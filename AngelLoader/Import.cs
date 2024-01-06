@@ -245,10 +245,6 @@ internal static class Import
 
     #region Private methods
 
-    // @Import(DarkLoader): DL writes its ini file in non-UTF8
-    // Notepad++ detects mine as ANSI (presumably 1252)
-    // Check the DarkLoader source code for how exactly it decides what encoding to write the ini in
-
     private static (ImportError Error, List<FanMission> FMs)
     ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
@@ -613,11 +609,12 @@ internal static class Import
 
             for (int i = 0; i < lines.Count; i++)
             {
-                string line = lines[i];
+                // FMSel reads its lines trimmed. Even the comment line, it trims the end of it too.
+                string lineT = lines[i].Trim();
 
-                if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+                if (lineT.Length >= 5 && lineT.StartsWithFast("[FM="))
                 {
-                    string instName = line.Substring(4, line.Length - 5);
+                    string instName = lineT.Substring(4, lineT.Length - 5);
 
                     // @Import(FMSel): FMSel has number-append name collision handling, so we need to handle it
                     // For scenarios where we have an installed dir but no archive name, we should try to do
@@ -626,8 +623,7 @@ internal static class Import
 
                     while (i < lines.Count - 1)
                     {
-                        // @Import: FMSel: We're not trimming these lines at all. Is this to spec?
-                        string lineFM = lines[i + 1];
+                        string lineFM = lines[i + 1].Trim();
                         if (lineFM.StartsWithFast("NiceName="))
                         {
                             fm.Title = lineFM.Substring(9);
@@ -748,7 +744,6 @@ internal static class Import
             }
         }
 
-        // @Import(NDL): Test!
         static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
             DictionaryI<FileInfo> archivesDict = new();
@@ -781,7 +776,6 @@ internal static class Import
                             archiveRoot = dir;
                             TryAddToArchivesHash(dir, archivesDict);
                         }
-                        // @Import(NDL): Test additional archive roots
                         else if (lc.StartsWithFast("AdditionalArchiveRoots="))
                         {
                             additionalArchiveRootsFound = true;
@@ -829,7 +823,7 @@ internal static class Import
 
             for (int i = 0; i < lines.Count; i++)
             {
-                // @Import: NDL: We're not trimming these lines at all. Is this to spec?
+                // NDL doesn't read its lines trimmed, so this is correct.
                 string line = lines[i];
 
                 if (line.Length >= 5 && line.StartsWithFast("[FM="))
@@ -847,7 +841,6 @@ internal static class Import
 
                     while (i < lines.Count - 1)
                     {
-                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
                         if (lineFM.StartsWithFast("NiceName="))
                         {
