@@ -334,6 +334,7 @@ internal static class RtfProcessing
 #endif
                     {
                         langWorkRequired = true;
+                        break;
                     }
                 }
             }
