@@ -1819,7 +1819,7 @@ public sealed partial class Scanner : IDisposable
 
         if (fmIsT3) foreach (NameAndIndex f in T3FMExtrasDirFiles) _readmeDirFiles.Add(f);
 
-        // @Import(Scanner): We can use the readme encoding to read the title out of titles.str
+        // TODO(Scanner): We can use the readme encoding to read the title out of titles.str
         // These titles are usually too short to detect encoding, but if we use the readme encoding it's likely
         // to match.
         // Update: That doesn't work. Most of the 1252-readme'd FMs' titles.str AND newgame.str files are in

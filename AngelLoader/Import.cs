@@ -776,7 +776,6 @@ internal static class Import
 
             for (int i = 0; i < lines.Count; i++)
             {
-                // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                 string line = lines[i];
 
                 if (line == "[Config]")
