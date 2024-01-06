@@ -8,11 +8,6 @@ then just use that when we need to go line-by-line. It's still an array allocati
 be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
 
 @RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
-@RAR: We'll have to test the whole collection for identicality and functionality as rar files. Find or make some batch converter.
-
-@RAR: RAR5 solid FM had a CRC mismatch - test with regular SharpCompress!
-@RAR: Dammit, it doesn't happen with regular SharpCompress. We messed something up in our ripping out of stuff.
-Try and find which commit it was exactly.
 */
 
 //#define ScanSynchronous
