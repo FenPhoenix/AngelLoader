@@ -708,7 +708,28 @@ internal static class Import
         return (ImportError.None, importedFMs);
     }
 
-    // @Import(NDL): NDL has a "relative paths" option - find out what this is and if we need to do anything to account for it
+    /*
+    @Import(NDL): NDL has a "relative paths" option - find out what this is and if we need to do anything to account for it
+    NewDarkLoader loops through the archive paths and runs each through the below method.
+    It always throws an invalid path exception for me, but there's probably some form these can be in that will
+    work.
+    */
+    /*
+        public static string AbsoluteToRelative(string absolutePath)
+        {
+            if (absolutePath != "")
+            {
+                Uri pathUri = new Uri(absolutePath);
+                string currentFile = Path.Combine(Environment.CurrentDirectory, "NewDarkLoader.dll"); //Dir of running program
+                Uri refUri = new Uri(currentFile);
+                Uri relUri = refUri.MakeRelativeUri(pathUri);
+                string finalPath = relUri.ToString().Replace("%20", " ");
+                return finalPath;
+            }
+            else
+                return "";
+        }
+    */
     private static (ImportError Error, List<FanMission> FMs)
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
