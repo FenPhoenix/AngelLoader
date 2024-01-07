@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -265,6 +266,21 @@ public static partial class Utils
     {
         timer.Stop();
         timer.Start();
+    }
+
+    internal static Encoding GetOEMCodePageOrFallback(Encoding fallback)
+    {
+        Encoding enc;
+        try
+        {
+            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch
+        {
+            enc = fallback;
+        }
+
+        return enc;
     }
 
 #if DateAccTest

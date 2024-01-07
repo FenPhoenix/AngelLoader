@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -14,15 +13,7 @@ public static partial class Utils
     internal static ZipArchive GetReadModeZipArchiveCharEnc(string fileName, byte[] buffer)
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
-        Encoding enc;
-        try
-        {
-            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
-        }
-        catch
-        {
-            enc = Encoding.UTF8;
-        }
+        Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
 
         return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }

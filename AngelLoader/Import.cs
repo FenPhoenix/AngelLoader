@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using FMScanner;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -17,11 +19,11 @@ namespace AngelLoader;
 
 /*
 @Import: Overhaul the import system. It needs:
--Quadratic searches changed to hash lookups
--NDL 1.7.0 AdditionalArchiveRoots support
+(done) Quadratic searches changed to hash lookups
+(done) NDL 1.7.0 AdditionalArchiveRoots support
 -Thorough testing with full sets from each loader
 -Notes addressed and bugs fixed
--Perf
+(done) Perf
 */
 
 internal static class Import
@@ -143,6 +145,8 @@ internal static class Import
 
         InstDirNameContext instDirNameContext = new();
 
+        Ini.WriteFullFMDataIni(makeBackup: true);
+
         // For DarkLoader this will be only one file, so it works out.
         // This is so we can keep just the one await call.
         foreach (string iniFile in iniFiles)
@@ -200,6 +204,7 @@ internal static class Import
                         -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
                         tags wouldn't work because they're only in TagsString and blah blah blah.
                         -But couldn't I just call the tag list updater?
+                        -Refreshes the TDM ini list, deduping any new name collisions there may now be.
                         -This also updates the FM stats on the UI, and anything else that FindFMs() might update.
                          We could just do that explicitly here of course, but as long as we're calling this anyway
                          we may as well let it do the work.
@@ -245,9 +250,12 @@ internal static class Import
     {
         #region Local functions
 
-        static string RemoveDLArchiveBadChars(string archive)
+        static string RemoveDLArchiveBadChars(string archive, string[] badChars)
         {
-            foreach (string s in new[] { "]", "\u0009", "\u000A", "\u000D" }) archive = archive.Replace(s, "");
+            foreach (string s in badChars)
+            {
+                archive = archive.Replace(s, "");
+            }
             return archive;
         }
 
@@ -258,8 +266,10 @@ internal static class Import
 
         #region Data
 
-        string[] _nonFMHeaders =
-        {
+        string[] badChars = { "]", "\u0009", "\u000A", "\u000D" };
+
+        HashSetI nonFMHeaders =
+        [
             "[options]",
             "[window]",
             "[mission directories]",
@@ -267,7 +277,7 @@ internal static class Import
             "[Thief 2]",
             "[Thief2x]",
             "[SShock 2]"
-        };
+        ];
 
         // Not used - we scan for game types ourselves currently
         //private enum DLGame
@@ -279,107 +289,118 @@ internal static class Import
         //    darkGameSS2 = 4
         //}
 
-        var _darkLoaderFMRegex = new Regex(@"\.[0123456789]+]$", RegexOptions.Compiled);
+        Regex darkLoaderFMRegex = new(@"\.[0123456789]+]$", RegexOptions.Compiled);
+
+        const string missionDirsHeader = "[mission directories]";
 
         #endregion
 
         var fms = new List<FanMission>();
 
-        bool missionDirsRead = false;
-        var archiveDirs = new List<string>();
-
         ImportError DoImport()
         {
             try
             {
-                string[] lines = File.ReadAllLines(iniFile);
+                // It appears that DarkLoader uses the default legacy system codepage (437 for North America usually),
+                // although I don't understand Delphi Pascal enough to 100% confirm it doesn't have some additional
+                // behavior... but this is likely to result in better text than UTF8, so.
+                List<string> lines = File_ReadAllLines_List(iniFile, GetOEMCodePageOrFallback(Encoding.UTF8), true);
 
                 if (importFMData)
                 {
-                    for (int i = 0; i < lines.Length; i++)
+                    var archives = new DictionaryI<string>();
+                    HashSetI fmArchivesHash = new();
+
+                    #region Read archive directories
+
+                    // We need to know the archive dirs before doing anything, because we may need to recreate
+                    // some lossy names (if any bad chars have been removed by DarkLoader).
+
+                    /*
+                    @Import(DarkLoader duplicate archives) research:
+                    -If two FMs are same-named but different-sized, it puts them both in the list, which it can
+                     do because the size is part of the id.
+                     Possible solutions:
+                     -Come up with a way to differentiate same-named archives in our own database
+                     -Ask the user which one they want to take (displaying metadata), and take that one only
+                     -Currently we just take the first one.
+                    */
+                    for (int i = 0; i < lines.Count; i++)
                     {
-                        string line = lines[i];
-                        string lineTS = line.TrimStart();
-                        string lineTB = lineTS.TrimEnd();
-
-                        #region Read archive directories
-
-                        // We need to know the archive dirs before doing anything, because we may need to
-                        // recreate some lossy names (if any bad chars have been removed by DarkLoader).
-                        if (!missionDirsRead && lineTB == "[mission directories]")
+                        string lineT = lines[i].Trim();
+                        if (lineT.EqualsI(missionDirsHeader))
                         {
-                            while (i < lines.Length - 1)
+                            HashSetI archivesHash = new();
+
+                            while (i < lines.Count - 1)
                             {
                                 string lt = lines[i + 1].Trim();
                                 if (!lt.IsEmpty() && lt[0] != '[' && lt.EndsWithO("=1"))
                                 {
-                                    archiveDirs.Add(lt.Substring(0, lt.Length - 2));
+                                    string dir = lt.Substring(0, lt.Length - 2);
+                                    if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
+                                    try
+                                    {
+                                        // DarkLoader only does zip format
+                                        foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
+                                        {
+                                            string fnNoExt = Path.GetFileNameWithoutExtension(f);
+                                            if (fnNoExt.IsWhiteSpace()) continue;
+                                            if (archivesHash.Add(fnNoExt))
+                                            {
+                                                archives[RemoveDLArchiveBadChars(fnNoExt, badChars)] = fnNoExt;
+                                            }
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log(ErrorText.Ex + "in DarkLoader archive dir file enumeration", ex);
+                                    }
                                 }
-                                else if (!lt.IsEmpty() && lt[0] == '[' && lt[^1] == ']')
+                                else if (lt.IsIniHeader())
                                 {
                                     break;
                                 }
                                 i++;
                             }
-
-                            if (archiveDirs.Count == 0 || archiveDirs.All(static x => x.IsWhiteSpace()))
-                            {
-                                return ImportError.NoArchiveDirsFound;
-                            }
-
-                            // Restart from the beginning of the file, this time skipping anything that isn't
-                            // an FM entry
-                            i = -1;
-                            missionDirsRead = true;
-                            continue;
+                            break;
                         }
+                    }
 
-                        #endregion
+                    if (archives.Count == 0)
+                    {
+                        return ImportError.NoArchiveDirsFound;
+                    }
 
-                        #region Read FM entries
+                    #endregion
 
-                        // MUST CHECK missionDirsRead OR IT ADDS EVERY FM TWICE!
-                        if (missionDirsRead &&
-                            !_nonFMHeaders.Contains(lineTB) && lineTB.Length > 0 && lineTB[0] == '[' &&
-                            lineTB[^1] == ']' && lineTB.Contains('.') &&
-                            _darkLoaderFMRegex.Match(lineTB).Success)
+                    #region Read FM entries
+
+                    for (int i = 0; i < lines.Count; i++)
+                    {
+                        string lineT = lines[i].Trim();
+
+                        if (!nonFMHeaders.Contains(lineT) &&
+                            lineT.IsIniHeader() &&
+                            lineT.Contains('.') &&
+                            darkLoaderFMRegex.Match(lineT).Success)
                         {
-                            int lastIndexDot = lineTB.LastIndexOf('.');
-                            string archive = lineTB.Substring(1, lastIndexDot - 1);
-                            string size = lineTB.Substring(lastIndexDot + 1, lineTB.Length - lastIndexDot - 2);
+                            int lastIndexDot = lineT.LastIndexOf('.');
+                            string dlArchive = lineT.Substring(1, lastIndexDot - 1);
+                            string size = lineT.Substring(lastIndexDot + 1, lineT.Length - lastIndexDot - 2);
 
-                            foreach (string dir in archiveDirs)
+                            if (!archives.TryGetValue(dlArchive, out string realArchive))
                             {
-                                if (!Directory.Exists(dir)) continue;
-                                try
-                                {
-                                    // DarkLoader only does zip format
-                                    // @Import(DarkLoader): Multiple disk hit
-                                    foreach (string f in FastIO.GetFilesTopOnly(dir, "*.zip"))
-                                    {
-                                        string fnNoExt = Path.GetFileNameWithoutExtension(f);
-                                        if (RemoveDLArchiveBadChars(fnNoExt).EqualsI(archive))
-                                        {
-                                            archive = fnNoExt;
-                                            goto breakout;
-                                        }
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log(ErrorText.Ex + "in DarkLoader archive dir file enumeration", ex);
-                                }
+                                continue;
                             }
 
-                            breakout:
-
-                            archive += ".zip";
+                            realArchive += ".zip";
 
                             ulong.TryParse(size, out ulong sizeBytes);
                             var fm = new FanMission
                             {
-                                Archive = archive,
-                                InstalledDir = archive.ToInstDirNameFMSel(instDirNameContext, true),
+                                Archive = realArchive,
+                                InstalledDir = realArchive.ToInstDirNameFMSel(instDirNameContext, true),
                                 SizeBytes = sizeBytes
                             };
 
@@ -388,7 +409,7 @@ internal static class Import
                             // fact it's somewhat likely they would have done so, but still, better to just
                             // scan for it ourselves later)
 
-                            while (i < lines.Length - 1)
+                            while (i < lines.Count - 1)
                             {
                                 string lts = lines[i + 1].TrimStart();
                                 string ltb = lts.TrimEnd();
@@ -443,18 +464,21 @@ internal static class Import
                                     // result will be 0 on fail, which is the empty value so it's fine
                                     fm.FinishedOn = result;
                                 }
-                                else if (!ltb.IsEmpty() && ltb[0] == '[' && ltb[^1] == ']')
+                                else if (ltb.IsIniHeader())
                                 {
                                     break;
                                 }
                                 i++;
                             }
 
-                            fms.Add(fm);
+                            if (fmArchivesHash.Add(fm.Archive))
+                            {
+                                fms.Add(fm);
+                            }
                         }
-
-                        #endregion
                     }
+
+                    #endregion
                 }
 
                 if (importSaves)
@@ -489,13 +513,13 @@ internal static class Import
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.DarkLoader, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
 
         return (ImportError.None, importedFMs);
     }
 
     private static bool
-    ImportDarkLoaderSaves(string[] lines)
+    ImportDarkLoaderSaves(List<string> lines)
     {
         // We DON'T use game generalization here, because DarkLoader only supports T1/T2/SS2 and will never
         // change (it's not updated anymore). So it's okay that we code those games in manually here.
@@ -507,7 +531,7 @@ internal static class Import
         bool t2DirRead = false;
         bool ss2DirRead = false;
 
-        for (int i = 0; i < lines.Length; i++)
+        for (int i = 0; i < lines.Count; i++)
         {
             string line = lines[i];
             string lineTS = line.TrimStart();
@@ -515,7 +539,7 @@ internal static class Import
 
             if (lineTB == "[options]")
             {
-                while (i < lines.Length - 1)
+                while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
                     if (lt.StartsWithI("thief1dir="))
@@ -533,7 +557,7 @@ internal static class Import
                         ss2Dir = lt.Substring(10).Trim();
                         ss2DirRead = true;
                     }
-                    else if (!lt.IsEmpty() && lt[0] == '[' && lt[^1] == ']')
+                    else if (lt.IsIniHeader())
                     {
                         break;
                     }
@@ -573,25 +597,31 @@ internal static class Import
     private static (ImportError Error, List<FanMission> FMs)
     ImportFMSelInternal(string iniFile, FieldsToImport fields)
     {
-        string[] lines = File.ReadAllLines(iniFile);
+        // As far as can be ascertained through manual testing, FMSel seems to read/write its ini file in UTF8.
+        List<string> lines = File_ReadAllLines_List(iniFile);
         var fms = new List<FanMission>();
 
-        static void DoImport(string[] lines, List<FanMission> fms)
+        static void DoImport(List<string> lines, List<FanMission> fms)
         {
-            for (int i = 0; i < lines.Length; i++)
+            HashSetI fmArchivesHash = new();
+
+            for (int i = 0; i < lines.Count; i++)
             {
-                string line = lines[i];
+                // FMSel reads its lines trimmed. Even the comment line, it trims the end of it too.
+                string lineT = lines[i].Trim();
 
-                if (line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+                if (lineT.Length >= 5 && lineT.StartsWithO("[FM="))
                 {
-                    string instName = line.Substring(4, line.Length - 5);
+                    string instName = lineT.Substring(4, lineT.Length - 5);
 
+                    // @Import(FMSel): FMSel has number-append name collision handling, so we need to handle it
+                    // For scenarios where we have an installed dir but no archive name, we should try to do
+                    // something to still be able to merge it in. This situation is probably rare though.
                     var fm = new FanMission { InstalledDir = instName };
 
-                    while (i < lines.Length - 1)
+                    while (i < lines.Count - 1)
                     {
-                        // @Import: FMSel: We're not trimming these lines at all. Is this to spec?
-                        string lineFM = lines[i + 1];
+                        string lineFM = lines[i + 1].Trim();
                         if (lineFM.StartsWithO("NiceName="))
                         {
                             fm.Title = lineFM.Substring(9);
@@ -605,7 +635,15 @@ internal static class Import
                         */
                         else if (lineFM.StartsWithO("Archive="))
                         {
-                            fm.Archive = lineFM.Substring(8);
+                            string archive = lineFM.Substring(8);
+                            /*
+                            FMSel searches subfolders and its archive fields can have leading relative paths
+                            (eg. "import_test\1999-06-04_PoorLordBafford.zip"). Stripping them takes care of the
+                            case where the subfolder file names are not in the list already. In the unlikely case
+                            that there are duplicate-named files in subfolders, there's nothing we can really do
+                            since we don't support this, so just taking the first is as good as any option.
+                            */
+                            fm.Archive = archive.GetFileNameFast();
                         }
                         else if (lineFM.StartsWithO("ReleaseDate="))
                         {
@@ -646,77 +684,167 @@ internal static class Import
                         {
                             fm.SelectedReadme = lineFM.Substring(9);
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[^1] == ']')
+                        else if (lineFM.IsIniHeader())
                         {
                             break;
                         }
                         i++;
                     }
 
-                    fms.Add(fm);
+                    if (fmArchivesHash.Add(fm.Archive))
+                    {
+                        fms.Add(fm);
+                    }
                 }
             }
         }
 
         DoImport(lines, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.FMSel, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
 
         return (ImportError.None, importedFMs);
     }
 
+    /*
+    @Import(NDL): NDL has a "relative paths" option - find out what this is and if we need to do anything to account for it
+    NewDarkLoader loops through the archive paths and runs each through the below method.
+    It always throws an invalid path exception for me, but there's probably some form these can be in that will
+    work.
+    */
+    /*
+        public static string AbsoluteToRelative(string absolutePath)
+        {
+            if (absolutePath != "")
+            {
+                Uri pathUri = new Uri(absolutePath);
+                string currentFile = Path.Combine(Environment.CurrentDirectory, "NewDarkLoader.dll"); //Dir of running program
+                Uri refUri = new Uri(currentFile);
+                Uri relUri = refUri.MakeRelativeUri(pathUri);
+                string finalPath = relUri.ToString().Replace("%20", " ");
+                return finalPath;
+            }
+            else
+                return "";
+        }
+    */
     private static (ImportError Error, List<FanMission> FMs)
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
-        string[] lines = File.ReadAllLines(iniFile);
+        // NewDarkLoader uses Encoding.Default for NewDarkLoader.ini, confirmed from source and testing 1.7.0
+        List<string> lines = File_ReadAllLines_List(iniFile, Encoding.Default, true);
         var fms = new List<FanMission>();
 
-        static ImportError DoImport(string[] lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
+        static void TryAddToArchivesHash(string dir, DictionaryI<FileInfo> archivesDict)
         {
-            string[]? _archiveDirFiles = null;
-            string[] GetArchiveDirFiles(string archiveDir) => _archiveDirFiles ??= Directory.GetFiles(archiveDir, "*", SearchOption.AllDirectories);
+            try
+            {
+                // NDL always searches subdirectories as well
+                foreach (FileInfo fi in new DirectoryInfo(dir).GetFiles("*", SearchOption.AllDirectories))
+                {
+                    string f = fi.FullName;
 
-            bool archiveDirRead = false;
-            string archiveDir = "";
+                    // @DIRSEP: '/' conversion due to string.ContainsI()
+                    if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
+                    {
+                        string fn = Path.GetFileName(f);
+                        if (!fn.IsWhiteSpace() &&
+                            fn.ExtIsArchive() &&
+                            !fn.ContainsI(Paths.FMSelBak))
+                        {
+                            archivesDict[fn] = fi;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
+            }
+        }
 
-            for (int i = 0; i < lines.Length; i++)
+        static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
+        {
+            DictionaryI<FileInfo> archivesDict = new();
+
+            #region Read archive directory
+
+            // Unfortunately NDL doesn't store its archive names, so we have to do a file search
+            // similar to DarkLoader
+
+            for (int i = 0; i < lines.Count; i++)
             {
                 string line = lines[i];
 
-                #region Read archive directory
-
-                if (!archiveDirRead && line == "[Config]")
+                if (line == "[Config]")
                 {
-                    while (i < lines.Length - 1)
+                    string archiveRoot = "";
+
+                    bool archiveRootFound = false;
+                    bool additionalArchiveRootsFound = false;
+
+                    while (i < lines.Count - 1)
                     {
-                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lc = lines[i + 1];
                         if (lc.StartsWithO("ArchiveRoot="))
                         {
-                            archiveDir = lc.Substring(12).Trim();
+                            archiveRootFound = true;
+                            string dir = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
+                            archiveRoot = dir;
+                            TryAddToArchivesHash(dir, archivesDict);
+                        }
+                        else if (lc.StartsWithO("AdditionalArchiveRoots="))
+                        {
+                            additionalArchiveRootsFound = true;
+                            string val = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            string[] dirs = val.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                            for (int dirI = 0; dirI < dirs.Length; dirI++)
+                            {
+                                string dir = dirs[dirI].Trim();
+                                if (!archiveRoot.IsEmpty() && dir.PathEqualsI(archiveRoot))
+                                {
+                                    continue;
+                                }
+                                if (dir.IsWhiteSpace() || !Directory.Exists(dir))
+                                {
+                                    continue;
+                                }
+                                TryAddToArchivesHash(dir, archivesDict);
+                            }
+                        }
+                        else if (lc.IsIniHeader())
+                        {
                             break;
                         }
-                        else if (!lc.IsEmpty() && lc[0] == '[' && lc[^1] == ']')
+                        if (archiveRootFound && additionalArchiveRootsFound)
                         {
                             break;
                         }
                         i++;
                     }
-
-                    if (archiveDir.IsEmpty()) return ImportError.NoArchiveDirsFound;
-
-                    i = -1;
-                    archiveDirRead = true;
-                    continue;
                 }
+            }
 
-                #endregion
+            #endregion
 
-                #region Read FM entries
+            if (archivesDict.Count == 0) return ImportError.NoArchiveDirsFound;
 
-                // MUST CHECK archiveDirRead OR IT ADDS EVERY FM TWICE!
-                if (archiveDirRead &&
-                    line.Length >= 5 && line[0] == '[' && line[1] == 'F' && line[2] == 'M' && line[3] == '=')
+            List<FileInfo> archivesList = new(archivesDict.Count);
+            foreach (var item in archivesDict)
+            {
+                archivesList.Add(item.Value);
+            }
+            DictionaryI<FanMission> fmsInstalledDirDict = new();
+
+            #region Read FM entries (initial)
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                // NDL doesn't read its lines trimmed, so this is correct.
+                string line = lines[i];
+
+                if (line.Length >= 5 && line.StartsWithO("[FM="))
                 {
                     // @Import: There can be a problem like:
                     // installed name is CoolMission[1]
@@ -727,34 +855,10 @@ internal static class Import
                     string instName = line.Substring(4, line.Length - 5);
 
                     var fm = new FanMission { InstalledDir = instName };
+                    fmsInstalledDirDict[instName] = fm;
 
-                    // Unfortunately NDL doesn't store its archive names, so we have to do a file search
-                    // similar to DarkLoader
-                    try
+                    while (i < lines.Count - 1)
                     {
-                        // NDL always searches subdirectories as well
-                        foreach (string f in GetArchiveDirFiles(archiveDir))
-                        {
-                            // @DIRSEP: '/' conversion due to string.ContainsI()
-                            if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
-                            {
-                                string fn = Path.GetFileNameWithoutExtension(f);
-                                if (fn.ToInstDirNameNDL(instDirNameContext, true).EqualsI(instName) || fn.EqualsI(instName))
-                                {
-                                    fm.Archive = Path.GetFileName(f);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
-                    }
-
-                    while (i < lines.Length - 1)
-                    {
-                        // @Import: NDL: We're not trimming these lines at all. Is this to spec?
                         string lineFM = lines[i + 1];
                         if (lineFM.StartsWithO("NiceName="))
                         {
@@ -800,7 +904,7 @@ internal static class Import
                             ulong.TryParse(lineFM.Substring(7), out ulong result);
                             fm.SizeBytes = result;
                         }
-                        else if (!lineFM.IsEmpty() && lineFM[0] == '[' && lineFM[^1] == ']')
+                        else if (lineFM.IsIniHeader())
                         {
                             break;
                         }
@@ -809,9 +913,45 @@ internal static class Import
 
                     fms.Add(fm);
                 }
-
-                #endregion
             }
+
+            #endregion
+
+            #region Set FM archive fields
+
+            static bool SizesMatch(FileInfo archiveFI, FanMission fm)
+            {
+                return archiveFI.Length >= 0 && fm.SizeBytes == (ulong)archiveFI.Length;
+            }
+
+            static string RemoveBrackets(string str) => str.Replace("[", "").Replace("]", "");
+
+            for (int i = 0; i < archivesList.Count; i++)
+            {
+                // @Import(NDL set archive fields): Try really hard to make sure we get an archive for each FM
+
+                FileInfo archiveFI = archivesList[i];
+                string archive = archiveFI.Name;
+
+                // NewDarkLoader removes square brackets [] on ini read, but still writes them out, so it's possible
+                // for them to be in there, so we need to check both cases.
+                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: false)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameFMSel(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
+
+                    (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||
+                    (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameFMSel(instDirNameContext, truncate: false)), out fm) && SizesMatch(archiveFI, fm)))
+                {
+                    fm.Archive = archive;
+                }
+            }
+
+            #endregion
 
             return ImportError.None;
         }
@@ -820,137 +960,59 @@ internal static class Import
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData(ImportType.NewDarkLoader, fms, fields);
+        List<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
 
         return (ImportError.None, importedFMs);
     }
 
-    private static List<FanMission>
-    MergeImportedFMData(ImportType importType, List<FanMission> importedFMs, FieldsToImport fields)
+    private static List<FanMission> MergeImportedFMData_DL(List<FanMission> importedFMs, FieldsToImport fields)
     {
-        // Perf
-        int initCount = FMDataIniList.Count;
-        bool[] checkedArray = new bool[initCount];
-
-        // We can't just send back the list we got in, because we will have deep-copied them to the main list
         var importedFMsInMainList = new List<FanMission>();
 
-        for (int impFMi = 0; impFMi < importedFMs.Count; impFMi++)
+        DictionaryI<FanMission> archivesDict = new();
+        foreach (FanMission fm in FMDataIniList)
         {
-            FanMission importedFM = importedFMs[impFMi];
-
-            bool existingFound = false;
-            for (int mainFMi = 0; mainFMi < initCount; mainFMi++)
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
             {
-                FanMission mainFM = FMDataIniList[mainFMi];
-
-                if (!checkedArray[mainFMi] &&
-                    // @Import: Import match-up
-                    // We should match installed dirs better! Match to FMSel/NDL _-replace style, truncated
-                    // and not, etc... even bracket-numbered? D:
-                    ((importType == ImportType.DarkLoader &&
-                      mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                     (importType == ImportType.FMSel &&
-                      ((!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                       importedFM.InstalledDir.EqualsI(mainFM.InstalledDir))) ||
-                     (importType == ImportType.NewDarkLoader &&
-                      // @Import: BUG:? Why aren't we checking archive for this?!?!
-                      // Test this!
-                      (
-                          //(!importedFM.Archive.IsEmpty() && importedFM.Archive.EqualsI(mainFM.Archive)) ||
-                          importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)
-                      )
-                     )
-                    )
-                   /*
-                   @Import: Original v1.01 is like this:
-
-                   if (!mainFM.Checked &&
-                       (importType == ImportType.DarkLoader &&
-                        mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                       (importType == ImportType.FMSel &&
-                        (!importedFM.Archive.IsEmpty() && mainFM.Archive.EqualsI(importedFM.Archive)) ||
-                         importedFM.InstalledDir.EqualsI(mainFM.InstalledDir)) ||
-                       (importType == ImportType.NewDarkLoader &&
-                        mainFM.InstalledDir.EqualsI(importedFM.InstalledDir)))
-
-                   So it's 100% intentional, not wrong parentheses or anything.
-                   NewDarkLoader doesn't store the archive names in its ini. BUT we still get it by searching
-                   the archive dir on disk. So... it probably is still an oversight?
-                   */
-                   )
-                {
-                    if (fields.Title && !importedFM.Title.IsEmpty())
-                    {
-                        mainFM.Title = importedFM.Title;
-                    }
-                    if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
-                    {
-                        mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
-                    }
-                    if (fields.LastPlayed)
-                    {
-                        mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
-                    }
-                    if (fields.FinishedOn)
-                    {
-                        mainFM.FinishedOn = importedFM.FinishedOn;
-                        if (importType != ImportType.FMSel)
-                        {
-                            mainFM.FinishedOnUnknown = false;
-                        }
-                    }
-                    if (fields.Comment)
-                    {
-                        mainFM.Comment = importedFM.Comment;
-                    }
-
-                    if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
-                    {
-                        if (fields.Rating)
-                        {
-                            mainFM.Rating = importedFM.Rating;
-                        }
-                        if (fields.DisabledMods)
-                        {
-                            mainFM.DisabledMods = importedFM.DisabledMods;
-                            mainFM.DisableAllMods = mainFM.DisabledMods == "*";
-                        }
-                        if (fields.Tags)
-                        {
-                            mainFM.TagsString = importedFM.TagsString;
-                        }
-                        if (fields.SelectedReadme)
-                        {
-                            mainFM.SelectedReadme = importedFM.SelectedReadme;
-                        }
-                    }
-                    if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
-                    {
-                        if (fields.Size && mainFM.SizeBytes == 0)
-                        {
-                            mainFM.SizeBytes = importedFM.SizeBytes;
-                        }
-                    }
-                    else if (importType == ImportType.FMSel && mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
-                    {
-                        if (fields.FinishedOn)
-                        {
-                            mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
-                        }
-                    }
-
-                    mainFM.MarkedScanned = true;
-
-                    checkedArray[mainFMi] = true;
-
-                    importedFMsInMainList.Add(mainFM);
-
-                    existingFound = true;
-                    break;
-                }
+                archivesDict[fm.Archive] = fm;
             }
-            if (!existingFound)
+        }
+
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
+                {
+                    mainFM.Title = importedFM.Title;
+                }
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                {
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                    mainFM.FinishedOnUnknown = false;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Size && mainFM.SizeBytes == 0)
+                {
+                    mainFM.SizeBytes = importedFM.SizeBytes;
+                }
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
+            }
+            else
             {
                 var newFM = new FanMission
                 {
@@ -976,44 +1038,275 @@ internal static class Import
                 {
                     newFM.Comment = importedFM.Comment;
                 }
+                if (fields.Size)
+                {
+                    newFM.SizeBytes = importedFM.SizeBytes;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOn = importedFM.FinishedOn;
+                }
 
-                if (importType is ImportType.NewDarkLoader or ImportType.FMSel)
+                newFM.MarkedScanned = true;
+
+                FMDataIniList.Add(newFM);
+                importedFMsInMainList.Add(newFM);
+            }
+        }
+
+        return importedFMsInMainList;
+    }
+
+    private static List<FanMission> MergeImportedFMData_NDL(List<FanMission> importedFMs, FieldsToImport fields)
+    {
+        var importedFMsInMainList = new List<FanMission>();
+
+        DictionaryI<FanMission> archivesDict = new();
+        DictionaryI<FanMission> instDirsDict = new();
+        foreach (FanMission fm in FMDataIniList)
+        {
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            {
+                archivesDict[fm.Archive] = fm;
+            }
+            if (!instDirsDict.ContainsKey(fm.InstalledDir))
+            {
+                instDirsDict[fm.InstalledDir] = fm;
+            }
+        }
+
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+                instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
                 {
-                    if (fields.Rating)
-                    {
-                        newFM.Rating = importedFM.Rating;
-                    }
-                    if (fields.DisabledMods)
-                    {
-                        newFM.DisabledMods = importedFM.DisabledMods;
-                        newFM.DisableAllMods = newFM.DisabledMods == "*";
-                    }
-                    if (fields.Tags)
-                    {
-                        newFM.TagsString = importedFM.TagsString;
-                    }
-                    if (fields.SelectedReadme)
-                    {
-                        newFM.SelectedReadme = importedFM.SelectedReadme;
-                    }
+                    mainFM.Title = importedFM.Title;
                 }
-                if (importType is ImportType.NewDarkLoader or ImportType.DarkLoader)
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
                 {
-                    if (fields.Size)
-                    {
-                        newFM.SizeBytes = importedFM.SizeBytes;
-                    }
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                    mainFM.FinishedOnUnknown = false;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    mainFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    mainFM.DisabledMods = importedFM.DisabledMods;
+                    mainFM.DisableAllMods = mainFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    mainFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    mainFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.Size && mainFM.SizeBytes == 0)
+                {
+                    mainFM.SizeBytes = importedFM.SizeBytes;
+                }
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
+            }
+            else
+            {
+                var newFM = new FanMission
+                {
+                    Archive = importedFM.Archive,
+                    InstalledDir = importedFM.InstalledDir
+                };
+
+                if (fields.Title)
+                {
+                    newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                        !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                        importedFM.InstalledDir;
+                }
+                if (fields.ReleaseDate)
+                {
+                    newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.Comment)
+                {
+                    newFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    newFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    newFM.DisabledMods = importedFM.DisabledMods;
+                    newFM.DisableAllMods = newFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    newFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    newFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.Size)
+                {
+                    newFM.SizeBytes = importedFM.SizeBytes;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOn = importedFM.FinishedOn;
+                }
+
+                newFM.MarkedScanned = true;
+
+                FMDataIniList.Add(newFM);
+                importedFMsInMainList.Add(newFM);
+            }
+        }
+
+        return importedFMsInMainList;
+    }
+
+    private static List<FanMission> MergeImportedFMData_FMSel(List<FanMission> importedFMs, FieldsToImport fields)
+    {
+        var importedFMsInMainList = new List<FanMission>();
+
+        DictionaryI<FanMission> archivesDict = new();
+        DictionaryI<FanMission> instDirsDict = new();
+        foreach (FanMission fm in FMDataIniList)
+        {
+            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            {
+                archivesDict[fm.Archive] = fm;
+            }
+            if (!instDirsDict.ContainsKey(fm.InstalledDir))
+            {
+                instDirsDict[fm.InstalledDir] = fm;
+            }
+        }
+
+        foreach (FanMission importedFM in importedFMs)
+        {
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+                instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
+            {
+                if (fields.Title && !importedFM.Title.IsEmpty())
+                {
+                    mainFM.Title = importedFM.Title;
+                }
+                if (fields.ReleaseDate && importedFM.ReleaseDate.DateTime != null)
+                {
+                    mainFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    mainFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.FinishedOn)
+                {
+                    mainFM.FinishedOn = importedFM.FinishedOn;
+                }
+                if (fields.Comment)
+                {
+                    mainFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    mainFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    mainFM.DisabledMods = importedFM.DisabledMods;
+                    mainFM.DisableAllMods = mainFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    mainFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    mainFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (mainFM.FinishedOn == 0 && !mainFM.FinishedOnUnknown)
+                {
                     if (fields.FinishedOn)
                     {
-                        newFM.FinishedOn = importedFM.FinishedOn;
+                        mainFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                     }
                 }
-                else if (importType == ImportType.FMSel)
+
+                mainFM.MarkedScanned = true;
+
+                importedFMsInMainList.Add(mainFM);
+            }
+            else
+            {
+                var newFM = new FanMission
                 {
-                    if (fields.FinishedOn)
-                    {
-                        newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
-                    }
+                    Archive = importedFM.Archive,
+                    InstalledDir = importedFM.InstalledDir
+                };
+
+                if (fields.Title)
+                {
+                    newFM.Title = !importedFM.Title.IsEmpty() ? importedFM.Title :
+                        !importedFM.Archive.IsEmpty() ? importedFM.Archive.RemoveExtension() :
+                        importedFM.InstalledDir;
+                }
+                if (fields.ReleaseDate)
+                {
+                    newFM.ReleaseDate.DateTime = importedFM.ReleaseDate.DateTime;
+                }
+                if (fields.LastPlayed)
+                {
+                    newFM.LastPlayed.DateTime = importedFM.LastPlayed.DateTime;
+                }
+                if (fields.Comment)
+                {
+                    newFM.Comment = importedFM.Comment;
+                }
+                if (fields.Rating)
+                {
+                    newFM.Rating = importedFM.Rating;
+                }
+                if (fields.DisabledMods)
+                {
+                    newFM.DisabledMods = importedFM.DisabledMods;
+                    newFM.DisableAllMods = newFM.DisabledMods == "*";
+                }
+                if (fields.Tags)
+                {
+                    newFM.TagsString = importedFM.TagsString;
+                }
+                if (fields.SelectedReadme)
+                {
+                    newFM.SelectedReadme = importedFM.SelectedReadme;
+                }
+                if (fields.FinishedOn)
+                {
+                    newFM.FinishedOnUnknown = importedFM.FinishedOnUnknown;
                 }
 
                 newFM.MarkedScanned = true;
