@@ -317,15 +317,13 @@ internal static class Import
                     // some lossy names (if any bad chars have been removed by DarkLoader).
 
                     /*
-                    @Import(DarkLoader): Test when multiple archives with the same name exist in different archive dirs
-                    Does it use first or last encountered? Check this!
-
                     @Import(DarkLoader duplicate archives) research:
                     -If two FMs are same-named but different-sized, it puts them both in the list, which it can
                      do because the size is part of the id.
                      Possible solutions:
                      -Come up with a way to differentiate same-named archives in our own database
                      -Ask the user which one they want to take (displaying metadata), and take that one only
+                     -Currently we just take the first one.
                     */
                     for (int i = 0; i < lines.Count; i++)
                     {
