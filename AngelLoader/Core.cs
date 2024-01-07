@@ -116,7 +116,7 @@ internal static class Core
         // Perf: The only thing the splash screen needs is the theme
         (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
-        Error[] gameDataErrors = InitializedArray(SupportedGameCount, Error.None);
+        SetGameDataError[] gameDataErrors = InitializedArray(SupportedGameCount, SetGameDataError.None);
         bool enableTDMWatchers = false;
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
 
@@ -173,10 +173,13 @@ internal static class Core
                         // Existence checks on startup are merely a perf optimization: values start blank so just
                         // don't set them if we don't have a game exe
                         string gameExe = Config.GetGameExe(gameIndex);
-                        if (!gameExe.IsEmpty() && File.Exists(gameExe))
+                        if (!gameExe.IsEmpty())
                         {
-                            (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
-                            if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
+                            if (File.Exists(gameExe))
+                            {
+                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                                if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
+                            }
                         }
                     }
                 }
@@ -381,6 +384,7 @@ internal static class Core
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
+        ThrowDialogIfGameDirNotWriteable(gameDataErrors);
 
         if (!openSettings)
         {
@@ -399,11 +403,35 @@ internal static class Core
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
     }
 
-    private static void ThrowDialogIfSneakyOptionsIniNotFound(Error[] errors)
+    // @GameDirWrite: Test when both error conditions are true
+    private static void ThrowDialogIfSneakyOptionsIniNotFound(SetGameDataError[] errors)
     {
-        if (errors[(int)GameIndex.Thief3] == Error.SneakyOptionsNotFound)
+        if (errors[(int)GameIndex.Thief3].HasFlagFast(SetGameDataError.SneakyOptionsNotFound))
         {
             Dialogs.ShowAlert(LText.AlertMessages.Misc_SneakyOptionsIniNotFound, LText.AlertMessages.Alert);
+        }
+    }
+
+    private static void ThrowDialogIfGameDirNotWriteable(SetGameDataError[] errors)
+    {
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            SetGameDataError error = errors[i];
+
+            if (error.HasFlagFast(SetGameDataError.GameDirNotWriteable))
+            {
+                Log(GetLocalizedGameName(gameIndex) + ": No write permission for game directory.\r\n" +
+                    "Game path: " + Config.GetGamePath(gameIndex));
+
+                Dialogs.ShowError(
+                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_AdvanceWarning + "\r\n\r\n" +
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    Config.GetGamePath(gameIndex),
+                    icon: MBoxIcon.Warning
+                );
+            }
         }
     }
 
@@ -517,7 +545,7 @@ internal static class Core
         if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
         // Game paths should have been checked and verified before OK was clicked, so assume they're good here
-        Error[] setGameDataErrors = new Error[SupportedGameCount];
+        SetGameDataError[] setGameDataErrors = new SetGameDataError[SupportedGameCount];
         bool enableTDMWatchers = false;
         for (int i = 0; i < SupportedGameCount; i++)
         {
@@ -534,6 +562,7 @@ internal static class Core
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
+        ThrowDialogIfGameDirNotWriteable(setGameDataErrors);
 
         #endregion
 
@@ -757,10 +786,10 @@ internal static class Core
     /// </summary>
     /// <param name="gameIndex"></param>
     /// <param name="storeConfigInfo"></param>
-    private static (Error Error, bool EnableTDMWatchers, List<string>? CamModIniLines)
+    private static (SetGameDataError Error, bool EnableTDMWatchers, List<string>? CamModIniLines)
     SetGameDataFromDisk(GameIndex gameIndex, bool storeConfigInfo)
     {
-        Error error = Error.None;
+        SetGameDataError error = SetGameDataError.None;
         bool enableTDMWatchers = false;
         List<string>? camModIniLines = null;
         string gameExe = Config.GetGameExe(gameIndex);
@@ -781,6 +810,15 @@ internal static class Core
 
         // This must come first, so below methods can use it
         Config.SetGamePath(gameIndex, gamePath);
+
+        bool checkGameDirWritePermission =
+            !gamePath.IsEmpty() && GameDirNeedsWriteAccess(gameIndex);
+
+        if (checkGameDirWritePermission && !DirectoryHasWritePermission(gamePath))
+        {
+            error |= SetGameDataError.GameDirNotWriteable;
+        }
+
         if (GameIsDark(gameIndex))
         {
             var data = gameExeSpecified
@@ -887,7 +925,10 @@ internal static class Core
                 }
                 else
                 {
-                    error = t3Data.Error;
+                    if (t3Data.Error == Error.SneakyOptionsNotFound)
+                    {
+                        error |= SetGameDataError.SneakyOptionsNotFound;
+                    }
                     Config.SetFMInstallPath(GameIndex.Thief3, "");
                 }
                 // Do this even if there was an error, because we could still have a valid selector line

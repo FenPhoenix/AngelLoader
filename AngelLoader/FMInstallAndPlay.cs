@@ -443,18 +443,47 @@ internal static class FMInstallAndPlay
     {
         if (gameIndex == GameIndex.TDM) return true;
 
-        bool success = GameIsDark(gameIndex)
+        bool suIsPortable = false;
+
+        (bool success, Exception? ex) = GameIsDark(gameIndex)
             ? GameConfigFiles.SetDarkFMSelector(gameIndex, gamePath)
-            : GameConfigFiles.SetT3FMSelector();
+            : GameConfigFiles.SetT3FMSelector(out suIsPortable);
 
         if (success) return true;
 
-        Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
-            (GameIsDark(gameIndex) ? nameof(GameConfigFiles.SetDarkFMSelector) : nameof(GameConfigFiles.SetT3FMSelector)) +
-            " returned false)\r\n" +
-            "Source: " + playSource, stackTrace: true);
+        string protectedDir = ex is UnauthorizedAccessException
+            ? "\r\nTried to write to a protected directory.\r\nGame path: " + gamePath
+            : "";
 
-        if (playSource != PlaySource.Editor)
+        Log("Unable to set us as the selector for " + Config.GetGameExe(gameIndex) + " (" +
+            (GameIsDark(gameIndex)
+                ? nameof(GameConfigFiles.SetDarkFMSelector)
+                : nameof(GameConfigFiles.SetT3FMSelector)) +
+            " returned false)\r\n" +
+            "Source: " + playSource +
+            protectedDir,
+            stackTrace: true);
+
+        if (playSource == PlaySource.Editor) return false;
+
+        // @GameDirWrite: Test this
+        if (ex is UnauthorizedAccessException)
+        {
+            // If SU is not portable, we should be accessing somewhere in the Documents folder, which should not
+            // be write-protected and also the alert messages say "game directory" so that would be misleading.
+            // @GENGAMES(Manual game-dir-needs-write-access check): Efficiency, don't do the portable check again
+            if (gameIndex != GameIndex.Thief3 || suIsPortable)
+            {
+                Core.Dialogs.ShowError(
+                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    gamePath,
+                    icon: MBoxIcon.Warning
+                );
+            }
+        }
+        else
         {
             Core.Dialogs.ShowError(
                 "Failed to start the game.\r\n\r\n" +
@@ -609,6 +638,25 @@ internal static class FMInstallAndPlay
         if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
 
         #region Exe: Fail if blank or not found
+
+        if (GameDirNeedsWriteAccess(gameIndex))
+        {
+            if (!DirectoryHasWritePermission(gamePath))
+            {
+                Log(gameName + ": No write permission for game directory.\r\n" +
+                    "Game path: " + gamePath);
+
+                Core.Dialogs.ShowError(
+                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_Play + "\r\n\r\n" +
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    gamePath,
+                    icon: MBoxIcon.Warning
+                );
+
+                return failed;
+            }
+        }
 
         if (gameExe.IsEmpty() || !File.Exists(gameExe))
         {
@@ -1306,6 +1354,22 @@ internal static class FMInstallAndPlay
 
                         return fail;
                     }
+                }
+
+                if (!DirectoryHasWritePermission(instBasePath))
+                {
+                    Log(gameName + ": No write permission for installed FMs directory.\r\n" +
+                        "Installed FMs directory: " + instBasePath);
+
+                    Core.Dialogs.ShowError(
+                        GetLocalizedGameNameColon(gameIndex) + "\r\n" +
+                        LText.AlertMessages.NoWriteAccessToInstalledFMsDir + "\r\n\r\n" +
+                        LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                        instBasePath,
+                        icon: MBoxIcon.Warning
+                    );
+
+                    return fail;
                 }
 
                 if (Canceled(install)) return fail;

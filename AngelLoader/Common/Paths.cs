@@ -331,6 +331,8 @@ internal static class Paths
         }
     }
 
+    internal static bool SneakyUpgradeIsPortable() => TryGetSneakyOptionsIniFromGameDir(out _);
+
     private static bool TryGetSneakyOptionsIniFromGameDir(out string soIni)
     {
         try

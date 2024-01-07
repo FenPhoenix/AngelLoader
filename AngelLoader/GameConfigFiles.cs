@@ -333,7 +333,7 @@ internal static class GameConfigFiles
                     {
                         // For Thief 3, we actually just need SneakyOptions.ini. The game itself existing
                         // is not technically a requirement.
-                        SetT3FMSelector(resetSelector: true);
+                        SetT3FMSelector(out _, resetSelector: true);
                     }
                 }
             }
@@ -436,7 +436,7 @@ internal static class GameConfigFiles
 
             if (!linesModified) return;
 
-            if (!TryWriteAllLines(cfgFile, lines))
+            if (!TryWriteAllLines(cfgFile, lines, out _))
             {
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
@@ -476,7 +476,7 @@ internal static class GameConfigFiles
             lines.Add(key_fm_language_forced + " 1");
         }
 
-        if (!TryWriteAllLines(camCfg, lines))
+        if (!TryWriteAllLines(camCfg, lines, out _))
         {
             // ReSharper disable once RedundantJumpStatement
             return; // Explicit for clarity of intent
@@ -487,11 +487,14 @@ internal static class GameConfigFiles
 
     // @CAN_RUN_BEFORE_VIEW_INIT
     // TODO(SetDarkFMSelector): Rewrite this mess into something readable!
-    internal static bool SetDarkFMSelector(GameIndex gameIndex, string gamePath, bool resetSelector = false)
+    internal static (bool Success, Exception? Ex)
+    SetDarkFMSelector(GameIndex gameIndex, string gamePath, bool resetSelector = false)
     {
-        if (!GameIsDark(gameIndex)) return false;
+        (bool, Exception?) failNoEx = (false, null);
 
-        if (gamePath.IsEmpty()) return false;
+        if (!GameIsDark(gameIndex)) return failNoEx;
+
+        if (gamePath.IsEmpty()) return failNoEx;
 
         #region Local functions
 
@@ -576,12 +579,12 @@ internal static class GameConfigFiles
                 "Game: " + gameIndex,
                 stackTrace: true
             );
-            return false;
+            return failNoEx;
         }
 
         if (!TryReadAllLines(camModIni, out var lines))
         {
-            return false;
+            return failNoEx;
         }
 
         bool changeLoaderIfResetting = true;
@@ -723,25 +726,29 @@ internal static class GameConfigFiles
             lines.Insert(fmCommentLineIndex + 1, fmLine);
         }
 
-        return TryWriteAllLines(camModIni, lines);
+        bool success = TryWriteAllLines(camModIni, lines, out Exception? ex);
+        return (success, ex);
     }
 
     // @CAN_RUN_BEFORE_VIEW_INIT
-    internal static bool SetT3FMSelector(bool resetSelector = false)
+    internal static (bool Success, Exception? Ex)
+    SetT3FMSelector(out bool suIsPortable, bool resetSelector = false)
     {
+        (bool, Exception?) failNoEx = (false, null);
+
         bool existingExternSelectorKeyOverwritten = false;
         bool existingAlwaysShowKeyOverwritten = false;
         int insertLineIndex = -1;
 
-        (string soIni, _) = Paths.GetSneakyOptionsIni();
+        (string soIni, suIsPortable) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
-            return false;
+            return failNoEx;
         }
 
         if (!TryReadAllLines(soIni, out var lines))
         {
-            return false;
+            return failNoEx;
         }
 
         // Confirmed SU can read the selector value with both forward and backward slashes
@@ -861,7 +868,8 @@ internal static class GameConfigFiles
             lines.Insert(insertLineIndex, key_AlwaysShow + "true");
         }
 
-        return TryWriteAllLines(soIni, lines);
+        bool success = TryWriteAllLines(soIni, lines, out Exception? ex);
+        return (success, ex);
     }
 
     #endregion
@@ -1200,7 +1208,7 @@ internal static class GameConfigFiles
 
         RemoveConsecutiveWhiteSpace(lines);
 
-        TryWriteAllLines(userCfgFile, lines);
+        TryWriteAllLines(userCfgFile, lines, out _);
     }
 
     internal static bool? GetTitaniumMode(GameIndex gameIndex)
@@ -1249,7 +1257,7 @@ internal static class GameConfigFiles
             }
         }
 
-        TryWriteAllLines(userBndFile, lines);
+        TryWriteAllLines(userBndFile, lines, out _);
     }
 
     internal static void SetGlobalDarkGameValues(GameIndex gameIndex)
@@ -1273,7 +1281,7 @@ internal static class GameConfigFiles
 
             RemoveConsecutiveWhiteSpace(lines);
 
-            TryWriteAllLines(camCfgFile, lines);
+            TryWriteAllLines(camCfgFile, lines, out _);
         }
     }
 

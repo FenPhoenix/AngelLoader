@@ -1,4 +1,6 @@
-﻿namespace AngelLoader;
+﻿using System;
+
+namespace AngelLoader;
 
 internal enum Error
 {
@@ -20,6 +22,14 @@ internal enum Error
     GameExeNotFound,
     SneakyDllNotFound,
     GameVersionNotFound
+}
+
+[Flags]
+internal enum SetGameDataError
+{
+    None = 0,
+    SneakyOptionsNotFound = 1,
+    GameDirNotWriteable = 2
 }
 
 internal enum MissFlagError
