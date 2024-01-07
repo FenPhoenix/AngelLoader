@@ -389,7 +389,7 @@ internal static class Import
                             string dlArchive = lineT.Substring(1, lastIndexDot - 1);
                             string size = lineT.Substring(lastIndexDot + 1, lineT.Length - lastIndexDot - 2);
 
-                            if (!archives.TryGetValue(dlArchive, out string realArchive))
+                            if (!archives.TryGetValue(dlArchive, out string? realArchive))
                             {
                                 continue;
                             }
@@ -935,7 +935,7 @@ internal static class Import
 
                 // NewDarkLoader removes square brackets [] on ini read, but still writes them out, so it's possible
                 // for them to be in there, so we need to check both cases.
-                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) && SizesMatch(archiveFI, fm)) ||
+                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission? fm) && SizesMatch(archiveFI, fm)) ||
                     (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
 
                     (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||
@@ -972,15 +972,15 @@ internal static class Import
         DictionaryI<FanMission> archivesDict = new();
         foreach (FanMission fm in FMDataIniList)
         {
-            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            if (!fm.Archive.IsEmpty())
             {
-                archivesDict[fm.Archive] = fm;
+                archivesDict.TryAdd(fm.Archive, fm);
             }
         }
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM))
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
                 {
@@ -1065,19 +1065,16 @@ internal static class Import
         DictionaryI<FanMission> instDirsDict = new();
         foreach (FanMission fm in FMDataIniList)
         {
-            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            if (!fm.Archive.IsEmpty())
             {
-                archivesDict[fm.Archive] = fm;
+                archivesDict.TryAdd(fm.Archive, fm);
             }
-            if (!instDirsDict.ContainsKey(fm.InstalledDir))
-            {
-                instDirsDict[fm.InstalledDir] = fm;
-            }
+            instDirsDict.TryAdd(fm.InstalledDir, fm);
         }
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
                 instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
@@ -1197,19 +1194,16 @@ internal static class Import
         DictionaryI<FanMission> instDirsDict = new();
         foreach (FanMission fm in FMDataIniList)
         {
-            if (!fm.Archive.IsEmpty() && !archivesDict.ContainsKey(fm.Archive))
+            if (!fm.Archive.IsEmpty())
             {
-                archivesDict[fm.Archive] = fm;
+                archivesDict.TryAdd(fm.Archive, fm);
             }
-            if (!instDirsDict.ContainsKey(fm.InstalledDir))
-            {
-                instDirsDict[fm.InstalledDir] = fm;
-            }
+            instDirsDict.TryAdd(fm.InstalledDir, fm);
         }
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
                 instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
