@@ -59,13 +59,21 @@ public static partial class Common
 
     public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
     {
-        var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
-        while (sr.Reader.ReadLine() is { } str)
+        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+        try
         {
-            ret.Add(str);
+            var ret = new List<string>();
+            using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(path, buffer), encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
+            while (sr.Reader.ReadLine() is { } str)
+            {
+                ret.Add(str);
+            }
+            return ret;
         }
-        return ret;
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
     }
 
     public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)
