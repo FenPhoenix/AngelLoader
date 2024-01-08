@@ -988,7 +988,7 @@ internal static class Import
                     mainFM.FinishedOn = importedFM.FinishedOn;
                     mainFM.FinishedOnUnknown = false;
                 }
-                if (fields.Comment)
+                if (fields.Comment && !importedFM.Comment.IsEmpty())
                 {
                     mainFM.Comment = importedFM.Comment;
                 }
@@ -1083,7 +1083,7 @@ internal static class Import
                     mainFM.FinishedOn = importedFM.FinishedOn;
                     mainFM.FinishedOnUnknown = false;
                 }
-                if (fields.Comment)
+                if (fields.Comment && !importedFM.Comment.IsEmpty())
                 {
                     mainFM.Comment = importedFM.Comment;
                 }
@@ -1211,7 +1211,7 @@ internal static class Import
                 {
                     mainFM.FinishedOn = importedFM.FinishedOn;
                 }
-                if (fields.Comment)
+                if (fields.Comment && !importedFM.Comment.IsEmpty())
                 {
                     mainFM.Comment = importedFM.Comment;
                 }
