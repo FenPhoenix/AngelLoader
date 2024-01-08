@@ -476,7 +476,6 @@ internal static class FMInstallAndPlay
 
         if (playSource == PlaySource.Editor) return false;
 
-        // @GameDirWrite: Test this
         if (ex is UnauthorizedAccessException)
         {
             // If SU is not portable, we should be accessing somewhere in the Documents folder, which should not

@@ -282,7 +282,6 @@ internal sealed class LText_Class
         internal readonly string DarkLoader_InstalledFMFound = "AngelLoader has detected that this game has an FM installed with DarkLoader. You should install the original game in DarkLoader before continuing, or you may encounter problems with the wrong FM being loaded.";
         internal readonly string DarkLoader_OpenNow = "Open DarkLoader now";
         [FenGenBlankLine]
-        // @GameDirWrite: Make these shorter, clearer? Should it be "write permission"?
         internal readonly string NoWriteAccessToGameDir_AdvanceWarning = "AngelLoader does not have write access to the game directory. The game will not be able to be played.";
         internal readonly string NoWriteAccessToGameDir_Play = "AngelLoader does not have write access to the game directory. Unable to play.";
         internal readonly string GameDirInsideProgramFiles_Explanation = "A common reason for this is the game directory being located inside Program Files. If this is the case, you'll need to move it to another location.";

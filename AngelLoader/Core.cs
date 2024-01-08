@@ -394,7 +394,6 @@ internal static class Core
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
     }
 
-    // @GameDirWrite: Test when both error conditions are true
     private static void ThrowDialogIfSneakyOptionsIniNotFound(SetGameDataError[] errors)
     {
         if (errors[(int)GameIndex.Thief3].HasFlagFast(SetGameDataError.SneakyOptionsNotFound))
