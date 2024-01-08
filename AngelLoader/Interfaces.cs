@@ -373,4 +373,6 @@ public interface IView : ISettingsChangeableView
     bool ModalDialogUp();
 
     void UpdateConfig();
+
+    void RunStartupPlay();
 }

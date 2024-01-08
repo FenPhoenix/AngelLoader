@@ -39,6 +39,7 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -1191,6 +1192,8 @@ public sealed partial class MainForm : DarkFormBase,
         _splashScreen = null;
 
         _startupState = false;
+
+        RunStartupPlay();
     }
 
     #endregion
@@ -5240,6 +5243,31 @@ public sealed partial class MainForm : DarkFormBase,
             if (TopRightTabControl.GetTabBarRect().Contains(TopRightTabControl.ClientCursorPos()))
             {
                 TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
+            }
+        }
+    }
+
+    public void RunStartupPlay()
+    {
+        if (Core.StartupPlayData.Enabled)
+        {
+            Core.StartupPlayData.Enabled = false;
+
+            GameIndex gameIndex = Core.StartupPlayData.GameIndex;
+            string installedNameId = Core.StartupPlayData.InstalledNameId;
+
+            Trace.WriteLine(gameIndex);
+            Trace.WriteLine(installedNameId);
+
+            foreach (FanMission fm in FMsViewList)
+            {
+                if (fm.Game == GameIndexToGame(gameIndex) &&
+                    fm.RealInstalledDir.EqualsI(installedNameId))
+                {
+                    // @CMDLINE: Implement selection and play
+                    Trace.WriteLine(fm.Title);
+                    break;
+                }
             }
         }
     }

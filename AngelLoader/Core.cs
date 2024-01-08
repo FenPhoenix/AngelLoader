@@ -23,6 +23,7 @@ the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switc
 */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -2590,18 +2591,6 @@ internal static class Core
 
     #endregion
 
-    #region Command line
-
-    internal static void ActivateMainView()
-    {
-        if (View != null!)
-        {
-            View.ActivateThisInstance();
-        }
-    }
-
-    #endregion
-
     internal static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
     {
         fm = View.GetMainSelectedFMOrNull();
@@ -2703,4 +2692,58 @@ internal static class Core
 
         return VisualTheme.Classic;
     }
+
+    #region Command line
+
+    internal static void ActivateMainView()
+    {
+        if (View != null!)
+        {
+            View.ActivateThisInstance();
+        }
+    }
+
+    internal sealed class StartupPlay
+    {
+        internal bool Enabled;
+        internal GameIndex GameIndex;
+        internal string InstalledNameId = "";
+    }
+
+    internal static readonly StartupPlay StartupPlayData = new();
+
+    internal static void HandleCommandLineArgs(ReadOnlyCollection<string> argsCollection)
+    {
+        string[] args = argsCollection.ToArray();
+        if (args.Length != 2) return;
+
+        string arg1 = args[0].Trim();
+        if (!arg1.StartsWithI("-play:")) return;
+
+        string game = arg1.Substring("-play:".Length);
+        if (game.IsEmpty()) return;
+
+        for (int i = 0; i < SupportedGameCount; i++)
+        {
+            GameIndex gameIndex = (GameIndex)i;
+            if (game.EqualsI(GetGamePrefix(gameIndex)))
+            {
+                string installedDirId = args[1].Trim();
+                StartupPlayData.Enabled = true;
+                StartupPlayData.GameIndex = gameIndex;
+                StartupPlayData.InstalledNameId = installedDirId;
+                return;
+            }
+        }
+    }
+
+    internal static void RunStartupPlay()
+    {
+        if (View != null!)
+        {
+            View.RunStartupPlay();
+        }
+    }
+
+    #endregion
 }

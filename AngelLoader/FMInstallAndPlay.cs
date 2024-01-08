@@ -2207,20 +2207,6 @@ internal static class FMInstallAndPlay
                 fm.Installed = false;
                 if (markFMAsUnavailable) fm.MarkedUnavailable = true;
 
-                /*
-                NewDarkLoader still truncates its Thief 3 install names, but the "official" way is not to
-                do it for Thief 3. If the user already has FMs that were installed with NewDarkLoader, we
-                just read in the truncated names and treat them as normal for compatibility purposes. But
-                if we've just uninstalled the mission, then we can safely convert InstalledDir back to full
-                un-truncated form for future use.
-                NOTE: 2022-05-17: This was a dumb glib decision that will probably just cause confusion
-                for the importer code and anyone else who looks at the behavior.
-                */
-                if (gameIndex == GameIndex.Thief3 && !fm.Archive.IsEmpty())
-                {
-                    fm.InstalledDir = fm.Archive.ToInstDirNameFMSel(instDirNameContext, truncate: false);
-                }
-
                 if (!single)
                 {
                     Core.View.SetProgressBoxState_Single(
