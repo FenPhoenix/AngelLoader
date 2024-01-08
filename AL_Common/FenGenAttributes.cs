@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
+#pragma warning disable CS9113 // Parameter is unread.
 
 // ReSharper disable UnusedParameter.Local
 #pragma warning disable IDE0060 // Remove unused parameter.
