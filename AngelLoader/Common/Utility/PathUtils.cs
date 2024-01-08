@@ -209,7 +209,6 @@ public static partial class Utils
         }
     }
 
-    // @GameDirWrite: Test all call sites and T3 in SU portable mode
     internal static bool DirectoryHasWritePermission(string path)
     {
         try
