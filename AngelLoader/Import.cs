@@ -605,9 +605,9 @@ internal static class Import
                 {
                     string instName = lineT.Substring(4, lineT.Length - 5);
 
-                    // @Import(FMSel): FMSel has number-append name collision handling, so we need to handle it
-                    // For scenarios where we have an installed dir but no archive name, we should try to do
-                    // something to still be able to merge it in. This situation is probably rare though.
+                    // FMSel has number-append name collision handling, but if we have installed dirs and no
+                    // archives then we should still have picked the correct name up from searching the actual
+                    // installed dir ourselves, so FMSel's installed names should match ours even in this case.
                     var fm = new FanMission { InstalledDir = instName };
 
                     while (i < lines.Count - 1)
@@ -698,7 +698,7 @@ internal static class Import
     }
 
     /*
-    @Import(NDL): NDL has a "relative paths" option - find out what this is and if we need to do anything to account for it
+    @Import(NDL): NDL has a "relative paths" option - do we want to support it?
     NewDarkLoader loops through the archive paths and runs each through the below method.
     It always throws an invalid path exception for me, but there's probably some form these can be in that will
     work.
@@ -919,8 +919,6 @@ internal static class Import
 
             for (int i = 0; i < archivesList.Count; i++)
             {
-                // @Import(NDL set archive fields): Try really hard to make sure we get an archive for each FM
-
                 FileInfo archiveFI = archivesList[i];
                 string archive = archiveFI.Name;
 
