@@ -29,7 +29,7 @@ internal static class Paths
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern int GetModuleFileNameW(HandleRef hModule, StringBuilder buffer, int length);
-    private static string GetStartupPath()
+    private static string GetStartupExePath()
     {
         var nullHandleRef = new HandleRef(null, IntPtr.Zero);
         const int MAX_PATH = 260;
@@ -48,16 +48,16 @@ internal static class Paths
             buffer.EnsureCapacity(capacity);
         }
         buffer.Length = length;
-        return Path.GetDirectoryName(buffer.ToString())!;
+        return buffer.ToString();
     }
 
 #if DEBUG || Release_Testing
-    private static string? _startup;
-    internal static string Startup
+    private static string? _startupExe;
+    internal static string StartupExe
     {
         get
         {
-            if (_startup.IsEmpty())
+            if (_startupExe.IsEmpty())
             {
                 try
                 {
@@ -70,20 +70,23 @@ internal static class Paths
                     var is set. Obviously don't add this var yourself.
                     */
                     string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
-                    _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : GetStartupPath();
+                    _startupExe = val?.EqualsTrue() == true ? @"C:\AngelLoader\AngelLoader.exe" : GetStartupExePath();
                 }
                 catch
                 {
-                    _startup = GetStartupPath();
+                    _startupExe = GetStartupExePath();
                 }
             }
 
-            return _startup;
+            return _startupExe;
         }
     }
 #else
-    internal static readonly string Startup = GetStartupPath();
+    internal static readonly string StartupExe = GetStartupExePath();
 #endif
+
+    private static string? _startupPath;
+    internal static string Startup => _startupPath ??= Path.GetDirectoryName(StartupExe)!;
 
     #endregion
 

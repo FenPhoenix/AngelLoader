@@ -25,6 +25,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private bool _deleteFromDBMenuItemVisible;
     private bool _openInDromEdMenuItemVisible;
     private bool _openInDromedMenuItemEnabled;
+    private bool _createShortcutMenuItemVisible;
     private bool _openFMFolderMenuItemVisible;
     private bool _scanFMMenuItemEnabled;
     private bool _convertAudioSubMenuEnabled;
@@ -65,6 +66,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private ToolStripSeparator OpenInDromEdSep = null!;
     private ToolStripMenuItemCustom OpenInDromEdMenuItem = null!;
     private ToolStripSeparator OpenFMFolderSep = null!;
+    private ToolStripMenuItemCustom CreateShortcutMenuItem = null!;
     private ToolStripMenuItemCustom OpenFMFolderMenuItem = null!;
     private ToolStripMenuItemCustom ScanFMMenuItem = null!;
     private ToolStripMenuItemCustom ConvertAudioMenuItem = null!;
@@ -178,6 +180,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             OpenInDromEdSep = new ToolStripSeparator(),
             OpenInDromEdMenuItem = new ToolStripMenuItemCustom(),
             OpenFMFolderSep = new ToolStripSeparator(),
+            CreateShortcutMenuItem = new ToolStripMenuItemCustom(),
             OpenFMFolderMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
             ScanFMMenuItem = new ToolStripMenuItemCustom(),
@@ -229,6 +232,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         DeleteFMMenuItem.Click += AsyncMenuItems_Click;
         DeleteFromDBMenuItem.Click += AsyncMenuItems_Click;
         OpenInDromEdMenuItem.Click += AsyncMenuItems_Click;
+        CreateShortcutMenuItem.Click += CreateShortcutMenuItem_Click;
         OpenFMFolderMenuItem.Click += OpenFMFolderMenuItem_Click;
         ScanFMMenuItem.Click += AsyncMenuItems_Click;
         ConvertWAVsTo16BitMenuItem.Click += AsyncMenuItems_Click;
@@ -266,6 +270,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         OpenInDromEdSep.Visible = _openInDromEdMenuItemVisible;
         OpenInDromEdMenuItem.Visible = _openInDromEdMenuItemVisible;
         OpenInDromEdMenuItem.Enabled = _openInDromedMenuItemEnabled;
+
+        CreateShortcutMenuItem.Visible = _createShortcutMenuItemVisible;
 
         OpenFMFolderSep.Visible = _openFMFolderMenuItemVisible;
         OpenFMFolderMenuItem.Visible = _openFMFolderMenuItemVisible;
@@ -340,6 +346,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         SetDeleteFromDBMenuItemText(multiSelected);
 
         SetOpenInDromEdMenuItemText(sayShockEd);
+
+        SetCreateShortcutMenuItemText(multiSelected);
 
         OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
@@ -601,6 +609,27 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             : LText.FMsList.FMMenu_OpenInDromEd;
     }
 
+    internal void SetCreateShortcutMenuItemVisible(bool value)
+    {
+        if (_constructed)
+        {
+            CreateShortcutMenuItem.Visible = value;
+        }
+        else
+        {
+            _createShortcutMenuItemVisible = value;
+        }
+    }
+
+    internal void SetCreateShortcutMenuItemText(bool multiSelected)
+    {
+        if (!_constructed) return;
+
+        CreateShortcutMenuItem.Text = multiSelected
+            ? LText.FMsList.FMMenu_CreateShortcuts
+            : LText.FMsList.FMMenu_CreateShortcut;
+    }
+
     internal void SetOpenFMFolderVisible(bool value)
     {
         if (_constructed)
@@ -782,6 +811,11 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
                 ? !_owner.FMsDGV.GetMainSelectedFM().Pinned
                 : sender == ExplicitPinToTopMenuItem);
         }
+    }
+
+    private void CreateShortcutMenuItem_Click(object sender, EventArgs e)
+    {
+        Core.CreateShortcuts(_owner.FMsDGV.GetSelectedFMs_InOrder());
     }
 
     private void OpenFMFolderMenuItem_Click(object sender, EventArgs e)

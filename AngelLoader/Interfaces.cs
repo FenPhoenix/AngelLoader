@@ -375,4 +375,6 @@ public interface IView : ISettingsChangeableView
     void UpdateConfig();
 
     Task RunStartupPlay();
+
+    (bool accepted, string selectedPath, string[] SelectedPaths) ShowFolderBrowserDialog(bool multiSelect = false, string initialPath = "");
 }
