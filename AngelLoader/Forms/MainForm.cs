@@ -5267,6 +5267,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    // @ViewBusinessLogic(RunStartupPlay())
     public async Task RunStartupPlay()
     {
         if (!UIEnabled ||
@@ -5325,6 +5326,8 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // @CMDLINE: Localize this
+        Logger.Log("Passed FM via command line, but a matching available FM couldn't be found in the list.\r\n" +
+                   "Passed command line: -play:" + GetGamePrefix(gameIndex) + " \"" + installedNameId + "\"");
         Core.Dialogs.ShowError("The requested FM is not in the list, or does not exist on disk.", icon: MBoxIcon.Warning);
     }
 }
