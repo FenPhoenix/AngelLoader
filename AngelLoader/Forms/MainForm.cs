@@ -5298,7 +5298,7 @@ public sealed partial class MainForm : DarkFormBase,
                     GamesTabControl.SelectedTab = tab;
                 }
 
-                this.SuspendDrawing();
+                EverythingPanel.SuspendDrawing();
 
                 ClearUIAndCurrentInternalFilter();
 
@@ -5313,12 +5313,12 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     FMsDGV.SelectSingle(index);
                     CenterSelectedFM();
-                    this.ResumeDrawing();
+                    EverythingPanel.ResumeDrawing();
                     await FMInstallAndPlay.InstallIfNeededAndPlay(fm);
                 }
                 else
                 {
-                    this.ResumeDrawing();
+                    EverythingPanel.ResumeDrawing();
                 }
                 break;
             }
