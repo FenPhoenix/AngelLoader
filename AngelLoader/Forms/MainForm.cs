@@ -39,7 +39,6 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -2176,11 +2175,32 @@ public sealed partial class MainForm : DarkFormBase,
                 _gameTabs,
                 SupportedGameCount);
 
-            // We don't need to do a manual refresh here because ShowTab will end up resulting in one
-            GamesTabControl.ShowTab(tab, s.Checked);
-            AutosizeGameTabsWidth();
-            PositionFilterBarAfterTabs();
+            ShowGameTab(tab, s.Checked, programmatic: false);
         }
+    }
+
+    private void ShowGameTab(TabPage tab, bool show, bool programmatic)
+    {
+        if (programmatic)
+        {
+            bool[] states = GameFilterControlsLLMenu.GetCheckedStates();
+            int tabIndex = Array.IndexOf(_gameTabs, tab);
+            if (states[tabIndex] == show)
+            {
+                return;
+            }
+            states[tabIndex] = show;
+            if (states.All(static x => !x))
+            {
+                return;
+            }
+            GameFilterControlsLLMenu.SetCheckedStates(states);
+        }
+
+        // We don't need to do a manual refresh here because ShowTab will end up resulting in one
+        GamesTabControl.ShowTab(tab, show);
+        AutosizeGameTabsWidth();
+        PositionFilterBarAfterTabs();
     }
 
     private void SetGameFilterShowHideMenuText() =>
@@ -5262,9 +5282,6 @@ public sealed partial class MainForm : DarkFormBase,
         GameIndex gameIndex = Core.StartupPlayData.GameIndex;
         string installedNameId = Core.StartupPlayData.InstalledNameId;
 
-        Trace.WriteLine(gameIndex);
-        Trace.WriteLine(installedNameId);
-
         for (int i = 0; i < FMsViewList.Count; i++)
         {
             FanMission fm = FMsViewList[i];
@@ -5274,12 +5291,23 @@ public sealed partial class MainForm : DarkFormBase,
                 fm.RealInstalledDir.EqualsI(installedNameId) &&
                 !fm.MarkedUnavailable)
             {
+                if (Config.GameOrganization == GameOrganization.ByTab)
+                {
+                    TabPage tab = _gameTabs[(int)gameIndex];
+                    ShowGameTab(tab, show: true, programmatic: true);
+                    GamesTabControl.SelectedTab = tab;
+                }
+
                 this.SuspendDrawing();
+
                 ClearUIAndCurrentInternalFilter();
+
+                Config.ShowUnavailableFMs = false;
+                FilterShowUnavailableButton.Checked = false;
+
                 await SortAndSetFilter();
-                // @CMDLINE: Implement selection and play
-                // @CMDLINE: This needs to be able to switch game tabs too... which means showing a tab if it's hidden too.
-                Trace.WriteLine(fm.Title);
+
+                // @CMDLINE: Test more thoroughly
                 int index = FMsDGV.GetIndexFromInstalledName(fm.InstalledDir, false, -1);
                 if (index > -1)
                 {
