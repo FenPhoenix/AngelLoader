@@ -64,7 +64,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         InitSlim();
 #endif
 
-        Text = "AngelLoader " + Application.ProductVersion;
+        Text = ControlUtils.GetWindowTitleString();
 
         _graphicsContext = new Native.GraphicsContext_Ref(Handle);
     }

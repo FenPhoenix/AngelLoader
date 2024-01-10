@@ -884,17 +884,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         #region Former InitThreadable()
 
-#if RELEASE_BETA
-        const string betaVer = "4";
-        string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
-#else
-        string title = "AngelLoader " + Application.ProductVersion;
-#endif
-#if X64
-        title += " (64-bit)";
-#endif
-
-        Text = title;
+        Text = ControlUtils.GetWindowTitleString();
 
         #region Set up form and control state
 

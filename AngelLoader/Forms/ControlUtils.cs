@@ -894,4 +894,18 @@ internal static class ControlUtils
         newTheme = default;
         return false;
     }
+
+    internal static string GetWindowTitleString()
+    {
+#if RELEASE_BETA
+        const string betaVer = "4";
+        string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
+#else
+        string title = "AngelLoader " + Application.ProductVersion;
+#endif
+#if X64
+        title += " (64-bit)";
+#endif
+        return title;
+    }
 }
