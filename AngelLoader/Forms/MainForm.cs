@@ -1128,8 +1128,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Must come after Show() I guess or it doesn't work?!
         FMsDGV.Focus();
 
-        await RunStartupPlay();
-
 #if !ReleasePublic
         //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
@@ -4603,9 +4601,6 @@ public sealed partial class MainForm : DarkFormBase,
                                                 && Config.GetGameEditorDetected(gameIndex));
         FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-        FMsDGV_FM_LLMenu.SetCreateShortcutMenuItemVisible(allAreSupportedAndAvailable);
-        FMsDGV_FM_LLMenu.SetCreateShortcutMenuItemText(multiSelected);
-
         FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && (fm.Game == Game.TDM || fm.Installed));
 
         FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
@@ -5283,69 +5278,5 @@ public sealed partial class MainForm : DarkFormBase,
                 TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
             }
         }
-    }
-
-    // @ViewBusinessLogic(RunStartupPlay())
-    public async Task RunStartupPlay()
-    {
-        if (!UIEnabled ||
-            ViewBlocked ||
-            !Core.StartupPlayData.Enabled)
-        {
-            Core.StartupPlayData.Enabled = false;
-            return;
-        }
-
-        Core.StartupPlayData.Enabled = false;
-
-        GameIndex gameIndex = Core.StartupPlayData.GameIndex;
-        string installedNameId = Core.StartupPlayData.InstalledNameId;
-
-        for (int i = 0; i < FMsViewList.Count; i++)
-        {
-            FanMission fm = FMsViewList[i];
-            if (fm.Game == GameIndexToGame(gameIndex) &&
-                // Using real installed dir + game as unique id, because TDM's "unique" id can change on re-find
-                // but we'll be persisting it on disk here, so we can't use it.
-                fm.RealInstalledDir.EqualsI(installedNameId) &&
-                !fm.MarkedUnavailable)
-            {
-                if (Config.GameOrganization == GameOrganization.ByTab)
-                {
-                    TabPage tab = _gameTabs[(int)gameIndex];
-                    ShowGameTab(tab, show: true, programmatic: true);
-                    GamesTabControl.SelectedTab = tab;
-                }
-
-                EverythingPanel.SuspendDrawing();
-
-                ClearUIAndCurrentInternalFilter();
-
-                Config.ShowUnavailableFMs = false;
-                FilterShowUnavailableButton.Checked = false;
-
-                await SortAndSetFilter();
-
-                // @CMDLINE: Test more thoroughly
-                int index = FMsDGV.GetIndexFromInstalledName(fm.InstalledDir, false, -1);
-                if (index > -1)
-                {
-                    FMsDGV.SelectSingle(index);
-                    CenterSelectedFM();
-                    EverythingPanel.ResumeDrawing();
-                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm);
-                }
-                else
-                {
-                    EverythingPanel.ResumeDrawing();
-                }
-                return;
-            }
-        }
-
-        // @CMDLINE: Localize this
-        Logger.Log("Passed FM via command line, but a matching available FM couldn't be found in the list.\r\n" +
-                   "Passed command line: -play:" + GetGamePrefix(gameIndex) + " \"" + installedNameId + "\"");
-        Core.Dialogs.ShowError("The requested FM is not in the list, or does not exist on disk.", icon: MBoxIcon.Warning);
     }
 }

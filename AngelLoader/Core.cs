@@ -23,7 +23,6 @@ the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switc
 */
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -31,7 +30,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,7 +42,6 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.NativeCommon;
 using static AngelLoader.SettingsWindowData;
 using static AngelLoader.Utils;
 
@@ -1989,53 +1986,6 @@ internal static class Core
 
     #endregion
 
-    internal static void CreateShortcuts(FanMission[] fms)
-    {
-        // @CMDLINE: Make separate file save dialogs? And/or make it clear what the user is selecting.
-        // Cause just saying "choose a folder" is a little unclear?
-        (bool accepted, string selectedPath, _) = View.ShowFolderBrowserDialog();
-        if (!accepted) return;
-        foreach (FanMission fm in fms)
-        {
-            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
-            {
-                continue;
-            }
-
-            string titleSafe = fm.Title;
-            foreach (char c in Path.GetInvalidFileNameChars())
-            {
-                titleSafe = titleSafe.Replace(c, '_');
-            }
-
-            string fullFilePath;
-            try
-            {
-                fullFilePath = Path.Combine(selectedPath, titleSafe + ".lnk");
-            }
-            catch (Exception ex)
-            {
-                Log("Failed to create a final file path for fm " + fm.GetId() + "\r\n" +
-                    nameof(selectedPath) + ": " + selectedPath + "\r\n" +
-                    "fm title: " + fm.Title + "\r\n" +
-                    "fm title (filename safe): " + titleSafe + "\r\n" +
-                    "intended extension: .lnk", ex);
-                Dialogs.ShowError("Failed to create a final file path for fm '" + fm.GetId() + "'.");
-                continue;
-            }
-
-            IShellLinkW link = (IShellLinkW)new ShellLink();
-
-            // @CMDLINE: Put "-play:" into a global constant somewhere
-            link.SetPath(Paths.StartupExe);
-            link.SetArguments("-play:" + GetGamePrefix(gameIndex) + " \"" + fm.RealInstalledDir + "\"");
-            link.SetIconLocation(Paths.StartupExe, 0);
-
-            IPersistFile file = (IPersistFile)link;
-            file.Save(fullFilePath, false);
-        }
-    }
-
     #region Open / run
 
     internal static void OpenFMFolder(FanMission fm)
@@ -2749,48 +2699,6 @@ internal static class Core
         if (View != null!)
         {
             View.ActivateThisInstance();
-        }
-    }
-
-    internal sealed class StartupPlay
-    {
-        internal bool Enabled;
-        internal GameIndex GameIndex;
-        internal string InstalledNameId = "";
-    }
-
-    internal static readonly StartupPlay StartupPlayData = new();
-
-    internal static void HandleCommandLineArgs(ReadOnlyCollection<string> argsCollection)
-    {
-        string[] args = argsCollection.ToArray();
-        if (args.Length != 2) return;
-
-        string arg1 = args[0].Trim();
-        if (!arg1.StartsWithI("-play:")) return;
-
-        string game = arg1.Substring("-play:".Length);
-        if (game.IsEmpty()) return;
-
-        for (int i = 0; i < SupportedGameCount; i++)
-        {
-            GameIndex gameIndex = (GameIndex)i;
-            if (game.EqualsI(GetGamePrefix(gameIndex)))
-            {
-                string installedDirId = args[1].Trim();
-                StartupPlayData.Enabled = true;
-                StartupPlayData.GameIndex = gameIndex;
-                StartupPlayData.InstalledNameId = installedDirId;
-                return;
-            }
-        }
-    }
-
-    internal static async Task RunStartupPlay()
-    {
-        if (View != null!)
-        {
-            await View.RunStartupPlay();
         }
     }
 
