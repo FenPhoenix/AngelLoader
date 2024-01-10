@@ -175,10 +175,26 @@ public static partial class Utils
     {
         try
         {
-            return Environment.OSVersion.Platform == PlatformID.Win32NT &&
-                   Environment.OSVersion.Version >= new Version(6, 1);
+            OperatingSystem osVersion = Environment.OSVersion;
+            return osVersion.Platform == PlatformID.Win32NT &&
+                   osVersion.Version >= new Version(6, 1);
 
             // Win8 check: same but version is 6, 2
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    internal static bool WinVersionSupportsDarkMode()
+    {
+        try
+        {
+            OperatingSystem osVersion = Environment.OSVersion;
+            return osVersion.Platform == PlatformID.Win32NT &&
+                   osVersion.Version.Major >= 10 &&
+                   osVersion.Version.Build >= 17763;
         }
         catch
         {
