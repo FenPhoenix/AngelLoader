@@ -253,8 +253,10 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private void Test3Button_Click(object sender, EventArgs e)
+    private async void Test3Button_Click(object sender, EventArgs e)
     {
+        // @Import: Test, remove for final
+        await ShowAskToImportWindow();
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
@@ -1124,8 +1126,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (askForImport)
         {
-            // @Import(Ask for import): Implement
-            Core.Dialogs.ShowAlert("Ask for import dialog", "Import", icon: MBoxIcon.None);
+            await ShowAskToImportWindow();
         }
     }
 
@@ -5129,6 +5130,21 @@ public sealed partial class MainForm : DarkFormBase,
                 ImportFinishedOn: f.ImportFinishedOn,
                 ImportSize: f.ImportSize
             );
+    }
+
+    private async Task ShowAskToImportWindow()
+    {
+        ImportType importType;
+        DialogResult result;
+        using (var f = new AskToImportForm())
+        {
+            result = f.ShowDialogDark(this);
+            importType = f.SelectedImportType;
+        }
+        if (result == DialogResult.OK)
+        {
+            await Import.ImportFrom(importType);
+        }
     }
 
     #endregion

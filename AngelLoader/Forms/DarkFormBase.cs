@@ -11,7 +11,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public abstract class DarkFormBase : Form
+public class DarkFormBase : Form
 {
     private bool _loading = true;
 
@@ -45,7 +45,10 @@ public abstract class DarkFormBase : Form
 
     private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
 
-    public abstract void RespondToSystemThemeChange();
+    public virtual void RespondToSystemThemeChange()
+    {
+        throw new NotImplementedException(nameof(RespondToSystemThemeChange) + " must be implemented for all forms!");
+    }
 
     private protected void SetThemeBase(
         VisualTheme theme,

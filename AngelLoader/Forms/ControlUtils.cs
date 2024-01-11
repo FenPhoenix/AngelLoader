@@ -47,9 +47,10 @@ internal static class ControlUtils
 
     #region Centering
 
-    internal static void CenterH(this Control control, Control parent)
+    internal static void CenterH(this Control control, Control parent, bool clientSize = false)
     {
-        control.Location = control.Location with { X = (parent.Width / 2) - (control.Width / 2) };
+        int pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
+        control.Location = control.Location with { X = (pWidth / 2) - (control.Width / 2) };
     }
 
 #if false

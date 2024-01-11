@@ -873,6 +873,11 @@ internal sealed class LText_Class
 
     internal sealed class Importing_Class
     {
+        internal readonly string AskToImport_Title = "Import";
+        // @Import: Improve this message?
+        internal readonly string AskToImport_Message = "Do you want to import your data from another loader?";
+        internal readonly string AskToImport_DontImport = "Don't import";
+        [FenGenBlankLine]
         internal readonly string NothingWasImported = "Nothing was imported.";
         internal readonly string SelectedFileIsNotAValidPath = "Selected file is not a valid path.";
         [FenGenBlankLine]
