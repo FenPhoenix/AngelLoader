@@ -46,7 +46,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
             SetStyle(ControlStyles.UserPaint, _darkModeEnabled);
 
-            if (EnableScrollButtonsRefreshHack)
+            if (EnableScrollButtonsRefreshHack && Visible)
             {
                 // Utterly repellent hack to force the scroll buttons to redraw, because they're one of those
                 // "normal control but locked inside another and we even suppress its messages, ha-ha" things.
