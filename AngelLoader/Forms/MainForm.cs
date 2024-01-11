@@ -252,10 +252,8 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private async void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object sender, EventArgs e)
     {
-        // @Import: Test, remove for final
-        await ShowAskToImportWindow();
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
