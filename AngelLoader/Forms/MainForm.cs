@@ -5134,6 +5134,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async Task ShowAskToImportWindow()
     {
+        reshow:
         ImportType importType;
         DialogResult result;
         using (var f = new AskToImportForm())
@@ -5143,7 +5144,8 @@ public sealed partial class MainForm : DarkFormBase,
         }
         if (result == DialogResult.OK)
         {
-            await Import.ImportFrom(importType);
+            bool accepted = await Import.ImportFrom(importType);
+            if (!accepted) goto reshow;
         }
     }
 
