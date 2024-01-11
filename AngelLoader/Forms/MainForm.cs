@@ -53,7 +53,6 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
-using AngelLoader.Forms.WinFormsNative.Dialogs;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -5053,19 +5052,6 @@ public sealed partial class MainForm : DarkFormBase,
     #endregion
 
     #region Show dialogs
-
-    public (bool accepted, string selectedPath, string[] SelectedPaths)
-    ShowFolderBrowserDialog(bool multiSelect = false, string initialPath = "")
-    {
-        using var d = new VistaFolderBrowserDialog();
-        d.MultiSelect = multiSelect;
-        if (!initialPath.IsEmpty())
-        {
-            d.InitialDirectory = initialPath;
-        }
-        DialogResult result = d.ShowDialogDark(this);
-        return (result == DialogResult.OK, d.DirectoryName, d.DirectoryNames.ToArray());
-    }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
     ShowScanAllFMsWindow(bool selected)
