@@ -587,6 +587,27 @@ internal static class Native
 
     #endregion
 
+    #region Spinner parts
+
+    internal enum SPINPARTS
+    {
+        SPNP_UP = 1,
+        SPNP_DOWN = 2,
+        SPNP_UPHORZ = 3,
+        SPNP_DOWNHORZ = 4
+    };
+
+    // DOWNHORZSTATES are the same values
+    internal enum UPHORZSTATES
+    {
+        UPHZS_NORMAL = 1,
+        UPHZS_HOT = 2,
+        UPHZS_PRESSED = 3,
+        UPHZS_DISABLED = 4
+    };
+
+    #endregion
+
     #region Scroll bar parts
 
     internal const int SBP_ARROWBTN = 1;

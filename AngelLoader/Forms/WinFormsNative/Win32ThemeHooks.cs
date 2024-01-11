@@ -199,6 +199,10 @@ internal static class Win32ThemeHooks
             {
                 succeeded = TreeView_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
             }
+            else if (hTheme == _hThemes[(int)RenderedControl.TabScrollButtons] && TabScrollButtonsEnabled())
+            {
+                succeeded = TabScrollButtons_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
+            }
         }
 
         return succeeded
@@ -404,12 +408,13 @@ internal static class Win32ThemeHooks
 
     #region Arrays
 
-    private const int _renderedControlCount = 3;
+    private const int _renderedControlCount = 4;
     private enum RenderedControl
     {
         ScrollBar,
         ToolTip,
-        TreeView
+        TreeView,
+        TabScrollButtons
     }
 
     private static readonly IntPtr[] _hThemes = new IntPtr[_renderedControlCount];
@@ -418,7 +423,8 @@ internal static class Win32ThemeHooks
     {
         "Scrollbar",
         "ToolTip",
-        "TreeView"
+        "TreeView",
+        "Spin"
     };
 
     #endregion
@@ -446,6 +452,69 @@ internal static class Win32ThemeHooks
     #endregion
 
     #region Control rendering
+
+    #region Tab scroll buttons
+
+    // This really for all horizontal spinners, as no messages are sent when the tab control's spinner needs to
+    // be painted, so we can't override just for that...
+    // It's okay because we don't use them anywhere else, but yeah.
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool TabScrollButtonsEnabled() => Global.Config.DarkMode;
+
+    private static bool TabScrollButtons_TryDrawThemeBackground(
+        IntPtr hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        Rectangle rect = pRect.ToRectangle();
+
+        if (iPartId
+            is not (int)Native.SPINPARTS.SPNP_UPHORZ
+            and not (int)Native.SPINPARTS.SPNP_DOWNHORZ)
+        {
+            return false;
+        }
+
+        g.FillRectangle(DarkColors.DarkBackgroundBrush, rect);
+        g.DrawRectangle(DarkColors.LighterBackgroundPen, rect);
+
+        Pen pen;
+        switch (iStateId)
+        {
+            case (int)Native.UPHORZSTATES.UPHZS_PRESSED:
+                pen = DarkColors.ActiveControlPen;
+                break;
+            case (int)Native.UPHORZSTATES.UPHZS_DISABLED:
+                pen = DarkColors.GreySelectionPen;
+                break;
+            case (int)Native.UPHORZSTATES.UPHZS_HOT:
+                pen = DarkColors.GreyHighlightPen;
+                break;
+            case (int)Native.UPHORZSTATES.UPHZS_NORMAL:
+            default:
+                pen = DarkColors.GreySelectionPen;
+                break;
+        }
+
+        Direction direction = iPartId == (int)Native.SPINPARTS.SPNP_UPHORZ
+            ? Direction.Right
+            : Direction.Left;
+
+        Images.PaintArrow7x4(
+            g: g,
+            direction: direction,
+            area: rect,
+            controlEnabled: iStateId != (int)Native.UPHORZSTATES.UPHZS_DISABLED,
+            pen: pen);
+
+        return true;
+    }
+
+    #endregion
 
     #region ScrollBar
 
