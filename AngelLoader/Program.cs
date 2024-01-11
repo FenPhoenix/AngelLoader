@@ -109,7 +109,12 @@ internal static class Program
             SetLogFile(Paths.LogFile);
 
             // We don't need to clear this log because LogStartup overwrites (no append)
-            LogStartup(viewEnv.ProductVersion + " Started session");
+#if X64
+            const string appType = "Framework x64";
+#else
+            const string appType = "Framework x86";
+#endif
+            LogStartup(viewEnv.ProductVersion + " (" + appType + ") Started session");
 
             // Do this after the startup log so we don't try to log something at the same time as the non-
             // lock-protected startup log
