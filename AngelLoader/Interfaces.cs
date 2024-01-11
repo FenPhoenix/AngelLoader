@@ -42,7 +42,8 @@ public interface IViewEnvironment
     ISplashScreen GetSplashScreen();
     IView GetView();
     void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
-    (bool Accepted, ConfigData OutConfig) ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
+    (bool Accepted, ConfigData OutConfig, bool AskForImport)
+    ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
 }
 
 public interface IDialogs
@@ -182,7 +183,7 @@ public interface IView : ISettingsChangeableView
     /// Call this only after the FindFMs() thread has finished.
     /// </summary>
     /// <returns></returns>
-    Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen);
+    Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport);
 
     void Show();
 

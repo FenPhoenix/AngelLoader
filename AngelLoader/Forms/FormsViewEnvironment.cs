@@ -34,11 +34,11 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public void ApplicationExit() => Application.Exit();
 
-    public (bool Accepted, ConfigData OutConfig)
+    public (bool Accepted, ConfigData OutConfig, bool AskForImport)
     ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state)
     {
         using var f = new SettingsForm(view, inConfig, state);
-        return (f.ShowDialogDark() == DialogResult.OK, f.OutConfig);
+        return (f.ShowDialogDark() == DialogResult.OK, f.OutConfig, f.AskForImport);
     }
 
     public string ProductVersion => Application.ProductVersion;

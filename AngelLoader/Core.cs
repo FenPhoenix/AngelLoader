@@ -300,7 +300,7 @@ internal static class Core
 
         startupWorkTask.Wait();
 
-        Task DoParallelLoad()
+        Task DoParallelLoad(bool askForImport)
         {
             splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                     LText.SplashScreen.LoadingMainApp);
@@ -371,7 +371,7 @@ internal static class Core
                 splashScreen.LockPainting(false);
             }
 
-            return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen);
+            return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen, askForImport);
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
@@ -379,15 +379,16 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad();
+            await DoParallelLoad(false);
         }
         else
         {
             splashScreen.Hide();
-            if (await OpenSettings(settingsWindowState))
+            (bool accepted, bool askForImport) = await OpenSettings(settingsWindowState);
+            if (accepted)
             {
                 splashScreen.Show(Config.VisualTheme);
-                await DoParallelLoad();
+                await DoParallelLoad(askForImport);
             }
         }
 
@@ -431,12 +432,12 @@ internal static class Core
     /// </summary>
     /// <param name="state"></param>
     /// <returns><see langword="true"/> if changes were accepted, <see langword="false"/> if canceled.</returns>
-    public static async Task<bool>
+    public static async Task<(bool Accepted, bool AskForImport)>
     OpenSettings(SettingsWindowState state = SettingsWindowState.Normal)
     {
         bool startup = state.IsStartup();
 
-        (bool accepted, ConfigData outConfig) =
+        (bool accepted, ConfigData outConfig, bool askForImport) =
             ViewEnv.ShowSettingsWindow(startup ? null : View, Config, state);
 
         #region Save window state
@@ -459,7 +460,7 @@ internal static class Core
             // Since nothing of consequence has yet happened, it's okay to do the brutal quit
             // We know the game paths by now, so we can do this
             if (startup) EnvironmentExitDoShutdownTasks(0);
-            return false;
+            return (false, false);
         }
 
         #region Set changed bools
@@ -579,7 +580,7 @@ internal static class Core
 
             Ini.WriteConfigIni();
 
-            return true;
+            return (true, askForImport);
         }
 
         // From this point on, we're not in startup mode.
@@ -767,7 +768,7 @@ internal static class Core
 
         Ini.WriteConfigIni();
 
-        return true;
+        return (true, false);
     }
 
     /// <summary>
