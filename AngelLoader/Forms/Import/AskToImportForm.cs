@@ -28,7 +28,8 @@ public sealed partial class AskToImportForm : DarkFormBase
     {
         Text = LText.Importing.AskToImport_Title;
 
-        MessageLabel.Text = LText.Importing.AskToImport_Message;
+        MessageLabel.Text = LText.Importing.AskToImport_AskMessage;
+        Message2Label.Text = LText.Importing.AskToImport_ImportLaterMessage;
         DarkLoaderButton.Text = NonLocalizableText.DarkLoaderEllipses;
         FMSelButton.Text = NonLocalizableText.FMSelEllipses;
         NewDarkLoaderButton.Text = NonLocalizableText.NewDarkLoaderEllipses;
@@ -49,14 +50,13 @@ public sealed partial class AskToImportForm : DarkFormBase
         int maxLength = 0;
 
         if (MessageLabel.Width > maxLength) maxLength = MessageLabel.Width;
-        if (DarkLoaderButton.Width > maxLength) maxLength = DarkLoaderButton.Width;
-        if (FMSelButton.Width > maxLength) maxLength = FMSelButton.Width;
-        if (NewDarkLoaderButton.Width > maxLength) maxLength = NewDarkLoaderButton.Width;
-        if (DontImportButton.Width > maxLength) maxLength = DontImportButton.Width;
+        if (Message2Label.Width > maxLength) maxLength = Message2Label.Width;
+        if (maxButtonLength > maxLength) maxLength = maxButtonLength;
 
         if (ClientSize.Width < maxLength + 48) ClientSize = ClientSize with { Width = maxLength + 48 };
 
         MessageLabel.CenterH(this, clientSize: true);
+        Message2Label.CenterH(this, clientSize: true);
         DarkLoaderButton.CenterH(this, clientSize: true);
         FMSelButton.CenterH(this, clientSize: true);
         NewDarkLoaderButton.CenterH(this, clientSize: true);
