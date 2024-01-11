@@ -11,8 +11,30 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public class DarkFormBase : Form
+/*
+We want this one method to be abstract to enforce it be overridden, but then the whole class needs to be abstract,
+but then the designer refuses to work with it. So give the designer what it wants in debug mode, but make it
+abstract in non-debug so it won't compile if we miss an override.
+*/
+public
+#if !DEBUG
+    abstract
+#endif
+    class DarkFormBase : Form
 {
+    public
+#if DEBUG
+        virtual
+#else
+        abstract
+#endif
+        void RespondToSystemThemeChange()
+#if DEBUG
+        { }
+#else
+        ;
+#endif
+
     private bool _loading = true;
 
     [Browsable(false)]
@@ -44,20 +66,6 @@ public class DarkFormBase : Form
     #region Theming
 
     private readonly List<KeyValuePair<Control, ControlUtils.ControlOriginalColors?>> _controlColors = new();
-
-    /*
-    @Import(RespondToSystemThemeChange()):
-    This stupid thing can't be abstract because the class can't be abstract because the designer refuses to work
-    with it if it is. If it can't be abstract, that means we can't enforce that it be overriden. We can't use an
-    interface here either because then it only enforces it be put here, not in derived classes, and if it's here
-    then derived classes aren't required to have it. We could put the interface on all derived classes, but then
-    it's just as easy to forget that as it is to forget this method. Argh! We might need a custom analyzer to
-    enforce this stupid thing.
-    */
-    public virtual void RespondToSystemThemeChange()
-    {
-        //throw new NotImplementedException(nameof(RespondToSystemThemeChange) + " must be implemented for all forms!");
-    }
 
     private protected void SetThemeBase(
         VisualTheme theme,
