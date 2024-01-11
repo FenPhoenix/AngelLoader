@@ -480,7 +480,7 @@ internal static class Win32ThemeHooks
         }
 
         g.FillRectangle(DarkColors.DarkBackgroundBrush, rect);
-        g.DrawRectangle(DarkColors.LighterBackgroundPen, rect);
+        g.DrawRectangle(DarkColors.LighterBackgroundPen, rect.X, rect.Y, rect.Width - 1, rect.Height - 1);
 
         Pen pen;
         switch (iStateId)

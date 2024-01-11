@@ -906,6 +906,7 @@ sealed partial class MainForm
         this.TopRightTabControl.Controls.Add(this.TagsTabPage);
         this.TopRightTabControl.Controls.Add(this.PatchTabPage);
         this.TopRightTabControl.Controls.Add(this.ModsTabPage);
+        this.TopRightTabControl.EnableScrollButtonsRefreshHack = true;
         this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
         this.TopRightTabControl.Name = "TopRightTabControl";
         this.TopRightTabControl.SelectedIndex = 0;

@@ -556,6 +556,7 @@ public sealed partial class MainForm
         // 
         TopRightTabControl.AllowReordering = true;
         TopRightTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        TopRightTabControl.EnableScrollButtonsRefreshHack = true;
         TopRightTabControl.Size = new Size(535, 310);
         TopRightTabControl.TabIndex = 15;
 

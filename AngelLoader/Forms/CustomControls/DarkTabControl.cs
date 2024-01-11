@@ -46,6 +46,25 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
             SetStyle(ControlStyles.UserPaint, _darkModeEnabled);
 
+            if (EnableScrollButtonsRefreshHack)
+            {
+                // Utterly repellent hack to force the scroll buttons to redraw, because they're one of those
+                // "normal control but locked inside another and we even suppress its messages, ha-ha" things.
+                Rectangle tabBarVisibleRect = GetTabBarRect();
+                int totalTabsWidth = 0;
+                for (int i = 0; i < TabCount; i++)
+                {
+                    totalTabsWidth += GetTabRect(i).Width;
+                }
+
+                // +1 because the scroll buttons' appearance trigger is not exact
+                if (totalTabsWidth > tabBarVisibleRect.Width + 1)
+                {
+                    Hide();
+                    Show();
+                }
+            }
+
             Refresh();
         }
     }
@@ -53,6 +72,10 @@ public sealed class DarkTabControl : TabControl, IDarkable
     [PublicAPI]
     [DefaultValue(false)]
     public bool AllowReordering { get; set; }
+
+    [PublicAPI]
+    [DefaultValue(false)]
+    public bool EnableScrollButtonsRefreshHack { get; set; }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
