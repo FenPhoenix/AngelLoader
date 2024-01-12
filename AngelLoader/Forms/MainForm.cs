@@ -5315,8 +5315,11 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     EverythingPanel.ResumeDrawing();
                 }
-                break;
+                return;
             }
         }
+
+        // @CMDLINE: Localize this
+        Core.Dialogs.ShowError("The requested FM is not in the list, or does not exist on disk.", icon: MBoxIcon.Warning);
     }
 }
