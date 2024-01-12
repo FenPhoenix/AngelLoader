@@ -875,7 +875,7 @@ internal sealed class LText_Class
     {
         internal readonly string AskToImport_Title = "Import";
         // @Import: Improve this message?
-        internal readonly string AskToImport_AskMessage = "Do you want to import your data from another loader?";
+        internal readonly string AskToImport_AskMessage = "Would you like to import your data from another loader?";
         internal readonly string AskToImport_ImportLaterMessage = "You can always import later by choosing Import from the main menu.";
         internal readonly string AskToImport_DontImport = "Don't import";
         [FenGenBlankLine]
