@@ -99,6 +99,8 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
+            Core.HandleCommandLineArgs(eventArgs.CommandLine);
+
 #if !WPF
             IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
 #else
@@ -135,6 +137,8 @@ internal static class Program
             // could be because we're not directly running a form, but running it later through an app context?
             // Who knows the frigging reason, but we have to do it manually for it to work, so meh.
             Core.ActivateMainView();
+            Core.HandleCommandLineArgs(eventArgs.CommandLine);
+            Core.RunStartupPlay();
         }
     }
 
