@@ -1058,7 +1058,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // This one can't be multithreaded because it depends on the FMs list
     // @ViewBusinessLogic(FinishInitAndShow)
-    public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen)
+    public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport)
     {
         _splashScreen = splashScreen;
 
@@ -1121,6 +1121,12 @@ public sealed partial class MainForm : DarkFormBase,
 #if !ReleasePublic
         //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
+
+        if (askForImport)
+        {
+            // @Import(Ask for import): Implement
+            Core.Dialogs.ShowAlert("Ask for import dialog", "Import", icon: MBoxIcon.None);
+        }
     }
 
     /*

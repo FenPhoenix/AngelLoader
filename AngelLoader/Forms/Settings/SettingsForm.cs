@@ -99,6 +99,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     #endregion
 
     public readonly ConfigData OutConfig;
+    public bool AskForImport;
 
     protected override void WndProc(ref Message m)
     {
@@ -1316,6 +1317,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
         }
+
+        AskForImport = _state == SettingsWindowState.StartupClean;
     }
 
     private void SetCursors(bool wait)
