@@ -252,7 +252,7 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object? sender, EventArgs e)
     {
     }
 
@@ -3479,10 +3479,6 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     #region FMs list sorting
-
-    public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
-
-    public SortDirection GetCurrentSortDirection() => FMsDGV.CurrentSortDirection;
 
     private void SortFMsDGV(Column column, SortDirection sortDirection)
     {

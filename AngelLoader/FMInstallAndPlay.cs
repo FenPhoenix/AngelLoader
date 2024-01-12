@@ -2101,8 +2101,6 @@ internal static class FMInstallAndPlay
 
             bool skipUninstallWithNoArchiveWarning = false;
 
-            InstDirNameContext instDirNameContext = new();
-
             byte[]? fileStreamBuffer = null;
 
             for (int i = 0; i < fmDataList.Length; i++)
