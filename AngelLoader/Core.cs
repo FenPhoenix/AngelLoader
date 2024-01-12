@@ -2611,6 +2611,18 @@ internal static class Core
 
     #endregion
 
+    #region Command line
+
+    internal static void ActivateMainView()
+    {
+        if (View != null!)
+        {
+            View.ActivateThisInstance();
+        }
+    }
+
+    #endregion
+
     internal static bool SelectedFMIsPlayable([NotNullWhen(true)] out FanMission? fm)
     {
         fm = View.GetMainSelectedFMOrNull();
@@ -2712,16 +2724,4 @@ internal static class Core
 
         return VisualTheme.Classic;
     }
-
-    #region Command line
-
-    internal static void ActivateMainView()
-    {
-        if (View != null!)
-        {
-            View.ActivateThisInstance();
-        }
-    }
-
-    #endregion
 }
