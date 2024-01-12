@@ -595,7 +595,7 @@ internal static class Native
         SPNP_DOWN = 2,
         SPNP_UPHORZ = 3,
         SPNP_DOWNHORZ = 4
-    };
+    }
 
     // DOWNHORZSTATES are the same values
     internal enum UPHORZSTATES
@@ -604,7 +604,7 @@ internal static class Native
         UPHZS_HOT = 2,
         UPHZS_PRESSED = 3,
         UPHZS_DISABLED = 4
-    };
+    }
 
     #endregion
 

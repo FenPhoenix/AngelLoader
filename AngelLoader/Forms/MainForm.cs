@@ -3479,10 +3479,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region FMs list sorting
 
-    public Column GetCurrentSortedColumnIndex() => FMsDGV.CurrentSortedColumn;
-
-    public SortDirection GetCurrentSortDirection() => FMsDGV.CurrentSortDirection;
-
     private void SortFMsDGV(Column column, SortDirection sortDirection)
     {
         FMsDGV.CurrentSortedColumn = column;
