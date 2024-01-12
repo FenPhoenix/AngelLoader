@@ -41,7 +41,7 @@ sealed partial class ModsControl
         this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.CheckList = new AngelLoader.Forms.CustomControls.ModsPanel();
         this.AutoScrollDummyPanel = new DrawnPanel();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new ToolTipCustom(this.components);
         this.ResetFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -177,5 +177,5 @@ sealed partial class ModsControl
     internal DarkLabel DisabledModsLabel;
     internal ModsPanel CheckList;
     internal DrawnPanel AutoScrollDummyPanel;
-    internal System.Windows.Forms.ToolTip MainToolTip;
+    internal ToolTipCustom MainToolTip;
 }

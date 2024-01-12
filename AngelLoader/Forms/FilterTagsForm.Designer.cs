@@ -54,7 +54,7 @@ sealed partial class FilterTagsForm
         this.ResetButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.MoveButtonsPanel = new System.Windows.Forms.Panel();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.FilterLabelsPanel.SuspendLayout();
         this.BottomFLP.SuspendLayout();
@@ -360,6 +360,6 @@ sealed partial class FilterTagsForm
     private AngelLoader.Forms.CustomControls.StandardButton ResetButton;
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     private System.Windows.Forms.Panel MoveButtonsPanel;
-    private System.Windows.Forms.ToolTip MainToolTip;
+    private AngelLoader.Forms.CustomControls.ToolTipCustom MainToolTip;
     private AngelLoader.Forms.CustomControls.DarkTextBox FindTagTextBox;
 }

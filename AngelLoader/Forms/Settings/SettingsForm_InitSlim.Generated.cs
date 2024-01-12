@@ -13,7 +13,7 @@ partial class SettingsForm
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
         this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();

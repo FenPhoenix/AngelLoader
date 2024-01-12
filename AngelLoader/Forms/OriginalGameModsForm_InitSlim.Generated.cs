@@ -13,7 +13,7 @@ partial class OriginalGameModsForm
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 

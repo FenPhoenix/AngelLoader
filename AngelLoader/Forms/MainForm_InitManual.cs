@@ -93,7 +93,7 @@ public sealed partial class MainForm
         ReadmeResetZoomButton = new DarkButton();
         ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
         ReadmeRichTextBox = new RichTextBoxCustom();
-        MainToolTip = new ToolTip(components);
+        MainToolTip = new ToolTipCustom(components);
         BottomRightFLP.SuspendLayout();
         BottomLeftFLP.SuspendLayout();
         EverythingPanel.SuspendLayout();

@@ -116,7 +116,7 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
         this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
         this.BottomRightFLP.SuspendLayout();
         this.BottomLeftFLP.SuspendLayout();
         this.EverythingPanel.SuspendLayout();
@@ -1143,7 +1143,7 @@ sealed partial class MainForm
     internal CustomControls.DarkSplitContainerCustom MainSplitContainer;
     internal CustomControls.DarkSplitContainerCustom TopSplitContainer;
 
-    internal System.Windows.Forms.ToolTip MainToolTip;
+    internal CustomControls.ToolTipCustom MainToolTip;
 
     #region Top bar
 
