@@ -35,7 +35,7 @@ internal static class Import
 
     #region Public methods
 
-    internal static async Task ImportFrom(ImportType importType)
+    internal static async Task<bool> ImportFrom(ImportType importType)
     {
         bool importFMData = false;
         bool importSaves = false;
@@ -67,12 +67,12 @@ internal static class Import
                 goto reshow;
             }
 
-            if (!accepted) return;
+            if (!accepted) return false;
 
             if (!importFMData && !importSaves)
             {
                 Core.Dialogs.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
+                return true;
             }
 
             iniFiles.Add(iniFile);
@@ -102,13 +102,13 @@ internal static class Import
                 bool importFinishedOn,
                 bool importSize) = Core.View.ShowImportFromMultipleInisWindow(importType);
 
-            if (!accepted) return;
+            if (!accepted) return false;
             foreach (string file in returnedIniFiles) iniFiles.Add(file);
 
             if (iniFiles.All(static x => x.IsWhiteSpace()))
             {
                 Core.Dialogs.ShowAlert(LText.Importing.NothingWasImported, LText.AlertMessages.Alert);
-                return;
+                return true;
             }
 
             fields = new FieldsToImport
@@ -230,6 +230,8 @@ internal static class Import
         // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field
         // is not referencing a stale FM object that no longer exists in the list!
         await Core.View.SortAndSetFilter(forceDisplayFM: true);
+
+        return true;
     }
 
     #endregion
