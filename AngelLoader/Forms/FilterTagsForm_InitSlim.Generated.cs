@@ -30,7 +30,7 @@ sealed partial class FilterTagsForm
         this.ResetButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.MoveButtonsPanel = new System.Windows.Forms.Panel();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.FilterLabelsPanel.SuspendLayout();
         this.BottomFLP.SuspendLayout();

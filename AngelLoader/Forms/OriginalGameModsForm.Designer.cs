@@ -37,7 +37,7 @@ partial class OriginalGameModsForm
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.MainToolTip = new System.Windows.Forms.ToolTip(this.components);
+        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -125,5 +125,5 @@ partial class OriginalGameModsForm
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
     private CustomControls.StandardButton Cancel_Button;
     private CustomControls.DarkCheckBox NewMantleCheckBox;
-    private System.Windows.Forms.ToolTip MainToolTip;
+    private CustomControls.ToolTipCustom MainToolTip;
 }
