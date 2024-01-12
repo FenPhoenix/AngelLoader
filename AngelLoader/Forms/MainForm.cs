@@ -1125,6 +1125,8 @@ public sealed partial class MainForm : DarkFormBase,
         // Must come after Show() I guess or it doesn't work?!
         FMsDGV.Focus();
 
+        await RunStartupPlay();
+
 #if !ReleasePublic
         //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
 #endif
@@ -1208,18 +1210,16 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     // debug - end of startup - to make sure when we profile, we're measuring only startup time
-    protected override async void OnShown(EventArgs e)
+#if RT_StartupOnly
+    protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
 
-#if RT_StartupOnly
         // Regular Environment.Exit() because we're testing speed
         Environment.Exit(1);
         return;
-#endif
-
-        await RunStartupPlay();
     }
+#endif
 
     protected override void OnDeactivate(EventArgs e)
     {
