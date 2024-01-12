@@ -166,7 +166,10 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
                     SolidBrush backColorBrush = focused
                         ? DarkColors.LightBackgroundBrush
-                        : Enabled && tabRect.Contains(this.ClientCursorPos())
+                        : Enabled &&
+                          // Prevent highlighting when the mouse is over the scroll arrows
+                          Control.FromHandle(Native.WindowFromPoint(Cursor.Position)) != null &&
+                          tabRect.Contains(this.ClientCursorPos())
                             ? DarkColors.Fen_HotTabBackgroundBrush
                             : DarkColors.Fen_DeselectedTabBackgroundBrush;
 
