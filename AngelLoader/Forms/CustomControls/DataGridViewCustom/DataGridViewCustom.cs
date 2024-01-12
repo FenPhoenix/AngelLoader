@@ -171,9 +171,9 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         return ret;
     }
 
-    internal int GetIndexFromInstalledName(string installedName, bool findNearest)
+    internal int GetIndexFromInstalledName(string installedName, bool findNearest, int defaultValue = 0)
     {
-        if (installedName.IsEmpty()) return 0;
+        if (installedName.IsEmpty()) return defaultValue;
 
         for (int i = 0; i < FilterShownIndexList.Count; i++)
         {
@@ -201,7 +201,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             }
         }
 
-        return 0;
+        return defaultValue;
     }
 
     internal SelectedFM GetMainSelectedFMPosInfo() =>

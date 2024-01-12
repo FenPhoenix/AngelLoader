@@ -2758,11 +2758,11 @@ internal static class Core
         }
     }
 
-    internal static void RunStartupPlay()
+    internal static async Task RunStartupPlay()
     {
         if (View != null!)
         {
-            View.RunStartupPlay();
+            await View.RunStartupPlay();
         }
     }
 

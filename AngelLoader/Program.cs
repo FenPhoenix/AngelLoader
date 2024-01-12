@@ -128,7 +128,7 @@ internal static class Program
             return false;
         }
 
-        protected override void OnStartupNextInstance(StartupNextInstanceEventArgs eventArgs)
+        protected override async void OnStartupNextInstance(StartupNextInstanceEventArgs eventArgs)
         {
             // The official Microsoft example puts the base call line first, so I guess I will too?
             // https://github.com/microsoft/wpf-samples/tree/main/Application%20Management/SingleInstanceDetection
@@ -138,7 +138,7 @@ internal static class Program
             // Who knows the frigging reason, but we have to do it manually for it to work, so meh.
             Core.ActivateMainView();
             Core.HandleCommandLineArgs(eventArgs.CommandLine);
-            Core.RunStartupPlay();
+            await Core.RunStartupPlay();
         }
     }
 

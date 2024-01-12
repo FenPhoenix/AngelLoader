@@ -374,5 +374,5 @@ public interface IView : ISettingsChangeableView
 
     void UpdateConfig();
 
-    void RunStartupPlay();
+    Task RunStartupPlay();
 }

@@ -1190,9 +1190,6 @@ public sealed partial class MainForm : DarkFormBase,
         _splashScreen = null;
 
         _startupState = false;
-
-
-        RunStartupPlay();
     }
 
     #endregion
@@ -1212,16 +1209,18 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     // debug - end of startup - to make sure when we profile, we're measuring only startup time
-#if RT_StartupOnly
-    protected override void OnShown(EventArgs e)
+    protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
 
+#if RT_StartupOnly
         // Regular Environment.Exit() because we're testing speed
         Environment.Exit(1);
         return;
-    }
 #endif
+
+        await RunStartupPlay();
+    }
 
     protected override void OnDeactivate(EventArgs e)
     {
@@ -5243,27 +5242,52 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void RunStartupPlay()
+    public async Task RunStartupPlay()
     {
-        if (Core.StartupPlayData.Enabled)
+        if (!UIEnabled ||
+            ViewBlocked ||
+            !Core.StartupPlayData.Enabled)
         {
             Core.StartupPlayData.Enabled = false;
+            return;
+        }
 
-            GameIndex gameIndex = Core.StartupPlayData.GameIndex;
-            string installedNameId = Core.StartupPlayData.InstalledNameId;
+        Core.StartupPlayData.Enabled = false;
 
-            Trace.WriteLine(gameIndex);
-            Trace.WriteLine(installedNameId);
+        GameIndex gameIndex = Core.StartupPlayData.GameIndex;
+        string installedNameId = Core.StartupPlayData.InstalledNameId;
 
-            foreach (FanMission fm in FMsViewList)
+        Trace.WriteLine(gameIndex);
+        Trace.WriteLine(installedNameId);
+
+        for (int i = 0; i < FMsViewList.Count; i++)
+        {
+            FanMission fm = FMsViewList[i];
+            if (fm.Game == GameIndexToGame(gameIndex) &&
+                // Using real installed dir + game as unique id, because TDM's "unique" id can change on re-find
+                // but we'll be persisting it on disk here, so we can't use it.
+                fm.RealInstalledDir.EqualsI(installedNameId) &&
+                !fm.MarkedUnavailable)
             {
-                if (fm.Game == GameIndexToGame(gameIndex) &&
-                    fm.RealInstalledDir.EqualsI(installedNameId))
+                this.SuspendDrawing();
+                ClearUIAndCurrentInternalFilter();
+                await SortAndSetFilter();
+                // @CMDLINE: Implement selection and play
+                // @CMDLINE: This needs to be able to switch game tabs too... which means showing a tab if it's hidden too.
+                Trace.WriteLine(fm.Title);
+                int index = FMsDGV.GetIndexFromInstalledName(fm.InstalledDir, false, -1);
+                if (index > -1)
                 {
-                    // @CMDLINE: Implement selection and play
-                    Trace.WriteLine(fm.Title);
-                    break;
+                    FMsDGV.SelectSingle(index);
+                    CenterSelectedFM();
+                    this.ResumeDrawing();
+                    await FMInstallAndPlay.InstallIfNeededAndPlay(fm);
                 }
+                else
+                {
+                    this.ResumeDrawing();
+                }
+                break;
             }
         }
     }
