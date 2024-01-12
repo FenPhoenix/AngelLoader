@@ -54,13 +54,24 @@ public abstract class DarkFormBase : Form
         Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
-        // Set title bar theme
-        int value = theme == VisualTheme.Dark ? 1 : 0;
-        Native.DwmSetWindowAttribute(
-            Handle,
-            Native.DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
-            ref value,
-            Marshal.SizeOf<int>());
+        if (Utils.WinVersionSupportsDarkMode())
+        {
+            // Set title bar theme
+            int value = theme == VisualTheme.Dark ? 1 : 0;
+            int result = Native.DwmSetWindowAttribute(
+                Handle,
+                Native.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                ref value,
+                Marshal.SizeOf<int>());
+            if (result != 0)
+            {
+                Native.DwmSetWindowAttribute(
+                    Handle,
+                    Native.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
+                    ref value,
+                    Marshal.SizeOf<int>());
+            }
+        }
 
         ControlUtils.SetTheme(
             baseControl: this,
