@@ -24,12 +24,17 @@ internal static class Paths
 #endif
 
 #if DEBUG || Release_Testing
-    private static string? _startup;
-    internal static string Startup
+    private static string GetStartupExePath()
+    {
+        return Path.Combine(AppContext.BaseDirectory, "AngelLoader.exe");
+    }
+
+    private static string? _startupExe;
+    internal static string StartupExe
     {
         get
         {
-            if (_startup.IsEmpty())
+            if (_startupExe.IsEmpty())
             {
                 try
                 {
@@ -42,20 +47,23 @@ internal static class Paths
                     var is set. Obviously don't add this var yourself.
                     */
                     string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
-                    _startup = val?.EqualsTrue() == true ? @"C:\AngelLoader" : AppContext.BaseDirectory;
+                    _startupExe = val?.EqualsTrue() == true ? @"C:\AngelLoader\AngelLoader.exe" : GetStartupExePath();
                 }
                 catch
                 {
-                    _startup = AppContext.BaseDirectory;
+                    _startupExe = GetStartupExePath();
                 }
             }
 
-            return _startup;
+            return _startupExe;
         }
     }
 #else
-    internal static readonly string Startup = AppContext.BaseDirectory;
+    internal static readonly string StartupExe = GetStartupExePath();
 #endif
+
+    private static string? _startupPath;
+    internal static string Startup => _startupPath ??= Path.GetDirectoryName(StartupExe)!;
 
     #endregion
 

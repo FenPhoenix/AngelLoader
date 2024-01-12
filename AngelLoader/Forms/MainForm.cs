@@ -53,6 +53,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
+using AngelLoader.Forms.WinFormsNative.Dialogs;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -4459,6 +4460,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool installShouldBeEnabled;
         bool anyAreTDM;
         bool installShouldBeVisible;
+        bool allAreSupportedAndAvailable;
 
         bool multiplePinnedStates = false;
         {
@@ -4546,7 +4548,7 @@ public sealed partial class MainForm : DarkFormBase,
             allAreAvailable = markedUnavailableCount == 0;
             noneAreAvailable = markedUnavailableCount == selRowsCount;
             bool allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
-            bool allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+            allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
 
             multiSelected = selRowsCount > 1;
             playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
@@ -4604,6 +4606,9 @@ public sealed partial class MainForm : DarkFormBase,
                                                 fm.Game.ConvertsToDark(out GameIndex gameIndex)
                                                 && Config.GetGameEditorDetected(gameIndex));
         FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
+
+        FMsDGV_FM_LLMenu.SetCreateShortcutMenuItemVisible(allAreSupportedAndAvailable);
+        FMsDGV_FM_LLMenu.SetCreateShortcutMenuItemText(multiSelected);
 
         FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && (fm.Game == Game.TDM || fm.Installed));
 
@@ -5072,6 +5077,19 @@ public sealed partial class MainForm : DarkFormBase,
     #endregion
 
     #region Show dialogs
+
+    public (bool accepted, string selectedPath, string[] SelectedPaths)
+    ShowFolderBrowserDialog(bool multiSelect = false, string initialPath = "")
+    {
+        using var d = new VistaFolderBrowserDialog();
+        d.MultiSelect = multiSelect;
+        if (!initialPath.IsEmpty())
+        {
+            d.InitialDirectory = initialPath;
+        }
+        DialogResult result = d.ShowDialogDark(this);
+        return (result == DialogResult.OK, d.DirectoryName, d.DirectoryNames.ToArray());
+    }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
     ShowScanAllFMsWindow(bool selected)

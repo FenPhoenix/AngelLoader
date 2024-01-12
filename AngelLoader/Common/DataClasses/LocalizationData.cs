@@ -461,6 +461,8 @@ internal sealed class LText_Class
         internal readonly string FMMenu_DeleteFMsFromDB = "Delete FMs from database...";
         internal readonly string FMMenu_OpenInDromEd = "Open FM in DromEd";
         internal readonly string FMMenu_OpenInShockEd = "Open FM in ShockEd";
+        internal readonly string FMMenu_CreateShortcut = "Create shortcut...";
+        internal readonly string FMMenu_CreateShortcuts = "Create shortcuts...";
         internal readonly string FMMenu_OpenFMFolder = "Open FM folder";
         internal readonly string FMMenu_Rating = "Rating";
         internal readonly string FMMenu_FinishedOn = "Finished on";
