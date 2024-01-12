@@ -273,7 +273,6 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         CreateShortcutMenuItem.Visible = _createShortcutMenuItemVisible;
 
-        OpenFMFolderSep.Visible = _openFMFolderMenuItemVisible;
         OpenFMFolderMenuItem.Visible = _openFMFolderMenuItemVisible;
 
         ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
@@ -304,6 +303,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         // These must come after the constructed bool gets set to true
         ShowOrHideDeleteSeparator();
+        ShowOrHideOpenFMInFolderSeparator();
         SetImages();
         SetPinItemsMode(_multiplePinnedStates);
         UpdateRatingList(Config.RatingDisplayStyle);
@@ -526,7 +526,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     private void ShowOrHideDeleteSeparator()
     {
         if (!_constructed) return;
-        DeleteSep.Visible = DeleteFMMenuItem.Visible || DeleteFromDBMenuItem.Visible;
+        DeleteSep.Visible = _deleteFMMenuItemVisible || _deleteFromDBMenuItemVisible;
+    }
+
+    private void ShowOrHideOpenFMInFolderSeparator()
+    {
+        if (!_constructed) return;
+        OpenFMFolderSep.Visible = _openFMFolderMenuItemVisible || _createShortcutMenuItemVisible;
     }
 
     internal void SetDeleteFMMenuItemVisible(bool value)
@@ -535,10 +541,8 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             DeleteFMMenuItem.Visible = value;
         }
-        else
-        {
-            _deleteFMMenuItemVisible = value;
-        }
+        // Track logical visibility, otherwise we fail to show the separators
+        _deleteFMMenuItemVisible = value;
 
         ShowOrHideDeleteSeparator();
     }
@@ -558,10 +562,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             DeleteFromDBMenuItem.Visible = value;
         }
-        else
-        {
-            _deleteFromDBMenuItemVisible = value;
-        }
+        _deleteFromDBMenuItemVisible = value;
 
         ShowOrHideDeleteSeparator();
     }
@@ -615,10 +616,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         {
             CreateShortcutMenuItem.Visible = value;
         }
-        else
-        {
-            _createShortcutMenuItemVisible = value;
-        }
+        _createShortcutMenuItemVisible = value;
+
+        ShowOrHideOpenFMInFolderSeparator();
     }
 
     internal void SetCreateShortcutMenuItemText(bool multiSelected)
@@ -634,13 +634,11 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
     {
         if (_constructed)
         {
-            OpenFMFolderSep.Visible = value;
             OpenFMFolderMenuItem.Visible = value;
         }
-        else
-        {
-            _openFMFolderMenuItemVisible = value;
-        }
+        _openFMFolderMenuItemVisible = value;
+
+        ShowOrHideOpenFMInFolderSeparator();
     }
 
     internal void SetScanFMMenuItemEnabled(bool value)
