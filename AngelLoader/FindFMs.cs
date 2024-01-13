@@ -686,11 +686,7 @@ internal static class FindFMs
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
-            if (!hash.Contains(fm.InstalledDir))
-            {
-                hash.Add(fm.InstalledDir);
-            }
-            else
+            if (!hash.Add(fm.InstalledDir))
             {
                 bool truncate = fm.Game != Game.Thief3;
                 for (int j = 0; ; j++)
@@ -974,16 +970,9 @@ internal static class FindFMs
             // out of the view list at least.
             // (This used to get done as an accidental side effect of the ContainsIRemoveFirst() call)
             // We shouldn't have duplicate archives, but importing might add different installed dirs...
-            if (!fm.Archive.IsEmpty())
+            if (!fm.Archive.IsEmpty() && !viewListHash.Add(fm.Archive))
             {
-                if (!viewListHash.Contains(fm.Archive))
-                {
-                    viewListHash.Add(fm.Archive);
-                }
-                else
-                {
-                    continue;
-                }
+                continue;
             }
 
             // Perf so we don't have to iterate the list again later
