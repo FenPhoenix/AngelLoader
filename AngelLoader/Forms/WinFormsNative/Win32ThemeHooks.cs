@@ -457,8 +457,8 @@ internal static class Win32ThemeHooks
         Rectangle rect = pRect.ToRectangle();
 
         if (iPartId
-            is not (int)Native.SPINPARTS.SPNP_UPHORZ
-            and not (int)Native.SPINPARTS.SPNP_DOWNHORZ)
+            is not Native.SPNP_UPHORZ
+            and not Native.SPNP_DOWNHORZ)
         {
             return false;
         }
@@ -469,22 +469,22 @@ internal static class Win32ThemeHooks
         Pen pen;
         switch (iStateId)
         {
-            case (int)Native.UPHORZSTATES.UPHZS_PRESSED:
+            case Native.UP_OR_DOWN_HZS_PRESSED:
                 pen = DarkColors.ActiveControlPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_DISABLED:
+            case Native.UP_OR_DOWN_HZS_DISABLED:
                 pen = DarkColors.GreySelectionPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_HOT:
+            case Native.UP_OR_DOWN_HZS_HOT:
                 pen = DarkColors.GreyHighlightPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_NORMAL:
+            case Native.UP_OR_DOWN_HZS_NORMAL:
             default:
                 pen = DarkColors.GreySelectionPen;
                 break;
         }
 
-        Direction direction = iPartId == (int)Native.SPINPARTS.SPNP_UPHORZ
+        Direction direction = iPartId == Native.SPNP_UPHORZ
             ? Direction.Right
             : Direction.Left;
 
@@ -492,7 +492,7 @@ internal static class Win32ThemeHooks
             g: g,
             direction: direction,
             area: rect,
-            controlEnabled: iStateId != (int)Native.UPHORZSTATES.UPHZS_DISABLED,
+            controlEnabled: iStateId != Native.UP_OR_DOWN_HZS_DISABLED,
             pen: pen);
 
         return true;

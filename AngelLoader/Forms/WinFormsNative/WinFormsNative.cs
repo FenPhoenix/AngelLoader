@@ -547,22 +547,14 @@ internal static partial class Native
 
     #region Spinner parts
 
-    internal enum SPINPARTS
-    {
-        SPNP_UP = 1,
-        SPNP_DOWN = 2,
-        SPNP_UPHORZ = 3,
-        SPNP_DOWNHORZ = 4
-    }
+    internal const int SPNP_UPHORZ = 3;
+    internal const int SPNP_DOWNHORZ = 4;
 
-    // DOWNHORZSTATES are the same values
-    internal enum UPHORZSTATES
-    {
-        UPHZS_NORMAL = 1,
-        UPHZS_HOT = 2,
-        UPHZS_PRESSED = 3,
-        UPHZS_DISABLED = 4
-    }
+    // Up and down states are the same set of values
+    internal const int UP_OR_DOWN_HZS_NORMAL = 1;
+    internal const int UP_OR_DOWN_HZS_HOT = 2;
+    internal const int UP_OR_DOWN_HZS_PRESSED = 3;
+    internal const int UP_OR_DOWN_HZS_DISABLED = 4;
 
     #endregion
 
