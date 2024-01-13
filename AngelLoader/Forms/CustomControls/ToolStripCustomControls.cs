@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using AngelLoader.DataClasses;
@@ -62,6 +63,28 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
             Invalidate();
         }
     }
+
+    private void TrySetToolTipMaxDelay()
+    {
+        try
+        {
+            PropertyInfo? toolTipProperty = typeof(ToolStrip).GetProperty("ToolTip",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (toolTipProperty != null)
+            {
+                ToolTip? toolTip = (ToolTip?)toolTipProperty.GetValue(this);
+                toolTip?.TrySetMaxDelay();
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+    }
+
+    public ToolStripCustom() => TrySetToolTipMaxDelay();
+
+    public ToolStripCustom(params ToolStripItem[] items) : base(items) => TrySetToolTipMaxDelay();
 
     protected override void OnPaint(PaintEventArgs e)
     {
