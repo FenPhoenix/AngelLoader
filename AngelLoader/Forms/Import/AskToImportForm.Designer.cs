@@ -85,7 +85,6 @@ sealed partial class AskToImportForm
             this.MessageLabel.Size = new System.Drawing.Size(257, 13);
             this.MessageLabel.TabIndex = 0;
             this.MessageLabel.Text = "Do you want to import your data from another loader?";
-            this.MessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // Message2Label
             // 
