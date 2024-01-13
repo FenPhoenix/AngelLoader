@@ -369,6 +369,8 @@ internal static class Win32ThemeHooks
     private const int COLOR_3DFACE = 15;
     private const int COLOR_GRAYTEXT = 17;
 
+#if !NETFRAMEWORK || !X64
+
     private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
     private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
     private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
@@ -378,6 +380,8 @@ internal static class Win32ThemeHooks
     private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
     private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
     private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+
+#endif
 
     #endregion
 
@@ -473,8 +477,8 @@ internal static class Win32ThemeHooks
         Rectangle rect = pRect.ToRectangle();
 
         if (iPartId
-            is not (int)Native.SPINPARTS.SPNP_UPHORZ
-            and not (int)Native.SPINPARTS.SPNP_DOWNHORZ)
+            is not Native.SPNP_UPHORZ
+            and not Native.SPNP_DOWNHORZ)
         {
             return false;
         }
@@ -485,22 +489,22 @@ internal static class Win32ThemeHooks
         Pen pen;
         switch (iStateId)
         {
-            case (int)Native.UPHORZSTATES.UPHZS_PRESSED:
+            case Native.UP_OR_DOWN_HZS_PRESSED:
                 pen = DarkColors.ActiveControlPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_DISABLED:
+            case Native.UP_OR_DOWN_HZS_DISABLED:
                 pen = DarkColors.GreySelectionPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_HOT:
+            case Native.UP_OR_DOWN_HZS_HOT:
                 pen = DarkColors.GreyHighlightPen;
                 break;
-            case (int)Native.UPHORZSTATES.UPHZS_NORMAL:
+            case Native.UP_OR_DOWN_HZS_NORMAL:
             default:
                 pen = DarkColors.GreySelectionPen;
                 break;
         }
 
-        Direction direction = iPartId == (int)Native.SPINPARTS.SPNP_UPHORZ
+        Direction direction = iPartId == Native.SPNP_UPHORZ
             ? Direction.Right
             : Direction.Left;
 
@@ -508,7 +512,7 @@ internal static class Win32ThemeHooks
             g: g,
             direction: direction,
             area: rect,
-            controlEnabled: iStateId != (int)Native.UPHORZSTATES.UPHZS_DISABLED,
+            controlEnabled: iStateId != Native.UP_OR_DOWN_HZS_DISABLED,
             pen: pen);
 
         return true;
