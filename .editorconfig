@@ -1,6 +1,6 @@
 ﻿[*.cs]
 
-# IDE0079: Remove unnecessary suppression
-dotnet_diagnostic.IDE0079.severity = none
-# IDE0037: Use inferred member name
-dotnet_diagnostic.IDE0037.severity = none
+dotnet_style_prefer_collection_expression = false:suggestion
+dotnet_style_collection_initializer = true:suggestion
+
+resharper_use_collection_expression_highlighting = false:suggestion
