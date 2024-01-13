@@ -48,7 +48,6 @@ sealed partial class AskToImportForm
         // 
         this.MessageLabel.AutoSize = true;
         this.MessageLabel.Location = new System.Drawing.Point(48, 16);
-        this.MessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // Message2Label
         // 
