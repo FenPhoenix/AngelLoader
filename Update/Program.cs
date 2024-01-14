@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
 
@@ -6,6 +7,9 @@ namespace Update;
 
 internal static class Program
 {
+    private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
+    internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
+
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>

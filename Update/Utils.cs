@@ -44,16 +44,13 @@ internal static class Utils
         }
     }
 
-    private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
-    private static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
-
     internal static void ClearUpdateTempPath()
     {
-        if (!Directory.Exists(UpdateTempPath)) return;
+        if (!Directory.Exists(Program.UpdateTempPath)) return;
 
         try
         {
-            foreach (string f in Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories))
+            foreach (string f in Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.AllDirectories))
             {
                 new FileInfo(f).IsReadOnly = false;
             }
@@ -65,11 +62,11 @@ internal static class Utils
 
         try
         {
-            foreach (string f in Directory.GetFiles(UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            foreach (string f in Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
             {
                 File.Delete(f);
             }
-            foreach (string d in Directory.GetDirectories(UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            foreach (string d in Directory.GetDirectories(Program.UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
             {
                 Directory.Delete(d, recursive: true);
             }

@@ -48,9 +48,11 @@ public sealed partial class MainForm : Form
     private void DoCopy()
     {
         string startupPath = Application.StartupPath;
-        string selfExe = Path.GetFileName(Application.ExecutablePath);
+        string exePath = Application.ExecutablePath;
 
-        List<string> files = Directory.GetFiles(startupPath, "*", SearchOption.AllDirectories).ToList();
+        File.Move(exePath, exePath + ".bak");
+
+        List<string> files = Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
 
         for (int i = 0; i < files.Count; i++)
         {
@@ -58,21 +60,19 @@ public sealed partial class MainForm : Form
 
             if (fileName.EqualsI("FMData.ini") ||
                 fileName.StartsWithI("FMData.bak") ||
-                fileName.EqualsI("Config.ini") ||
-                fileName.EqualsI(selfExe))
+                fileName.EqualsI("Config.ini"))
             {
                 files.RemoveAt(i);
                 i--;
             }
         }
 
-        string selfDir = startupPath;
-        if (!selfDir.EndsWithDirSep()) selfDir += "\\";
+        string updateDirWithTrailingDirSep = Program.UpdateTempPath.TrimEnd('\\', '/') + "\\";
 
         for (int i = 0; i < files.Count; i++)
         {
             string file = files[i];
-            string fileName = file.Substring(selfDir.Length);
+            string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
 
             CopyingLabel.Text = "Copying..." + Environment.NewLine + fileName;
             CopyingLabel.CenterHOnForm(this);
