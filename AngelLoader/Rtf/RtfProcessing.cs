@@ -524,7 +524,6 @@ internal static class RtfProcessing
 
             return currentReadmeBytes;
         }
-
     }
 
     private static void CopyInserts(
