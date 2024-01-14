@@ -13,10 +13,12 @@ The plan:
 -AL downloads the update and puts it in the temp folder, then calls this exe
 -This exe then:
  -Waits for AL to close
+ -Deletes its renamed exe if it exists
  -Renames its exe while running
  -Copies the update from the temp folder (including the updater exe from there, which will copy because we've
   renamed ourselves)
- -If successful, delete our renamed exe, call AL, and close
+ -If successful, call AL, and close
+ -AL will delete our renamed exe (possibly on next close, so it doesn't have to wait for us to close?)
  -If failed, rename our exe back to normal
 
 TODO: Remove debug command line in properties!
@@ -49,6 +51,15 @@ public sealed partial class MainForm : Form
     {
         string startupPath = Application.StartupPath;
         string exePath = Application.ExecutablePath;
+
+        try
+        {
+            File.Delete(exePath + ".bak");
+        }
+        catch
+        {
+            // didn't exist or whatever
+        }
 
         File.Move(exePath, exePath + ".bak");
 
