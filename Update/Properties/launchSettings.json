@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "AL_UpdateCopy": {
+    "Update": {
       "commandName": "Project",
       "commandLineArgs": "\"C:\\AngelLoader\" \"AngelLoader.exe\""
     }

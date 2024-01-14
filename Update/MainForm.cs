@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace AL_UpdateCopy;
+namespace Update;
 
 /*
 The plan:
@@ -18,6 +18,8 @@ The plan:
   renamed ourselves)
  -If successful, delete our renamed exe, call AL, and close
  -If failed, rename our exe back to normal
+
+TODO: Remove debug command line in properties!
 */
 
 public sealed partial class MainForm : Form

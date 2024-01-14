@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace AL_UpdateCopy;
+namespace Update;
 
 internal static class Utils
 {

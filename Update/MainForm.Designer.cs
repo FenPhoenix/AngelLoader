@@ -1,4 +1,4 @@
-﻿namespace AL_UpdateCopy;
+﻿namespace Update;
 
 sealed partial class MainForm
 {

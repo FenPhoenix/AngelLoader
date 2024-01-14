@@ -2,7 +2,7 @@ using System;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
 
-namespace AL_UpdateCopy;
+namespace Update;
 
 internal static class Program
 {

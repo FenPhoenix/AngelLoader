@@ -6,9 +6,14 @@
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
     <UseWindowsForms>true</UseWindowsForms>
-    <StartupObject>AL_UpdateCopy.Program</StartupObject>
+    <StartupObject>Update.Program</StartupObject>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\AngelLoader.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
