@@ -5,23 +5,23 @@ namespace AL_UpdateCopy;
 
 internal static class Utils
 {
-    internal static void CenterH(this Control control, Control parent, bool clientSize = false)
+    internal static void CenterHOnForm(this Control control, Control parent)
     {
-        int pWidth = clientSize ? parent.ClientSize.Width : parent.Width;
-        control.Location = control.Location with { X = (pWidth / 2) - (control.Width / 2) };
+        control.Location = control.Location with { X = (parent.ClientSize.Width / 2) - (control.Width / 2) };
     }
 
     internal static bool EqualsI(this string str1, string str2) => str1.Equals(str2, StringComparison.OrdinalIgnoreCase);
 
     internal static bool StartsWithI(this string str1, string str2) => str1.StartsWith(str2, StringComparison.OrdinalIgnoreCase);
 
+    internal static bool EndsWithDirSep(this string str) => str.Length > 0 && (str[str.Length - 1] == '/' || str[str.Length - 1] == '\\');
+
     internal static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
-    internal static T Clamp<T>(this T value, T min, T max) where T : IComparable<T> =>
-        value.CompareTo(min) < 0 ? min : value.CompareTo(max) > 0 ? max : value;
+    private static int Clamp(this int value, int min, int max) => value < min ? min : value > max ? max : value;
 
     /// <summary>
-    /// Hack for better visuals - value changes visually instantly with this
+    /// Hack for better visuals - value changes visually instantly with this.
     /// </summary>
     /// <param name="progressBar"></param>
     /// <param name="value"></param>

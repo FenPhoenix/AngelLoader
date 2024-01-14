@@ -36,11 +36,12 @@ sealed partial class MainForm
             // CopyingLabel
             // 
             this.CopyingLabel.AutoSize = true;
-            this.CopyingLabel.Location = new System.Drawing.Point(208, 24);
+            this.CopyingLabel.Location = new System.Drawing.Point(200, 24);
             this.CopyingLabel.Name = "CopyingLabel";
-            this.CopyingLabel.Size = new System.Drawing.Size(45, 13);
+            this.CopyingLabel.Size = new System.Drawing.Size(54, 13);
             this.CopyingLabel.TabIndex = 0;
-            this.CopyingLabel.Text = "Copying";
+            this.CopyingLabel.Text = "Copying...";
+            this.CopyingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // CopyingProgressBar
             // 

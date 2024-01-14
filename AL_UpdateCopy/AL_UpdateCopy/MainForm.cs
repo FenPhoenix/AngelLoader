@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -12,8 +13,8 @@ public sealed partial class MainForm : Form
     {
         InitializeComponent();
 
-        CopyingLabel.CenterH(this, clientSize: true);
-        CopyingProgressBar.CenterH(this, clientSize: true);
+        CopyingLabel.CenterHOnForm(this);
+        CopyingProgressBar.CenterHOnForm(this);
     }
 
     protected override void OnShown(EventArgs e)
@@ -31,8 +32,8 @@ public sealed partial class MainForm : Form
 
         for (int i = 0; i < files.Count; i++)
         {
-            string file = files[i];
-            string fileName = Path.GetFileName(file);
+            string fileName = Path.GetFileName(files[i]);
+
             if (fileName.EqualsI("FMData.ini") ||
                 fileName.StartsWithI("FMData.bak") ||
                 fileName.EqualsI("Config.ini") ||
@@ -43,15 +44,31 @@ public sealed partial class MainForm : Form
             }
         }
 
+        string selfDir = startupPath;
+        if (!selfDir.EndsWithDirSep()) selfDir += "\\";
+
         for (int i = 0; i < files.Count; i++)
         {
-            int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
-            CopyingProgressBar.SetProgress(percent.Clamp(0, 100));
-
             string file = files[i];
-            string fileName = Path.GetFileName(file);
+            Trace.WriteLine(file);
+            string fileName = file.Substring(selfDir.Length);
+
+            CopyingLabel.Text = "Copying..." + Environment.NewLine + fileName;
+            CopyingLabel.CenterHOnForm(this);
+
             // TODO: Handle errors robustly
+            string finalFileName = Path.Combine(Program.DestDir, fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
             File.Copy(file, Path.Combine(Program.DestDir, fileName), overwrite: true);
+
+            //for (int t = 0; t < 100; t++)
+            //{
+            //    Thread.Sleep(1);
+            //    Application.DoEvents();
+            //}
+
+            int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
+            CopyingProgressBar.SetProgress(percent);
         }
     }
 }
