@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
 
@@ -38,62 +39,65 @@ internal static class Program
     private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
     internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
 
-    internal static void DoCopy()
+    internal static async Task DoCopy()
     {
         string startupPath = Application.StartupPath;
         string exePath = Application.ExecutablePath;
 
-        try
+        await Task.Run(() =>
         {
-            File.Delete(exePath + ".bak");
-        }
-        catch
-        {
-            // didn't exist or whatever
-        }
-
-        File.Move(exePath, exePath + ".bak");
-
-        List<string> files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
-
-        for (int i = 0; i < files.Count; i++)
-        {
-            string fileName = Path.GetFileName(files[i]);
-
-            if (fileName.EqualsI("FMData.ini") ||
-                fileName.StartsWithI("FMData.bak") ||
-                fileName.EqualsI("Config.ini"))
+            try
             {
-                files.RemoveAt(i);
-                i--;
+                File.Delete(exePath + ".bak");
             }
-        }
+            catch
+            {
+                // didn't exist or whatever
+            }
 
-        string updateDirWithTrailingDirSep = UpdateTempPath.TrimEnd('\\', '/') + "\\";
+            File.Move(exePath, exePath + ".bak");
 
-        for (int i = 0; i < files.Count; i++)
-        {
-            string file = files[i];
-            string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
+            List<string> files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
 
-            MainView.SetMessage("Copying..." + Environment.NewLine + fileName);
+            for (int i = 0; i < files.Count; i++)
+            {
+                string fileName = Path.GetFileName(files[i]);
 
-            // TODO: Handle errors robustly
-            string finalFileName = Path.Combine(startupPath, fileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
-            File.Copy(file, finalFileName, overwrite: true);
+                if (fileName.EqualsI("FMData.ini") ||
+                    fileName.StartsWithI("FMData.bak") ||
+                    fileName.EqualsI("Config.ini"))
+                {
+                    files.RemoveAt(i);
+                    i--;
+                }
+            }
 
-            //for (int t = 0; t < 100; t++)
-            //{
-            //    Thread.Sleep(1);
-            //    Application.DoEvents();
-            //}
+            string updateDirWithTrailingDirSep = UpdateTempPath.TrimEnd('\\', '/') + "\\";
 
-            int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
-            MainView.SetProgress(percent);
-        }
+            for (int i = 0; i < files.Count; i++)
+            {
+                string file = files[i];
+                string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
 
-        Utils.ClearUpdateTempPath();
+                MainView.SetMessage("Copying..." + Environment.NewLine + fileName);
+
+                // TODO: Handle errors robustly
+                string finalFileName = Path.Combine(startupPath, fileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
+                File.Copy(file, finalFileName, overwrite: true);
+
+                //for (int t = 0; t < 100; t++)
+                //{
+                //    Thread.Sleep(1);
+                //    Application.DoEvents();
+                //}
+
+                int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
+                MainView.SetProgress(percent);
+            }
+
+            Utils.ClearUpdateTempPath();
+        });
 
         // TODO: Handle errors robustly
         using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"))) { }

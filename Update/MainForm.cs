@@ -34,17 +34,17 @@ public sealed partial class MainForm : Form
         CopyingProgressBar.CenterHOnForm(this);
     }
 
-    protected override void OnShown(EventArgs e)
+    protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
-        Program.DoCopy();
+        await Program.DoCopy();
     }
 
-    public void SetMessage(string message)
+    public void SetMessage(string message) => Invoke(() =>
     {
         CopyingLabel.Text = message;
         CopyingLabel.CenterHOnForm(this);
-    }
+    });
 
-    public void SetProgress(int percent) => CopyingProgressBar.SetProgress(percent);
+    public void SetProgress(int percent) => Invoke(() => CopyingProgressBar.SetProgress(percent));
 }
