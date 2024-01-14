@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Update;
@@ -40,6 +41,42 @@ internal static class Utils
         {
             progressBar.Value = (value + 1).Clamp(min, max);
             progressBar.Value = value;
+        }
+    }
+
+    private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
+    private static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
+
+    internal static void ClearUpdateTempPath()
+    {
+        if (!Directory.Exists(UpdateTempPath)) return;
+
+        try
+        {
+            foreach (string f in Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories))
+            {
+                new FileInfo(f).IsReadOnly = false;
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+
+        try
+        {
+            foreach (string f in Directory.GetFiles(UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            {
+                File.Delete(f);
+            }
+            foreach (string d in Directory.GetDirectories(UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            {
+                Directory.Delete(d, recursive: true);
+            }
+        }
+        catch
+        {
+            // ignore
         }
     }
 }

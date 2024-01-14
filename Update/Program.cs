@@ -6,9 +6,6 @@ namespace Update;
 
 internal static class Program
 {
-    internal static string DestDir = "";
-    internal static string DestExe = "";
-
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
@@ -26,17 +23,7 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
-            if (eventArgs.CommandLine.Count == 2)
-            {
-                DestDir = eventArgs.CommandLine[0];
-                DestExe = eventArgs.CommandLine[1];
-
-                if (!string.IsNullOrEmpty(DestDir) &&
-                    !string.IsNullOrEmpty(DestExe))
-                {
-                    Application.Run(new MainForm());
-                }
-            }
+            Application.Run(new MainForm());
             return false;
         }
     }

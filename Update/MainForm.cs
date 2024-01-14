@@ -78,9 +78,9 @@ public sealed partial class MainForm : Form
             CopyingLabel.CenterHOnForm(this);
 
             // TODO: Handle errors robustly
-            string finalFileName = Path.Combine(Program.DestDir, fileName);
+            string finalFileName = Path.Combine(startupPath, fileName);
             Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
-            File.Copy(file, Path.Combine(Program.DestDir, fileName), overwrite: true);
+            File.Copy(file, finalFileName, overwrite: true);
 
             //for (int t = 0; t < 100; t++)
             //{
@@ -92,8 +92,10 @@ public sealed partial class MainForm : Form
             CopyingProgressBar.SetProgress(percent);
         }
 
+        Utils.ClearUpdateTempPath();
+
         // TODO: Handle errors robustly
-        using (Process.Start(Path.Combine(Program.DestDir, Program.DestExe))) { }
+        using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"))) { }
         Application.Exit();
     }
 }

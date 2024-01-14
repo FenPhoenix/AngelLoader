@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Update": {
-      "commandName": "Project",
-      "commandLineArgs": "\"C:\\AngelLoader\" \"AngelLoader.exe\""
-    }
-  }
-}
