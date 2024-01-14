@@ -7,6 +7,19 @@ using System.Windows.Forms;
 
 namespace AL_UpdateCopy;
 
+/*
+The plan:
+-Ship this executable with AL distribution
+-AL downloads the update and puts it in the temp folder, then calls this exe
+-This exe then:
+ -Waits for AL to close
+ -Renames its exe while running
+ -Copies the update from the temp folder (including the updater exe from there, which will copy because we've
+  renamed ourselves)
+ -If successful, delete our renamed exe, call AL, and close
+ -If failed, rename our exe back to normal
+*/
+
 public sealed partial class MainForm : Form
 {
     public MainForm()
@@ -50,7 +63,6 @@ public sealed partial class MainForm : Form
         for (int i = 0; i < files.Count; i++)
         {
             string file = files[i];
-            Trace.WriteLine(file);
             string fileName = file.Substring(selfDir.Length);
 
             CopyingLabel.Text = "Copying..." + Environment.NewLine + fileName;
@@ -70,5 +82,9 @@ public sealed partial class MainForm : Form
             int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
             CopyingProgressBar.SetProgress(percent);
         }
+
+        // TODO: Handle errors robustly
+        using (Process.Start(Path.Combine(Program.DestDir, Program.DestExe))) { }
+        Application.Exit();
     }
 }

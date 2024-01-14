@@ -2,7 +2,7 @@
   "profiles": {
     "AL_UpdateCopy": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\al_dest\""
+      "commandLineArgs": "\"C:\\AngelLoader\" \"AngelLoader.exe\""
     }
   }
 }
