@@ -15,8 +15,6 @@ internal static class Utils
 
     internal static bool StartsWithI(this string str1, string str2) => str1.StartsWith(str2, StringComparison.OrdinalIgnoreCase);
 
-    internal static bool EndsWithDirSep(this string str) => str.Length > 0 && (str[str.Length - 1] == '/' || str[str.Length - 1] == '\\');
-
     internal static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
     private static int Clamp(this int value, int min, int max) => value < min ? min : value > max ? max : value;

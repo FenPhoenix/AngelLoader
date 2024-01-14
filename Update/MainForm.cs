@@ -17,7 +17,7 @@ The plan:
  -AL will delete our renamed exe (possibly on next close, so it doesn't have to wait for us to close?)
  -If failed, rename our exe back to normal
 
-TODO: Remove debug command line in properties!
+@Update: Remove debug command line in properties!
 */
 
 public sealed partial class MainForm : Form

@@ -28,6 +28,9 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
+            // @Update: What to do if a user starts this exe manually
+            // We should either quit out if we're not passed a go command, or make this app be the one that also
+            // downloads the update.
             MainView = new MainForm();
             Application.Run(MainView);
             return false;
@@ -81,7 +84,7 @@ internal static class Program
 
                 MainView.SetMessage("Copying..." + Environment.NewLine + fileName);
 
-                // TODO: Handle errors robustly
+                // @Update: Handle errors robustly
                 string finalFileName = Path.Combine(startupPath, fileName);
                 Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
                 File.Copy(file, finalFileName, overwrite: true);
@@ -99,7 +102,7 @@ internal static class Program
             Utils.ClearUpdateTempPath();
         });
 
-        // TODO: Handle errors robustly
+        // @Update: Handle errors robustly
         using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"))) { }
         Application.Exit();
     }
