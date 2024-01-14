@@ -7,7 +7,6 @@ sealed partial class MainForm
     /// </summary>
     private void InitSlim()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
         this.CopyingLabel = new System.Windows.Forms.Label();
         this.CopyingProgressBar = new System.Windows.Forms.ProgressBar();
         this.SuspendLayout();
@@ -16,7 +15,6 @@ sealed partial class MainForm
         // 
         this.CopyingLabel.AutoSize = true;
         this.CopyingLabel.Location = new System.Drawing.Point(200, 24);
-        this.CopyingLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // CopyingProgressBar
         // 

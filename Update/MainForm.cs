@@ -26,7 +26,14 @@ public sealed partial class MainForm : Form
 {
     public MainForm()
     {
+#if DEBUG
         InitializeComponent();
+#else
+        InitSlim();
+#endif
+
+        Text = "AngelLoader Update";
+        CopyingLabel.Text = "Copying...";
 
         CopyingLabel.CenterHOnForm(this);
         CopyingProgressBar.CenterHOnForm(this);
