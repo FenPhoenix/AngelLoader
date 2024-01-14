@@ -12,7 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Resources\AngelLoader.ico" />
+	  <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="MainForm.resx" />
+	  <Content Include="Resources\AngelLoader.ico" />
   </ItemGroup>
 
   <ItemGroup>
