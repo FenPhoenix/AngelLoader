@@ -103,9 +103,6 @@ internal static class Utils
 
         var buffer = new StringBuilder(1024);
 
-        // We're doing this whole rigamarole because the game might have been started by someone other than
-        // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
-
         bool alIsRunning;
         do
         {
