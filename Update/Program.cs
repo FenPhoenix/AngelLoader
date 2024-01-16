@@ -28,11 +28,22 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
-            // @Update: What to do if a user starts this exe manually
-            // We should either quit out if we're not passed a go command, or make this app be the one that also
-            // downloads the update.
-            MainView = new MainForm();
-            Application.Run(MainView);
+            /*
+            @Update: What to do if a user starts this exe manually
+            We should either quit out if we're not passed a go command, or make this app be the one that also
+            downloads the update.
+            @Update: Maybe we should name this something unappealing like "_update_internal.exe"
+            */
+            if (eventArgs.CommandLine.Count == 1 &&
+                eventArgs.CommandLine[0] == "-go")
+            {
+                MainView = new MainForm();
+                Application.Run(MainView);
+            }
+            else
+            {
+                MessageBox.Show("This executable is not meant to be run on its own. Please update from within AngelLoader.");
+            }
             return false;
         }
     }
@@ -49,6 +60,22 @@ internal static class Program
 
         await Task.Run(() =>
         {
+            List<string> files;
+            try
+            {
+                files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
+                if (files.Count == 0) return;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return;
+            }
+            catch (Exception)
+            {
+                // @Update: Handle other exception cases here
+                return;
+            }
+
             try
             {
                 File.Delete(exePath + ".bak");
@@ -58,9 +85,8 @@ internal static class Program
                 // didn't exist or whatever
             }
 
+            // @Update: Handle errors here
             File.Move(exePath, exePath + ".bak");
-
-            List<string> files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
 
             for (int i = 0; i < files.Count; i++)
             {
