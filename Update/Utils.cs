@@ -49,14 +49,16 @@ internal static class Utils
 
     internal static void ClearUpdateTempPath()
     {
-        if (!Directory.Exists(Program.UpdateTempPath)) return;
-
         try
         {
             foreach (string f in Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.AllDirectories))
             {
                 new FileInfo(f).IsReadOnly = false;
             }
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return;
         }
         catch
         {
