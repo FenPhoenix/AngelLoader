@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32.SafeHandles;
 
 namespace Update;
 
@@ -72,6 +77,82 @@ internal static class Utils
         catch
         {
             // ignore
+        }
+    }
+
+    #region Process
+
+    /*
+    We use these instead of the built-in ones because those ones won't always work right unless you have
+    Admin privileges(?!). At least on Framework anyway.
+    */
+
+    private const uint QUERY_LIMITED_INFORMATION = 0x00001000;
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
+
+    [DllImport("kernel32.dll")]
+    private static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+    #endregion
+
+    internal static async Task WaitForAngelLoaderToClose()
+    {
+        string angelLoaderExe = Path.Combine(Application.StartupPath, "AngelLoader.exe");
+
+        var buffer = new StringBuilder(1024);
+
+        // We're doing this whole rigamarole because the game might have been started by someone other than
+        // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
+
+        bool alIsRunning;
+        do
+        {
+            alIsRunning = false;
+            Process[] processes = Process.GetProcesses();
+            try
+            {
+                foreach (Process proc in processes)
+                {
+                    try
+                    {
+                        string fn = GetProcessPath(proc.Id, buffer);
+                        if (!string.IsNullOrEmpty(fn) && fn.EqualsI(angelLoaderExe))
+                        {
+                            alIsRunning = true;
+                            break;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
+            finally
+            {
+                foreach (Process process in processes)
+                {
+                    process.Dispose();
+                }
+            }
+            await Task.Delay(100);
+        } while (alIsRunning);
+
+        return;
+
+        static string GetProcessPath(int procId, StringBuilder buffer)
+        {
+            buffer.Clear();
+
+            using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
+            if (!hProc.IsInvalid)
+            {
+                int size = buffer.Capacity;
+                if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
+            }
+            return "";
         }
     }
 }

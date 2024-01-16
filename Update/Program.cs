@@ -9,6 +9,11 @@ using Microsoft.VisualBasic.ApplicationServices;
 
 namespace Update;
 
+/*
+IMPORTANT: This app MUST NOT have any dependencies! It's going to copy an entire AL installation into its own directory.
+The rename of its own exe should be all that is required to allow the entire copy to succeed (no files locked).
+*/
+
 internal static class Program
 {
     /// <summary>
@@ -57,6 +62,8 @@ internal static class Program
     {
         string startupPath = Application.StartupPath;
         string exePath = Application.ExecutablePath;
+
+        await Utils.WaitForAngelLoaderToClose();
 
         await Task.Run(() =>
         {
