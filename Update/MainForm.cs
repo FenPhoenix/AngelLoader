@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using Update.Properties;
 
 namespace Update;
 
@@ -29,6 +30,8 @@ public sealed partial class MainForm : Form
 #else
         InitSlim();
 #endif
+
+        Icon = Resources.AngelLoader;
 
         Text = "AngelLoader Update";
         CopyingProgressBar.CenterHOnForm(this);
