@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 internal sealed class Lazy_UpdateNotification : IDarkable
@@ -27,7 +28,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
     internal Lazy_UpdateNotification(MainForm owner) => _owner = owner;
 
-    internal void Construct()
+    private void Construct()
     {
         if (_constructed) return;
 
@@ -37,6 +38,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         {
             Tag = LoadType.Lazy,
 
+            Margin = new Padding(0, 12, 0, 0),
             TabIndex = 0,
 
             DarkModeEnabled = _darkModeEnabled
@@ -52,7 +54,11 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
     private async void Label_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-        await CheckUpdates.ShowUpdateAskDialog();
+        // @Update: This link should not be visible if we have no update infos
+        if (Config.UpdateInfosTempCache.Count > 0)
+        {
+            await CheckUpdates.ShowUpdateAskDialog(Config.UpdateInfosTempCache);
+        }
     }
 
     internal void Localize()
@@ -60,5 +66,18 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         if (!_constructed) return;
         // @Update: Localize this
         Label.Text = "Update";
+    }
+
+    internal void SetVisible(bool visible)
+    {
+        if (visible)
+        {
+            Construct();
+            Label.Show();
+        }
+        else
+        {
+            if (_constructed) Label.Hide();
+        }
     }
 }

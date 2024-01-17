@@ -259,7 +259,17 @@ public sealed partial class MainForm : DarkFormBase,
     // @Update: Remove all testing code when we're done
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        await CheckUpdates.Check2024();
+        (bool success, List<CheckUpdates.UpdateInfo> updateInfos) = await CheckUpdates.Check2024();
+        if (success)
+        {
+            Config.UpdateInfosTempCache.ClearAndAdd_Small(updateInfos);
+            Lazy_UpdateNotification.SetVisible(true);
+        }
+        else
+        {
+            Config.UpdateInfosTempCache.Clear();
+            Lazy_UpdateNotification.SetVisible(false);
+        }
     }
 
     private void GenerateAllFiles()

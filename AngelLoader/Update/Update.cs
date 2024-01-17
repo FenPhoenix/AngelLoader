@@ -32,15 +32,57 @@ internal static class CheckUpdates
         internal Uri? ChangelogUrl;
     }
 
-    internal static async Task ShowUpdateAskDialog()
+    internal sealed class UpdateInfo
     {
-        // @Update: Implement
+        internal readonly Version Version;
+        internal readonly string ChangelogText;
+        internal readonly Uri DownloadUri;
+
+        internal UpdateInfo(Version version, string changelogText, Uri downloadUri)
+        {
+            Version = version;
+            ChangelogText = changelogText;
+            DownloadUri = downloadUri;
+        }
     }
 
-    internal static async Task<bool> Check2024()
+    internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
+    {
+        string changelogFullText = "";
+        foreach (var item in updateInfos)
+        {
+            changelogFullText += item.Version + ":\r\n\r\n" + item.ChangelogText;
+        }
+
+        (MBoxButton buttonPressed, _) =
+            Core.Dialogs.ShowMultiChoiceDialog(
+                message: "Do you want to test extract the latest version?\r\n\r\n" + changelogFullText,
+                title: "Test",
+                icon: MBoxIcon.None,
+                yes: LText.Global.Yes,
+                no: LText.Global.No);
+        if (buttonPressed == MBoxButton.Yes)
+        {
+            UpdateInfo? latest = updateInfos[0];
+            using var fs = File.OpenRead(latest.DownloadUri.LocalPath);
+            using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+            Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+            archive.ExtractToDirectory(Paths.UpdateTemp);
+            // @Update: Put a UI-disabling progress meter or whatnot here
+            Core.Dialogs.ShowAlert("Extract done!", "Test");
+
+            Config.UpdateInfosTempCache.Clear();
+
+            // @Update: Call the update copier and exit main AL app here.
+        }
+    }
+
+    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> Check2024()
     {
         return await Task.Run(static () =>
         {
+            List<UpdateInfo> ret = new();
+
 #if X64
             const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\versions.ini";
 #else
@@ -51,7 +93,7 @@ internal static class CheckUpdates
 
             if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
             {
-                return false;
+                return (false, ret);
             }
 
             Trace.WriteLine(versionsFile);
@@ -94,44 +136,23 @@ internal static class CheckUpdates
                 if (updateFile != null) versions.Add(updateFile);
             }
 
-            if (versions.Count == 0) return false;
+            if (versions.Count == 0) return (false, ret);
 
-            // @Update: Go down through the list until we come to a version that's equal or lower than the app version.
-            // So we can get the changelogs for all newer versions.
-
-            string changelogFullText = "";
             foreach (UpdateFile item in versions)
             {
                 Uri? changelogUri = item.ChangelogUrl;
-                if (changelogUri != null)
+                Uri? downloadUri = item.DownloadUrl;
+
+                if (changelogUri != null && downloadUri != null)
                 {
-                    changelogFullText += item.Version! + ":\r\n\r\n" + File.ReadAllText(changelogUri.LocalPath);
+                    ret.Add(new UpdateInfo(
+                        item.Version!,
+                        File.ReadAllText(changelogUri.LocalPath),
+                        downloadUri));
                 }
             }
 
-            (MBoxButton buttonPressed, _) =
-                Core.Dialogs.ShowMultiChoiceDialog(
-                    message: "Do you want to test extract the latest version?\r\n\r\n" + changelogFullText,
-                    title: "Test",
-                    icon: MBoxIcon.None,
-                    yes: LText.Global.Yes,
-                    no: LText.Global.No);
-            if (buttonPressed == MBoxButton.Yes)
-            {
-                UpdateFile? latest = versions[0];
-                Uri? downloadUri = latest.DownloadUrl;
-                if (downloadUri != null)
-                {
-                    using var fs = File.OpenRead(downloadUri.LocalPath);
-                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                    archive.ExtractToDirectory(Paths.UpdateTemp);
-                    // @Update: Put a UI-disabling progress meter or whatnot here
-                    Core.Dialogs.ShowAlert("Extract done!", "Test");
-                }
-            }
-
-            return true;
+            return (ret.Count > 0, ret);
         });
     }
 
