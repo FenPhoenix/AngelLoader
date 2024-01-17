@@ -10,7 +10,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     private bool _constructed;
 
     // @Update: We could make this a PictureBox or whatever later on
-    private DarkLinkLabel Label;
+    private DarkLinkLabel Label = null!;
 
     private bool _darkModeEnabled;
     [PublicAPI]
