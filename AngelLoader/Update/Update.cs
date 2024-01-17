@@ -1,23 +1,136 @@
-﻿//#define CHECK_UPDATES
+﻿#define CHECK_UPDATES
 
 #if CHECK_UPDATES
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+// @Update: Get rid of WinForms reference here when we're done
 using System.Windows.Forms;
+using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
 internal static class CheckUpdates
 {
-    private static CancellationTokenSource CheckForUpdatesCTS = new CancellationTokenSource();
+    private sealed class UpdateFile
+    {
+        internal Version? Version;
+        internal byte[]? Checksum;
+        internal Uri? DownloadUrl;
+        internal Uri? ChangelogUrl;
+    }
+
+    internal static async Task<bool> Check2024()
+    {
+        return await Task.Run(static () =>
+        {
+#if X64
+            const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\versions.ini";
+#else
+            const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x86\versions.ini";
+#endif
+
+            List<UpdateFile> versions = new();
+
+            if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
+            {
+                return false;
+            }
+
+            Trace.WriteLine(versionsFile);
+            //var uri = new Uri(versionsFile);
+            //using Stream latestVersionStream = await GlobalHttpClient.GetStreamAsync(uri);
+            UpdateFile? updateFile = null;
+
+            using Stream versionFileStream = File.OpenRead(versionsFile);
+            using (var sr = new StreamReader(versionFileStream))
+            {
+                while (sr.ReadLine() is { } line)
+                {
+                    string lineT = line.Trim();
+
+                    if (lineT.IsEmpty()) continue;
+
+                    if (lineT[0] == '[' && lineT[lineT.Length - 1] == ']' &&
+                        Version.TryParse(lineT.Substring(1, lineT.Length - 2), out Version version))
+                    {
+                        if (version <= appVersion) break;
+
+                        Trace.WriteLine("Header: Version " + version);
+                        if (updateFile != null) versions.Add(updateFile);
+                        updateFile = new UpdateFile { Version = version };
+                    }
+                    else if (updateFile != null)
+                    {
+                        if (lineT.StartsWithO("ChangelogUrl="))
+                        {
+                            updateFile.ChangelogUrl = new Uri(lineT.Substring("ChangelogUrl=".Length));
+                            Trace.WriteLine("Changelog location: " + updateFile.ChangelogUrl);
+                        }
+                        else if (lineT.StartsWithO("DownloadUrl="))
+                        {
+                            updateFile.DownloadUrl = new Uri(lineT.Substring("DownloadUrl=".Length));
+                            Trace.WriteLine("Download location: " + updateFile.DownloadUrl);
+                        }
+                    }
+                }
+                if (updateFile != null) versions.Add(updateFile);
+            }
+
+            if (versions.Count == 0) return false;
+
+            // @Update: Go down through the list until we come to a version that's equal or lower than the app version.
+            // So we can get the changelogs for all newer versions.
+
+            string changelogFullText = "";
+            foreach (UpdateFile item in versions)
+            {
+                Uri? changelogUri = item.ChangelogUrl;
+                if (changelogUri != null)
+                {
+                    changelogFullText += item.Version! + ":\r\n\r\n" + File.ReadAllText(changelogUri.LocalPath);
+                }
+            }
+
+            (MBoxButton buttonPressed, _) =
+                Core.Dialogs.ShowMultiChoiceDialog(
+                    message: "Do you want to test extract the latest version?\r\n\r\n" + changelogFullText,
+                    title: "Test",
+                    icon: MBoxIcon.None,
+                    yes: LText.Global.Yes,
+                    no: LText.Global.No);
+            if (buttonPressed == MBoxButton.Yes)
+            {
+                UpdateFile? latest = versions[0];
+                Uri? downloadUri = latest.DownloadUrl;
+                if (downloadUri != null)
+                {
+                    using var fs = File.OpenRead(downloadUri.LocalPath);
+                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    archive.ExtractToDirectory(Paths.UpdateTemp);
+                    // @Update: Put a UI-disabling progress meter or whatnot here
+                    Core.Dialogs.ShowAlert("Extract done!", "Test");
+                }
+            }
+
+            return true;
+        });
+    }
+
+    private static CancellationTokenSource CheckForUpdatesCTS = new();
 
     internal static void Cancel() => CheckForUpdatesCTS.CancelIfNotDisposed();
 
@@ -177,14 +290,6 @@ internal static class CheckUpdates
         return bytes;
     }
 
-    private class UpdateFile
-    {
-        internal Version? Version;
-        internal byte[]? Checksum;
-        internal Uri? DownloadUrl;
-        internal Uri? ChangelogUrl;
-    }
-
     private static (bool Success, UpdateFile UpdateFile)
     ReadUpdateFile(string file)
     {
@@ -200,14 +305,14 @@ internal static class CheckUpdates
                 if (!line.Contains('=')) continue;
 
                 string val = line.Substring(line.IndexOf('=') + 1);
-                if (line.StartsWithFast_NoNullChecks("Version="))
+                if (line.StartsWithFast("Version="))
                 {
                     if (Version.TryParse(val, out Version result))
                     {
                         ret.Version = result;
                     }
                 }
-                if (line.StartsWithFast_NoNullChecks("Checksum="))
+                if (line.StartsWithFast("Checksum="))
                 {
                     byte[] bytes = HexStringToBytes(val);
                     if (bytes.Length > 0)
@@ -215,14 +320,14 @@ internal static class CheckUpdates
                         ret.Checksum = bytes;
                     }
                 }
-                else if (line.StartsWithFast_NoNullChecks("DownloadUrl="))
+                else if (line.StartsWithFast("DownloadUrl="))
                 {
                     if (Uri.IsWellFormedUriString(val, UriKind.Absolute))
                     {
                         ret.DownloadUrl = new Uri(val);
                     }
                 }
-                else if (line.StartsWithFast_NoNullChecks("ChangelogUrl="))
+                else if (line.StartsWithFast("ChangelogUrl="))
                 {
                     if (Uri.IsWellFormedUriString(val, UriKind.Absolute))
                     {

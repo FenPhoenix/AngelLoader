@@ -131,6 +131,9 @@ internal static class Paths
 
     #endregion
 
+    private static string? _updateTemp;
+    internal static string UpdateTemp => _updateTemp ??= PathCombineFast_NoChecks(_baseTemp, "Update");
+
     internal static void CreateOrClearTempPath(string path)
     {
         #region Safety check

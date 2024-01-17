@@ -255,9 +255,10 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private void Test3Button_Click(object sender, EventArgs e)
+    // @Update: Remove all testing code when we're done
+    private async void Test3Button_Click(object sender, EventArgs e)
     {
-
+        await CheckUpdates.Check2024();
     }
 
     private void GenerateAllFiles()
