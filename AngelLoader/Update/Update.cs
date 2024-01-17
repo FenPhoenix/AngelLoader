@@ -32,6 +32,11 @@ internal static class CheckUpdates
         internal Uri? ChangelogUrl;
     }
 
+    internal static async Task ShowUpdateAskDialog()
+    {
+        // @Update: Implement
+    }
+
     internal static async Task<bool> Check2024()
     {
         return await Task.Run(static () =>

@@ -185,6 +185,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
+    private readonly Lazy_UpdateNotification Lazy_UpdateNotification;
 
     #endregion
 
@@ -641,7 +642,8 @@ public sealed partial class MainForm : DarkFormBase,
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
-            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
+            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
+            Lazy_UpdateNotification = new Lazy_UpdateNotification(this)
         };
 
         #endregion
@@ -1910,6 +1912,8 @@ public sealed partial class MainForm : DarkFormBase,
             InstallUninstallFMLLButton.Localize();
 
             Lazy_WebSearchButton.Localize();
+
+            Lazy_UpdateNotification.Localize();
 
             // On startup this is a race condition as the FMs list is still being populated!
             if (!startup) SetAvailableAndFinishedFMCount(forceRefresh: true);
