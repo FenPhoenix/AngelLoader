@@ -259,17 +259,6 @@ public sealed partial class MainForm : DarkFormBase,
     // @Update: Remove all testing code when we're done
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        (bool success, List<CheckUpdates.UpdateInfo> updateInfos) = await CheckUpdates.Check2024();
-        if (success)
-        {
-            Config.UpdateInfosTempCache.ClearAndAdd_Small(updateInfos);
-            Lazy_UpdateNotification.SetVisible(true);
-        }
-        else
-        {
-            Config.UpdateInfosTempCache.Clear();
-            Lazy_UpdateNotification.SetVisible(false);
-        }
     }
 
     private void GenerateAllFiles()
@@ -1178,6 +1167,41 @@ public sealed partial class MainForm : DarkFormBase,
         if (askForImport)
         {
             await ShowAskToImportWindow();
+        }
+
+        if (Config.CheckForUpdates == CheckForUpdates.FirstTimeAsk)
+        {
+            // @Update: Localize this
+            (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                message: "Do you want AngelLoader to check for updates every startup?",
+                title: "Updates",
+                icon: MBoxIcon.Information,
+                yes: LText.Global.Yes,
+                no: LText.Global.No
+            );
+            Config.CheckForUpdates = buttonPressed == MBoxButton.Yes
+                ? CheckForUpdates.True
+                : CheckForUpdates.False;
+        }
+
+        if (Config.CheckForUpdates == CheckForUpdates.True)
+        {
+            await DoUpdateWork();
+        }
+    }
+
+    private async Task DoUpdateWork()
+    {
+        (bool success, List<CheckUpdates.UpdateInfo> updateInfos) = await CheckUpdates.Check2024();
+        if (success)
+        {
+            Config.UpdateInfosTempCache.ClearAndAdd_Small(updateInfos);
+            Invoke(() => Lazy_UpdateNotification.SetVisible(true));
+        }
+        else
+        {
+            Config.UpdateInfosTempCache.Clear();
+            Invoke(() => Lazy_UpdateNotification.SetVisible(false));
         }
     }
 
