@@ -779,6 +779,15 @@ internal static partial class Ini
         config.EnableFuzzySearch = valTrimmed.EqualsTrue();
     }
 
+    private static void Config_CheckForUpdates_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(CheckForUpdates).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.CheckForUpdates = (CheckForUpdates)field.GetValue(null);
+        }
+    }
+
     #endregion
 
     private sealed unsafe class Config_DelegatePointerWrapper
@@ -972,6 +981,8 @@ internal static partial class Ini
         { "AskedToScanForMisCounts", new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
 
         { "EnableFuzzySearch", new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
+
+        { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
 
         #region Backward compatibility
 
@@ -1367,6 +1378,8 @@ internal static partial class Ini
         sb.Append("AskedToScanForMisCounts").Append('=').Append(config.AskedToScanForMisCounts).AppendLine();
 
         sb.Append("EnableFuzzySearch").Append('=').Append(config.EnableFuzzySearch).AppendLine();
+
+        sb.Append("CheckForUpdates").Append('=').Append(config.CheckForUpdates).AppendLine();
 
         using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
         sw.Write(sb.ToString());

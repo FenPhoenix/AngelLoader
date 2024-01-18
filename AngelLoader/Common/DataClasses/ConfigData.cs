@@ -460,6 +460,8 @@ public sealed class ConfigData
 
     #endregion
 
+    internal CheckForUpdates CheckForUpdates = CheckForUpdates.FirstTimeAsk;
+
     // This is for storing the list of update infos from the server from the initial update-available check, so
     // the update window doesn't have to get them again.
     // @Update: Should this go in Global?
