@@ -3180,7 +3180,17 @@ public sealed partial class MainForm : DarkFormBase,
                 if (keepSelection == KeepSel.False)
                 {
                     row = 0;
-                    FMsDGV.FirstDisplayedScrollingRowIndex = 0;
+                    // TODO: Refreshing the list while the readme is fullscreen:
+                    // In this case we SHOULD be resetting our place in the list, but aren't.
+                    // Very low priority, because nobody's going to probably ever to do that, but noting it.
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex = 0;
+                    }
+                    catch
+                    {
+                        // no room is available to display rows
+                    }
                 }
                 else
                 {
@@ -5317,13 +5327,17 @@ public sealed partial class MainForm : DarkFormBase,
         TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
     }
 
-    private int _storedFMsDGVFirstDisplayedScrollingRowIndex;
+    internal int _storedFMsDGVFirstDisplayedScrollingRowIndex;
+    internal int _storedFMsDGVDisplayedRowCountFalse;
+    internal int _storedFMsDGVDisplayedRowCountTrue;
 
     private void MainSplitContainer_FullScreenBeforeChanged(object sender, EventArgs e)
     {
         if (!MainSplitContainer.FullScreen)
         {
             _storedFMsDGVFirstDisplayedScrollingRowIndex = FMsDGV.FirstDisplayedScrollingRowIndex;
+            _storedFMsDGVDisplayedRowCountFalse = FMsDGV.DisplayedRowCount(false);
+            _storedFMsDGVDisplayedRowCountTrue = FMsDGV.DisplayedRowCount(true);
         }
     }
 

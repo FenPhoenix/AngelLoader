@@ -222,12 +222,19 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         // that, and we do want that guard check.
         if (!RowSelected()) return ret;
 
-        int firstDisplayed = FirstDisplayedScrollingRowIndex;
-        int lastDisplayed = firstDisplayed + DisplayedRowCount(false);
+        bool readmeMaximized = _owner.MainSplitContainer.FullScreen;
+
+        int firstDisplayed = readmeMaximized
+            ? _owner._storedFMsDGVFirstDisplayedScrollingRowIndex
+            : FirstDisplayedScrollingRowIndex;
+        int lastDisplayed = firstDisplayed +
+                            (readmeMaximized
+                                ? _owner._storedFMsDGVDisplayedRowCountFalse
+                                : DisplayedRowCount(false));
 
         int indexFromTop = index >= firstDisplayed && index <= lastDisplayed
             ? index - firstDisplayed
-            : DisplayedRowCount(true) / 2;
+            : (readmeMaximized ? _owner._storedFMsDGVDisplayedRowCountTrue : DisplayedRowCount(true)) / 2;
 
         ret.InstalledName = GetFMFromIndex(index).InstalledDir;
         ret.IndexFromTop = indexFromTop;
