@@ -18,7 +18,6 @@ using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -48,20 +47,20 @@ internal static class CheckUpdates
 
     internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
     {
+        // @Update: Test with multiple versions/changelogs
         string changelogFullText = "";
-        foreach (var item in updateInfos)
+        // @Update: TEST ONLY, remove for final!
+        updateInfos.Add(new UpdateInfo(new Version(1, 7, 11), "This is another version test!", new Uri("https://www.google.ca")));
+        for (int i = 0; i < updateInfos.Count; i++)
         {
-            changelogFullText += item.Version + ":\r\n\r\n" + item.ChangelogText;
+            if (i > 0) changelogFullText += "\r\n\r\n\r\n";
+            UpdateInfo? item = updateInfos[i];
+            changelogFullText += item.Version + ":\r\n" + item.ChangelogText;
         }
 
-        (MBoxButton buttonPressed, _) =
-            Core.Dialogs.ShowMultiChoiceDialog(
-                message: "Do you want to test extract the latest version?\r\n\r\n" + changelogFullText,
-                title: "Test",
-                icon: MBoxIcon.None,
-                yes: LText.Global.Yes,
-                no: LText.Global.No);
-        if (buttonPressed == MBoxButton.Yes)
+        bool accepted = Core.View.ShowUpdateAvailableDialog(changelogFullText);
+
+        if (accepted)
         {
             UpdateInfo? latest = updateInfos[0];
             using var fs = File.OpenRead(latest.DownloadUri.LocalPath);
@@ -147,7 +146,7 @@ internal static class CheckUpdates
                 {
                     ret.Add(new UpdateInfo(
                         item.Version!,
-                        File.ReadAllText(changelogUri.LocalPath),
+                        File.ReadAllText(changelogUri.LocalPath).Trim(),
                         downloadUri));
                 }
             }
