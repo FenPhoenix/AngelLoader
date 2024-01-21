@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AL_Common;
@@ -10,6 +11,7 @@ public static partial class Common
     #region Classes
 
     [PublicAPI]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ArrayWithLength<T>
     {
         public readonly T[] Array;
