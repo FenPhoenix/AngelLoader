@@ -49,8 +49,6 @@ internal static class CheckUpdates
     {
         // @Update: Test with multiple versions/changelogs
         string changelogFullText = "";
-        // @Update: TEST ONLY, remove for final!
-        updateInfos.Add(new UpdateInfo(new Version(1, 7, 11), "This is another version test!", new Uri("https://www.google.ca")));
         for (int i = 0; i < updateInfos.Count; i++)
         {
             if (i > 0) changelogFullText += "\r\n\r\n\r\n";
@@ -95,6 +93,7 @@ internal static class CheckUpdates
                 return (false, ret);
             }
 
+            // @Update: Remove all Trace calls for final
             Trace.WriteLine(versionsFile);
             //var uri = new Uri(versionsFile);
             //using Stream latestVersionStream = await GlobalHttpClient.GetStreamAsync(uri);
