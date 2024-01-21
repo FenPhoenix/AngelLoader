@@ -465,6 +465,8 @@ public sealed class ConfigData
     // This is for storing the list of update infos from the server from the initial update-available check, so
     // the update window doesn't have to get them again.
     // @Update: Should this go in Global?
+    // @Update: We shouldn't cache this, because it could be an arbitrary time before the user clicks the update control.
+    // We should in fact be re-getting the info when they click it, to make sure it's fresh.
     internal readonly List<CheckUpdates.UpdateInfo> UpdateInfosTempCache = new();
 
 #if !ReleaseBeta && !ReleasePublic
