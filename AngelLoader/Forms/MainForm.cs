@@ -5137,6 +5137,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Show dialogs
 
+    public bool ShowUpdateAvailableDialog(string releaseNotes)
+    {
+        using var f = new UpdateForm();
+        f.SetReleaseNotes(releaseNotes);
+        return f.ShowDialogDark() == DialogResult.OK;
+    }
+
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
     ShowScanAllFMsWindow(bool selected)
     {
