@@ -34,10 +34,12 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
         var container = _owner.BottomRightFLP;
 
+        // @Update: Should we make this label/icon more visible/obnoxious colored etc. since it's meant to be a notification?
         Label = new DarkLinkLabel
         {
             Tag = LoadType.Lazy,
 
+            AutoSize = true,
             Margin = new Padding(0, 12, 0, 0),
             TabIndex = 0,
 
