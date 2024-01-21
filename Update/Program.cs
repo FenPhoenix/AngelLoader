@@ -65,7 +65,7 @@ internal static class Program
 
         await Utils.WaitForAngelLoaderToClose();
 
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             List<string> files;
             try
@@ -117,10 +117,44 @@ internal static class Program
 
                 MainView.SetMessage("Copying..." + Environment.NewLine + fileName);
 
-                // @Update: Handle errors robustly
-                string finalFileName = Path.Combine(startupPath, fileName);
-                Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
-                File.Copy(file, finalFileName, overwrite: true);
+                int retryCount = 0;
+                retry:
+                string finalFileName = "";
+                try
+                {
+                    // @Update: Make the copy atomic: if part of it fails, revert to the entire old version
+                    // Don't just leave some files of new version and some of old version in the app folder!
+                    finalFileName = Path.Combine(startupPath, fileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
+                    File.Copy(file, finalFileName, overwrite: true);
+                }
+                catch (Exception ex)
+                {
+                    if (retryCount > 10)
+                    {
+                        DialogResult result = MessageBox.Show(MainView,
+                            "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
+                            "If AngelLoader is running, close it and try again.\r\n\r\nException: " + ex,
+                            "Error",
+                            MessageBoxButtons.RetryCancel,
+                            MessageBoxIcon.Warning);
+                        if (result == DialogResult.Retry)
+                        {
+                            retryCount = 0;
+                            goto retry;
+                        }
+                        else
+                        {
+                            Application.Exit();
+                        }
+                    }
+                    else
+                    {
+                        retryCount++;
+                        await Task.Delay(1000);
+                        goto retry;
+                    }
+                }
 
                 //for (int t = 0; t < 100; t++)
                 //{

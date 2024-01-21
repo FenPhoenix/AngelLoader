@@ -66,11 +66,13 @@ internal static class CheckUpdates
             Paths.CreateOrClearTempPath(Paths.UpdateTemp);
             archive.ExtractToDirectory(Paths.UpdateTemp);
             // @Update: Put a UI-disabling progress meter or whatnot here
-            Core.Dialogs.ShowAlert("Extract done!", "Test");
+            //Core.Dialogs.ShowAlert("Extract done!", "Test");
 
             Config.UpdateInfosTempCache.Clear();
 
             // @Update: Call the update copier and exit main AL app here.
+            Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Path.Combine(Paths.Startup, "Update.exe"), "-go"));
+            Application.Exit();
         }
     }
 
