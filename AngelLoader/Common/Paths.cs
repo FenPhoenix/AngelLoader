@@ -206,6 +206,9 @@ internal static class Paths
 
     #endregion
 
+    private static string _updateExe;
+    internal static string UpdateExe => _updateExe ??= PathCombineFast_NoChecks(Startup, "Update.exe");
+
     #region Docs
 
     private static string? _docFile;

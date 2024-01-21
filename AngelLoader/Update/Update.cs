@@ -71,7 +71,7 @@ internal static class CheckUpdates
             Config.UpdateInfosTempCache.Clear();
 
             // @Update: Call the update copier and exit main AL app here.
-            Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Path.Combine(Paths.Startup, "Update.exe"), "-go"));
+            Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
             Application.Exit();
         }
     }
@@ -82,6 +82,7 @@ internal static class CheckUpdates
         {
             List<UpdateInfo> ret = new();
 
+            // @Update: change to web url for final
 #if X64
             const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\versions.ini";
 #else
