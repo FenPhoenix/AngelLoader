@@ -41,6 +41,7 @@ public sealed partial class MainForm : Form
     {
         base.OnShown(e);
         await Program.DoCopy();
+        Application.Exit();
     }
 
     public void SetMessage(string message) => Invoke(() =>

@@ -33,12 +33,7 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
-            /*
-            @Update: What to do if a user starts this exe manually
-            We should either quit out if we're not passed a go command, or make this app be the one that also
-            downloads the update.
-            @Update: Maybe we should name this something unappealing like "_update_internal.exe"
-            */
+            // @Update: Maybe we should name this something unappealing like "_update_internal.exe"
             if (eventArgs.CommandLine.Count == 1 &&
                 eventArgs.CommandLine[0] == "-go")
             {
@@ -124,8 +119,18 @@ internal static class Program
                 File.Copy(Path.Combine(startupPath, relativeFileName), Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
             }
 
-            // @Update: Handle errors here
-            File.Move(exePath, exePath + ".bak");
+            try
+            {
+                File.Move(exePath, exePath + ".bak");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(View,
+                    "Update failed: Unable to rename '" + exePath + "' to '" + exePath + ".bak'.\r\n\r\n" +
+                    "Exception:\r\n\r\n" +
+                    ex);
+                return;
+            }
 
             for (int i = 0; i < files.Count; i++)
             {
@@ -139,8 +144,6 @@ internal static class Program
                 string finalFileName = "";
                 try
                 {
-                    // @Update: Make the copy atomic: if part of it fails, revert to the entire old version
-                    // Don't just leave some files of new version and some of old version in the app folder!
                     finalFileName = Path.Combine(startupPath, fileName);
                     Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
                     //if (i == files.Count - 1)
@@ -167,7 +170,7 @@ internal static class Program
                         else
                         {
                             Rollback(startupPath, oldRelativeFileNames);
-                            Application.Exit();
+                            return;
                         }
                     }
                     else
@@ -186,9 +189,18 @@ internal static class Program
             Utils.ClearUpdateBakTempPath();
         });
 
-        // @Update: Handle errors robustly
-        using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
-        Application.Exit();
+        try
+        {
+            using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(View,
+                "Unable to start AngelLoader. You'll need to start it manually.\r\n\r\n" +
+                "Exception:\r\n\r\n" +
+                ex);
+            return;
+        }
     }
 
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
@@ -205,8 +217,11 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(View, "The update failed and we tried to restore the old version, but that failed too. " +
-                                  "It's recommended to download the latest version of AngelLoader and re-install it manually.\r\n\r\nException:\r\n\r\n" + ex);
+            MessageBox.Show(View,
+                "The update failed and we tried to restore the old version, but that failed too. " +
+                "It's recommended to download the latest version of AngelLoader and re-install it manually.\r\n\r\n" +
+                "Exception:\r\n\r\n" +
+                ex);
         }
     }
 }
