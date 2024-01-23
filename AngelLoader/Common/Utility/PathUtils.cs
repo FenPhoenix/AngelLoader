@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -279,6 +280,56 @@ public static partial class Utils
         }
     }
 
+    #region Default encoding
+
+    /*
+    NewDark wants paths to be in system default (ANSI) encoding. Note that it appears to only be cam_mod.ini that
+    it wants in this encoding, either that or it just wants the paths specifically to be in this encoding.
+
+    FMSel says this:
+
+    UTF-8 USAGE
+    -----------
+    All file and directory names (including the raw FM name since that boils down to a directory) are NOT in UTF-8
+    format, they're in "raw" unconverted format to keep things simple, all other strings (nice names, tags, notes
+    etc. etc.) are in UTF-8 format
+    */
+
+    internal static bool TryReadAllLines_DefaultEncoding(string file, [NotNullWhen(true)] out List<string>? lines)
+    {
+        try
+        {
+            lines = File_ReadAllLines_List(file, Encoding.Default, true);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExRead + file, ex);
+            lines = null;
+            return false;
+        }
+    }
+
+    internal static bool TryWriteAllLines_DefaultEncoding(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception)
+    {
+        try
+        {
+            File.WriteAllLines(file, lines, Encoding.Default);
+            exception = null;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExWrite + file, ex);
+            exception = ex;
+            return false;
+        }
+    }
+
+    #endregion
+
+    #endregion
+
     internal static bool DirectoryHasWritePermission(string path)
     {
         try
@@ -301,6 +352,4 @@ public static partial class Utils
             return true;
         }
     }
-
-    #endregion
 }
