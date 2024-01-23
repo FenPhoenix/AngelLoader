@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -115,7 +116,11 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using (var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(camModIni), new StreamReaderCustom()))
+        using (var sr = new StreamReaderCustom.SRC_Wrapper(
+                   stream: File_OpenReadFast(camModIni),
+                   encoding: Encoding.Default,
+                   detectEncodingFromByteOrderMarks: true,
+                   sr: new StreamReaderCustom()))
         {
             /*
              Conforms to the way NewDark reads it:
@@ -380,13 +385,18 @@ internal static class GameConfigFiles
 
         if (gamePath.IsEmpty()) return;
 
-        Run(gamePath, Paths.CamCfg, removeAll: false);
-        Run(gamePath, Paths.CamExtCfg, removeAll: true);
-        Run(gamePath, Paths.CamModIni, removeAll: true, camModIniLines);
+        Run(gamePath, Paths.CamCfg, removeAll: false, useDefaultEncoding: false);
+        Run(gamePath, Paths.CamExtCfg, removeAll: true, useDefaultEncoding: false);
+        Run(gamePath, Paths.CamModIni, removeAll: true, useDefaultEncoding: true, camModIniLines);
 
         return;
 
-        static void Run(string gamePath, string fileName, bool removeAll, List<string>? fileLines = null)
+        static void Run(
+            string gamePath,
+            string fileName,
+            bool removeAll,
+            bool useDefaultEncoding,
+            List<string>? fileLines = null)
         {
             if (!TryCombineFilePathAndCheckExistence(gamePath, fileName, out string cfgFile))
             {
@@ -396,7 +406,10 @@ internal static class GameConfigFiles
             List<string>? lines;
             if (fileLines == null)
             {
-                if (!TryReadAllLines(cfgFile, out lines))
+                bool readSuccess = useDefaultEncoding
+                    ? TryReadAllLines_DefaultEncoding(cfgFile, out lines)
+                    : TryReadAllLines(cfgFile, out lines);
+                if (!readSuccess)
                 {
                     return;
                 }
@@ -438,7 +451,11 @@ internal static class GameConfigFiles
 
             if (!linesModified) return;
 
-            if (!TryWriteAllLines(cfgFile, lines, out _))
+            bool writeSuccess = useDefaultEncoding
+                ? TryWriteAllLines_DefaultEncoding(cfgFile, lines, out _)
+                : TryWriteAllLines(cfgFile, lines, out _);
+
+            if (!writeSuccess)
             {
                 // ReSharper disable once RedundantJumpStatement
                 return; // Explicit for clarity of intent
@@ -584,7 +601,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines(camModIni, out var lines))
+        if (!TryReadAllLines_DefaultEncoding(camModIni, out var lines))
         {
             return failNoEx;
         }
@@ -728,7 +745,7 @@ internal static class GameConfigFiles
             lines.Insert(fmCommentLineIndex + 1, fmLine);
         }
 
-        bool success = TryWriteAllLines(camModIni, lines, out Exception? ex);
+        bool success = TryWriteAllLines_DefaultEncoding(camModIni, lines, out Exception? ex);
         return (success, ex);
     }
 
