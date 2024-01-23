@@ -1192,17 +1192,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async Task DoUpdateWork()
     {
-        (bool success, List<CheckUpdates.UpdateInfo> updateInfos) = await CheckUpdates.Check2024();
-        if (success)
-        {
-            Config.UpdateInfosTempCache.ClearAndAdd_Small(updateInfos);
-            Invoke(() => Lazy_UpdateNotification.SetVisible(true));
-        }
-        else
-        {
-            Config.UpdateInfosTempCache.Clear();
-            Invoke(() => Lazy_UpdateNotification.SetVisible(false));
-        }
+        (bool success, _) = await CheckUpdates.Check2024();
+        Invoke(() => Lazy_UpdateNotification.SetVisible(success));
     }
 
     /*

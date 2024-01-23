@@ -17,7 +17,6 @@ using System.Windows.Forms;
 using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.Logger;
-using static AngelLoader.Global;
 
 namespace AngelLoader;
 
@@ -68,9 +67,6 @@ internal static class CheckUpdates
             // @Update: Put a UI-disabling progress meter or whatnot here
             //Core.Dialogs.ShowAlert("Extract done!", "Test");
 
-            Config.UpdateInfosTempCache.Clear();
-
-            // @Update: Call the update copier and exit main AL app here.
             Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
             Application.Exit();
         }
@@ -82,7 +78,7 @@ internal static class CheckUpdates
         {
             List<UpdateInfo> ret = new();
 
-            // @Update: change to web url for final
+            // @Update: Change to web url for final
 #if X64
             const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\versions.ini";
 #else

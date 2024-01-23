@@ -1,6 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 using JetBrains.Annotations;
-using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 internal sealed class Lazy_UpdateNotification : IDarkable
@@ -56,10 +56,23 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
     private async void Label_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-        // @Update: This link should not be visible if we have no update infos
-        if (Config.UpdateInfosTempCache.Count > 0)
+        try
         {
-            await CheckUpdates.ShowUpdateAskDialog(Config.UpdateInfosTempCache);
+            _owner.SetWaitCursor(true);
+            (bool success, List<CheckUpdates.UpdateInfo> updateInfos) = await CheckUpdates.Check2024();
+            if (success && updateInfos.Count > 0)
+            {
+                await CheckUpdates.ShowUpdateAskDialog(updateInfos);
+            }
+            else
+            {
+                // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
+                Core.Dialogs.ShowAlert("Update error description goes here", "Update");
+            }
+        }
+        finally
+        {
+            _owner.SetWaitCursor(false);
         }
     }
 
