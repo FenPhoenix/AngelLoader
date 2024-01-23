@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using AL_Common;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -15,6 +18,53 @@ public static partial class Utils
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
         return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
+    }
+
+    internal static void ExtractToDirectory_Fast(
+        this ZipArchive source,
+        string destinationDirectoryName,
+        IProgress<int>? progress)
+    {
+        string path1 = Directory.CreateDirectory(destinationDirectoryName).FullName;
+
+        int length = path1.Length;
+        if (length > 0 && path1[length - 1] != Path.DirectorySeparatorChar)
+        {
+            path1 += Path.DirectorySeparatorChar.ToString();
+        }
+
+        byte[] tempBuffer = new byte[StreamCopyBufferSize];
+
+        ReadOnlyCollection<ZipArchiveEntry> entries = source.Entries;
+        int entryCount = entries.Count;
+        for (int i = 0; i < entryCount; i++)
+        {
+            ZipArchiveEntry entry = entries[i];
+            string fullPath = Path.GetFullPath(Path.Combine(path1, entry.FullName));
+
+            if (!fullPath.StartsWith(path1, StringComparison.OrdinalIgnoreCase))
+            {
+                ThrowHelper.IOException(
+                    "Extracting Zip entry would have resulted in a file outside the specified destination directory.");
+            }
+
+            if (Path.GetFileName(fullPath).Length == 0)
+            {
+                if (entry.Length > 0)
+                {
+                    ThrowHelper.IOException(
+                        "Zip entry name ends in directory separator character but contains data.");
+                }
+                Directory.CreateDirectory(fullPath);
+            }
+            else
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(fullPath)!);
+                entry.ExtractToFile_Fast(fullPath, false, tempBuffer);
+            }
+
+            progress?.Report(GetPercentFromValue_Int(i + 1, entryCount));
+        }
     }
 
     internal static void ExtractToFile_Fast(

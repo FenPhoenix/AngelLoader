@@ -17,6 +17,8 @@ using System.Windows.Forms;
 using AL_Common;
 using static AL_Common.Common;
 using static AL_Common.Logger;
+using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -61,17 +63,49 @@ internal static class CheckUpdates
 
         if (accepted)
         {
-            UpdateInfo? latest = updateInfos[0];
-            using var fs = File.OpenRead(latest.DownloadUri.LocalPath);
-            using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
-            Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-            archive.ExtractToDirectory(Paths.UpdateTemp);
-            // @Update: Put a UI-disabling progress meter or whatnot here
-            //Core.Dialogs.ShowAlert("Extract done!", "Test");
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Core.View.ShowProgressBox_Single(
+                        // @Update: Localize this
+                        message1: "Downloading update...",
+                        progressType: ProgressType.Determinate
+                    );
 
-            Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
-            Application.Exit();
+                    UpdateInfo? latest = updateInfos[0];
+                    using var fs = File.OpenRead(latest.DownloadUri.LocalPath);
+                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+
+                    var progress = new Progress<int>(ReportProgress);
+
+                    archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+
+                    Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
+                }
+                catch (Exception ex)
+                {
+                    Log("Error downloading the update.", ex);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    // @Update: Localize this
+                    Core.Dialogs.ShowError("Error downloading the update.", LText.AlertMessages.Alert, MBoxIcon.Warning);
+                    return;
+                }
+                finally
+                {
+                    Core.View.HideProgressBox();
+                }
+
+                // Do this AFTER hiding the progress box, otherwise it'll throw up the "operation in progress"
+                // message and cancel the app exit.
+                Application.Exit();
+            });
         }
+
+        return;
+
+        static void ReportProgress(int percent) => Core.View.SetProgressPercent(percent);
     }
 
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> Check2024()
