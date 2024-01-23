@@ -128,7 +128,7 @@ internal static class Program
             };
 
 #if !WPF
-            System.Windows.Forms.Application.Run(new AppContext(viewEnv));
+            System.Windows.Forms.Application.Run(new AppContext(viewEnv, doUpdateCleanup: eventArgs.CommandLine.Contains("-after_update_cleanup")));
 #else
 #endif
 
@@ -150,7 +150,7 @@ internal static class Program
 #if !WPF
     private sealed class AppContext : System.Windows.Forms.ApplicationContext
     {
-        internal AppContext(IViewEnvironment viewEnv) => Core.Init(viewEnv);
+        internal AppContext(IViewEnvironment viewEnv, bool doUpdateCleanup) => Core.Init(viewEnv, doUpdateCleanup);
     }
 #else
 #endif

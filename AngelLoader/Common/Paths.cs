@@ -134,6 +134,9 @@ internal static class Paths
     private static string? _updateTemp;
     internal static string UpdateTemp => _updateTemp ??= PathCombineFast_NoChecks(_baseTemp, "Update");
 
+    private static string? _updateBakTemp;
+    internal static string UpdateBakTemp => _updateBakTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateBak");
+
     internal static void CreateOrClearTempPath(string path)
     {
         #region Safety check
@@ -206,8 +209,11 @@ internal static class Paths
 
     #endregion
 
-    private static string _updateExe;
+    private static string? _updateExe;
     internal static string UpdateExe => _updateExe ??= PathCombineFast_NoChecks(Startup, "Update.exe");
+
+    private static string? _updateExeBak;
+    internal static string UpdateExeBak => _updateExeBak ??= PathCombineFast_NoChecks(Startup, "Update.exe.bak");
 
     #region Docs
 

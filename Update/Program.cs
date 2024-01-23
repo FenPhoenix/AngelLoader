@@ -42,21 +42,24 @@ internal static class Program
             if (eventArgs.CommandLine.Count == 1 &&
                 eventArgs.CommandLine[0] == "-go")
             {
-                MainView = new MainForm();
-                Application.Run(MainView);
+                View = new MainForm();
+                Application.Run(View);
             }
             else
             {
-                MessageBox.Show("This executable is not meant to be run on its own. Please update from within AngelLoader.");
+                MessageBox.Show(
+                    "This executable is not meant to be run on its own. Please update from within AngelLoader.",
+                    "AngelLoader Updater");
             }
             return false;
         }
     }
 
-    private static MainForm MainView = null!;
+    private static MainForm View = null!;
 
     private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
     internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
+    internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
 
     internal static async Task DoCopy()
     {
@@ -92,9 +95,6 @@ internal static class Program
                 // didn't exist or whatever
             }
 
-            // @Update: Handle errors here
-            File.Move(exePath, exePath + ".bak");
-
             for (int i = 0; i < files.Count; i++)
             {
                 string fileName = Path.GetFileName(files[i]);
@@ -110,12 +110,29 @@ internal static class Program
 
             string updateDirWithTrailingDirSep = UpdateTempPath.TrimEnd('\\', '/') + "\\";
 
+            List<string> oldRelativeFileNames = new();
+
+            Directory.CreateDirectory(UpdateBakTempPath);
+            Utils.ClearUpdateBakTempPath();
+            for (int i = 0; i < files.Count; i++)
+            {
+                string file = files[i];
+                string relativeFileName = file.Substring(updateDirWithTrailingDirSep.Length);
+                oldRelativeFileNames.Add(relativeFileName);
+                string finalFileName = Path.Combine(UpdateBakTempPath, relativeFileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
+                File.Copy(Path.Combine(startupPath, relativeFileName), Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+            }
+
+            // @Update: Handle errors here
+            File.Move(exePath, exePath + ".bak");
+
             for (int i = 0; i < files.Count; i++)
             {
                 string file = files[i];
                 string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
 
-                MainView.SetMessage("Copying..." + Environment.NewLine + fileName);
+                View.SetMessage("Copying..." + Environment.NewLine + fileName);
 
                 int retryCount = 0;
                 retry:
@@ -126,13 +143,17 @@ internal static class Program
                     // Don't just leave some files of new version and some of old version in the app folder!
                     finalFileName = Path.Combine(startupPath, fileName);
                     Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
+                    //if (i == files.Count - 1)
+                    //{
+                    //    throw new Exception("TEST");
+                    //}
                     File.Copy(file, finalFileName, overwrite: true);
                 }
                 catch (Exception ex)
                 {
                     if (retryCount > 10)
                     {
-                        DialogResult result = MessageBox.Show(MainView,
+                        DialogResult result = MessageBox.Show(View,
                             "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
                             "If AngelLoader is running, close it and try again.\r\n\r\nException: " + ex,
                             "Error",
@@ -145,6 +166,7 @@ internal static class Program
                         }
                         else
                         {
+                            Rollback(startupPath, oldRelativeFileNames);
                             Application.Exit();
                         }
                     }
@@ -156,21 +178,35 @@ internal static class Program
                     }
                 }
 
-                //for (int t = 0; t < 100; t++)
-                //{
-                //    Thread.Sleep(1);
-                //    Application.DoEvents();
-                //}
-
                 int percent = Utils.GetPercentFromValue_Int(i + 1, files.Count);
-                MainView.SetProgress(percent);
+                View.SetProgress(percent);
             }
 
             Utils.ClearUpdateTempPath();
+            Utils.ClearUpdateBakTempPath();
         });
 
         // @Update: Handle errors robustly
-        using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"))) { }
+        using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
         Application.Exit();
+    }
+
+    private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
+    {
+        View.SetMessage("Could not complete copy; rolling back to old version...");
+        try
+        {
+            for (int i = 0; i < oldRelativeFileNames.Count; i++)
+            {
+                string relativeFileName = oldRelativeFileNames[i];
+                File.Copy(Path.Combine(UpdateBakTempPath, relativeFileName),
+                    Path.Combine(startupPath, relativeFileName), overwrite: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(View, "The update failed and we tried to restore the old version, but that failed too. " +
+                                  "It's recommended to download the latest version of AngelLoader and re-install it manually.\r\n\r\nException:\r\n\r\n" + ex);
+        }
     }
 }

@@ -47,11 +47,15 @@ internal static class Utils
         }
     }
 
-    internal static void ClearUpdateTempPath()
+    internal static void ClearUpdateTempPath() => ClearDir(Program.UpdateTempPath);
+
+    internal static void ClearUpdateBakTempPath() => ClearDir(Program.UpdateBakTempPath);
+
+    private static void ClearDir(string path)
     {
         try
         {
-            foreach (string f in Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.AllDirectories))
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
             {
                 new FileInfo(f).IsReadOnly = false;
             }
@@ -67,11 +71,11 @@ internal static class Utils
 
         try
         {
-            foreach (string f in Directory.GetFiles(Program.UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly))
             {
                 File.Delete(f);
             }
-            foreach (string d in Directory.GetDirectories(Program.UpdateTempPath, "*", SearchOption.TopDirectoryOnly))
+            foreach (string d in Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly))
             {
                 Directory.Delete(d, recursive: true);
             }

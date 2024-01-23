@@ -68,7 +68,7 @@ internal static class Core
     internal static System.Threading.Thread CoreThread = null!;
 #endif
 
-    internal static async void Init(IViewEnvironment viewEnv)
+    internal static async void Init(IViewEnvironment viewEnv, bool doUpdateCleanup)
     {
 #if RT_HeavyTests
         CoreThread = System.Threading.Thread.CurrentThread;
@@ -205,6 +205,28 @@ internal static class Core
         splashScreen.Show(Config.VisualTheme);
 
         _configReadARE.WaitOne();
+
+        if (doUpdateCleanup)
+        {
+            await Task.Run(static () =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        File.Delete(Paths.UpdateExeBak);
+                        break;
+                    }
+                    catch
+                    {
+                        // didn't exist or whatever
+                    }
+                    Thread.Sleep(100);
+                }
+                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                Paths.CreateOrClearTempPath(Paths.UpdateBakTemp);
+            });
+        }
 
         #region Read languages
 
