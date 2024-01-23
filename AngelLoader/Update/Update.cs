@@ -46,6 +46,8 @@ internal static class CheckUpdates
 
     internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
     {
+        if (updateInfos.Count == 0) return;
+
         // @Update: Test with multiple versions/changelogs
         string changelogFullText = "";
         for (int i = 0; i < updateInfos.Count; i++)
