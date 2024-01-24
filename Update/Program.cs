@@ -56,10 +56,16 @@ internal static class Program
     internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
     internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
 
+    // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
     internal static async Task DoCopy()
     {
+#if false
+        string startupPath = @"C:\AngelLoader";
+        string exePath = @"C:\AngelLoader\Update.exe";
+#else
         string startupPath = Application.StartupPath;
         string exePath = Application.ExecutablePath;
+#endif
 
         await Utils.WaitForAngelLoaderToClose();
 
@@ -113,10 +119,17 @@ internal static class Program
             {
                 string file = files[i];
                 string relativeFileName = file.Substring(updateDirWithTrailingDirSep.Length);
-                oldRelativeFileNames.Add(relativeFileName);
-                string finalFileName = Path.Combine(UpdateBakTempPath, relativeFileName);
-                Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
-                File.Copy(Path.Combine(startupPath, relativeFileName), Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+
+                string appFileName = Path.Combine(startupPath, relativeFileName);
+
+                if (File.Exists(appFileName))
+                {
+                    string finalBakFileName = Path.Combine(UpdateBakTempPath, relativeFileName);
+                    Directory.CreateDirectory(Path.GetDirectoryName(finalBakFileName)!);
+                    File.Copy(appFileName, Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+
+                    oldRelativeFileNames.Add(relativeFileName);
+                }
             }
 
             try
