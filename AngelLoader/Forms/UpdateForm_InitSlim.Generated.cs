@@ -58,6 +58,7 @@ sealed partial class UpdateForm
         this.ClientSize = new System.Drawing.Size(800, 444);
         this.Controls.Add(this.ReleaseNotesTextBox);
         this.Controls.Add(this.BottomButtonsFLP);
+        this.MinimizeBox = false;
         this.MinimumSize = new System.Drawing.Size(300, 200);
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         // Hack to prevent slow first render on some forms if Text is blank
