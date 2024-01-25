@@ -165,15 +165,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
-        #region Instantiate pages
-
-        PathsPage = new PathsPage { Visible = false };
-        AppearancePage = new AppearancePage { Visible = false };
-        OtherPage = new OtherPage { Visible = false };
-        ThiefBuddyPage = new ThiefBuddyPage { Visible = false };
-        UpdatePage = new UpdatePage { Visible = false };
-
-        #endregion
+        // IMPORTANT: Settings page controls: Don't reorder
+        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
+        {
+            (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
+            (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
+            (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
+            (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
+            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false })
+        };
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -270,16 +270,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // @GENGAMES (Settings): End
 
         #endregion
-
-        // IMPORTANT: Settings page controls: Don't reorder
-        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
-        {
-            (PathsRadioButton, PathsPage),
-            (AppearanceRadioButton, AppearancePage),
-            (OtherRadioButton, OtherPage),
-            (ThiefBuddyRadioButton, ThiefBuddyPage),
-            (UpdateRadioButton, UpdatePage)
-        };
 
         AssertR(PageControls.Length == SettingsTabCount, "Page control count doesn't match " + nameof(SettingsTabCount));
         AssertR(HelpSections.SettingsPages.Length == SettingsTabCount,
