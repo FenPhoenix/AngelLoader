@@ -366,7 +366,8 @@ internal enum SettingsTab
     Paths,
     Appearance,
     Other,
-    ThiefBuddy
+    ThiefBuddy,
+    Update
 }
 
 /*

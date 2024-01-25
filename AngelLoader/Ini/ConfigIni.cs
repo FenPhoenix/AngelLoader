@@ -92,6 +92,14 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_SettingsUpdateVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.SetSettingsTabVScrollPos(SettingsTab.Update, result);
+        }
+    }
+
     #endregion
 
     private static void Config_LaunchGamesWithSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -812,6 +820,7 @@ internal static partial class Ini
         { "SettingsAppearanceVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
         { "SettingsOtherVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
         { "SettingsThiefBuddyVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
+        { "SettingsUpdateVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsUpdateVScrollPos_Set) },
 
         #endregion
 
@@ -1156,6 +1165,7 @@ internal static partial class Ini
         sb.Append("SettingsAppearanceVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Appearance)).AppendLine();
         sb.Append("SettingsOtherVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Other)).AppendLine();
         sb.Append("SettingsThiefBuddyVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy)).AppendLine();
+        sb.Append("SettingsUpdateVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Update)).AppendLine();
 
         #endregion
 

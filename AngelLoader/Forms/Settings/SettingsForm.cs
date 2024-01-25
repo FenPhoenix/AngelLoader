@@ -85,6 +85,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly AppearancePage AppearancePage;
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
+    private readonly UpdatePage UpdatePage;
 
     private enum PathError { True, False }
 
@@ -170,6 +171,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         AppearancePage = new AppearancePage { Visible = false };
         OtherPage = new OtherPage { Visible = false };
         ThiefBuddyPage = new ThiefBuddyPage { Visible = false };
+        UpdatePage = new UpdatePage { Visible = false };
 
         #endregion
 
@@ -275,7 +277,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (PathsRadioButton, PathsPage),
             (AppearanceRadioButton, AppearancePage),
             (OtherRadioButton, OtherPage),
-            (ThiefBuddyRadioButton, ThiefBuddyPage)
+            (ThiefBuddyRadioButton, ThiefBuddyPage),
+            (UpdateRadioButton, UpdatePage)
         };
 
         AssertR(PageControls.Length == SettingsTabCount, "Page control count doesn't match " + nameof(SettingsTabCount));
@@ -658,6 +661,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             UpdateThiefBuddyExistenceOnUI();
 
             #endregion
+
+            #region Update page
+
+            UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked = config.CheckForUpdates == CheckForUpdates.True;
+
+            #endregion
         }
 
         #endregion
@@ -1005,6 +1014,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 ThiefBuddyPage.GetTBLinkLabel.Text = LText.SettingsWindow.ThiefBuddy_Get;
 
                 #endregion
+
+                #region Update
+
+                UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
+                UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
+                UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
+
+                #endregion
             }
         }
         finally
@@ -1324,6 +1341,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
                 ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
                 RunThiefBuddyOnFMPlay.Ask;
+
+            #endregion
+
+            #region Update page
+
+            OutConfig.CheckForUpdates = UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked
+                ? CheckForUpdates.True
+                : CheckForUpdates.False;
 
             #endregion
         }

@@ -835,6 +835,10 @@ internal sealed class LText_Class
         internal readonly string ThiefBuddy_RunNever = "Never";
         internal readonly string ThiefBuddy_Help = "Thief Buddy, by VoiceActor, is a tool that allows you to make and restore multiple quicksaves.";
         internal readonly string ThiefBuddy_Get = "Get Thief Buddy";
+        [FenGenBlankLine]
+        internal readonly string Update_TabText = "Update";
+        internal readonly string Update_UpdateOptions = "Update options";
+        internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
     }
 
     internal sealed class DateFilterBox_Class

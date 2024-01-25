@@ -582,8 +582,6 @@ internal static class Core
         Config.SteamExe = outConfig.SteamExe;
         Config.LaunchGamesWithSteam = outConfig.LaunchGamesWithSteam;
 
-        Config.RunThiefBuddyOnFMPlay = outConfig.RunThiefBuddyOnFMPlay;
-
         Config.FMsBackupPath = outConfig.FMsBackupPath;
 
         Config.FMArchivePaths.ClearAndAdd_Small(outConfig.FMArchivePaths);
@@ -669,6 +667,18 @@ internal static class Core
         Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
 
         Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
+
+        #endregion
+
+        #region Thief Buddy page
+
+        Config.RunThiefBuddyOnFMPlay = outConfig.RunThiefBuddyOnFMPlay;
+
+        #endregion
+
+        #region Update page
+
+        Config.CheckForUpdates = outConfig.CheckForUpdates;
 
         #endregion
 
