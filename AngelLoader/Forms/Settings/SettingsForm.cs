@@ -27,7 +27,6 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.SettingsWindowData;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
@@ -166,7 +165,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         OutConfig = new ConfigData();
 
         // IMPORTANT: Settings page controls: Don't reorder
-        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
+#pragma warning disable IDE0300 // Simplify collection initialization
+        // ReSharper disable once RedundantExplicitArraySize
+        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[SettingsTabCount]
         {
             (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
             (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
@@ -174,6 +175,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false })
         };
+#pragma warning restore IDE0300 // Simplify collection initialization
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -270,11 +272,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // @GENGAMES (Settings): End
 
         #endregion
-
-        AssertR(PageControls.Length == SettingsTabCount, "Page control count doesn't match " + nameof(SettingsTabCount));
-        AssertR(HelpSections.SettingsPages.Length == SettingsTabCount,
-            nameof(HelpSections) + "." + nameof(HelpSections.SettingsPages) + " doesn't match " +
-            nameof(SettingsTabCount));
 
         // These are nullable because null values get put INTO them later. So not a mistake to fill them with
         // non-nullable ints right off the bat.
