@@ -57,6 +57,7 @@ internal static class Program
     internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
 
     // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
+    // @Update: Do we want to read the language inis for this app?
     internal static async Task DoCopy()
     {
 #if false
@@ -75,15 +76,27 @@ internal static class Program
             try
             {
                 files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
-                if (files.Count == 0) return;
+                if (files.Count == 0)
+                {
+                    MessageBox.Show(View,
+                        "Update failed: No files in '" + UpdateTempPath + "'.\r\n\r\n");
+                    return;
+                }
             }
-            catch (DirectoryNotFoundException)
+            catch (DirectoryNotFoundException ex)
             {
+                MessageBox.Show(View,
+                    "Update failed: Update temp directory not found: '" + UpdateTempPath + "'.\r\n\r\n" +
+                    "Exception:\r\n\r\n" +
+                    ex);
                 return;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // @Update: Handle other exception cases here
+                MessageBox.Show(View,
+                    "Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.\r\n\r\n" +
+                    "Exception:\r\n\r\n" +
+                    ex);
                 return;
             }
 
