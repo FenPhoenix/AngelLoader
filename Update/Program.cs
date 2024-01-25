@@ -113,8 +113,20 @@ internal static class Program
 
             List<string> oldRelativeFileNames = new();
 
-            Directory.CreateDirectory(UpdateBakTempPath);
+            try
+            {
+                Directory.CreateDirectory(UpdateBakTempPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(View,
+                    "Update failed: Unable to create '" + UpdateBakTempPath + "'.\r\n\r\n" +
+                    "Exception:\r\n\r\n" +
+                    ex);
+                return;
+            }
             Utils.ClearUpdateBakTempPath();
+
             for (int i = 0; i < files.Count; i++)
             {
                 string file = files[i];
@@ -125,8 +137,21 @@ internal static class Program
                 if (File.Exists(appFileName))
                 {
                     string finalBakFileName = Path.Combine(UpdateBakTempPath, relativeFileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(finalBakFileName)!);
-                    File.Copy(appFileName, Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+
+                    try
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(finalBakFileName)!);
+                        File.Copy(appFileName, Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(View,
+                            "Update failed: Unable to complete backup of current app files.\r\n\r\n" +
+                            "Exception:\r\n\r\n" +
+                            ex);
+                        Utils.ClearUpdateBakTempPath();
+                        return;
+                    }
 
                     oldRelativeFileNames.Add(relativeFileName);
                 }
