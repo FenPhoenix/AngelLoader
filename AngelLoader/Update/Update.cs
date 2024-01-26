@@ -112,7 +112,7 @@ internal static class CheckUpdates
     @Update: Web data minimization:
     The update check can (may/probably will) happen every startup for many many different users, and we'll be
     hitting a github pages site, so cut the data transfer down to the absolute bare minimum: just the latest
-    version, 5-8 bytes or so. The actual update will be a much less frequent occurence, so we can afford to
+    version, 5-8 bytes or so. The actual update will be a much less frequent occurrence, so we can afford to
     download more data there.
     */
     internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static () =>
@@ -131,17 +131,14 @@ internal static class CheckUpdates
 
             using Stream versionFileStream = File.OpenRead(latestVersionFile);
             using var sr = new StreamReader(versionFileStream);
-            while (sr.ReadLine() is { } line)
-            {
-                return Version.TryParse(line.Trim(), out Version version) && version > appVersion;
-            }
+            return sr.ReadLine() is { } line &&
+                   Version.TryParse(line.Trim(), out Version version) &&
+                   version > appVersion;
         }
         catch
         {
             return false;
         }
-
-        return false;
     });
 
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
