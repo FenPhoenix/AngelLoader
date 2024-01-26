@@ -114,6 +114,12 @@ internal static class CheckUpdates
     hitting a github pages site, so cut the data transfer down to the absolute bare minimum: just the latest
     version, 5-8 bytes or so. The actual update will be a much less frequent occurrence, so we can afford to
     download more data there.
+
+    @Update(url dilemma):
+    We could pull a trick and check like fenphoenix.com/angelloader_update first, which doesn't exist currently,
+    and then if we fail we fall back to github pages. That way I can switch to my own site any time and as long
+    as I put the stuff at the url AL is expecting, all update-supporting versions will automatically switch to it
+    too.
     */
     internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static () =>
     {
