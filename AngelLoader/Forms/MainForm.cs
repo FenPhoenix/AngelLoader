@@ -1190,10 +1190,22 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    // @Update: Add manual update check to the main menu
     private async Task DoUpdateWork()
     {
-        (bool success, _) = await CheckUpdates.Check2024();
-        Invoke(() => Lazy_UpdateNotification.SetVisible(success));
+        // @Update: Maybe add cancellation for this task just for extra robustness - we'll cancel on form close
+        bool updateAvailable = await CheckUpdates.CheckIfUpdateAvailable();
+        if (!AboutToClose)
+        {
+            try
+            {
+                Invoke(() => Lazy_UpdateNotification.SetVisible(updateAvailable));
+            }
+            catch
+            {
+                // We're closing or already closed or whatever
+            }
+        }
     }
 
     /*

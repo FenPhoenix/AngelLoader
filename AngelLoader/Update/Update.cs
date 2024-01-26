@@ -108,8 +108,45 @@ internal static class CheckUpdates
         static void ReportProgress(int percent) => Core.View.SetProgressPercent(percent);
     }
 
-    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> Check2024()
+    /*
+    @Update: Web data minimization:
+    The update check can (may/probably will) happen every startup for many many different users, and we'll be
+    hitting a github pages site, so cut the data transfer down to the absolute bare minimum: just the latest
+    version, 5-8 bytes or so. The actual update will be a much less frequent occurence, so we can afford to
+    download more data there.
+    */
+    internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static () =>
     {
+        try
+        {
+            // @Update: Change to web url for final
+            // @Update: Updating the latest version file is the very last thing that should be done by the release packager
+            // We want everything in place when the app finds a new version defined there.
+            const string latestVersionFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\latest_version.txt";
+
+            if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
+            {
+                return false;
+            }
+
+            using Stream versionFileStream = File.OpenRead(latestVersionFile);
+            using var sr = new StreamReader(versionFileStream);
+            while (sr.ReadLine() is { } line)
+            {
+                return Version.TryParse(line.Trim(), out Version version) && version > appVersion;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
+    });
+
+    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
+    {
+        // @Update: We need try-catches here to handle errors
         return await Task.Run(static () =>
         {
             List<UpdateInfo> ret = new();

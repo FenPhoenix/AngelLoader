@@ -61,7 +61,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         try
         {
             _owner.SetWaitCursor(true);
-            (success, updateInfos) = await CheckUpdates.Check2024();
+            (success, updateInfos) = await CheckUpdates.GetUpdateDetails();
         }
         finally
         {
