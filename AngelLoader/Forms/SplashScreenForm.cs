@@ -84,23 +84,9 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         _foreColorCached = ForeColor;
         _backColorCached = BackColor;
 
-        try
-        {
-            // Prevent double-calling of DrawMain()!
-            _lockPainting = true;
+        Program.PreloadState.SplashScreenPreloadTask.Wait();
 
-            Program.PreloadState.SplashScreenPreloadTask.Wait();
-
-            base.Show();
-
-            // Must draw these after Show(), or they don't show up.
-            // These will stay visible for the life of the form, due to our setup.
-            DrawMain();
-        }
-        finally
-        {
-            _lockPainting = false;
-        }
+        base.Show();
     }
 
     private void DrawMain()
@@ -168,26 +154,19 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         ControlUtils.DrawCheckMark(_graphicsContext.G, checkMarkPen, outlineBoxRect);
     }
 
-    private bool _lockPainting;
-    public void LockPainting(bool enabled) => _lockPainting = enabled;
-
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg
-            is Native.WM_PAINT
-            or Native.WM_NCPAINT
-            or Native.WM_ERASEBKGND
-            or Native.WM_SETREDRAW
-           )
+        if (m.Msg == Native.WM_WINDOWPOSCHANGED && VisibleCached)
         {
-            // If a message box pops up over us, we're going to get a paint event and we'll lose everything
-            // we've painted. If we block the event, we won't lose what we've painted, but the message box
-            // will be invisible. So just redraw if we get a paint event, but allow it to be "locked" (disabled)
-            // during the threaded-access portion of the code for safety.
-            if (!_lockPainting)
+            try
             {
+                // This counts as our initial call after Show(), and also further ones to fix the situation where
+                // the update copier starts us and then we lose our graphics for some inane reason.
                 DrawMain();
-                DrawMessage();
+            }
+            catch
+            {
+                // Something went wrong, whatever, let's at least not crash
             }
         }
 

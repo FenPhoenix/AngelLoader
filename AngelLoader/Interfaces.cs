@@ -24,7 +24,6 @@ public interface ISplashScreen
     void Show(VisualTheme theme);
     void Hide();
     void Dispose();
-    void LockPainting(bool enabled);
 }
 
 // The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another

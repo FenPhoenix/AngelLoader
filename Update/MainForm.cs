@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Forms;
 
 namespace Update;
@@ -45,6 +47,11 @@ public sealed partial class MainForm : DarkFormBase
         await Program.DoCopy();
         if (!Program._testMode)
         {
+            Application.Exit();
+        }
+        else
+        {
+            using (Process.Start(Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
             Application.Exit();
         }
     }

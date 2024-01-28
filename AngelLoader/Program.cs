@@ -20,7 +20,6 @@ internal sealed class PreloadState
 
     internal readonly Task SplashScreenPreloadTask;
 
-    // @Update: On AL start after update copier is done, sometimes the images don't show on the splash screen
     internal PreloadState()
     {
         SplashScreenPreloadTask = Task.Run(() =>

@@ -331,67 +331,59 @@ internal static class Core
             // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this
             // still works, so keeping it.
             splashScreen.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
-            try
+
+#if RT_HeavyTests
+#pragma warning disable IDE0002
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            Global.ThreadLocked = true;
+#pragma warning restore IDE0002
+#endif
+
+            Exception? ex = null;
+            // IMPORTANT: Begin no-splash-screen-call zone
+            // The FM finder will update the splash screen from another thread (accessing only the graphics
+            // context, so no cross-thread Control access exceptions), so any calls in here are potential
+            // race conditions.
+            using Task findFMsTask = Task.Run(() =>
             {
-                splashScreen.LockPainting(true);
-
-#if RT_HeavyTests
-#pragma warning disable IDE0002
-                // ReSharper disable once ArrangeStaticMemberQualifier
-                Global.ThreadLocked = true;
-#pragma warning restore IDE0002
-#endif
-
-                Exception? ex = null;
-                // IMPORTANT: Begin no-splash-screen-call zone
-                // The FM finder will update the splash screen from another thread (accessing only the graphics
-                // context, so no cross-thread Control access exceptions), so any calls in here are potential
-                // race conditions.
-                using Task findFMsTask = Task.Run(() =>
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    for (int i = 0; i < SupportedGameCount; i++)
+                    List<string>? camModIniLines = perGameCamModIniLines[i];
+                    if (camModIniLines != null)
                     {
-                        List<string>? camModIniLines = perGameCamModIniLines[i];
-                        if (camModIniLines != null)
-                        {
-                            GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
-                        }
+                        GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
                     }
-                    (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
-                    if (ex == null)
-                    {
-                        ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
-                    }
-
-                    TDM.UpdateTDMDataFromDisk(refresh: false);
-                });
-
-                // Construct and init the view right here, because it's a heavy operation and we want it to run
-                // in parallel with Find() to the greatest extent possible.
-                View = ViewEnv.GetView();
-
-                findFMsTask.Wait();
-
-#if RT_HeavyTests
-#pragma warning disable IDE0002
-                // ReSharper disable once ArrangeStaticMemberQualifier
-                Global.ThreadLocked = false;
-#pragma warning restore IDE0002
-#endif
-
-                // IMPORTANT: End no-splash-screen-call zone
-
-                if (ex != null)
-                {
-                    splashScreen.Hide();
-                    Log(ErrorText.ExRead + Paths.FMDataIni, ex);
-                    Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
-                    EnvironmentExitDoShutdownTasks(1);
                 }
-            }
-            finally
+                (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                if (ex == null)
+                {
+                    ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                }
+
+                TDM.UpdateTDMDataFromDisk(refresh: false);
+            });
+
+            // Construct and init the view right here, because it's a heavy operation and we want it to run
+            // in parallel with Find() to the greatest extent possible.
+            View = ViewEnv.GetView();
+
+            findFMsTask.Wait();
+
+#if RT_HeavyTests
+#pragma warning disable IDE0002
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            Global.ThreadLocked = false;
+#pragma warning restore IDE0002
+#endif
+
+            // IMPORTANT: End no-splash-screen-call zone
+
+            if (ex != null)
             {
-                splashScreen.LockPainting(false);
+                splashScreen.Hide();
+                Log(ErrorText.ExRead + Paths.FMDataIni, ex);
+                Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
+                EnvironmentExitDoShutdownTasks(1);
             }
 
             return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen, askForImport);
