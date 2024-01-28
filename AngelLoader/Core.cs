@@ -225,6 +225,7 @@ internal static class Core
                 }
                 Paths.CreateOrClearTempPath(Paths.UpdateTemp);
                 Paths.CreateOrClearTempPath(Paths.UpdateBakTemp);
+                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
             });
         }
 

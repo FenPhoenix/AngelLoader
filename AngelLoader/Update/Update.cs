@@ -46,6 +46,12 @@ internal static class CheckUpdates
         }
     }
 
+#if X64
+    private const string _bitnessDir = "framework_x64";
+#else
+    private const string _bitnessDir = "framework_x86";
+#endif
+
     internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
     {
         if (updateInfos.Count == 0) return;
@@ -63,10 +69,11 @@ internal static class CheckUpdates
 
         if (accepted)
         {
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 try
                 {
+                    // @Update: Make progress show for the archive download, and then have another one for the extract
                     Core.View.ShowProgressBox_Single(
                         // @Update: Localize this
                         message1: "Downloading update...",
@@ -74,7 +81,27 @@ internal static class CheckUpdates
                     );
 
                     UpdateInfo? latest = updateInfos[0];
-                    using var fs = File.OpenRead(latest.DownloadUri.LocalPath);
+
+                    // @Update: Implement cancellation token
+                    using var request = await GlobalHttpClient.GetAsync(latest.DownloadUri, CancellationToken.None);
+
+                    if (!request.IsSuccessStatusCode) return;
+
+                    // Just download the file once, so we know we won't read duplicate data or whatever
+
+                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+
+                    string localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
+                        Path.GetFileName(latest.DownloadUri.OriginalString));
+
+                    Stream zipStream = await request.Content.ReadAsStreamAsync();
+                    using (var zipLocalStream = File.Create(localZipFile))
+                    {
+                        // @Update: Implement cancellation token
+                        await zipStream.CopyToAsync(zipLocalStream, FileStreamBufferSize, CancellationToken.None);
+                    }
+
+                    using var fs = File.OpenRead(localZipFile);
                     using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
 
@@ -94,12 +121,15 @@ internal static class CheckUpdates
                 }
                 finally
                 {
+                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
                     Core.View.HideProgressBox();
                 }
 
                 // Do this AFTER hiding the progress box, otherwise it'll throw up the "operation in progress"
                 // message and cancel the app exit.
-                Application.Exit();
+                // MUST invoke, because otherwise the view's event handlers may/will be called on a thread, and
+                // then everything explodes due to cross-thread control access!
+                Core.View.Invoke(static () => Application.Exit());
             });
         }
 
@@ -121,24 +151,31 @@ internal static class CheckUpdates
     as I put the stuff at the url AL is expecting, all update-supporting versions will automatically switch to it
     too.
     */
-    internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static () =>
+    internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static async () =>
     {
         try
         {
             // @Update: Change to web url for final
             // @Update: Updating the latest version file is the very last thing that should be done by the release packager
             // We want everything in place when the app finds a new version defined there.
-            const string latestVersionFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\latest_version.txt";
+
+            // @Update: Switch to production folder (not testing one) for final
+            const string latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/updates_testing/" + _bitnessDir + "/latest_version.txt";
 
             if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
             {
                 return false;
             }
 
-            using Stream versionFileStream = File.OpenRead(latestVersionFile);
-            using var sr = new StreamReader(versionFileStream);
-            return sr.ReadLine() is { } line &&
-                   Version.TryParse(line.Trim(), out Version version) &&
+            // @Update: Implement cancellation token
+            using var request = await GlobalHttpClient.GetAsync(latestVersionFile, CancellationToken.None);
+
+            if (!request.IsSuccessStatusCode) return false;
+
+            string versionString = await request.Content.ReadAsStringAsync();
+
+            return !versionString.IsEmpty() &&
+                   Version.TryParse(versionString, out Version version) &&
                    version > appVersion;
         }
         catch
@@ -150,16 +187,12 @@ internal static class CheckUpdates
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
     {
         // @Update: We need try-catches here to handle errors
-        return await Task.Run(static () =>
+        return await Task.Run(static async () =>
         {
             List<UpdateInfo> ret = new();
 
             // @Update: Change to web url for final
-#if X64
-            const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x64\versions.ini";
-#else
-            const string versionsFile = @"G:\AngelLoader_Public_Zips\update_local\framework_x86\versions.ini";
-#endif
+            const string versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/updates_testing/" + _bitnessDir + "/versions.ini";
 
             List<UpdateFile> versions = new();
 
@@ -170,14 +203,18 @@ internal static class CheckUpdates
 
             // @Update: Remove all Trace calls for final
             Trace.WriteLine(versionsFile);
-            //var uri = new Uri(versionsFile);
-            //using Stream latestVersionStream = await GlobalHttpClient.GetStreamAsync(uri);
             UpdateFile? updateFile = null;
 
-            using Stream versionFileStream = File.OpenRead(versionsFile);
+            // @Update: Implement cancellation token
+            using var request = await GlobalHttpClient.GetAsync(versionsFile, CancellationToken.None);
+
+            if (!request.IsSuccessStatusCode) return (false, ret);
+
+            Stream versionFileStream = await request.Content.ReadAsStreamAsync();
+
             using (var sr = new StreamReader(versionFileStream))
             {
-                while (sr.ReadLine() is { } line)
+                while (await sr.ReadLineAsync() is { } line)
                 {
                     string lineT = line.Trim();
 
@@ -218,10 +255,27 @@ internal static class CheckUpdates
 
                 if (changelogUri != null && downloadUri != null)
                 {
-                    ret.Add(new UpdateInfo(
-                        item.Version!,
-                        File.ReadAllText(changelogUri.LocalPath).Trim(),
-                        downloadUri));
+                    // @Update: Handle errors
+                    // @Update: Implement cancellation token
+                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, CancellationToken.None);
+
+                    // Quick-n-dirty way to normalize linebreaks, because they'll normally be Unix-style on GitHub
+                    using Stream changelogStream = await changelogRequest.Content.ReadAsStreamAsync();
+                    using var sr = new StreamReader(changelogStream);
+                    List<string> lines = new();
+                    while (await sr.ReadLineAsync() is { } line)
+                    {
+                        lines.Add(line);
+                    }
+                    string changelogText = string.Join(Environment.NewLine, lines.ToArray());
+
+                    if (request.IsSuccessStatusCode)
+                    {
+                        ret.Add(new UpdateInfo(
+                            item.Version!,
+                            changelogText,
+                            downloadUri));
+                    }
                 }
             }
 

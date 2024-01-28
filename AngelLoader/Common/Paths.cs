@@ -137,6 +137,9 @@ internal static class Paths
     private static string? _updateBakTemp;
     internal static string UpdateBakTemp => _updateBakTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateBak");
 
+    private static string? _updateAppDownloadTemp;
+    internal static string UpdateAppDownloadTemp => _updateAppDownloadTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateDL");
+
     internal static void CreateOrClearTempPath(string path)
     {
         #region Safety check
