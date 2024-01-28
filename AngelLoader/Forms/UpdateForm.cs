@@ -28,5 +28,6 @@ public sealed partial class UpdateForm : DarkFormBase
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
+    // @Update: Should we make this a RichTextBox so we can show bold/italic and zoom text and stuff?
     public void SetReleaseNotes(string releaseNotes) => ReleaseNotesTextBox.Text = releaseNotes;
 }
