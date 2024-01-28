@@ -265,14 +265,12 @@ internal static class CheckUpdates
                     using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, CancellationToken.None);
 
                     // Quick-n-dirty way to normalize linebreaks, because they'll normally be Unix-style on GitHub
-                    using Stream changelogStream = await changelogRequest.Content.ReadAsStreamAsync();
-                    using var sr = new StreamReader(changelogStream);
-                    List<string> lines = new();
-                    while (await sr.ReadLineAsync() is { } line)
+                    string changelogText = await changelogRequest.Content.ReadAsStringAsync();
+                    if (!changelogText.Contains('\r'))
                     {
-                        lines.Add(line);
+                        changelogText = changelogText.Replace("\n", "\r\n");
                     }
-                    string changelogText = string.Join(Environment.NewLine, lines.ToArray());
+                    changelogText = changelogText.Trim();
 
                     if (request.IsSuccessStatusCode)
                     {
