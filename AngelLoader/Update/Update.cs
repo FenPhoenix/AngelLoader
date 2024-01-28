@@ -1,4 +1,7 @@
-﻿#define CHECK_UPDATES
+﻿// @Update: Un-define this for final
+#define TESTING
+
+#define CHECK_UPDATES
 
 #if CHECK_UPDATES
 using System;
@@ -46,11 +49,20 @@ internal static class CheckUpdates
         }
     }
 
-#if X64
-    private const string _bitnessDir = "framework_x64";
+#if TESTING
+    private const string _updatesRepoDir = "updates_testing";
 #else
-    private const string _bitnessDir = "framework_x86";
+    private const string _updatesRepoDir = "updates";
 #endif
+
+#if X64
+    private const string _bitnessRepoDir = "framework_x64";
+#else
+    private const string _bitnessRepoDir = "framework_x86";
+#endif
+
+    private const string _latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/latest_version.txt";
+    private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
 
     internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
     {
@@ -155,12 +167,8 @@ internal static class CheckUpdates
     {
         try
         {
-            // @Update: Change to web url for final
             // @Update: Updating the latest version file is the very last thing that should be done by the release packager
             // We want everything in place when the app finds a new version defined there.
-
-            // @Update: Switch to production folder (not testing one) for final
-            const string latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/updates_testing/" + _bitnessDir + "/latest_version.txt";
 
             if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
             {
@@ -168,7 +176,7 @@ internal static class CheckUpdates
             }
 
             // @Update: Implement cancellation token
-            using var request = await GlobalHttpClient.GetAsync(latestVersionFile, CancellationToken.None);
+            using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, CancellationToken.None);
 
             if (!request.IsSuccessStatusCode) return false;
 
@@ -191,9 +199,6 @@ internal static class CheckUpdates
         {
             List<UpdateInfo> ret = new();
 
-            // @Update: Change to web url for final
-            const string versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/updates_testing/" + _bitnessDir + "/versions.ini";
-
             List<UpdateFile> versions = new();
 
             if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
@@ -202,11 +207,11 @@ internal static class CheckUpdates
             }
 
             // @Update: Remove all Trace calls for final
-            Trace.WriteLine(versionsFile);
+            Trace.WriteLine(_versionsFile);
             UpdateFile? updateFile = null;
 
             // @Update: Implement cancellation token
-            using var request = await GlobalHttpClient.GetAsync(versionsFile, CancellationToken.None);
+            using var request = await GlobalHttpClient.GetAsync(_versionsFile, CancellationToken.None);
 
             if (!request.IsSuccessStatusCode) return (false, ret);
 
@@ -282,6 +287,9 @@ internal static class CheckUpdates
             return (ret.Count > 0, ret);
         });
     }
+
+    // @Update: Get rid of this old code when we're done
+    #region Old
 
     private static CancellationTokenSource CheckForUpdatesCTS = new();
 
@@ -496,5 +504,7 @@ internal static class CheckUpdates
 
         return (true, ret);
     }
+
+    #endregion
 }
 #endif
