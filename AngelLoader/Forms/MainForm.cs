@@ -1779,6 +1779,16 @@ public sealed partial class MainForm : DarkFormBase,
 
         AboutToClose = true;
 
+        /*
+        @Update(Update task stops and keeps app open forever when we close the app while it's running)
+        Answers say you should "have the task shut itself down cleanly" but of course I already AM doing that but
+        it still doesn't. Even if I put an AutoResetEvent and wait for it and every damn thing I can think of.
+        Apparently you can set a thread to "Foreground" and then it will close with the app, but thread pool
+        threads are all "Background" and Task uses the thread pool. So we need to use a raw thread I guess.
+        If it can even be used without creating the entire empire state building's worth of custom code to
+        duplicate a Task except with the stupid threads as Foreground. Argh.
+        */
+
         Application.RemoveMessageFilter(this);
 
         UpdateConfig();
