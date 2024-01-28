@@ -159,41 +159,56 @@ internal static class CheckUpdates
     hitting a github pages site, so cut the data transfer down to the absolute bare minimum: just the latest
     version, 5-8 bytes or so. The actual update will be a much less frequent occurrence, so we can afford to
     download more data there.
-
-    @Update(url dilemma):
-    We could pull a trick and check like fenphoenix.com/angelloader_update first, which doesn't exist currently,
-    and then if we fail we fall back to github pages. That way I can switch to my own site any time and as long
-    as I put the stuff at the url AL is expecting, all update-supporting versions will automatically switch to it
-    too.
     */
-    internal static async Task<bool> CheckIfUpdateAvailable() => await Task.Run(static async () =>
+
+    // We need to use a thread because we need to set it to "foreground" so it will be killed on app close.
+    // Otherwise, we get the main window closing but the task keeping the app open forever, because tasks use
+    // thread pool threads which are all background...
+    internal static void StartCheckIfUpdateAvailableThread()
     {
+        // ReSharper disable once AsyncVoidLambda
+        var thread = new Thread(static async () =>
+        {
+            try
+            {
+                // @Update: Updating the latest version file is the very last thing that should be done by the release packager
+                // We want everything in place when the app finds a new version defined there.
+
+                if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
+                {
+                    return;
+                }
+
+                // @Update: Implement cancellation token
+                using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, CancellationToken.None);
+
+                if (!request.IsSuccessStatusCode) return;
+
+                string versionString = await request.Content.ReadAsStringAsync();
+
+                if (!versionString.IsEmpty() &&
+                    Version.TryParse(versionString, out Version version) &&
+                    version > appVersion)
+                {
+                    Core.View.Invoke(static () => Core.View.ShowUpdateNotification());
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        });
+
         try
         {
-            // @Update: Updating the latest version file is the very last thing that should be done by the release packager
-            // We want everything in place when the app finds a new version defined there.
-
-            if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
-            {
-                return false;
-            }
-
-            // @Update: Implement cancellation token
-            using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, CancellationToken.None);
-
-            if (!request.IsSuccessStatusCode) return false;
-
-            string versionString = await request.Content.ReadAsStringAsync();
-
-            return !versionString.IsEmpty() &&
-                   Version.TryParse(versionString, out Version version) &&
-                   version > appVersion;
+            thread.IsBackground = false;
+            thread.Start();
         }
         catch
         {
-            return false;
+            // ignore
         }
-    });
+    }
 
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
     {

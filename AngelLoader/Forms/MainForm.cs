@@ -1184,27 +1184,11 @@ public sealed partial class MainForm : DarkFormBase,
                 : CheckForUpdates.False;
         }
 
+        // @Update: Add manual update check to the main menu
         if (Config.CheckForUpdates == CheckForUpdates.True)
         {
-            await DoUpdateWork();
-        }
-    }
-
-    // @Update: Add manual update check to the main menu
-    private async Task DoUpdateWork()
-    {
-        // @Update: Maybe add cancellation for this task just for extra robustness - we'll cancel on form close
-        bool updateAvailable = await CheckUpdates.CheckIfUpdateAvailable();
-        if (!AboutToClose)
-        {
-            try
-            {
-                Invoke(() => Lazy_UpdateNotification.SetVisible(updateAvailable));
-            }
-            catch
-            {
-                // We're closing or already closed or whatever
-            }
+            // @Update: Maybe add cancellation for this task just for extra robustness - we'll cancel on form close
+            CheckUpdates.StartCheckIfUpdateAvailableThread();
         }
     }
 
@@ -1778,16 +1762,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         AboutToClose = true;
-
-        /*
-        @Update(Update task stops and keeps app open forever when we close the app while it's running)
-        Answers say you should "have the task shut itself down cleanly" but of course I already AM doing that but
-        it still doesn't. Even if I put an AutoResetEvent and wait for it and every damn thing I can think of.
-        Apparently you can set a thread to "Foreground" and then it will close with the app, but thread pool
-        threads are all "Background" and Task uses the thread pool. So we need to use a raw thread I guess.
-        If it can even be used without creating the entire empire state building's worth of custom code to
-        duplicate a Task except with the stupid threads as Foreground. Argh.
-        */
 
         Application.RemoveMessageFilter(this);
 
@@ -5385,6 +5359,14 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
             }
+        }
+    }
+
+    public void ShowUpdateNotification()
+    {
+        if (!AboutToClose)
+        {
+            Lazy_UpdateNotification.SetVisible(true);
         }
     }
 }
