@@ -213,6 +213,9 @@ internal static class CheckUpdates
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
     {
         // @Update: We need try-catches here to handle errors
+        // @Update: We should open the window immediately and download the data there, because:
+        // We don't want to let the user click around on the unblocked UI before the window opens up, as happens
+        // now.
         return await Task.Run(static async () =>
         {
             List<UpdateInfo> ret = new();
