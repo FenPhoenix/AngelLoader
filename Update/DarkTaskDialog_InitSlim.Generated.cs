@@ -1,0 +1,95 @@
+﻿namespace Update;
+
+sealed partial class DarkTaskDialog
+{
+    /// <summary>
+    /// Custom generated component initializer with cruft removed.
+    /// </summary>
+    private void InitSlim()
+    {
+        this.IconPictureBox = new System.Windows.Forms.PictureBox();
+        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.Cancel_Button = new DarkButton();
+        this.NoButton = new DarkButton();
+        this.YesButton = new DarkButton();
+        this.MessageLabel = new DarkLabel();
+        ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
+        this.BottomFLP.SuspendLayout();
+        this.SuspendLayout();
+        // 
+        // IconPictureBox
+        // 
+        this.IconPictureBox.Location = new System.Drawing.Point(10, 10);
+        this.IconPictureBox.Size = new System.Drawing.Size(32, 32);
+        this.IconPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+        // 
+        // BottomFLP
+        // 
+        this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomFLP.BackColor = System.Drawing.SystemColors.Control;
+        this.BottomFLP.Controls.Add(this.Cancel_Button);
+        this.BottomFLP.Controls.Add(this.NoButton);
+        this.BottomFLP.Controls.Add(this.YesButton);
+        this.BottomFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+        this.BottomFLP.Location = new System.Drawing.Point(0, 169);
+        this.BottomFLP.Margin = new System.Windows.Forms.Padding(0);
+        this.BottomFLP.Padding = new System.Windows.Forms.Padding(0, 0, 7, 0);
+        this.BottomFLP.Size = new System.Drawing.Size(532, 42);
+        this.BottomFLP.TabIndex = 1;
+        // 
+        // Cancel_Button
+        // 
+        this.Cancel_Button.AutoSize = true;
+        this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        this.Cancel_Button.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+        this.Cancel_Button.MinimumSize = new System.Drawing.Size(76, 23);
+        this.Cancel_Button.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+        this.Cancel_Button.TabIndex = 2;
+        // 
+        // NoButton
+        // 
+        this.NoButton.AutoSize = true;
+        this.NoButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        this.NoButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+        this.NoButton.MinimumSize = new System.Drawing.Size(76, 23);
+        this.NoButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+        this.NoButton.TabIndex = 1;
+        // 
+        // YesButton
+        // 
+        this.YesButton.AutoSize = true;
+        this.YesButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        this.YesButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+        this.YesButton.MinimumSize = new System.Drawing.Size(76, 23);
+        this.YesButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+        this.YesButton.TabIndex = 0;
+        // 
+        // MessageLabel
+        // 
+        this.MessageLabel.AutoSize = true;
+        this.MessageLabel.Location = new System.Drawing.Point(52, 15);
+        // 
+        // DarkTaskDialog
+        // 
+        this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+        this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+        this.BackColor = System.Drawing.SystemColors.Window;
+        this.ClientSize = new System.Drawing.Size(532, 211);
+        this.Controls.Add(this.BottomFLP);
+        this.Controls.Add(this.MessageLabel);
+        this.Controls.Add(this.IconPictureBox);
+        this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
+        this.ShowIcon = false;
+        this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+        // Hack to prevent slow first render on some forms if Text is blank
+        this.Text = " ";
+        ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).EndInit();
+        this.BottomFLP.ResumeLayout(false);
+        this.BottomFLP.PerformLayout();
+        this.ResumeLayout(false);
+        this.PerformLayout();
+    }
+}

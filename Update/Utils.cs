@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
 
 namespace Update;
@@ -22,30 +23,7 @@ internal static class Utils
 
     internal static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
-    private static int Clamp(this int value, int min, int max) => value < min ? min : value > max ? max : value;
-
-    /// <summary>
-    /// Hack for better visuals - value changes visually instantly with this.
-    /// </summary>
-    /// <param name="progressBar"></param>
-    /// <param name="value"></param>
-    internal static void SetProgress(this ProgressBar progressBar, int value)
-    {
-        int min = progressBar.Minimum;
-        int max = progressBar.Maximum;
-
-        value = value.Clamp(min, max);
-
-        if (value == max)
-        {
-            progressBar.Value = max;
-        }
-        else
-        {
-            progressBar.Value = (value + 1).Clamp(min, max);
-            progressBar.Value = value;
-        }
-    }
+    internal static int Clamp(this int value, int min, int max) => value < min ? min : value > max ? max : value;
 
     internal static void ClearUpdateTempPath() => ClearDir(Program.UpdateTempPath);
 
@@ -158,4 +136,89 @@ internal static class Utils
             return "";
         }
     }
+
+    internal static bool WinVersionSupportsDarkMode()
+    {
+        try
+        {
+            OperatingSystem osVersion = Environment.OSVersion;
+            return osVersion.Platform == PlatformID.Win32NT &&
+                   osVersion.Version.Major >= 10 &&
+                   osVersion.Version.Build >= 17763;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
+
+    internal static VisualTheme ReadThemeFromConfigIni(string path)
+    {
+        try
+        {
+            using var sr = new StreamReader(path);
+            while (sr.ReadLine() is { } line)
+            {
+                string lineT = line.Trim();
+                if (lineT.StartsWithO("VisualTheme="))
+                {
+                    string value = lineT.Substring("VisualTheme=".Length);
+                    return value switch
+                    {
+                        "FollowSystemTheme" => GetSystemTheme(),
+                        "Dark" => VisualTheme.Dark,
+                        _ => VisualTheme.Classic
+                    };
+                }
+            }
+
+            return GetSystemTheme();
+        }
+        catch
+        {
+            return GetSystemTheme();
+        }
+    }
+
+    private static VisualTheme GetSystemTheme()
+    {
+        try
+        {
+            // Firefox uses this registry key, so if it's reliable enough for them, it's reliable enough for me
+            object? appsUseLightThemeKey = Registry.GetValue(
+                keyName: @"HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+                valueName: "AppsUseLightTheme",
+                defaultValue: "");
+
+            if (appsUseLightThemeKey is int keyInt)
+            {
+                return keyInt == 0 ? VisualTheme.Dark : VisualTheme.Classic;
+            }
+        }
+        catch
+        {
+            return VisualTheme.Classic;
+        }
+
+        return VisualTheme.Classic;
+    }
+
+    public static void ShowAlert(
+        MainForm view,
+        string message,
+        // @Update: Localize this
+        string title = "Alert",
+        MessageBoxIcon icon = MessageBoxIcon.Warning) => view.Invoke(() =>
+    {
+        using var d = new DarkTaskDialog(
+            message: message,
+            title: title,
+            icon: icon,
+            // @Update: Localize this
+            yesText: "OK",
+            defaultButton: DialogResult.Yes);
+        d.ShowDialog(view);
+    });
 }

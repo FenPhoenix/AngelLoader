@@ -27,6 +27,8 @@ internal static class Program
         new SingleInstanceManager().Run(args);
     }
 
+    internal static bool _testMode;
+
     private sealed class SingleInstanceManager : WindowsFormsApplicationBase
     {
         internal SingleInstanceManager() => IsSingleInstance = true;
@@ -37,11 +39,25 @@ internal static class Program
             if (eventArgs.CommandLine.Count == 1 &&
                 eventArgs.CommandLine[0] == "-go")
             {
+                Data.VisualTheme = Utils.ReadThemeFromConfigIni(ConfigIniPath);
+
+                View = new MainForm();
+                Application.Run(View);
+            }
+            // @Update: Dummy-out test stuff for final
+            else if (eventArgs.CommandLine.Count == 1 &&
+                      eventArgs.CommandLine[0] == "-test")
+            {
+                _testMode = true;
+
+                Data.VisualTheme = Utils.ReadThemeFromConfigIni(ConfigIniPath);
+
                 View = new MainForm();
                 Application.Run(View);
             }
             else
             {
+                // Stock message box intentionally here
                 MessageBox.Show(
                     "This executable is not meant to be run on its own. Please update from within AngelLoader.",
                     "AngelLoader Updater");
@@ -52,6 +68,8 @@ internal static class Program
 
     private static MainForm View = null!;
 
+    private static readonly string ConfigIniPath = Path.Combine(Application.StartupPath, "Data", "Config.ini");
+
     private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
     internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
     internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
@@ -60,6 +78,13 @@ internal static class Program
     // @Update: Do we want to read the language inis for this app?
     internal static async Task DoCopy()
     {
+        if (_testMode)
+        {
+            View.SetMessage("Test...");
+            View.SetProgress(50);
+            return;
+        }
+
 #if false
         string startupPath = @"C:\AngelLoader";
         string exePath = @"C:\AngelLoader\Update.exe";
@@ -78,14 +103,14 @@ internal static class Program
                 files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
                 if (files.Count == 0)
                 {
-                    MessageBox.Show(View,
+                    Utils.ShowAlert(View,
                         "Update failed: No files in '" + UpdateTempPath + "'.\r\n\r\n");
                     return;
                 }
             }
             catch (DirectoryNotFoundException ex)
             {
-                MessageBox.Show(View,
+                Utils.ShowAlert(View,
                     "Update failed: Update temp directory not found: '" + UpdateTempPath + "'.\r\n\r\n" +
                     "Exception:\r\n\r\n" +
                     ex);
@@ -93,7 +118,7 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                MessageBox.Show(View,
+                Utils.ShowAlert(View,
                     "Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.\r\n\r\n" +
                     "Exception:\r\n\r\n" +
                     ex);
@@ -132,7 +157,7 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                MessageBox.Show(View,
+                Utils.ShowAlert(View,
                     "Update failed: Unable to create '" + UpdateBakTempPath + "'.\r\n\r\n" +
                     "Exception:\r\n\r\n" +
                     ex);
@@ -158,7 +183,7 @@ internal static class Program
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(View,
+                        Utils.ShowAlert(View,
                             "Update failed: Unable to complete backup of current app files.\r\n\r\n" +
                             "Exception:\r\n\r\n" +
                             ex);
@@ -176,7 +201,7 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                MessageBox.Show(View,
+                Utils.ShowAlert(View,
                     "Update failed: Unable to rename '" + exePath + "' to '" + exePath + ".bak'.\r\n\r\n" +
                     "Exception:\r\n\r\n" +
                     ex);
@@ -207,12 +232,19 @@ internal static class Program
                 {
                     if (retryCount > 10)
                     {
-                        DialogResult result = MessageBox.Show(View,
-                            "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
-                            "If AngelLoader is running, close it and try again.\r\n\r\nException: " + ex,
-                            "Error",
-                            MessageBoxButtons.RetryCancel,
-                            MessageBoxIcon.Warning);
+                        using var d = new DarkTaskDialog(
+                            message: "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
+                                     "If AngelLoader is running, close it and try again.\r\n\r\nException: " +
+                                     ex,
+                            title: "Error",
+                            icon: MessageBoxIcon.Warning,
+                            // @Update: Localize these
+                            yesText: "Retry",
+                            noText: "Cancel",
+                            defaultButton: DialogResult.Yes);
+
+                        DialogResult result = d.ShowDialog(View);
+
                         if (result == DialogResult.Retry)
                         {
                             retryCount = 0;
@@ -246,10 +278,11 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(View,
+            Utils.ShowAlert(View,
                 "Unable to start AngelLoader. You'll need to start it manually.\r\n\r\n" +
                 "Exception:\r\n\r\n" +
                 ex);
+            // ReSharper disable once RedundantJumpStatement
             return;
         }
     }
@@ -268,7 +301,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            MessageBox.Show(View,
+            Utils.ShowAlert(View,
                 "The update failed and we tried to restore the old version, but that failed too. " +
                 "It's recommended to download the latest version of AngelLoader and re-install it manually.\r\n\r\n" +
                 "Exception:\r\n\r\n" +

@@ -1,11 +1,10 @@
 using System;
 using System.Windows.Forms;
-using Update.Properties;
 
 namespace Update;
 
 /*
-The plan:
+@Update: The plan:
 -Ship this executable with AL distribution
 -AL downloads the update and puts it in the temp folder, then calls this exe
 -This exe then:
@@ -19,9 +18,11 @@ The plan:
  -If failed, rename our exe back to normal
 
 @Update: Remove debug command line in properties!
+
+@Update: Make close button safe - put up a warning, or revert on close?
 */
 
-public sealed partial class MainForm : Form
+public sealed partial class MainForm : DarkFormBase
 {
     public MainForm()
     {
@@ -31,17 +32,21 @@ public sealed partial class MainForm : Form
         InitSlim();
 #endif
 
-        Icon = Resources.AngelLoader;
-
         Text = "AngelLoader Update";
-        CopyingProgressBar.CenterHOnForm(this);
+
+        SetTheme(Data.VisualTheme);
+
+        CopyProgressBarOutlinePanel.CenterHOnForm(this);
     }
 
     protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
         await Program.DoCopy();
-        Application.Exit();
+        if (!Program._testMode)
+        {
+            Application.Exit();
+        }
     }
 
     public void SetMessage(string message) => Invoke(() =>
@@ -50,5 +55,19 @@ public sealed partial class MainForm : Form
         CopyingLabel.CenterHOnForm(this);
     });
 
-    public void SetProgress(int percent) => Invoke(() => CopyingProgressBar.SetProgress(percent));
+    public void SetProgress(int percent) => Invoke(() => CopyingProgressBar.Value = percent);
+
+    private void SetTheme(VisualTheme theme)
+    {
+        if (theme != VisualTheme.Dark)
+        {
+            ControlUtils.CreateAllControlsHandles(control: this);
+            CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.None;
+        }
+        else
+        {
+            SetThemeBase(theme: theme, createControlHandles: true);
+            CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.FixedSingle;
+        }
+    }
 }
