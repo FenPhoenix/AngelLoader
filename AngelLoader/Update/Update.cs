@@ -121,6 +121,9 @@ internal static class CheckUpdates
 
                     archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
 
+                    // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
+                    Ini.WriteConfigIni();
+
                     Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
                 }
                 catch (Exception ex)
@@ -141,7 +144,7 @@ internal static class CheckUpdates
                 // message and cancel the app exit.
                 // MUST invoke, because otherwise the view's event handlers may/will be called on a thread, and
                 // then everything explodes due to cross-thread control access!
-                Core.View.Invoke(static () => Application.Exit());
+                Core.View.Invoke(static () => Core.View.Close());
             });
         }
 

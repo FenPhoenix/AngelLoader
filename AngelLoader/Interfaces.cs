@@ -376,4 +376,6 @@ public interface IView : ISettingsChangeableView
     void UpdateConfig();
 
     bool ShowUpdateAvailableDialog(string releaseNotes);
+
+    void Close();
 }
