@@ -56,6 +56,7 @@ internal sealed class LText_Class
     internal readonly CharacterEncoding_Class CharacterEncoding = new();
     internal readonly AddFMsToSet_Class AddFMsToSet = new();
     internal readonly ThiefBuddy_Class ThiefBuddy = new();
+    internal readonly Update_Class Update = new();
 
     internal sealed class Meta_Class
     {
@@ -976,5 +977,10 @@ internal sealed class LText_Class
         internal readonly string RunThiefBuddy = "Run Thief Buddy";
         internal readonly string DontRunThiefBuddy = "Don't run Thief Buddy";
         internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
+    }
+
+    internal sealed class Update_Class
+    {
+        internal readonly string UpdateAvailable = "Update available";
     }
 }

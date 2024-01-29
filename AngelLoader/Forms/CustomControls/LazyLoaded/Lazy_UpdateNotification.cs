@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 internal sealed class Lazy_UpdateNotification : IDarkable
@@ -79,8 +80,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     internal void Localize()
     {
         if (!_constructed) return;
-        // @Update: Localize this
-        Button.Text = "Update available";
+        Button.Text = LText.Update.UpdateAvailable;
         RefreshSize();
     }
 
