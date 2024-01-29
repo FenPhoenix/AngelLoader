@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -42,12 +43,15 @@ internal sealed class Lazy_UpdateNotification : IDarkable
             Tag = LoadType.Lazy,
 
             AutoSize = false,
-            Size = new Size(25, 25),
+            DarkModeBackColor = DarkColors.Fen_ControlBackground,
+            FlatStyle = FlatStyle.Flat,
             Margin = new Padding(0, 9, 0, 0),
+            Size = new Size(25, 25),
             TabIndex = 0,
 
             DarkModeEnabled = _darkModeEnabled
         };
+        Button.FlatAppearance.BorderSize = 0;
         Button.PaintCustom += Button_Paint;
         Button.Click += Button_Click;
 

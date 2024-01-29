@@ -1414,7 +1414,7 @@ public static class Images
             new RectangleF(1.7f, 1.7f, 16.5f, 16.5f));
 
         g.FillPath(
-            _greenCircleBrush.Brush,
+            _al_LightBlueBrush.Brush,
             gp
         );
 
