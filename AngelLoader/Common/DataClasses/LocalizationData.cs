@@ -294,6 +294,7 @@ internal sealed class LText_Class
         internal readonly string GameVersions = "Game versions...";
         internal readonly string Import = "Import";
         internal readonly string ScanAllFMs = "Scan all FMs...";
+        internal readonly string CheckForUpdates = "Check for updates...";
         internal readonly string ViewHelpFile = "View help file";
         internal readonly string About = "About AngelLoader";
     }

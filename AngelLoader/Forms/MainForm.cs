@@ -2717,6 +2717,13 @@ public sealed partial class MainForm : DarkFormBase,
                 Cursor = Cursors.Default;
             }
         }
+        else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
+        {
+            // @Update(Check for updates menu option):
+            // We want to put up a "no updates available" window if none available, or go straight to the ask
+            // window with the changelog if there are.
+            Core.Dialogs.ShowAlert("Check for updates window goes here", "Todo");
+        }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
             await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFMs_InOrder());
