@@ -78,74 +78,72 @@ internal static class CheckUpdates
         }
 
         bool accepted = Core.View.ShowUpdateAvailableDialog(changelogFullText);
+        if (!accepted) return;
 
-        if (accepted)
+        // @Update: Make progress show for the archive download, and then have another one for the extract
+        Core.View.ShowProgressBox_Single(
+            message1: LText.Update.DownloadingUpdate,
+            progressType: ProgressType.Determinate
+        );
+
+        await Task.Run(async () =>
         {
-            await Task.Run(async () =>
+            try
             {
-                try
+                UpdateInfo? latest = updateInfos[0];
+
+                // @Update: Implement cancellation token
+                using var request = await GlobalHttpClient.GetAsync(latest.DownloadUri, CancellationToken.None);
+
+                if (!request.IsSuccessStatusCode) return;
+
+                // Just download the file once, so we know we won't read duplicate data or whatever
+
+                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+
+                string localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
+                    Path.GetFileName(latest.DownloadUri.OriginalString));
+
+                Stream zipStream = await request.Content.ReadAsStreamAsync();
+                using (var zipLocalStream = File.Create(localZipFile))
                 {
-                    // @Update: Make progress show for the archive download, and then have another one for the extract
-                    Core.View.ShowProgressBox_Single(
-                        message1: LText.Update.DownloadingUpdate,
-                        progressType: ProgressType.Determinate
-                    );
-
-                    UpdateInfo? latest = updateInfos[0];
-
                     // @Update: Implement cancellation token
-                    using var request = await GlobalHttpClient.GetAsync(latest.DownloadUri, CancellationToken.None);
-
-                    if (!request.IsSuccessStatusCode) return;
-
-                    // Just download the file once, so we know we won't read duplicate data or whatever
-
-                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
-
-                    string localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
-                        Path.GetFileName(latest.DownloadUri.OriginalString));
-
-                    Stream zipStream = await request.Content.ReadAsStreamAsync();
-                    using (var zipLocalStream = File.Create(localZipFile))
-                    {
-                        // @Update: Implement cancellation token
-                        await zipStream.CopyToAsync(zipLocalStream, FileStreamBufferSize, CancellationToken.None);
-                    }
-
-                    using var fs = File.OpenRead(localZipFile);
-                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-
-                    var progress = new Progress<int>(ReportProgress);
-
-                    archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
-
-                    // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
-                    Ini.WriteConfigIni();
-
-                    Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
-                }
-                catch (Exception ex)
-                {
-                    Log("Error downloading the update.", ex);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                    // @Update: Localize this
-                    Core.Dialogs.ShowError("Error downloading the update.", LText.AlertMessages.Alert, MBoxIcon.Warning);
-                    return;
-                }
-                finally
-                {
-                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
-                    Core.View.HideProgressBox();
+                    await zipStream.CopyToAsync(zipLocalStream, FileStreamBufferSize, CancellationToken.None);
                 }
 
-                // Do this AFTER hiding the progress box, otherwise it'll throw up the "operation in progress"
-                // message and cancel the app exit.
-                // MUST invoke, because otherwise the view's event handlers may/will be called on a thread, and
-                // then everything explodes due to cross-thread control access!
-                Core.View.Invoke(static () => Core.View.Close());
-            });
-        }
+                using var fs = File.OpenRead(localZipFile);
+                using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+
+                var progress = new Progress<int>(ReportProgress);
+
+                archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+
+                // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
+                Ini.WriteConfigIni();
+
+                Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
+            }
+            catch (Exception ex)
+            {
+                Log("Error downloading the update.", ex);
+                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                // @Update: Localize this
+                Core.Dialogs.ShowError("Error downloading the update.", LText.AlertMessages.Alert, MBoxIcon.Warning);
+                return;
+            }
+            finally
+            {
+                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+                Core.View.HideProgressBox();
+            }
+
+            // Do this AFTER hiding the progress box, otherwise it'll throw up the "operation in progress"
+            // message and cancel the app exit.
+            // MUST invoke, because otherwise the view's event handlers may/will be called on a thread, and
+            // then everything explodes due to cross-thread control access!
+            Core.View.Invoke(static () => Core.View.Close());
+        });
 
         return;
 
@@ -178,8 +176,9 @@ internal static class CheckUpdates
                     return;
                 }
 
-                // @Update: Implement cancellation token
-                using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, CancellationToken.None);
+                // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
+                // and it exits with the app if the app closes.
+                using var request = await GlobalHttpClient.GetAsync(_latestVersionFile);
 
                 if (!request.IsSuccessStatusCode) return;
 
