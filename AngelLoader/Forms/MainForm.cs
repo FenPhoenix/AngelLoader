@@ -1171,10 +1171,9 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (Config.CheckForUpdates == CheckForUpdates.FirstTimeAsk)
         {
-            // @Update: Localize this
             (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                message: "Do you want AngelLoader to check for updates every startup?",
-                title: "Updates",
+                message: LText.Update.AutoUpdateFirstAsk_Message,
+                title: LText.Update.AutoUpdateFirstAsk_Title,
                 icon: MBoxIcon.Information,
                 yes: LText.Global.Yes,
                 no: LText.Global.No

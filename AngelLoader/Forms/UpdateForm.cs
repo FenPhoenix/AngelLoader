@@ -19,12 +19,11 @@ public sealed partial class UpdateForm : DarkFormBase
 
     public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
 
-    // @Update: Localize this
     private void Localize()
     {
-        Text = "Update available";
+        Text = LText.Update.UpdateDialog_Title;
 
-        UpdateButton.Text = "Update and restart";
+        UpdateButton.Text = LText.Update.UpdateDialog_UpdateAndRestartButtonText;
         Cancel_Button.Text = LText.Global.Cancel;
     }
 

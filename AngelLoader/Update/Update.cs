@@ -87,8 +87,7 @@ internal static class CheckUpdates
                 {
                     // @Update: Make progress show for the archive download, and then have another one for the extract
                     Core.View.ShowProgressBox_Single(
-                        // @Update: Localize this
-                        message1: "Downloading update...",
+                        message1: LText.Update.DownloadingUpdate,
                         progressType: ProgressType.Determinate
                     );
 
