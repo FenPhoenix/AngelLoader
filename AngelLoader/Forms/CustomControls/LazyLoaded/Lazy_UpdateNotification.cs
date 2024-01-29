@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
@@ -10,7 +12,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     private bool _constructed;
 
     // @Update: We could make this a PictureBox or whatever later on
-    private DarkLinkLabel Label = null!;
+    private DarkButton Button = null!;
 
     private bool _darkModeEnabled;
     [PublicAPI]
@@ -22,7 +24,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
             _darkModeEnabled = value;
             if (!_constructed) return;
 
-            Label.DarkModeEnabled = value;
+            Button.DarkModeEnabled = value;
         }
     }
 
@@ -35,26 +37,34 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         var container = _owner.BottomRightFLP;
 
         // @Update: Should we make this label/icon more visible/obnoxious colored etc. since it's meant to be a notification?
-        Label = new DarkLinkLabel
+        Button = new DarkButton
         {
             Tag = LoadType.Lazy,
 
-            AutoSize = true,
-            Margin = new Padding(0, 12, 0, 0),
+            AutoSize = false,
+            Size = new Size(25, 25),
+            Margin = new Padding(0, 9, 0, 0),
             TabIndex = 0,
 
             DarkModeEnabled = _darkModeEnabled
         };
-        Label.LinkClicked += Label_LinkClicked;
+        Button.PaintCustom += Button_Paint;
+        Button.Click += Button_Click;
 
-        container.Controls.Add(Label);
+        // @Update: Should we maybe put it at the top, so it's more visible? It's not so easy to see down at the bottom.
+        container.Controls.Add(Button);
 
         _constructed = true;
 
         Localize();
     }
 
-    private async void Label_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    private void Button_Paint(object sender, PaintEventArgs e)
+    {
+        Images.PaintBitmapButton(Button, e, Images.UpdateIcon, x: 2, y: 2);
+    }
+
+    private async void Button_Click(object sender, EventArgs e)
     {
         bool success;
         List<CheckUpdates.UpdateInfo> updateInfos;
@@ -83,7 +93,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     {
         if (!_constructed) return;
         // @Update: Localize this
-        Label.Text = "Update";
+        _owner.MainToolTip.SetToolTip(Button, "Update available");
     }
 
     internal void SetVisible(bool visible)
@@ -91,11 +101,11 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         if (visible)
         {
             Construct();
-            Label.Show();
+            Button.Show();
         }
         else
         {
-            if (_constructed) Label.Hide();
+            if (_constructed) Button.Hide();
         }
     }
 }
