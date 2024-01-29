@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
-using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -12,8 +10,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
     private bool _constructed;
 
-    // @Update: We could make this a PictureBox or whatever later on
-    private DarkButton Button = null!;
+    internal ToolStripButtonCustom Button = null!;
 
     private bool _darkModeEnabled;
     [PublicAPI]
@@ -25,7 +22,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
             _darkModeEnabled = value;
             if (!_constructed) return;
 
-            Button.DarkModeEnabled = value;
+            Button.Image = Images.UpdateIcon;
         }
     }
 
@@ -35,42 +32,23 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     {
         if (_constructed) return;
 
-        var container = _owner.BottomRightFLP;
-
         // @Update: Should we make this label/icon more visible/obnoxious colored etc. since it's meant to be a notification?
-        Button = new DarkButton
+        Button = new ToolStripButtonCustom
         {
             Tag = LoadType.Lazy,
 
             AutoSize = false,
-            DarkModeBackColor = DarkColors.Fen_ControlBackground,
-            FlatStyle = FlatStyle.Flat,
-            Margin = new Padding(0, 9, 0, 0),
-            Size = new Size(25, 25),
-            TabIndex = 0,
-
-            DarkModeEnabled = _darkModeEnabled
+            DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
+            Image = Images.UpdateIcon,
+            Margin = new Padding(0)
         };
-        Button.FlatAppearance.BorderSize = 0;
-        Button.PaintCustom += Button_Paint;
         Button.Click += Button_Click;
 
-        // @Update: Should we maybe put it at the top, so it's more visible? It's not so easy to see down at the bottom.
-        container.Controls.Add(Button);
+        _owner.RefreshAreaToolStrip.Items.Insert(0, Button);
 
         _constructed = true;
 
         Localize();
-    }
-
-    private void Button_Paint(object sender, PaintEventArgs e)
-    {
-        Images.PaintBitmapButton(
-            Button,
-            e,
-            Button.Enabled ? Images.UpdateIcon : Images.GetDisabledImage(Images.UpdateIcon),
-            x: 2,
-            y: 2);
     }
 
     private async void Button_Click(object sender, EventArgs e)
@@ -102,7 +80,18 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     {
         if (!_constructed) return;
         // @Update: Localize this
-        _owner.MainToolTip.SetToolTip(Button, "Update available");
+        Button.Text = "Update available";
+        RefreshSize();
+    }
+
+    // Plain AutoSize makes the height go off the bottom, so do it manually. There's no MinimumSize for ToolStrip
+    // stuff either.
+    private void RefreshSize()
+    {
+        Button.AutoSize = true;
+        Button.AutoSize = false;
+        Button.Size = Button.Size with { Height = 25 };
+        _owner.SetFilterBarWidth();
     }
 
     internal void SetVisible(bool visible)
@@ -110,11 +99,11 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         if (visible)
         {
             Construct();
-            Button.Show();
+            Button.Visible = true;
         }
         else
         {
-            if (_constructed) Button.Hide();
+            if (_constructed) Button.Visible = false;
         }
     }
 }

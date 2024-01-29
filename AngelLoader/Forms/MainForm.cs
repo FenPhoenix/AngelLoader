@@ -185,7 +185,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
-    private readonly Lazy_UpdateNotification Lazy_UpdateNotification;
+    internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
 
     #endregion
 
@@ -2588,7 +2588,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetFilterBarWidth();
     }
 
-    private void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+    internal void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
 
     #region Filter bar controls
 
