@@ -61,7 +61,12 @@ internal sealed class Lazy_UpdateNotification : IDarkable
 
     private void Button_Paint(object sender, PaintEventArgs e)
     {
-        Images.PaintBitmapButton(Button, e, Images.UpdateIcon, x: 2, y: 2);
+        Images.PaintBitmapButton(
+            Button,
+            e,
+            Button.Enabled ? Images.UpdateIcon : Images.GetDisabledImage(Images.UpdateIcon),
+            x: 2,
+            y: 2);
     }
 
     private async void Button_Click(object sender, EventArgs e)
