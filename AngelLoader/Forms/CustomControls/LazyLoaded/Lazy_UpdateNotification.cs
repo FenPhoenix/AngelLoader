@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
@@ -52,30 +51,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         Localize();
     }
 
-    private async void Button_Click(object sender, EventArgs e)
-    {
-        bool success;
-        List<CheckUpdates.UpdateInfo> updateInfos;
-        try
-        {
-            _owner.SetWaitCursor(true);
-            (success, updateInfos) = await CheckUpdates.GetUpdateDetails();
-        }
-        finally
-        {
-            _owner.SetWaitCursor(false);
-        }
-
-        if (success && updateInfos.Count > 0)
-        {
-            await CheckUpdates.ShowUpdateAskDialog(updateInfos);
-        }
-        else
-        {
-            // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
-            Core.Dialogs.ShowAlert("Update error description goes here", "Update");
-        }
-    }
+    private static async void Button_Click(object sender, EventArgs e) => await CheckUpdates.ShowUpdateAskDialog();
 
     internal void Localize()
     {

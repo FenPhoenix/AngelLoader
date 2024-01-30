@@ -25,7 +25,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-internal static class CheckUpdates
+public static class CheckUpdates
 {
     private sealed class UpdateFile
     {
@@ -35,13 +35,13 @@ internal static class CheckUpdates
         internal Uri? ChangelogUrl;
     }
 
-    internal sealed class UpdateInfo
+    public sealed class UpdateInfo
     {
-        internal readonly Version Version;
-        internal readonly string ChangelogText;
-        internal readonly Uri DownloadUri;
+        public readonly Version Version;
+        public readonly string ChangelogText;
+        public readonly Uri DownloadUri;
 
-        internal UpdateInfo(Version version, string changelogText, Uri downloadUri)
+        public UpdateInfo(Version version, string changelogText, Uri downloadUri)
         {
             Version = version;
             ChangelogText = changelogText;
@@ -64,21 +64,10 @@ internal static class CheckUpdates
     private const string _latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/latest_version.txt";
     private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
 
-    internal static async Task ShowUpdateAskDialog(List<UpdateInfo> updateInfos)
+    internal static async Task ShowUpdateAskDialog()
     {
-        if (updateInfos.Count == 0) return;
-
-        // @Update: Test with multiple versions/changelogs
-        string changelogFullText = "";
-        for (int i = 0; i < updateInfos.Count; i++)
-        {
-            if (i > 0) changelogFullText += "\r\n\r\n\r\n";
-            UpdateInfo? item = updateInfos[i];
-            changelogFullText += item.Version + ":\r\n" + item.ChangelogText;
-        }
-
-        bool accepted = Core.View.ShowUpdateAvailableDialog(changelogFullText);
-        if (!accepted) return;
+        (bool accepted, UpdateInfo? updateInfo) = Core.View.ShowUpdateAvailableDialog();
+        if (!accepted || updateInfo == null) return;
 
         // @Update: Make progress show for the archive download, and then have another one for the extract
         Core.View.ShowProgressBox_Single(
@@ -90,10 +79,8 @@ internal static class CheckUpdates
         {
             try
             {
-                UpdateInfo? latest = updateInfos[0];
-
                 // @Update: Implement cancellation token
-                using var request = await GlobalHttpClient.GetAsync(latest.DownloadUri, CancellationToken.None);
+                using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, CancellationToken.None);
 
                 if (!request.IsSuccessStatusCode) return;
 
@@ -102,7 +89,7 @@ internal static class CheckUpdates
                 Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
 
                 string localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
-                    Path.GetFileName(latest.DownloadUri.OriginalString));
+                    Path.GetFileName(updateInfo.DownloadUri.OriginalString));
 
                 Stream zipStream = await request.Content.ReadAsStreamAsync();
                 using (var zipLocalStream = File.Create(localZipFile))
