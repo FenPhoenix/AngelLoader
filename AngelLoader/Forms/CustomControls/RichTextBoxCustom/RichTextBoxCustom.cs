@@ -75,8 +75,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
         }
     }
 
-    // @Update: current readme bytes being static is a problem. It's because of the preload code, but we need to somehow not have this.
-    private static byte[] _currentReadmeBytes = Array.Empty<byte>();
+    private byte[] _currentReadmeBytes = Array.Empty<byte>();
 
     private ReadmeType _currentReadmeType = ReadmeType.PlainText;
     // Despite it _usually_ being the case that plaintext type supports encoding change and everything else
@@ -218,7 +217,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
     {
         try
         {
-            SwitchOffPreloadState();
+            RTFPreprocessing.SwitchOffPreloadState();
 
             _currentReadmeSupportsEncodingChange = false;
             _currentReadmeBytes = Array.Empty<byte>();
@@ -253,7 +252,6 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
             _currentReadmeSupportsEncodingChange = false;
 
-            //_currentReadmeBytes = File.ReadAllBytes(path);
             _currentReadmeBytes = new byte[stream.Length];
             int bytesRead = stream.ReadAll(_currentReadmeBytes, 0, (int)stream.Length);
             if (bytesRead != stream.Length)
@@ -287,7 +285,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
     /// </returns>
     internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding)
     {
-        if (fileType is not ReadmeType.RichText) SwitchOffPreloadState();
+        if (fileType is not ReadmeType.RichText) RTFPreprocessing.SwitchOffPreloadState();
 
         AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
@@ -315,7 +313,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             // of it.
             if (fileType is ReadmeType.RichText)
             {
-                inPreloadedState = InPreloadedState(path, _darkModeEnabled);
+                inPreloadedState = RTFPreprocessing.InPreloadedState(path, _darkModeEnabled);
                 if (!inPreloadedState)
                 {
                     long size = new FileInfo(path).Length;
@@ -337,21 +335,23 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                 case ReadmeType.RichText:
                     _currentReadmeSupportsEncodingChange = false;
 
-                    if (fileType != ReadmeType.RichText || !inPreloadedState)
-                    {
-                        _currentReadmeBytes = File.ReadAllBytes(path);
-                    }
+                    PreProcessedRTF? preProcessedRTF = null;
+                    _currentReadmeBytes =
+                        fileType == ReadmeType.RichText && inPreloadedState &&
+                        (preProcessedRTF = RTFPreprocessing.GetPreProcessedRtf()) != null
+                            ? preProcessedRTF.OriginalBytes
+                            : File.ReadAllBytes(path);
 
                     // We control the format of GLML-converted files, so no need to do this for those
                     if (fileType == ReadmeType.RichText && !inPreloadedState)
                     {
-                        GlobalPreProcessRTF(_currentReadmeBytes);
+                        RTFPreprocessing.GlobalPreProcessRTF(_currentReadmeBytes);
                     }
 
                     // This resets the font if false, so don't do it after the load or it messes up the RTF.
                     ContentIsPlainText = false;
 
-                    RefreshDarkModeState(preProcessedRtf: _preProcessedRTF, skipSuspend: true);
+                    RefreshDarkModeState(preProcessedRtf: preProcessedRTF, skipSuspend: true);
 
                     break;
                 case ReadmeType.PlainText:

@@ -396,7 +396,7 @@ internal sealed partial class RichTextBoxCustom
 
     #region Workaround to fix black transparent regions in images
 
-    private static readonly byte[] _shppict =
+    internal static readonly byte[] _shppict =
     {
 #if false
         (byte)'{',
@@ -413,7 +413,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'t'
     };
 
-    private static readonly byte[] _shppictBlanked =
+    internal static readonly byte[] _shppictBlanked =
     {
 #if false
         (byte)'{',
@@ -430,7 +430,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'x'
     };
 
-    private static readonly byte[] _nonshppict =
+    internal static readonly byte[] _nonshppict =
     {
 #if false
         (byte)'{',
@@ -448,7 +448,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'t'
     };
 
-    private static readonly byte[] _nonshppictBlanked =
+    internal static readonly byte[] _nonshppictBlanked =
     {
 #if false
         (byte)'{',
