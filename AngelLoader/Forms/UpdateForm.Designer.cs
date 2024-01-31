@@ -34,7 +34,7 @@ sealed partial class UpdateForm
             this.BottomButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
             this.UpdateButton = new AngelLoader.Forms.CustomControls.StandardButton();
-            this.ReleaseNotesTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.ReleaseNotesRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
             this.BottomButtonsFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,7 +45,7 @@ sealed partial class UpdateForm
             this.BottomButtonsFLP.Controls.Add(this.Cancel_Button);
             this.BottomButtonsFLP.Controls.Add(this.UpdateButton);
             this.BottomButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 416);
+            this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 417);
             this.BottomButtonsFLP.Name = "BottomButtonsFLP";
             this.BottomButtonsFLP.Size = new System.Drawing.Size(800, 28);
             this.BottomButtonsFLP.TabIndex = 0;
@@ -68,28 +68,28 @@ sealed partial class UpdateForm
             this.UpdateButton.TabIndex = 1;
             this.UpdateButton.Text = "Update and restart";
             // 
-            // ReleaseNotesTextBox
+            // ReleaseNotesRichTextBox
             // 
-            this.ReleaseNotesTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.ReleaseNotesRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.ReleaseNotesTextBox.BackColor = System.Drawing.SystemColors.Window;
-            this.ReleaseNotesTextBox.DarkModeReadOnlyColorsAreDefault = true;
-            this.ReleaseNotesTextBox.Location = new System.Drawing.Point(0, 0);
-            this.ReleaseNotesTextBox.Multiline = true;
-            this.ReleaseNotesTextBox.Name = "ReleaseNotesTextBox";
-            this.ReleaseNotesTextBox.ReadOnly = true;
-            this.ReleaseNotesTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.ReleaseNotesTextBox.Size = new System.Drawing.Size(800, 416);
-            this.ReleaseNotesTextBox.TabIndex = 1;
+            this.ReleaseNotesRichTextBox.BackColor = System.Drawing.SystemColors.Window;
+            this.ReleaseNotesRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ReleaseNotesRichTextBox.Location = new System.Drawing.Point(2, 2);
+            this.ReleaseNotesRichTextBox.Name = "ReleaseNotesRichTextBox";
+            this.ReleaseNotesRichTextBox.ReadOnly = true;
+            this.ReleaseNotesRichTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.ReleaseNotesRichTextBox.Size = new System.Drawing.Size(796, 412);
+            this.ReleaseNotesRichTextBox.TabIndex = 1;
+            this.ReleaseNotesRichTextBox.Text = "";
             // 
             // UpdateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
-            this.ClientSize = new System.Drawing.Size(800, 444);
-            this.Controls.Add(this.ReleaseNotesTextBox);
+            this.ClientSize = new System.Drawing.Size(800, 445);
+            this.Controls.Add(this.ReleaseNotesRichTextBox);
             this.Controls.Add(this.BottomButtonsFLP);
             this.KeyPreview = true;
             this.MinimizeBox = false;
@@ -100,7 +100,6 @@ sealed partial class UpdateForm
             this.BottomButtonsFLP.ResumeLayout(false);
             this.BottomButtonsFLP.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
     }
 #endif
@@ -110,5 +109,5 @@ sealed partial class UpdateForm
     private CustomControls.DarkFlowLayoutPanel BottomButtonsFLP;
     private CustomControls.StandardButton Cancel_Button;
     private CustomControls.StandardButton UpdateButton;
-    private CustomControls.DarkTextBox ReleaseNotesTextBox;
+    private CustomControls.RichTextBoxCustom ReleaseNotesRichTextBox;
 }

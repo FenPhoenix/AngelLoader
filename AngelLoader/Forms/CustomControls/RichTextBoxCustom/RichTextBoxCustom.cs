@@ -596,6 +596,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
         base.Dispose(disposing);
     }
 
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool ViewBlocked => FindForm() is IDarkContextMenuOwner { ViewBlocked: true };
 
     private IContainer? _componentsFallback;

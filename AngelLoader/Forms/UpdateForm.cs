@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class UpdateForm : DarkFormBase
+public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 {
     private readonly AutoResetEvent _downloadARE = new(false);
 
@@ -23,6 +25,8 @@ public sealed partial class UpdateForm : DarkFormBase
         InitSlim();
 #endif
 
+        ReleaseNotesRichTextBox.SetOwner(this);
+
         UpdateButton.Enabled = false;
 
         if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
@@ -36,12 +40,17 @@ public sealed partial class UpdateForm : DarkFormBase
     {
         Text = LText.Update.UpdateDialog_Title;
 
+        ReleaseNotesRichTextBox.Localize();
+
         UpdateButton.Text = LText.Update.UpdateDialog_UpdateAndRestartButtonText;
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
-    // @Update: Should we make this a RichTextBox so we can show bold/italic and zoom text and stuff?
-    private void SetReleaseNotes(string releaseNotes) => ReleaseNotesTextBox.Text = releaseNotes;
+    private void SetReleaseNotes(string releaseNotes)
+    {
+        // @Update: Implement headings/bulleted lists etc.
+        ReleaseNotesRichTextBox.SetText(releaseNotes);
+    }
 
     protected override async void OnShown(EventArgs e)
     {
@@ -70,9 +79,20 @@ public sealed partial class UpdateForm : DarkFormBase
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        if (e.KeyCode == Keys.Escape)
+        switch (e.KeyCode)
         {
-            Close();
+            case Keys.Escape:
+                Close();
+                break;
+            case Keys.Add or Keys.Oemplus:
+                ReleaseNotesRichTextBox.Zoom(Zoom.In);
+                break;
+            case Keys.Subtract or Keys.OemMinus:
+                ReleaseNotesRichTextBox.Zoom(Zoom.Out);
+                break;
+            case Keys.D0 or Keys.NumPad0:
+                ReleaseNotesRichTextBox.Zoom(Zoom.Reset);
+                break;
         }
 
         base.OnKeyDown(e);
@@ -125,5 +145,19 @@ public sealed partial class UpdateForm : DarkFormBase
             // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
             Core.Dialogs.ShowAlert("Update error description goes here", "Update");
         }
+    }
+
+    public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        var tb = ReleaseNotesRichTextBox;
+
+        e.Graphics.DrawRectangle(
+            pen: Config.DarkMode ? DarkColors.GreySelectionPen : SystemPens.ControlLight,
+            rect: new Rectangle(tb.Left - 2, tb.Top - 2, tb.Width + 3, tb.Height + 3)
+        );
     }
 }
