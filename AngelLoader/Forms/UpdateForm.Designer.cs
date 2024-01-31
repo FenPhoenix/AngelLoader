@@ -91,6 +91,7 @@ sealed partial class UpdateForm
             this.ClientSize = new System.Drawing.Size(800, 444);
             this.Controls.Add(this.ReleaseNotesTextBox);
             this.Controls.Add(this.BottomButtonsFLP);
+            this.KeyPreview = true;
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(300, 200);
             this.Name = "UpdateForm";

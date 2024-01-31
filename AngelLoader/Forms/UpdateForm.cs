@@ -9,6 +9,12 @@ namespace AngelLoader.Forms;
 
 public sealed partial class UpdateForm : DarkFormBase
 {
+    private readonly AutoResetEvent _downloadARE = new(false);
+
+    private bool _downloadingUpdateInfo;
+
+    internal CheckUpdates.UpdateInfo? UpdateInfo;
+
     public UpdateForm()
     {
 #if DEBUG
@@ -23,8 +29,6 @@ public sealed partial class UpdateForm : DarkFormBase
 
         Localize();
     }
-
-    internal CheckUpdates.UpdateInfo? UpdateInfo;
 
     public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
 
@@ -42,6 +46,7 @@ public sealed partial class UpdateForm : DarkFormBase
     protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
+        Cancel_Button.Focus();
         await LoadUpdateInfo();
     }
 
@@ -63,9 +68,15 @@ public sealed partial class UpdateForm : DarkFormBase
         base.OnFormClosing(e);
     }
 
-    private readonly AutoResetEvent _downloadARE = new(false);
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Escape)
+        {
+            Close();
+        }
 
-    private bool _downloadingUpdateInfo;
+        base.OnKeyDown(e);
+    }
 
     private async Task LoadUpdateInfo()
     {
