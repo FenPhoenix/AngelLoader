@@ -12,6 +12,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
+// @Update: Make this more tall and vertical - maybe measure text height / detect screen height?
 public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 {
     private readonly AutoResetEvent _downloadARE = new(false);
