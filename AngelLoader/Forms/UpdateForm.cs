@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static AngelLoader.Global;
@@ -15,6 +16,8 @@ public sealed partial class UpdateForm : DarkFormBase
 #else
         InitSlim();
 #endif
+
+        UpdateButton.Enabled = false;
 
         if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
@@ -42,18 +45,49 @@ public sealed partial class UpdateForm : DarkFormBase
         await LoadUpdateInfo();
     }
 
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        if (_downloadingUpdateInfo)
+        {
+            try
+            {
+                CheckUpdates.CancelDetailsDownload();
+                _downloadARE.WaitOne();
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        base.OnFormClosing(e);
+    }
+
+    private readonly AutoResetEvent _downloadARE = new(false);
+
+    private bool _downloadingUpdateInfo;
+
     private async Task LoadUpdateInfo()
     {
+        SetReleaseNotes("Downloading update information...");
+
         bool success;
         List<CheckUpdates.UpdateInfo> updateInfos;
         try
         {
-            Cursor = Cursors.WaitCursor;
-            (success, updateInfos) = await CheckUpdates.GetUpdateDetails();
+            _downloadingUpdateInfo = true;
+            try
+            {
+                (success, updateInfos) = await CheckUpdates.GetUpdateDetails(_downloadARE);
+            }
+            catch (OperationCanceledException)
+            {
+                return;
+            }
         }
         finally
         {
-            Cursor = Cursors.Default;
+            _downloadingUpdateInfo = false;
         }
 
         if (success && updateInfos.Count > 0)
@@ -70,9 +104,13 @@ public sealed partial class UpdateForm : DarkFormBase
             }
 
             SetReleaseNotes(changelogFullText);
+
+            UpdateButton.Enabled = true;
         }
         else
         {
+            SetReleaseNotes("Failed to download update information.");
+
             // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
             Core.Dialogs.ShowAlert("Update error description goes here", "Update");
         }

@@ -61,6 +61,10 @@ public static class CheckUpdates
     private const string _bitnessRepoDir = "framework_x86";
 #endif
 
+    private static CancellationTokenSource _checkForUpdatesCTS = new();
+
+    internal static void CancelDetailsDownload() => _checkForUpdatesCTS.CancelIfNotDisposed();
+
     private const string _latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/latest_version.txt";
     private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
 
@@ -195,14 +199,18 @@ public static class CheckUpdates
         }
     }
 
-    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)> GetUpdateDetails()
+    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)>
+    GetUpdateDetails(AutoResetEvent downloadARE) => await Task.Run(async () =>
     {
-        // @Update: We need try-catches here to handle errors
-        // @Update: We should open the window immediately and download the data there, because:
-        // We don't want to let the user click around on the unblocked UI before the window opens up, as happens
-        // now.
-        return await Task.Run(static async () =>
+        try
         {
+            // @Update: We need try-catches here to handle errors
+            // @Update: We should open the window immediately and download the data there, because:
+            // We don't want to let the user click around on the unblocked UI before the window opens up, as happens
+            // now.
+
+            _checkForUpdatesCTS = _checkForUpdatesCTS.Recreate();
+
             List<UpdateInfo> ret = new();
 
             List<UpdateFile> versions = new();
@@ -212,21 +220,26 @@ public static class CheckUpdates
                 return (false, ret);
             }
 
-            // @Update: Remove all Trace calls for final
-            Trace.WriteLine(_versionsFile);
             UpdateFile? updateFile = null;
 
-            // @Update: Implement cancellation token
-            using var request = await GlobalHttpClient.GetAsync(_versionsFile, CancellationToken.None);
+            using var request = await GlobalHttpClient.GetAsync(_versionsFile, _checkForUpdatesCTS.Token);
+
+            _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
 
             if (!request.IsSuccessStatusCode) return (false, ret);
 
             Stream versionFileStream = await request.Content.ReadAsStreamAsync();
 
+            _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+
             using (var sr = new StreamReader(versionFileStream))
             {
+                _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+
                 while (await sr.ReadLineAsync() is { } line)
                 {
+                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+
                     string lineT = line.Trim();
 
                     if (lineT.IsEmpty()) continue;
@@ -236,7 +249,6 @@ public static class CheckUpdates
                     {
                         if (version <= appVersion) break;
 
-                        Trace.WriteLine("Header: Version " + version);
                         if (updateFile != null) versions.Add(updateFile);
                         updateFile = new UpdateFile { Version = version };
                     }
@@ -245,15 +257,16 @@ public static class CheckUpdates
                         if (lineT.StartsWithO("ChangelogUrl="))
                         {
                             updateFile.ChangelogUrl = new Uri(lineT.Substring("ChangelogUrl=".Length));
-                            Trace.WriteLine("Changelog location: " + updateFile.ChangelogUrl);
                         }
                         else if (lineT.StartsWithO("DownloadUrl="))
                         {
                             updateFile.DownloadUrl = new Uri(lineT.Substring("DownloadUrl=".Length));
-                            Trace.WriteLine("Download location: " + updateFile.DownloadUrl);
                         }
                     }
                 }
+
+                _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+
                 if (updateFile != null) versions.Add(updateFile);
             }
 
@@ -268,10 +281,15 @@ public static class CheckUpdates
                 {
                     // @Update: Handle errors
                     // @Update: Implement cancellation token
-                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, CancellationToken.None);
+                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, _checkForUpdatesCTS.Token);
+
+                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
 
                     // Quick-n-dirty way to normalize linebreaks, because they'll normally be Unix-style on GitHub
                     string changelogText = await changelogRequest.Content.ReadAsStringAsync();
+
+                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+
                     if (!changelogText.Contains('\r'))
                     {
                         changelogText = changelogText.Replace("\n", "\r\n");
@@ -289,19 +307,19 @@ public static class CheckUpdates
             }
 
             return (ret.Count > 0, ret);
-        });
-    }
+        }
+        finally
+        {
+            downloadARE.Set();
+        }
+    });
 
     // @Update: Get rid of this old code when we're done
     #region Old
 
-    private static CancellationTokenSource CheckForUpdatesCTS = new();
-
-    internal static void Cancel() => CheckForUpdatesCTS.CancelIfNotDisposed();
-
     internal static async Task Check()
     {
-        CheckForUpdatesCTS = CheckForUpdatesCTS.Recreate();
+        _checkForUpdatesCTS = _checkForUpdatesCTS.Recreate();
 
         //const string uri = "https://fenphoenix.github.io/AngelLoader/al_update/al_update.ini";
         const string uri = "https://fenphoenix.github.io/AngelLoader/al_update_testing/al_update.ini";
@@ -314,7 +332,7 @@ public static class CheckUpdates
             var req = WebRequest.Create(uri);
 
             WebResponse response;
-            using (CheckForUpdatesCTS.Token.Register(() => req.Abort()))
+            using (_checkForUpdatesCTS.Token.Register(() => req.Abort()))
             {
                 try
                 {
@@ -322,7 +340,7 @@ public static class CheckUpdates
                 }
                 catch (WebException)
                 {
-                    if (CheckForUpdatesCTS.IsCancellationRequested)
+                    if (_checkForUpdatesCTS.IsCancellationRequested)
                     {
                         return;
                     }
@@ -372,7 +390,7 @@ public static class CheckUpdates
         {
             await wc.DownloadFileTaskAsync(uri, localFile);
 
-            if (CheckForUpdatesCTS.IsCancellationRequested) return;
+            if (_checkForUpdatesCTS.IsCancellationRequested) return;
 
             var (success, updateFile) = ReadUpdateFile(localFile);
             if (!success)
