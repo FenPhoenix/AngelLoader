@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
@@ -74,6 +75,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
         }
     }
 
+    // @Update: current readme bytes being static is a problem. It's because of the preload code, but we need to somehow not have this.
     private static byte[] _currentReadmeBytes = Array.Empty<byte>();
 
     private ReadmeType _currentReadmeType = ReadmeType.PlainText;
@@ -231,6 +233,42 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             SetReadmeTypeAndColorState(ReadmeType.PlainText);
             ResumeState(toggleReadOnly: false);
             LocalizableMessageType = ReadmeLocalizableMessage.None;
+        }
+    }
+
+    /// <summary>
+    /// Loads RTF that we control, and thus doesn't need processing.
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <exception cref="InvalidDataException"></exception>
+    internal void LoadControlledRtf(Stream stream)
+    {
+        SetFullUrlsDetect();
+
+        try
+        {
+            SuspendState(toggleReadOnly: true);
+
+            SetReadmeTypeAndColorState(ReadmeType.RichText);
+
+            _currentReadmeSupportsEncodingChange = false;
+
+            //_currentReadmeBytes = File.ReadAllBytes(path);
+            _currentReadmeBytes = new byte[stream.Length];
+            int bytesRead = stream.ReadAll(_currentReadmeBytes, 0, (int)stream.Length);
+            if (bytesRead != stream.Length)
+            {
+                throw new InvalidDataException("Read length was not equal to stream length.");
+            }
+
+            // This resets the font if false, so don't do it after the load or it messes up the RTF.
+            ContentIsPlainText = false;
+
+            RefreshDarkModeState(skipSuspend: true);
+        }
+        finally
+        {
+            ResumeState(toggleReadOnly: true);
         }
     }
 
