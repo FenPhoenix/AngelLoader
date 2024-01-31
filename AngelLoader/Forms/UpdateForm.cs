@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,11 +49,9 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
-    private void SetReleaseNotes(string releaseNotes)
-    {
-        // @Update: Implement headings/bulleted lists etc.
-        ReleaseNotesRichTextBox.SetText(releaseNotes);
-    }
+    private void SetText(string text) => ReleaseNotesRichTextBox.SetText(text);
+
+    private void SetReleaseNotes(Stream stream) => ReleaseNotesRichTextBox.LoadControlledRtf(stream);
 
     protected override async void OnShown(EventArgs e)
     {
@@ -100,7 +101,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 
     private async Task LoadUpdateInfo()
     {
-        SetReleaseNotes("Downloading update information...");
+        SetText("Downloading update information...");
 
         bool success;
         List<CheckUpdates.UpdateInfo> updateInfos;
@@ -123,28 +124,82 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 
         if (success && updateInfos.Count > 0)
         {
+#if false
+            updateInfos.Add(new CheckUpdates.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
+#endif
+
             UpdateInfo = updateInfos[0];
 
-            // @Update: Test with multiple versions/changelogs
-            string changelogFullText = "";
+            string changelogFullText =
+                @"{\rtf1" +
+                @"\ansi\ansicpg1252" +
+                @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}}";
             for (int i = 0; i < updateInfos.Count; i++)
             {
-                if (i > 0) changelogFullText += "\r\n\r\n\r\n";
+                if (i > 0) changelogFullText += @"\line\line --- \line\line ";
                 CheckUpdates.UpdateInfo? item = updateInfos[i];
-                changelogFullText += item.Version + ":\r\n" + item.ChangelogText;
+                changelogFullText += @"\b1\fs28 " + item.Version + @":\fs24\b0 \line\line " +
+                                     ChangelogBodyToRtf(item.ChangelogText);
             }
+            changelogFullText += "}";
 
-            SetReleaseNotes(changelogFullText);
+            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText)))
+            {
+                SetReleaseNotes(ms);
+            }
 
             UpdateButton.Enabled = true;
         }
         else
         {
-            SetReleaseNotes("Failed to download update information.");
+            SetText("Failed to download update information.");
 
             // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
             Core.Dialogs.ShowAlert("Update error description goes here", "Update");
         }
+    }
+
+    // In with the UI code because RTF is UI-specific
+    private static string ChangelogBodyToRtf(string text)
+    {
+        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+            Match bulletMatch = Regex.Match(line, @"^\s*- ");
+            if (bulletMatch.Success)
+            {
+                lines[i] = "    " + line.Substring(0, bulletMatch.Index) + "\x2022" + line.Substring(bulletMatch.Index + 1);
+                continue;
+            }
+            Match headerMatch = Regex.Match(line.TrimEnd(), ":$");
+            if (headerMatch.Success)
+            {
+                lines[i] = @"\b1 " + line + @"\b0 ";
+            }
+        }
+
+        text = string.Join(@"\line ", lines);
+
+        StringBuilder sb = new();
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            char c = text[i];
+            // 2-char codepoints are just 2 consecutive \uN keywords, so this is correct
+            if (c > 127)
+            {
+                sb.Append(@"\u");
+                sb.Append((int)c);
+                sb.Append('?');
+            }
+            else
+            {
+                sb.Append(c);
+            }
+        }
+
+        return sb.ToString();
     }
 
     public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
