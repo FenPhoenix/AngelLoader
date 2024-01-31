@@ -692,6 +692,8 @@ public sealed partial class MainForm : DarkFormBase,
         InitComponentManual();
 #endif
 
+        ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
+
         _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 

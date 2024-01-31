@@ -9,7 +9,6 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AL_Common.Logger;
-using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
@@ -66,8 +65,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             _contentIsPlainText = value;
             if (_contentIsPlainText)
             {
-                // @Update: Extract this to a class-level bool so we can have different settings for different instances
-                Font = Config.ReadmeUseFixedWidthFont ? MonospaceFont : DefaultFont;
+                Font = _useFixedFont ? MonospaceFont : DefaultFont;
             }
             else
             {
@@ -99,8 +97,12 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
     internal void Localize() => Lazy_RTFBoxMenu.Localize();
 
+    private bool _useFixedFont;
+
     internal void SetFontType(bool useFixed)
     {
+        _useFixedFont = useFixed;
+
         if (!ContentIsPlainText) return;
 
         try
