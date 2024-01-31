@@ -1,9 +1,11 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -44,9 +46,11 @@ We would have to put it in an entirely separate process and do like RichTextBoxA
 and then just restart the process whenever our memory use gets too high.
 */
 
-internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
+internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkContextMenuOwner
 {
     #region Private fields / properties
+
+    private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
 
     internal ReadmeLocalizableMessage LocalizableMessageType = ReadmeLocalizableMessage.None;
 
@@ -62,6 +66,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             _contentIsPlainText = value;
             if (_contentIsPlainText)
             {
+                // @Update: Extract this to a class-level bool so we can have different settings for different instances
                 Font = Config.ReadmeUseFixedWidthFont ? MonospaceFont : DefaultFont;
             }
             else
@@ -80,13 +85,19 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     // .wri file and have fallen back to treating it as unparsed plain text.
     private bool _currentReadmeSupportsEncodingChange;
 
-    private MainForm _owner = null!;
+    private IWaitCursorSettable _owner = null!;
 
     #endregion
 
-    public RichTextBoxCustom() => InitWorkarounds();
+    public RichTextBoxCustom()
+    {
+        Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this);
+        InitWorkarounds();
+    }
 
     #region Private methods
+
+    internal void Localize() => Lazy_RTFBoxMenu.Localize();
 
     internal void SetFontType(bool useFixed)
     {
@@ -140,7 +151,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #region Public methods
 
-    internal void SetOwner(MainForm owner) => _owner = owner;
+    internal void SetOwner(IWaitCursorSettable owner) => _owner = owner;
 
     internal new void SelectAll()
     {
@@ -270,7 +281,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                     long size = new FileInfo(path).Length;
                     if (size > ByteSize.KB * 300)
                     {
-                        _owner.Cursor = Cursors.WaitCursor;
+                        _owner.SetWaitCursor(true);
                         needsCursorReset = true;
                     }
                 }
@@ -335,7 +346,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             ResumeState(toggleReadOnly);
             if (needsCursorReset)
             {
-                _owner.Cursor = Cursors.Default;
+                _owner.SetWaitCursor(false);
             }
             LocalizableMessageType = ReadmeLocalizableMessage.None;
         }
@@ -435,7 +446,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         if (e.Button == MouseButtons.Right)
         {
-            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+            ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
         }
     }
 
@@ -445,7 +456,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         if (ControlUtils.IsMenuKey(e))
         {
-            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+            ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
         }
     }
 
@@ -540,7 +551,16 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         {
             DisposeWorkarounds();
             _monospaceFont?.Dispose();
+            _componentsFallback?.Dispose();
         }
         base.Dispose(disposing);
     }
+
+    public bool ViewBlocked => FindForm() is IDarkContextMenuOwner { ViewBlocked: true };
+
+    private IContainer? _componentsFallback;
+
+    public IContainer GetComponents() => FindForm() is IDarkContextMenuOwner parent
+        ? parent.GetComponents()
+        : _componentsFallback ??= new Container();
 }

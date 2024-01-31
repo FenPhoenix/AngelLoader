@@ -182,7 +182,6 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
     private readonly TopRightLLMenu TopRightLLMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
-    internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
     internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
@@ -639,7 +638,6 @@ public sealed partial class MainForm : DarkFormBase,
             PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
             TopRightLLMenu = new TopRightLLMenu(this),
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
-            Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
             Lazy_UpdateNotification = new Lazy_UpdateNotification(this)
@@ -1916,7 +1914,7 @@ public sealed partial class MainForm : DarkFormBase,
                 SetReadmeLocalizableMessage(ReadmeRichTextBox.LocalizableMessageType);
             }
 
-            Lazy_RTFBoxMenu.Localize();
+            ReadmeRichTextBox.Localize();
 
             #endregion
 

@@ -7,10 +7,14 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-public interface ISettingsChangeableView
+public interface ISettingsChangeableView : IWaitCursorSettable
 {
     void Localize();
     void SetTheme(VisualTheme theme);
+}
+
+public interface IWaitCursorSettable
+{
     void SetWaitCursor(bool value);
 }
 
