@@ -136,7 +136,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
                 @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}}";
             for (int i = 0; i < updateInfos.Count; i++)
             {
-                if (i > 0) changelogFullText += @"\line\line --- \line\line ";
+                if (i > 0) changelogFullText += @"\line\line ---\line\line ";
                 CheckUpdates.UpdateInfo? item = updateInfos[i];
                 changelogFullText += @"\b1\fs28 " + item.Version + @":\fs24\b0 \line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
