@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -12,7 +13,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
+public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDarkContextMenuOwner
 {
     private readonly AutoResetEvent _downloadARE = new(false);
 
@@ -228,4 +229,8 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
             rect: new Rectangle(tb.Left - 2, tb.Top - 2, tb.Width + 3, tb.Height + 3)
         );
     }
+
+    public bool ViewBlocked => false;
+
+    public IContainer GetComponents() => components;
 }
