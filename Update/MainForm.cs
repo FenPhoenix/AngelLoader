@@ -22,6 +22,8 @@ namespace Update;
 @Update: Remove debug command line in properties!
 
 @Update: Make close button safe - put up a warning, or revert on close?
+
+@Update: Make two-line label be two labels for proper centering
 */
 
 public sealed partial class MainForm : DarkFormBase
