@@ -140,7 +140,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
             {
                 if (i > 0) changelogFullText += @"\line\line ---\line\line ";
                 CheckUpdates.UpdateInfo? item = updateInfos[i];
-                changelogFullText += @"\b1\fs28 " + item.Version + @":\fs24\b0 \line\line " +
+                changelogFullText += @"\b1\fs28 " + item.Version + @":\fs24\b0\line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
             }
             changelogFullText += "}";
@@ -175,6 +175,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
             Match bulletMatch = Regex.Match(line, @"^\s*- ");
             if (bulletMatch.Success)
             {
+                // @Update: This should be smarter for multi-level bulleted lists; we might have only a two-space indent in the raw version
                 lines[i] = "    " + line.Substring(0, bulletMatch.Index) + "\x2022" + line.Substring(bulletMatch.Index + 1);
                 continue;
             }
