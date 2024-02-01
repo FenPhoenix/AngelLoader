@@ -140,7 +140,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
             {
                 if (i > 0) changelogFullText += @"\line\line ---\line\line ";
                 CheckUpdates.UpdateInfo? item = updateInfos[i];
-                changelogFullText += @"\b1\fs28 " + item.Version + @":\fs24\b0\line\line " +
+                changelogFullText += @"\b1\fs26 " + item.Version + @":\fs24\b0\line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
             }
             changelogFullText += "}";
