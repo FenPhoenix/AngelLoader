@@ -53,8 +53,8 @@ public sealed partial class MainForm : DarkFormBase
         }
         else
         {
-            using (Process.Start(Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
-            Application.Exit();
+            //using (Process.Start(Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
+            //Application.Exit();
         }
     }
 

@@ -9,6 +9,7 @@
     <StartupObject>Update.Program</StartupObject>
     <NeutralLanguage>en-US</NeutralLanguage>
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

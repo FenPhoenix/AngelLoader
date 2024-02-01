@@ -208,16 +208,17 @@ internal static class Utils
     public static void ShowAlert(
         MainForm view,
         string message,
-        // @Update: Localize this
-        string title = "Alert",
+        string? title = null,
         MessageBoxIcon icon = MessageBoxIcon.Warning) => view.Invoke(() =>
     {
+        title ??= LocalizationData.LText.AlertMessages.Alert;
+
         using var d = new DarkTaskDialog(
             message: message,
             title: title,
             icon: icon,
             // @Update: Localize this
-            yesText: "OK",
+            yesText: LocalizationData.LText.Global.OK,
             defaultButton: DialogResult.Yes);
         d.ShowDialog(view);
     });

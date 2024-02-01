@@ -26,13 +26,12 @@ internal static class Language
         internal readonly string Name;
     }
 
-    internal static void
-        Generate(
-            string sourceFile,
-            string perGameLangGetterDestFile,
-            string langIniFile,
-            string testLangIniFile,
-            string testLang2IniFile)
+    internal static void Generate(
+        string sourceFile,
+        string perGameLangGetterDestFile,
+        string langIniFile,
+        string testLangIniFile,
+        string testLang2IniFile)
     {
         var (sections, perGameSets) = ReadSource(sourceFile);
 
