@@ -33,7 +33,7 @@ internal static class GLMLConversion
             // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
             @"\ansi\ansicpg1252" +
             // Fonts (use a pleasant sans-serif)
-            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
+            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial{\*\falt Calibri};}}" +
             // Set up red color and dark mode text colors
             colorTable +
             // \viewkind4 = normal, \uc1 = 1 char Unicode fallback (don't worry about it), \f0 = use font 0,
