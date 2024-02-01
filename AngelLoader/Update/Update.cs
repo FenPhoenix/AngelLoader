@@ -202,7 +202,7 @@ public static class CheckUpdates
         }
     }
 
-    internal static async Task<bool> CheckIfUpdateAvailable(CancellationToken cancellationToken)
+    private static async Task<bool> CheckIfUpdateAvailable(CancellationToken cancellationToken)
     {
         try
         {
@@ -342,8 +342,6 @@ public static class CheckUpdates
 
                 if (changelogUri != null && downloadUri != null)
                 {
-                    // @Update: Handle errors
-                    // @Update: Implement cancellation token
                     using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, _checkForUpdatesCTS.Token);
 
                     _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
@@ -373,6 +371,10 @@ public static class CheckUpdates
                 ? UpdateDetailsDownloadResult.Success
                 : UpdateDetailsDownloadResult.NoUpdatesFound;
             return (result, ret);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return (UpdateDetailsDownloadResult.Error, new List<UpdateInfo>());
         }
         finally
         {

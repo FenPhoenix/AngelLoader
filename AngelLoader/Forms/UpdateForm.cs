@@ -58,7 +58,14 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
     {
         base.OnShown(e);
         Cancel_Button.Focus();
-        await LoadUpdateInfo();
+        try
+        {
+            await LoadUpdateInfo();
+        }
+        catch
+        {
+            // Weird control-access-after-disposed thing even though we should be synchronous for that...
+        }
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
