@@ -994,6 +994,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string DownloadingUpdate = "Downloading update...";
         internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
+        internal readonly string UnpackingUpdate = "Unpacking update...";
         internal readonly string ErrorUnpackingUpdate = "Error unpacking the update.";
     }
 }

@@ -78,7 +78,7 @@ public static class CheckUpdates
         }
         if (!accepted || updateInfo == null) return;
 
-        // @Update: Make progress show for the archive download, and then have another one for the extract
+        // @Update: To get fancy we could do a double-size progress box and show total/(download|unpack)
         Core.View.ShowProgressBox_Single(
             message1: LText.Update.DownloadingUpdate,
             progressType: ProgressType.Determinate
@@ -89,6 +89,7 @@ public static class CheckUpdates
             try
             {
                 string localZipFile;
+                var progress = new Progress<int>(ReportProgress);
                 try
                 {
                     // @Update: Implement cancellation token
@@ -112,7 +113,7 @@ public static class CheckUpdates
                     using Stream zipStream = await request.Content.ReadAsStreamAsync();
                     using var zipLocalStream = File.Create(localZipFile);
                     // @Update: Implement cancellation token
-                    await zipStream.CopyToAsync(zipLocalStream, FileStreamBufferSize, CancellationToken.None);
+                    await StreamCopyNoAllocAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress);
                 }
                 catch (Exception ex)
                 {
@@ -124,11 +125,16 @@ public static class CheckUpdates
 
                 try
                 {
+                    Core.View.SetProgressPercent(0);
+
+                    Core.View.SetProgressBoxState_Single(
+                        message1: LText.Update.UnpackingUpdate,
+                        progressType: ProgressType.Determinate
+                    );
+
                     using var fs = File.OpenRead(localZipFile);
                     using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-
-                    var progress = new Progress<int>(ReportProgress);
 
                     archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
                 }
