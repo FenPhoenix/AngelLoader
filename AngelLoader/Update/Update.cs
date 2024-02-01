@@ -88,45 +88,62 @@ public static class CheckUpdates
         {
             try
             {
-                // @Update: Implement cancellation token
-                using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, CancellationToken.None);
-
-                if (!request.IsSuccessStatusCode) return;
-
-                // Just download the file once, so we know we won't read duplicate data or whatever
-
-                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
-
-                string localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
-                    Path.GetFileName(updateInfo.DownloadUri.OriginalString));
-
-                Stream zipStream = await request.Content.ReadAsStreamAsync();
-                using (var zipLocalStream = File.Create(localZipFile))
+                string localZipFile;
+                try
                 {
+                    // @Update: Implement cancellation token
+                    using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, CancellationToken.None);
+
+                    if (!request.IsSuccessStatusCode)
+                    {
+                        Log("Error downloading the update. Status code: " + request.StatusCode);
+                        Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                        Core.Dialogs.ShowError(LText.Update.ErrorDownloadingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Just download the file once, so we know we won't read duplicate data or whatever
+
+                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+
+                    localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
+                        Path.GetFileName(updateInfo.DownloadUri.OriginalString));
+
+                    using Stream zipStream = await request.Content.ReadAsStreamAsync();
+                    using var zipLocalStream = File.Create(localZipFile);
                     // @Update: Implement cancellation token
                     await zipStream.CopyToAsync(zipLocalStream, FileStreamBufferSize, CancellationToken.None);
                 }
+                catch (Exception ex)
+                {
+                    Log("Error downloading the update.", ex);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Core.Dialogs.ShowError(LText.Update.ErrorDownloadingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
+                    return;
+                }
 
-                using var fs = File.OpenRead(localZipFile);
-                using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
-                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                try
+                {
+                    using var fs = File.OpenRead(localZipFile);
+                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
 
-                var progress = new Progress<int>(ReportProgress);
+                    var progress = new Progress<int>(ReportProgress);
 
-                archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+                    archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+                }
+                catch (Exception ex)
+                {
+                    Log("Error unpacking the update.", ex);
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Core.Dialogs.ShowError(LText.Update.ErrorUnpackingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
+                    return;
+                }
 
                 // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
                 Ini.WriteConfigIni();
 
                 Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
-            }
-            catch (Exception ex)
-            {
-                Log("Error downloading the update.", ex);
-                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                // @Update: Localize this
-                Core.Dialogs.ShowError("Error downloading the update.", LText.AlertMessages.Alert, MBoxIcon.Warning);
-                return;
             }
             finally
             {

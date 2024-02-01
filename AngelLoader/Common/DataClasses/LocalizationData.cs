@@ -983,6 +983,7 @@ internal sealed class LText_Class
     {
         internal readonly string UpdateAlertBoxTitle = "Update";
         internal readonly string NoUpdatesAvailable = "No updates are available. You're using the latest version of AngelLoader.";
+        internal readonly string DownloadingUpdateInfo = "Downloading update information...";
         internal readonly string FailedToDownloadUpdateInfo = "Failed to download update information.";
         internal readonly string UpdateAvailable = "Update available";
         internal readonly string AutoUpdateFirstAsk_Title = "Updates";
@@ -992,5 +993,7 @@ internal sealed class LText_Class
         internal readonly string UpdateDialog_UpdateAndRestartButtonText = "Update and restart";
         [FenGenBlankLine]
         internal readonly string DownloadingUpdate = "Downloading update...";
+        internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
+        internal readonly string ErrorUnpackingUpdate = "Error unpacking the update.";
     }
 }

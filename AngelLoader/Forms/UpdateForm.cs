@@ -102,8 +102,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 
     private async Task LoadUpdateInfo()
     {
-        // @Update: Localize this
-        SetText("Downloading update information...");
+        SetText(LText.Update.DownloadingUpdateInfo);
 
         CheckUpdates.UpdateDetailsDownloadResult result;
         List<CheckUpdates.UpdateInfo> updateInfos;
