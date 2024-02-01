@@ -192,19 +192,42 @@ public static class CheckUpdates
 
             string versionString = await request.Content.ReadAsStringAsync();
 
-            if (!versionString.IsEmpty() &&
-                Version.TryParse(versionString, out Version version) &&
-                version > appVersion)
-            {
-                return true;
-            }
+            return !versionString.IsEmpty() &&
+                   Version.TryParse(versionString, out Version version) &&
+                   version > appVersion;
         }
         catch
         {
             return false;
         }
+    }
 
-        return false;
+    internal static async Task DoManualCheck()
+    {
+        bool updateAvailable;
+        try
+        {
+            Core.View.SetWaitCursor(true);
+            Core.View.Block(true);
+            updateAvailable = await CheckIfUpdateAvailable(CancellationToken.None);
+        }
+        finally
+        {
+            Core.View.Block(false);
+            Core.View.SetWaitCursor(false);
+        }
+
+        if (updateAvailable)
+        {
+            await ShowUpdateAskDialog();
+        }
+        else
+        {
+            Core.Dialogs.ShowAlert(
+                LText.Update.NoUpdatesAvailable,
+                LText.Update.UpdateAlertBoxTitle,
+                MBoxIcon.Information);
+        }
     }
 
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)>

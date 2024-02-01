@@ -2716,30 +2716,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
         {
-            bool updateAvailable;
-            try
-            {
-                SetWaitCursor(true);
-                Block(true);
-                updateAvailable = await CheckUpdates.CheckIfUpdateAvailable(CancellationToken.None);
-            }
-            finally
-            {
-                Block(false);
-                SetWaitCursor(false);
-            }
-
-            if (updateAvailable)
-            {
-                await CheckUpdates.ShowUpdateAskDialog();
-            }
-            else
-            {
-                Core.Dialogs.ShowAlert(
-                    LText.Update.NoUpdatesAvailable,
-                    LText.Update.UpdateAlertBoxTitle,
-                    MBoxIcon.Information);
-            }
+            await CheckUpdates.DoManualCheck();
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
