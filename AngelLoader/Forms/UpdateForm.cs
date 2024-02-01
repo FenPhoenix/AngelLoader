@@ -20,6 +20,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
     private bool _downloadingUpdateInfo;
 
     internal CheckUpdates.UpdateInfo? UpdateInfo;
+    internal bool NoUpdatesFound;
 
     public UpdateForm()
     {
@@ -104,14 +105,14 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
     {
         SetText("Downloading update information...");
 
-        bool success;
+        CheckUpdates.UpdateDetailsDownloadResult result;
         List<CheckUpdates.UpdateInfo> updateInfos;
         try
         {
             _downloadingUpdateInfo = true;
             try
             {
-                (success, updateInfos) = await CheckUpdates.GetUpdateDetails(_downloadARE);
+                (result, updateInfos) = await CheckUpdates.GetUpdateDetails(_downloadARE);
             }
             catch (OperationCanceledException)
             {
@@ -123,7 +124,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
             _downloadingUpdateInfo = false;
         }
 
-        if (success && updateInfos.Count > 0)
+        if (result == CheckUpdates.UpdateDetailsDownloadResult.Success && updateInfos.Count > 0)
         {
 #if false
             updateInfos.Add(new CheckUpdates.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
@@ -151,8 +152,15 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
 
             UpdateButton.Enabled = true;
         }
+        else if (result == CheckUpdates.UpdateDetailsDownloadResult.NoUpdatesFound)
+        {
+            SetText(LText.Update.NoUpdatesAvailable);
+            UpdateButton.Enabled = false;
+            NoUpdatesFound = true;
+        }
         else
         {
+            // @Update: Localize this
             SetText("Failed to download update information.");
             UpdateButton.Enabled = false;
         }

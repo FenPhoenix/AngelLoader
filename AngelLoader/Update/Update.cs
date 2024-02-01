@@ -70,7 +70,12 @@ public static class CheckUpdates
 
     internal static async Task ShowUpdateAskDialog()
     {
-        (bool accepted, UpdateInfo? updateInfo) = Core.View.ShowUpdateAvailableDialog();
+        (bool accepted, bool noUpdatesFound, UpdateInfo? updateInfo) = Core.View.ShowUpdateAvailableDialog();
+        if (noUpdatesFound)
+        {
+            Core.View.ShowUpdateNotification(false);
+            return;
+        }
         if (!accepted || updateInfo == null) return;
 
         // @Update: Make progress show for the archive download, and then have another one for the extract
@@ -160,7 +165,7 @@ public static class CheckUpdates
             // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
             // and it exits with the app if the app closes.
             if (!await CheckIfUpdateAvailable(CancellationToken.None)) return;
-            Core.View.Invoke(static () => Core.View.ShowUpdateNotification());
+            Core.View.Invoke(static () => Core.View.ShowUpdateNotification(true));
         });
 
         try
@@ -230,7 +235,14 @@ public static class CheckUpdates
         }
     }
 
-    internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)>
+    internal enum UpdateDetailsDownloadResult
+    {
+        Success,
+        Error,
+        NoUpdatesFound
+    }
+
+    internal static async Task<(UpdateDetailsDownloadResult Result, List<UpdateInfo> UpdateInfos)>
     GetUpdateDetails(AutoResetEvent downloadARE) => await Task.Run(async () =>
     {
         try
@@ -245,7 +257,7 @@ public static class CheckUpdates
 
             if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
             {
-                return (false, ret);
+                return (UpdateDetailsDownloadResult.Error, ret);
             }
 
             UpdateFile? updateFile = null;
@@ -254,7 +266,7 @@ public static class CheckUpdates
 
             _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
 
-            if (!request.IsSuccessStatusCode) return (false, ret);
+            if (!request.IsSuccessStatusCode) return (UpdateDetailsDownloadResult.Error, ret);
 
             Stream versionFileStream = await request.Content.ReadAsStreamAsync();
 
@@ -298,7 +310,7 @@ public static class CheckUpdates
                 if (updateFile != null) versions.Add(updateFile);
             }
 
-            if (versions.Count == 0) return (false, ret);
+            if (versions.Count == 0) return (UpdateDetailsDownloadResult.NoUpdatesFound, ret);
 
             foreach (UpdateFile item in versions)
             {
@@ -334,7 +346,10 @@ public static class CheckUpdates
                 }
             }
 
-            return (ret.Count > 0, ret);
+            UpdateDetailsDownloadResult result = ret.Count > 0
+                ? UpdateDetailsDownloadResult.Success
+                : UpdateDetailsDownloadResult.NoUpdatesFound;
+            return (result, ret);
         }
         finally
         {

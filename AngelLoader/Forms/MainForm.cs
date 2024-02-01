@@ -5125,10 +5125,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Show dialogs
 
-    public (bool Success, CheckUpdates.UpdateInfo? UpdateInfo) ShowUpdateAvailableDialog()
+    public (bool Success, bool NoUpdatesFound, CheckUpdates.UpdateInfo? UpdateInfo)
+    ShowUpdateAvailableDialog()
     {
         using var f = new UpdateForm();
-        return (f.ShowDialogDark() == DialogResult.OK, f.UpdateInfo);
+        return (f.ShowDialogDark() == DialogResult.OK, f.NoUpdatesFound, f.UpdateInfo);
     }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
@@ -5362,11 +5363,11 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void ShowUpdateNotification()
+    public void ShowUpdateNotification(bool show)
     {
         if (!AboutToClose)
         {
-            Lazy_UpdateNotification.SetVisible(true);
+            Lazy_UpdateNotification.SetVisible(show);
         }
     }
 }
