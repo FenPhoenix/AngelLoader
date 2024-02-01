@@ -154,9 +154,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
         else
         {
             SetText("Failed to download update information.");
-
-            // @Update: If we couldn't access the internet, we need to say something different than if it's some other error
-            Core.Dialogs.ShowAlert("Update error description goes here", "Update");
+            UpdateButton.Enabled = false;
         }
     }
 
