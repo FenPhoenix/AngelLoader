@@ -157,35 +157,10 @@ public static class CheckUpdates
         // ReSharper disable once AsyncVoidLambda
         var thread = new Thread(static async () =>
         {
-            try
-            {
-                // @Update: Updating the latest version file is the very last thing that should be done by the release packager
-                // We want everything in place when the app finds a new version defined there.
-
-                if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
-                {
-                    return;
-                }
-
-                // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
-                // and it exits with the app if the app closes.
-                using var request = await GlobalHttpClient.GetAsync(_latestVersionFile);
-
-                if (!request.IsSuccessStatusCode) return;
-
-                string versionString = await request.Content.ReadAsStringAsync();
-
-                if (!versionString.IsEmpty() &&
-                    Version.TryParse(versionString, out Version version) &&
-                    version > appVersion)
-                {
-                    Core.View.Invoke(static () => Core.View.ShowUpdateNotification());
-                }
-            }
-            catch
-            {
-                // ignore
-            }
+            // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
+            // and it exits with the app if the app closes.
+            if (!await CheckIfUpdateAvailable(CancellationToken.None)) return;
+            Core.View.Invoke(static () => Core.View.ShowUpdateNotification());
         });
 
         try
@@ -197,6 +172,39 @@ public static class CheckUpdates
         {
             // ignore
         }
+    }
+
+    internal static async Task<bool> CheckIfUpdateAvailable(CancellationToken cancellationToken)
+    {
+        try
+        {
+            // @Update: Updating the latest version file is the very last thing that should be done by the release packager
+            // We want everything in place when the app finds a new version defined there.
+
+            if (!Version.TryParse(Application.ProductVersion, out Version appVersion))
+            {
+                return false;
+            }
+
+            using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, cancellationToken);
+
+            if (!request.IsSuccessStatusCode) return false;
+
+            string versionString = await request.Content.ReadAsStringAsync();
+
+            if (!versionString.IsEmpty() &&
+                Version.TryParse(versionString, out Version version) &&
+                version > appVersion)
+            {
+                return true;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        return false;
     }
 
     internal static async Task<(bool Success, List<UpdateInfo> UpdateInfos)>

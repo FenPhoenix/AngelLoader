@@ -1183,10 +1183,8 @@ public sealed partial class MainForm : DarkFormBase,
                 : CheckForUpdates.False;
         }
 
-        // @Update: Add manual update check to the main menu
         if (Config.CheckForUpdates == CheckForUpdates.True)
         {
-            // @Update: Maybe add cancellation for this task just for extra robustness - we'll cancel on form close
             CheckUpdates.StartCheckIfUpdateAvailableThread();
         }
     }
@@ -2718,10 +2716,30 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
         {
-            // @Update(Check for updates menu option):
-            // We want to put up a "no updates available" window if none available, or go straight to the ask
-            // window with the changelog if there are.
-            Core.Dialogs.ShowAlert("Check for updates window goes here", "Todo");
+            bool updateAvailable;
+            try
+            {
+                SetWaitCursor(true);
+                Block(true);
+                updateAvailable = await CheckUpdates.CheckIfUpdateAvailable(CancellationToken.None);
+            }
+            finally
+            {
+                Block(false);
+                SetWaitCursor(false);
+            }
+
+            if (updateAvailable)
+            {
+                await CheckUpdates.ShowUpdateAskDialog();
+            }
+            else
+            {
+                Core.Dialogs.ShowAlert(
+                    LText.Update.NoUpdatesAvailable,
+                    LText.Update.UpdateAlertBoxTitle,
+                    MBoxIcon.Information);
+            }
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
