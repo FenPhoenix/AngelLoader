@@ -21,7 +21,7 @@ sealed partial class UpdateForm
         this.BottomButtonsFLP.Controls.Add(this.Cancel_Button);
         this.BottomButtonsFLP.Controls.Add(this.UpdateButton);
         this.BottomButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-        this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 417);
+        this.BottomButtonsFLP.Location = new System.Drawing.Point(0, 628);
         this.BottomButtonsFLP.Size = new System.Drawing.Size(800, 28);
         this.BottomButtonsFLP.TabIndex = 0;
         // 
@@ -47,7 +47,7 @@ sealed partial class UpdateForm
         this.ReleaseNotesRichTextBox.Location = new System.Drawing.Point(2, 2);
         this.ReleaseNotesRichTextBox.ReadOnly = true;
         this.ReleaseNotesRichTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-        this.ReleaseNotesRichTextBox.Size = new System.Drawing.Size(796, 412);
+        this.ReleaseNotesRichTextBox.Size = new System.Drawing.Size(796, 623);
         this.ReleaseNotesRichTextBox.TabIndex = 1;
         // 
         // UpdateForm
@@ -55,7 +55,7 @@ sealed partial class UpdateForm
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.CancelButton = this.Cancel_Button;
-        this.ClientSize = new System.Drawing.Size(800, 445);
+        this.ClientSize = new System.Drawing.Size(800, 656);
         this.Controls.Add(this.ReleaseNotesRichTextBox);
         this.Controls.Add(this.BottomButtonsFLP);
         this.KeyPreview = true;
