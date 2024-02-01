@@ -160,8 +160,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable
         }
         else
         {
-            // @Update: Localize this
-            SetText("Failed to download update information.");
+            SetText(LText.Update.FailedToDownloadUpdateInfo);
             UpdateButton.Enabled = false;
         }
     }

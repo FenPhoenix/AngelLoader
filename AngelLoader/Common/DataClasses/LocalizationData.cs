@@ -983,6 +983,7 @@ internal sealed class LText_Class
     {
         internal readonly string UpdateAlertBoxTitle = "Update";
         internal readonly string NoUpdatesAvailable = "No updates are available. You're using the latest version of AngelLoader.";
+        internal readonly string FailedToDownloadUpdateInfo = "Failed to download update information.";
         internal readonly string UpdateAvailable = "Update available";
         internal readonly string AutoUpdateFirstAsk_Title = "Updates";
         internal readonly string AutoUpdateFirstAsk_Message = "Would you like AngelLoader to check for updates every startup?";
