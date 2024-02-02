@@ -54,15 +54,18 @@ internal sealed class LocalizationData
     {
         internal readonly string Alert = "Alert";
         internal readonly string Error = "Error";
+        internal readonly string Error_ViewLog = "View log";
     }
 
     internal sealed class Update_Class
     {
         [FenGenBlankLine]
+        // @Update: Should we say like "Updating files..."?
         internal readonly string Copying = "Copying...";
-        internal readonly string RollingBack = "Could not complete copy; rolling back to old version...";
-        internal readonly string RollbackFailed = "The update failed and we tried to restore the old version, but that failed too. It's recommended to download the latest version of AngelLoader and re-install it manually.";
+        internal readonly string UpdateFailed = "The update failed. AngelLoader will remain at its current version.";
+        internal readonly string RollbackFailed = "The update failed, but the attempt to roll back to the previous version failed as well.";
+        // @Update: Put a link to download the latest version here?
+        internal readonly string RecommendManualUpdate = "It's recommended to download the latest version of AngelLoader and install it manually.";
         internal readonly string UnableToStartAngelLoader = "Unable to start AngelLoader. You'll need to start it manually.";
-        internal readonly string UnableToCompleteBackup = "Update failed: Unable to complete backup of current app files.";
     }
 }

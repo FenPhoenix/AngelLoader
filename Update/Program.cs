@@ -7,12 +7,15 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
 using static Update.Data;
+using static Update.Logger;
 
 namespace Update;
 
 /*
 IMPORTANT: This app MUST NOT have any dependencies! It's going to copy an entire AL installation into its own directory.
 The rename of its own exe should be all that is required to allow the entire copy to succeed (no files locked).
+
+@Update: When update fails safe, rename Update.exe.bak back to Update.exe!
 */
 
 internal static class Program
@@ -36,6 +39,8 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
+            SetLogFile(LogFile);
+
             ReadLanguageIni();
 
             // @Update: Maybe we should name this something unappealing like "_update_internal.exe"
@@ -131,25 +136,21 @@ internal static class Program
                 files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
                 if (files.Count == 0)
                 {
-                    Utils.ShowAlert(View,
-                        "Update failed: No files in '" + UpdateTempPath + "'.\r\n\r\n");
+                    Log("Update failed: No files in '" + UpdateTempPath + "'.");
+                    Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                     return;
                 }
             }
             catch (DirectoryNotFoundException ex)
             {
-                Utils.ShowAlert(View,
-                    "Update failed: Update temp directory not found: '" + UpdateTempPath + "'.\r\n\r\n" +
-                    "Exception:\r\n\r\n" +
-                    ex);
+                Log("Update failed: Update temp directory not found: '" + UpdateTempPath + "'.", ex);
+                Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
             catch (Exception ex)
             {
-                Utils.ShowAlert(View,
-                    "Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.\r\n\r\n" +
-                    "Exception:\r\n\r\n" +
-                    ex);
+                Log("Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.", ex);
+                Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
 
@@ -186,10 +187,8 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                Utils.ShowAlert(View,
-                    "Update failed: Unable to create '" + UpdateBakTempPath + "'.\r\n\r\n" +
-                    "Exception:\r\n\r\n" +
-                    ex);
+                Log("Update failed: Unable to create '" + UpdateBakTempPath + "' (current version backup path).", ex);
+                Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
             Utils.ClearUpdateBakTempPath();
@@ -212,10 +211,8 @@ internal static class Program
                     }
                     catch (Exception ex)
                     {
-                        Utils.ShowAlert(View,
-                            LText.Update.UnableToCompleteBackup + "\r\n\r\n" +
-                            "Exception:\r\n\r\n" +
-                            ex);
+                        Log("Update failed: Unable to complete the backup of current app files.", ex);
+                        Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                         Utils.ClearUpdateBakTempPath();
                         return;
                     }
@@ -230,10 +227,8 @@ internal static class Program
             }
             catch (Exception ex)
             {
-                Utils.ShowAlert(View,
-                    "Update failed: Unable to rename '" + exePath + "' to '" + exePath + ".bak'.\r\n\r\n" +
-                    "Exception:\r\n\r\n" +
-                    ex);
+                Log("Update failed: Unable to rename '" + exePath + "' to '" + exePath + ".bak'.", ex);
+                Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
 
@@ -261,6 +256,7 @@ internal static class Program
                 {
                     if (retryCount > 10)
                     {
+                        // @Update: Localize this
                         using var d = new DarkTaskDialog(
                             message: "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
                                      "If AngelLoader is running, close it and try again.\r\n\r\nException: " +
@@ -307,10 +303,8 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            Utils.ShowAlert(View,
-                LText.Update.UnableToStartAngelLoader + "\r\n\r\n" +
-                "Exception:\r\n\r\n" +
-                ex);
+            Log("Unable to start AngelLoader after update copy.", ex);
+            Utils.ShowAlert(View, LText.Update.UnableToStartAngelLoader);
             // ReSharper disable once RedundantJumpStatement
             return;
         }
@@ -318,7 +312,6 @@ internal static class Program
 
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
     {
-        View.SetMessage(LText.Update.RollingBack);
         try
         {
             for (int i = 0; i < oldRelativeFileNames.Count; i++)
@@ -327,13 +320,31 @@ internal static class Program
                 File.Copy(Path.Combine(UpdateBakTempPath, relativeFileName),
                     Path.Combine(startupPath, relativeFileName), overwrite: true);
             }
+            // @Update: Test this
+            Log("Update failed. Successfully rolled back (restored backed-up app files).");
+            Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
         }
         catch (Exception ex)
         {
-            Utils.ShowAlert(View,
-                LText.Update.RollbackFailed + "\r\n\r\n" +
-                "Exception:\r\n\r\n" +
-                ex);
+            // @Update: Test error and logging functionality
+            Log("Update failed and the rollback failed as well.", ex);
+            Utils.ShowError(View,
+                LText.Update.RollbackFailed + Environment.NewLine +
+                LText.Update.RecommendManualUpdate);
+        }
+    }
+
+    private static readonly string LogFile = Path.Combine(Application.StartupPath, "AngelLoader_log.txt");
+
+    internal static void OpenLogFile()
+    {
+        try
+        {
+            using (Process.Start(LogFile)) { }
+        }
+        catch
+        {
+            Utils.ShowAlert(View, "Unable to open log file." + "\r\n\r\n" + LogFile, LText.AlertMessages.Error);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Update;
 
-sealed partial class DarkTaskDialog
+partial class DarkTaskDialog
 {
     /// <summary>
     /// Custom generated component initializer with cruft removed.

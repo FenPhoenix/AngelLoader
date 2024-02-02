@@ -206,7 +206,7 @@ internal static class Utils
         return VisualTheme.Classic;
     }
 
-    public static void ShowAlert(
+    internal static void ShowAlert(
         MainForm view,
         string message,
         string? title = null,
@@ -222,5 +222,15 @@ internal static class Utils
             yesText: LText.Global.OK,
             defaultButton: DialogResult.Yes);
         d.ShowDialog(view);
+    });
+
+    internal static void ShowError(
+        MainForm view,
+        string message,
+        string? title = null,
+        MessageBoxIcon icon = MessageBoxIcon.Error) => view.Invoke(() =>
+    {
+        title ??= LText.AlertMessages.Error;
+        using var d = new DarkErrorDialog(message, title, icon);
     });
 }

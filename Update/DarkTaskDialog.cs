@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace Update;
 
-public sealed partial class DarkTaskDialog : DarkFormBase
+public partial class DarkTaskDialog : DarkFormBase
 {
     [PublicAPI]
     public DarkTaskDialog(

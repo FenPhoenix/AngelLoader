@@ -2,7 +2,7 @@
 
 namespace Update;
 
-sealed partial class DarkTaskDialog
+partial class DarkTaskDialog
 {
     /// <summary>
     /// Required designer variable.
@@ -141,10 +141,10 @@ sealed partial class DarkTaskDialog
 
     #endregion
 
-    private System.Windows.Forms.PictureBox IconPictureBox;
-    private DarkLabel MessageLabel;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private DarkButton Cancel_Button;
-    private DarkButton NoButton;
-    private DarkButton YesButton;
+    private protected System.Windows.Forms.PictureBox IconPictureBox;
+    private protected DarkLabel MessageLabel;
+    private protected System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private protected DarkButton Cancel_Button;
+    private protected DarkButton NoButton;
+    private protected DarkButton YesButton;
 }
