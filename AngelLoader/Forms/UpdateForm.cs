@@ -184,6 +184,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             if ((bulletMatch = Regex.Match(line, @"^\s*- ")).Success)
             {
                 // @Update: This should be smarter for multi-level bulleted lists; we might have only a two-space indent in the raw version
+                // @Update: Release packager should generate Markdown and TTLG forum code versions from pasted-in text from local file
                 lines[i] = "    " + line.Substring(0, bulletMatch.Index) + "\x2022" + line.Substring(bulletMatch.Index + 1);
             }
             else if ((Regex.Match(line.TrimEnd(), ":$")).Success)
