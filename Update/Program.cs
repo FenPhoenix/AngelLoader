@@ -422,6 +422,8 @@ internal static class Program
         }
     }
 
+    // @Update: We could/maybe should generate AL's constants into a file in this project.
+    // That way we'll automatically update them here without having to have a dll dependency (which is a no-go).
     private static readonly string LogFile = Path.Combine(Application.StartupPath, "AngelLoader_log.txt");
 
     internal static void OpenLogFile()
