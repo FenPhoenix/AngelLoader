@@ -404,7 +404,8 @@ internal static class Program
                     Path.Combine(startupPath, relativeFileName), overwrite: true);
             }
             // @Update: Test this
-            Log("Update failed. Successfully rolled back (restored backed-up app files).");
+            string reason = canceled ? "Update canceled." : "Update failed.";
+            Log(reason + " Successfully rolled back (restored backed-up app files).");
             string message = canceled
                 ? LText.Update.UpdateCanceled
                 : GenericUpdateFailedSafeMessage;
@@ -413,7 +414,8 @@ internal static class Program
         catch (Exception ex)
         {
             // @Update: Test error and logging functionality
-            Log("Update failed and the rollback failed as well.", ex);
+            string reason = canceled ? "Update canceled" : "Update failed";
+            Log(reason + " and the rollback failed as well.", ex);
             Utils.ShowError(View,
                 (canceled ? LText.Update.CanceledAndRollbackFailed : LText.Update.RollbackFailed) + Environment.NewLine +
                 LText.Update.RecommendManualUpdate);

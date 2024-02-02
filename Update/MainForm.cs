@@ -57,7 +57,9 @@ public sealed partial class MainForm : DarkFormBase
             }
             catch (OperationCanceledException)
             {
+                _updateInProgress = false;
                 Application.Exit();
+                return;
             }
         }
         catch
