@@ -149,7 +149,27 @@ public static class CheckUpdates
                 // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
                 Ini.WriteConfigIni();
 
-                Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
+                if (!File.Exists(Paths.UpdateExe))
+                {
+                    Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
+                    // @Update: Localize this
+                    Core.Dialogs.ShowError("Update failed: Couldn't find the updater executable.");
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    return;
+                }
+
+                try
+                {
+                    Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
+                }
+                catch (Exception ex)
+                {
+                    Log("Unable to start '" + Paths.UpdateExe + "'. Couldn't finish the update.", ex);
+                    // @Update: Localize this
+                    Core.Dialogs.ShowError("Update failed: Unable to start the updater executable.");
+                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    return;
+                }
             }
             finally
             {
