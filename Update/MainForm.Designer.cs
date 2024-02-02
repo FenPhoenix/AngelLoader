@@ -13,21 +13,21 @@ sealed partial class MainForm
     /// </summary>
     private void InitializeComponent()
     {
-            this.CopyingLabel = new Update.DarkLabel();
+            this.Message1Label = new Update.DarkLabel();
             this.CopyingProgressBar = new Update.DarkProgressBar();
             this.CopyProgressBarOutlinePanel = new System.Windows.Forms.Panel();
+            this.Message2Label = new Update.DarkLabel();
             this.CopyProgressBarOutlinePanel.SuspendLayout();
             this.SuspendLayout();
             // 
-            // CopyingLabel
+            // Message1Label
             // 
-            this.CopyingLabel.AutoSize = true;
-            this.CopyingLabel.Location = new System.Drawing.Point(200, 24);
-            this.CopyingLabel.Name = "CopyingLabel";
-            this.CopyingLabel.Size = new System.Drawing.Size(54, 13);
-            this.CopyingLabel.TabIndex = 0;
-            this.CopyingLabel.Text = "Copying...";
-            this.CopyingLabel.UseMnemonic = false;
+            this.Message1Label.AutoSize = true;
+            this.Message1Label.Location = new System.Drawing.Point(200, 24);
+            this.Message1Label.Name = "Message1Label";
+            this.Message1Label.Size = new System.Drawing.Size(54, 13);
+            this.Message1Label.TabIndex = 0;
+            this.Message1Label.Text = "Copying...";
             // 
             // CopyingProgressBar
             // 
@@ -45,13 +45,23 @@ sealed partial class MainForm
             this.CopyProgressBarOutlinePanel.Size = new System.Drawing.Size(394, 25);
             this.CopyProgressBarOutlinePanel.TabIndex = 2;
             // 
+            // Message2Label
+            // 
+            this.Message2Label.AutoSize = true;
+            this.Message2Label.Location = new System.Drawing.Point(200, 40);
+            this.Message2Label.Name = "Message2Label";
+            this.Message2Label.Size = new System.Drawing.Size(54, 13);
+            this.Message2Label.TabIndex = 0;
+            this.Message2Label.Text = "Copying...";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(456, 115);
             this.Controls.Add(this.CopyProgressBarOutlinePanel);
-            this.Controls.Add(this.CopyingLabel);
+            this.Controls.Add(this.Message2Label);
+            this.Controls.Add(this.Message1Label);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "MainForm";
@@ -67,7 +77,8 @@ sealed partial class MainForm
 
     #endregion
 
-    private DarkLabel CopyingLabel;
+    private DarkLabel Message1Label;
     private DarkProgressBar CopyingProgressBar;
     private System.Windows.Forms.Panel CopyProgressBarOutlinePanel;
+    private DarkLabel Message2Label;
 }

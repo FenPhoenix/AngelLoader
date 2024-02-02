@@ -113,7 +113,7 @@ internal static class Program
     {
         if (_testMode)
         {
-            View.SetMessage(LText.Update.Copying);
+            View.SetMessage1(LText.Update.CopyingFiles);
             View.SetProgress(50);
             return;
         }
@@ -234,12 +234,14 @@ internal static class Program
                 return;
             }
 
+            View.SetMessage1(LText.Update.CopyingFiles);
+
             for (int i = 0; i < files.Count; i++)
             {
                 string file = files[i];
                 string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
 
-                View.SetMessage(LText.Update.Copying + Environment.NewLine + fileName);
+                View.SetMessage2(fileName);
 
                 int retryCount = 0;
                 retry:
@@ -314,6 +316,7 @@ internal static class Program
     // @Update: Display the rollback on the UI, "Rolling back..." and maybe reverse progress
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
     {
+        View.SetMessage1(LText.Update.RestoringOldFiles);
         try
         {
             for (int i = 0; i < oldRelativeFileNames.Count; i++)

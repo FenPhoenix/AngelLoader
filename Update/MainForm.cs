@@ -1,6 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Update;
@@ -53,15 +51,21 @@ public sealed partial class MainForm : DarkFormBase
         }
         else
         {
-            //using (Process.Start(Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
+            //using (System.Diagnostics.Process.Start(System.IO.Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
             //Application.Exit();
         }
     }
 
-    public void SetMessage(string message) => Invoke(() =>
+    public void SetMessage1(string message) => Invoke(() =>
     {
-        CopyingLabel.Text = message;
-        CopyingLabel.CenterHOnForm(this);
+        Message1Label.Text = message;
+        Message1Label.CenterHOnForm(this);
+    });
+
+    public void SetMessage2(string message) => Invoke(() =>
+    {
+        Message2Label.Text = message;
+        Message2Label.CenterHOnForm(this);
     });
 
     public void SetProgress(int percent) => Invoke(() => CopyingProgressBar.Value = percent);
