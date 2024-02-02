@@ -65,8 +65,10 @@ internal sealed class LocalizationData
         internal readonly string CopyingFiles = "Copying files...";
         internal readonly string RestoringOldFiles = "Restoring old files...";
         internal readonly string UpdateFailed = "The update failed. AngelLoader will remain at its current version.";
+        internal readonly string UpdateCanceled = "The update was canceled. AngelLoader will remain at its current version.";
         // @Update(Rollback failed): Improve phrasing
         internal readonly string RollbackFailed = "The update failed, and the old app files couldn't be restored.";
+        internal readonly string CanceledAndRollbackFailed = "The update was canceled, but the old app files couldn't be restored.";
         // @Update: Put a link to download the latest version here?
         internal readonly string RecommendManualUpdate = "It's recommended to download the latest version of AngelLoader and install it manually.";
         internal readonly string UnableToStartAngelLoader = "AngelLoader couldn't be restarted. You'll need to start it manually.";

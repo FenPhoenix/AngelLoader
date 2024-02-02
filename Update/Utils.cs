@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -82,7 +83,7 @@ internal static class Utils
 
     #endregion
 
-    internal static async Task WaitForAngelLoaderToClose()
+    internal static async Task WaitForAngelLoaderToClose(CancellationToken cancellationToken)
     {
         string angelLoaderExe = Path.Combine(Application.StartupPath, "AngelLoader.exe");
 
@@ -93,6 +94,9 @@ internal static class Utils
         {
             alIsRunning = false;
             Process[] processes = Process.GetProcesses();
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
                 foreach (Process proc in processes)
@@ -110,6 +114,8 @@ internal static class Utils
                     {
                         // ignore
                     }
+
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
             finally

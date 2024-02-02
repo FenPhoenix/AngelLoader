@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
@@ -110,9 +111,37 @@ internal static class Program
     internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
     internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
 
-    // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
-    internal static async Task DoCopy()
+    private static CancellationTokenSource _copyCTS = new();
+
+    internal static void CancelCopy()
     {
+        try { _copyCTS.Cancel(); } catch (ObjectDisposedException) { }
+    }
+
+    internal static async Task DoCopy(AutoResetEvent autoResetEvent)
+    {
+        try
+        {
+            await DoCopyInternal();
+        }
+        catch (OperationCanceledException)
+        {
+            Utils.ClearUpdateTempPath();
+            Utils.ClearUpdateBakTempPath();
+            throw;
+        }
+        finally
+        {
+            autoResetEvent.Set();
+        }
+    }
+
+    // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
+    private static async Task DoCopyInternal()
+    {
+        _copyCTS.Dispose();
+        _copyCTS = new CancellationTokenSource();
+
         if (_testMode)
         {
             View.SetMessage1(LText.Update.CopyingFiles);
@@ -128,9 +157,11 @@ internal static class Program
         string exePath = Application.ExecutablePath;
 #endif
 
+        List<string> oldRelativeFileNames = new();
+
         View.SetMessage1(LText.Update.PreparingToUpdate);
 
-        await Utils.WaitForAngelLoaderToClose();
+        await Utils.WaitForAngelLoaderToClose(_copyCTS.Token);
 
         await Task.Run(async () =>
         {
@@ -138,6 +169,9 @@ internal static class Program
             try
             {
                 files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
+
+                CleanupAndThrowIfCancellationRequested();
+
                 if (files.Count == 0)
                 {
                     Log("Update failed: No files in '" + UpdateTempPath + "'.");
@@ -151,7 +185,7 @@ internal static class Program
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Log("Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
@@ -166,6 +200,8 @@ internal static class Program
             {
                 // ignore
             }
+
+            CleanupAndThrowIfCancellationRequested();
 
             for (int i = 0; i < files.Count; i++)
             {
@@ -183,19 +219,22 @@ internal static class Program
 
             string updateDirWithTrailingDirSep = UpdateTempPath.TrimEnd('\\', '/') + "\\";
 
-            List<string> oldRelativeFileNames = new();
-
             try
             {
                 Directory.CreateDirectory(UpdateBakTempPath);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Log("Update failed: Unable to create '" + UpdateBakTempPath + "' (current version backup path).", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
+
+            CleanupAndThrowIfCancellationRequested();
+
             Utils.ClearUpdateBakTempPath();
+
+            CleanupAndThrowIfCancellationRequested();
 
             for (int i = 0; i < files.Count; i++)
             {
@@ -213,7 +252,7 @@ internal static class Program
                         Directory.CreateDirectory(Path.GetDirectoryName(finalBakFileName)!);
                         File.Copy(appFileName, Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         Log("Update failed: Unable to complete the backup of current app files.", ex);
                         Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
@@ -223,6 +262,8 @@ internal static class Program
 
                     oldRelativeFileNames.Add(relativeFileName);
                 }
+
+                CleanupAndThrowIfCancellationRequested();
             }
 
             // If anything goes wrong, the rollback will restore our original exe, so we don't have to rename it
@@ -231,12 +272,14 @@ internal static class Program
             {
                 File.Move(exePath, exePath + ".bak");
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 Log("Update failed: Unable to rename '" + exePath + "' to '" + exePath + ".bak'.", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
+
+            CleanupAndThrowIfCancellationRequested(doRollback: true);
 
             View.SetMessage1(LText.Update.CopyingFiles);
 
@@ -254,13 +297,18 @@ internal static class Program
                 {
                     finalFileName = Path.Combine(startupPath, fileName);
                     Directory.CreateDirectory(Path.GetDirectoryName(finalFileName)!);
+
+                    CleanupAndThrowIfCancellationRequested(doRollback: true);
+
                     //if (i == files.Count - 1)
                     //{
                     //    throw new Exception("TEST");
                     //}
                     File.Copy(file, finalFileName, overwrite: true);
+
+                    CleanupAndThrowIfCancellationRequested(doRollback: true);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     if (retryCount > 10)
                     {
@@ -285,6 +333,9 @@ internal static class Program
                         else
                         {
                             Rollback(startupPath, oldRelativeFileNames);
+
+                            CleanupAndThrowIfCancellationRequested();
+
                             return;
                         }
                     }
@@ -300,7 +351,12 @@ internal static class Program
                 View.SetProgress(percent);
             }
 
+            CleanupAndThrowIfCancellationRequested(doRollback: true);
+
             Utils.ClearUpdateTempPath();
+
+            CleanupAndThrowIfCancellationRequested(doRollback: true);
+
             Utils.ClearUpdateBakTempPath();
         });
 
@@ -308,17 +364,35 @@ internal static class Program
         {
             using (Process.Start(Path.Combine(startupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log("Unable to start AngelLoader after update copy.", ex);
             Utils.ShowAlert(View, LText.Update.UnableToStartAngelLoader);
             // ReSharper disable once RedundantJumpStatement
             return;
         }
+
+        return;
+
+        void CleanupAndThrowIfCancellationRequested(bool doRollback = false)
+        {
+            if (_copyCTS.Token.IsCancellationRequested)
+            {
+                if (doRollback)
+                {
+                    Rollback(startupPath, oldRelativeFileNames, canceled: true);
+                }
+
+                Utils.ClearUpdateTempPath();
+                Utils.ClearUpdateBakTempPath();
+
+                _copyCTS.Token.ThrowIfCancellationRequested();
+            }
+        }
     }
 
     // @Update: Display the rollback on the UI, "Rolling back..." and maybe reverse progress
-    private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
+    private static void Rollback(string startupPath, List<string> oldRelativeFileNames, bool canceled = false)
     {
         View.SetMessage1(LText.Update.RestoringOldFiles);
         try
@@ -331,14 +405,17 @@ internal static class Program
             }
             // @Update: Test this
             Log("Update failed. Successfully rolled back (restored backed-up app files).");
-            Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
+            string message = canceled
+                ? LText.Update.UpdateCanceled
+                : GenericUpdateFailedSafeMessage;
+            Utils.ShowAlert(View, message);
         }
         catch (Exception ex)
         {
             // @Update: Test error and logging functionality
             Log("Update failed and the rollback failed as well.", ex);
             Utils.ShowError(View,
-                LText.Update.RollbackFailed + Environment.NewLine +
+                (canceled ? LText.Update.CanceledAndRollbackFailed : LText.Update.RollbackFailed) + Environment.NewLine +
                 LText.Update.RecommendManualUpdate);
         }
     }

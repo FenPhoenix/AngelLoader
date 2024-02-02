@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Update;
@@ -18,12 +20,13 @@ namespace Update;
  -If failed, rename our exe back to normal
 
 @Update: Remove debug command line in properties!
-
-@Update: Make close button safe - put up a warning, or revert on close?
 */
 
 public sealed partial class MainForm : DarkFormBase
 {
+    private bool _updateInProgress;
+    private readonly AutoResetEvent _copyARE = new(false);
+
     public MainForm()
     {
 #if DEBUG
@@ -45,7 +48,27 @@ public sealed partial class MainForm : DarkFormBase
     protected override async void OnShown(EventArgs e)
     {
         base.OnShown(e);
-        await Program.DoCopy();
+        try
+        {
+            _updateInProgress = true;
+            try
+            {
+                await Program.DoCopy(_copyARE);
+            }
+            catch (OperationCanceledException)
+            {
+                Application.Exit();
+            }
+        }
+        catch
+        {
+            // ignore - just in case
+        }
+        finally
+        {
+            _updateInProgress = false;
+        }
+
         if (!Program._testMode)
         {
             Application.Exit();
@@ -55,6 +78,17 @@ public sealed partial class MainForm : DarkFormBase
             //using (System.Diagnostics.Process.Start(System.IO.Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
             //Application.Exit();
         }
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        if (_updateInProgress)
+        {
+            e.Cancel = true;
+            Program.CancelCopy();
+        }
+
+        base.OnClosing(e);
     }
 
     public void SetMessage1(string message) => Invoke(() =>
