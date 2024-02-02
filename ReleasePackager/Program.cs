@@ -39,36 +39,54 @@ internal static class Program
         View.SetTTLGText(GetTTLGText(lineItems));
     }
 
-    // @Update: This BBCode crap still doesn't quite work. Breaks if you have a sublist that doesn't have any parent list items after it.
-
     private static string GetTTLGText(List<LineItem> lineItems)
     {
         List<string> ttlgLines = new();
         for (int i = 0; i < lineItems.Count; i++)
         {
             LineItem lineItem = lineItems[i];
+            // This whole crap is just trial-and-error smashing the keyboard until it appears to finally do what
+            // I @!#$!@#$! want. ARGH!
             if (lineItem.IsListLine)
             {
                 if (i == 0 ||
                     (i > 0 && !lineItems[i - 1].IsListLine) ||
-                    (i > 0 && lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent < lineItem.ListIndent)
-                    )
+                    (i > 0 && lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent < lineItem.ListIndent))
                 {
                     ttlgLines.Add("[LIST]");
                 }
                 else if (i > 0 &&
                     ((lineItems[i - 1].IsListLine && !lineItem.IsListLine) ||
-                     (lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent > lineItem.ListIndent))
-                   )
+                     (lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent > lineItem.ListIndent)))
                 {
-                    ttlgLines.Add("[/LIST]");
+                    if (lineItems.Count > 0)
+                    {
+                        for (int indentI = 0; indentI < lineItems[i - 1].ListIndent; indentI++)
+                        {
+                            ttlgLines.Add("[/LIST]");
+                        }
+                    }
+                    else
+                    {
+                        ttlgLines.Add("[/LIST]");
+                    }
                 }
 
                 ttlgLines.Add("[*]" + lineItem.Text);
 
                 if (i == lineItems.Count - 1)
                 {
-                    ttlgLines.Add("[/LIST]");
+                    if (lineItems.Count > 0)
+                    {
+                        for (int indentI = 0; indentI < lineItems[i - 1].ListIndent + 1; indentI++)
+                        {
+                            ttlgLines.Add("[/LIST]");
+                        }
+                    }
+                    else
+                    {
+                        ttlgLines.Add("[/LIST]");
+                    }
                 }
 
             }
@@ -76,8 +94,7 @@ internal static class Program
             {
                 if (i > 0 &&
                    ((lineItems[i - 1].IsListLine && !lineItem.IsListLine) ||
-                    (lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent > lineItem.ListIndent))
-                   )
+                    (lineItems[i - 1].IsListLine && lineItem.IsListLine && lineItems[i - 1].ListIndent > lineItem.ListIndent)))
                 {
                     ttlgLines.Add("[/LIST]");
                 }
