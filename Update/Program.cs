@@ -221,6 +221,8 @@ internal static class Program
                 }
             }
 
+            // If anything goes wrong, the rollback will restore our original exe, so we don't have to rename it
+            // back as long as the bak rename comes right before the loop
             try
             {
                 File.Move(exePath, exePath + ".bak");
@@ -263,7 +265,6 @@ internal static class Program
                                      ex,
                             title: LText.AlertMessages.Error,
                             icon: MessageBoxIcon.Warning,
-                            // @Update: Localize these
                             yesText: LText.Global.Retry,
                             noText: LText.Global.Cancel,
                             defaultButton: DialogResult.Yes);
@@ -310,6 +311,7 @@ internal static class Program
         }
     }
 
+    // @Update: Display the rollback on the UI, "Rolling back..." and maybe reverse progress
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
     {
         try
