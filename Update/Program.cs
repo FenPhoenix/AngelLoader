@@ -14,8 +14,6 @@ namespace Update;
 /*
 IMPORTANT: This app MUST NOT have any dependencies! It's going to copy an entire AL installation into its own directory.
 The rename of its own exe should be all that is required to allow the entire copy to succeed (no files locked).
-
-@Update: When update fails safe, rename Update.exe.bak back to Update.exe!
 */
 
 internal static class Program
@@ -108,7 +106,6 @@ internal static class Program
     internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
 
     // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
-    // @Update: Do we want to read the language inis for this app?
     internal static async Task DoCopy()
     {
         if (_testMode)
@@ -125,6 +122,8 @@ internal static class Program
         string startupPath = Application.StartupPath;
         string exePath = Application.ExecutablePath;
 #endif
+
+        View.SetMessage1(LText.Update.PreparingToUpdate);
 
         await Utils.WaitForAngelLoaderToClose();
 

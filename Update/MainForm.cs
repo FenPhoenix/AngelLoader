@@ -36,6 +36,9 @@ public sealed partial class MainForm : DarkFormBase
 
         Text = "AngelLoader Update";
 
+        Message1Label.Text = "";
+        Message2Label.Text = "";
+
         SetTheme(Data.VisualTheme);
 
         CopyProgressBarOutlinePanel.CenterHOnForm(this);
