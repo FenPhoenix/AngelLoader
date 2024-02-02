@@ -39,9 +39,6 @@ internal static class Program
         {
             SetLogFile(LogFile);
 
-            // Do this absolute first thing so we don't read stale data from AL's files (theme, language etc.)
-            Utils.WaitForAngelLoaderToClose();
-
             ReadLanguageIni();
 
             // @Update: Maybe we should name this something unappealing like "_update_internal.exe"
@@ -127,6 +124,8 @@ internal static class Program
 #endif
 
         View.SetMessage1(LText.Update.PreparingToUpdate);
+
+        await Utils.WaitForAngelLoaderToClose();
 
         await Task.Run(async () =>
         {
