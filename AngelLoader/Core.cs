@@ -214,12 +214,14 @@ internal static class Core
                 {
                     try
                     {
+                        // File.Delete() doesn't throw if the file doesn't exist, so in that case we exit the
+                        // loop here and everything's fine, and we waste no time retrying.
                         File.Delete(Paths.UpdateExeBak);
                         break;
                     }
                     catch
                     {
-                        // didn't exist or whatever
+                        // whatever
                     }
                     Thread.Sleep(100);
                 }

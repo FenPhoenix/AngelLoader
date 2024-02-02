@@ -79,7 +79,7 @@ public sealed partial class MainForm : Form
                 }
                 catch
                 {
-                    // didn't exist or whatever
+                    // ignore
                 }
 
                 p.StartInfo.Arguments =

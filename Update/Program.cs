@@ -159,7 +159,7 @@ internal static class Program
             }
             catch
             {
-                // didn't exist or whatever
+                // ignore
             }
 
             for (int i = 0; i < files.Count; i++)
