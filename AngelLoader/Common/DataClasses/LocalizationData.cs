@@ -71,8 +71,6 @@ internal sealed class LText_Class
     {
         internal readonly string OK = "OK";
         internal readonly string Cancel = "Cancel";
-        // Update copier
-        internal readonly string Retry = "Retry";
         internal readonly string Stop = "Stop";
         internal readonly string Continue = "Continue";
         internal readonly string ContinueAnyway = "Continue anyway";
@@ -998,14 +996,5 @@ internal sealed class LText_Class
         internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
         internal readonly string UnpackingUpdate = "Unpacking update...";
         internal readonly string ErrorUnpackingUpdate = "Error unpacking the update.";
-        [FenGenBlankLine]
-        // Update copier
-        // @Update: Find a way to have the language file generated from multiple sources, this and the update copier
-        // This works for the moment, duplicating these fields between apps, but it's brittle and wasteful.
-        internal readonly string Copying = "Copying...";
-        internal readonly string RollingBack = "Could not complete copy; rolling back to old version...";
-        internal readonly string RollbackFailed = "The update failed and we tried to restore the old version, but that failed too. It's recommended to download the latest version of AngelLoader and re-install it manually.";
-        internal readonly string UnableToStartAngelLoader = "Unable to start AngelLoader. You'll need to start it manually.";
-        internal readonly string UnableToCompleteBackup = "Update failed: Unable to complete backup of current app files.";
     }
 }

@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Update", "Update\Update.csp
 		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReleasePackager", "ReleasePackager\ReleasePackager.csproj", "{0422F67A-FE3D-414D-AD0B-6E4D298D47BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReleasePackager", "ReleasePackager\ReleasePackager.csproj", "{0422F67A-FE3D-414D-AD0B-6E4D298D47BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
