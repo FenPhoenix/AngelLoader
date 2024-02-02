@@ -190,7 +190,7 @@ public static class CheckUpdates
     }
 
     /*
-    @Update: Web data minimization:
+    Web data minimization:
     The update check can (may/probably will) happen every startup for many many different users, and we'll be
     hitting a github pages site, so cut the data transfer down to the absolute bare minimum: just the latest
     version, 5-8 bytes or so. The actual update will be a much less frequent occurrence, so we can afford to

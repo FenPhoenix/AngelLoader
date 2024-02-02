@@ -460,8 +460,6 @@ public sealed class ConfigData
 
     #endregion
 
-    // @Update: We should hide the update available icon if the user turns this off in Settings.
-    // They can always update manually from the main menu.
     internal CheckForUpdates CheckForUpdates = CheckForUpdates.FirstTimeAsk;
 
 #if !ReleaseBeta && !ReleasePublic
