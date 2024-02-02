@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
+using static Update.Data;
 
 namespace Update;
 
@@ -211,14 +212,14 @@ internal static class Utils
         string? title = null,
         MessageBoxIcon icon = MessageBoxIcon.Warning) => view.Invoke(() =>
     {
-        title ??= LocalizationData.LText.AlertMessages.Alert;
+        title ??= LText.AlertMessages.Alert;
 
         using var d = new DarkTaskDialog(
             message: message,
             title: title,
             icon: icon,
             // @Update: Localize this
-            yesText: LocalizationData.LText.Global.OK,
+            yesText: LText.Global.OK,
             defaultButton: DialogResult.Yes);
         d.ShowDialog(view);
     });

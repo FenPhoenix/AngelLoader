@@ -5,8 +5,6 @@ namespace Update;
 [SuppressMessage("ReSharper", "ConvertToConstant.Global")]
 internal sealed class LocalizationData
 {
-    internal static readonly LocalizationData LText = new();
-
     internal readonly Global_Class Global = new();
     internal readonly AlertMessages_Class AlertMessages = new();
     internal readonly Update_Class Update = new();

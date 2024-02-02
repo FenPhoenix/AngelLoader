@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic.ApplicationServices;
+using static Update.Data;
 
 namespace Update;
 
@@ -85,7 +86,7 @@ internal static class Program
             }
             if (string.IsNullOrEmpty(langName)) return;
             string langFile = Path.Combine(Application.StartupPath, "Data", "Languages", langName + ".ini");
-            Ini.ReadLocalizationIni(langFile, LocalizationData.LText);
+            Ini.ReadLocalizationIni(langFile, LText);
         }
         catch
         {
@@ -107,7 +108,7 @@ internal static class Program
     {
         if (_testMode)
         {
-            View.SetMessage(LocalizationData.LText.Update.Copying);
+            View.SetMessage(LText.Update.Copying);
             View.SetProgress(50);
             return;
         }
@@ -212,7 +213,7 @@ internal static class Program
                     catch (Exception ex)
                     {
                         Utils.ShowAlert(View,
-                            LocalizationData.LText.Update.UnableToCompleteBackup + "\r\n\r\n" +
+                            LText.Update.UnableToCompleteBackup + "\r\n\r\n" +
                             "Exception:\r\n\r\n" +
                             ex);
                         Utils.ClearUpdateBakTempPath();
@@ -241,7 +242,7 @@ internal static class Program
                 string file = files[i];
                 string fileName = file.Substring(updateDirWithTrailingDirSep.Length);
 
-                View.SetMessage(LocalizationData.LText.Update.Copying + Environment.NewLine + fileName);
+                View.SetMessage(LText.Update.Copying + Environment.NewLine + fileName);
 
                 int retryCount = 0;
                 retry:
@@ -264,11 +265,11 @@ internal static class Program
                             message: "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
                                      "If AngelLoader is running, close it and try again.\r\n\r\nException: " +
                                      ex,
-                            title: LocalizationData.LText.AlertMessages.Error,
+                            title: LText.AlertMessages.Error,
                             icon: MessageBoxIcon.Warning,
                             // @Update: Localize these
-                            yesText: LocalizationData.LText.Global.Retry,
-                            noText: LocalizationData.LText.Global.Cancel,
+                            yesText: LText.Global.Retry,
+                            noText: LText.Global.Cancel,
                             defaultButton: DialogResult.Yes);
 
                         DialogResult result = d.ShowDialog(View);
@@ -307,7 +308,7 @@ internal static class Program
         catch (Exception ex)
         {
             Utils.ShowAlert(View,
-                LocalizationData.LText.Update.UnableToStartAngelLoader + "\r\n\r\n" +
+                LText.Update.UnableToStartAngelLoader + "\r\n\r\n" +
                 "Exception:\r\n\r\n" +
                 ex);
             // ReSharper disable once RedundantJumpStatement
@@ -317,7 +318,7 @@ internal static class Program
 
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames)
     {
-        View.SetMessage(LocalizationData.LText.Update.RollingBack);
+        View.SetMessage(LText.Update.RollingBack);
         try
         {
             for (int i = 0; i < oldRelativeFileNames.Count; i++)
@@ -330,7 +331,7 @@ internal static class Program
         catch (Exception ex)
         {
             Utils.ShowAlert(View,
-                LocalizationData.LText.Update.RollbackFailed + "\r\n\r\n" +
+                LText.Update.RollbackFailed + "\r\n\r\n" +
                 "Exception:\r\n\r\n" +
                 ex);
         }
