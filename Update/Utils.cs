@@ -100,7 +100,7 @@ internal static class Utils
                     try
                     {
                         string fn = GetProcessPath(proc.Id, buffer);
-                        if (!string.IsNullOrEmpty(fn) && fn.EqualsI(angelLoaderExe))
+                        if (!string.IsNullOrEmpty(fn) && fn.Replace('/', '\\').EqualsI(angelLoaderExe.Replace('/', '\\')))
                         {
                             alIsRunning = true;
                             break;

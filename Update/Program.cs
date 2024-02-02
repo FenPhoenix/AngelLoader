@@ -39,6 +39,11 @@ internal static class Program
         {
             SetLogFile(LogFile);
 
+            // It's safe to read the AL config file before waiting for AL to close, because it will have written
+            // out the config explicitly BEFORE calling us. This also lets us pop up our window immediately to
+            // make it feel like things are moving along quickly, without a big delay with no window.
+            // Also AL doesn't write to its language files so it's always safe to read those.
+
             ReadLanguageIni();
 
             // @Update: Maybe we should name this something unappealing like "_update_internal.exe"
