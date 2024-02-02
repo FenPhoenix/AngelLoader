@@ -39,6 +39,8 @@ internal static class Program
         View.SetTTLGText(GetTTLGText(lineItems));
     }
 
+    // @Update: This BBCode crap still doesn't quite work. Breaks if you have a sublist that doesn't have any parent list items after it.
+
     private static string GetTTLGText(List<LineItem> lineItems)
     {
         List<string> ttlgLines = new();
