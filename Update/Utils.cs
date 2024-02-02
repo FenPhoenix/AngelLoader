@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -82,7 +82,7 @@ internal static class Utils
 
     #endregion
 
-    internal static async Task WaitForAngelLoaderToClose()
+    internal static void WaitForAngelLoaderToClose()
     {
         string angelLoaderExe = Path.Combine(Application.StartupPath, "AngelLoader.exe");
 
@@ -100,7 +100,7 @@ internal static class Utils
                     try
                     {
                         string fn = GetProcessPath(proc.Id, buffer);
-                        if (!string.IsNullOrEmpty(fn) && fn.EqualsI(angelLoaderExe))
+                        if (!string.IsNullOrEmpty(fn) && fn.Replace('/', '\\').EqualsI(angelLoaderExe.Replace('/', '\\')))
                         {
                             alIsRunning = true;
                             break;
@@ -119,7 +119,7 @@ internal static class Utils
                     process.Dispose();
                 }
             }
-            await Task.Delay(100);
+            Thread.Sleep(100);
         } while (alIsRunning);
 
         return;
