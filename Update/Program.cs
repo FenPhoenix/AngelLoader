@@ -414,8 +414,8 @@ internal static class Program
         catch (Exception ex)
         {
             // @Update: Test error and logging functionality
-            string reason = canceled ? "Update canceled" : "Update failed";
-            Log(reason + " and the rollback failed as well.", ex);
+            string message = canceled ? "Update canceled but the rollback failed." : "Update failed and the rollback failed as well.";
+            Log(message, ex);
             Utils.ShowError(View,
                 (canceled ? LText.Update.CanceledAndRollbackFailed : LText.Update.RollbackFailed) + Environment.NewLine +
                 LText.Update.RecommendManualUpdate);
