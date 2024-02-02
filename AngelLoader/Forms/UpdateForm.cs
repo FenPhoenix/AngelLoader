@@ -179,15 +179,14 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         for (int i = 0; i < lines.Length; i++)
         {
             string line = lines[i];
-            Match bulletMatch = Regex.Match(line, @"^\s*- ");
-            if (bulletMatch.Success)
+
+            Match bulletMatch;
+            if ((bulletMatch = Regex.Match(line, @"^\s*- ")).Success)
             {
                 // @Update: This should be smarter for multi-level bulleted lists; we might have only a two-space indent in the raw version
                 lines[i] = "    " + line.Substring(0, bulletMatch.Index) + "\x2022" + line.Substring(bulletMatch.Index + 1);
-                continue;
             }
-            Match headerMatch = Regex.Match(line.TrimEnd(), ":$");
-            if (headerMatch.Success)
+            else if ((Regex.Match(line.TrimEnd(), ":$")).Success)
             {
                 lines[i] = @"\b1 " + line + @"\b0 ";
             }
