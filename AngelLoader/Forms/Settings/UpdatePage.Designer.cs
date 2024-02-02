@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms;
 
-partial class UpdatePage
+sealed partial class UpdatePage
 {
     /// <summary> 
     /// Required designer variable.

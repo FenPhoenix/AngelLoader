@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms;
 
-partial class UpdatePage
+sealed partial class UpdatePage
 {
     /// <summary>
     /// Custom generated component initializer with cruft removed.
