@@ -16,7 +16,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-public static class Update
+public static class AppUpdate
 {
     private sealed class UpdateInfoInternal
     {
@@ -420,4 +420,43 @@ public static class Update
             downloadARE.Set();
         }
     });
+
+    internal static string[] GetFormattedPlainTextReleaseNotesLines(string text)
+    {
+        const string bullet = "\x2022";
+
+        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+
+        int currentIndent = 0;
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+            int listCharIndex = ListCharIndex(line);
+            if (listCharIndex > -1)
+            {
+                if (listCharIndex > currentIndent)
+                {
+                    currentIndent++;
+                }
+                else if (listCharIndex < currentIndent)
+                {
+                    currentIndent--;
+                }
+                lines[i] = new string(' ', 4 * (currentIndent + 1)) + bullet + " " + line.Substring(listCharIndex + 1).TrimStart();
+            }
+        }
+
+        return lines;
+
+        static int ListCharIndex(string line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (char.IsWhiteSpace(c)) continue;
+                if (c == '-') return i;
+            }
+            return -1;
+        }
+    }
 }

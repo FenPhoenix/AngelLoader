@@ -19,7 +19,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     private bool _downloadingUpdateInfo;
 
-    internal Update.UpdateInfo? UpdateInfo;
+    internal AppUpdate.UpdateInfo? UpdateInfo;
     internal bool NoUpdatesFound;
 
     public UpdateForm()
@@ -75,7 +75,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         {
             try
             {
-                AngelLoader.Update.CancelDetailsDownload();
+                AppUpdate.CancelDetailsDownload();
                 _downloadARE.WaitOne();
             }
             catch
@@ -112,14 +112,14 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     {
         SetText(LText.Update.DownloadingUpdateInfo);
 
-        Update.UpdateDetailsDownloadResult result;
-        List<Update.UpdateInfo> updateInfos;
+        AppUpdate.UpdateDetailsDownloadResult result;
+        List<AppUpdate.UpdateInfo> updateInfos;
         try
         {
             _downloadingUpdateInfo = true;
             try
             {
-                (result, updateInfos) = await AngelLoader.Update.GetUpdateDetails(_downloadARE);
+                (result, updateInfos) = await AppUpdate.GetUpdateDetails(_downloadARE);
             }
             catch (OperationCanceledException)
             {
@@ -131,10 +131,10 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             _downloadingUpdateInfo = false;
         }
 
-        if (result == AngelLoader.Update.UpdateDetailsDownloadResult.Success && updateInfos.Count > 0)
+        if (result == AppUpdate.UpdateDetailsDownloadResult.Success && updateInfos.Count > 0)
         {
 #if false
-            updateInfos.Add(new CheckUpdates.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
+            updateInfos.Add(new AppUpdate.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
 #endif
 
             UpdateInfo = updateInfos[0];
@@ -142,12 +142,12 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             string changelogFullText =
                 @"{\rtf1" +
                 @"\ansi\ansicpg1252" +
-                @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}}";
+                @"\deff0{\fonttbl{\f0\fnull\fcharset0 Segoe UI;}}";
             for (int i = 0; i < updateInfos.Count; i++)
             {
                 if (i > 0) changelogFullText += @"\line\line ---\line\line ";
-                Update.UpdateInfo? item = updateInfos[i];
-                changelogFullText += @"\b1\fs26 " + item.Version + @":\fs24\b0\line\line " +
+                AppUpdate.UpdateInfo? item = updateInfos[i];
+                changelogFullText += @"\b1 " + item.Version + @":\b0\line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
             }
             changelogFullText += "}";
@@ -159,7 +159,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
             UpdateButton.Enabled = true;
         }
-        else if (result == AngelLoader.Update.UpdateDetailsDownloadResult.NoUpdatesFound)
+        else if (result == AppUpdate.UpdateDetailsDownloadResult.NoUpdatesFound)
         {
             SetText(LText.Update.NoUpdatesAvailable);
             UpdateButton.Enabled = false;
@@ -175,18 +175,18 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     // In with the UI code because RTF is UI-specific
     private static string ChangelogBodyToRtf(string text)
     {
-        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        string[] lines = AppUpdate.GetFormattedPlainTextReleaseNotesLines(text);
+
         for (int i = 0; i < lines.Length; i++)
         {
             string line = lines[i];
 
-            Match bulletMatch;
-            if ((bulletMatch = Regex.Match(line, @"^\s*- ")).Success)
-            {
-                // @Update: This should be smarter for multi-level bulleted lists; we might have only a two-space indent in the raw version
-                lines[i] = "    " + line.Substring(0, bulletMatch.Index) + "\x2022" + line.Substring(bulletMatch.Index + 1);
-            }
-            else if ((Regex.Match(line.TrimEnd(), ":$")).Success)
+            lines[i] = line
+                .Replace(@"\", @"\\")
+                .Replace("{", @"\{")
+                .Replace("}", @"\}");
+
+            if (Regex.Match(line.TrimEnd(), ":$").Success)
             {
                 lines[i] = @"\b1 " + line + @"\b0 ";
             }
@@ -231,5 +231,5 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     public bool ViewBlocked => false;
 
-    public IContainer GetComponents() => components;
+    public IContainer GetComponents() => components ??= new Container();
 }

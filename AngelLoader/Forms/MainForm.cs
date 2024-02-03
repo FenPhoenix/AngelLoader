@@ -1161,10 +1161,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Must come after Show() I guess or it doesn't work?!
         FMsDGV.Focus();
 
-#if !ReleasePublic
-        //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
-#endif
-
         if (askForImport)
         {
             await ShowAskToImportWindow();
@@ -1186,7 +1182,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (Config.CheckForUpdates == CheckForUpdates.True)
         {
-            AngelLoader.Update.StartCheckIfUpdateAvailableThread();
+            AppUpdate.StartCheckIfUpdateAvailableThread();
         }
     }
 
@@ -2717,7 +2713,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
         {
-            await AngelLoader.Update.DoManualCheck();
+            await AppUpdate.DoManualCheck();
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
@@ -5042,7 +5038,7 @@ public sealed partial class MainForm : DarkFormBase,
             ReadmeRichTextBox.ZoomFactor);
     }
 
-    public IContainer GetComponents() => components;
+    public IContainer GetComponents() => components ??= new Container();
 
     #region Cursor over area detection
 
@@ -5126,7 +5122,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Show dialogs
 
-    public (bool Success, bool NoUpdatesFound, Update.UpdateInfo? UpdateInfo)
+    public (bool Success, bool NoUpdatesFound, AppUpdate.UpdateInfo? UpdateInfo)
     ShowUpdateAvailableDialog()
     {
         using var f = new UpdateForm();
