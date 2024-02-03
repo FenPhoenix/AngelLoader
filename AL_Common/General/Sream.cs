@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace AL_Common;
 
@@ -121,19 +119,6 @@ public static partial class Common
         while ((count = source.Read(buffer, 0, buffer.Length)) != 0)
         {
             destination.Write(buffer, 0, count);
-        }
-    }
-
-    public static async Task StreamCopyNoAllocAsync(Stream source, Stream destination, byte[] buffer, IProgress<int> progress)
-    {
-        int streamLength = (int)source.Length;
-        int bytesRead;
-        int totalBytesRead = 0;
-        while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length)) != 0)
-        {
-            await destination.WriteAsync(buffer, 0, bytesRead);
-            totalBytesRead += bytesRead;
-            progress.Report(GetPercentFromValue_Int(totalBytesRead, streamLength));
         }
     }
 

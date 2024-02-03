@@ -92,10 +92,6 @@ public interface IView : ISettingsChangeableView
     /// <param name="cancelAction"></param>
     void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
-    #region Disabled until needed
-
-#if false
-
     /// <summary>
     /// This method call is auto-invoked, so no need to wrap it manually.
     /// <para/>
@@ -109,10 +105,6 @@ public interface IView : ISettingsChangeableView
     /// <param name="cancelMessage"></param>
     /// <param name="cancelAction"></param>
     void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
-
-#endif
-
-    #endregion
 
     /// <summary>
     /// This method call is auto-invoked, so no need to wrap it manually.

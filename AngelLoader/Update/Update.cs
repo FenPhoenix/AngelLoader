@@ -72,12 +72,19 @@ public static class CheckUpdates
             progressType: ProgressType.Determinate
         );
 
+        Core.View.ShowProgressBox_Double(
+            mainMessage1: LText.Update.Updating,
+            subMessage: LText.Update.DownloadingUpdate,
+            mainProgressType: ProgressType.Determinate,
+            subProgressType: ProgressType.Determinate
+        );
+
         await Task.Run(async () =>
         {
             try
             {
                 string localZipFile;
-                var progress = new Progress<int>(ReportProgress);
+                var progress = new Progress<ProgressPercents>(ReportProgress);
                 try
                 {
                     // @Update: Implement cancellation token
@@ -101,7 +108,7 @@ public static class CheckUpdates
                     using Stream zipStream = await request.Content.ReadAsStreamAsync();
                     using var zipLocalStream = File.Create(localZipFile);
                     // @Update: Implement cancellation token
-                    await StreamCopyNoAllocAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress);
+                    await UpdateZipStreamCopyAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress);
                 }
                 catch (Exception ex)
                 {
@@ -113,18 +120,16 @@ public static class CheckUpdates
 
                 try
                 {
-                    Core.View.SetProgressPercent(0);
-
-                    Core.View.SetProgressBoxState_Single(
-                        message1: LText.Update.UnpackingUpdate,
-                        progressType: ProgressType.Determinate
+                    Core.View.SetProgressBoxState_Double(
+                        subMessage: LText.Update.UnpackingUpdate,
+                        subPercent: 0
                     );
 
                     using var fs = File.OpenRead(localZipFile);
                     using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
 
-                    archive.ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+                    archive.Update_ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
                 }
                 catch (Exception ex)
                 {
@@ -174,7 +179,32 @@ public static class CheckUpdates
 
         return;
 
-        static void ReportProgress(int percent) => Core.View.SetProgressPercent(percent);
+        static void ReportProgress(ProgressPercents percents)
+        {
+            Core.View.SetProgressBoxState(mainPercent: percents.MainPercent, subPercent: percents.SubPercent);
+        }
+
+        static async Task UpdateZipStreamCopyAsync(
+            Stream source,
+            Stream destination,
+            byte[] buffer,
+            IProgress<ProgressPercents> progress)
+        {
+            ProgressPercents percents = new();
+
+            int streamLength = (int)source.Length;
+            int bytesRead;
+            int totalBytesRead = 0;
+            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length)) != 0)
+            {
+                await destination.WriteAsync(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+
+                percents.SubPercent = GetPercentFromValue_Int(totalBytesRead, streamLength);
+                percents.MainPercent = percents.SubPercent / 2;
+                progress.Report(percents);
+            }
+        }
     }
 
     /*

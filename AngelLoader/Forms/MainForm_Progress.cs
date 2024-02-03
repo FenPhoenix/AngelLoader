@@ -59,10 +59,6 @@ public sealed partial class MainForm
             cancelAction: cancelAction ?? NullAction);
     });
 
-    #region Disabled until needed
-
-#if false
-
     public void ShowProgressBox_Double(
         string? mainMessage1 = null,
         string? mainMessage2 = null,
@@ -73,7 +69,7 @@ public sealed partial class MainForm
         Action? cancelAction = null) => Invoke(() =>
     {
         ConstructProgressBox();
-        ProgressBox!.SetState(
+        ProgressBox.SetState(
             visible: true,
             size: ProgressSizeMode.Double,
             mainMessage1: mainMessage1 ?? "",
@@ -86,10 +82,6 @@ public sealed partial class MainForm
             cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
-
-#endif
-
-    #endregion
 
     #endregion
 

@@ -992,6 +992,7 @@ internal sealed class LText_Class
         internal readonly string UpdateDialog_Title = "Update AngelLoader";
         internal readonly string UpdateDialog_UpdateAndRestartButtonText = "Update and restart";
         [FenGenBlankLine]
+        internal readonly string Updating = "Updating...";
         internal readonly string DownloadingUpdate = "Downloading update...";
         internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
         internal readonly string UnpackingUpdate = "Unpacking update...";

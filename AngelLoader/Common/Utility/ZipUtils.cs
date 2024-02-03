@@ -20,11 +20,13 @@ public static partial class Utils
         return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
-    internal static void ExtractToDirectory_Fast(
+    internal static void Update_ExtractToDirectory_Fast(
         this ZipArchive source,
         string destinationDirectoryName,
-        IProgress<int>? progress)
+        IProgress<ProgressPercents> progress)
     {
+        ProgressPercents percents = new();
+
         string path1 = Directory.CreateDirectory(destinationDirectoryName).FullName;
 
         int length = path1.Length;
@@ -63,7 +65,9 @@ public static partial class Utils
                 entry.ExtractToFile_Fast(fullPath, false, tempBuffer);
             }
 
-            progress?.Report(GetPercentFromValue_Int(i + 1, entryCount));
+            percents.SubPercent = GetPercentFromValue_Int(i + 1, entryCount);
+            percents.MainPercent = 50 + (percents.SubPercent / 2);
+            progress.Report(percents);
         }
     }
 
