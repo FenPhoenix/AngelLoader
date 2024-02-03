@@ -49,6 +49,8 @@ public static class CheckUpdates
         }
     }
 
+    // @Update: Test all of this with internet disabled
+
 #if TESTING
     private const string _updatesRepoDir = "updates_testing";
 #else
@@ -290,8 +292,6 @@ public static class CheckUpdates
     {
         try
         {
-            // @Update: We need try-catches here to handle errors
-
             _checkForUpdatesCTS = _checkForUpdatesCTS.Recreate();
 
             List<UpdateInfo> ret = new();
