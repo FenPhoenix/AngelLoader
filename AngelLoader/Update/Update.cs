@@ -28,18 +28,11 @@ public static class CheckUpdates
         internal Uri? ChangelogUrl;
     }
 
-    public sealed class UpdateInfo
+    public sealed class UpdateInfo(Version version, string changelogText, Uri downloadUri)
     {
-        public readonly Version Version;
-        public readonly string ChangelogText;
-        public readonly Uri DownloadUri;
-
-        public UpdateInfo(Version version, string changelogText, Uri downloadUri)
-        {
-            Version = version;
-            ChangelogText = changelogText;
-            DownloadUri = downloadUri;
-        }
+        public readonly Version Version = version;
+        public readonly string ChangelogText = changelogText;
+        public readonly Uri DownloadUri = downloadUri;
     }
 
     // @Update: Test all of this with internet disabled
