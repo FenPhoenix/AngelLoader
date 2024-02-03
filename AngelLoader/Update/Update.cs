@@ -144,11 +144,20 @@ public static class CheckUpdates
 
                 if (!File.Exists(Paths.UpdateExe))
                 {
-                    Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
-                    // @Update: Localize this
-                    Core.Dialogs.ShowError("Update failed: Couldn't find the updater executable.");
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                    return;
+                    try
+                    {
+                        // Last-ditch attempt - extremely unlikely for this bak file to still exist and the
+                        // normal exe not (maybe impossible currently?)
+                        File.Move(Paths.UpdateExeBak, Paths.UpdateExe);
+                    }
+                    catch
+                    {
+                        Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
+                        // @Update: Localize this
+                        Core.Dialogs.ShowError("Update failed: Couldn't find the updater executable.");
+                        Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                        return;
+                    }
                 }
 
                 try
