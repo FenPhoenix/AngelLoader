@@ -228,46 +228,44 @@ internal static class Program
             return;
         }
 
+        var p = new Process();
         try
         {
-            using (var p = new Process())
+            p.StartInfo.FileName = Path.Combine(Application.StartupPath, "7z.exe");
+            p.StartInfo.WorkingDirectory = Application.StartupPath;
+            // @Update: Have AL's post-build batch file pass bitness and version to us
+            string outputArchive = Path.Combine(releaseBasePath,
+                "AngelLoader_v1.7.X_PACKAGE_TEST_" + bitnessString + ".zip");
+
+            try
             {
-                p.StartInfo.FileName = Path.Combine(Application.StartupPath, "7z.exe");
-                p.StartInfo.WorkingDirectory = Application.StartupPath;
-                // @Update: Have AL's post-build batch file pass bitness and version to us
-                string outputArchive = Path.Combine(releaseBasePath,
-                    "AngelLoader_v1.7.X_PACKAGE_TEST_" + bitnessString + ".zip");
+                File.Delete(outputArchive);
+            }
+            catch
+            {
+                // ignore
+            }
 
-                try
-                {
-                    File.Delete(outputArchive);
-                }
-                catch
-                {
-                    // ignore
-                }
+            p.StartInfo.Arguments =
+                "a \"" + outputArchive + "\" \"" + Path.Combine(inputPath, "*.*") + "\" "
+                // -r        = Recurse subdirectories
+                // -y        = Say yes to all prompts automatically
+                // -mx=9     = Compression level Ultra (maximum)
+                // -mfb=257  = Max fast bytes (max compression)
+                // -mpass=15 = Max passes (max compression)
+                // -mcu=on   = Always use UTF-8 for non-ASCII file names
+                + "-r -y -mx=9 -mfb=257 -mpass=15 -mcu=on";
+            Trace.WriteLine(p.StartInfo.Arguments);
+            p.StartInfo.CreateNoWindow = false;
 
-                p.StartInfo.Arguments =
-                    "a \"" + outputArchive + "\" \"" + Path.Combine(inputPath, "*.*") + "\" "
-                    // -r        = Recurse subdirectories
-                    // -y        = Say yes to all prompts automatically
-                    // -mx=9     = Compression level Ultra (maximum)
-                    // -mfb=257  = Max fast bytes (max compression)
-                    // -mpass=15 = Max passes (max compression)
-                    // -mcu=on   = Always use UTF-8 for non-ASCII file names
-                    + "-r -y -mx=9 -mfb=257 -mpass=15 -mcu=on";
-                Trace.WriteLine(p.StartInfo.Arguments);
-                p.StartInfo.CreateNoWindow = false;
+            p.Start();
+            p.WaitForExit();
 
-                p.Start();
-                p.WaitForExit();
-
-                if (p.ExitCode != 0)
-                {
-                    MessageBox.Show(View,
-                        "Error exit code from 7z.exe: " + p.ExitCode);
-                    return;
-                }
+            if (p.ExitCode != 0)
+            {
+                MessageBox.Show(View,
+                    "Error exit code from 7z.exe: " + p.ExitCode);
+                return;
             }
         }
         catch (Exception ex)
@@ -277,6 +275,36 @@ internal static class Program
                 "Exception:\r\n\r\n" +
                 ex);
             return;
+        }
+        finally
+        {
+            try
+            {
+                if (!p.HasExited)
+                {
+                    p.Kill();
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+            finally
+            {
+                try
+                {
+                    if (!p.HasExited)
+                    {
+                        p.WaitForExit();
+                    }
+                }
+                catch
+                {
+                    // ignore...
+                }
+
+                p.Dispose();
+            }
         }
     }
 
