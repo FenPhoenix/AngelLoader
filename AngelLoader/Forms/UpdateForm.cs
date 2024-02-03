@@ -32,7 +32,8 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
         ReleaseNotesRichTextBox.SetOwner(this);
 
-        UpdateButton.Enabled = false;
+        LoadingLabel.SendToBack();
+        ShowMessage(LText.Update.DownloadingUpdateInfo);
 
         if (Config.DarkMode) SetThemeBase(Config.VisualTheme);
 
@@ -51,9 +52,21 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         Cancel_Button.Text = LText.Global.Cancel;
     }
 
-    private void SetText(string text) => ReleaseNotesRichTextBox.SetText(text);
+    private void ShowMessage(string text)
+    {
+        UpdateButton.Enabled = false;
+        ReleaseNotesRichTextBox.Hide();
+        LoadingLabel.Text = text;
+        LoadingLabel.CenterHV(this, clientSize: true);
+        LoadingLabel.Show();
+    }
 
-    private void SetReleaseNotes(Stream stream) => ReleaseNotesRichTextBox.LoadControlledRtf(stream);
+    private void SetReleaseNotes(Stream stream)
+    {
+        LoadingLabel.Hide();
+        ReleaseNotesRichTextBox.Show();
+        ReleaseNotesRichTextBox.LoadControlledRtf(stream);
+    }
 
     protected override async void OnShown(EventArgs e)
     {
@@ -110,8 +123,6 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     private async Task LoadUpdateInfo()
     {
-        SetText(LText.Update.DownloadingUpdateInfo);
-
         AppUpdate.UpdateDetailsDownloadResult result;
         List<AppUpdate.UpdateInfo> updateInfos;
         try
@@ -161,14 +172,12 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         }
         else if (result == AppUpdate.UpdateDetailsDownloadResult.NoUpdatesFound)
         {
-            SetText(LText.Update.NoUpdatesAvailable);
-            UpdateButton.Enabled = false;
+            ShowMessage(LText.Update.NoUpdatesAvailable);
             NoUpdatesFound = true;
         }
         else
         {
-            SetText(LText.Update.FailedToDownloadUpdateInfo);
-            UpdateButton.Enabled = false;
+            ShowMessage(LText.Update.FailedToDownloadUpdateInfo);
         }
     }
 

@@ -11,6 +11,7 @@ sealed partial class UpdateForm
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.UpdateButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ReleaseNotesRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
+        this.LoadingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BottomButtonsFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -50,12 +51,20 @@ sealed partial class UpdateForm
         this.ReleaseNotesRichTextBox.Size = new System.Drawing.Size(796, 623);
         this.ReleaseNotesRichTextBox.TabIndex = 1;
         // 
+        // LoadingLabel
+        // 
+        this.LoadingLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+        this.LoadingLabel.AutoSize = true;
+        this.LoadingLabel.Location = new System.Drawing.Point(376, 296);
+        this.LoadingLabel.Size = new System.Drawing.Size(47, 13);
+        // 
         // UpdateForm
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.CancelButton = this.Cancel_Button;
         this.ClientSize = new System.Drawing.Size(800, 656);
+        this.Controls.Add(this.LoadingLabel);
         this.Controls.Add(this.ReleaseNotesRichTextBox);
         this.Controls.Add(this.BottomButtonsFLP);
         this.KeyPreview = true;
@@ -67,5 +76,6 @@ sealed partial class UpdateForm
         this.BottomButtonsFLP.ResumeLayout(false);
         this.BottomButtonsFLP.PerformLayout();
         this.ResumeLayout(false);
+        this.PerformLayout();
     }
 }

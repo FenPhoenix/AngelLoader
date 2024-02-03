@@ -35,6 +35,7 @@ sealed partial class UpdateForm
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
             this.UpdateButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.ReleaseNotesRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
+            this.LoadingLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BottomButtonsFLP.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -83,12 +84,23 @@ sealed partial class UpdateForm
             this.ReleaseNotesRichTextBox.TabIndex = 1;
             this.ReleaseNotesRichTextBox.Text = "";
             // 
+            // LoadingLabel
+            // 
+            this.LoadingLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.LoadingLabel.AutoSize = true;
+            this.LoadingLabel.Location = new System.Drawing.Point(376, 296);
+            this.LoadingLabel.Name = "LoadingLabel";
+            this.LoadingLabel.Size = new System.Drawing.Size(47, 13);
+            this.LoadingLabel.TabIndex = 2;
+            this.LoadingLabel.Text = "[loading]";
+            // 
             // UpdateForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.Cancel_Button;
             this.ClientSize = new System.Drawing.Size(800, 656);
+            this.Controls.Add(this.LoadingLabel);
             this.Controls.Add(this.ReleaseNotesRichTextBox);
             this.Controls.Add(this.BottomButtonsFLP);
             this.KeyPreview = true;
@@ -100,6 +112,7 @@ sealed partial class UpdateForm
             this.BottomButtonsFLP.ResumeLayout(false);
             this.BottomButtonsFLP.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
     }
 #endif
@@ -110,4 +123,5 @@ sealed partial class UpdateForm
     private CustomControls.StandardButton Cancel_Button;
     private CustomControls.StandardButton UpdateButton;
     private CustomControls.RichTextBoxCustom ReleaseNotesRichTextBox;
+    private CustomControls.DarkLabel LoadingLabel;
 }
