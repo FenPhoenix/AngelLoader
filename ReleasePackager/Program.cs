@@ -176,6 +176,8 @@ internal static class Program
         return -1;
     }
 
+    // @Update: When writing the file to the server, write with UTF8 no BOM for size minimization
+
     #region Package
 
     // @Update: These paths are output to in the personal post-build bat file
