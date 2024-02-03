@@ -19,7 +19,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     private bool _downloadingUpdateInfo;
 
-    internal CheckUpdates.UpdateInfo? UpdateInfo;
+    internal Update.UpdateInfo? UpdateInfo;
     internal bool NoUpdatesFound;
 
     public UpdateForm()
@@ -75,7 +75,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         {
             try
             {
-                CheckUpdates.CancelDetailsDownload();
+                AngelLoader.Update.CancelDetailsDownload();
                 _downloadARE.WaitOne();
             }
             catch
@@ -112,14 +112,14 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     {
         SetText(LText.Update.DownloadingUpdateInfo);
 
-        CheckUpdates.UpdateDetailsDownloadResult result;
-        List<CheckUpdates.UpdateInfo> updateInfos;
+        Update.UpdateDetailsDownloadResult result;
+        List<Update.UpdateInfo> updateInfos;
         try
         {
             _downloadingUpdateInfo = true;
             try
             {
-                (result, updateInfos) = await CheckUpdates.GetUpdateDetails(_downloadARE);
+                (result, updateInfos) = await AngelLoader.Update.GetUpdateDetails(_downloadARE);
             }
             catch (OperationCanceledException)
             {
@@ -131,7 +131,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             _downloadingUpdateInfo = false;
         }
 
-        if (result == CheckUpdates.UpdateDetailsDownloadResult.Success && updateInfos.Count > 0)
+        if (result == AngelLoader.Update.UpdateDetailsDownloadResult.Success && updateInfos.Count > 0)
         {
 #if false
             updateInfos.Add(new CheckUpdates.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
@@ -146,7 +146,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             for (int i = 0; i < updateInfos.Count; i++)
             {
                 if (i > 0) changelogFullText += @"\line\line ---\line\line ";
-                CheckUpdates.UpdateInfo? item = updateInfos[i];
+                Update.UpdateInfo? item = updateInfos[i];
                 changelogFullText += @"\b1\fs26 " + item.Version + @":\fs24\b0\line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
             }
@@ -159,7 +159,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
             UpdateButton.Enabled = true;
         }
-        else if (result == CheckUpdates.UpdateDetailsDownloadResult.NoUpdatesFound)
+        else if (result == AngelLoader.Update.UpdateDetailsDownloadResult.NoUpdatesFound)
         {
             SetText(LText.Update.NoUpdatesAvailable);
             UpdateButton.Enabled = false;

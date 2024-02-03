@@ -370,7 +370,7 @@ public interface IView : ISettingsChangeableView
 
     void UpdateConfig();
 
-    (bool Success, bool NoUpdatesFound, CheckUpdates.UpdateInfo? UpdateInfo) ShowUpdateAvailableDialog();
+    (bool Success, bool NoUpdatesFound, Update.UpdateInfo? UpdateInfo) ShowUpdateAvailableDialog();
 
     void Close();
 

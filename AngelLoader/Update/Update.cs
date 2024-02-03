@@ -1,9 +1,6 @@
 ﻿// @Update: Un-define this for final
 #define TESTING
 
-#define CHECK_UPDATES
-
-#if CHECK_UPDATES
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,9 +16,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-public static class CheckUpdates
+public static class Update
 {
-    private sealed class UpdateFile
+    private sealed class UpdateInfoInternal
     {
         internal Version? Version;
         internal Uri? DownloadUrl;
@@ -33,6 +30,13 @@ public static class CheckUpdates
         public readonly Version Version = version;
         public readonly string ChangelogText = changelogText;
         public readonly Uri DownloadUri = downloadUri;
+    }
+
+    internal enum UpdateDetailsDownloadResult
+    {
+        Success,
+        Error,
+        NoUpdatesFound
     }
 
     // @Update: Test all of this with internet disabled
@@ -51,10 +55,10 @@ public static class CheckUpdates
 
     private static CancellationTokenSource _checkForUpdatesCTS = new();
 
-    internal static void CancelDetailsDownload() => _checkForUpdatesCTS.CancelIfNotDisposed();
-
     private const string _latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/latest_version.txt";
     private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
+
+    internal static void CancelDetailsDownload() => _checkForUpdatesCTS.CancelIfNotDisposed();
 
     internal static async Task ShowUpdateAskDialog()
     {
@@ -303,13 +307,6 @@ public static class CheckUpdates
         }
     }
 
-    internal enum UpdateDetailsDownloadResult
-    {
-        Success,
-        Error,
-        NoUpdatesFound
-    }
-
     internal static async Task<(UpdateDetailsDownloadResult Result, List<UpdateInfo> UpdateInfos)>
     GetUpdateDetails(AutoResetEvent downloadARE) => await Task.Run(async () =>
     {
@@ -319,14 +316,14 @@ public static class CheckUpdates
 
             List<UpdateInfo> ret = new();
 
-            List<UpdateFile> versions = new();
+            List<UpdateInfoInternal> versions = new();
 
             if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
             {
                 return (UpdateDetailsDownloadResult.Error, ret);
             }
 
-            UpdateFile? updateFile = null;
+            UpdateInfoInternal? updateFile = null;
 
             using var request = await GlobalHttpClient.GetAsync(_versionsFile, _checkForUpdatesCTS.Token);
 
@@ -356,7 +353,7 @@ public static class CheckUpdates
                         if (version <= appVersion) break;
 
                         if (updateFile != null) versions.Add(updateFile);
-                        updateFile = new UpdateFile { Version = version };
+                        updateFile = new UpdateInfoInternal { Version = version };
                     }
                     else if (updateFile != null)
                     {
@@ -378,7 +375,7 @@ public static class CheckUpdates
 
             if (versions.Count == 0) return (UpdateDetailsDownloadResult.NoUpdatesFound, ret);
 
-            foreach (UpdateFile item in versions)
+            foreach (UpdateInfoInternal item in versions)
             {
                 Uri? changelogUri = item.ChangelogUrl;
                 Uri? downloadUri = item.DownloadUrl;
@@ -425,4 +422,3 @@ public static class CheckUpdates
         }
     });
 }
-#endif

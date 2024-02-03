@@ -1185,7 +1185,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (Config.CheckForUpdates == CheckForUpdates.True)
         {
-            CheckUpdates.StartCheckIfUpdateAvailableThread();
+            AngelLoader.Update.StartCheckIfUpdateAvailableThread();
         }
     }
 
@@ -2716,7 +2716,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
         {
-            await CheckUpdates.DoManualCheck();
+            await AngelLoader.Update.DoManualCheck();
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
@@ -5125,7 +5125,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Show dialogs
 
-    public (bool Success, bool NoUpdatesFound, CheckUpdates.UpdateInfo? UpdateInfo)
+    public (bool Success, bool NoUpdatesFound, Update.UpdateInfo? UpdateInfo)
     ShowUpdateAvailableDialog()
     {
         using var f = new UpdateForm();
