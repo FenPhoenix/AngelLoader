@@ -32,7 +32,6 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     {
         if (_constructed) return;
 
-        // @Update: Should we make this label/icon more visible/obnoxious colored etc. since it's meant to be a notification?
         Button = new ToolStripButtonCustom
         {
             Tag = LoadType.Lazy,

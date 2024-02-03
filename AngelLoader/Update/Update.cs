@@ -70,7 +70,6 @@ public static class Update
         }
         if (!accepted || updateInfo == null) return;
 
-        // @Update: To get fancy we could do a double-size progress box and show total/(download|unpack)
         Core.View.ShowProgressBox_Single(
             message1: LText.Update.DownloadingUpdate,
             progressType: ProgressType.Determinate
