@@ -997,5 +997,7 @@ internal sealed class LText_Class
         internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
         internal readonly string UnpackingUpdate = "Unpacking update...";
         internal readonly string ErrorUnpackingUpdate = "Error unpacking the update.";
+        internal readonly string UpdaterExeNotFound = "Update failed: Couldn't find the updater executable.";
+        internal readonly string UpdaterExeStartFailed = "Update failed: Couldn't start the updater executable.";
     }
 }

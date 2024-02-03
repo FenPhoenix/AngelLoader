@@ -153,8 +153,7 @@ public static class CheckUpdates
                     catch
                     {
                         Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
-                        // @Update: Localize this
-                        Core.Dialogs.ShowError("Update failed: Couldn't find the updater executable.");
+                        Core.Dialogs.ShowError(LText.Update.UpdaterExeNotFound + "\r\n\r\n" + Paths.UpdateExe);
                         Paths.CreateOrClearTempPath(Paths.UpdateTemp);
                         return;
                     }
@@ -167,8 +166,7 @@ public static class CheckUpdates
                 catch (Exception ex)
                 {
                     Log("Unable to start '" + Paths.UpdateExe + "'. Couldn't finish the update.", ex);
-                    // @Update: Localize this
-                    Core.Dialogs.ShowError("Update failed: Unable to start the updater executable.");
+                    Core.Dialogs.ShowError(LText.Update.UpdaterExeStartFailed + "\r\n\r\n" + Paths.UpdateExe);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
                     return;
                 }
