@@ -72,5 +72,9 @@ internal sealed class LocalizationData
         // @Update: Put a link to download the latest version here?
         internal readonly string RecommendManualUpdate = "It's recommended to download the latest version of AngelLoader and install it manually.";
         internal readonly string UnableToStartAngelLoader = "AngelLoader couldn't be restarted. You'll need to start it manually.";
+        internal readonly string FileCopy_CouldNotCopyFile = "Couldn't copy the following file:";
+        internal readonly string FileCopy_Source = "Source:";
+        internal readonly string FileCopy_Destination = "Destination:";
+        internal readonly string FileCopy_CloseAngelLoader = "If AngelLoader is running, close it and try again.";
     }
 }

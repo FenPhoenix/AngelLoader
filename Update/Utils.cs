@@ -224,7 +224,6 @@ internal static class Utils
             message: message,
             title: title,
             icon: icon,
-            // @Update: Localize this
             yesText: LText.Global.OK,
             defaultButton: DialogResult.Yes);
         d.ShowDialog(view);

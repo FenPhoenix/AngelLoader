@@ -312,11 +312,12 @@ internal static class Program
                 {
                     if (retryCount > 10)
                     {
-                        // @Update: Localize this
+                        Log("Couldn't copy '" + file + "' to '" + finalFileName + "'.", ex);
                         using var d = new DarkTaskDialog(
-                            message: "Couldn't copy '" + file + "' to '" + finalFileName + "'.\r\n\r\n" +
-                                     "If AngelLoader is running, close it and try again.\r\n\r\nException: " +
-                                     ex,
+                            message: LText.Update.FileCopy_CouldNotCopyFile + "\r\n\r\n" +
+                                     LText.Update.FileCopy_Source + " " + file + "\r\n" +
+                                     LText.Update.FileCopy_Destination + " " + finalFileName + "\r\n\r\n" +
+                                     LText.Update.FileCopy_CloseAngelLoader,
                             title: LText.AlertMessages.Error,
                             icon: MessageBoxIcon.Warning,
                             yesText: LText.Global.Retry,
