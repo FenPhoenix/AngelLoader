@@ -261,43 +261,6 @@ public sealed partial class MainForm : DarkFormBase,
     {
     }
 
-    private void GenerateAllFiles()
-    {
-        const string path = @"G:\AngelLoader_Public_Zips";
-        List<string> zipFiles = Directory.GetFiles(path, "*.zip").ToList();
-        zipFiles.AddRange(Directory.GetFiles(Path.Combine(path, "tests"), "*.zip"));
-        Trace.WriteLine("---- start zip files");
-        foreach (string zipFile in zipFiles)
-        {
-            Trace.WriteLine(zipFile);
-        }
-        Trace.WriteLine("---- end zip files");
-
-        HashSetI allFilesInAppHistoryHash = new();
-
-        foreach (string zipFile in zipFiles)
-        {
-            using var fs = File.OpenRead(zipFile);
-            using (var archive = new ZipArchive(fs, ZipArchiveMode.Read))
-            {
-                foreach (ZipArchiveEntry entry in archive.Entries)
-                {
-                    string fullName = entry.FullName;
-                    if (!fullName.EndsWithDirSep() &&
-                        !fullName.PathStartsWithI("Data/"))
-                    {
-                        allFilesInAppHistoryHash.Add(fullName);
-                    }
-                }
-            }
-        }
-
-        List<string> allFilesInAppHistorySorted = allFilesInAppHistoryHash.ToList();
-        allFilesInAppHistorySorted.Sort();
-
-        File.WriteAllLines(Path.Combine(path, "allFilesInAppHistory.txt"), allFilesInAppHistorySorted);
-    }
-
     private void Test4Button_Click(object sender, EventArgs e)
     {
     }
