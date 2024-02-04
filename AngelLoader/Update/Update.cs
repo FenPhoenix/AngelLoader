@@ -476,6 +476,27 @@ public static class AppUpdate
         }
     });
 
+    /*
+    Because the release packager might end up private, here's the spec for server-side changelogs.
+    They're just plain text, no Markdown, except that list items are like:
+    
+    (tab)- An item
+    (tab)- Another item
+    (tab)(tab)- A sub-item
+    (tab)- Yet another main item
+
+    With (tab) meaning an actual tab character. Lists are indented by one tab to start with, and one is added
+    for every sub-list. Sort of like Markdown but a bit modified to make it extremely easy to parse lists without
+    carrying around Markdig or what have you. We use Markdig for the release packager so we don't have to use it
+    here. We use tab chars for indenting so that one indent == one char. So if we want to convert tabs to spaces
+    of whatever length, it's trivial, and we can also trivially convert the dashes to Unicode bullets or whatever
+    we want. Section headers can be detected by the simple heuristic of a line ending with : and not starting with
+    a dash after 0 or more whitespaces.
+
+    We don't use full Markdown for the release notes because we have to convert them to RTF, and I don't want to
+    have to support the entirety of Markdown in the RTF converter. All we really want are section headers and
+    lists.
+    */
     internal static string[] GetFormattedPlainTextReleaseNotesLines(string text)
     {
         const string bullet = "\x2022";
