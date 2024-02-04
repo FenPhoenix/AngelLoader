@@ -71,15 +71,9 @@ public static class AppUpdate
         if (!accepted || updateInfo == null) return;
 
         Core.View.ShowProgressBox_Single(
-            message1: LText.Update.DownloadingUpdate,
+            message1: LText.Update.Updating,
+            message2: LText.Update.DownloadingUpdate,
             progressType: ProgressType.Determinate
-        );
-
-        Core.View.ShowProgressBox_Double(
-            mainMessage1: LText.Update.Updating,
-            subMessage: LText.Update.DownloadingUpdate,
-            mainProgressType: ProgressType.Determinate,
-            subProgressType: ProgressType.Determinate
         );
 
         await Task.Run(async () =>
@@ -123,9 +117,8 @@ public static class AppUpdate
 
                 try
                 {
-                    Core.View.SetProgressBoxState_Double(
-                        subMessage: LText.Update.UnpackingUpdate,
-                        subPercent: 0
+                    Core.View.SetProgressBoxState_Single(
+                        message2: LText.Update.UnpackingUpdate
                     );
 
                     using var fs = File.OpenRead(localZipFile);
@@ -191,7 +184,7 @@ public static class AppUpdate
 
         static void ReportProgress(ProgressPercents percents)
         {
-            Core.View.SetProgressBoxState(mainPercent: percents.MainPercent, subPercent: percents.SubPercent);
+            Core.View.SetProgressPercent(percents.MainPercent);
         }
 
         static async Task UpdateZipStreamCopyAsync(
