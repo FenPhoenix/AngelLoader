@@ -55,7 +55,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
     internal void Localize()
     {
         if (!_constructed) return;
-        Button.Text = LText.Update.UpdateAvailable;
+        Button.Text = LText.Update.UpdateAvailableNotification;
         RefreshSize();
     }
 

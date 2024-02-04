@@ -1132,8 +1132,8 @@ public sealed partial class MainForm : DarkFormBase,
         if (Config.CheckForUpdates == CheckForUpdates.FirstTimeAsk)
         {
             (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                message: LText.Update.AutoUpdateFirstAsk_Message,
-                title: LText.Update.AutoUpdateFirstAsk_Title,
+                message: LText.Update.AutoUpdateFirstAskDialog_Message,
+                title: LText.Update.AutoUpdateFirstAskDialog_Title,
                 icon: MBoxIcon.Information,
                 yes: LText.Global.Yes,
                 no: LText.Global.No

@@ -979,7 +979,6 @@ internal sealed class LText_Class
         internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
     }
 
-    // @Update: Look this over and see if we want to improve the wording of anything
     internal sealed class Update_Class
     {
         internal readonly string UpdateAlertBoxTitle = "Update";
@@ -987,9 +986,9 @@ internal sealed class LText_Class
         internal readonly string CouldNotAccessUpdateServer = "Couldn't access the update server.";
         internal readonly string DownloadingUpdateInfo = "Downloading update information...";
         internal readonly string FailedToDownloadUpdateInfo = "Failed to download update information.";
-        internal readonly string UpdateAvailable = "Update available";
-        internal readonly string AutoUpdateFirstAsk_Title = "Updates";
-        internal readonly string AutoUpdateFirstAsk_Message = "Would you like AngelLoader to check for updates every startup?";
+        internal readonly string UpdateAvailableNotification = "Update available";
+        internal readonly string AutoUpdateFirstAskDialog_Title = "Updates";
+        internal readonly string AutoUpdateFirstAskDialog_Message = "Would you like AngelLoader to check for updates every startup?";
         [FenGenBlankLine]
         internal readonly string UpdateDialog_Title = "Update AngelLoader";
         internal readonly string UpdateDialog_UpdateAndRestartButtonText = "Update and restart";
