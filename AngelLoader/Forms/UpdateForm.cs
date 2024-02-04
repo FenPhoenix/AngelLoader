@@ -226,7 +226,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     // In with the UI code because RTF is UI-specific
     private static string ChangelogBodyToRtf(string text)
     {
-        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        string[] lines = AppUpdate.GetFormattedPlainTextReleaseNotesLines(text);
 
         for (int i = 0; i < lines.Length; i++)
         {

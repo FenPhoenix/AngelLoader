@@ -475,4 +475,55 @@ public static class AppUpdate
             downloadARE.Set();
         }
     });
+
+    internal static string[] GetFormattedPlainTextReleaseNotesLines(string text)
+    {
+        const string bullet = "\x2022";
+
+        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string line = lines[i];
+
+            int listCharIndex = ListCharIndex(line);
+            if (listCharIndex > -1)
+            {
+                lines[i] = line.Substring(0, listCharIndex) + bullet + line.Substring(listCharIndex + 1);
+                line = lines[i];
+            }
+
+            if (line.StartsWithO("\t"))
+            {
+                int nonTabIndex = NonTabCharIndex(line);
+                if (listCharIndex > -1)
+                {
+                    lines[i] = new string(' ', nonTabIndex * 4) + line.TrimStart();
+                }
+            }
+        }
+
+        return lines;
+
+        static int ListCharIndex(string line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (char.IsWhiteSpace(c)) continue;
+                return c == '-' ? i : -1;
+            }
+            return -1;
+        }
+
+        static int NonTabCharIndex(string line)
+        {
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (c != '\t') return i;
+            }
+            return -1;
+        }
+    }
 }
