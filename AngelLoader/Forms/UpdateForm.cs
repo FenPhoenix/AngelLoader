@@ -45,8 +45,8 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     public override void RespondToSystemThemeChange()
     {
-        SetThemeBase(Config.VisualTheme);
         RefreshRtfTheme(refreshExistingText: true);
+        SetThemeBase(Config.VisualTheme);
     }
 
     private void Localize()
