@@ -8,7 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.WinFormsNative;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
@@ -19,7 +21,8 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     private bool _downloadingUpdateInfo;
 
-    internal AppUpdate.UpdateInfo? UpdateInfo;
+    private readonly List<AppUpdate.UpdateInfo> UpdateInfos = new(0);
+    internal AppUpdate.UpdateInfo? UpdateInfo => UpdateInfos.Count > 0 ? UpdateInfos[0] : null;
     internal bool NoUpdatesFound;
 
     public UpdateForm()
@@ -40,7 +43,11 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         Localize();
     }
 
-    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+    public override void RespondToSystemThemeChange()
+    {
+        SetThemeBase(Config.VisualTheme);
+        RefreshRtfTheme(refreshExistingText: true);
+    }
 
     private void Localize()
     {
@@ -148,25 +155,9 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             updateInfos.Add(new AppUpdate.UpdateInfo(new Version(1, 0), "This is test text!", new Uri("https://www.google.com")));
 #endif
 
-            UpdateInfo = updateInfos[0];
+            UpdateInfos.ClearAndAdd_Small(updateInfos);
 
-            string changelogFullText =
-                @"{\rtf1" +
-                @"\ansi\ansicpg1252" +
-                @"\deff0{\fonttbl{\f0\fnull\fcharset0 Segoe UI;}}";
-            for (int i = 0; i < updateInfos.Count; i++)
-            {
-                if (i > 0) changelogFullText += @"\line\line ---\line\line ";
-                AppUpdate.UpdateInfo? item = updateInfos[i];
-                changelogFullText += @"\b1 " + item.Version + @":\b0\line\line " +
-                                     ChangelogBodyToRtf(item.ChangelogText);
-            }
-            changelogFullText += "}";
-
-            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText)))
-            {
-                SetReleaseNotes(ms);
-            }
+            RefreshRtfTheme();
 
             UpdateButton.Enabled = true;
         }
@@ -178,6 +169,57 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
         else
         {
             ShowMessage(LText.Update.FailedToDownloadUpdateInfo);
+        }
+    }
+
+    private void RefreshRtfTheme(bool refreshExistingText = false)
+    {
+        if (_downloadingUpdateInfo) return;
+
+        if (UpdateInfos.Count == 0)
+        {
+            ReleaseNotesRichTextBox.Clear();
+            UpdateButton.Enabled = false;
+            return;
+        }
+
+        Native.SCROLLINFO? si = null;
+        try
+        {
+            if (refreshExistingText)
+            {
+                si = ControlUtils.GetCurrentScrollInfo(ReleaseNotesRichTextBox.Handle, Native.SB_VERT);
+                this.SuspendDrawing();
+            }
+
+            string themedHorizontalLine = RtfProcessing.GetThemedHorizontalLine(Config.DarkMode);
+
+            string changelogFullText =
+                @"{\rtf1" +
+                @"\ansi\ansicpg1252" +
+                @"\deff0{\fonttbl{\f0\fnull\fcharset0 Segoe UI;}}" +
+                @"\viewkind4\uc1\f0 ";
+            for (int i = 0; i < UpdateInfos.Count; i++)
+            {
+                if (i > 0) changelogFullText += @"\line\line" + themedHorizontalLine + @"\line ";
+                AppUpdate.UpdateInfo? item = UpdateInfos[i];
+                changelogFullText += @"\b1 " + item.Version + @":\b0\line\line " +
+                                     ChangelogBodyToRtf(item.ChangelogText);
+            }
+            changelogFullText += "}";
+
+            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText)))
+            {
+                SetReleaseNotes(ms);
+            }
+        }
+        finally
+        {
+            if (refreshExistingText && si != null)
+            {
+                ControlUtils.RepositionScroll(ReleaseNotesRichTextBox.Handle, si.Value, Native.SB_VERT);
+                this.ResumeDrawing();
+            }
         }
     }
 
