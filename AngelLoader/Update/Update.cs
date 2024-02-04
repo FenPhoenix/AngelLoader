@@ -32,6 +32,13 @@ public static class AppUpdate
         public readonly Uri DownloadUri = downloadUri;
     }
 
+    private enum CheckUpdateResult
+    {
+        UpdateAvailable,
+        NoUpdateAvailable,
+        Error
+    }
+
     internal enum UpdateDetailsDownloadResult
     {
         Success,
@@ -268,8 +275,10 @@ public static class AppUpdate
         {
             // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
             // and it exits with the app if the app closes.
-            if (!await CheckIfUpdateAvailable(CancellationToken.None)) return;
-            Core.View.Invoke(static () => Core.View.ShowUpdateNotification(true));
+            if (await CheckIfUpdateAvailable(CancellationToken.None) == CheckUpdateResult.UpdateAvailable)
+            {
+                Core.View.Invoke(static () => Core.View.ShowUpdateNotification(true));
+            }
         });
 
         try
@@ -283,7 +292,7 @@ public static class AppUpdate
         }
     }
 
-    private static async Task<bool> CheckIfUpdateAvailable(CancellationToken cancellationToken)
+    private static async Task<CheckUpdateResult> CheckIfUpdateAvailable(CancellationToken cancellationToken)
     {
         try
         {
@@ -292,28 +301,35 @@ public static class AppUpdate
 
             if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
             {
-                return false;
+                return CheckUpdateResult.NoUpdateAvailable;
             }
 
             using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, cancellationToken);
 
-            if (!request.IsSuccessStatusCode) return false;
+            if (!request.IsSuccessStatusCode)
+            {
+                Log("Update check failed. Status code: " + request.StatusCode);
+                return CheckUpdateResult.Error;
+            }
 
             string versionString = await request.Content.ReadAsStringAsync();
 
             return !versionString.IsEmpty() &&
                    Version.TryParse(versionString, out Version version) &&
-                   version > appVersion;
+                   version > appVersion
+                ? CheckUpdateResult.UpdateAvailable
+                : CheckUpdateResult.NoUpdateAvailable;
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            Log("Update check failed.", ex);
+            return CheckUpdateResult.Error;
         }
     }
 
     internal static async Task DoManualCheck()
     {
-        bool updateAvailable;
+        CheckUpdateResult updateAvailable;
         try
         {
             Core.View.SetWaitCursor(true);
@@ -326,16 +342,23 @@ public static class AppUpdate
             Core.View.SetWaitCursor(false);
         }
 
-        if (updateAvailable)
+        switch (updateAvailable)
         {
-            await ShowUpdateAskDialog();
-        }
-        else
-        {
-            Core.Dialogs.ShowAlert(
-                LText.Update.NoUpdatesAvailable,
-                LText.Update.UpdateAlertBoxTitle,
-                MBoxIcon.Information);
+            case CheckUpdateResult.UpdateAvailable:
+                await ShowUpdateAskDialog();
+                break;
+            case CheckUpdateResult.NoUpdateAvailable:
+                Core.Dialogs.ShowAlert(
+                    LText.Update.NoUpdatesAvailable,
+                    LText.Update.UpdateAlertBoxTitle,
+                    MBoxIcon.Information);
+                break;
+            default:
+                Core.Dialogs.ShowError(
+                    LText.Update.CouldNotAccessUpdateServer,
+                    LText.Update.UpdateAlertBoxTitle,
+                    MBoxIcon.Warning);
+                break;
         }
     }
 

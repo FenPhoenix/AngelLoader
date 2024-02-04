@@ -979,10 +979,12 @@ internal sealed class LText_Class
         internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
     }
 
+    // @Update: Look this over and see if we want to improve the wording of anything
     internal sealed class Update_Class
     {
         internal readonly string UpdateAlertBoxTitle = "Update";
         internal readonly string NoUpdatesAvailable = "No updates are available. You're using the latest version of AngelLoader.";
+        internal readonly string CouldNotAccessUpdateServer = "Couldn't access the update server.";
         internal readonly string DownloadingUpdateInfo = "Downloading update information...";
         internal readonly string FailedToDownloadUpdateInfo = "Failed to download update information.";
         internal readonly string UpdateAvailable = "Update available";
