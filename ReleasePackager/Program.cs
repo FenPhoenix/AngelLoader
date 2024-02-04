@@ -176,7 +176,12 @@ internal static class Program
         return -1;
     }
 
-    // @Update: When writing the file to the server, write with UTF8 no BOM for size minimization
+    /*
+    @Update: When writing the file to the server, write with UTF8 no BOM for size minimization.
+    @Update: The GitHub pages server takes a couple minutes after upload to have the new data appear in get requests.
+    We should have this thing stay running and do like a once-a-minute check to see if the uploaded notes match
+    the local ones, and only then should it update the latest version file on the server.
+    */
 
     #region Package
 

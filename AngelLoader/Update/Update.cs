@@ -90,7 +90,6 @@ public static class AppUpdate
                 var progress = new Progress<ProgressPercents>(ReportProgress);
                 try
                 {
-                    // @Update: Implement cancellation token
                     using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
 
                     if (!request.IsSuccessStatusCode)
@@ -120,7 +119,6 @@ public static class AppUpdate
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
-                    // @Update: Implement cancellation token
                     await UpdateZipStreamCopyAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress, _updatingCTS.Token);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
