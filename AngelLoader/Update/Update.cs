@@ -475,46 +475,4 @@ public static class AppUpdate
             downloadARE.Set();
         }
     });
-
-    // @Update: This logic is still not right. It goes back one indent even when it should go back more than that.
-    // We should use a Markdown parser library and all this would be fixed. But the bloat though. Argh.
-    // If we want to stay handmade, I guess we need a stack to tell us how many indents to go back.
-    internal static string[] GetFormattedPlainTextReleaseNotesLines(string text)
-    {
-        const string bullet = "\x2022";
-
-        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
-
-        int currentIndent = 0;
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string line = lines[i];
-            int listCharIndex = ListCharIndex(line);
-            if (listCharIndex > -1)
-            {
-                if (listCharIndex > currentIndent)
-                {
-                    currentIndent++;
-                }
-                else if (listCharIndex < currentIndent)
-                {
-                    currentIndent--;
-                }
-                lines[i] = new string(' ', 4 * (currentIndent + 1)) + bullet + " " + line.Substring(listCharIndex + 1).TrimStart();
-            }
-        }
-
-        return lines;
-
-        static int ListCharIndex(string line)
-        {
-            for (int i = 0; i < line.Length; i++)
-            {
-                char c = line[i];
-                if (char.IsWhiteSpace(c)) continue;
-                if (c == '-') return i;
-            }
-            return -1;
-        }
-    }
 }
