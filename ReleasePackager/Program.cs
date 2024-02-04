@@ -2,13 +2,31 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ReleasePackager;
 
 internal static class Program
 {
+    private static MainForm View = null!;
+
+    // @Update: These paths are output to in the personal post-build bat file
+    // We need to make them be accessible to other users. Also make them not hard-coded?
+    private const string _releaseBasePath = @"C:\AngelLoader_Public_Package";
+    private static readonly string ReleaseNotesPath = Path.Combine(_releaseBasePath, "ReleaseNotes");
+    private static readonly string RawReleaseNotesFile = Path.Combine(ReleaseNotesPath, "Raw_release_notes.txt");
+    private static readonly string MarkdownReleaseNotesFile = Path.Combine(ReleaseNotesPath, "Markdown_release_notes.txt");
+    private static readonly string TTLGReleaseNotesFile = Path.Combine(ReleaseNotesPath, "TTLG_release_notes.txt");
+
+    internal enum Bitness
+    {
+        X86,
+        X64
+    }
+
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
@@ -21,7 +39,50 @@ internal static class Program
         Application.Run(View);
     }
 
-    private static MainForm View = null!;
+    private static string NormalizeToCRLF(this string text)
+    {
+        if (text.IndexOf('\r') == -1)
+        {
+            text = text.Replace("\n", "\r\n");
+        }
+
+        return text;
+    }
+
+    private static void ClearDir(string path)
+    {
+        try
+        {
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+            {
+                new FileInfo(f).IsReadOnly = false;
+            }
+        }
+        catch (DirectoryNotFoundException)
+        {
+            return;
+        }
+        catch
+        {
+            // ignore
+        }
+
+        try
+        {
+            foreach (string f in Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly))
+            {
+                File.Delete(f);
+            }
+            foreach (string d in Directory.GetDirectories(path, "*", SearchOption.TopDirectoryOnly))
+            {
+                Directory.Delete(d, recursive: true);
+            }
+        }
+        catch
+        {
+            // ignore
+        }
+    }
 
     private sealed class LineItem(string text, bool isHeader, bool isListLine, int listIndent)
     {
@@ -134,7 +195,7 @@ internal static class Program
     private static List<LineItem> BuildLineItems()
     {
         List<LineItem> lineItems = new();
-        string[] lines = View.GetReleaseNotesText().Split(new[] { "\r\n" }, StringSplitOptions.None);
+        string[] lines = View.GetRawReleaseNotesText().Split(new[] { "\r\n" }, StringSplitOptions.None);
         int currentIndent = 0;
         foreach (string line in lines)
         {
@@ -183,28 +244,32 @@ internal static class Program
     the local ones, and only then should it update the latest version file on the server.
     */
 
-    #region Package
-
-    // @Update: These paths are output to in the personal post-build bat file
-    // We need to make them be accessible to other users. Also make them not hard-coded?
-    private const string releaseBasePath = @"C:\AngelLoader_Public_Package";
-
-    internal enum Bitness
+    internal static async Task CreateRelease()
     {
-        X86,
-        X64
+        ClearDir(ReleaseNotesPath);
+        string rawReleaseNotes = View.GetRawReleaseNotesText().NormalizeToCRLF();
+        string markdownReleaseNotes = View.GetMarkdownReleaseNotes().NormalizeToCRLF();
+        string ttlgReleaseNotes = View.GetTTLGReleaseNotes().NormalizeToCRLF();
+
+        // Default is to write without BOM, but let's be absolutely strict and explicit for robustness.
+        UTF8Encoding utf8NoBOM = new(false, true);
+
+        // Maybe we just keep the app open and don't need to write these files...
+        File.WriteAllText(RawReleaseNotesFile, rawReleaseNotes, utf8NoBOM);
+        File.WriteAllText(MarkdownReleaseNotesFile, markdownReleaseNotes, utf8NoBOM);
+        File.WriteAllText(TTLGReleaseNotesFile, ttlgReleaseNotes, utf8NoBOM);
     }
 
-    private static readonly string[] _bitnessStrings = { "x86", "x64" };
+    #region Package
 
-    private static string GetBitnessString(Bitness bitness) => _bitnessStrings[(int)bitness];
+    private static string GetBitnessString(Bitness bitness) => bitness == Bitness.X64 ? "x64" : "x86";
 
     internal static void Package(Bitness bitness)
     {
         string bitnessString = GetBitnessString(bitness);
 
         // @Update: Ditto the above with these paths
-        string inputPath = Path.Combine(releaseBasePath, bitnessString);
+        string inputPath = Path.Combine(_releaseBasePath, bitnessString);
 
         string[] files;
         try
@@ -239,7 +304,7 @@ internal static class Program
             p.StartInfo.FileName = Path.Combine(Application.StartupPath, "7z.exe");
             p.StartInfo.WorkingDirectory = Application.StartupPath;
             // @Update: Have AL's post-build batch file pass bitness and version to us
-            string outputArchive = Path.Combine(releaseBasePath,
+            string outputArchive = Path.Combine(_releaseBasePath,
                 "AngelLoader_v1.7.X_PACKAGE_TEST_" + bitnessString + ".zip");
 
             try

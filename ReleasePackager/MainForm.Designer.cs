@@ -34,6 +34,7 @@ sealed partial class MainForm
             this.ReleaseNotesTTLGLabel = new System.Windows.Forms.Label();
             this.ReleaseNotesMarkdownRawTextBox = new System.Windows.Forms.TextBox();
             this.ReleaseNotesMarkdownRawLabel = new System.Windows.Forms.Label();
+            this.CreateReleaseButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // ReleaseNotesTextBox
@@ -93,11 +94,22 @@ sealed partial class MainForm
             this.ReleaseNotesMarkdownRawLabel.TabIndex = 1;
             this.ReleaseNotesMarkdownRawLabel.Text = "Release notes (Markdown raw):";
             // 
+            // CreateReleaseButton
+            // 
+            this.CreateReleaseButton.Location = new System.Drawing.Point(616, 336);
+            this.CreateReleaseButton.Name = "CreateReleaseButton";
+            this.CreateReleaseButton.Size = new System.Drawing.Size(96, 23);
+            this.CreateReleaseButton.TabIndex = 2;
+            this.CreateReleaseButton.Text = "Create release";
+            this.CreateReleaseButton.UseVisualStyleBackColor = true;
+            this.CreateReleaseButton.Click += new System.EventHandler(this.CreateReleaseButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1431, 670);
+            this.Controls.Add(this.CreateReleaseButton);
             this.Controls.Add(this.ReleaseNotesMarkdownRawLabel);
             this.Controls.Add(this.ReleaseNotesTTLGLabel);
             this.Controls.Add(this.ReleaseNotesLabel);
@@ -119,4 +131,5 @@ sealed partial class MainForm
     private System.Windows.Forms.Label ReleaseNotesTTLGLabel;
     private System.Windows.Forms.TextBox ReleaseNotesMarkdownRawTextBox;
     private System.Windows.Forms.Label ReleaseNotesMarkdownRawLabel;
+    private System.Windows.Forms.Button CreateReleaseButton;
 }
