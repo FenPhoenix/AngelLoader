@@ -27,9 +27,9 @@ internal static class Utils
 
     internal static int Clamp(this int value, int min, int max) => value < min ? min : value > max ? max : value;
 
-    internal static void ClearUpdateTempPath() => ClearDir(Program.UpdateTempPath);
+    internal static void ClearUpdateTempPath() => ClearDir(Paths.UpdateTemp);
 
-    internal static void ClearUpdateBakTempPath() => ClearDir(Program.UpdateBakTempPath);
+    internal static void ClearUpdateBakTempPath() => ClearDir(Paths.UpdateBakTemp);
 
     private static void ClearDir(string path)
     {

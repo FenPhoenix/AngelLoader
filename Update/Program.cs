@@ -19,6 +19,12 @@ The rename of its own exe should be all that is required to allow the entire cop
 
 internal static class Program
 {
+    internal static bool _testMode;
+
+    private static MainForm View = null!;
+
+    private static CancellationTokenSource _copyCTS = new();
+
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
@@ -30,15 +36,13 @@ internal static class Program
         new SingleInstanceManager().Run(args);
     }
 
-    internal static bool _testMode;
-
     private sealed class SingleInstanceManager : WindowsFormsApplicationBase
     {
         internal SingleInstanceManager() => IsSingleInstance = true;
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
-            SetLogFile(LogFile);
+            SetLogFile(Paths.LogFile);
 
             // It's safe to read the AL config file before waiting for AL to close, because it will have written
             // out the config explicitly BEFORE calling us. This also lets us pop up our window immediately to
@@ -51,7 +55,7 @@ internal static class Program
             if (eventArgs.CommandLine.Count == 1 &&
                 eventArgs.CommandLine[0] == "-go")
             {
-                Data.VisualTheme = Utils.ReadThemeFromConfigIni(ConfigIniPath);
+                Data.VisualTheme = Utils.ReadThemeFromConfigIni(Paths.ConfigIni);
 
                 View = new MainForm();
                 Application.Run(View);
@@ -62,7 +66,7 @@ internal static class Program
             {
                 _testMode = true;
 
-                Data.VisualTheme = Utils.ReadThemeFromConfigIni(ConfigIniPath);
+                Data.VisualTheme = Utils.ReadThemeFromConfigIni(Paths.ConfigIni);
 
                 View = new MainForm();
                 Application.Run(View);
@@ -83,7 +87,7 @@ internal static class Program
         try
         {
             string langName = "";
-            string[] lines = File.ReadAllLines(ConfigIniPath);
+            string[] lines = File.ReadAllLines(Paths.ConfigIni);
             foreach (string line in lines)
             {
                 string lineT = line.Trim();
@@ -102,16 +106,6 @@ internal static class Program
             // ignore
         }
     }
-
-    private static MainForm View = null!;
-
-    private static readonly string ConfigIniPath = Path.Combine(Application.StartupPath, "Data", "Config.ini");
-
-    private static readonly string _baseTempPath = Path.Combine(Path.GetTempPath(), "AngelLoader");
-    internal static readonly string UpdateTempPath = Path.Combine(_baseTempPath, "Update");
-    internal static readonly string UpdateBakTempPath = Path.Combine(_baseTempPath, "UpdateBak");
-
-    private static CancellationTokenSource _copyCTS = new();
 
     internal static void CancelCopy()
     {
@@ -168,26 +162,26 @@ internal static class Program
             List<string> files;
             try
             {
-                files = Directory.GetFiles(UpdateTempPath, "*", SearchOption.AllDirectories).ToList();
+                files = Directory.GetFiles(Paths.UpdateTemp, "*", SearchOption.AllDirectories).ToList();
 
                 CleanupAndThrowIfCancellationRequested();
 
                 if (files.Count == 0)
                 {
-                    Log("Update failed: No files in '" + UpdateTempPath + "'.");
+                    Log("Update failed: No files in '" + Paths.UpdateTemp + "'.");
                     Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                     return;
                 }
             }
             catch (DirectoryNotFoundException ex)
             {
-                Log("Update failed: Update temp directory not found: '" + UpdateTempPath + "'.", ex);
+                Log("Update failed: Update temp directory not found: '" + Paths.UpdateTemp + "'.", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                Log("Update failed: Error while trying to get the list of new app files in '" + UpdateTempPath + "'.", ex);
+                Log("Update failed: Error while trying to get the list of new app files in '" + Paths.UpdateTemp + "'.", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
@@ -217,15 +211,15 @@ internal static class Program
                 }
             }
 
-            string updateDirWithTrailingDirSep = UpdateTempPath.TrimEnd('\\', '/') + "\\";
+            string updateDirWithTrailingDirSep = Paths.UpdateTemp.TrimEnd('\\', '/') + "\\";
 
             try
             {
-                Directory.CreateDirectory(UpdateBakTempPath);
+                Directory.CreateDirectory(Paths.UpdateBakTemp);
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                Log("Update failed: Unable to create '" + UpdateBakTempPath + "' (current version backup path).", ex);
+                Log("Update failed: Unable to create '" + Paths.UpdateBakTemp + "' (current version backup path).", ex);
                 Utils.ShowAlert(View, GenericUpdateFailedSafeMessage);
                 return;
             }
@@ -245,12 +239,12 @@ internal static class Program
 
                 if (File.Exists(appFileName))
                 {
-                    string finalBakFileName = Path.Combine(UpdateBakTempPath, relativeFileName);
+                    string finalBakFileName = Path.Combine(Paths.UpdateBakTemp, relativeFileName);
 
                     try
                     {
                         Directory.CreateDirectory(Path.GetDirectoryName(finalBakFileName)!);
-                        File.Copy(appFileName, Path.Combine(UpdateBakTempPath, relativeFileName), overwrite: true);
+                        File.Copy(appFileName, Path.Combine(Paths.UpdateBakTemp, relativeFileName), overwrite: true);
                     }
                     catch (Exception ex) when (ex is not OperationCanceledException)
                     {
@@ -401,7 +395,7 @@ internal static class Program
             for (int i = 0; i < oldRelativeFileNames.Count; i++)
             {
                 string relativeFileName = oldRelativeFileNames[i];
-                File.Copy(Path.Combine(UpdateBakTempPath, relativeFileName),
+                File.Copy(Path.Combine(Paths.UpdateBakTemp, relativeFileName),
                     Path.Combine(startupPath, relativeFileName), overwrite: true);
             }
             // @Update: Test this
@@ -423,19 +417,15 @@ internal static class Program
         }
     }
 
-    // @Update: We could/maybe should generate AL's constants into a file in this project.
-    // That way we'll automatically update them here without having to have a dll dependency (which is a no-go).
-    private static readonly string LogFile = Path.Combine(Application.StartupPath, "AngelLoader_log.txt");
-
     internal static void OpenLogFile()
     {
         try
         {
-            using (Process.Start(LogFile)) { }
+            using (Process.Start(Paths.LogFile)) { }
         }
         catch
         {
-            Utils.ShowAlert(View, "Unable to open log file." + "\r\n\r\n" + LogFile, LText.AlertMessages.Error);
+            Utils.ShowAlert(View, "Unable to open log file." + "\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
         }
     }
 }
