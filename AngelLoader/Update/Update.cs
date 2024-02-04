@@ -476,6 +476,9 @@ public static class AppUpdate
         }
     });
 
+    // @Update: This logic is still not right. It goes back one indent even when it should go back more than that.
+    // We should use a Markdown parser library and all this would be fixed. But the bloat though. Argh.
+    // If we want to stay handmade, I guess we need a stack to tell us how many indents to go back.
     internal static string[] GetFormattedPlainTextReleaseNotesLines(string text)
     {
         const string bullet = "\x2022";
