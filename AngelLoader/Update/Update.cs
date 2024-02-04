@@ -46,8 +46,6 @@ public static class AppUpdate
         NoUpdatesFound
     }
 
-    // @Update: Test all of this with internet disabled
-
 #if TESTING
     private const string _updatesRepoDir = "updates_testing";
 #else
