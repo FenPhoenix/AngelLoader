@@ -53,12 +53,14 @@ public static class AppUpdate
     private const string _bitnessRepoDir = "framework_x86";
 #endif
 
-    private static CancellationTokenSource _checkForUpdatesCTS = new();
+    private static CancellationTokenSource _detailsDownloadCTS = new();
+    private static CancellationTokenSource _updatingCTS = new();
 
     private const string _latestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/latest_version.txt";
     private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
 
-    internal static void CancelDetailsDownload() => _checkForUpdatesCTS.CancelIfNotDisposed();
+    internal static void CancelDetailsDownload() => _detailsDownloadCTS.CancelIfNotDisposed();
+    internal static void CancelUpdate() => _updatingCTS.CancelIfNotDisposed();
 
     internal static async Task ShowUpdateAskDialog()
     {
@@ -70,10 +72,14 @@ public static class AppUpdate
         }
         if (!accepted || updateInfo == null) return;
 
+        _updatingCTS = _updatingCTS.Recreate();
+
         Core.View.ShowProgressBox_Single(
             message1: LText.Update.Updating,
             message2: LText.Update.DownloadingUpdate,
-            progressType: ProgressType.Determinate
+            progressType: ProgressType.Determinate,
+            cancelMessage: LText.Global.Cancel,
+            cancelAction: CancelUpdate
         );
 
         await Task.Run(async () =>
@@ -85,7 +91,7 @@ public static class AppUpdate
                 try
                 {
                     // @Update: Implement cancellation token
-                    using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, CancellationToken.None);
+                    using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
 
                     if (!request.IsSuccessStatusCode)
                     {
@@ -95,19 +101,31 @@ public static class AppUpdate
                         return;
                     }
 
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
                     // Just download the file once, so we know we won't read duplicate data or whatever
 
                     Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
 
                     localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
                         Path.GetFileName(updateInfo.DownloadUri.OriginalString));
 
                     using Stream zipStream = await request.Content.ReadAsStreamAsync();
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
                     using var zipLocalStream = File.Create(localZipFile);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
                     // @Update: Implement cancellation token
-                    await UpdateZipStreamCopyAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress);
+                    await UpdateZipStreamCopyAsync(zipStream, zipLocalStream, new byte[StreamCopyBufferSize], progress, _updatingCTS.Token);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Error downloading the update.", ex);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
@@ -122,12 +140,22 @@ public static class AppUpdate
                     );
 
                     using var fs = File.OpenRead(localZipFile);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
                     using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
 
-                    archive.Update_ExtractToDirectory_Fast(Paths.UpdateTemp, progress);
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
+
+                    archive.Update_ExtractToDirectory_Fast(Paths.UpdateTemp, progress, _updatingCTS.Token);
+
+                    _updatingCTS.Token.ThrowIfCancellationRequested();
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Error unpacking the update.", ex);
                     Paths.CreateOrClearTempPath(Paths.UpdateTemp);
@@ -138,6 +166,8 @@ public static class AppUpdate
                 // Save out the config BEFORE starting the update copier, so it can get the right theme/lang
                 Ini.WriteConfigIni();
 
+                _updatingCTS.Token.ThrowIfCancellationRequested();
+
                 if (!File.Exists(Paths.UpdateExe))
                 {
                     try
@@ -146,7 +176,7 @@ public static class AppUpdate
                         // normal exe not (maybe impossible currently?)
                         File.Move(Paths.UpdateExeBak, Paths.UpdateExe);
                     }
-                    catch
+                    catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
                         Core.Dialogs.ShowError(LText.Update.UpdaterExeNotFound + "\r\n\r\n" + Paths.UpdateExe);
@@ -155,11 +185,13 @@ public static class AppUpdate
                     }
                 }
 
+                _updatingCTS.Token.ThrowIfCancellationRequested();
+
                 try
                 {
                     Utils.ProcessStart_UseShellExecute(new ProcessStartInfo(Paths.UpdateExe, "-go"));
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Unable to start '" + Paths.UpdateExe + "'. Couldn't finish the update.", ex);
                     Core.Dialogs.ShowError(LText.Update.UpdaterExeStartFailed + "\r\n\r\n" + Paths.UpdateExe);
@@ -167,8 +199,14 @@ public static class AppUpdate
                     return;
                 }
             }
+            catch (OperationCanceledException)
+            {
+                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                return;
+            }
             finally
             {
+                _updatingCTS.Dispose();
                 Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
                 Core.View.HideProgressBox();
             }
@@ -191,16 +229,20 @@ public static class AppUpdate
             Stream source,
             Stream destination,
             byte[] buffer,
-            IProgress<ProgressPercents> progress)
+            IProgress<ProgressPercents> progress,
+            CancellationToken cancellationToken)
         {
             ProgressPercents percents = new();
 
             int streamLength = (int)source.Length;
             int bytesRead;
             int totalBytesRead = 0;
-            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length)) != 0)
+            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) != 0)
             {
-                await destination.WriteAsync(buffer, 0, bytesRead);
+                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
                 totalBytesRead += bytesRead;
 
                 percents.SubPercent = GetPercentFromValue_Int(totalBytesRead, streamLength);
@@ -304,7 +346,7 @@ public static class AppUpdate
     {
         try
         {
-            _checkForUpdatesCTS = _checkForUpdatesCTS.Recreate();
+            _detailsDownloadCTS = _detailsDownloadCTS.Recreate();
 
             List<UpdateInfo> ret = new();
 
@@ -317,23 +359,23 @@ public static class AppUpdate
 
             UpdateInfoInternal? updateFile = null;
 
-            using var request = await GlobalHttpClient.GetAsync(_versionsFile, _checkForUpdatesCTS.Token);
+            using var request = await GlobalHttpClient.GetAsync(_versionsFile, _detailsDownloadCTS.Token);
 
-            _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+            _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
             if (!request.IsSuccessStatusCode) return (UpdateDetailsDownloadResult.Error, ret);
 
             Stream versionFileStream = await request.Content.ReadAsStreamAsync();
 
-            _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+            _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
             using (var sr = new StreamReader(versionFileStream))
             {
-                _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+                _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
                 while (await sr.ReadLineAsync() is { } line)
                 {
-                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+                    _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
                     string lineT = line.Trim();
 
@@ -360,7 +402,7 @@ public static class AppUpdate
                     }
                 }
 
-                _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+                _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
                 if (updateFile != null) versions.Add(updateFile);
             }
@@ -374,13 +416,13 @@ public static class AppUpdate
 
                 if (changelogUri != null && downloadUri != null)
                 {
-                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, _checkForUpdatesCTS.Token);
+                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, _detailsDownloadCTS.Token);
 
-                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+                    _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
                     string changelogText = await changelogRequest.Content.ReadAsStringAsync();
 
-                    _checkForUpdatesCTS.Token.ThrowIfCancellationRequested();
+                    _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
                     // Quick-n-dirty way to normalize linebreaks, because they'll normally be Unix-style on GitHub
                     if (!changelogText.Contains('\r'))
@@ -410,6 +452,7 @@ public static class AppUpdate
         }
         finally
         {
+            _detailsDownloadCTS.Dispose();
             downloadARE.Set();
         }
     });
