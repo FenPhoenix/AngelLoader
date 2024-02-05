@@ -294,9 +294,6 @@ public static class AppUpdate
     {
         try
         {
-            // @Update: Updating the latest version file is the very last thing that should be done by the release packager
-            // We want everything in place when the app finds a new version defined there.
-
             if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
             {
                 return CheckUpdateResult.NoUpdateAvailable;

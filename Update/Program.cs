@@ -130,7 +130,6 @@ internal static class Program
         }
     }
 
-    // @Update: Maybe we should rename all to-be-replaced files first, then delete after, just to avoid "in use" errors
     private static async Task DoCopyInternal()
     {
         _copyCTS.Dispose();
@@ -386,7 +385,6 @@ internal static class Program
         }
     }
 
-    // @Update: Display the rollback on the UI, "Rolling back..." and maybe reverse progress
     private static void Rollback(string startupPath, List<string> oldRelativeFileNames, bool canceled = false)
     {
         View.SetMessage1(LText.Update.RestoringOldFiles);
