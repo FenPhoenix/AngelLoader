@@ -60,6 +60,7 @@ internal sealed class LocalizationData
     internal sealed class Update_Class
     {
         [FenGenBlankLine]
+        internal readonly string DoNotRunUpdateExeManually = "This executable is not meant to be run on its own. Please update from within AngelLoader.";
         internal readonly string PreparingToUpdate = "Preparing to update...";
         internal readonly string CopyingFiles = "Copying files...";
         internal readonly string RestoringOldFiles = "Restoring old files...";

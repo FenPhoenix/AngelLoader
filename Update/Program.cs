@@ -1,3 +1,5 @@
+//#define TESTING
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,7 +21,9 @@ The rename of its own exe should be all that is required to allow the entire cop
 
 internal static class Program
 {
+#if TESTING
     internal static bool _testMode;
+#endif
 
     private static MainForm View = null!;
 
@@ -51,7 +55,6 @@ internal static class Program
 
             ReadLanguageIni();
 
-            // @Update: Maybe we should name this something unappealing like "_update_internal.exe"
             if (eventArgs.CommandLine.Count == 1 &&
                 eventArgs.CommandLine[0] == "-go")
             {
@@ -60,7 +63,7 @@ internal static class Program
                 View = new MainForm();
                 Application.Run(View);
             }
-            // @Update: Dummy-out test stuff for final
+#if TESTING
             else if (eventArgs.CommandLine.Count == 1 &&
                       eventArgs.CommandLine[0] == "-test")
             {
@@ -71,12 +74,11 @@ internal static class Program
                 View = new MainForm();
                 Application.Run(View);
             }
+#endif
             else
             {
                 // Stock message box intentionally here
-                MessageBox.Show(
-                    "This executable is not meant to be run on its own. Please update from within AngelLoader.",
-                    "AngelLoader Updater");
+                MessageBox.Show(LText.Update.DoNotRunUpdateExeManually, "AngelLoader Updater");
             }
             return false;
         }
@@ -138,12 +140,14 @@ internal static class Program
         _copyCTS.Dispose();
         _copyCTS = new CancellationTokenSource();
 
+#if TESTING
         if (_testMode)
         {
             View.SetMessage1(LText.Update.CopyingFiles);
             View.SetProgress(50);
             return;
         }
+#endif
 
 #if false
         string startupPath = @"C:\AngelLoader";
