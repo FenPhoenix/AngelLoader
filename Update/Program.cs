@@ -130,6 +130,9 @@ internal static class Program
         }
     }
 
+    // Repulsive hack cause I'm lazy
+    private static bool _startAngelLoader = true;
+
     private static async Task DoCopyInternal()
     {
         _copyCTS.Dispose();
@@ -306,7 +309,7 @@ internal static class Program
                     if (retryCount > 10)
                     {
                         Log("Couldn't copy '" + file + "' to '" + finalFileName + "'.", ex);
-                        using var d = new DarkTaskDialog(
+                        DialogResult result = Utils.ShowDialogCustom(View,
                             message: LText.Update.FileCopy_CouldNotCopyFile + "\r\n\r\n" +
                                      LText.Update.FileCopy_Source + " " + file + "\r\n" +
                                      LText.Update.FileCopy_Destination + " " + finalFileName + "\r\n\r\n" +
@@ -316,8 +319,6 @@ internal static class Program
                             yesText: LText.Global.Retry,
                             noText: LText.Global.Cancel,
                             defaultButton: DialogResult.Yes);
-
-                        DialogResult result = d.ShowDialog(View);
 
                         if (result == DialogResult.Retry)
                         {
@@ -353,6 +354,8 @@ internal static class Program
 
             Utils.ClearUpdateBakTempPath();
         });
+
+        if (!_startAngelLoader) return;
 
         try
         {
@@ -396,7 +399,6 @@ internal static class Program
                 File.Copy(Path.Combine(Paths.UpdateBakTemp, relativeFileName),
                     Path.Combine(startupPath, relativeFileName), overwrite: true);
             }
-            // @Update: Test this
             string reason = canceled ? "Update canceled." : "Update failed.";
             Log(reason + " Successfully rolled back (restored backed-up app files).");
             string message = canceled
@@ -406,7 +408,7 @@ internal static class Program
         }
         catch (Exception ex)
         {
-            // @Update: Test error and logging functionality
+            _startAngelLoader = false;
             string message = canceled ? "Update canceled but the rollback failed." : "Update failed and the rollback failed as well.";
             Log(message, ex);
             Utils.ShowError(View,

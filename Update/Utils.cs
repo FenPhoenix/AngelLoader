@@ -237,5 +237,26 @@ internal static class Utils
     {
         title ??= LText.AlertMessages.Error;
         using var d = new DarkErrorDialog(message, title, icon);
+        d.ShowDialog(view);
+    });
+
+    internal static DialogResult ShowDialogCustom(
+        MainForm view,
+        string message,
+        string title,
+        MessageBoxIcon icon,
+        string yesText,
+        string noText,
+        DialogResult defaultButton) => (DialogResult)view.Invoke(() =>
+    {
+        using var d = new DarkTaskDialog(
+            message: message,
+            title: title,
+            icon: icon,
+            yesText: yesText,
+            noText: noText,
+            defaultButton: defaultButton);
+
+        return d.ShowDialog(view);
     });
 }
