@@ -477,18 +477,18 @@ public static class AppUpdate
     Because the release packager might end up private, here's the spec for server-side changelogs.
     They're just plain text, no Markdown, except that list items are like:
     
-    (tab)- An item
-    (tab)- Another item
-    (tab)(tab)- A sub-item
-    (tab)- Yet another main item
+    Some line before the list
+     - An item
+     - Another item
+      - A sub-item
+     - Yet another main item
 
-    With (tab) meaning an actual tab character. Lists are indented by one tab to start with, and one is added
-    for every sub-list. Sort of like Markdown but a bit modified to make it extremely easy to parse lists without
-    carrying around Markdig or what have you. We use Markdig for the release packager so we don't have to use it
-    here. We use tab chars for indenting so that one indent == one char. So if we want to convert tabs to spaces
-    of whatever length, it's trivial, and we can also trivially convert the dashes to Unicode bullets or whatever
-    we want. Section headers can be detected by the simple heuristic of a line ending with : and not starting with
-    a dash after 0 or more whitespaces.
+    Lists are indented by one space to start with, and one is added for every sub-list. Sort of like Markdown but
+    a bit modified to make it extremely easy to parse lists without carrying around Markdig or what have you. We
+    use Markdig for the release packager so we don't have to use it here. We use a single space for indenting so
+    that one indent == one char. So if we want to convert the space to a tab or whatever, it's trivial, and we
+    can also trivially convert the dashes to Unicode bullets or whatever we want. Section headers can be detected
+    by the simple heuristic of a line ending with : and not starting with a dash after 0 or more whitespaces.
 
     We don't use full Markdown for the release notes because we have to convert them to RTF, and I don't want to
     have to support the entirety of Markdown in the RTF converter. All we really want are section headers and
@@ -511,12 +511,12 @@ public static class AppUpdate
                 line = lines[i];
             }
 
-            if (line.StartsWithO("\t"))
+            if (line.StartsWithO(" "))
             {
-                int nonTabIndex = NonTabCharIndex(line);
+                int nonSpaceIndex = NonSpaceCharIndex(line);
                 if (listCharIndex > -1)
                 {
-                    lines[i] = new string(' ', nonTabIndex * 4) + line.TrimStart();
+                    lines[i] = new string(' ', nonSpaceIndex * 4) + line.TrimStart();
                 }
             }
         }
@@ -534,12 +534,12 @@ public static class AppUpdate
             return -1;
         }
 
-        static int NonTabCharIndex(string line)
+        static int NonSpaceCharIndex(string line)
         {
             for (int i = 0; i < line.Length; i++)
             {
                 char c = line[i];
-                if (c != '\t') return i;
+                if (c != ' ') return i;
             }
             return -1;
         }
