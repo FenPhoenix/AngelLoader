@@ -1132,7 +1132,7 @@ public sealed partial class MainForm : DarkFormBase,
             (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
                 message: LText.Update.AutoUpdateFirstAskDialog_Message,
                 title: LText.Update.AutoUpdateFirstAskDialog_Title,
-                icon: MBoxIcon.Information,
+                icon: MBoxIcon.None,
                 yes: LText.Global.Yes,
                 no: LText.Global.No
             );
