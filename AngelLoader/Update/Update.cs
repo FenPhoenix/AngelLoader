@@ -1,5 +1,4 @@
-﻿// @Update: Un-define this for final
-#define TESTING
+﻿//#define TESTING
 
 using System;
 using System.Collections.Generic;
@@ -65,7 +64,8 @@ public static class AppUpdate
     private const string _versionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _updatesRepoDir + "/" + _bitnessRepoDir + "/versions.ini";
 
     internal static void CancelDetailsDownload() => _detailsDownloadCTS.CancelIfNotDisposed();
-    internal static void CancelUpdate() => _updatingCTS.CancelIfNotDisposed();
+
+    private static void CancelUpdate() => _updatingCTS.CancelIfNotDisposed();
 
     internal static async Task ShowUpdateAskDialog()
     {

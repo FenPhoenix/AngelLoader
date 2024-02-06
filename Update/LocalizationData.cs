@@ -8,17 +8,18 @@ namespace Update;
 
 #region Attributes
 
+#pragma warning disable CS9113 // Parameter is unread.
 /// <summary>
 /// This attribute should be used on the localization class. Only one instance of this attribute should
 /// be used, or else FenGen will throw an error.
 /// </summary>
 [Conditional("compile_FenGen_attributes")]
 [AttributeUsage(AttributeTargets.Class)]
-file sealed class FenGenLocalizationSourceClassAttribute : Attribute { }
+file sealed class FenGenLocalizationSourceClassAttribute : Attribute;
 
 [Conditional("compile_FenGen_attributes")]
 [AttributeUsage(AttributeTargets.Field)]
-file sealed class FenGenPlaceAfterKeyAttribute(string key) : Attribute { }
+file sealed class FenGenPlaceAfterKeyAttribute(string key) : Attribute;
 
 /// <summary>
 /// Cheap and crappy way to specify blank lines that should be written to the lang ini, until I can
@@ -29,8 +30,11 @@ file sealed class FenGenPlaceAfterKeyAttribute(string key) : Attribute { }
 file sealed class FenGenBlankLineAttribute : Attribute
 {
     public FenGenBlankLineAttribute() { }
+    // ReSharper disable once UnusedMember.Local
+    // ReSharper disable once UnusedParameter.Local
     public FenGenBlankLineAttribute(int numberOfBlankLines) { }
 }
+#pragma warning restore CS9113 // Parameter is unread.
 
 #endregion
 

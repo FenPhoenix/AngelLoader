@@ -208,10 +208,8 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             }
             changelogFullText += "}";
 
-            using (var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText)))
-            {
-                SetReleaseNotes(ms);
-            }
+            using var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText));
+            SetReleaseNotes(ms);
         }
         finally
         {

@@ -255,9 +255,7 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    // @Update: Remove all testing code when we're done
-    // @Update: Remove all Trace.WriteLine() stuff when we're done
-    private async void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object sender, EventArgs e)
     {
     }
 
