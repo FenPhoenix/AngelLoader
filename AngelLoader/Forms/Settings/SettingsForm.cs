@@ -27,7 +27,6 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.SettingsWindowData;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
@@ -85,6 +84,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly AppearancePage AppearancePage;
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
+    private readonly UpdatePage UpdatePage;
 
     private enum PathError { True, False }
 
@@ -164,14 +164,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
-        #region Instantiate pages
-
-        PathsPage = new PathsPage { Visible = false };
-        AppearancePage = new AppearancePage { Visible = false };
-        OtherPage = new OtherPage { Visible = false };
-        ThiefBuddyPage = new ThiefBuddyPage { Visible = false };
-
-        #endregion
+        // IMPORTANT: Settings page controls: Don't reorder
+#pragma warning disable IDE0300 // Simplify collection initialization
+        // ReSharper disable once RedundantExplicitArraySize
+        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[SettingsTabCount]
+        {
+            (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
+            (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
+            (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
+            (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
+            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false })
+        };
+#pragma warning restore IDE0300 // Simplify collection initialization
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -268,20 +272,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // @GENGAMES (Settings): End
 
         #endregion
-
-        // IMPORTANT: Settings page controls: Don't reorder
-        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[]
-        {
-            (PathsRadioButton, PathsPage),
-            (AppearanceRadioButton, AppearancePage),
-            (OtherRadioButton, OtherPage),
-            (ThiefBuddyRadioButton, ThiefBuddyPage)
-        };
-
-        AssertR(PageControls.Length == SettingsTabCount, "Page control count doesn't match " + nameof(SettingsTabCount));
-        AssertR(HelpSections.SettingsPages.Length == SettingsTabCount,
-            nameof(HelpSections) + "." + nameof(HelpSections.SettingsPages) + " doesn't match " +
-            nameof(SettingsTabCount));
 
         // These are nullable because null values get put INTO them later. So not a mistake to fill them with
         // non-nullable ints right off the bat.
@@ -658,6 +648,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             UpdateThiefBuddyExistenceOnUI();
 
             #endregion
+
+            #region Update page
+
+            UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked = config.CheckForUpdates == CheckForUpdates.True;
+
+            #endregion
         }
 
         #endregion
@@ -1005,6 +1001,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 ThiefBuddyPage.GetTBLinkLabel.Text = LText.SettingsWindow.ThiefBuddy_Get;
 
                 #endregion
+
+                #region Update
+
+                UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
+                UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
+                UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
+
+                #endregion
             }
         }
         finally
@@ -1324,6 +1328,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
                 ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
                 RunThiefBuddyOnFMPlay.Ask;
+
+            #endregion
+
+            #region Update page
+
+            OutConfig.CheckForUpdates = UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked
+                ? CheckForUpdates.True
+                : CheckForUpdates.False;
 
             #endregion
         }

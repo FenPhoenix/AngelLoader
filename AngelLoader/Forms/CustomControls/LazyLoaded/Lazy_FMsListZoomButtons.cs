@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 
@@ -42,6 +43,12 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
     {
         if (_constructed) return;
 
+        int insertIndex = _owner.RefreshAreaToolStrip.Items.Count > 0 &&
+                          _owner.RefreshAreaToolStrip.Items[0]
+                              .EqualsIfNotNull(_owner.Lazy_UpdateNotification.Button)
+            ? 1
+            : 0;
+
         // Insert them in reverse order so we always insert at 0
         for (int i = 2; i >= 0; i--)
         {
@@ -53,7 +60,7 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
                 Size = new Size(25, 25)
             };
             Buttons[i] = button;
-            _owner.RefreshAreaToolStrip.Items.Insert(0, button);
+            _owner.RefreshAreaToolStrip.Items.Insert(insertIndex, button);
             button.Click += _owner.FMsListZoomButtons_Click;
         }
 

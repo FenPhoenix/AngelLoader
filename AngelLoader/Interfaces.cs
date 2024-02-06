@@ -7,10 +7,14 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-public interface ISettingsChangeableView
+public interface ISettingsChangeableView : IWaitCursorSettable
 {
     void Localize();
     void SetTheme(VisualTheme theme);
+}
+
+public interface IWaitCursorSettable
+{
     void SetWaitCursor(bool value);
 }
 
@@ -24,7 +28,6 @@ public interface ISplashScreen
     void Show(VisualTheme theme);
     void Hide();
     void Dispose();
-    void LockPainting(bool enabled);
 }
 
 // The splash screen is extremely un-thread-safe by design (because it's a UI we have to update while another
@@ -89,10 +92,6 @@ public interface IView : ISettingsChangeableView
     /// <param name="cancelAction"></param>
     void ShowProgressBox_Single(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
 
-    #region Disabled until needed
-
-#if false
-
     /// <summary>
     /// This method call is auto-invoked, so no need to wrap it manually.
     /// <para/>
@@ -106,10 +105,6 @@ public interface IView : ISettingsChangeableView
     /// <param name="cancelMessage"></param>
     /// <param name="cancelAction"></param>
     void ShowProgressBox_Double(string? mainMessage1 = null, string? mainMessage2 = null, ProgressType? mainProgressType = null, string? subMessage = null, ProgressType? subProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
-
-#endif
-
-    #endregion
 
     /// <summary>
     /// This method call is auto-invoked, so no need to wrap it manually.
@@ -374,4 +369,10 @@ public interface IView : ISettingsChangeableView
     bool ModalDialogUp();
 
     void UpdateConfig();
+
+    (bool Success, bool NoUpdatesFound, AppUpdate.UpdateInfo? UpdateInfo) ShowUpdateAvailableDialog();
+
+    void Close();
+
+    void ShowUpdateNotification(bool show);
 }

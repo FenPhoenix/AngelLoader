@@ -2,6 +2,7 @@
 using AL_Common;
 
 namespace AngelLoader.Forms;
+
 public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
 {
     public ThiefBuddyPage()

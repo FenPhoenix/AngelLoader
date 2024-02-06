@@ -15,6 +15,44 @@ internal static class RtfProcessing
 {
     #region Private fields
 
+    #region Horizontal line setup
+
+    // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
+    // and scale the width out.
+    // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
+    // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
+    // and the double-screen-width method doesn't give a consistent width anymore.
+    // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
+    // picscalex is in percent
+    // max value for anything is 32767
+    private const string _horizontalLine_Header =
+        @"{\pict\pngblip\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 ";
+
+    private const string _horizontalLine_Footer = @"}\line ";
+
+    // These are raw hex bytes straight out of the original png files. Too bad they're pngs and thus we
+    // can't easily modify their colors on the fly without writing a png creator, but I don't think RTF
+    // supports transparency on anything uncompressed.
+    private const string HorizontalLine_LightMode =
+        _horizontalLine_Header +
+        "89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000020494441" +
+        "5478DA62FCFFFF3F030830314001850CC6909010B0898CD4361920C0009E400819AEAF5DA1000000" +
+        "0049454E44AE426082" +
+        _horizontalLine_Footer;
+
+    private const string HorizontalLine_DarkMode =
+        _horizontalLine_Header +
+        "89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000025494441" +
+        "5478DA62FAFFFF3F030833314001850C9693274FFE07311841A652C140380320C00005DF0C79948E" +
+        "11520000000049454E44AE426082" +
+        _horizontalLine_Footer;
+
+    internal static string GetThemedHorizontalLine(bool darkMode) => darkMode
+        ? HorizontalLine_DarkMode
+        : HorizontalLine_LightMode;
+
+    #endregion
+
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't
     // want to make a new one every time.
     private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;

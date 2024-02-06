@@ -13,7 +13,7 @@ internal static class GLMLConversion
 {
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
-    internal static string GLMLToRTF(byte[] glmlBytes, bool darkModeEnabled)
+    internal static string GLMLToRTF(byte[] glmlBytes, bool darkMode)
     {
         // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
         string glml = Encoding.UTF8.GetString(glmlBytes);
@@ -21,10 +21,10 @@ internal static class GLMLConversion
         static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
 
         string colorTable = @"{\colortbl ";
-        colorTable = darkModeEnabled
+        colorTable = darkMode
             ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground)
             : colorTable + ";";
-        colorTable = AddColorToTable(colorTable, darkModeEnabled ? DarkColors.GLMLRed_Dark : DarkColors.GLMLRed_Light);
+        colorTable = AddColorToTable(colorTable, darkMode ? DarkColors.GLMLRed_Dark : DarkColors.GLMLRed_Light);
         colorTable += "}";
 
         string rtfHeader =
@@ -33,48 +33,14 @@ internal static class GLMLConversion
             // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
             @"\ansi\ansicpg1252" +
             // Fonts (use a pleasant sans-serif)
-            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset0 Calibri;}}" +
+            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial{\*\falt Calibri};}}" +
             // Set up red color and dark mode text colors
             colorTable +
             // \viewkind4 = normal, \uc1 = 1 char Unicode fallback (don't worry about it), \f0 = use font 0,
             // \cf0 = use color 0 as the foreground color
-            @"\viewkind4\uc1\f0" + (darkModeEnabled ? @"\cf0 " : " ");
+            @"\viewkind4\uc1\f0" + (darkMode ? @"\cf0 " : " ");
 
-        #region Horizontal line setup
-
-        // RichTextBox steadfastly refuses to understand the normal way of drawing lines, so use a small image
-        // and scale the width out.
-        // Now that we're using the latest RichEdit version again, we can go back to just scaling out to a
-        // zillion. And we need to, because DPI is involved or something (or maybe Win10 is just different)
-        // and the double-screen-width method doesn't give a consistent width anymore.
-        // width and height are in twips, 30 twips = 2 pixels, 285 twips = 19 pixels, etc. (at 96 dpi)
-        // picscalex is in percent
-        // max value for anything is 32767
-        const string horizontalLine_Header =
-            @"{\pict\pngblip\picw30\pich285\picwgoal32767\pichgoal285\picscalex1600 ";
-
-        const string horizontalLine_Footer = @"}\line ";
-
-        // These are raw hex bytes straight out of the original png files. Too bad they're pngs and thus we
-        // can't easily modify their colors on the fly without writing a png creator, but I don't think RTF
-        // supports transparency on anything uncompressed.
-        const string horizontalLine_LightMode =
-            horizontalLine_Header +
-            "89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000020494441" +
-            "5478DA62FCFFFF3F030830314001850CC6909010B0898CD4361920C0009E400819AEAF5DA1000000" +
-            "0049454E44AE426082" +
-            horizontalLine_Footer;
-
-        const string horizontalLine_DarkMode =
-            horizontalLine_Header +
-            "89504E470D0A1A0A0000000D4948445200000002000000130806000000BA3CDC1A00000025494441" +
-            "5478DA62FAFFFF3F030833314001850C9693274FFE07311841A652C140380320C00005DF0C79948E" +
-            "11520000000049454E44AE426082" +
-            horizontalLine_Footer;
-
-        string horizontalLine = darkModeEnabled ? horizontalLine_DarkMode : horizontalLine_LightMode;
-
-        #endregion
+        string horizontalLine = RtfProcessing.GetThemedHorizontalLine(darkMode);
 
         // In quick testing, smallest final rtf size was ~8K chars and largest was ~38K chars. Preallocating
         // 16K chars reduces GC time substantially. 40K or something may be fine but this works for now.
@@ -324,7 +290,7 @@ internal static class GLMLConversion
 
         #endregion
 
-        if (darkModeEnabled)
+        if (darkMode)
         {
             // Background code at the end again, cause why not, it works
             sb.Append(RtfProcessing.RTF_DarkBackgroundString);

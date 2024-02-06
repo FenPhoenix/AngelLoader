@@ -18,6 +18,7 @@ internal static class Language
         internal string Key = "";
         internal string Value = "";
         internal bool IsComment;
+        internal string PlaceAfterKey = "";
     }
 
     private sealed class IniSection : List<IniItem>
@@ -26,15 +27,51 @@ internal static class Language
         internal readonly string Name;
     }
 
-    internal static void
-        Generate(
-            string sourceFile,
-            string perGameLangGetterDestFile,
-            string langIniFile,
-            string testLangIniFile,
-            string testLang2IniFile)
+    internal static void Generate(
+        string mainSourceFile,
+        string updaterSourceFile,
+        string perGameLangGetterDestFile,
+        string langIniFile,
+        string testLangIniFile,
+        string testLang2IniFile)
     {
-        var (sections, perGameSets) = ReadSource(sourceFile);
+        var (sections, perGameSets) = ReadSource(mainSourceFile);
+        var (updaterSections, _) = ReadSource(updaterSourceFile);
+
+        // 
+        foreach (IniSection updaterSection in updaterSections)
+        {
+            IniSection? mainSection = sections.FirstOrDefault(x => x.Name == updaterSection.Name);
+            if (mainSection != null)
+            {
+                foreach (IniItem updaterSectionItem in updaterSection)
+                {
+                    if (updaterSectionItem.Key.IsEmpty() || updaterSectionItem.IsComment)
+                    {
+                        mainSection.Add(updaterSectionItem);
+                    }
+                    else if (mainSection.FirstOrDefault(x => x.Key == updaterSectionItem.Key) == null)
+                    {
+                        IniItem? placeAfterKeyItem = updaterSectionItem.PlaceAfterKey.IsEmpty()
+                            ? null
+                            : mainSection.FirstOrDefault(x => x.Key == updaterSectionItem.PlaceAfterKey);
+
+                        if (placeAfterKeyItem != null)
+                        {
+                            mainSection.Insert(mainSection.IndexOf(placeAfterKeyItem) + 1, updaterSectionItem);
+                        }
+                        else
+                        {
+                            mainSection.Add(updaterSectionItem);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                sections.Add(updaterSection);
+            }
+        }
 
         WritePerGameStringGetterFile(perGameLangGetterDestFile, perGameSets);
         WriteIniFile(langIniFile, sections);
@@ -92,6 +129,7 @@ internal static class Language
             foreach (SyntaxNode m in members)
             {
                 bool doNotWriteThis = false;
+                string placeAfterKey = "";
 
                 var member = (MemberDeclarationSyntax)m;
                 foreach (AttributeListSyntax attrList in member.AttributeLists)
@@ -100,6 +138,16 @@ internal static class Language
                     {
                         switch (attr.Name.ToString())
                         {
+                            case GenAttributes.FenGenPlaceAfterKey:
+                            {
+                                var argList = attr.ArgumentList;
+                                if (argList != null)
+                                {
+                                    var arg = argList.Arguments[0];
+                                    placeAfterKey = ((LiteralExpressionSyntax)arg.Expression).Token.ValueText;
+                                }
+                                break;
+                            }
                             case GenAttributes.FenGenGameSet:
                             {
                                 gameIndex = 0;
@@ -198,7 +246,8 @@ internal static class Language
                 {
                     Key = fName,
                     Value = ((LiteralExpressionSyntax)initializer.Value).Token.ValueText,
-                    DoNotWrite = doNotWriteThis
+                    DoNotWrite = doNotWriteThis,
+                    PlaceAfterKey = placeAfterKey
                 });
             }
 

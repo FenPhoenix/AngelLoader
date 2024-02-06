@@ -29,6 +29,7 @@ internal sealed class MainLLMenu : IDarkable
             return _menu;
         }
     }
+
     private ToolStripMenuItemCustom GameVersionsMenuItem = null!;
     private ToolStripMenuItemCustom ImportMenuItem = null!;
     internal ToolStripMenuItemCustom ImportFromDarkLoaderMenuItem = null!;
@@ -38,6 +39,7 @@ internal sealed class MainLLMenu : IDarkable
     internal ToolStripMenuItemCustom ScanAllFMsMenuItem = null!;
 
     internal ToolStripMenuItemCustom SettingsMenuItem = null!;
+    internal ToolStripMenuItemCustom CheckForUpdatesMenuItem = null!;
 
     private ToolStripMenuItemCustom ViewHelpFileMenuItem = null!;
     private ToolStripMenuItemCustom AboutMenuItem = null!;
@@ -72,6 +74,7 @@ internal sealed class MainLLMenu : IDarkable
             new ToolStripSeparator(),
             ScanAllFMsMenuItem = new ToolStripMenuItemCustom(),
             SettingsMenuItem = new ToolStripMenuItemCustom(),
+            CheckForUpdatesMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
             ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
             AboutMenuItem = new ToolStripMenuItemCustom(),
@@ -96,6 +99,7 @@ internal sealed class MainLLMenu : IDarkable
         }
         ScanAllFMsMenuItem.Click += _owner.Async_EventHandler_Main;
         SettingsMenuItem.Click += _owner.Async_EventHandler_Main;
+        CheckForUpdatesMenuItem.Click += _owner.Async_EventHandler_Main;
         ViewHelpFileMenuItem.Click += _owner.ViewHelpFileMenuItem_Click;
         AboutMenuItem.Click += _owner.AboutMenuItem_Click;
         ExitMenuItem.Click += _owner.Exit_Click;
@@ -115,6 +119,7 @@ internal sealed class MainLLMenu : IDarkable
         ImportMenuItem.Text = LText.MainMenu.Import;
         ScanAllFMsMenuItem.Text = LText.MainMenu.ScanAllFMs;
         SettingsMenuItem.Text = LText.MainButtons.Settings;
+        CheckForUpdatesMenuItem.Text = LText.MainMenu.CheckForUpdates;
         ViewHelpFileMenuItem.Text = LText.MainMenu.ViewHelpFile;
         AboutMenuItem.Text = LText.MainMenu.About;
         ExitMenuItem.Text = LText.Global.Exit;

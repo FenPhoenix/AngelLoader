@@ -9,9 +9,9 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
 {
     private bool _constructed;
 
-    private readonly MainForm _owner;
+    private readonly RichTextBoxCustom _owner;
 
-    internal Lazy_RTFBoxMenu(MainForm owner) => _owner = owner;
+    internal Lazy_RTFBoxMenu(RichTextBoxCustom owner) => _owner = owner;
 
     private DarkContextMenu _menu = null!;
     internal DarkContextMenu Menu
@@ -54,8 +54,8 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
 
         _menu.Opening += MenuOpening;
 
-        CopyMenuItem.Click += (_, _) => _owner.ReadmeRichTextBox.Copy();
-        SelectAllMenuItem.Click += (_, _) => _owner.ReadmeRichTextBox.SelectAll();
+        CopyMenuItem.Click += (_, _) => _owner.Copy();
+        SelectAllMenuItem.Click += (_, _) => _owner.SelectAll();
 
         _menu.DarkModeEnabled = _darkModeEnabled;
 
@@ -74,15 +74,15 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
 
     private void MenuOpening(object sender, CancelEventArgs e)
     {
-        if (!_owner.ReadmeRichTextBox.Visible)
+        if (!_owner.Visible)
         {
             e.Cancel = true;
             return;
         }
 
-        CopyMenuItem.Enabled = _owner.ReadmeRichTextBox.SelectionLength > 0;
-        SelectAllMenuItem.Enabled = !(_owner.ReadmeRichTextBox.SelectionStart == 0 &&
-                                      _owner.ReadmeRichTextBox.SelectionLength ==
-                                      _owner.ReadmeRichTextBox.TextLength);
+        CopyMenuItem.Enabled = _owner.SelectionLength > 0;
+        SelectAllMenuItem.Enabled = !(_owner.SelectionStart == 0 &&
+                                      _owner.SelectionLength ==
+                                      _owner.TextLength);
     }
 }

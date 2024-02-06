@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace FMScanner;
 
 internal static class StringSplit
 {
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct RentedArray<T>
     {
         public readonly T[] Array;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using static AL_Common.Common;
 
 namespace AngelLoader.DataClasses;
@@ -70,6 +71,7 @@ public sealed class FMTagsCollection : IEnumerable<string>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct CatAndTagsList
 {
     public readonly string Category;

@@ -138,6 +138,7 @@
 		<ProjectReference Include="..\FMScanner\FMScanner.csproj" />
 		<ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
 		<ProjectReference Include="..\Ude\Ude.NetStandard.csproj" />
+		<ProjectReference Include="..\Update\Update.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

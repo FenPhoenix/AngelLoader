@@ -179,9 +179,9 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
     private readonly TopRightLLMenu TopRightLLMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
-    internal readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
+    internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
 
     #endregion
 
@@ -597,9 +597,9 @@ public sealed partial class MainForm : DarkFormBase,
             PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
             TopRightLLMenu = new TopRightLLMenu(this),
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
-            Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
-            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this)
+            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
+            Lazy_UpdateNotification = new Lazy_UpdateNotification(this)
         };
 
         #endregion
@@ -650,6 +650,8 @@ public sealed partial class MainForm : DarkFormBase,
         // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
         InitComponentManual();
 #endif
+
+        ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
         _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
@@ -1117,13 +1119,28 @@ public sealed partial class MainForm : DarkFormBase,
         // Must come after Show() I guess or it doesn't work?!
         FMsDGV.Focus();
 
-#if !ReleasePublic
-        //if (Config.CheckForUpdatesOnStartup) await CheckUpdates.Check();
-#endif
-
         if (askForImport)
         {
             await ShowAskToImportWindow();
+        }
+
+        if (Config.CheckForUpdates == CheckForUpdates.FirstTimeAsk)
+        {
+            (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                message: LText.Update.AutoUpdateFirstAskDialog_Message,
+                title: LText.Update.AutoUpdateFirstAskDialog_Title,
+                icon: MBoxIcon.None,
+                yes: LText.Global.Yes,
+                no: LText.Global.No
+            );
+            Config.CheckForUpdates = buttonPressed == MBoxButton.Yes
+                ? CheckForUpdates.True
+                : CheckForUpdates.False;
+        }
+
+        if (Config.CheckForUpdates == CheckForUpdates.True)
+        {
+            AppUpdate.StartCheckIfUpdateAvailableThread();
         }
     }
 
@@ -1852,7 +1869,7 @@ public sealed partial class MainForm : DarkFormBase,
                 SetReadmeLocalizableMessage(ReadmeRichTextBox.LocalizableMessageType);
             }
 
-            Lazy_RTFBoxMenu.Localize();
+            ReadmeRichTextBox.Localize();
 
             #endregion
 
@@ -1868,6 +1885,8 @@ public sealed partial class MainForm : DarkFormBase,
             InstallUninstallFMLLButton.Localize();
 
             Lazy_WebSearchButton.Localize();
+
+            Lazy_UpdateNotification.Localize();
 
             // On startup this is a race condition as the FMs list is still being populated!
             if (!startup) SetAvailableAndFinishedFMCount(forceRefresh: true);
@@ -2521,7 +2540,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetFilterBarWidth();
     }
 
-    private void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
+    internal void SetFilterBarWidth() => FilterBarFLP.Width = (RefreshAreaToolStrip.Location.X - 4) - FilterBarFLP.Location.X;
 
     #region Filter bar controls
 
@@ -2649,6 +2668,10 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 Cursor = Cursors.Default;
             }
+        }
+        else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
+        {
+            await AppUpdate.DoManualCheck();
         }
         else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
         {
@@ -3100,7 +3123,17 @@ public sealed partial class MainForm : DarkFormBase,
                 if (keepSelection == KeepSel.False)
                 {
                     row = 0;
-                    FMsDGV.FirstDisplayedScrollingRowIndex = 0;
+                    // TODO: Refreshing the list while the readme is fullscreen:
+                    // In this case we SHOULD be resetting our place in the list, but aren't.
+                    // Very low priority, because nobody's going to probably ever to do that, but noting it.
+                    try
+                    {
+                        FMsDGV.FirstDisplayedScrollingRowIndex = 0;
+                    }
+                    catch
+                    {
+                        // no room is available to display rows
+                    }
                 }
                 else
                 {
@@ -4963,7 +4996,7 @@ public sealed partial class MainForm : DarkFormBase,
             ReadmeRichTextBox.ZoomFactor);
     }
 
-    public IContainer GetComponents() => components;
+    public IContainer GetComponents() => components ??= new Container();
 
     #region Cursor over area detection
 
@@ -5046,6 +5079,13 @@ public sealed partial class MainForm : DarkFormBase,
     #endregion
 
     #region Show dialogs
+
+    public (bool Success, bool NoUpdatesFound, AppUpdate.UpdateInfo? UpdateInfo)
+    ShowUpdateAvailableDialog()
+    {
+        using var f = new UpdateForm();
+        return (f.ShowDialogDark() == DialogResult.OK, f.NoUpdatesFound, f.UpdateInfo);
+    }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
     ShowScanAllFMsWindow(bool selected)
@@ -5237,13 +5277,17 @@ public sealed partial class MainForm : DarkFormBase,
         TopRightTabControl.Visible = !TopSplitContainer.FullScreen;
     }
 
-    private int _storedFMsDGVFirstDisplayedScrollingRowIndex;
+    internal int _storedFMsDGVFirstDisplayedScrollingRowIndex;
+    internal int _storedFMsDGVDisplayedRowCountFalse;
+    internal int _storedFMsDGVDisplayedRowCountTrue;
 
     private void MainSplitContainer_FullScreenBeforeChanged(object sender, EventArgs e)
     {
         if (!MainSplitContainer.FullScreen)
         {
             _storedFMsDGVFirstDisplayedScrollingRowIndex = FMsDGV.FirstDisplayedScrollingRowIndex;
+            _storedFMsDGVDisplayedRowCountFalse = FMsDGV.DisplayedRowCount(false);
+            _storedFMsDGVDisplayedRowCountTrue = FMsDGV.DisplayedRowCount(true);
         }
     }
 
@@ -5271,6 +5315,14 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
             }
+        }
+    }
+
+    public void ShowUpdateNotification(bool show)
+    {
+        if (!AboutToClose)
+        {
+            Lazy_UpdateNotification.SetVisible(show);
         }
     }
 }

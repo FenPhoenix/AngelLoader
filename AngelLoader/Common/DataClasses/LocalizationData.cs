@@ -56,6 +56,7 @@ internal sealed class LText_Class
     internal readonly CharacterEncoding_Class CharacterEncoding = new();
     internal readonly AddFMsToSet_Class AddFMsToSet = new();
     internal readonly ThiefBuddy_Class ThiefBuddy = new();
+    internal readonly Update_Class Update = new();
 
     internal sealed class Meta_Class
     {
@@ -294,6 +295,7 @@ internal sealed class LText_Class
         internal readonly string GameVersions = "Game versions...";
         internal readonly string Import = "Import";
         internal readonly string ScanAllFMs = "Scan all FMs...";
+        internal readonly string CheckForUpdates = "Check for updates...";
         internal readonly string ViewHelpFile = "View help file";
         internal readonly string About = "About AngelLoader";
     }
@@ -835,6 +837,10 @@ internal sealed class LText_Class
         internal readonly string ThiefBuddy_RunNever = "Never";
         internal readonly string ThiefBuddy_Help = "Thief Buddy, by VoiceActor, is a tool that allows you to make and restore multiple quicksaves.";
         internal readonly string ThiefBuddy_Get = "Get Thief Buddy";
+        [FenGenBlankLine]
+        internal readonly string Update_TabText = "Update";
+        internal readonly string Update_UpdateOptions = "Update options";
+        internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
     }
 
     internal sealed class DateFilterBox_Class
@@ -971,5 +977,28 @@ internal sealed class LText_Class
         internal readonly string RunThiefBuddy = "Run Thief Buddy";
         internal readonly string DontRunThiefBuddy = "Don't run Thief Buddy";
         internal readonly string ErrorRunning = "There was an error trying to run Thief Buddy.";
+    }
+
+    internal sealed class Update_Class
+    {
+        internal readonly string UpdateAlertBoxTitle = "Update";
+        internal readonly string NoUpdatesAvailable = "No updates are available. You're using the latest version of AngelLoader.";
+        internal readonly string CouldNotAccessUpdateServer = "Couldn't access the update server.";
+        internal readonly string DownloadingUpdateInfo = "Downloading update information...";
+        internal readonly string FailedToDownloadUpdateInfo = "Failed to download update information.";
+        internal readonly string UpdateAvailableNotification = "Update available";
+        internal readonly string AutoUpdateFirstAskDialog_Title = "Updates";
+        internal readonly string AutoUpdateFirstAskDialog_Message = "Would you like AngelLoader to check for updates every startup?";
+        [FenGenBlankLine]
+        internal readonly string UpdateDialog_Title = "Update AngelLoader";
+        internal readonly string UpdateDialog_UpdateAndRestartButtonText = "Update and restart";
+        [FenGenBlankLine]
+        internal readonly string Updating = "Updating...";
+        internal readonly string DownloadingUpdate = "Downloading update...";
+        internal readonly string ErrorDownloadingUpdate = "Error downloading the update.";
+        internal readonly string UnpackingUpdate = "Unpacking update...";
+        internal readonly string ErrorUnpackingUpdate = "Error unpacking the update.";
+        internal readonly string UpdaterExeNotFound = "Update failed: Couldn't find the updater executable.";
+        internal readonly string UpdaterExeStartFailed = "Update failed: Couldn't start the updater executable.";
     }
 }
