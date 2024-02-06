@@ -106,7 +106,6 @@ public static partial class Misc
             "#settings_appearance_section",
             "#settings_other_section",
             "#settings_thief_buddy_section",
-            // @Update: Add this to the doc (or not, cause it's blindingly obvious and there's only one thing there)
             "#settings_update_section"
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
