@@ -17,6 +17,7 @@ New images:
 `update_available_notification.png`  
 
 Updated images:  
+`main_menu.png`  
 `setup_other_tab.png`  
 `setup_paths_tab.png`  
 `setup_thief_buddy_tab.png`  
