@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -303,8 +304,15 @@ public static class AppUpdate
 
             if (!request.IsSuccessStatusCode)
             {
-                Log("Update check failed. Status code: " + request.StatusCode);
-                return CheckUpdateResult.Error;
+                if (request.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return CheckUpdateResult.NoUpdateAvailable;
+                }
+                else
+                {
+                    Log("Update check failed. Status code: " + request.StatusCode);
+                    return CheckUpdateResult.Error;
+                }
             }
 
             string versionString = await request.Content.ReadAsStringAsync();
