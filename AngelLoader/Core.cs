@@ -2357,7 +2357,7 @@ internal static class Core
             version = null;
         }
 
-        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion;
+        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }

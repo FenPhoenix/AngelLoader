@@ -1183,8 +1183,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 OutConfig.VisualTheme =
                     AppearancePage.DarkThemeRadioButton.Checked
-                    ? VisualTheme.Dark
-                    : VisualTheme.Classic;
+                        ? VisualTheme.Dark
+                        : VisualTheme.Classic;
                 OutConfig.FollowSystemTheme = false;
             }
 

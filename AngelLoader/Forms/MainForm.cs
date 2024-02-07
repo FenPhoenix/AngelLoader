@@ -3125,7 +3125,7 @@ public sealed partial class MainForm : DarkFormBase,
                     row = 0;
                     // TODO: Refreshing the list while the readme is fullscreen:
                     // In this case we SHOULD be resetting our place in the list, but aren't.
-                    // Very low priority, because nobody's going to probably ever to do that, but noting it.
+                    // Very low priority, because nobody's going to probably ever do that, but noting it.
                     try
                     {
                         FMsDGV.FirstDisplayedScrollingRowIndex = 0;

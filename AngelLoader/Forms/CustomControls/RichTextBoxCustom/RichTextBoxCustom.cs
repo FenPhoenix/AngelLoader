@@ -477,6 +477,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
     {
         base.OnLinkClicked(e);
 
+        if (e.LinkText.IsEmpty()) return;
+
         Core.OpenLink(e.LinkText, fixUpEmailLinks: true);
     }
 

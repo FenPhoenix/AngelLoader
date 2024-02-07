@@ -38,7 +38,6 @@ internal static class Language
         var (sections, perGameSets) = ReadSource(mainSourceFile);
         var (updaterSections, _) = ReadSource(updaterSourceFile);
 
-        // 
         foreach (IniSection updaterSection in updaterSections)
         {
             IniSection? mainSection = sections.FirstOrDefault(x => x.Name == updaterSection.Name);
