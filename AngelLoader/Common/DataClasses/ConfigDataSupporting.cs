@@ -88,6 +88,13 @@ internal enum RunThiefBuddyOnFMPlay
 
 public enum VisualTheme { Classic, Dark }
 
+public enum CheckForUpdates
+{
+    FirstTimeAsk,
+    True,
+    False
+}
+
 #region Top-right tabs
 
 // IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
@@ -359,7 +366,8 @@ internal enum SettingsTab
     Paths,
     Appearance,
     Other,
-    ThiefBuddy
+    ThiefBuddy,
+    Update
 }
 
 /*

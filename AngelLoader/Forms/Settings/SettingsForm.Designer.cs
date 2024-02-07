@@ -24,13 +24,14 @@ partial class SettingsForm
             this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
-            this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
+            this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
             this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
+            this.UpdateRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.BottomFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -103,6 +104,7 @@ partial class SettingsForm
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.MainSplitContainer.Panel1.Controls.Add(this.UpdateRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
@@ -168,6 +170,17 @@ partial class SettingsForm
             this.PagePanel.Size = new System.Drawing.Size(535, 613);
             this.PagePanel.TabIndex = 2;
             // 
+            // UpdateRadioButton
+            // 
+            this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
+            this.UpdateRadioButton.Name = "UpdateRadioButton";
+            this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
+            this.UpdateRadioButton.TabIndex = 4;
+            this.UpdateRadioButton.Text = "Update";
+            this.UpdateRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
+            // 
             // SettingsForm
             // 
             this.AcceptButton = this.OKButton;
@@ -210,4 +223,5 @@ partial class SettingsForm
     private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom PathsRadioButton;
     private System.Windows.Forms.PictureBox ErrorIconPictureBox;
     private CustomControls.DarkRadioButtonCustom ThiefBuddyRadioButton;
+    private CustomControls.DarkRadioButtonCustom UpdateRadioButton;
 }

@@ -204,6 +204,7 @@ internal static class GenAttributes
     internal const string FenGenRtfDuplicateDestClass = nameof(FenGenRtfDuplicateDestClass);
 
     internal const string FenGenTreatAsList = nameof(FenGenTreatAsList);
+    internal const string FenGenPlaceAfterKey = nameof(FenGenPlaceAfterKey);
 }
 
 internal static class Core
@@ -258,6 +259,7 @@ internal static class Core
     private static class DefineHeaders
     {
         internal const string LocalizationSource = "FenGen_LocalizationSource";
+        internal const string UpdaterLocalizationSource = "FenGen_UpdaterLocalizationSource";
         internal const string GameSupportSource = "FenGen_GameSupportSource";
         internal const string LanguageSupportSource = "FenGen_LanguageSupportSource";
         internal const string LanguageSupportDest = "FenGen_LanguageSupportDest";
@@ -412,6 +414,7 @@ internal static class Core
         if (LangTaskActive())
         {
             defineHeaders.Add(DefineHeaders.LocalizationSource);
+            defineHeaders.Add(DefineHeaders.UpdaterLocalizationSource);
             defineHeaders.Add(DefineHeaders.LocalizedGameNameGetterDest);
             defineHeaders.Add(DefineHeaders.LanguageSupportSource);
             defineHeaders.Add(DefineHeaders.LanguageSupportDest);
@@ -486,7 +489,8 @@ internal static class Core
                 : ("", "");
 
             Language.Generate(
-                sourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
+                mainSourceFile: taggedFilesDict[DefineHeaders.LocalizationSource],
+                updaterSourceFile: taggedFilesDict[DefineHeaders.UpdaterLocalizationSource],
                 perGameLangGetterDestFile: taggedFilesDict[DefineHeaders.LocalizedGameNameGetterDest],
                 langIniFile: englishIni,
                 testLangIniFile: testLangIni,

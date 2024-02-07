@@ -395,13 +395,13 @@ internal sealed partial class RichTextBoxCustom
 
     #region Workaround to fix black transparent regions in images
 
-    private static readonly byte[] _shppict = @"\shppict"u8.ToArray();
+    internal static readonly byte[] _shppict = @"\shppict"u8.ToArray();
 
-    private static readonly byte[] _shppictBlanked = @"\xxxxxxx"u8.ToArray();
+    internal static readonly byte[] _shppictBlanked = @"\xxxxxxx"u8.ToArray();
 
-    private static readonly byte[] _nonshppict = @"\nonshppict"u8.ToArray();
+    internal static readonly byte[] _nonshppict = @"\nonshppict"u8.ToArray();
 
-    private static readonly byte[] _nonshppictBlanked = @"\xxxxxxxxxx"u8.ToArray();
+    internal static readonly byte[] _nonshppictBlanked = @"\xxxxxxxxxx"u8.ToArray();
 
     /*
     Alright kids, gather round while your ol' Grandpa Fen explains you the deal.

@@ -106,7 +106,7 @@ public sealed partial class Scanner : IDisposable
     private readonly string _sevenZipWorkingPath;
     private readonly string _sevenZipExePath;
 
-    // Biggest known FM readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
+    // Biggest known FM plaintext readme as of 2023/03/28 is 56KB, so 100KB is way more than enough to not reallocate
     private readonly FileEncoding _fileEncoding = new(ByteSize.KB * 100);
 
     private readonly ListFast<FileInfoCustom> _fmDirFileInfos = new(0);
@@ -1370,6 +1370,13 @@ public sealed partial class Scanner : IDisposable
                         -UPDATE 2023/3/26:
                          The intrface miss** dir heuristic is not good after all, there's tons of FMs with valid
                          mis files that don't have a matching intrface subdir.
+                        -UPDATE 2024/2/6:
+                         Turns out DarkLoader actually just uses the first .mis file and doesn't check it for
+                         used or anything. I completely misunderstood and wrongly assumed right from the start.
+                         In fact, that's probably why unused .mis files exist: Authors probably put a small dummy
+                         .mis file as the first one so that DarkLoader would scan it and be faster than scanning
+                         the real, larger one. So, I could just take the first one and all would be fine...
+                         Unless some newer missions are depending on our previous behavior...
                         */
                         else if ((_scanOptions.ScanGameType
 #if FMScanner_FullCode

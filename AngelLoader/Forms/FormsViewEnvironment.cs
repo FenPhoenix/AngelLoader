@@ -80,6 +80,6 @@ public sealed class FormsViewEnvironment : IViewEnvironment
             return;
         }
 
-        RichTextBoxCustom.PreloadRichFormat(readmeFile, bytes, config.DarkMode);
+        RTFPreprocessing.PreloadRichFormat(readmeFile, bytes, config.DarkMode);
     }
 }

@@ -460,6 +460,8 @@ public sealed class ConfigData
 
     #endregion
 
+    internal CheckForUpdates CheckForUpdates = CheckForUpdates.FirstTimeAsk;
+
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
     internal bool ForceWindowed;

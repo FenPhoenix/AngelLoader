@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>$(SolutionTargetFramework)</TargetFramework>
+    <Nullable>enable</Nullable>
+	<LangVersion>latest</LangVersion>
+    <UseWindowsForms>true</UseWindowsForms>
+    <StartupObject>Update.Program</StartupObject>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <EmbeddedResource Condition="'$(Configuration)' != 'Debug'" Remove="MainForm.resx" />
+	  <Content Include="Resources\AngelLoader.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CustomControls\DarkButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="DarkErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="DarkTaskDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

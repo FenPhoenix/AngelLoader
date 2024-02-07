@@ -63,7 +63,7 @@ internal static class Core
     // Remove this null-handwave and get null notification on this so we don't accidentally access it when
     // it's null. But if we check it from another thread there'll be a race condition. Figure something out?
     internal static IView View = null!;
-    private static IViewEnvironment ViewEnv = null!;
+    internal static IViewEnvironment ViewEnv = null!;
     internal static IDialogs Dialogs = null!;
 
     /*
@@ -78,7 +78,7 @@ internal static class Core
     internal static System.Threading.Thread CoreThread = null!;
 #endif
 
-    internal static async void Init(IViewEnvironment viewEnv)
+    internal static async void Init(IViewEnvironment viewEnv, bool doUpdateCleanup)
     {
 #if RT_HeavyTests
         CoreThread = System.Threading.Thread.CurrentThread;
@@ -173,6 +173,7 @@ internal static class Core
                         // Existence checks on startup are merely a perf optimization: values start blank so just
                         // don't set them if we don't have a game exe
                         string gameExe = Config.GetGameExe(gameIndex);
+
                         if (!gameExe.IsEmpty())
                         {
                             if (File.Exists(gameExe))
@@ -214,6 +215,31 @@ internal static class Core
         splashScreen.Show(Config.VisualTheme);
 
         _configReadARE.WaitOne();
+
+        if (doUpdateCleanup)
+        {
+            await Task.Run(static () =>
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    try
+                    {
+                        // File.Delete() doesn't throw if the file doesn't exist, so in that case we exit the
+                        // loop here and everything's fine, and we waste no time retrying.
+                        File.Delete(Paths.UpdateExeBak);
+                        break;
+                    }
+                    catch
+                    {
+                        // whatever
+                    }
+                    Thread.Sleep(100);
+                }
+                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                Paths.CreateOrClearTempPath(Paths.UpdateBakTemp);
+                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+            });
+        }
 
         #region Read languages
 
@@ -317,67 +343,59 @@ internal static class Core
             // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this
             // still works, so keeping it.
             splashScreen.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
-            try
+
+#if RT_HeavyTests
+#pragma warning disable IDE0002
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            Global.ThreadLocked = true;
+#pragma warning restore IDE0002
+#endif
+
+            Exception? ex = null;
+            // IMPORTANT: Begin no-splash-screen-call zone
+            // The FM finder will update the splash screen from another thread (accessing only the graphics
+            // context, so no cross-thread Control access exceptions), so any calls in here are potential
+            // race conditions.
+            using Task findFMsTask = Task.Run(() =>
             {
-                splashScreen.LockPainting(true);
-
-#if RT_HeavyTests
-#pragma warning disable IDE0002
-                // ReSharper disable once ArrangeStaticMemberQualifier
-                Global.ThreadLocked = true;
-#pragma warning restore IDE0002
-#endif
-
-                Exception? ex = null;
-                // IMPORTANT: Begin no-splash-screen-call zone
-                // The FM finder will update the splash screen from another thread (accessing only the graphics
-                // context, so no cross-thread Control access exceptions), so any calls in here are potential
-                // race conditions.
-                using Task findFMsTask = Task.Run(() =>
+                for (int i = 0; i < SupportedGameCount; i++)
                 {
-                    for (int i = 0; i < SupportedGameCount; i++)
+                    List<string>? camModIniLines = perGameCamModIniLines[i];
+                    if (camModIniLines != null)
                     {
-                        List<string>? camModIniLines = perGameCamModIniLines[i];
-                        if (camModIniLines != null)
-                        {
-                            GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
-                        }
+                        GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
                     }
-                    (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
-                    if (ex == null)
-                    {
-                        ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
-                    }
-
-                    TDM.UpdateTDMDataFromDisk(refresh: false);
-                });
-
-                // Construct and init the view right here, because it's a heavy operation and we want it to run
-                // in parallel with Find() to the greatest extent possible.
-                View = ViewEnv.GetView();
-
-                findFMsTask.Wait();
-
-#if RT_HeavyTests
-#pragma warning disable IDE0002
-                // ReSharper disable once ArrangeStaticMemberQualifier
-                Global.ThreadLocked = false;
-#pragma warning restore IDE0002
-#endif
-
-                // IMPORTANT: End no-splash-screen-call zone
-
-                if (ex != null)
-                {
-                    splashScreen.Hide();
-                    Log(ErrorText.ExRead + Paths.FMDataIni, ex);
-                    Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
-                    EnvironmentExitDoShutdownTasks(1);
                 }
-            }
-            finally
+                (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                if (ex == null)
+                {
+                    ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
+                }
+
+                TDM.UpdateTDMDataFromDisk(refresh: false);
+            });
+
+            // Construct and init the view right here, because it's a heavy operation and we want it to run
+            // in parallel with Find() to the greatest extent possible.
+            View = ViewEnv.GetView();
+
+            findFMsTask.Wait();
+
+#if RT_HeavyTests
+#pragma warning disable IDE0002
+            // ReSharper disable once ArrangeStaticMemberQualifier
+            Global.ThreadLocked = false;
+#pragma warning restore IDE0002
+#endif
+
+            // IMPORTANT: End no-splash-screen-call zone
+
+            if (ex != null)
             {
-                splashScreen.LockPainting(false);
+                splashScreen.Hide();
+                Log(ErrorText.ExRead + Paths.FMDataIni, ex);
+                Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
+                EnvironmentExitDoShutdownTasks(1);
             }
 
             return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen, askForImport);
@@ -569,8 +587,6 @@ internal static class Core
         Config.SteamExe = outConfig.SteamExe;
         Config.LaunchGamesWithSteam = outConfig.LaunchGamesWithSteam;
 
-        Config.RunThiefBuddyOnFMPlay = outConfig.RunThiefBuddyOnFMPlay;
-
         Config.FMsBackupPath = outConfig.FMsBackupPath;
 
         Config.FMArchivePaths.ClearAndAdd(outConfig.FMArchivePaths);
@@ -656,6 +672,18 @@ internal static class Core
         Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
 
         Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
+
+        #endregion
+
+        #region Thief Buddy page
+
+        Config.RunThiefBuddyOnFMPlay = outConfig.RunThiefBuddyOnFMPlay;
+
+        #endregion
+
+        #region Update page
+
+        Config.CheckForUpdates = outConfig.CheckForUpdates;
 
         #endregion
 

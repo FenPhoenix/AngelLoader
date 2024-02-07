@@ -16,6 +16,12 @@ public static partial class Common
 
     #region Fields / classes
 
+    public sealed class ProgressPercents
+    {
+        public int MainPercent;
+        public int SubPercent;
+    }
+
     // Class instead of enum so we don't have to keep casting its fields
     public static class ByteSize
     {

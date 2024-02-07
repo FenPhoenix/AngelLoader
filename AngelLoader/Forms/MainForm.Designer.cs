@@ -169,7 +169,7 @@ sealed partial class MainForm
         this.SettingsButton.Name = "SettingsButton";
         this.SettingsButton.Padding = new System.Windows.Forms.Padding(30, 0, 6, 0);
         this.SettingsButton.Size = new System.Drawing.Size(100, 36);
-        this.SettingsButton.TabIndex = 62;
+        this.SettingsButton.TabIndex = 2;
         this.SettingsButton.Text = "Settings...";
         this.SettingsButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.SettingsButton_Paint);
         this.SettingsButton.Click += new System.EventHandler(this.Async_EventHandler_Main);
@@ -181,7 +181,7 @@ sealed partial class MainForm
         this.FMCountLabel.Margin = new System.Windows.Forms.Padding(3, 1, 0, 0);
         this.FMCountLabel.Name = "FMCountLabel";
         this.FMCountLabel.Size = new System.Drawing.Size(58, 13);
-        this.FMCountLabel.TabIndex = 63;
+        this.FMCountLabel.TabIndex = 1;
         this.FMCountLabel.Text = "[FM count]";
         // 
         // BottomLeftFLP
@@ -269,6 +269,7 @@ sealed partial class MainForm
         this.MainSplitContainer.Size = new System.Drawing.Size(1671, 672);
         this.MainSplitContainer.SplitterDistance = 309;
         this.MainSplitContainer.TabIndex = 0;
+        this.MainSplitContainer.FullScreenBeforeChanged += new System.EventHandler(this.MainSplitContainer_FullScreenBeforeChanged);
         this.MainSplitContainer.FullScreenChanged += new System.EventHandler(this.MainSplitContainer_FullScreenChanged);
         // 
         // TopSplitContainer

@@ -104,7 +104,8 @@ public static partial class Misc
             "#settings_paths_section",
             "#settings_appearance_section",
             "#settings_other_section",
-            "#settings_thief_buddy_section"
+            "#settings_thief_buddy_section",
+            "#settings_update_section"
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 

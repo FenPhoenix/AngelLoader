@@ -1,9 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AL_Common.Logger;
@@ -44,9 +47,11 @@ We would have to put it in an entirely separate process and do like RichTextBoxA
 and then just restart the process whenever our memory use gets too high.
 */
 
-internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
+internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkContextMenuOwner
 {
     #region Private fields / properties
+
+    private readonly Lazy_RTFBoxMenu Lazy_RTFBoxMenu;
 
     internal ReadmeLocalizableMessage LocalizableMessageType = ReadmeLocalizableMessage.None;
 
@@ -62,7 +67,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             _contentIsPlainText = value;
             if (_contentIsPlainText)
             {
-                Font = Config.ReadmeUseFixedWidthFont ? MonospaceFont : DefaultFont;
+                Font = _useFixedFont ? MonospaceFont : DefaultFont;
             }
             else
             {
@@ -71,7 +76,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         }
     }
 
-    private static byte[] _currentReadmeBytes = Array.Empty<byte>();
+    private byte[] _currentReadmeBytes = Array.Empty<byte>();
 
     private ReadmeType _currentReadmeType = ReadmeType.PlainText;
     // Despite it _usually_ being the case that plaintext type supports encoding change and everything else
@@ -80,16 +85,26 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     // .wri file and have fallen back to treating it as unparsed plain text.
     private bool _currentReadmeSupportsEncodingChange;
 
-    private MainForm _owner = null!;
+    private IWaitCursorSettable _owner = null!;
 
     #endregion
 
-    public RichTextBoxCustom() => InitWorkarounds();
+    public RichTextBoxCustom()
+    {
+        Lazy_RTFBoxMenu = new Lazy_RTFBoxMenu(this);
+        InitWorkarounds();
+    }
 
     #region Private methods
 
+    internal void Localize() => Lazy_RTFBoxMenu.Localize();
+
+    private bool _useFixedFont;
+
     internal void SetFontType(bool useFixed)
     {
+        _useFixedFont = useFixed;
+
         if (!ContentIsPlainText) return;
 
         try
@@ -140,7 +155,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
     #region Public methods
 
-    internal void SetOwner(MainForm owner) => _owner = owner;
+    internal void SetOwner(IWaitCursorSettable owner) => _owner = owner;
 
     internal new void SelectAll()
     {
@@ -203,7 +218,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     {
         try
         {
-            SwitchOffPreloadState();
+            RTFPreprocessing.SwitchOffPreloadState();
 
             _currentReadmeSupportsEncodingChange = false;
             _currentReadmeBytes = Array.Empty<byte>();
@@ -222,6 +237,41 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     }
 
     /// <summary>
+    /// Loads RTF that we control, and thus doesn't need processing.
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <exception cref="InvalidDataException"></exception>
+    internal void LoadControlledRtf(Stream stream)
+    {
+        SetFullUrlsDetect();
+
+        try
+        {
+            SuspendState(toggleReadOnly: true);
+
+            SetReadmeTypeAndColorState(ReadmeType.RichText);
+
+            _currentReadmeSupportsEncodingChange = false;
+
+            _currentReadmeBytes = new byte[stream.Length];
+            int bytesRead = stream.ReadAll(_currentReadmeBytes, 0, (int)stream.Length);
+            if (bytesRead != stream.Length)
+            {
+                throw new InvalidDataException("Read length was not equal to stream length.");
+            }
+
+            // This resets the font if false, so don't do it after the load or it messes up the RTF.
+            ContentIsPlainText = false;
+
+            RefreshDarkModeState(skipSuspend: true);
+        }
+        finally
+        {
+            ResumeState(toggleReadOnly: true);
+        }
+    }
+
+    /// <summary>
     /// Loads a file into the box without resetting the zoom factor.
     /// </summary>
     /// <param name="path"></param>
@@ -236,7 +286,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
     /// </returns>
     internal Encoding? LoadContent(string path, ReadmeType fileType, Encoding? encoding)
     {
-        if (fileType is not ReadmeType.RichText) SwitchOffPreloadState();
+        if (fileType is not ReadmeType.RichText) RTFPreprocessing.SwitchOffPreloadState();
 
         AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
 
@@ -264,13 +314,13 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             // of it.
             if (fileType is ReadmeType.RichText)
             {
-                inPreloadedState = InPreloadedState(path, _darkModeEnabled);
+                inPreloadedState = RTFPreprocessing.InPreloadedState(path, _darkModeEnabled);
                 if (!inPreloadedState)
                 {
                     long size = new FileInfo(path).Length;
                     if (size > ByteSize.KB * 300)
                     {
-                        _owner.Cursor = Cursors.WaitCursor;
+                        _owner.SetWaitCursor(true);
                         needsCursorReset = true;
                     }
                 }
@@ -286,21 +336,23 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
                 case ReadmeType.RichText:
                     _currentReadmeSupportsEncodingChange = false;
 
-                    if (fileType != ReadmeType.RichText || !inPreloadedState)
-                    {
-                        _currentReadmeBytes = File.ReadAllBytes(path);
-                    }
+                    PreProcessedRTF? preProcessedRTF = null;
+                    _currentReadmeBytes =
+                        fileType == ReadmeType.RichText && inPreloadedState &&
+                        (preProcessedRTF = RTFPreprocessing.GetPreProcessedRtf()) != null
+                            ? preProcessedRTF.OriginalBytes
+                            : File.ReadAllBytes(path);
 
                     // We control the format of GLML-converted files, so no need to do this for those
                     if (fileType == ReadmeType.RichText && !inPreloadedState)
                     {
-                        GlobalPreProcessRTF(_currentReadmeBytes);
+                        RTFPreprocessing.GlobalPreProcessRTF(_currentReadmeBytes);
                     }
 
                     // This resets the font if false, so don't do it after the load or it messes up the RTF.
                     ContentIsPlainText = false;
 
-                    RefreshDarkModeState(preProcessedRtf: _preProcessedRTF, skipSuspend: true);
+                    RefreshDarkModeState(preProcessedRtf: preProcessedRTF, skipSuspend: true);
 
                     break;
                 case ReadmeType.PlainText:
@@ -335,7 +387,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
             ResumeState(toggleReadOnly);
             if (needsCursorReset)
             {
-                _owner.Cursor = Cursors.Default;
+                _owner.SetWaitCursor(false);
             }
             LocalizableMessageType = ReadmeLocalizableMessage.None;
         }
@@ -437,7 +489,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         if (e.Button == MouseButtons.Right)
         {
-            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+            ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
         }
     }
 
@@ -447,7 +499,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
 
         if (ControlUtils.IsMenuKey(e))
         {
-            ContextMenuStrip ??= _owner.Lazy_RTFBoxMenu.Menu;
+            ContextMenuStrip ??= Lazy_RTFBoxMenu.Menu;
         }
     }
 
@@ -542,7 +594,18 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable
         {
             DisposeWorkarounds();
             _monospaceFont?.Dispose();
+            _componentsFallback?.Dispose();
         }
         base.Dispose(disposing);
     }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool ViewBlocked => FindForm() is IDarkContextMenuOwner { ViewBlocked: true };
+
+    private IContainer? _componentsFallback;
+
+    public IContainer GetComponents() => FindForm() is IDarkContextMenuOwner parent
+        ? parent.GetComponents()
+        : _componentsFallback ??= new Container();
 }

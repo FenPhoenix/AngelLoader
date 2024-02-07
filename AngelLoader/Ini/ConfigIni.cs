@@ -92,6 +92,14 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_SettingsUpdateVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed.ToString(), out int result))
+        {
+            config.SetSettingsTabVScrollPos(SettingsTab.Update, result);
+        }
+    }
+
     #endregion
 
     private static void Config_LaunchGamesWithSteam_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -778,6 +786,15 @@ internal static partial class Ini
         config.EnableFuzzySearch = valTrimmed.EqualsTrue();
     }
 
+    private static void Config_CheckForUpdates_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(CheckForUpdates).GetField(valTrimmed.ToString(), _bFlagsEnum);
+        if (field != null)
+        {
+            config.CheckForUpdates = (CheckForUpdates)field.GetValue(null);
+        }
+    }
+
     #endregion
 
     private readonly unsafe struct Config_DelegatePointerWrapper
@@ -802,6 +819,7 @@ internal static partial class Ini
         { "SettingsAppearanceVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
         { "SettingsOtherVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
         { "SettingsThiefBuddyVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
+        { "SettingsUpdateVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsUpdateVScrollPos_Set) },
 
         #endregion
 
@@ -971,6 +989,8 @@ internal static partial class Ini
         { "AskedToScanForMisCounts".AsMemory(), new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
 
         { "EnableFuzzySearch".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
+
+        { "CheckForUpdates".AsMemory(), new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
 
         #region Backward compatibility
 
@@ -1154,6 +1174,7 @@ internal static partial class Ini
         sw.Append("SettingsAppearanceVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Appearance));
         sw.Append("SettingsOtherVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Other));
         sw.Append("SettingsThiefBuddyVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy));
+        sw.Append("SettingsUpdateVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Update));
 
         #endregion
 
@@ -1376,5 +1397,6 @@ internal static partial class Ini
         sw.Append("AskedToScanForMisCounts=").AppendLine(config.AskedToScanForMisCounts);
 
         sw.Append("EnableFuzzySearch=").AppendLine(config.EnableFuzzySearch);
+        sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
     }
 }

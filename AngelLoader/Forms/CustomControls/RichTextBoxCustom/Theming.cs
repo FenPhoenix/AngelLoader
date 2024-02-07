@@ -22,6 +22,7 @@ internal sealed partial class RichTextBoxCustom
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
             SetReadmeTypeAndColorState(_currentReadmeType);
+            Lazy_RTFBoxMenu.DarkModeEnabled = value;
             // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
             // selected or whatever
             if (Visible) RefreshDarkModeState(preProcessedRtf: null, skipSuspend: false);
@@ -61,7 +62,7 @@ internal sealed partial class RichTextBoxCustom
             if (_currentReadmeType == ReadmeType.RichText)
             {
                 byte[] bytes = preProcessedRtf != null
-                    ? preProcessedRtf.Bytes
+                    ? preProcessedRtf.ProcessedBytes
                     : RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
                 using var ms = new MemoryStream(bytes);
                 // @NET5: On modern .NET, RichTextBox now throws if the rtf is broken.
@@ -75,7 +76,7 @@ internal sealed partial class RichTextBoxCustom
         // Let exceptions propagate back, so we'll get the "unable to load readme" message.
         finally
         {
-            SwitchOffPreloadState();
+            RTFPreprocessing.SwitchOffPreloadState();
 
             if (!skipSuspend)
             {

@@ -138,7 +138,7 @@ public sealed partial class MainForm
         SettingsButton.Margin = new Padding(15, 3, 3, 3);
         SettingsButton.MinimumSize = new Size(0, 36);
         SettingsButton.Padding = new Padding(30, 0, 6, 0);
-        SettingsButton.TabIndex = 62;
+        SettingsButton.TabIndex = 2;
         SettingsButton.PaintCustom += SettingsButton_Paint;
         SettingsButton.Click += Async_EventHandler_Main;
         // 
@@ -219,6 +219,7 @@ public sealed partial class MainForm
         MainSplitContainer.Size = new Size(1671, 672);
         MainSplitContainer.SplitterDistance = 309;
         MainSplitContainer.TabIndex = 0;
+        MainSplitContainer.FullScreenBeforeChanged += MainSplitContainer_FullScreenBeforeChanged;
         MainSplitContainer.FullScreenChanged += MainSplitContainer_FullScreenChanged;
         // 
         // TopSplitContainer

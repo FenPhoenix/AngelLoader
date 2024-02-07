@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static AL_Common.Common;
 
 namespace AL_Common;
@@ -9,6 +10,7 @@ public static partial class RTFParserCommon
 {
     // Perf: A readonly struct is required to retain full performance, and therefore we can only put readonly
     // things in here (no mutable value types like the unicode skip counter etc.)
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Context
     {
         public readonly char[] Keyword;

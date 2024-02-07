@@ -4,42 +4,46 @@ using static AL_Common.Common;
 
 namespace AngelLoader.Forms.CustomControls;
 
-internal sealed partial class RichTextBoxCustom
+internal sealed class PreProcessedRTF
 {
-    private sealed class PreProcessedRTF
+    private readonly string _fileName;
+    internal readonly byte[] OriginalBytes;
+    internal readonly byte[] ProcessedBytes;
+    private readonly bool _darkMode;
+
+    /*
+    It's possible for us to preload a readme but then end up on a different FM. It could happen if we
+    filter out the selected FM that was specified in the config, or if we load in new FMs and we reset
+    our selection, etc. So make sure the readme we want to display is in fact the one we preloaded.
+    Otherwise, we're just going to cancel the preload and load the new readme normally.
+    */
+    internal bool Identical(string fileName, bool darkMode) =>
+        // Ultra paranoid checks
+        !fileName.IsWhiteSpace() &&
+        !_fileName.IsWhiteSpace() &&
+        _fileName.PathEqualsI(fileName) &&
+        _darkMode == darkMode;
+
+    internal PreProcessedRTF(string fileName, byte[] originalBytes, byte[] processedBytes, bool darkMode)
     {
-        private readonly string _fileName;
-        internal readonly byte[] Bytes;
-        private readonly bool _darkMode;
-
-        /*
-        It's possible for us to preload a readme but then end up on a different FM. It could happen if we
-        filter out the selected FM that was specified in the config, or if we load in new FMs and we reset
-        our selection, etc. So make sure the readme we want to display is in fact the one we preloaded.
-        Otherwise, we're just going to cancel the preload and load the new readme normally.
-        */
-        internal bool Identical(string fileName, bool darkMode) =>
-            // Ultra paranoid checks
-            !fileName.IsWhiteSpace() &&
-            !_fileName.IsWhiteSpace() &&
-            _fileName.PathEqualsI(fileName) &&
-            _darkMode == darkMode;
-
-        internal PreProcessedRTF(string fileName, byte[] bytes, bool darkMode)
-        {
-            _fileName = fileName;
-            Bytes = bytes;
-            _darkMode = darkMode;
-        }
+        _fileName = fileName;
+        OriginalBytes = originalBytes;
+        ProcessedBytes = processedBytes;
+        _darkMode = darkMode;
     }
+}
 
+internal static class RTFPreprocessing
+{
     private static PreProcessedRTF? _preProcessedRTF;
+
+    internal static PreProcessedRTF? GetPreProcessedRtf() => _preProcessedRTF;
 
     /// <summary>
     /// Perform pre-processing that needs to be done regardless of visual theme.
     /// </summary>
     /// <param name="bytes"></param>
-    private static void GlobalPreProcessRTF(byte[] bytes)
+    internal static void GlobalPreProcessRTF(byte[] bytes)
     {
         /*
         It's six of one half a dozen of the other - each method causes rare cases of images
@@ -50,12 +54,12 @@ internal sealed partial class RichTextBoxCustom
         overly-specific meddling. Microsoft have changed their RichEdit control before, and
         they might again, in which case I'm screwed either way.
         */
-        ReplaceByteSequence(bytes, _shppict, _shppictBlanked);
-        ReplaceByteSequence(bytes, _nonshppict, _nonshppictBlanked);
+        ReplaceByteSequence(bytes, RichTextBoxCustom._shppict, RichTextBoxCustom._shppictBlanked);
+        ReplaceByteSequence(bytes, RichTextBoxCustom._nonshppict, RichTextBoxCustom._nonshppictBlanked);
     }
 
     [MemberNotNullWhen(true, nameof(_preProcessedRTF))]
-    private static bool InPreloadedState(string readmeFile, bool darkMode)
+    internal static bool InPreloadedState(string readmeFile, bool darkMode)
     {
         if (_preProcessedRTF?.Identical(readmeFile, darkMode) == true)
         {
@@ -68,20 +72,19 @@ internal sealed partial class RichTextBoxCustom
         }
     }
 
-    private static void SwitchOffPreloadState() => _preProcessedRTF = null;
+    internal static void SwitchOffPreloadState() => _preProcessedRTF = null;
 
     public static void PreloadRichFormat(string readmeFile, byte[] preloadedBytesRaw, bool darkMode)
     {
-        _currentReadmeBytes = preloadedBytesRaw;
-
         try
         {
-            GlobalPreProcessRTF(_currentReadmeBytes);
+            GlobalPreProcessRTF(preloadedBytesRaw);
 
             _preProcessedRTF = new PreProcessedRTF(
-                readmeFile,
-                RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, darkMode),
-                darkMode
+                fileName: readmeFile,
+                originalBytes: preloadedBytesRaw,
+                processedBytes: RtfProcessing.GetProcessedRTFBytes(preloadedBytesRaw, darkMode),
+                darkMode: darkMode
             );
         }
         catch

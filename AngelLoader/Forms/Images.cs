@@ -204,6 +204,20 @@ public static class Images
 
     #endregion
 
+    #region Update arrow
+
+    private static readonly float[] _updateArrowPoints =
+    {
+        0,5, 5,0, 10,5, 6.5f,5, 6.5f,9, 3.5f,9, 3.5f,5
+    };
+
+    private static readonly byte[] _updateArrowTypes = MakeTypeArray((1, 5, 0, 129));
+
+    private static GraphicsPath? _updateArrowGPath;
+    private static GraphicsPath UpdateArrowGPath => _updateArrowGPath ??= MakeGraphicsPath(_updateArrowPoints, _updateArrowTypes);
+
+    #endregion
+
     #region X symbol
 
     private static readonly float[] _xPoints =
@@ -1067,6 +1081,13 @@ public static class Images
 
     #endregion
 
+    private static Bitmap? _updateIcon;
+    private static Bitmap? _updateIcon_Dark;
+    public static Bitmap UpdateIcon =>
+        Config.DarkMode
+            ? _updateIcon_Dark ??= CreateUpdateIcon()
+            : _updateIcon ??= CreateUpdateIcon();
+
     #region FMs list only
 
     private static Bitmap? _greenCheckCircle;
@@ -1372,6 +1393,28 @@ public static class Images
 
         g.FillPath(
             Config.DarkMode ? DarkColors.Fen_DarkBackgroundBrush : Brushes.White,
+            gp
+        );
+
+        return ret;
+    }
+
+    private static Bitmap CreateUpdateIcon()
+    {
+        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
+        using var g = Graphics.FromImage(ret);
+
+        g.SmoothingMode = SmoothingMode.AntiAlias;
+
+        GraphicsPath gp = UpdateArrowGPath;
+
+        FitRectInBounds(
+            g,
+            gp.GetBounds(),
+            new RectangleF(1.7f, 1.7f, 16.5f, 16.5f));
+
+        g.FillPath(
+            _al_LightBlueBrush.Brush,
             gp
         );
 
