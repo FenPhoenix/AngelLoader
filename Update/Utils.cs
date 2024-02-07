@@ -12,7 +12,7 @@ using static Update.Data;
 
 namespace Update;
 
-internal static class Utils
+internal static partial class Utils
 {
     internal static void CenterHOnForm(this Control control, Control parent)
     {
@@ -78,8 +78,8 @@ internal static class Utils
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
-    [DllImport("kernel32.dll")]
-    private static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+    [LibraryImport("kernel32.dll")]
+    private static partial SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
     #endregion
 
@@ -125,7 +125,7 @@ internal static class Utils
                     process.Dispose();
                 }
             }
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
         } while (alIsRunning);
 
         return;
@@ -247,7 +247,7 @@ internal static class Utils
         MessageBoxIcon icon,
         string yesText,
         string noText,
-        DialogResult defaultButton) => (DialogResult)view.Invoke(() =>
+        DialogResult defaultButton) => view.Invoke(() =>
     {
         using var d = new DarkTaskDialog(
             message: message,

@@ -10,7 +10,6 @@ using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 using static AL_Common.Common;
 using static AL_Common.Logger;
-using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 

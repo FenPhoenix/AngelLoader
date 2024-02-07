@@ -27,7 +27,6 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.SettingsWindowData;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 

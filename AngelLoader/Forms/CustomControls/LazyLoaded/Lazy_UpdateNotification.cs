@@ -50,7 +50,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
         Localize();
     }
 
-    private static async void Button_Click(object sender, EventArgs e) => await AppUpdate.ShowUpdateAskDialog();
+    private static async void Button_Click(object? sender, EventArgs e) => await AppUpdate.ShowUpdateAskDialog();
 
     internal void Localize()
     {

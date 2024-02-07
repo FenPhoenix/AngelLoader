@@ -163,6 +163,8 @@ internal static class Program
 
         await Utils.WaitForAngelLoaderToClose(_copyCTS.Token);
 
+        CleanupAndThrowIfCancellationRequested();
+
         await Task.Run(async () =>
         {
             List<string> files;

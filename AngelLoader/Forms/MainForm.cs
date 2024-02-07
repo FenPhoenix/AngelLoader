@@ -5299,7 +5299,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal int _storedFMsDGVDisplayedRowCountFalse;
     internal int _storedFMsDGVDisplayedRowCountTrue;
 
-    private void MainSplitContainer_FullScreenBeforeChanged(object sender, EventArgs e)
+    private void MainSplitContainer_FullScreenBeforeChanged(object? sender, EventArgs e)
     {
         if (!MainSplitContainer.FullScreen)
         {
@@ -5309,7 +5309,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void MainSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    private void MainSplitContainer_FullScreenChanged(object? sender, EventArgs e)
     {
         MainSplitContainer.Panel1.Enabled = !MainSplitContainer.FullScreen;
         if (!MainSplitContainer.FullScreen)

@@ -114,11 +114,11 @@ public static class AppUpdate
                     localZipFile = Path.Combine(Paths.UpdateAppDownloadTemp,
                         Path.GetFileName(updateInfo.DownloadUri.OriginalString));
 
-                    using Stream zipStream = await request.Content.ReadAsStreamAsync();
+                    await using Stream zipStream = await request.Content.ReadAsStreamAsync();
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
-                    using var zipLocalStream = File.Create(localZipFile);
+                    await using var zipLocalStream = File.Create(localZipFile);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -140,7 +140,7 @@ public static class AppUpdate
                         message2: LText.Update.UnpackingUpdate
                     );
 
-                    using var fs = File.OpenRead(localZipFile);
+                    await using var fs = File.OpenRead(localZipFile);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -235,21 +235,27 @@ public static class AppUpdate
             ProgressPercents percents = new();
 
             byte[] buffer = ArrayPool<byte>.Shared.Rent(81920);
-
-            int streamLength = (int)source.Length;
-            int bytesRead;
-            int totalBytesRead = 0;
-            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken)) != 0)
+            try
             {
-                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken);
+                int streamLength = (int)source.Length;
+                int bytesRead;
+                int totalBytesRead = 0;
+                while ((bytesRead = await source.ReadAsync(buffer, cancellationToken)) != 0)
+                {
+                    await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
 
-                cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                totalBytesRead += bytesRead;
+                    totalBytesRead += bytesRead;
 
-                percents.SubPercent = GetPercentFromValue_Int(totalBytesRead, streamLength);
-                percents.MainPercent = percents.SubPercent / 2;
-                progress.Report(percents);
+                    percents.SubPercent = GetPercentFromValue_Int(totalBytesRead, streamLength);
+                    percents.MainPercent = percents.SubPercent / 2;
+                    progress.Report(percents);
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
             }
         }
     }
@@ -293,7 +299,7 @@ public static class AppUpdate
     {
         try
         {
-            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
+            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version? appVersion))
             {
                 return CheckUpdateResult.NoUpdateAvailable;
             }
@@ -313,10 +319,10 @@ public static class AppUpdate
                 }
             }
 
-            string versionString = await request.Content.ReadAsStringAsync();
+            string versionString = await request.Content.ReadAsStringAsync(cancellationToken);
 
             return !versionString.IsEmpty() &&
-                   Version.TryParse(versionString, out Version version) &&
+                   Version.TryParse(versionString, out Version? version) &&
                    version > appVersion
                 ? CheckUpdateResult.UpdateAvailable
                 : CheckUpdateResult.NoUpdateAvailable;
@@ -374,7 +380,7 @@ public static class AppUpdate
 
             List<UpdateInfoInternal> versions = new();
 
-            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
+            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version? appVersion))
             {
                 return (UpdateDetailsDownloadResult.Error, ret);
             }
@@ -403,8 +409,8 @@ public static class AppUpdate
 
                     if (lineT.IsEmpty()) continue;
 
-                    if (lineT[0] == '[' && lineT[lineT.Length - 1] == ']' &&
-                        Version.TryParse(lineT.Substring(1, lineT.Length - 2), out Version version))
+                    if (lineT[0] == '[' && lineT[^1] == ']' &&
+                        Version.TryParse(lineT.AsSpan(1, lineT.Length - 2), out Version? version))
                     {
                         if (version <= appVersion) break;
 
@@ -504,7 +510,7 @@ public static class AppUpdate
     {
         const string bullet = "\x2022";
 
-        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        string[] lines = text.Split("\r\n");
 
         for (int i = 0; i < lines.Length; i++)
         {
@@ -513,7 +519,7 @@ public static class AppUpdate
             int listCharIndex = ListCharIndex(line);
             if (listCharIndex > -1)
             {
-                lines[i] = line.Substring(0, listCharIndex) + bullet + line.Substring(listCharIndex + 1);
+                lines[i] = string.Concat(line.AsSpan(0, listCharIndex), bullet, line.AsSpan(listCharIndex + 1));
                 line = lines[i];
             }
 
