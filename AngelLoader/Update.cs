@@ -452,12 +452,8 @@ public static class AppUpdate
 
                     _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
-                    // Quick-n-dirty way to normalize linebreaks, because they'll normally be Unix-style on GitHub
-                    if (!changelogText.Contains('\r'))
-                    {
-                        changelogText = changelogText.Replace("\n", "\r\n");
-                    }
-                    changelogText = changelogText.Trim();
+                    // Normalize linebreaks, because they'll normally be Unix-style on GitHub
+                    changelogText = changelogText.NormalizeToCRLF().Trim();
 
                     if (request.IsSuccessStatusCode)
                     {
