@@ -686,8 +686,10 @@ internal static class Native
     [DllImport("uxtheme.dll", ExactSpelling = true)]
     internal static extern bool IsThemeActive();
 
+#if !NETFRAMEWORK || !X64
     [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern IntPtr CreateSolidBrush(int crColor);
+#endif
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
