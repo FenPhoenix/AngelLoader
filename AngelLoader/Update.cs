@@ -53,7 +53,7 @@ public static class AppUpdate
     private const string _updatesRepoDir = "updates";
 #endif
 
-    private const string _bitnessRepoDir = "net_x64";
+    private const string _bitnessRepoDir = "netmodern_x64";
 
     private static CancellationTokenSource _detailsDownloadCTS = new();
     private static CancellationTokenSource _updatingCTS = new();
