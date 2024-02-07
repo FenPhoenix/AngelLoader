@@ -208,9 +208,6 @@ public sealed class DarkButton : Button, IDarkable
 
     #region Event Handler Region
 
-    // Need our own event because we can't fire base.OnPaint() or it overrides our own painting
-    public event EventHandler<PaintEventArgs>? PaintCustom;
-
     protected override void OnMouseMove(MouseEventArgs e)
     {
         base.OnMouseMove(e);
@@ -335,7 +332,6 @@ public sealed class DarkButton : Button, IDarkable
         if (!_darkModeEnabled)
         {
             base.OnPaint(e);
-            PaintCustom?.Invoke(this, e);
             return;
         }
 
@@ -418,42 +414,6 @@ public sealed class DarkButton : Button, IDarkable
 
         Padding padding = Padding;
 
-        if (Image != null)
-        {
-            //SizeF stringSize = g.MeasureString(Text, Font, rect.Size);
-
-            int x;
-            //int x = (ClientSize.Width / 2) - (Image.Size.Width / 2);
-            int y = (ClientSize.Height / 2) - (Image.Size.Height / 2);
-
-            switch (TextImageRelation)
-            {
-                // @DarkModeNote(DarkButton): These are probably incorrect - fix them if we ever want to use them
-#if false
-                case TextImageRelation.ImageAboveText:
-                    textOffsetY = (Image.Size.Height / 2) + (ImagePadding / 2);
-                    y -= (int)(stringSize.Height / 2) + (ImagePadding / 2);
-                    break;
-                case TextImageRelation.TextAboveImage:
-                    textOffsetY = ((Image.Size.Height / 2) + (ImagePadding / 2)) * -1;
-                    y += (int)(stringSize.Height / 2) + (ImagePadding / 2);
-                    break;
-                case TextImageRelation.TextBeforeImage:
-                    x += (int)stringSize.Width;
-                    break;
-#endif
-                case TextImageRelation.ImageBeforeText:
-                default:
-                    textOffsetX = Image.Size.Width + ImagePadding + 1;
-                    x = textOffsetX - (ImagePadding * 2);
-                    break;
-            }
-
-            g.DrawImageUnscaled(Image, x, y);
-
-            padding.Left -= Image.Width * 2;
-        }
-
         // 3 pixel offset on all sides because of fudging with the rectangle, this gets it back to accurate
         // for the text.
         // @DarkModeNote(DarkButton/TextRect):
@@ -482,7 +442,7 @@ public sealed class DarkButton : Button, IDarkable
 
         if (ButtonStyle == DarkButtonStyle.Normal)
         {
-            Control parent = Parent;
+            Control? parent = Parent;
 
             if (parent != null)
             {
@@ -493,8 +453,6 @@ public sealed class DarkButton : Button, IDarkable
         }
 
         #endregion
-
-        PaintCustom?.Invoke(this, e);
     }
 
     #endregion

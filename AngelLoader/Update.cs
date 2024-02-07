@@ -506,7 +506,7 @@ public static class AppUpdate
     {
         const string bullet = "\x2022";
 
-        string[] lines = text.Split(new[] { "\r\n" }, StringSplitOptions.None);
+        string[] lines = text.Split(SA_CRLF, StringSplitOptions.None);
 
         for (int i = 0; i < lines.Length; i++)
         {

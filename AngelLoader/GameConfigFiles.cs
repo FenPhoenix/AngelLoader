@@ -406,10 +406,9 @@ internal static class GameConfigFiles
             List<string>? lines;
             if (fileLines == null)
             {
-                bool readSuccess = useDefaultEncoding
+                if (!(useDefaultEncoding
                     ? TryReadAllLines_DefaultEncoding(cfgFile, out lines)
-                    : TryReadAllLines(cfgFile, out lines);
-                if (!readSuccess)
+                    : TryReadAllLines(cfgFile, out lines)))
                 {
                     return;
                 }

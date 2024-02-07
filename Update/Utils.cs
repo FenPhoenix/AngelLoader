@@ -125,7 +125,7 @@ internal static class Utils
                     process.Dispose();
                 }
             }
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
         } while (alIsRunning);
 
         return;

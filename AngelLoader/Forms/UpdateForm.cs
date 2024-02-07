@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -202,7 +201,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             for (int i = 0; i < UpdateInfos.Count; i++)
             {
                 if (i > 0) changelogFullText += @"\line\line" + themedHorizontalLine + @"\line ";
-                AppUpdate.UpdateInfo? item = UpdateInfos[i];
+                AppUpdate.UpdateInfo item = UpdateInfos[i];
                 changelogFullText += @"\b1 " + item.Version + @":\b0\line\line " +
                                      ChangelogBodyToRtf(item.ChangelogText);
             }
@@ -228,17 +227,18 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
         for (int i = 0; i < lines.Length; i++)
         {
-            string line = lines[i];
-
-            lines[i] = line
+            string line = lines[i]
                 .Replace(@"\", @"\\")
                 .Replace("{", @"\{")
                 .Replace("}", @"\}");
 
-            if (Regex.Match(line.TrimEnd(), ":$").Success)
+            string lineTE = line.TrimEnd();
+
+            if (lineTE.Length > 0 && lineTE[lineTE.Length - 1] == ':')
             {
-                lines[i] = @"\b1 " + line + @"\b0 ";
+                line = @"\b1 " + line + @"\b0 ";
             }
+            lines[i] = line;
         }
 
         text = string.Join(@"\line ", lines);

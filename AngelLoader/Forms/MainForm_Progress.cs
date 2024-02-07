@@ -59,6 +59,7 @@ public sealed partial class MainForm
             cancelAction: cancelAction ?? NullAction);
     });
 
+#if false
     public void ShowProgressBox_Double(
         string? mainMessage1 = null,
         string? mainMessage2 = null,
@@ -82,6 +83,7 @@ public sealed partial class MainForm
             cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
+#endif
 
     #endregion
 
