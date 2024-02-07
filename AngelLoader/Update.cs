@@ -20,9 +20,11 @@ public static class AppUpdate
 {
     private sealed class UpdateInfoInternal
     {
-        internal Version? Version;
+        internal readonly Version Version;
         internal Uri? DownloadUrl;
         internal Uri? ChangelogUrl;
+
+        internal UpdateInfoInternal(Version version) => Version = version;
     }
 
     public sealed class UpdateInfo(Version version, string changelogText, Uri downloadUri)
@@ -411,7 +413,7 @@ public static class AppUpdate
                         if (version <= appVersion) break;
 
                         if (updateFile != null) versions.Add(updateFile);
-                        updateFile = new UpdateInfoInternal { Version = version };
+                        updateFile = new UpdateInfoInternal(version);
                     }
                     else if (updateFile != null)
                     {
@@ -454,7 +456,7 @@ public static class AppUpdate
                     if (request.IsSuccessStatusCode)
                     {
                         ret.Add(new UpdateInfo(
-                            item.Version!,
+                            item.Version,
                             changelogText,
                             downloadUri));
                     }
