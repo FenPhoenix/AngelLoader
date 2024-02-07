@@ -1,0 +1,79 @@
+echo ------------------------- START OF post_build_fen_personal_dev.bat
+
+rem ~ strips surrounded quotes if they exist
+rem batch file hell #9072: no spaces can exist around = sign for these lines
+set ConfigurationName=%~1
+set TargetDir=%~2
+set ProjectDir=%~3
+set SolutionDir=%~4
+set PlatformName=%~5
+set TargetFramework=%~6
+
+rem batch file hell #21354: vars with spaces in the value must be entirely in quotes
+
+if %ConfigurationName% == Release_Beta (
+set "destDir=C:\AngelLoader_Beta_Package\x64_netmodern\"
+) else if %ConfigurationName% == Release_Public (
+set "destDir=C:\AngelLoader_Public_Package\x64_netmodern\"
+) else (
+set "destDir=C:\AngelLoader\"
+)
+
+"%system%xcopy" "%TargetDir%AngelLoader.exe" "%destDir%" /y
+
+"%system%xcopy" "%TargetDir%AngelLoader.exe.config" "%destDir%" /y
+"%system%xcopy" "%TargetDir%*.runtimeconfig.json" "%destDir%" /y
+"%system%xcopy" "%TargetDir%*AngelLoader.deps.json" "%destDir%" /y
+"%system%xcopy" "%SolutionDir%bin_dependencies\7z32" "%destDir%\7z32\" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\7z64" "%destDir%\7z64\" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\*.dll" "%TargetDir%" /y /i
+"%system%xcopy" "%SolutionDir%bin_dependencies\*.ttf" "%destDir%" /y /i
+
+"%system%xcopy" "%TargetDir%*.dll" "%destDir%" /y
+
+rem Dumb hack to get rid of extraneous dll files because ludicrously
+rem xcopy requires you to make an entire file just to list excludes, rather than
+rem specifying them on the command line like someone who is not clinically insane
+del /F "%destDir%JetBrains.Annotations.dll"
+del /F "%destDir%*xunit*.dll"
+del /F "%destDir%*TestPlatform*.dll"
+del /F "%destDir%testhost.dll"
+del /F "%destDir%EasyLoad*.dll"
+del /F "%destDir%System.Text.Encoding.CodePages.dll"
+
+del /F "%destDir%EasyHook32.dll"
+del /F "%destDir%EasyHook.dll"
+rd /S /Q "%destDir%7z32"
+
+del /F "%destDir%*.exe.config"
+del /F "%destDir%System.Buffers.dll"
+del /F "%destDir%System.Memory.dll"
+del /F "%destDir%System.Numerics.Vectors.dll"
+del /F "%destDir%System.Runtime.CompilerServices.Unsafe.dll"
+
+"%system%xcopy" "%SolutionDir%bin_dependencies\ffmpeg" "%destDir%ffmpeg\" /y /i
+
+if %ConfigurationName% == Release_Public (
+	"%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
+) else if %ConfigurationName% == Release_Beta (
+	"%system%xcopy" "%ProjectDir%Languages\English.ini" "%destDir%Data\Languages\" /y
+) else (
+	"%system%xcopy" "%ProjectDir%Languages\*.ini" "%destDir%Data\Languages\" /y /i /e
+)
+
+"%system%xcopy" "%ProjectDir%Resources\AngelLoader.ico" "%destDir%" /y /i
+
+"%system%xcopy" "%SolutionDir%BinReleaseOnly" "%destDir%" /y /i /e
+
+if %PlatformName% == x86 (
+	del /F "%destDir%Licenses\CoreHook license.txt"
+) else (
+	del /F "%destDir%Licenses\EasyHook license.txt"
+)
+
+rem Exclude "history" dir without having to copy and delete it afterwards (it's large) or write out an excludes file
+"%system%xcopy" "%SolutionDir%docs\doc\English\*.html" "%destDir%doc\" /y /i
+"%system%xcopy" "%SolutionDir%docs\doc\English\images" "%destDir%doc\images" /y /i /e
+
+del /F "%destDir%7z.dll"
+del /F "%destDir%7z64.dll"

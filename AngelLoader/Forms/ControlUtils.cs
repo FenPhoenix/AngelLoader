@@ -902,12 +902,10 @@ internal static class ControlUtils
     {
 #if RELEASE_BETA
         const string betaVer = "4";
-        string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer;
+        string title = "AngelLoader " + Application.ProductVersion + " beta " + betaVer + " (64-bit)";
 #else
-        string title = "AngelLoader " + Application.ProductVersion;
-#endif
-#if X64
-        title += " (64-bit)";
+        string title = "AngelLoader " + Application.ProductVersion + " (64-bit)";
+
 #endif
         return title;
     }
