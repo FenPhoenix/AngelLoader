@@ -149,4 +149,14 @@ public static partial class Utils
     }
 
     #endregion
+
+    internal static string NormalizeToCRLF(this string text)
+    {
+        if (!text.Contains('\r'))
+        {
+            text = text.Replace("\n", "\r\n");
+        }
+
+        return text;
+    }
 }
