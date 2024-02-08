@@ -1711,7 +1711,7 @@ internal static class Core
                             wroteFMName = true;
                         }
                         sw.WriteLine(readme);
-                        var fe = new FMScanner.SimpleHelpers.FileEncoding();
+                        var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
                         using var fs = File.OpenRead(readmePath);
                         Encoding? encoding = fe.DetectFileEncoding(fs);
                         if (encoding != null)
