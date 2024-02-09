@@ -21,24 +21,11 @@ public sealed class DarkButton : Button, IDarkable
 {
     #region Field Region
 
-    private DarkButtonStyle _style = DarkButtonStyle.Normal;
-
     private DarkControlState _buttonState = DarkControlState.Normal;
 
     private bool _spacePressed;
 
-    private int _imagePadding = 5;
-
-    private FlatStyle? _originalFlatStyle;
-    private int? _originalBorderSize;
-
     #endregion
-
-    private enum DarkButtonStyle
-    {
-        Normal,
-        Flat
-    }
 
     #region Designer Property Region
 
@@ -66,15 +53,6 @@ public sealed class DarkButton : Button, IDarkable
 #endif
 
     [PublicAPI]
-    public Color? DarkModeBackColor;
-
-    [PublicAPI]
-    public Color? DarkModeHoverColor;
-
-    [PublicAPI]
-    public Color? DarkModePressedColor;
-
-    [PublicAPI]
     public new string Text
     {
         get => base.Text;
@@ -96,47 +74,6 @@ public sealed class DarkButton : Button, IDarkable
         }
     }
 
-    private DarkButtonStyle ButtonStyle
-    {
-        get => _style;
-        set
-        {
-            _style = value;
-            InvalidateIfDark();
-        }
-    }
-
-    [Category("Appearance")]
-    [Description("Determines the amount of padding between the image and text.")]
-    [DefaultValue(5)]
-    [PublicAPI]
-    public int ImagePadding
-    {
-        get => _imagePadding;
-        set
-        {
-            _imagePadding = value;
-            InvalidateIfDark();
-        }
-    }
-
-    #endregion
-
-    #region Code Property Region
-
-    [PublicAPI]
-    public new FlatStyle FlatStyle
-    {
-        get => base.FlatStyle;
-        set
-        {
-            base.FlatStyle = value;
-            ButtonStyle = value == FlatStyle.Flat
-                ? DarkButtonStyle.Flat
-                : DarkButtonStyle.Normal;
-        }
-    }
-
     #endregion
 
     private bool _darkModeEnabled;
@@ -154,21 +91,10 @@ public sealed class DarkButton : Button, IDarkable
 
             if (_darkModeEnabled)
             {
-                _originalFlatStyle ??= base.FlatStyle;
-                _originalBorderSize ??= FlatAppearance.BorderSize;
                 UseVisualStyleBackColor = false;
                 SetButtonState(DarkControlState.Normal);
 
                 Invalidate();
-            }
-            else
-            {
-                // Need to set these explicitly because in some cases (not all) they don't get set back automatically
-                ForeColor = SystemColors.ControlText;
-                BackColor = SystemColors.Control;
-                UseVisualStyleBackColor = true;
-                if (_originalFlatStyle != null) base.FlatStyle = (FlatStyle)_originalFlatStyle;
-                if (_originalBorderSize != null) FlatAppearance.BorderSize = (int)_originalBorderSize;
             }
         }
     }
@@ -337,57 +263,34 @@ public sealed class DarkButton : Button, IDarkable
 
         Graphics g = e.Graphics;
 
-        Rectangle rect = ButtonStyle == DarkButtonStyle.Normal
-            // Slightly modified rectangle to account for Flat style being slightly larger than classic mode,
-            // this matches us visually in size and position to classic mode
-            ? new Rectangle(1, 1, ClientSize.Width - 2, ClientSize.Height - 3)
-            : ClientRectangle;
+        Rectangle rect = new(1, 1, ClientSize.Width - 2, ClientSize.Height - 3);
 
         SolidBrush textColorBrush = DarkColors.LightTextBrush;
         Pen borderPen = DarkColors.GreySelectionPen;
         Color? fillColor = null;
-        if (DarkModeBackColor != null) fillColor = DarkModeBackColor;
 
         if (Enabled)
         {
-            if (ButtonStyle == DarkButtonStyle.Normal)
+            if (Focused && TabStop)
             {
-                if (Focused && TabStop)
-                {
-                    borderPen = DarkColors.BlueHighlightPen;
-                }
-
-                switch (_buttonState)
-                {
-                    case DarkControlState.Hover:
-                        fillColor = DarkModeHoverColor ?? DarkColors.BlueBackground;
-                        borderPen = DarkColors.BlueHighlightPen;
-                        break;
-                    case DarkControlState.Pressed:
-                        fillColor = DarkModePressedColor ?? DarkColors.DarkBackground;
-                        break;
-                }
+                borderPen = DarkColors.BlueHighlightPen;
             }
-            else if (ButtonStyle == DarkButtonStyle.Flat)
+
+            switch (_buttonState)
             {
-                switch (_buttonState)
-                {
-                    case DarkControlState.Normal:
-                        fillColor = DarkModeBackColor ?? DarkColors.GreyBackground;
-                        break;
-                    case DarkControlState.Hover:
-                        fillColor = DarkModeHoverColor ?? DarkColors.MediumBackground;
-                        break;
-                    case DarkControlState.Pressed:
-                        fillColor = DarkModePressedColor ?? DarkColors.DarkBackground;
-                        break;
-                }
+                case DarkControlState.Hover:
+                    fillColor = DarkColors.BlueBackground;
+                    borderPen = DarkColors.BlueHighlightPen;
+                    break;
+                case DarkControlState.Pressed:
+                    fillColor = DarkColors.DarkBackground;
+                    break;
             }
         }
         else
         {
             textColorBrush = DarkColors.DisabledTextBrush;
-            fillColor = DarkModeBackColor ?? DarkColors.DarkGreySelection;
+            fillColor = DarkColors.DarkGreySelection;
         }
 
         if (fillColor != null)
@@ -401,16 +304,10 @@ public sealed class DarkButton : Button, IDarkable
             g.FillRectangle(fillBrush, rect);
         }
 
-        if (ButtonStyle == DarkButtonStyle.Normal)
-        {
-            // Again, match us visually to size and position of classic mode
-            var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
+        // Again, match us visually to size and position of classic mode
+        var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
 
-            g.DrawRectangle(borderPen, borderRect);
-        }
-
-        int textOffsetX = 0;
-        int textOffsetY = 0;
+        g.DrawRectangle(borderPen, borderRect);
 
         Padding padding = Padding;
 
@@ -420,8 +317,8 @@ public sealed class DarkButton : Button, IDarkable
         // But actually we only know it's accurate for left-alignment, test if it is for all other alignments
         // as well...
         var textRect = new Rectangle(
-            rect.Left + textOffsetX + padding.Left + 3,
-            rect.Top + textOffsetY + padding.Top + 3,
+            rect.Left + padding.Left + 3,
+            rect.Top + padding.Top + 3,
             (rect.Width - padding.Horizontal) - 6,
             (rect.Height - padding.Vertical) - 6);
 
@@ -440,16 +337,13 @@ public sealed class DarkButton : Button, IDarkable
         // the visual size and positioning of the classic theme.
         // Draw this AFTER everything else, so that we draw on top so everything looks right.
 
-        if (ButtonStyle == DarkButtonStyle.Normal)
-        {
-            Control? parent = Parent;
+        Control? parent = Parent;
 
-            if (parent != null)
-            {
-                using var pen = new Pen(parent.BackColor);
-                var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
-                g.DrawRectangle(pen, bgRect);
-            }
+        if (parent != null)
+        {
+            using var pen = new Pen(parent.BackColor);
+            var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+            g.DrawRectangle(pen, bgRect);
         }
 
         #endregion

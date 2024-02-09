@@ -14,14 +14,11 @@ namespace Update;
 
 internal static class Utils
 {
-    internal static void CenterHOnForm(this Control control, Control parent)
-    {
-        control.Location = control.Location with { X = (parent.ClientSize.Width / 2) - (control.Width / 2) };
-    }
-
     internal static bool EqualsI(this string str1, string str2) => str1.Equals(str2, StringComparison.OrdinalIgnoreCase);
 
     internal static bool StartsWithI(this string str1, string str2) => str1.StartsWith(str2, StringComparison.OrdinalIgnoreCase);
+
+    internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
 
     internal static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
 
@@ -158,8 +155,6 @@ internal static class Utils
             return false;
         }
     }
-
-    internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
 
     internal static VisualTheme ReadThemeFromConfigIni(string path)
     {

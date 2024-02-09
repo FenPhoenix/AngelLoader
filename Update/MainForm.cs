@@ -63,6 +63,16 @@ public sealed partial class MainForm : DarkFormBase
         }
         else
         {
+#if true
+            Utils.ShowDialogCustom(
+                this,
+                "Message dsf dsf dsf dsf sdf sd fsd",
+                "Title",
+                MessageBoxIcon.Warning,
+                "Yes sda fdsaf dsaf dsa fdsa fsa",
+                "No dsaf dsa fsa fdsa fasd",
+                DialogResult.Yes);
+#endif
             //using (System.Diagnostics.Process.Start(System.IO.Path.Combine(Application.StartupPath, "AngelLoader.exe"), "-after_update_cleanup")) { }
             //Application.Exit();
         }

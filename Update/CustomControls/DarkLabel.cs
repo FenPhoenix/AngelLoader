@@ -23,12 +23,6 @@ public sealed class DarkLabel : Label, IDarkable
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool DarkModeEnabled { get; set; }
 
-    [PublicAPI]
-    public Color? DarkModeForeColor;
-
-    [PublicAPI]
-    public Color? DarkModeBackColor;
-
     protected override void OnPaint(PaintEventArgs e)
     {
         if (DarkModeEnabled)
@@ -43,17 +37,8 @@ public sealed class DarkLabel : Label, IDarkable
                 | TextFormatFlags.TextBoxControl
                 | TextFormatFlags.WordBreak;
 
-            Color color = Enabled ? DarkModeForeColor ?? DarkColors.LightText : DarkColors.DisabledText;
-            if (DarkModeBackColor == null)
-            {
-                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
-            }
-            else
-            {
-                using var bgBrush = new SolidBrush((Color)DarkModeBackColor);
-                e.Graphics.FillRectangle(bgBrush, ClientRectangle);
-                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, (Color)DarkModeBackColor, textFormatFlags);
-            }
+            Color color = Enabled ? DarkColors.LightText : DarkColors.DisabledText;
+            TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
         }
         else
         {
