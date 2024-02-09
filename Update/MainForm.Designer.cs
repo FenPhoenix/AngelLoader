@@ -28,21 +28,16 @@ sealed partial class MainForm
             this.Message1Label.Size = new System.Drawing.Size(54, 13);
             this.Message1Label.TabIndex = 0;
             this.Message1Label.Text = "Copying...";
-            this.Message1Label.UseMnemonic = false;
             // 
             // CopyingProgressBar
             // 
-            this.CopyingProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.CopyingProgressBar.Location = new System.Drawing.Point(0, 0);
             this.CopyingProgressBar.Name = "CopyingProgressBar";
             this.CopyingProgressBar.Size = new System.Drawing.Size(504, 23);
-            this.CopyingProgressBar.TabIndex = 1;
+            this.CopyingProgressBar.TabIndex = 0;
             // 
             // CopyProgressBarOutlinePanel
             // 
-            this.CopyProgressBarOutlinePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.CopyProgressBarOutlinePanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.CopyProgressBarOutlinePanel.Controls.Add(this.CopyingProgressBar);
             this.CopyProgressBarOutlinePanel.Location = new System.Drawing.Point(31, 63);
@@ -58,7 +53,6 @@ sealed partial class MainForm
             this.Message2Label.Size = new System.Drawing.Size(54, 13);
             this.Message2Label.TabIndex = 0;
             this.Message2Label.Text = "Copying...";
-            this.Message2Label.UseMnemonic = false;
             // 
             // MainForm
             // 
