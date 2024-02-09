@@ -469,7 +469,6 @@ internal static class FMData
         w.WL("#endregion");
     }
 
-    // @LANGS: Carry as much data from the source enum as you can: type (uint) etc.
     private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
     {
         static void WriteEnumSingle(

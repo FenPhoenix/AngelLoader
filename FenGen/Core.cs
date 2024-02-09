@@ -75,6 +75,7 @@ internal sealed class LanguageSourceEnum
     internal readonly List<string> LangIndexEnumNamesLowercase = new();
     internal readonly List<string> LangCodes = new();
     internal readonly List<string> LangTranslatedNames = new();
+    internal string LangEnumType = "";
 }
 
 internal sealed class DesignerCSFile
