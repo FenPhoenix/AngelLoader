@@ -70,28 +70,17 @@ public partial class DarkTaskDialog : DarkFormBase
 
         CancelButton = _cancelButtonVisible ? Cancel_Button : _noButtonVisible ? NoButton : YesButton;
 
-        static void ThrowForDefaultButton(DialogResult button) => throw new ArgumentException("Default button not visible: " + button);
-
         NoButton.DialogResult = DialogResult.No;
         YesButton.DialogResult = DialogResult.Yes;
         Cancel_Button.DialogResult = DialogResult.Cancel;
 
-        switch (defaultButton)
+        AcceptButton = defaultButton switch
         {
-            case DialogResult.Yes:
-                if (!_yesButtonVisible) ThrowForDefaultButton(DialogResult.Yes);
-                AcceptButton = YesButton;
-                break;
-            case DialogResult.No:
-                if (!_noButtonVisible) ThrowForDefaultButton(DialogResult.No);
-                AcceptButton = NoButton;
-                break;
-            case DialogResult.Cancel:
-            default:
-                if (!_cancelButtonVisible) ThrowForDefaultButton(DialogResult.Cancel);
-                AcceptButton = Cancel_Button;
-                break;
-        }
+            DialogResult.Yes when (_yesButtonVisible) => YesButton,
+            DialogResult.No when (_noButtonVisible) => NoButton,
+            DialogResult.Cancel when (_cancelButtonVisible) => Cancel_Button,
+            _ => Cancel_Button
+        };
 
         #endregion
 

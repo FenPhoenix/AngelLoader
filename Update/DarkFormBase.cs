@@ -42,10 +42,7 @@ public class DarkFormBase : Form
 
     private protected void SetThemeBase(
         VisualTheme theme,
-        Func<Component, bool>? excludePredicate = null,
-        bool createControlHandles = false,
-        Func<Control, bool>? createHandlePredicate = null,
-        int capacity = -1)
+        Func<Component, bool>? excludePredicate = null)
     {
         if (Utils.WinVersionSupportsDarkMode())
         {
@@ -70,10 +67,7 @@ public class DarkFormBase : Form
             baseControl: this,
             controlColors: _controlColors,
             theme: theme,
-            excludePredicate: excludePredicate,
-            createControlHandles: createControlHandles,
-            createHandlePredicate: createHandlePredicate,
-            capacity: capacity);
+            excludePredicate: excludePredicate);
     }
 
     #endregion
