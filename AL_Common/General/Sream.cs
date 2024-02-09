@@ -122,5 +122,147 @@ public static partial class Common
         }
     }
 
+    #region Chainable StreamWriter methods
+
+    public static StreamWriter Append(this StreamWriter sw, string value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, char value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, int value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, uint value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, long value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, ulong value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, float value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, double value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, decimal value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, bool value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter Append(this StreamWriter sw, object? value)
+    {
+        sw.Write(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, string value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, char value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, int value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, uint value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, long value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, ulong value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, float value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, double value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, decimal value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, bool value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw, object? value)
+    {
+        sw.WriteLine(value);
+        return sw;
+    }
+
+    public static StreamWriter AppendLine(this StreamWriter sw)
+    {
+        sw.WriteLine();
+        return sw;
+    }
+
+    #endregion
+
     #endregion
 }

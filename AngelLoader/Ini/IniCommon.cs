@@ -718,7 +718,7 @@ internal static partial class Ini
         }
     }
 
-    private static void CommaCombineGameFlags(StringBuilder sb, Game games)
+    private static void CommaCombineGameFlags(StreamWriter sw, Game games)
     {
         bool notEmpty = false;
 
@@ -727,31 +727,31 @@ internal static partial class Ini
             Game game = GameIndexToGame((GameIndex)i);
             if (games.HasFlagFast(game))
             {
-                if (notEmpty) sb.Append(',');
-                sb.Append(SupportedGameNames[i]);
+                if (notEmpty) sw.Write(',');
+                sw.Write(SupportedGameNames[i]);
                 notEmpty = true;
             }
         }
 
-        sb.AppendLine();
+        sw.WriteLine();
     }
 
-    private static void CommaCombineFinishedStates(StringBuilder sb, FinishedState finished)
+    private static void CommaCombineFinishedStates(StreamWriter sw, FinishedState finished)
     {
         bool notEmpty = false;
 
         if (finished.HasFlagFast(FinishedState.Finished))
         {
-            sb.Append(nameof(FinishedState.Finished));
+            sw.Write(nameof(FinishedState.Finished));
             notEmpty = true;
         }
         if (finished.HasFlagFast(FinishedState.Unfinished))
         {
-            if (notEmpty) sb.Append(',');
-            sb.Append(nameof(FinishedState.Unfinished));
+            if (notEmpty) sw.Write(',');
+            sw.Write(nameof(FinishedState.Unfinished));
         }
 
-        sb.AppendLine();
+        sw.WriteLine();
     }
 
     private static string FilterDate(DateTime? dt) => dt == null
