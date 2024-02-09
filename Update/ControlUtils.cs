@@ -9,6 +9,11 @@ namespace Update;
 
 internal static class ControlUtils
 {
+    internal static void CenterHOnForm(this Control control, Control parent)
+    {
+        control.Location = control.Location with { X = (parent.ClientSize.Width / 2) - (control.Width / 2) };
+    }
+
     internal sealed class ControlOriginalColors
     {
         internal readonly Color ForeColor;
