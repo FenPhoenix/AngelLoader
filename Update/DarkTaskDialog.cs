@@ -7,6 +7,11 @@ namespace Update;
 
 public partial class DarkTaskDialog : DarkFormBase
 {
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+    private readonly bool _yesButtonVisible;
+    private readonly bool _noButtonVisible;
+    private readonly bool _cancelButtonVisible;
+
     [PublicAPI]
     public DarkTaskDialog(
         string message,
@@ -38,14 +43,9 @@ public partial class DarkTaskDialog : DarkFormBase
 
         // Have to use these bools, because if we check Visible it will always be false even though we might
         // just have set it to true, because we haven't shown ourselves yet so everything counts as not visible
-        bool yesButtonVisible = yesText != null;
-        bool noButtonVisible = noText != null;
-        bool cancelButtonVisible = cancelText != null;
-
-        if (!yesButtonVisible && !noButtonVisible && !cancelButtonVisible)
-        {
-            throw new ArgumentException("At least one button must have text specified!");
-        }
+        _yesButtonVisible = yesText != null;
+        _noButtonVisible = noText != null;
+        _cancelButtonVisible = cancelText != null;
 
         int imageMarginX = icon != MessageBoxIcon.None ? 49 : 7;
 
@@ -58,9 +58,9 @@ public partial class DarkTaskDialog : DarkFormBase
         if (noText != null) NoButton.Text = noText;
         if (cancelText != null) Cancel_Button.Text = cancelText;
 
-        YesButton.Visible = yesButtonVisible;
-        NoButton.Visible = noButtonVisible;
-        Cancel_Button.Visible = cancelButtonVisible;
+        YesButton.Visible = _yesButtonVisible;
+        NoButton.Visible = _noButtonVisible;
+        Cancel_Button.Visible = _cancelButtonVisible;
 
         if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
@@ -68,7 +68,7 @@ public partial class DarkTaskDialog : DarkFormBase
 
         #region Set default buttons
 
-        CancelButton = cancelButtonVisible ? Cancel_Button : noButtonVisible ? NoButton : YesButton;
+        CancelButton = _cancelButtonVisible ? Cancel_Button : _noButtonVisible ? NoButton : YesButton;
 
         static void ThrowForDefaultButton(DialogResult button) => throw new ArgumentException("Default button not visible: " + button);
 
@@ -79,16 +79,16 @@ public partial class DarkTaskDialog : DarkFormBase
         switch (defaultButton)
         {
             case DialogResult.Yes:
-                if (!yesButtonVisible) ThrowForDefaultButton(DialogResult.Yes);
+                if (!_yesButtonVisible) ThrowForDefaultButton(DialogResult.Yes);
                 AcceptButton = YesButton;
                 break;
             case DialogResult.No:
-                if (!noButtonVisible) ThrowForDefaultButton(DialogResult.No);
+                if (!_noButtonVisible) ThrowForDefaultButton(DialogResult.No);
                 AcceptButton = NoButton;
                 break;
             case DialogResult.Cancel:
             default:
-                if (!cancelButtonVisible) ThrowForDefaultButton(DialogResult.Cancel);
+                if (!_cancelButtonVisible) ThrowForDefaultButton(DialogResult.Cancel);
                 AcceptButton = Cancel_Button;
                 break;
         }
@@ -146,6 +146,20 @@ public partial class DarkTaskDialog : DarkFormBase
         {
             Cancel_Button.Focus();
         }
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        if (e.CloseReason == CloseReason.UserClosing)
+        {
+            DialogResult =
+                _cancelButtonVisible
+                    ? DialogResult.Cancel
+                    : _noButtonVisible
+                        ? DialogResult.No
+                        : DialogResult.Yes;
+        }
+        base.OnFormClosing(e);
     }
 
     private void SetTheme(VisualTheme theme)

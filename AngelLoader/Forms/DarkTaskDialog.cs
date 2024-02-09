@@ -11,6 +11,11 @@ namespace AngelLoader.Forms;
 
 public partial class DarkTaskDialog : DarkFormBase
 {
+    // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+    private readonly bool _yesButtonVisible;
+    private readonly bool _noButtonVisible;
+    private readonly bool _cancelButtonVisible;
+
     #region Public fields
 
     [PublicAPI]
@@ -55,12 +60,12 @@ public partial class DarkTaskDialog : DarkFormBase
 
         // Have to use these bools, because if we check Visible it will always be false even though we might
         // just have set it to true, because we haven't shown ourselves yet so everything counts as not visible
-        bool yesButtonVisible = yesText != null;
-        bool noButtonVisible = noText != null;
-        bool cancelButtonVisible = cancelText != null;
+        _yesButtonVisible = yesText != null;
+        _noButtonVisible = noText != null;
+        _cancelButtonVisible = cancelText != null;
         bool checkBoxVisible = checkBoxText != null;
 
-        if (!yesButtonVisible && !noButtonVisible && !cancelButtonVisible)
+        if (!_yesButtonVisible && !_noButtonVisible && !_cancelButtonVisible)
         {
             ThrowHelper.ArgumentException("At least one button must have text specified!");
         }
@@ -72,7 +77,7 @@ public partial class DarkTaskDialog : DarkFormBase
         base.Text = title;
         MessageLabel.Text = message;
 
-        if (yesIsDangerous && yesButtonVisible)
+        if (yesIsDangerous && _yesButtonVisible)
         {
             YesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             YesButton.ImageAlign = ContentAlignment.MiddleCenter;
@@ -84,9 +89,9 @@ public partial class DarkTaskDialog : DarkFormBase
         if (cancelText != null) Cancel_Button.Text = cancelText;
         if (checkBoxText != null) VerificationCheckBox.Text = checkBoxText;
 
-        YesButton.Visible = yesButtonVisible;
-        NoButton.Visible = noButtonVisible;
-        Cancel_Button.Visible = cancelButtonVisible;
+        YesButton.Visible = _yesButtonVisible;
+        NoButton.Visible = _noButtonVisible;
+        Cancel_Button.Visible = _cancelButtonVisible;
         VerificationCheckBox.Visible = checkBoxVisible;
         VerificationCheckBox.Checked = checkBoxChecked == true;
 
@@ -96,7 +101,7 @@ public partial class DarkTaskDialog : DarkFormBase
 
         #region Set default buttons
 
-        CancelButton = cancelButtonVisible ? Cancel_Button : noButtonVisible ? NoButton : YesButton;
+        CancelButton = _cancelButtonVisible ? Cancel_Button : _noButtonVisible ? NoButton : YesButton;
 
         static void ThrowForDefaultButton(MBoxButton button) => ThrowHelper.ArgumentException("Default button not visible: " + button);
 
@@ -107,16 +112,16 @@ public partial class DarkTaskDialog : DarkFormBase
         switch (defaultButton)
         {
             case MBoxButton.Yes:
-                if (!yesButtonVisible) ThrowForDefaultButton(MBoxButton.Yes);
+                if (!_yesButtonVisible) ThrowForDefaultButton(MBoxButton.Yes);
                 AcceptButton = YesButton;
                 break;
             case MBoxButton.No:
-                if (!noButtonVisible) ThrowForDefaultButton(MBoxButton.No);
+                if (!_noButtonVisible) ThrowForDefaultButton(MBoxButton.No);
                 AcceptButton = NoButton;
                 break;
             case MBoxButton.Cancel:
             default:
-                if (!cancelButtonVisible) ThrowForDefaultButton(MBoxButton.Cancel);
+                if (!_cancelButtonVisible) ThrowForDefaultButton(MBoxButton.Cancel);
                 AcceptButton = Cancel_Button;
                 break;
         }
@@ -177,6 +182,20 @@ public partial class DarkTaskDialog : DarkFormBase
         {
             Cancel_Button.Focus();
         }
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        if (e.CloseReason == CloseReason.UserClosing)
+        {
+            DialogResult =
+                _cancelButtonVisible
+                    ? DialogResult.Cancel
+                    : _noButtonVisible
+                        ? DialogResult.No
+                        : DialogResult.Yes;
+        }
+        base.OnFormClosing(e);
     }
 
     public override void RespondToSystemThemeChange() => SetTheme(Config.VisualTheme);
