@@ -561,7 +561,7 @@ internal static class FMData
             {
                 if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
                 writer.WL("case " + enumName + "." + enumNames[gi] + ":");
-                writer.WL("sb.Append(\"" + fieldIniName + "\").Append('=').AppendLine(\"" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
+                writer.WL("sw.WriteLine(\"" + fieldIniName + "=" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
                 writer.WL("break;");
             }
             string enumDotEnumTypeZero = enumName + "." + enumNames[0];
@@ -576,11 +576,11 @@ internal static class FMData
         {
             "private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)",
             "{",
-            "var sb = new StringBuilder();",
+            "using var sw = new StreamWriter(fileName, false, Encoding.UTF8);",
             "",
-            "static void AddFMToSB(FanMission fm, StringBuilder sb)",
+            "static void AddFMToSW(FanMission fm, StreamWriter sw)",
             "{",
-            "sb.AppendLine(\"[FM]\");",
+            "sw.WriteLine(\"[FM]\");",
             ""
         });
 
@@ -602,16 +602,18 @@ internal static class FMData
             void swlSBAppend(string objField, string value, string suffix = "")
             {
                 if (!suffix.IsEmpty()) suffix = "." + suffix;
-                w.WL("sb.Append(\"" + objField + "\").Append('=');");
-                w.WL("sb.AppendLine(" + value + suffix + ");");
+                w.WL("sw.Write(\"" + objField + "=\");");
+                w.WL("sw.WriteLine(" + value + suffix + ");");
             }
 
             if (field.IsReadmeEncoding)
             {
                 w.WL("foreach (var item in " + objDotField + ")");
                 w.WL("{");
-                w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
-                w.WL("sb.Append(item.Key).Append(',').AppendLine(item.Value.ToString());");
+                w.WL("sw.Write(\"" + fieldIniName + "=\");");
+                w.WL("sw.Write(item.Key);");
+                w.WL("sw.Write(',');");
+                w.WL("sw.WriteLine(item.Value.ToString());");
                 w.WL("}");
             }
             else if (field.Type.StartsWithO("List<"))
@@ -619,11 +621,12 @@ internal static class FMData
                 bool listTypeIsString = field.Type == "List<string>";
                 if (field.ListType == ListType.MultipleLines)
                 {
-                    string foreachType = listTypeIsString ? "string" : "var";
-                    w.WL("foreach (" + foreachType + " s in " + objDotField + ")");
+                    // Avoid foreach enumerator allocations in case the type doesn't elide them on its own
+                    w.WL("var list = " + objDotField + ";");
+                    w.WL("for (int i = 0; i < list.Count; i++)");
                     w.WL("{");
-
-                    swlSBAppend(fieldIniName, "s", !listTypeIsString ? toString : "");
+                    w.WL("var item = list[i];");
+                    swlSBAppend(fieldIniName, "item", !listTypeIsString ? toString : "");
                     w.WL("}");
                 }
                 else
@@ -646,19 +649,20 @@ internal static class FMData
                 // For bools, there's only two possible values and if we're not writing it out if it's
                 // false, we know if we ARE writing it out then it can only be true, so just put a string
                 // literal in there and don't do ToString() (mem, perf)
-                w.WL("sb.Append(\"" + fieldIniName + "\").AppendLine(\"=True\");");
+                w.WL("sw.WriteLine(\"" + fieldIniName + "=True\");");
                 w.WL("}");
             }
             else if (field.Type == "bool?")
             {
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField, toString);
+                swlSBAppend(fieldIniName, objDotField + " == true ? bool.TrueString : bool.FalseString");
                 w.WL("}");
             }
             else if (_numericTypes.Contains(field.Type))
             {
                 string floatArgs = GetFloatArgsWrite(field.Type);
+                if (!floatArgs.IsEmpty()) floatArgs = ", provider: " + floatArgs;
                 if (field.NumericEmpty != null)
                 {
                     w.WL("if (" + objDotField + " != " + ((long)field.NumericEmpty).ToStrInv() + ")");
@@ -707,8 +711,8 @@ internal static class FMData
                 {
                     w.WL("if (" + objDotField + " != 0)");
                     w.WL("{");
-                    w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
-                    w.WL("CommaCombineLanguageFlags(sb, " + objDotField + ");");
+                    w.WL("sw.Write(\"" + fieldIniName + "=\");");
+                    w.WL("CommaCombineLanguageFlags(sw, " + objDotField + ");");
                     w.WL("}");
                 }
             }
@@ -736,47 +740,43 @@ internal static class FMData
                 w.WL("#if write_old_resources_style");
                 w.WL("if (" + obj + ".ResourcesScanned)");
                 w.WL("{");
-                w.WL("sb.AppendLine(\"HasMap=\" + FMHasResource(" + obj + ", CustomResources.Map).ToString());");
-                w.WL("sb.AppendLine(\"HasAutomap=\" + FMHasResource(" + obj + ", CustomResources.Automap).ToString());");
-                w.WL("sb.AppendLine(\"HasScripts=\" + FMHasResource(" + obj + ", CustomResources.Scripts).ToString());");
-                w.WL("sb.AppendLine(\"HasTextures=\" + FMHasResource(" + obj + ", CustomResources.Textures).ToString());");
-                w.WL("sb.AppendLine(\"HasSounds=\" + FMHasResource(" + obj + ", CustomResources.Sounds).ToString());");
-                w.WL("sb.AppendLine(\"HasObjects=\" + FMHasResource(" + obj + ", CustomResources.Objects).ToString());");
-                w.WL("sb.AppendLine(\"HasCreatures=\" + FMHasResource(" + obj + ", CustomResources.Creatures).ToString());");
-                w.WL("sb.AppendLine(\"HasMotions=\" + FMHasResource(" + obj + ", CustomResources.Motions).ToString());");
-                w.WL("sb.AppendLine(\"HasMovies=\" + FMHasResource(" + obj + ", CustomResources.Movies).ToString());");
-                w.WL("sb.AppendLine(\"HasSubtitles=\" + FMHasResource(" + obj + ", CustomResources.Subtitles).ToString());");
+                w.WL("sw.WriteLine(\"HasMap=\" + FMHasResource(" + obj + ", CustomResources.Map).ToString());");
+                w.WL("sw.WriteLine(\"HasAutomap=\" + FMHasResource(" + obj + ", CustomResources.Automap).ToString());");
+                w.WL("sw.WriteLine(\"HasScripts=\" + FMHasResource(" + obj + ", CustomResources.Scripts).ToString());");
+                w.WL("sw.WriteLine(\"HasTextures=\" + FMHasResource(" + obj + ", CustomResources.Textures).ToString());");
+                w.WL("sw.WriteLine(\"HasSounds=\" + FMHasResource(" + obj + ", CustomResources.Sounds).ToString());");
+                w.WL("sw.WriteLine(\"HasObjects=\" + FMHasResource(" + obj + ", CustomResources.Objects).ToString());");
+                w.WL("sw.WriteLine(\"HasCreatures=\" + FMHasResource(" + obj + ", CustomResources.Creatures).ToString());");
+                w.WL("sw.WriteLine(\"HasMotions=\" + FMHasResource(" + obj + ", CustomResources.Motions).ToString());");
+                w.WL("sw.WriteLine(\"HasMovies=\" + FMHasResource(" + obj + ", CustomResources.Movies).ToString());");
+                w.WL("sw.WriteLine(\"HasSubtitles=\" + FMHasResource(" + obj + ", CustomResources.Subtitles).ToString());");
                 w.WL("}");
                 w.WL("#else");
-                w.WL("sb.Append(\"" + fieldIniName + "\").Append('=');");
+                w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("if (" + obj + ".ResourcesScanned)");
                 w.WL("{");
-                w.WL("CommaCombineCustomResources(" + objDotField + ", sb);");
+                w.WL("CommaCombineCustomResources(" + objDotField + ", sw);");
                 w.WL("}");
                 w.WL("else");
                 w.WL("{");
-                w.WL("sb.AppendLine(\"NotScanned\");");
+                w.WL("sw.WriteLine(\"NotScanned\");");
                 w.WL("}");
                 w.WL("#endif");
             }
         }
 
-        // AddFMToSB
+        // AddFMToSW
         w.WL("}");
         w.WL();
         w.WL("foreach (FanMission fm in fmDataList)");
         w.WL("{");
-        w.WL("AddFMToSB(fm, sb);");
+        w.WL("AddFMToSW(fm, sw);");
         w.WL("}");
         w.WL();
         w.WL("foreach (FanMission fm in fmDataListTDM)");
         w.WL("{");
-        w.WL("AddFMToSB(fm, sb);");
+        w.WL("AddFMToSW(fm, sw);");
         w.WL("}");
-
-        w.WL();
-        w.WL("using var sw = new StreamWriter(fileName, false, Encoding.UTF8);");
-        w.WL("sw.Write(sb.ToString());");
 
         // method WriteFMDataIni
         w.WL("}");
