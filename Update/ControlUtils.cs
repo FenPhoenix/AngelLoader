@@ -23,9 +23,7 @@ internal static class ControlUtils
 
     private static void FillControlColorList(
     Control control,
-    List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
-    bool createControlHandles,
-    Func<Control, bool>? createHandlePredicate = null)
+    List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors)
     {
         if (controlColors != null)
         {
@@ -35,42 +33,22 @@ internal static class ControlUtils
             controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
         }
 
-        if (createControlHandles &&
-            createHandlePredicate?.Invoke(control) != false &&
-            !control.IsHandleCreated)
-        {
-            _ = control.Handle;
-        }
-
         Control.ControlCollection controls = control.Controls;
         int count = controls.Count;
         for (int i = 0; i < count; i++)
         {
             FillControlColorList(
                 control: controls[i],
-                controlColors: controlColors,
-                createControlHandles: createControlHandles,
-                createHandlePredicate: createHandlePredicate
+                controlColors: controlColors
             );
         }
-    }
-
-    internal static void CreateAllControlsHandles(Control control)
-    {
-        FillControlColorList(
-            control: control,
-            controlColors: null,
-            createControlHandles: true);
     }
 
     internal static void SetTheme(
         Control baseControl,
         List<KeyValuePair<Control, ControlOriginalColors?>> controlColors,
         VisualTheme theme,
-        Func<Component, bool>? excludePredicate = null,
-        bool createControlHandles = false,
-        Func<Control, bool>? createHandlePredicate = null,
-        int capacity = -1)
+        Func<Component, bool>? excludePredicate = null)
     {
         bool darkMode = theme == VisualTheme.Dark;
 
@@ -78,12 +56,9 @@ internal static class ControlUtils
         // Remember to handle this if new controls are added that this applies to.
         if (controlColors.Count == 0)
         {
-            if (capacity >= 0) controlColors.Capacity = capacity;
             FillControlColorList(
                 control: baseControl,
-                controlColors: (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors,
-                createControlHandles: createControlHandles,
-                createHandlePredicate: createHandlePredicate);
+                controlColors: (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors);
         }
 
         foreach (var item in controlColors)

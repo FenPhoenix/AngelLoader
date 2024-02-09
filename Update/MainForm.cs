@@ -100,12 +100,11 @@ public sealed partial class MainForm : DarkFormBase
     {
         if (theme != VisualTheme.Dark)
         {
-            ControlUtils.CreateAllControlsHandles(control: this);
             CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.None;
         }
         else
         {
-            SetThemeBase(theme: theme, createControlHandles: true);
+            SetThemeBase(theme: theme);
             CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.FixedSingle;
         }
     }
