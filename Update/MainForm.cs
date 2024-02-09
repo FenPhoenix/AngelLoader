@@ -2,6 +2,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -25,9 +26,12 @@ public sealed partial class MainForm : DarkFormBase
         Message1Label.Text = "";
         Message2Label.Text = "";
 
-        SetTheme(Data.VisualTheme);
+        if (Data.VisualTheme != VisualTheme.Classic)
+        {
+            SetThemeBase(Data.VisualTheme);
+        }
 
-        CopyProgressBarOutlinePanel.CenterHOnForm(this);
+        CopyProgressBar.CenterHOnForm(this);
     }
 
     protected override async void OnShown(EventArgs e)
@@ -104,18 +108,20 @@ public sealed partial class MainForm : DarkFormBase
         Message2Label.CenterHOnForm(this);
     });
 
-    public void SetProgress(int percent) => Invoke(() => CopyingProgressBar.Value = percent);
+    public void SetProgress(int percent) => Invoke(() => CopyProgressBar.Value = percent);
 
-    private void SetTheme(VisualTheme theme)
+    protected override void OnPaint(PaintEventArgs e)
     {
-        if (theme != VisualTheme.Dark)
+        base.OnPaint(e);
+
+        if (Data.VisualTheme == VisualTheme.Dark)
         {
-            CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.None;
-        }
-        else
-        {
-            SetThemeBase(theme: theme);
-            CopyProgressBarOutlinePanel.BorderStyle = BorderStyle.FixedSingle;
+            Rectangle rect = new(
+                CopyProgressBar.Location.X - 1,
+                CopyProgressBar.Location.Y - 1,
+                CopyProgressBar.Width + 1,
+                CopyProgressBar.Height + 1);
+            e.Graphics.DrawRectangle(DarkColors.GreySelectionPen, rect);
         }
     }
 }
