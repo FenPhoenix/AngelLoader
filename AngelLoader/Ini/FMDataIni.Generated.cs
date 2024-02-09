@@ -411,7 +411,7 @@ internal static partial class Ini
 
         Span<char> numberSpan = stackalloc char[20];
 
-        static void AddFMToSB(FanMission fm, StreamWriter sw, Span<char> numberSpan)
+        static void AddFMToSW(FanMission fm, StreamWriter sw, Span<char> numberSpan)
         {
             sw.WriteLine("[FM]");
 
@@ -683,12 +683,12 @@ internal static partial class Ini
 
         foreach (FanMission fm in fmDataList)
         {
-            AddFMToSB(fm, sw, numberSpan);
+            AddFMToSW(fm, sw, numberSpan);
         }
 
         foreach (FanMission fm in fmDataListTDM)
         {
-            AddFMToSB(fm, sw, numberSpan);
+            AddFMToSW(fm, sw, numberSpan);
         }
     }
 

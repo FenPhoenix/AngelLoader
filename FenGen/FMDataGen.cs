@@ -506,7 +506,7 @@ internal static class FMData
             "",
             "Span<char> numberSpan = stackalloc char[20];",
             "",
-            "static void AddFMToSB(FanMission fm, StreamWriter sw, Span<char> numberSpan)",
+            "static void AddFMToSW(FanMission fm, StreamWriter sw, Span<char> numberSpan)",
             "{",
             "sw.WriteLine(\"[FM]\");",
             ""
@@ -712,17 +712,17 @@ internal static class FMData
             }
         }
 
-        // AddFMToSB
+        // AddFMToSW
         w.WL("}");
         w.WL();
         w.WL("foreach (FanMission fm in fmDataList)");
         w.WL("{");
-        w.WL("AddFMToSB(fm, sw, numberSpan);");
+        w.WL("AddFMToSW(fm, sw, numberSpan);");
         w.WL("}");
         w.WL();
         w.WL("foreach (FanMission fm in fmDataListTDM)");
         w.WL("{");
-        w.WL("AddFMToSB(fm, sw, numberSpan);");
+        w.WL("AddFMToSW(fm, sw, numberSpan);");
         w.WL("}");
 
         // method WriteFMDataIni
