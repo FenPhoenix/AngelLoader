@@ -13,7 +13,7 @@ public sealed class RarReaderEntry : RarEntry
         IsSolid = solid;
     }
 
-    internal RarFilePart Part { get; }
+    private readonly RarFilePart Part;
 
     internal override IEnumerable<FilePart> Parts => Part.AsEnumerable<FilePart>();
 

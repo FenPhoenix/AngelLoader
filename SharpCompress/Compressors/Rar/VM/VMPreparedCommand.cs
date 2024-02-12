@@ -8,9 +8,9 @@ internal sealed class VMPreparedCommand
         Op2 = new VMPreparedOperand();
     }
 
-    internal VMCommands OpCode { get; set; }
-    internal bool IsByteMode { get; set; }
-    internal VMPreparedOperand Op1 { get; }
+    internal VMCommands OpCode;
+    internal bool IsByteMode;
+    internal readonly VMPreparedOperand Op1;
 
-    internal VMPreparedOperand Op2 { get; }
+    internal readonly VMPreparedOperand Op2;
 }

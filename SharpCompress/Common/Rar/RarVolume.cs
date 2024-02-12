@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Common.Rar;
 
@@ -14,70 +13,68 @@ namespace SharpCompress.Common.Rar;
 public abstract class RarVolume : Volume
 {
     private readonly RarHeaderFactory _headerFactory;
-    internal int _maxCompressionAlgorithm;
+    private int _maxCompressionAlgorithm;
 
-    internal RarVolume(StreamingMode mode, Stream stream, ReaderOptions options, int index = 0)
-        : base(stream, options, index) => _headerFactory = new RarHeaderFactory(mode, options);
+    internal RarVolume(StreamingMode mode, Stream stream, int index = 0)
+        : base(stream) => _headerFactory = new RarHeaderFactory(mode);
 
 #nullable disable
-    internal ArchiveHeader ArchiveHeader { get; private set; }
+    private ArchiveHeader ArchiveHeader;
 
 #nullable enable
 
-    internal StreamingMode Mode => _headerFactory.StreamingMode;
+    private StreamingMode Mode => _headerFactory.StreamingMode;
 
     internal abstract IEnumerable<RarFilePart> ReadFileParts();
 
-    internal abstract RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader);
+    internal abstract RarFilePart CreateFilePart(FileHeader fileHeader);
 
     internal IEnumerable<RarFilePart> GetVolumeFileParts()
     {
-        MarkHeader? lastMarkHeader = null;
         foreach (var header in _headerFactory.ReadHeaders(Stream))
         {
             switch (header.HeaderType)
             {
                 case HeaderType.Mark:
 
-                    {
-                        lastMarkHeader = (MarkHeader)header;
-                    }
-                    break;
+                {
+                }
+                break;
                 case HeaderType.Archive:
 
-                    {
-                        ArchiveHeader = (ArchiveHeader)header;
-                    }
-                    break;
+                {
+                    ArchiveHeader = (ArchiveHeader)header;
+                }
+                break;
                 case HeaderType.File:
 
+                {
+                    var fh = (FileHeader)header;
+                    if (_maxCompressionAlgorithm < fh.CompressionAlgorithm)
                     {
-                        var fh = (FileHeader)header;
-                        if (_maxCompressionAlgorithm < fh.CompressionAlgorithm)
-                        {
-                            _maxCompressionAlgorithm = fh.CompressionAlgorithm;
-                        }
-
-                        yield return CreateFilePart(lastMarkHeader!, fh);
+                        _maxCompressionAlgorithm = fh.CompressionAlgorithm;
                     }
-                    break;
+
+                    yield return CreateFilePart(fh);
+                }
+                break;
                 case HeaderType.Service:
 
+                {
+                    var fh = (FileHeader)header;
+                    if (fh.FileName == "CMT")
                     {
-                        var fh = (FileHeader)header;
-                        if (fh.FileName == "CMT")
-                        {
-                            var part = CreateFilePart(lastMarkHeader!, fh);
-                            var buffer = new byte[fh.CompressedSize];
-                            part.GetCompressedStream().Read(buffer, 0, buffer.Length);
-                            Comment = System.Text.Encoding.UTF8.GetString(
-                                buffer,
-                                0,
-                                buffer.Length - 1
-                            );
-                        }
+                        var part = CreateFilePart(fh);
+                        var buffer = new byte[fh.CompressedSize];
+                        part.GetCompressedStream().Read(buffer, 0, buffer.Length);
+                        System.Text.Encoding.UTF8.GetString(
+                            buffer,
+                            0,
+                            buffer.Length - 1
+                        );
                     }
-                    break;
+                }
+                break;
             }
         }
     }
@@ -123,6 +120,4 @@ public abstract class RarVolume : Volume
             return ArchiveHeader.IsSolid;
         }
     }
-
-    public string? Comment { get; internal set; }
 }

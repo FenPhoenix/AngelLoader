@@ -17,17 +17,14 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    internal AbstractReader(ReaderOptions options)
+    internal AbstractReader()
     {
-        Options = options;
     }
-
-    internal ReaderOptions Options { get; }
 
     /// <summary>
     /// Current volume that the current entry resides in
     /// </summary>
-    public abstract TVolume Volume { get; }
+    protected abstract TVolume Volume { get; }
 
     /// <summary>
     /// Current file entry
@@ -44,20 +41,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     #endregion
 
-    public bool Cancelled { get; private set; }
-
-    /// <summary>
-    /// Indicates that the remaining entries are not required.
-    /// On dispose of an EntryStream, the stream will not skip to the end of the entry.
-    /// An attempt to move to the next entry will throw an exception, as the compressed stream is not positioned at an entry boundary.
-    /// </summary>
-    public void Cancel()
-    {
-        if (!completed)
-        {
-            Cancelled = true;
-        }
-    }
+    public bool Cancelled { get; }
 
     public bool MoveToNextEntry()
     {
@@ -86,7 +70,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         return false;
     }
 
-    protected bool LoadStreamForReading(Stream stream)
+    private bool LoadStreamForReading(Stream stream)
     {
         entriesForCurrentReadStream?.Dispose();
         if ((stream is null) || (!stream.CanRead))
@@ -103,7 +87,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     protected virtual Stream RequestInitialStream() => Volume.Stream;
 
-    internal bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
+    private bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
 
     protected abstract IEnumerable<TEntry> GetEntries(Stream stream);
 
@@ -130,7 +114,6 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
             {
                 var bytesToAdvance = Entry.CompressedSize;
                 rawStream.Skip(bytesToAdvance);
-                part.Skipped = true;
                 return;
             }
         }
@@ -161,10 +144,10 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         wroteCurrentEntry = true;
     }
 
-    internal void Write(Stream writeStream)
+    private void Write(Stream writeStream)
     {
         using Stream s = OpenEntryStream();
-        s.TransferTo(writeStream, Entry);
+        s.TransferTo(writeStream);
     }
 
     public EntryStream OpenEntryStream()

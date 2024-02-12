@@ -13,33 +13,33 @@ namespace SharpCompress.Readers.Rar;
 public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
 {
     private RarVolume? volume;
-    internal Lazy<IRarUnpack> UnpackV2017 { get; } =
-        new Lazy<IRarUnpack>(() => new Compressors.Rar.UnpackV2017.Unpack());
-    internal Lazy<IRarUnpack> UnpackV1 { get; } =
-        new Lazy<IRarUnpack>(() => new Compressors.Rar.UnpackV1.Unpack());
 
-    internal RarReader(ReaderOptions options)
-        : base(options) { }
+    private readonly Lazy<IRarUnpack> UnpackV2017 =
+        new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV2017.Unpack());
 
-    internal abstract void ValidateArchive(RarVolume archive);
+    private readonly Lazy<IRarUnpack> UnpackV1 =
+        new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV1.Unpack());
 
-    public override RarVolume Volume => volume!;
+    internal RarReader() { }
+
+    protected abstract void ValidateArchive(RarVolume archive);
+
+    protected override RarVolume Volume => volume!;
 
     /// <summary>
     /// Opens a RarReader for Non-seeking usage with a single volume
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="options"></param>
     /// <returns></returns>
-    public static RarReader Open(Stream stream, ReaderOptions? options = null)
+    public static RarReader Open(Stream stream)
     {
         stream.CheckNotNull(nameof(stream));
-        return new SingleVolumeRarReader(stream, options ?? new ReaderOptions());
+        return new SingleVolumeRarReader(stream);
     }
 
     protected override IEnumerable<RarReaderEntry> GetEntries(Stream stream)
     {
-        volume = new RarReaderVolume(stream, Options);
+        volume = new RarReaderVolume(stream);
         foreach (var fp in volume.ReadFileParts())
         {
             ValidateArchive(volume);
@@ -47,7 +47,7 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
         }
     }
 
-    protected IEnumerable<FilePart> CreateFilePartEnumerableForCurrentEntry() =>
+    private IEnumerable<FilePart> CreateFilePartEnumerableForCurrentEntry() =>
         Entry.Parts;
 
     protected override EntryStream GetEntryStream()

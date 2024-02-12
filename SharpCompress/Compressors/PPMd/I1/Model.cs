@@ -13,9 +13,9 @@ namespace SharpCompress.Compressors.PPMd.I1;
 /// </summary>
 internal sealed partial class Model
 {
-    public const uint SIGNATURE = 0x84acaf8fU;
-    public const char VARIANT = 'I';
-    public const int MAXIMUM_ORDER = 16; // maximum allowed model order
+    private const uint SIGNATURE = 0x84acaf8fU;
+    //public const char VARIANT = 'I';
+    private const int MAXIMUM_ORDER = 16; // maximum allowed model order
 
     private const byte UPPER_FREQUENCY = 5;
     private const byte INTERVAL_BIT_COUNT = 7;

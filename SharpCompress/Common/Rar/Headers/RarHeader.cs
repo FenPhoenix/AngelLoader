@@ -13,13 +13,12 @@ internal class RarHeader : IRarHeader
 
     internal static RarHeader? TryReadBase(
         RarCrcBinaryReader reader,
-        bool isRar5,
-        ArchiveEncoding archiveEncoding
+        bool isRar5
     )
     {
         try
         {
-            return new RarHeader(reader, isRar5, archiveEncoding);
+            return new RarHeader(reader, isRar5);
         }
         catch (EndOfStreamException)
         {
@@ -27,11 +26,10 @@ internal class RarHeader : IRarHeader
         }
     }
 
-    private RarHeader(RarCrcBinaryReader reader, bool isRar5, ArchiveEncoding archiveEncoding)
+    private RarHeader(RarCrcBinaryReader reader, bool isRar5)
     {
         _headerType = HeaderType.Null;
         _isRar5 = isRar5;
-        ArchiveEncoding = archiveEncoding;
         if (IsRar5)
         {
             HeaderCrc = reader.ReadUInt32();
@@ -75,7 +73,6 @@ internal class RarHeader : IRarHeader
         HeaderSize = header.HeaderSize;
         ExtraSize = header.ExtraSize;
         AdditionalDataSize = header.AdditionalDataSize;
-        ArchiveEncoding = header.ArchiveEncoding;
         ReadFinish(reader);
 
         var n = RemainingHeaderBytes(reader);
@@ -106,25 +103,23 @@ internal class RarHeader : IRarHeader
 
     protected bool IsRar5 => _isRar5;
 
-    protected uint HeaderCrc { get; }
+    private readonly uint HeaderCrc;
 
-    internal byte HeaderCode { get; }
+    internal readonly byte HeaderCode;
 
-    protected ushort HeaderFlags { get; }
+    protected readonly ushort HeaderFlags;
 
     protected bool HasHeaderFlag(ushort flag) => (HeaderFlags & flag) == flag;
 
-    protected int HeaderSize { get; }
-
-    internal ArchiveEncoding ArchiveEncoding { get; }
+    protected readonly int HeaderSize;
 
     /// <summary>
     /// Extra header size.
     /// </summary>
-    protected uint ExtraSize { get; }
+    protected readonly uint ExtraSize;
 
     /// <summary>
     /// Size of additional data (eg file contents)
     /// </summary>
-    protected long AdditionalDataSize { get; }
+    protected readonly long AdditionalDataSize;
 }

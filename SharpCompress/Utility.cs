@@ -8,8 +8,6 @@ namespace SharpCompress;
 [CLSCompliant(false)]
 public static class Utility
 {
-    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) => new(items);
-
     public static void SetSize(this List<byte> list, int count)
     {
         if (count > list.Count)
@@ -43,17 +41,17 @@ public static class Utility
         long length
     )
     {
-        if (sourceIndex > int.MaxValue || sourceIndex < int.MinValue)
+        if (sourceIndex is > int.MaxValue or < int.MinValue)
         {
             throw new ArgumentOutOfRangeException(nameof(sourceIndex));
         }
 
-        if (destinationIndex > int.MaxValue || destinationIndex < int.MinValue)
+        if (destinationIndex is > int.MaxValue or < int.MinValue)
         {
             throw new ArgumentOutOfRangeException(nameof(destinationIndex));
         }
 
-        if (length > int.MaxValue || length < int.MinValue)
+        if (length is > int.MaxValue or < int.MinValue)
         {
             throw new ArgumentOutOfRangeException(nameof(length));
         }
@@ -100,16 +98,14 @@ public static class Utility
         var buffer = GetTransferByteArray();
         try
         {
-            var read = 0;
-            var readCount = 0;
             do
             {
-                readCount = buffer.Length;
+                int readCount = buffer.Length;
                 if (readCount > advanceAmount)
                 {
                     readCount = (int)advanceAmount;
                 }
-                read = source.Read(buffer, 0, readCount);
+                int read = source.Read(buffer, 0, readCount);
                 if (read <= 0)
                 {
                     break;
@@ -189,8 +185,7 @@ public static class Utility
 
     public static long TransferTo(
         this Stream source,
-        Stream destination,
-        Common.Entry entry
+        Stream destination
     )
     {
         var array = GetTransferByteArray();

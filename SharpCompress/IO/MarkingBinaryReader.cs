@@ -6,10 +6,10 @@ namespace SharpCompress.IO;
 
 internal class MarkingBinaryReader : BinaryReader
 {
-    public MarkingBinaryReader(Stream stream)
+    protected MarkingBinaryReader(Stream stream)
         : base(stream) { }
 
-    public long CurrentReadByteCount { get; protected set; }
+    public long CurrentReadByteCount { get; private set; }
 
     public void Mark() => CurrentReadByteCount = 0;
 

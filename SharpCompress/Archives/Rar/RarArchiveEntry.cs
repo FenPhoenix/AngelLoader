@@ -5,29 +5,23 @@ using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
-public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
+public sealed class RarArchiveEntry : RarEntry, IEntry
 {
     private readonly ICollection<RarFilePart> parts;
     private readonly RarArchive archive;
-    private readonly ReaderOptions readerOptions;
 
     internal RarArchiveEntry(
         RarArchive archive,
-        IEnumerable<RarFilePart> parts,
-        ReaderOptions readerOptions
+        IEnumerable<RarFilePart> parts
     )
     {
         this.parts = parts.ToList();
         this.archive = archive;
-        this.readerOptions = readerOptions;
         IsSolid = FileHeader.IsSolid;
     }
-
-    public IArchive Archive => archive;
 
     internal override IEnumerable<FilePart> Parts => parts;
 
@@ -81,7 +75,7 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 
     private void CheckIncomplete()
     {
-        if (!readerOptions.DisableCheckIncomplete && !IsComplete)
+        if (!IsComplete)
         {
             throw new IncompleteArchiveException(
                 "ArchiveEntry is incomplete and cannot perform this operation."

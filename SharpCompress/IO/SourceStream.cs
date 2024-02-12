@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress.Readers;
 
 namespace SharpCompress.IO;
 
@@ -15,21 +14,19 @@ public sealed class SourceStream : Stream
     private readonly Func<int, Stream?> _getStreamPart;
     private int _stream;
 
-    public SourceStream(FileInfo file, Func<int, FileInfo?> getPart, ReaderOptions options)
-        : this(null, null, file, getPart, options) { }
+    public SourceStream(FileInfo file, Func<int, FileInfo?> getPart)
+        : this(null, null, file, getPart) { }
 
-    public SourceStream(Stream stream, Func<int, Stream?> getPart, ReaderOptions options)
-        : this(stream, getPart, null, null, options) { }
+    public SourceStream(Stream stream, Func<int, Stream?> getPart)
+        : this(stream, getPart, null, null) { }
 
     private SourceStream(
         Stream? stream,
         Func<int, Stream?>? getStreamPart,
         FileInfo? file,
-        Func<int, FileInfo?>? getFilePart,
-        ReaderOptions options
+        Func<int, FileInfo?>? getFilePart
     )
     {
-        ReaderOptions = options;
         _files = new List<FileInfo>();
         _streams = new List<Stream>();
         IsFileMode = file != null;
@@ -39,7 +36,7 @@ public sealed class SourceStream : Stream
         {
             _streams.Add(stream!);
             _getStreamPart = getStreamPart!;
-            _getFilePart = _ => null!;
+            _getFilePart = static _ => null!;
             if (stream is FileStream fileStream)
             {
                 _files.Add(new FileInfo(fileStream.Name));
@@ -50,7 +47,7 @@ public sealed class SourceStream : Stream
             _files.Add(file!);
             _streams.Add(_files[0].OpenRead());
             _getFilePart = getFilePart!;
-            _getStreamPart = _ => null!;
+            _getStreamPart = static _ => null!;
         }
         _stream = 0;
         _prevSize = 0;
@@ -62,16 +59,15 @@ public sealed class SourceStream : Stream
         SetStream(0);
     }
 
-    public bool IsVolumes { get; set; }
+    public bool IsVolumes;
 
-    public ReaderOptions ReaderOptions { get; }
-    public bool IsFileMode { get; }
+    private readonly bool IsFileMode;
 
     public IEnumerable<Stream> Streams => _streams;
 
     private Stream Current => _streams[_stream];
 
-    public bool LoadStream(int index) //ensure all parts to id are loaded
+    private bool LoadStream(int index) //ensure all parts to id are loaded
     {
         while (_streams.Count <= index)
         {
@@ -106,7 +102,7 @@ public sealed class SourceStream : Stream
         return true;
     }
 
-    public bool SetStream(int idx) //allow caller to switch part in multipart
+    private bool SetStream(int idx) //allow caller to switch part in multipart
     {
         if (LoadStream(idx))
         {
@@ -122,7 +118,7 @@ public sealed class SourceStream : Stream
 
     public override bool CanWrite => false;
 
-    public override long Length => !IsVolumes ? _streams.Sum(a => a.Length) : Current.Length;
+    public override long Length => !IsVolumes ? _streams.Sum(static a => a.Length) : Current.Length;
 
     public override long Position
     {
@@ -215,7 +211,7 @@ public sealed class SourceStream : Stream
 
     public override void Close()
     {
-        if (IsFileMode || !ReaderOptions.LeaveStreamOpen) //close if file mode or options specify it
+        if (IsFileMode) //close if file mode or options specify it
         {
             foreach (var stream in _streams)
             {

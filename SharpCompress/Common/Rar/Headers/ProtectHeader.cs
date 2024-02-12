@@ -16,15 +16,11 @@ internal sealed class ProtectHeader : RarHeader
 
     protected override void ReadFinish(MarkingBinaryReader reader)
     {
-        Version = reader.ReadByte();
-        RecSectors = reader.ReadUInt16();
-        TotalBlocks = reader.ReadUInt32();
-        Mark = reader.ReadBytes(8);
+        reader.ReadByte();
+        reader.ReadUInt16();
+        reader.ReadUInt32();
+        reader.ReadBytes(8);
     }
 
     internal uint DataSize => checked((uint)AdditionalDataSize);
-    internal byte Version { get; private set; }
-    internal ushort RecSectors { get; private set; }
-    internal uint TotalBlocks { get; private set; }
-    internal byte[]? Mark { get; private set; }
 }

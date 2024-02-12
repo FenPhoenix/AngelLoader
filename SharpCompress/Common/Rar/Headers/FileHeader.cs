@@ -43,7 +43,7 @@ internal sealed class FileHeader : RarHeader
         // long.MaxValue causes the unpack code to finish when the input stream is exhausted
         UncompressedSize = HasFlag(FileFlagsV5.UNPACKED_SIZE_UNKNOWN) ? long.MaxValue : lvalue;
 
-        FileAttributes = reader.ReadRarVIntUInt32();
+        reader.ReadRarVIntUInt32();
 
         if (HasFlag(FileFlagsV5.HAS_MOD_TIME))
         {
@@ -74,7 +74,7 @@ internal sealed class FileHeader : RarHeader
         // Bits 11 - 14 (0x3c00) define the minimum size of dictionary size required to extract data. Value 0 means 128 KB, 1 - 256 KB, ..., 14 - 2048 MB, 15 - 4096 MB.
         WindowSize = IsDirectory ? 0 : ((size_t)0x20000) << ((compressionInfo >> 10) & 0xf);
 
-        HostOs = reader.ReadRarVIntByte();
+        reader.ReadRarVIntByte();
 
         var nameSize = reader.ReadRarVIntUInt16();
 
@@ -104,8 +104,6 @@ internal sealed class FileHeader : RarHeader
             throw new InvalidFormatException("rar5 header size / extra size inconsistency");
         }
 
-        isEncryptedRar5 = false;
-
         while (RemainingHeaderBytes(reader) > 0)
         {
             var size = reader.ReadRarVIntUInt16();
@@ -117,7 +115,6 @@ internal sealed class FileHeader : RarHeader
                 case 1: // file encryption
 
                     {
-                        isEncryptedRar5 = true;
 
                         //var version = reader.ReadRarVIntByte();
                         //if (version != 0) throw new InvalidFormatException("unknown encryption algorithm " + version);
@@ -139,11 +136,11 @@ internal sealed class FileHeader : RarHeader
                         }
                         if ((flags & 0x4) == 0x4)
                         {
-                            FileCreatedTime = ReadExtendedTimeV5(reader, isWindowsTime);
+                            ReadExtendedTimeV5(reader, isWindowsTime);
                         }
                         if ((flags & 0x8) == 0x8)
                         {
-                            FileLastAccessedTime = ReadExtendedTimeV5(reader, isWindowsTime);
+                            ReadExtendedTimeV5(reader, isWindowsTime);
                         }
                     }
                     break;
@@ -220,7 +217,7 @@ internal sealed class FileHeader : RarHeader
 
         var lowUncompressedSize = reader.ReadUInt32();
 
-        HostOs = reader.ReadByte();
+        reader.ReadByte();
 
         FileCrc = reader.ReadUInt32();
 
@@ -231,7 +228,7 @@ internal sealed class FileHeader : RarHeader
 
         var nameSize = reader.ReadInt16();
 
-        FileAttributes = reader.ReadUInt32();
+        reader.ReadUInt32();
 
         uint highCompressedSize = 0;
         uint highUncompressedkSize = 0;
@@ -297,16 +294,11 @@ internal sealed class FileHeader : RarHeader
                     }
                     if (datasize > 0)
                     {
-                        SubData = reader.ReadBytes(datasize);
+                        reader.ReadBytes(datasize);
                     }
 
                     if (NewSubHeaderType.SUBHEAD_TYPE_RR.Equals(fileNameBytes))
                     {
-                        RecoverySectors =
-                            SubData[8]
-                            + (SubData[9] << 8)
-                            + (SubData[10] << 16)
-                            + (SubData[11] << 24);
                     }
                 }
                 break;
@@ -329,9 +321,9 @@ internal sealed class FileHeader : RarHeader
                     reader,
                     0
                 );
-                FileCreatedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 1);
-                FileLastAccessedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 2);
-                FileArchivedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 3);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 1);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 2);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 3);
             }
         }
     }
@@ -391,7 +383,7 @@ internal sealed class FileHeader : RarHeader
 
     public override string ToString() => FileName;
 
-    private ushort Flags { get; set; }
+    private ushort Flags;
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;
 
@@ -433,15 +425,11 @@ internal sealed class FileHeader : RarHeader
 
     internal byte[] R4Salt { get; private set; }
 
-    private byte HostOs { get; set; }
-    internal uint FileAttributes { get; private set; }
     internal long CompressedSize { get; private set; }
     internal long UncompressedSize { get; private set; }
     internal string FileName { get; private set; }
-    internal byte[] SubData { get; private set; }
-    internal int RecoverySectors { get; private set; }
-    internal long DataStartPosition { get; set; }
-    public Stream PackedStream { get; set; }
+    internal long DataStartPosition;
+    public Stream PackedStream;
 
     public bool IsSplitBefore =>
         IsRar5 ? HasHeaderFlag(HeaderFlagsV5.SPLIT_BEFORE) : HasFlag(FileFlagsV4.SPLIT_BEFORE);
@@ -450,14 +438,5 @@ internal sealed class FileHeader : RarHeader
 
     public bool IsDirectory => HasFlag(IsRar5 ? FileFlagsV5.DIRECTORY : FileFlagsV4.DIRECTORY);
 
-    private bool isEncryptedRar5 = false;
-    public bool IsEncrypted => IsRar5 ? isEncryptedRar5 : HasFlag(FileFlagsV4.PASSWORD);
-
     internal DateTime? FileLastModifiedTime { get; private set; }
-
-    internal DateTime? FileCreatedTime { get; private set; }
-
-    internal DateTime? FileLastAccessedTime { get; private set; }
-
-    internal DateTime? FileArchivedTime { get; private set; }
 }

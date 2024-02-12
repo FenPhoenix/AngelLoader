@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using AL_Common;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Common.Rar.Headers;
 
@@ -10,19 +9,17 @@ public sealed class RarHeaderFactory
 {
     private bool _isRar5;
 
-    public RarHeaderFactory(StreamingMode mode, ReaderOptions options)
+    public RarHeaderFactory(StreamingMode mode)
     {
         StreamingMode = mode;
-        Options = options;
     }
 
-    public ReaderOptions Options { get; }
     public StreamingMode StreamingMode { get; }
     public bool IsEncrypted { get; private set; }
 
     public IEnumerable<IRarHeader> ReadHeaders(Stream stream)
     {
-        var markHeader = MarkHeader.Read(stream, Options.LeaveStreamOpen, Options.LookForHeader);
+        var markHeader = MarkHeader.Read(stream, lookForHeader: false);
         _isRar5 = markHeader.IsRar5;
         yield return markHeader;
 
@@ -53,7 +50,7 @@ public sealed class RarHeaderFactory
             );
         }
 
-        var header = RarHeader.TryReadBase(reader, _isRar5, Options.ArchiveEncoding);
+        var header = RarHeader.TryReadBase(reader, _isRar5);
         if (header is null)
         {
             return null;

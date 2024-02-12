@@ -64,12 +64,12 @@ internal partial class Unpack
     private List<UnpackFilter> Filters => filters;
 
     // TODO: make sure these aren't already somewhere else
-    public int BlockSize;
-    public int BlockBitSize;
-    public int BlockStart;
-    public bool LastBlockInFile;
+    private int BlockSize;
+    private int BlockBitSize;
+    private int BlockStart;
+    private bool LastBlockInFile;
 
-    public void Unpack5(bool Solid)
+    private void Unpack5(bool Solid)
     {
         FileExtracted = true;
 

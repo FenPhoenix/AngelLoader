@@ -22,5 +22,5 @@ internal abstract class FlagUtility
     /// <param name="bitField">Flagged variable</param>
     /// <param name="flag">Flag to test</param>
     /// <returns></returns>
-    public static bool HasFlag(long bitField, long flag) => ((bitField & flag) == flag);
+    private static bool HasFlag(long bitField, long flag) => (bitField & flag) == flag;
 }

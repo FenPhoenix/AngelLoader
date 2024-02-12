@@ -22,7 +22,7 @@ internal sealed partial class Model
         public uint _address;
         public readonly byte[] _memory;
         public static readonly PpmContext ZERO = new PpmContext(0, null);
-        public const int SIZE = 12;
+        private const int SIZE = 12;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PpmContext"/> structure.
@@ -36,7 +36,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the number statistics.
         /// </summary>
-        public byte NumberStatistics
+        public readonly byte NumberStatistics
         {
             get => _memory[_address];
             set => _memory[_address] = value;
@@ -45,7 +45,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the flags.
         /// </summary>
-        public byte Flags
+        public readonly byte Flags
         {
             get => _memory[_address + 1];
             set => _memory[_address + 1] = value;
@@ -54,7 +54,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the summary frequency.
         /// </summary>
-        public ushort SummaryFrequency
+        public readonly ushort SummaryFrequency
         {
             get => (ushort)(_memory[_address + 2] | (_memory[_address + 3] << 8));
             set
@@ -67,7 +67,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the statistics.
         /// </summary>
-        public PpmState Statistics
+        public readonly PpmState Statistics
         {
             get =>
                 new PpmState(
@@ -151,7 +151,7 @@ internal sealed partial class Model
         /// information can be obtained using the Frequency property on the PPM state provided by the
         ///context.FirstState property.
         /// </summary>
-        public byte FirstStateFrequency
+        public readonly byte FirstStateFrequency
         {
             get => _memory[_address + 3];
             set => _memory[_address + 3] = value;
@@ -267,140 +267,6 @@ internal sealed partial class Model
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode() => _address.GetHashCode();
-    }
-
-    private void EncodeBinarySymbol(int symbol, PpmContext context)
-    {
-        var state = context.FirstState;
-        int index1 = _probabilities[state.Frequency - 1];
-        var index2 =
-            _numberStatisticsToBinarySummaryIndex[context.Suffix.NumberStatistics]
-            + _previousSuccess
-            + context.Flags
-            + ((_runLength >> 26) & 0x20);
-
-        if (state.Symbol == symbol)
-        {
-            _foundState = state;
-            state.Frequency += (byte)((state.Frequency < 196) ? 1 : 0);
-            _coder._lowCount = 0;
-            _coder._highCount = _binarySummary[index1, index2];
-            _binarySummary[index1, index2] += (ushort)(
-                INTERVAL - Mean(_binarySummary[index1, index2], PERIOD_BIT_COUNT, 2)
-            );
-            _previousSuccess = 1;
-            _runLength++;
-        }
-        else
-        {
-            _coder._lowCount = _binarySummary[index1, index2];
-            _binarySummary[index1, index2] -= (ushort)Mean(
-                _binarySummary[index1, index2],
-                PERIOD_BIT_COUNT,
-                2
-            );
-            _coder._highCount = BINARY_SCALE;
-            _initialEscape = EXPONENTIAL_ESCAPES[_binarySummary[index1, index2] >> 10];
-            _characterMask[state.Symbol] = _escapeCount;
-            _previousSuccess = 0;
-            _numberMasked = 0;
-            _foundState = PpmState.ZERO;
-        }
-    }
-
-    private void EncodeSymbol1(int symbol, PpmContext context)
-    {
-        uint lowCount;
-        uint index = context.Statistics.Symbol;
-        var state = context.Statistics;
-        _coder._scale = context.SummaryFrequency;
-        if (index == symbol)
-        {
-            _coder._highCount = state.Frequency;
-            _previousSuccess = (byte)((2 * _coder._highCount >= _coder._scale) ? 1 : 0);
-            _foundState = state;
-            _foundState.Frequency += 4;
-            context.SummaryFrequency += 4;
-            _runLength += _previousSuccess;
-            if (state.Frequency > MAXIMUM_FREQUENCY)
-            {
-                Rescale(context);
-            }
-            _coder._lowCount = 0;
-            return;
-        }
-
-        lowCount = state.Frequency;
-        index = context.NumberStatistics;
-        _previousSuccess = 0;
-        while ((++state).Symbol != symbol)
-        {
-            lowCount += state.Frequency;
-            if (--index == 0)
-            {
-                _coder._lowCount = lowCount;
-                _characterMask[state.Symbol] = _escapeCount;
-                _numberMasked = context.NumberStatistics;
-                index = context.NumberStatistics;
-                _foundState = PpmState.ZERO;
-                do
-                {
-                    _characterMask[(--state).Symbol] = _escapeCount;
-                } while (--index != 0);
-                _coder._highCount = _coder._scale;
-                return;
-            }
-        }
-        _coder._highCount = (_coder._lowCount = lowCount) + state.Frequency;
-        Update1(state, context);
-    }
-
-    private void EncodeSymbol2(int symbol, PpmContext context)
-    {
-        var see2Context = MakeEscapeFrequency(context);
-        uint currentSymbol;
-        uint lowCount = 0;
-        var index = (uint)(context.NumberStatistics - _numberMasked);
-        var state = context.Statistics - 1;
-
-        do
-        {
-            do
-            {
-                currentSymbol = state[1].Symbol;
-                state++;
-            } while (_characterMask[currentSymbol] == _escapeCount);
-            _characterMask[currentSymbol] = _escapeCount;
-            if (currentSymbol == symbol)
-            {
-                goto SymbolFound;
-            }
-            lowCount += state.Frequency;
-        } while (--index != 0);
-
-        _coder._lowCount = lowCount;
-        _coder._scale += _coder._lowCount;
-        _coder._highCount = _coder._scale;
-        see2Context._summary += (ushort)_coder._scale;
-        _numberMasked = context.NumberStatistics;
-        return;
-
-        SymbolFound:
-        _coder._lowCount = lowCount;
-        lowCount += state.Frequency;
-        _coder._highCount = lowCount;
-        for (var p1 = state; --index != 0; )
-        {
-            do
-            {
-                currentSymbol = p1[1].Symbol;
-                p1++;
-            } while (_characterMask[currentSymbol] == _escapeCount);
-            lowCount += p1.Frequency;
-        }
-        _coder._scale += lowCount;
-        see2Context.Update();
-        Update2(state, context);
     }
 
     private void DecodeBinarySymbol(PpmContext context)
@@ -577,7 +443,7 @@ internal sealed partial class Model
 
     private See2Context MakeEscapeFrequency(PpmContext context)
     {
-        var numberStatistics = (uint)2 * context.NumberStatistics;
+        uint numberStatistics;
         See2Context see2Context;
 
         if (context.NumberStatistics != 0xff)

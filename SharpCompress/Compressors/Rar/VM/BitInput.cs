@@ -14,17 +14,13 @@ internal class BitInput
         get => inAddr;
         set => inAddr = value;
     }
-    public int InBit
-    {
-        get => inBit;
-        set => inBit = value;
-    }
+    public int InBit => inBit;
     public bool ExternalBuffer;
 
     /// <summary>  </summary>
     internal BitInput() => InBuf = new byte[MAX_SIZE];
 
-    internal byte[] InBuf { get; }
+    internal readonly byte[] InBuf;
 
     internal void InitBitInput()
     {

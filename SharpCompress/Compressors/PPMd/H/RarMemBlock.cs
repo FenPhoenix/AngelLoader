@@ -70,7 +70,7 @@ internal sealed class RarMemBlock : Pointer
 
     internal void SetNext(RarMemBlock next) => SetNext(next.Address);
 
-    internal void SetNext(int next)
+    private void SetNext(int next)
     {
         _next = next;
         if (Memory != null)
@@ -97,7 +97,7 @@ internal sealed class RarMemBlock : Pointer
         }
     }
 
-    internal int GetPrev()
+    private int GetPrev()
     {
         if (Memory != null)
         {
@@ -108,7 +108,7 @@ internal sealed class RarMemBlock : Pointer
 
     internal void SetPrev(RarMemBlock prev) => SetPrev(prev.Address);
 
-    internal void SetPrev(int prev)
+    private void SetPrev(int prev)
     {
         _prev = prev;
         if (Memory != null)

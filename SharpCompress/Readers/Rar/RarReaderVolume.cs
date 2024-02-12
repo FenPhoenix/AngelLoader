@@ -8,11 +8,11 @@ namespace SharpCompress.Readers.Rar;
 
 public sealed class RarReaderVolume : RarVolume
 {
-    internal RarReaderVolume(Stream stream, ReaderOptions options, int index = 0)
-        : base(StreamingMode.Streaming, stream, options, index) { }
+    internal RarReaderVolume(Stream stream, int index = 0)
+        : base(StreamingMode.Streaming, stream, index) { }
 
-    internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
-        new NonSeekableStreamFilePart(markHeader, fileHeader, Index);
+    internal override RarFilePart CreateFilePart(FileHeader fileHeader) =>
+        new NonSeekableStreamFilePart(fileHeader);
 
     internal override IEnumerable<RarFilePart> ReadFileParts() => GetVolumeFileParts();
 }

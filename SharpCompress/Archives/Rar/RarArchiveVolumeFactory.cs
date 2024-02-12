@@ -7,10 +7,9 @@ internal static class RarArchiveVolumeFactory
 {
     internal static FileInfo? GetFilePart(int index, FileInfo part1) //base the name on the first part
     {
-        FileInfo? item = null;
-
         //new style rar - ..part1 | /part01 | part001 ....
         Match m = Regex.Match(part1.Name, @"^(.*\.part)([0-9]+)(\.rar)$", RegexOptions.IgnoreCase);
+        FileInfo? item;
         if (m.Success)
         {
             item = new FileInfo(
@@ -49,7 +48,7 @@ internal static class RarArchiveVolumeFactory
             }
         }
 
-        if (item != null && item.Exists)
+        if (item is { Exists: true })
         {
             return item;
         }

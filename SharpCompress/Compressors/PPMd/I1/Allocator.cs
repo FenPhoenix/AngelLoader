@@ -28,13 +28,13 @@ internal sealed class Allocator
     public uint _allocatorSize;
     public uint _glueCount;
     public Pointer _baseUnit;
-    public Pointer _lowUnit;
-    public Pointer _highUnit;
+    private Pointer _lowUnit;
+    private Pointer _highUnit;
     public Pointer _text;
     public Pointer _heap;
     public readonly MemoryNode[] _memoryNodes;
 
-    public byte[] _memory;
+    private byte[] _memory;
 
     /// <summary>
     /// Initializes static read-only arrays used by the <see cref="Allocator"/>.

@@ -53,9 +53,9 @@ internal static class ArchiveFlagsV4
 {
     public const ushort VOLUME = 0x0001;
     public const ushort SOLID = 0x0008;
-    public const ushort NEW_NUMBERING = 0x0010;
+    //public const ushort NEW_NUMBERING = 0x0010;
     public const ushort PASSWORD = 0x0080;
-    public const ushort FIRST_VOLUME = 0x0100;
+    //public const ushort FIRST_VOLUME = 0x0100;
     public const ushort ENCRYPT_VER = 0x0200;
 }
 
@@ -70,7 +70,7 @@ internal static class FileFlagsV4
 {
     public const ushort SPLIT_BEFORE = 0x0001;
     public const ushort SPLIT_AFTER = 0x0002;
-    public const ushort PASSWORD = 0x0004;
+    //public const ushort PASSWORD = 0x0004;
     public const ushort SOLID = 0x0010;
 
     public const ushort WINDOW_MASK = 0x00e0;

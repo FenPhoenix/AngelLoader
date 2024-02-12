@@ -9,9 +9,9 @@ internal sealed class VMStandardFilterSignature
         Type = type;
     }
 
-    internal int Length { get; }
+    internal readonly int Length;
 
-    internal uint CRC { get; }
+    internal readonly uint CRC;
 
-    internal VMStandardFilters Type { get; }
+    internal readonly VMStandardFilters Type;
 }

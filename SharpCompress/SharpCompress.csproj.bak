@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<AssemblyTitle>SharpCompress - Pure C# Decompression/Compression</AssemblyTitle>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<VersionPrefix>0.34.1</VersionPrefix>
+		<AssemblyVersion>0.34.1</AssemblyVersion>
+		<FileVersion>0.34.1</FileVersion>
+		<Authors>Adam Hathcock</Authors>
+		<TargetFramework>$(SolutionTargetFramework)</TargetFramework>
+		<AssemblyName>SharpCompress</AssemblyName>
+		<Copyright>Copyright (c) 2014  Adam Hathcock</Copyright>
+		<Description>SharpCompress is a compression library for NET Standard 2.0/2.1/NET 6.0/NET 7.0 that can unrar, decompress 7zip, decompress xz, zip/unzip, tar/untar lzip/unlzip, bzip2/unbzip2 and gzip/ungzip with forward-only reading and file random access APIs. Write support for zip/tar/bzip2/gzip is implemented.</Description>
+		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<ItemGroup>
+	  <PackageReference Include="SpanExtensions.Net" Version="1.1.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
+	</ItemGroup>
+</Project>

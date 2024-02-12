@@ -2,8 +2,8 @@ namespace SharpCompress.Compressors.Rar.VM;
 
 internal sealed class VMPreparedOperand
 {
-    internal VMOpType Type { get; set; }
-    internal int Data { get; set; }
-    internal int Base { get; set; }
-    internal int Offset { get; set; }
+    internal VMOpType Type;
+    internal int Data;
+    internal int Base;
+    internal int Offset;
 }

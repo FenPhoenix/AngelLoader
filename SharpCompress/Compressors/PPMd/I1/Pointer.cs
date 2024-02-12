@@ -21,7 +21,7 @@ internal struct Pointer
     public uint _address;
     public readonly byte[] _memory;
     public static readonly Pointer ZERO = new Pointer(0, null);
-    public const int SIZE = 1;
+    //public const int SIZE = 1;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Pointer"/> structure.
