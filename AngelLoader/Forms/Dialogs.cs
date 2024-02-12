@@ -3,7 +3,6 @@ using System.Windows.Forms;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
