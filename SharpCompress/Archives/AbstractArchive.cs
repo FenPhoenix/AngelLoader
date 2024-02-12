@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SharpCompress.Common;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Archives;
 
 public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
-    where TEntry : IArchiveEntry
+    where TEntry : IEntry
     where TVolume : IDisposable
 {
     private readonly LazyReadOnlyCollection<TVolume> lazyVolumes;
@@ -38,18 +36,6 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
     /// </summary>
     protected ICollection<TVolume> Volumes => lazyVolumes;
 
-    /// <summary>
-    /// The total size of the files compressed in the archive.
-    /// </summary>
-    public virtual long TotalSize =>
-        Entries.Aggregate(0L, static (total, cf) => total + cf.CompressedSize);
-
-    /// <summary>
-    /// The total size of the files as uncompressed in the archive.
-    /// </summary>
-    public virtual long TotalUncompressedSize =>
-        Entries.Aggregate(0L, static (total, cf) => total + cf.Size);
-
     protected abstract IEnumerable<TVolume> LoadVolumes(SourceStream srcStream);
     protected abstract IEnumerable<TEntry> LoadEntries(IEnumerable<TVolume> volumes);
 
@@ -64,6 +50,7 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
         }
     }
 
+#if false
     private void EnsureEntriesLoaded()
     {
         lazyEntries.EnsureFullyLoaded();
@@ -87,12 +74,18 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
         return CreateReaderForSolidExtraction();
     }
 
-    protected abstract IReader CreateReaderForSolidExtraction();
+    /// <summary>
+    /// The total size of the files compressed in the archive.
+    /// </summary>
+    public long TotalSize =>
+        Entries.Aggregate(0L, static (total, cf) => total + cf.CompressedSize);
 
     /// <summary>
-    /// Archive is SOLID (this means the Archive saved bytes by reusing information which helps for archives containing many small files).
+    /// The total size of the files as uncompressed in the archive.
     /// </summary>
-    public virtual bool IsSolid => false;
+    public long TotalUncompressedSize =>
+        Entries.Aggregate(0L, static (total, cf) => total + cf.Size);
+
 
     /// <summary>
     /// The archive can find all the parts of the archive needed to fully extract the archive.  This forces the parsing of the entire archive.
@@ -105,4 +98,5 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
             return Entries.All(static x => x.IsComplete);
         }
     }
+#endif
 }

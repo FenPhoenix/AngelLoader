@@ -7,7 +7,7 @@ namespace SharpCompress.Readers.Rar;
 internal sealed class NonSeekableStreamFilePart : RarFilePart
 {
     internal NonSeekableStreamFilePart(FileHeader fh, int index = 0)
-        : base(fh, index) { }
+        : base(fh) { }
 
     internal override Stream GetCompressedStream() => FileHeader.PackedStream;
 

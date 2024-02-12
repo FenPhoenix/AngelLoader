@@ -6,8 +6,6 @@ using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
 using SharpCompress.IO;
-using SharpCompress.Readers;
-using SharpCompress.Readers.Rar;
 
 namespace SharpCompress.Archives.Rar;
 
@@ -26,7 +24,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         : base(srcStream) { }
 
     protected override IEnumerable<RarArchiveEntry> LoadEntries(IEnumerable<RarVolume> volumes) =>
-        RarArchiveEntryFactory.GetEntries(this, volumes, OptionsBase);
+        RarArchiveEntryFactory.GetEntries(this, volumes);
 
     protected override IEnumerable<RarVolume> LoadVolumes(SourceStream srcStream)
     {
@@ -49,14 +47,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         }
     }
 
-    protected override IReader CreateReaderForSolidExtraction()
-    {
-        var stream = Volumes.First().Stream;
-        stream.Position = 0;
-        return RarReader.Open(stream, OptionsBase);
-    }
-
-    public override bool IsSolid => Volumes.First().IsSolidArchive;
+    public bool IsSolid => Volumes.First().IsSolidArchive;
 
     #region Creation
     /// <summary>

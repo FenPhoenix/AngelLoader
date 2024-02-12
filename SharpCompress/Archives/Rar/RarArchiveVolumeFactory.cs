@@ -49,7 +49,7 @@ internal static class RarArchiveVolumeFactory
             }
         }
 
-        if (item != null && item.Exists)
+        if (item is { Exists: true })
         {
             return item;
         }

@@ -15,5 +15,5 @@ internal sealed class StreamRarArchiveVolume : RarVolume
     internal override IEnumerable<RarFilePart> ReadFileParts() => GetVolumeFileParts();
 
     internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
-        new SeekableFilePart(markHeader, fileHeader, Index, Stream);
+        new SeekableFilePart(fileHeader, Stream);
 }

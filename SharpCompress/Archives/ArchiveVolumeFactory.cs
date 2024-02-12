@@ -24,7 +24,7 @@ internal abstract class ArchiveVolumeFactory
             );
         }
 
-        if (item != null && item.Exists)
+        if (item is { Exists: true })
         {
             return item;
         }

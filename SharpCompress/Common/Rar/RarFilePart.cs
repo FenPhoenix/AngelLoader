@@ -8,7 +8,7 @@ namespace SharpCompress.Common.Rar;
 /// </summary>
 internal abstract class RarFilePart : FilePart
 {
-    internal RarFilePart(FileHeader fh, int index)
+    internal RarFilePart(FileHeader fh)
     {
         FileHeader = fh;
     }

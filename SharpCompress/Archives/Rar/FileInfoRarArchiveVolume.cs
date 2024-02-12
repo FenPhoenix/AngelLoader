@@ -16,7 +16,6 @@ internal abstract class FileInfoRarArchiveVolume : RarVolume
     internal FileInfoRarArchiveVolume(FileInfo fileInfo, OptionsBase options, int index = 0)
         : base(StreamingMode.Seekable, fileInfo.OpenRead(), FixOptions(options), index)
     {
-        FileInfo = fileInfo;
         FileParts = GetVolumeFileParts().ToArray().ToReadOnly();
     }
 
@@ -29,10 +28,8 @@ internal abstract class FileInfoRarArchiveVolume : RarVolume
 
     private ReadOnlyCollection<RarFilePart> FileParts { get; }
 
-    private FileInfo FileInfo { get; }
-
     internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
-        new FileInfoRarFilePart(this, markHeader, fileHeader, FileInfo);
+        new SeekableFilePart(fileHeader, Stream);
 
     internal override IEnumerable<RarFilePart> ReadFileParts() => FileParts;
 }

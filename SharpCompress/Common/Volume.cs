@@ -11,7 +11,6 @@ public abstract class Volume : IDisposable
     internal Volume(Stream stream, OptionsBase OptionsBase, int index = 0)
     {
         Index = index;
-        OptionsBase = OptionsBase;
         if (OptionsBase.LeaveStreamOpen)
         {
             stream = NonDisposingStream.Create(stream);
@@ -21,11 +20,13 @@ public abstract class Volume : IDisposable
 
     internal Stream Stream => _actualStream;
 
-    protected OptionsBase OptionsBase { get; }
-
     public int Index { get; }
 
+#if false
+    protected OptionsBase OptionsBase { get; }
+
     public string FileName => (_actualStream as FileStream)?.Name!;
+#endif
 
     protected void Dispose(bool disposing)
     {

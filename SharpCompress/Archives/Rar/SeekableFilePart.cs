@@ -9,13 +9,10 @@ internal class SeekableFilePart : RarFilePart
 {
     private readonly Stream stream;
 
-    internal SeekableFilePart(
-        MarkHeader mh,
-        FileHeader fh,
-        int index,
+    internal SeekableFilePart(FileHeader fh,
         Stream stream
     )
-        : base(fh, index)
+        : base(fh)
     {
         this.stream = stream;
     }
@@ -29,6 +26,4 @@ internal class SeekableFilePart : RarFilePart
         }
         return stream;
     }
-
-    internal virtual string FilePartName => "Unknown Stream - File Entry: " + FileHeader.FileName;
 }

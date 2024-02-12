@@ -8,21 +8,18 @@ using SharpCompress.Compressors.Rar;
 
 namespace SharpCompress.Archives.Rar;
 
-public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
+public sealed class RarArchiveEntry : RarEntry, IEntry
 {
     private readonly ICollection<RarFilePart> parts;
     private readonly RarArchive archive;
-    private readonly OptionsBase OptionsBase;
 
     internal RarArchiveEntry(
         RarArchive archive,
-        IEnumerable<RarFilePart> parts,
-        OptionsBase OptionsBase
+        IEnumerable<RarFilePart> parts
     )
     {
         this.parts = parts.ToList();
         this.archive = archive;
-        this.OptionsBase = OptionsBase;
         IsSolid = FileHeader.IsSolid;
     }
 
