@@ -53,7 +53,7 @@ public sealed class RarHeaderFactory
             );
         }
 
-        var header = RarHeader.TryReadBase(reader, _isRar5, Options.ArchiveEncoding);
+        var header = RarHeader.TryReadBase(reader, _isRar5);
         if (header is null)
         {
             return null;

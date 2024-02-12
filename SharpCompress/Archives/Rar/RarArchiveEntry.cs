@@ -27,8 +27,6 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
         IsSolid = FileHeader.IsSolid;
     }
 
-    public IArchive Archive => archive;
-
     internal override IEnumerable<FilePart> Parts => parts;
 
     internal override FileHeader FileHeader => parts.First().FileHeader;

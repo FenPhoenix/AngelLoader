@@ -1,5 +1,3 @@
-using System;
-
 namespace SharpCompress.Common;
 
 public sealed class MultiVolumeExtractionException : ExtractionException
@@ -7,6 +5,8 @@ public sealed class MultiVolumeExtractionException : ExtractionException
     public MultiVolumeExtractionException(string message)
         : base(message) { }
 
-    public MultiVolumeExtractionException(string message, Exception inner)
+#if false
+    public MultiVolumeExtractionException(string message, System.Exception inner)
         : base(message, inner) { }
+#endif
 }

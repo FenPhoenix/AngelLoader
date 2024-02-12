@@ -13,9 +13,9 @@ namespace SharpCompress.Archives.Rar;
 public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
 {
     internal Lazy<IRarUnpack> UnpackV2017 { get; } =
-        new Lazy<IRarUnpack>(() => new Compressors.Rar.UnpackV2017.Unpack());
+        new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV2017.Unpack());
     internal Lazy<IRarUnpack> UnpackV1 { get; } =
-        new Lazy<IRarUnpack>(() => new Compressors.Rar.UnpackV1.Unpack());
+        new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV1.Unpack());
 
     /// <summary>
     /// Constructor with a SourceStream able to handle FileInfo and Streams.
@@ -32,7 +32,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         SrcStream.LoadAllParts(); //request all streams
         var streams = SrcStream.Streams.ToArray();
         var idx = 0;
-        if (streams.Length > 1 && IsRarFile(streams[1], ReaderOptions)) //test part 2 - true = multipart not split
+        if (streams.Length > 1 && IsRarFile(streams[1])) //test part 2 - true = multipart not split
         {
             SrcStream.IsVolumes = true;
             streams[1].Position = 0;
@@ -44,7 +44,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         }
         else //split mode or single file
         {
-            return new StreamRarArchiveVolume(SrcStream, ReaderOptions, idx++).AsEnumerable();
+            return new StreamRarArchiveVolume(SrcStream, ReaderOptions, idx).AsEnumerable();
         }
     }
 
@@ -84,10 +84,10 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     public static RarArchive Open(Stream stream, ReaderOptions? options = null)
     {
         stream.CheckNotNull(nameof(stream));
-        return new RarArchive(new SourceStream(stream, i => null, options ?? new ReaderOptions()));
+        return new RarArchive(new SourceStream(stream, static _ => null, options ?? new ReaderOptions()));
     }
 
-    public static bool IsRarFile(Stream stream, ReaderOptions? options = null)
+    public static bool IsRarFile(Stream stream)
     {
         try
         {

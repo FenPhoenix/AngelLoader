@@ -130,7 +130,6 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
             {
                 var bytesToAdvance = Entry.CompressedSize;
                 rawStream.Skip(bytesToAdvance);
-                part.Skipped = true;
                 return;
             }
         }

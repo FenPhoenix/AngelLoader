@@ -15,7 +15,7 @@ internal class SeekableFilePart : RarFilePart
         int index,
         Stream stream
     )
-        : base(mh, fh, index)
+        : base(fh, index)
     {
         this.stream = stream;
     }
@@ -30,5 +30,5 @@ internal class SeekableFilePart : RarFilePart
         return stream;
     }
 
-    internal override string FilePartName => "Unknown Stream - File Entry: " + FileHeader.FileName;
+    internal virtual string FilePartName => "Unknown Stream - File Entry: " + FileHeader.FileName;
 }

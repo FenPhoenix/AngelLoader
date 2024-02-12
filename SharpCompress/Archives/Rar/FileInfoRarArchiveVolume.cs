@@ -11,7 +11,7 @@ namespace SharpCompress.Archives.Rar;
 /// <summary>
 /// A rar part based on a FileInfo object
 /// </summary>
-internal class FileInfoRarArchiveVolume : RarVolume
+internal abstract class FileInfoRarArchiveVolume : RarVolume
 {
     internal FileInfoRarArchiveVolume(FileInfo fileInfo, ReaderOptions options, int index = 0)
         : base(StreamingMode.Seekable, fileInfo.OpenRead(), FixOptions(options), index)
@@ -27,9 +27,9 @@ internal class FileInfoRarArchiveVolume : RarVolume
         return options;
     }
 
-    internal ReadOnlyCollection<RarFilePart> FileParts { get; }
+    private ReadOnlyCollection<RarFilePart> FileParts { get; }
 
-    internal FileInfo FileInfo { get; }
+    private FileInfo FileInfo { get; }
 
     internal override RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader) =>
         new FileInfoRarFilePart(this, markHeader, fileHeader, FileInfo);
