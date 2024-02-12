@@ -949,7 +949,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
                 OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
+                MainToolTip.SetToolTip(OtherPage.ConvertWAVsTo16BitOnInstallCheckBox, LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall_ToolTip);
                 OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
+                MainToolTip.SetToolTip(OtherPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall_ToolTip);
 
                 OtherPage.OldMantleForOldDarkFMsCheckBox.Text = LText.SettingsWindow.Other_UseOldMantlingForOldDarkFMs;
 

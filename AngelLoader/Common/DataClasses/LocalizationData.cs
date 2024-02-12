@@ -794,7 +794,9 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string Other_FMSettings = "FM settings";
         internal readonly string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
+        internal readonly string Other_ConvertWAVsTo16BitOnInstall_ToolTip = "Fixes static in certain .wav files when OpenAL audio is enabled.";
         internal readonly string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
+        internal readonly string Other_ConvertOGGsToWAVsOnInstall_ToolTip = "Fixes stuttering on some systems when loading .ogg files.";
         [FenGenBlankLine]
         internal readonly string Other_UseOldMantlingForOldDarkFMs = "Use old mantling for OldDark FMs";
         [FenGenBlankLine]
