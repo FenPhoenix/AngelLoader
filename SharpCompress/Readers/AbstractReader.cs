@@ -86,7 +86,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         return false;
     }
 
-    protected bool LoadStreamForReading(Stream stream)
+    private bool LoadStreamForReading(Stream stream)
     {
         entriesForCurrentReadStream?.Dispose();
         if ((stream is null) || (!stream.CanRead))
@@ -103,7 +103,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     protected virtual Stream RequestInitialStream() => Volume.Stream;
 
-    internal bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
+    private bool NextEntryForCurrentStream() => entriesForCurrentReadStream!.MoveNext();
 
     protected abstract IEnumerable<TEntry> GetEntries(Stream stream);
 
@@ -160,10 +160,10 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
         wroteCurrentEntry = true;
     }
 
-    internal void Write(Stream writeStream)
+    private void Write(Stream writeStream)
     {
         using Stream s = OpenEntryStream();
-        s.TransferTo(writeStream, Entry);
+        s.TransferTo(writeStream);
     }
 
     public EntryStream OpenEntryStream()
