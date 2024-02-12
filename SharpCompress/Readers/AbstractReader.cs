@@ -27,7 +27,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
     /// <summary>
     /// Current volume that the current entry resides in
     /// </summary>
-    public abstract TVolume Volume { get; }
+    protected abstract TVolume Volume { get; }
 
     /// <summary>
     /// Current file entry
@@ -44,20 +44,7 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
 
     #endregion
 
-    public bool Cancelled { get; private set; }
-
-    /// <summary>
-    /// Indicates that the remaining entries are not required.
-    /// On dispose of an EntryStream, the stream will not skip to the end of the entry.
-    /// An attempt to move to the next entry will throw an exception, as the compressed stream is not positioned at an entry boundary.
-    /// </summary>
-    public void Cancel()
-    {
-        if (!completed)
-        {
-            Cancelled = true;
-        }
-    }
+    public bool Cancelled { get; }
 
     public bool MoveToNextEntry()
     {

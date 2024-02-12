@@ -73,12 +73,10 @@ public sealed class LazyReadOnlyCollection<T> : ICollection<T>
     {
         if (!fullyLoaded)
         {
-            this.ForEach(static x => { });
+            this.ForEach(static _ => { });
             fullyLoaded = true;
         }
     }
-
-    internal IEnumerable<T> GetLoaded() => backing;
 
     #region ICollection<T> Members
 

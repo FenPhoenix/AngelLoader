@@ -1,6 +1,6 @@
 namespace SharpCompress.Common;
 
-public class OptionsBase
+public sealed class OptionsBase
 {
     /// <summary>
     /// SharpCompress will keep the supplied streams open.  Default is true.

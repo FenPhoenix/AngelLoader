@@ -39,7 +39,7 @@ public sealed class SourceStream : Stream
         {
             _streams.Add(stream!);
             _getStreamPart = getStreamPart!;
-            _getFilePart = _ => null!;
+            _getFilePart = static _ => null!;
             if (stream is FileStream fileStream)
             {
                 _files.Add(new FileInfo(fileStream.Name));
@@ -50,7 +50,7 @@ public sealed class SourceStream : Stream
             _files.Add(file!);
             _streams.Add(_files[0].OpenRead());
             _getFilePart = getFilePart!;
-            _getStreamPart = _ => null!;
+            _getStreamPart = static _ => null!;
         }
         _stream = 0;
         _prevSize = 0;
@@ -122,7 +122,7 @@ public sealed class SourceStream : Stream
 
     public override bool CanWrite => false;
 
-    public override long Length => !IsVolumes ? _streams.Sum(a => a.Length) : Current.Length;
+    public override long Length => !IsVolumes ? _streams.Sum(static a => a.Length) : Current.Length;
 
     public override long Position
     {

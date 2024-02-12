@@ -43,7 +43,7 @@ internal sealed class FileHeader : RarHeader
         // long.MaxValue causes the unpack code to finish when the input stream is exhausted
         UncompressedSize = HasFlag(FileFlagsV5.UNPACKED_SIZE_UNKNOWN) ? long.MaxValue : lvalue;
 
-        FileAttributes = reader.ReadRarVIntUInt32();
+        reader.ReadRarVIntUInt32();
 
         if (HasFlag(FileFlagsV5.HAS_MOD_TIME))
         {
@@ -74,7 +74,7 @@ internal sealed class FileHeader : RarHeader
         // Bits 11 - 14 (0x3c00) define the minimum size of dictionary size required to extract data. Value 0 means 128 KB, 1 - 256 KB, ..., 14 - 2048 MB, 15 - 4096 MB.
         WindowSize = IsDirectory ? 0 : ((size_t)0x20000) << ((compressionInfo >> 10) & 0xf);
 
-        HostOs = reader.ReadRarVIntByte();
+        reader.ReadRarVIntByte();
 
         var nameSize = reader.ReadRarVIntUInt16();
 
@@ -220,7 +220,7 @@ internal sealed class FileHeader : RarHeader
 
         var lowUncompressedSize = reader.ReadUInt32();
 
-        HostOs = reader.ReadByte();
+        reader.ReadByte();
 
         FileCrc = reader.ReadUInt32();
 
@@ -231,7 +231,7 @@ internal sealed class FileHeader : RarHeader
 
         var nameSize = reader.ReadInt16();
 
-        FileAttributes = reader.ReadUInt32();
+        reader.ReadUInt32();
 
         uint highCompressedSize = 0;
         uint highUncompressedkSize = 0;
@@ -302,11 +302,6 @@ internal sealed class FileHeader : RarHeader
 
                     if (NewSubHeaderType.SUBHEAD_TYPE_RR.Equals(fileNameBytes))
                     {
-                        RecoverySectors =
-                            SubData[8]
-                            + (SubData[9] << 8)
-                            + (SubData[10] << 16)
-                            + (SubData[11] << 24);
                     }
                 }
                 break;
@@ -433,13 +428,10 @@ internal sealed class FileHeader : RarHeader
 
     internal byte[] R4Salt { get; private set; }
 
-    private byte HostOs { get; set; }
-    internal uint FileAttributes { get; private set; }
     internal long CompressedSize { get; private set; }
     internal long UncompressedSize { get; private set; }
     internal string FileName { get; private set; }
     internal byte[] SubData { get; private set; }
-    internal int RecoverySectors { get; private set; }
     internal long DataStartPosition { get; set; }
     public Stream PackedStream { get; set; }
 
@@ -450,7 +442,7 @@ internal sealed class FileHeader : RarHeader
 
     public bool IsDirectory => HasFlag(IsRar5 ? FileFlagsV5.DIRECTORY : FileFlagsV4.DIRECTORY);
 
-    private bool isEncryptedRar5 = false;
+    private bool isEncryptedRar5;
     public bool IsEncrypted => IsRar5 ? isEncryptedRar5 : HasFlag(FileFlagsV4.PASSWORD);
 
     internal DateTime? FileLastModifiedTime { get; private set; }

@@ -18,11 +18,11 @@ internal sealed class EndArchiveHeader : RarHeader
             Flags = HeaderFlags;
             if (HasFlag(EndArchiveFlagsV4.DATA_CRC))
             {
-                ArchiveCrc = reader.ReadInt32();
+                reader.ReadInt32();
             }
             if (HasFlag(EndArchiveFlagsV4.VOLUME_NUMBER))
             {
-                VolumeNumber = reader.ReadInt16();
+                reader.ReadInt16();
             }
         }
     }
@@ -30,8 +30,4 @@ internal sealed class EndArchiveHeader : RarHeader
     private ushort Flags { get; set; }
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;
-
-    internal int? ArchiveCrc { get; private set; }
-
-    internal short? VolumeNumber { get; private set; }
 }
