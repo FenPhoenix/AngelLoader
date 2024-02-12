@@ -8,7 +8,7 @@ public abstract class Volume : IDisposable
 {
     private readonly Stream _actualStream;
 
-    internal Volume(Stream stream, int index = 0)
+    internal Volume(Stream stream)
     {
         _actualStream = NonDisposingStream.Create(stream);
     }
