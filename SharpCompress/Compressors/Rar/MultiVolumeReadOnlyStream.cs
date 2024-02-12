@@ -16,6 +16,9 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
     private IEnumerator<RarFilePart> filePartEnumerator;
     private Stream currentStream;
 
+    private long currentPartTotalReadBytes;
+    private long currentEntryTotalReadBytes;
+
     internal MultiVolumeReadOnlyStream(
         IEnumerable<RarFilePart> parts
     )
@@ -44,6 +47,8 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
         maxPosition = filePartEnumerator.Current.FileHeader.CompressedSize;
         currentPosition = 0;
         currentStream = filePartEnumerator.Current.GetCompressedStream();
+
+        currentPartTotalReadBytes = 0;
 
         CurrentCrc = filePartEnumerator.Current.FileHeader.FileCrc;
     }
@@ -97,6 +102,8 @@ internal sealed class MultiVolumeReadOnlyStream : Stream
                 break;
             }
         }
+        currentPartTotalReadBytes += totalRead;
+        currentEntryTotalReadBytes += totalRead;
         return totalRead;
     }
 

@@ -20,7 +20,17 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
         // to ease in porting Unpack50.cs
         Inp = this;
 
-    public long DestSize => destUnpSize;
+    public bool FileExtracted { get; private set; }
+
+    public long DestSize
+    {
+        get => destUnpSize;
+        set
+        {
+            destUnpSize = value;
+            FileExtracted = false;
+        }
+    }
 
     public bool Suspended
     {
@@ -209,6 +219,8 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             }
         }
 
+        FileExtracted = true;
+
         if (!suspended)
         {
             UnpInitData(solid);
@@ -250,6 +262,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                 }
                 if (suspended)
                 {
+                    FileExtracted = false;
                     return;
                 }
             }
@@ -647,6 +660,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
                         prgStack[I] = null;
                     }
                     writeStream.Write(FilteredData, 0, FilteredDataSize);
+                    unpSomeRead = true;
                     writtenFileSize += FilteredDataSize;
                     destUnpSize -= FilteredDataSize;
                     WrittenBorder = BlockEnd;
@@ -676,11 +690,13 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
     {
         if (endPtr != startPtr)
         {
+            unpSomeRead = true;
         }
         if (endPtr < startPtr)
         {
             UnpWriteData(window, startPtr, -startPtr & PackDef.MAXWINMASK);
             UnpWriteData(window, 0, endPtr);
+            unpAllBuf = true;
         }
         else
         {
@@ -1003,7 +1019,7 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             vmCode.Add((byte)(GetBits() >> 8));
             AddBits(8);
         }
-        return (AddVMCode(FirstByte, vmCode));
+        return (AddVMCode(FirstByte, vmCode, Length));
     }
 
     private bool ReadVMCodePPM()
@@ -1048,10 +1064,10 @@ internal sealed partial class Unpack : BitInput, IRarUnpack
             }
             vmCode.Add((byte)Ch); // VMCode[I]=Ch;
         }
-        return (AddVMCode(FirstByte, vmCode));
+        return (AddVMCode(FirstByte, vmCode, Length));
     }
 
-    private bool AddVMCode(int firstByte, List<byte> vmCode)
+    private bool AddVMCode(int firstByte, List<byte> vmCode, int length)
     {
         var Inp = new BitInput();
         Inp.InitBitInput();

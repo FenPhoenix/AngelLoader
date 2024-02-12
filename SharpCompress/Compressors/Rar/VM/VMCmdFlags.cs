@@ -1,6 +1,6 @@
 namespace SharpCompress.Compressors.Rar.VM;
 
-internal static class VMCmdFlags
+internal class VMCmdFlags
 {
     public const byte VMCF_OP0 = 0;
     public const byte VMCF_OP1 = 1;

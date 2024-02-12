@@ -5,6 +5,7 @@ namespace SharpCompress.Compressors.Rar.UnpackV1;
 internal sealed class UnpackFilter
 {
     public byte Type;
+    public byte Channels;
 
     internal UnpackFilter() => Program = new VMPreparedProgram();
 
@@ -20,5 +21,5 @@ internal sealed class UnpackFilter
     // in PrgStack array. Not defined for filters in Filters array.
     internal int ParentFilter;
 
-    internal readonly VMPreparedProgram Program;
+    internal VMPreparedProgram Program;
 }

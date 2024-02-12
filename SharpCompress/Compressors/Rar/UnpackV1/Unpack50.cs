@@ -64,13 +64,15 @@ internal partial class Unpack
     private List<UnpackFilter> Filters => filters;
 
     // TODO: make sure these aren't already somewhere else
-    private int BlockSize;
-    private int BlockBitSize;
-    private int BlockStart;
-    private bool LastBlockInFile;
+    public int BlockSize;
+    public int BlockBitSize;
+    public int BlockStart;
+    public bool LastBlockInFile;
 
-    private void Unpack5(bool Solid)
+    public void Unpack5(bool Solid)
     {
+        FileExtracted = true;
+
         if (!Suspended)
         {
             UnpInitData(Solid);
@@ -133,6 +135,7 @@ internal partial class Unpack
 
                 if (Suspended)
                 {
+                    FileExtracted = false;
                     return;
                 }
             }
@@ -299,6 +302,7 @@ internal partial class Unpack
         if (Filter.Type == (byte)FilterType.FILTER_DELTA)
         {
             //Filter.Channels=(Inp.fgetbits()>>11)+1;
+            Filter.Channels = (byte)((Inp.fgetbits() >> 11) + 1);
             Inp.faddbits(5);
         }
 

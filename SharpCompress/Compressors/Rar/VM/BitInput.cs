@@ -5,8 +5,8 @@ internal class BitInput
     /// <summary> the max size of the input</summary>
     internal const int MAX_SIZE = 0x8000;
 
-    protected int inAddr;
-    protected int inBit;
+    public int inAddr;
+    public int inBit;
 
     // TODO: rename var
     public int InAddr
@@ -14,7 +14,11 @@ internal class BitInput
         get => inAddr;
         set => inAddr = value;
     }
-    public int InBit => inBit;
+    public int InBit
+    {
+        get => inBit;
+        set => inBit = value;
+    }
     public bool ExternalBuffer;
 
     /// <summary>  </summary>

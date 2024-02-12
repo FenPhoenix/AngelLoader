@@ -103,6 +103,6 @@ internal partial class Unpack : IRarUnpack
         set => PPMEscChar = value;
     }
 
-    private static byte[] EnsureCapacity(byte[] array, int length) =>
+    public static byte[] EnsureCapacity(byte[] array, int length) =>
         array.Length < length ? new byte[length] : array;
 }
