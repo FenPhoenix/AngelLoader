@@ -282,7 +282,7 @@ internal static class FMScan
                                 {
                                     if (unsupportedCompressionErrors.Count == 1)
                                     {
-                                        Core.Dialogs.ShowError_ViewOwned(
+                                        Core.Dialogs.ShowError(
                                             "The zip archive '"
                                             + unsupportedCompressionErrors[0].FM.Path +
                                             "' contains one or more files compressed with an unsupported compression method. " +
@@ -310,12 +310,12 @@ internal static class FMScan
                                             msg += "\r\n\r\nIn addition, one or more other errors occurred. See the log for details.";
                                         }
 
-                                        Core.Dialogs.ShowError_ViewOwned(msg);
+                                        Core.Dialogs.ShowError(msg);
                                     }
                                 }
                                 else
                                 {
-                                    Core.Dialogs.ShowError_ViewOwned(
+                                    Core.Dialogs.ShowError(
                                         "One or more errors occurred while scanning. See the log for details.");
                                 }
                             }
@@ -461,7 +461,7 @@ internal static class FMScan
                     string message = scanningOne
                         ? LText.AlertMessages.Scan_ExceptionInScanOne
                         : LText.AlertMessages.Scan_ExceptionInScanMultiple;
-                    Core.Dialogs.ShowError_ViewOwned(message);
+                    Core.Dialogs.ShowError(message);
                     return false;
                 }
 
