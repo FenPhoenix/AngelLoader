@@ -13,10 +13,8 @@ public static class DarkColors
 
     #region DarkUI
 
-    public static readonly Color GreyBackground = Color.FromArgb(60, 63, 65);
     public static readonly Color BlueBackground = Color.FromArgb(66, 77, 95);
     public static readonly Color DarkBackground = Color.FromArgb(43, 43, 43);
-    public static readonly Color MediumBackground = Color.FromArgb(49, 51, 53);
     public static readonly Color LightBackground = Color.FromArgb(69, 73, 74);
     public static readonly Color LightText = Color.FromArgb(220, 220, 220);
     public static readonly Color DisabledText = Color.FromArgb(153, 153, 153);
