@@ -36,7 +36,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the number statistics.
         /// </summary>
-        public byte NumberStatistics
+        public readonly byte NumberStatistics
         {
             get => _memory[_address];
             set => _memory[_address] = value;
@@ -45,7 +45,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the flags.
         /// </summary>
-        public byte Flags
+        public readonly byte Flags
         {
             get => _memory[_address + 1];
             set => _memory[_address + 1] = value;
@@ -54,7 +54,7 @@ internal sealed partial class Model
         /// <summary>
         /// Gets or sets the summary frequency.
         /// </summary>
-        public ushort SummaryFrequency
+        public readonly ushort SummaryFrequency
         {
             get => (ushort)(_memory[_address + 2] | (_memory[_address + 3] << 8));
             set

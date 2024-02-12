@@ -21,5 +21,5 @@ internal sealed class UnpackFilter
     // in PrgStack array. Not defined for filters in Filters array.
     internal int ParentFilter;
 
-    internal VMPreparedProgram Program;
+    internal readonly VMPreparedProgram Program;
 }

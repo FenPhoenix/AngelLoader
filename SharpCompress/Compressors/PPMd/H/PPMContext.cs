@@ -8,15 +8,7 @@ namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class PpmContext : Pointer
 {
-    internal FreqData FreqData
-    {
-        get => _freqData;
-        set
-        {
-            _freqData.SummFreq = value.SummFreq;
-            _freqData.SetStats(value.GetStats());
-        }
-    }
+    internal FreqData FreqData => _freqData;
 
     public int NumStats
     {

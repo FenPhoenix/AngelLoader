@@ -14,11 +14,7 @@ internal class BitInput
         get => inAddr;
         set => inAddr = value;
     }
-    public int InBit
-    {
-        get => inBit;
-        set => inBit = value;
-    }
+    public int InBit => inBit;
     public bool ExternalBuffer;
 
     /// <summary>  </summary>

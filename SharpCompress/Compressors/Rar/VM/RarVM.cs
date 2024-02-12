@@ -10,10 +10,10 @@ internal sealed class RarVM : BitInput
 {
     internal byte[] Mem { get; private set; }
 
-    public const int VM_MEMSIZE = 0x40000;
+    private const int VM_MEMSIZE = 0x40000;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'VM_MEMMASK '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public const int VM_MEMMASK = (VM_MEMSIZE - 1);
+    private const int VM_MEMMASK = (VM_MEMSIZE - 1);
 
     public const int VM_GLOBALMEMADDR = 0x3C000;
 
@@ -96,7 +96,7 @@ internal sealed class RarVM : BitInput
 
     private int GetOperand(VMPreparedOperand cmdOp)
     {
-        var ret = 0;
+        int ret;
         if (cmdOp.Type == VMOpType.VM_OPREGMEM)
         {
             var pos = (cmdOp.Offset + cmdOp.Base) & VM_MEMMASK;
@@ -221,100 +221,100 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_CMP:
 
-                    {
-                        var value1 = (VMFlags)GetValue(cmd.IsByteMode, Mem, op1);
-                        var result = value1 - GetValue(cmd.IsByteMode, Mem, op2);
+                {
+                    var value1 = (VMFlags)GetValue(cmd.IsByteMode, Mem, op1);
+                    var result = value1 - GetValue(cmd.IsByteMode, Mem, op2);
 
-                        if (result == 0)
-                        {
-                            flags = VMFlags.VM_FZ;
-                        }
-                        else
-                        {
-                            flags = (VMFlags)(
-                                (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
-                            );
-                        }
+                    if (result == 0)
+                    {
+                        flags = VMFlags.VM_FZ;
                     }
-                    break;
+                    else
+                    {
+                        flags = (VMFlags)(
+                            (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
+                        );
+                    }
+                }
+                break;
 
                 case VMCommands.VM_CMPB:
 
+                {
+                    var value1 = (VMFlags)GetValue(true, Mem, op1);
+                    var result = value1 - GetValue(true, Mem, op2);
+                    if (result == 0)
                     {
-                        var value1 = (VMFlags)GetValue(true, Mem, op1);
-                        var result = value1 - GetValue(true, Mem, op2);
-                        if (result == 0)
-                        {
-                            flags = VMFlags.VM_FZ;
-                        }
-                        else
-                        {
-                            flags = (VMFlags)(
-                                (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
-                            );
-                        }
+                        flags = VMFlags.VM_FZ;
                     }
-                    break;
+                    else
+                    {
+                        flags = (VMFlags)(
+                            (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
+                        );
+                    }
+                }
+                break;
 
                 case VMCommands.VM_CMPD:
 
+                {
+                    var value1 = (VMFlags)GetValue(false, Mem, op1);
+                    var result = value1 - GetValue(false, Mem, op2);
+                    if (result == 0)
                     {
-                        var value1 = (VMFlags)GetValue(false, Mem, op1);
-                        var result = value1 - GetValue(false, Mem, op2);
-                        if (result == 0)
-                        {
-                            flags = VMFlags.VM_FZ;
-                        }
-                        else
-                        {
-                            flags = (VMFlags)(
-                                (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
-                            );
-                        }
+                        flags = VMFlags.VM_FZ;
                     }
-                    break;
+                    else
+                    {
+                        flags = (VMFlags)(
+                            (result > value1) ? 1 : 0 | (int)(result & VMFlags.VM_FS)
+                        );
+                    }
+                }
+                break;
 
                 case VMCommands.VM_ADD:
 
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var result = (int)(
+                        ((value1 + (long)GetValue(cmd.IsByteMode, Mem, op2)))
+                        & unchecked((int)0xffffffff)
+                    );
+                    if (cmd.IsByteMode)
                     {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var result = (int)(
-                            ((value1 + (long)GetValue(cmd.IsByteMode, Mem, op2)))
-                            & unchecked((int)0xffffffff)
+                        result &= 0xff;
+                        flags = (VMFlags)(
+                            (result < value1)
+                                ? 1
+                                : 0
+                                    | (
+                                        result == 0
+                                            ? (int)VMFlags.VM_FZ
+                                            : (((result & 0x80) != 0) ? (int)VMFlags.VM_FS : 0)
+                                    )
                         );
-                        if (cmd.IsByteMode)
-                        {
-                            result &= 0xff;
-                            flags = (VMFlags)(
-                                (result < value1)
-                                    ? 1
-                                    : 0
-                                        | (
-                                            result == 0
-                                                ? (int)VMFlags.VM_FZ
-                                                : (((result & 0x80) != 0) ? (int)VMFlags.VM_FS : 0)
-                                        )
-                            );
 
-                            // Flags=(Result<Value1)|(Result==0 ? VM_FZ:((Result&0x80) ?
-                            // VM_FS:0));
-                        }
-                        else
-                        {
-                            flags = (VMFlags)(
-                                (result < value1)
-                                    ? 1
-                                    : 0
-                                        | (
-                                            result == 0
-                                                ? (int)VMFlags.VM_FZ
-                                                : (result & (int)VMFlags.VM_FS)
-                                        )
-                            );
-                        }
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
+                        // Flags=(Result<Value1)|(Result==0 ? VM_FZ:((Result&0x80) ?
+                        // VM_FS:0));
                     }
-                    break;
+                    else
+                    {
+                        flags = (VMFlags)(
+                            (result < value1)
+                                ? 1
+                                : 0
+                                    | (
+                                        result == 0
+                                            ? (int)VMFlags.VM_FZ
+                                            : (result & (int)VMFlags.VM_FS)
+                                    )
+                        );
+                    }
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_ADDB:
                     SetValue(
@@ -344,21 +344,21 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_SUB:
 
-                    {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var result = (int)(
-                            value1
-                            & (0xffFFffFF - GetValue(cmd.IsByteMode, Mem, op2))
-                            & unchecked((int)0xFFffFFff)
-                        );
-                        flags = (VMFlags)(
-                            (result == 0)
-                                ? (int)VMFlags.VM_FZ
-                                : ((result > value1) ? 1 : 0 | (result & (int)VMFlags.VM_FS))
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result); // (Cmd->ByteMode,Op1,Result);
-                    }
-                    break;
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var result = (int)(
+                        value1
+                        & (0xffFFffFF - GetValue(cmd.IsByteMode, Mem, op2))
+                        & unchecked((int)0xFFffFFff)
+                    );
+                    flags = (VMFlags)(
+                        (result == 0)
+                            ? (int)VMFlags.VM_FZ
+                            : ((result > value1) ? 1 : 0 | (result & (int)VMFlags.VM_FS))
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result); // (Cmd->ByteMode,Op1,Result);
+                }
+                break;
 
                 case VMCommands.VM_SUBB:
                     SetValue(
@@ -404,19 +404,19 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_INC:
 
+                {
+                    var result = (int)(GetValue(cmd.IsByteMode, Mem, op1) & (0xFFffFFffL + 1L));
+                    if (cmd.IsByteMode)
                     {
-                        var result = (int)(GetValue(cmd.IsByteMode, Mem, op1) & (0xFFffFFffL + 1L));
-                        if (cmd.IsByteMode)
-                        {
-                            result &= 0xff;
-                        }
-
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
+                        result &= 0xff;
                     }
-                    break;
+
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                }
+                break;
 
                 case VMCommands.VM_INCB:
                     SetValue(true, Mem, op1, (int)(GetValue(true, Mem, op1) & (0xFFffFFffL + 1L)));
@@ -433,14 +433,14 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_DEC:
 
-                    {
-                        var result = (int)(GetValue(cmd.IsByteMode, Mem, op1) & (0xFFffFFff - 1));
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
-                    }
-                    break;
+                {
+                    var result = (int)(GetValue(cmd.IsByteMode, Mem, op1) & (0xFFffFFff - 1));
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                }
+                break;
 
                 case VMCommands.VM_DECB:
                     SetValue(true, Mem, op1, (int)(GetValue(true, Mem, op1) & (0xFFffFFff - 1)));
@@ -456,50 +456,50 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_XOR:
 
-                    {
-                        var result =
-                            GetValue(cmd.IsByteMode, Mem, op1) ^ GetValue(cmd.IsByteMode, Mem, op2);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var result =
+                        GetValue(cmd.IsByteMode, Mem, op1) ^ GetValue(cmd.IsByteMode, Mem, op2);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_AND:
 
-                    {
-                        var result =
-                            GetValue(cmd.IsByteMode, Mem, op1) & GetValue(cmd.IsByteMode, Mem, op2);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var result =
+                        GetValue(cmd.IsByteMode, Mem, op1) & GetValue(cmd.IsByteMode, Mem, op2);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_OR:
 
-                    {
-                        var result =
-                            GetValue(cmd.IsByteMode, Mem, op1) | GetValue(cmd.IsByteMode, Mem, op2);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var result =
+                        GetValue(cmd.IsByteMode, Mem, op1) | GetValue(cmd.IsByteMode, Mem, op2);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_TEST:
 
-                    {
-                        var result =
-                            GetValue(cmd.IsByteMode, Mem, op1) & GetValue(cmd.IsByteMode, Mem, op2);
-                        flags = (VMFlags)(
-                            result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
-                        );
-                    }
-                    break;
+                {
+                    var result =
+                        GetValue(cmd.IsByteMode, Mem, op1) & GetValue(cmd.IsByteMode, Mem, op2);
+                    flags = (VMFlags)(
+                        result == 0 ? (int)VMFlags.VM_FZ : result & (int)VMFlags.VM_FS
+                    );
+                }
+                break;
 
                 case VMCommands.VM_JS:
                     if ((flags & VMFlags.VM_FS) != 0)
@@ -571,62 +571,62 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_SHL:
 
-                    {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var value2 = GetValue(cmd.IsByteMode, Mem, op2);
-                        var result = value1 << value2;
-                        flags = (VMFlags)(
-                            (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
-                            | (
-                                ((value1 << (value2 - 1)) & unchecked((int)0x80000000)) != 0
-                                    ? (int)VMFlags.VM_FC
-                                    : 0
-                            )
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var value2 = GetValue(cmd.IsByteMode, Mem, op2);
+                    var result = value1 << value2;
+                    flags = (VMFlags)(
+                        (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
+                        | (
+                            ((value1 << (value2 - 1)) & unchecked((int)0x80000000)) != 0
+                                ? (int)VMFlags.VM_FC
+                                : 0
+                        )
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_SHR:
 
-                    {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var value2 = GetValue(cmd.IsByteMode, Mem, op2);
-                        var result = (value1 >>> value2);
-                        flags = (VMFlags)(
-                            (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
-                            | (((value1 >>> (value2 - 1))) & (int)VMFlags.VM_FC)
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var value2 = GetValue(cmd.IsByteMode, Mem, op2);
+                    var result = (value1 >>> value2);
+                    flags = (VMFlags)(
+                        (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
+                        | (((value1 >>> (value2 - 1))) & (int)VMFlags.VM_FC)
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_SAR:
 
-                    {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var value2 = GetValue(cmd.IsByteMode, Mem, op2);
-                        var result = value1 >> value2;
-                        flags = (VMFlags)(
-                            (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
-                            | ((value1 >> (value2 - 1)) & (int)VMFlags.VM_FC)
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var value2 = GetValue(cmd.IsByteMode, Mem, op2);
+                    var result = value1 >> value2;
+                    flags = (VMFlags)(
+                        (result == 0 ? (int)VMFlags.VM_FZ : (result & (int)VMFlags.VM_FS))
+                        | ((value1 >> (value2 - 1)) & (int)VMFlags.VM_FC)
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_NEG:
 
-                    {
-                        var result = -GetValue(cmd.IsByteMode, Mem, op1);
-                        flags = (VMFlags)(
-                            result == 0
-                                ? (int)VMFlags.VM_FZ
-                                : (int)VMFlags.VM_FC | (result & (int)VMFlags.VM_FS)
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var result = -GetValue(cmd.IsByteMode, Mem, op1);
+                    flags = (VMFlags)(
+                        result == 0
+                            ? (int)VMFlags.VM_FZ
+                            : (int)VMFlags.VM_FC | (result & (int)VMFlags.VM_FS)
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_NEGB:
                     SetValue(true, Mem, op1, -GetValue(true, Mem, op1));
@@ -638,24 +638,24 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_PUSHA:
 
+                {
+                    for (int i = 0, SP = R[7] - 4; i < regCount; i++, SP -= 4)
                     {
-                        for (int i = 0, SP = R[7] - 4; i < regCount; i++, SP -= 4)
-                        {
-                            SetValue(false, Mem, SP & VM_MEMMASK, R[i]);
-                        }
-                        R[7] -= regCount * 4;
+                        SetValue(false, Mem, SP & VM_MEMMASK, R[i]);
                     }
-                    break;
+                    R[7] -= regCount * 4;
+                }
+                break;
 
                 case VMCommands.VM_POPA:
 
+                {
+                    for (int i = 0, SP = R[7]; i < regCount; i++, SP += 4)
                     {
-                        for (int i = 0, SP = R[7]; i < regCount; i++, SP += 4)
-                        {
-                            R[7 - i] = GetValue(false, Mem, SP & VM_MEMMASK);
-                        }
+                        R[7 - i] = GetValue(false, Mem, SP & VM_MEMMASK);
                     }
-                    break;
+                }
+                break;
 
                 case VMCommands.VM_PUSHF:
                     R[7] -= 4;
@@ -677,97 +677,97 @@ internal sealed class RarVM : BitInput
 
                 case VMCommands.VM_XCHG:
 
-                    {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        SetValue(cmd.IsByteMode, Mem, op1, GetValue(cmd.IsByteMode, Mem, op2));
-                        SetValue(cmd.IsByteMode, Mem, op2, value1);
-                    }
-                    break;
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    SetValue(cmd.IsByteMode, Mem, op1, GetValue(cmd.IsByteMode, Mem, op2));
+                    SetValue(cmd.IsByteMode, Mem, op2, value1);
+                }
+                break;
 
                 case VMCommands.VM_MUL:
 
-                    {
-                        var result = (int)(
-                            (
-                                GetValue(cmd.IsByteMode, Mem, op1)
-                                & (0xFFffFFff * GetValue(cmd.IsByteMode, Mem, op2))
-                                & unchecked((int)0xFFffFFff)
-                            ) & unchecked((int)0xFFffFFff)
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
-                    }
-                    break;
+                {
+                    var result = (int)(
+                        (
+                            GetValue(cmd.IsByteMode, Mem, op1)
+                            & (0xFFffFFff * GetValue(cmd.IsByteMode, Mem, op2))
+                            & unchecked((int)0xFFffFFff)
+                        ) & unchecked((int)0xFFffFFff)
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_DIV:
 
+                {
+                    var divider = GetValue(cmd.IsByteMode, Mem, op2);
+                    if (divider != 0)
                     {
-                        var divider = GetValue(cmd.IsByteMode, Mem, op2);
-                        if (divider != 0)
-                        {
-                            var result = GetValue(cmd.IsByteMode, Mem, op1) / divider;
-                            SetValue(cmd.IsByteMode, Mem, op1, result);
-                        }
+                        var result = GetValue(cmd.IsByteMode, Mem, op1) / divider;
+                        SetValue(cmd.IsByteMode, Mem, op1, result);
                     }
-                    break;
+                }
+                break;
 
                 case VMCommands.VM_ADC:
 
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var FC = (int)(flags & VMFlags.VM_FC);
+                    var result = (int)(
+                        value1
+                        & (0xFFffFFff + GetValue(cmd.IsByteMode, Mem, op2))
+                        & (0xFFffFFff + FC)
+                        & unchecked((int)0xFFffFFff)
+                    );
+                    if (cmd.IsByteMode)
                     {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var FC = (int)(flags & VMFlags.VM_FC);
-                        var result = (int)(
-                            value1
-                            & (0xFFffFFff + GetValue(cmd.IsByteMode, Mem, op2))
-                            & (0xFFffFFff + FC)
-                            & unchecked((int)0xFFffFFff)
-                        );
-                        if (cmd.IsByteMode)
-                        {
-                            result &= 0xff;
-                        }
-
-                        flags = (VMFlags)(
-                            (result < value1 || result == value1 && FC != 0)
-                                ? 1
-                                : 0
-                                    | (
-                                        result == 0
-                                            ? (int)VMFlags.VM_FZ
-                                            : (result & (int)VMFlags.VM_FS)
-                                    )
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
+                        result &= 0xff;
                     }
-                    break;
+
+                    flags = (VMFlags)(
+                        (result < value1 || result == value1 && FC != 0)
+                            ? 1
+                            : 0
+                                | (
+                                    result == 0
+                                        ? (int)VMFlags.VM_FZ
+                                        : (result & (int)VMFlags.VM_FS)
+                                )
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_SBB:
 
+                {
+                    var value1 = GetValue(cmd.IsByteMode, Mem, op1);
+                    var FC = (int)(flags & VMFlags.VM_FC);
+                    var result = (int)(
+                        value1
+                        & (0xFFffFFff - GetValue(cmd.IsByteMode, Mem, op2))
+                        & (0xFFffFFff - FC)
+                        & unchecked((int)0xFFffFFff)
+                    );
+                    if (cmd.IsByteMode)
                     {
-                        var value1 = GetValue(cmd.IsByteMode, Mem, op1);
-                        var FC = (int)(flags & VMFlags.VM_FC);
-                        var result = (int)(
-                            value1
-                            & (0xFFffFFff - GetValue(cmd.IsByteMode, Mem, op2))
-                            & (0xFFffFFff - FC)
-                            & unchecked((int)0xFFffFFff)
-                        );
-                        if (cmd.IsByteMode)
-                        {
-                            result &= 0xff;
-                        }
-                        flags = (VMFlags)(
-                            (result > value1 || result == value1 && FC != 0)
-                                ? 1
-                                : 0
-                                    | (
-                                        result == 0
-                                            ? (int)VMFlags.VM_FZ
-                                            : (result & (int)VMFlags.VM_FS)
-                                    )
-                        );
-                        SetValue(cmd.IsByteMode, Mem, op1, result);
+                        result &= 0xff;
                     }
-                    break;
+                    flags = (VMFlags)(
+                        (result > value1 || result == value1 && FC != 0)
+                            ? 1
+                            : 0
+                                | (
+                                    result == 0
+                                        ? (int)VMFlags.VM_FZ
+                                        : (result & (int)VMFlags.VM_FS)
+                                )
+                    );
+                    SetValue(cmd.IsByteMode, Mem, op1, result);
+                }
+                break;
 
                 case VMCommands.VM_RET:
                     if (R[7] >= VM_MEMSIZE)
@@ -809,7 +809,7 @@ internal sealed class RarVM : BitInput
         prg.CommandCount = 0;
         if (xorSum == code[0])
         {
-            var filterType = IsStandardFilter(code, codeSize);
+            var filterType = IsStandardFilter(code);
             if (filterType != VMStandardFilters.VMSF_NONE)
             {
                 var curCmd = new VMPreparedCommand();
@@ -1119,7 +1119,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    public static VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
+    private static VMStandardFilters IsStandardFilter(byte[] code)
     {
         VMStandardFilterSignature[] stdList =
         {
@@ -1149,368 +1149,368 @@ internal sealed class RarVM : BitInput
             case VMStandardFilters.VMSF_E8:
             case VMStandardFilters.VMSF_E8E9:
 
+            {
+                var dataSize = R[4];
+                long fileOffset = R[6] & unchecked((int)0xFFffFFff);
+
+                if (dataSize >= VM_GLOBALMEMADDR)
                 {
-                    var dataSize = R[4];
-                    long fileOffset = R[6] & unchecked((int)0xFFffFFff);
-
-                    if (dataSize >= VM_GLOBALMEMADDR)
+                    break;
+                }
+                const int fileSize = 0x1000000;
+                var cmpByte2 = (byte)(
+                    (filterType == VMStandardFilters.VMSF_E8E9) ? 0xe9 : 0xe8
+                );
+                for (var curPos = 0; curPos < dataSize - 4;)
+                {
+                    var curByte = Mem[curPos++];
+                    if (curByte == 0xe8 || curByte == cmpByte2)
                     {
-                        break;
-                    }
-                    const int fileSize = 0x1000000;
-                    var cmpByte2 = (byte)(
-                        (filterType == VMStandardFilters.VMSF_E8E9) ? 0xe9 : 0xe8
-                    );
-                    for (var curPos = 0; curPos < dataSize - 4; )
-                    {
-                        var curByte = Mem[curPos++];
-                        if (curByte == 0xe8 || curByte == cmpByte2)
+                        //		#ifdef PRESENT_INT32
+                        //		            sint32 Offset=CurPos+FileOffset;
+                        //		            sint32 Addr=GET_VALUE(false,Data);
+                        //		            if (Addr<0)
+                        //		            {
+                        //		              if (Addr+Offset>=0)
+                        //		                SET_VALUE(false,Data,Addr+FileSize);
+                        //		            }
+                        //		            else
+                        //		              if (Addr<FileSize)
+                        //		                SET_VALUE(false,Data,Addr-Offset);
+                        //		#else
+                        var offset = curPos + fileOffset;
+                        long Addr = GetValue(false, Mem, curPos);
+                        if ((Addr & unchecked((int)0x80000000)) != 0)
                         {
-                            //		#ifdef PRESENT_INT32
-                            //		            sint32 Offset=CurPos+FileOffset;
-                            //		            sint32 Addr=GET_VALUE(false,Data);
-                            //		            if (Addr<0)
-                            //		            {
-                            //		              if (Addr+Offset>=0)
-                            //		                SET_VALUE(false,Data,Addr+FileSize);
-                            //		            }
-                            //		            else
-                            //		              if (Addr<FileSize)
-                            //		                SET_VALUE(false,Data,Addr-Offset);
-                            //		#else
-                            var offset = curPos + fileOffset;
-                            long Addr = GetValue(false, Mem, curPos);
-                            if ((Addr & unchecked((int)0x80000000)) != 0)
+                            if (((Addr + offset) & unchecked((int)0x80000000)) == 0)
                             {
-                                if (((Addr + offset) & unchecked((int)0x80000000)) == 0)
-                                {
-                                    SetValue(false, Mem, curPos, (int)Addr + fileSize);
-                                }
+                                SetValue(false, Mem, curPos, (int)Addr + fileSize);
                             }
-                            else
-                            {
-                                if (((Addr - fileSize) & unchecked((int)0x80000000)) != 0)
-                                {
-                                    SetValue(false, Mem, curPos, (int)(Addr - offset));
-                                }
-                            }
-
-                            //		#endif
-                            curPos += 4;
                         }
+                        else
+                        {
+                            if (((Addr - fileSize) & unchecked((int)0x80000000)) != 0)
+                            {
+                                SetValue(false, Mem, curPos, (int)(Addr - offset));
+                            }
+                        }
+
+                        //		#endif
+                        curPos += 4;
                     }
                 }
-                break;
+            }
+            break;
 
             case VMStandardFilters.VMSF_ITANIUM:
 
+            {
+                var dataSize = R[4];
+                long fileOffset = R[6] & unchecked((int)0xFFffFFff);
+
+                if (dataSize >= VM_GLOBALMEMADDR)
                 {
-                    var dataSize = R[4];
-                    long fileOffset = R[6] & unchecked((int)0xFFffFFff);
+                    break;
+                }
+                var curPos = 0;
 
-                    if (dataSize >= VM_GLOBALMEMADDR)
+                //UPGRADE_NOTE: Final was removed from the declaration of 'Masks '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
+                byte[] Masks = { 4, 4, 6, 6, 0, 0, 7, 7, 4, 4, 0, 0, 4, 4, 0, 0 };
+                fileOffset = (fileOffset >>> 4);
+
+                while (curPos < dataSize - 21)
+                {
+                    var Byte = (Mem[curPos] & 0x1f) - 0x10;
+                    if (Byte >= 0)
                     {
-                        break;
-                    }
-                    var curPos = 0;
-
-                    //UPGRADE_NOTE: Final was removed from the declaration of 'Masks '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-                    byte[] Masks = { 4, 4, 6, 6, 0, 0, 7, 7, 4, 4, 0, 0, 4, 4, 0, 0 };
-                    fileOffset = (fileOffset >>> 4);
-
-                    while (curPos < dataSize - 21)
-                    {
-                        var Byte = (Mem[curPos] & 0x1f) - 0x10;
-                        if (Byte >= 0)
+                        var cmdMask = Masks[Byte];
+                        if (cmdMask != 0)
                         {
-                            var cmdMask = Masks[Byte];
-                            if (cmdMask != 0)
+                            for (var i = 0; i <= 2; i++)
                             {
-                                for (var i = 0; i <= 2; i++)
+                                if ((cmdMask & (1 << i)) != 0)
                                 {
-                                    if ((cmdMask & (1 << i)) != 0)
+                                    var startPos = (i * 41) + 5;
+                                    var opType = filterItanium_GetBits(
+                                        curPos,
+                                        startPos + 37,
+                                        4
+                                    );
+                                    if (opType == 5)
                                     {
-                                        var startPos = (i * 41) + 5;
-                                        var opType = filterItanium_GetBits(
+                                        var offset = filterItanium_GetBits(
                                             curPos,
-                                            startPos + 37,
-                                            4
+                                            startPos + 13,
+                                            20
                                         );
-                                        if (opType == 5)
-                                        {
-                                            var offset = filterItanium_GetBits(
-                                                curPos,
-                                                startPos + 13,
-                                                20
-                                            );
-                                            filterItanium_SetBits(
-                                                curPos,
-                                                (int)(offset - fileOffset) & 0xfffff,
-                                                startPos + 13,
-                                                20
-                                            );
-                                        }
+                                        filterItanium_SetBits(
+                                            curPos,
+                                            (int)(offset - fileOffset) & 0xfffff,
+                                            startPos + 13,
+                                            20
+                                        );
                                     }
                                 }
                             }
                         }
-                        curPos += 16;
-                        fileOffset++;
                     }
+                    curPos += 16;
+                    fileOffset++;
                 }
-                break;
+            }
+            break;
 
             case VMStandardFilters.VMSF_DELTA:
 
+            {
+                var dataSize = R[4] & unchecked((int)0xFFffFFff);
+                var channels = R[0] & unchecked((int)0xFFffFFff);
+                var srcPos = 0;
+                var border = (dataSize * 2) & unchecked((int)0xFFffFFff);
+                SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
+                if (dataSize >= VM_GLOBALMEMADDR / 2)
                 {
-                    var dataSize = R[4] & unchecked((int)0xFFffFFff);
-                    var channels = R[0] & unchecked((int)0xFFffFFff);
-                    var srcPos = 0;
-                    var border = (dataSize * 2) & unchecked((int)0xFFffFFff);
-                    SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
-                    if (dataSize >= VM_GLOBALMEMADDR / 2)
-                    {
-                        break;
-                    }
+                    break;
+                }
 
-                    //		 bytes from same channels are grouped to continual data blocks,
-                    //		 so we need to place them back to their interleaving positions
+                //		 bytes from same channels are grouped to continual data blocks,
+                //		 so we need to place them back to their interleaving positions
 
-                    for (var curChannel = 0; curChannel < channels; curChannel++)
+                for (var curChannel = 0; curChannel < channels; curChannel++)
+                {
+                    byte PrevByte = 0;
+                    for (
+                        var destPos = dataSize + curChannel;
+                        destPos < border;
+                        destPos += channels
+                    )
                     {
-                        byte PrevByte = 0;
-                        for (
-                            var destPos = dataSize + curChannel;
-                            destPos < border;
-                            destPos += channels
-                        )
-                        {
-                            Mem[destPos] = (PrevByte = (byte)(PrevByte - Mem[srcPos++]));
-                        }
+                        Mem[destPos] = (PrevByte = (byte)(PrevByte - Mem[srcPos++]));
                     }
                 }
-                break;
+            }
+            break;
 
             case VMStandardFilters.VMSF_RGB:
 
+            {
+                // byte *SrcData=Mem,*DestData=SrcData+DataSize;
+                int dataSize = R[4],
+                    width = R[0] - 3,
+                    posR = R[1];
+                const int channels = 3;
+                var srcPos = 0;
+                var destDataPos = dataSize;
+                SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
+                if (dataSize >= VM_GLOBALMEMADDR / 2 || posR < 0)
                 {
-                    // byte *SrcData=Mem,*DestData=SrcData+DataSize;
-                    int dataSize = R[4],
-                        width = R[0] - 3,
-                        posR = R[1];
-                    const int channels = 3;
-                    var srcPos = 0;
-                    var destDataPos = dataSize;
-                    SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
-                    if (dataSize >= VM_GLOBALMEMADDR / 2 || posR < 0)
-                    {
-                        break;
-                    }
-                    for (var curChannel = 0; curChannel < channels; curChannel++)
-                    {
-                        long prevByte = 0;
+                    break;
+                }
+                for (var curChannel = 0; curChannel < channels; curChannel++)
+                {
+                    long prevByte = 0;
 
-                        for (var i = curChannel; i < dataSize; i += channels)
+                    for (var i = curChannel; i < dataSize; i += channels)
+                    {
+                        long predicted;
+                        var upperPos = i - width;
+                        if (upperPos >= 3)
                         {
-                            long predicted;
-                            var upperPos = i - width;
-                            if (upperPos >= 3)
-                            {
-                                var upperDataPos = destDataPos + upperPos;
-                                var upperByte = Mem[upperDataPos] & 0xff;
-                                var upperLeftByte = Mem[upperDataPos - 3] & 0xff;
-                                predicted = prevByte + upperByte - upperLeftByte;
-                                var pa = Math.Abs((int)(predicted - prevByte));
-                                var pb = Math.Abs((int)(predicted - upperByte));
-                                var pc = Math.Abs((int)(predicted - upperLeftByte));
-                                if (pa <= pb && pa <= pc)
-                                {
-                                    predicted = prevByte;
-                                }
-                                else
-                                {
-                                    if (pb <= pc)
-                                    {
-                                        predicted = upperByte;
-                                    }
-                                    else
-                                    {
-                                        predicted = upperLeftByte;
-                                    }
-                                }
-                            }
-                            else
+                            var upperDataPos = destDataPos + upperPos;
+                            var upperByte = Mem[upperDataPos] & 0xff;
+                            var upperLeftByte = Mem[upperDataPos - 3] & 0xff;
+                            predicted = prevByte + upperByte - upperLeftByte;
+                            var pa = Math.Abs((int)(predicted - prevByte));
+                            var pb = Math.Abs((int)(predicted - upperByte));
+                            var pc = Math.Abs((int)(predicted - upperLeftByte));
+                            if (pa <= pb && pa <= pc)
                             {
                                 predicted = prevByte;
                             }
-
-                            prevByte = ((predicted - Mem[srcPos++]) & 0xff) & 0xff;
-                            Mem[destDataPos + i] = (byte)(prevByte & 0xff);
+                            else
+                            {
+                                if (pb <= pc)
+                                {
+                                    predicted = upperByte;
+                                }
+                                else
+                                {
+                                    predicted = upperLeftByte;
+                                }
+                            }
                         }
-                    }
-                    for (int i = posR, border = dataSize - 2; i < border; i += 3)
-                    {
-                        var G = Mem[destDataPos + i + 1];
-                        Mem[destDataPos + i] = (byte)(Mem[destDataPos + i] + G);
-                        Mem[destDataPos + i + 2] = (byte)(Mem[destDataPos + i + 2] + G);
+                        else
+                        {
+                            predicted = prevByte;
+                        }
+
+                        prevByte = ((predicted - Mem[srcPos++]) & 0xff) & 0xff;
+                        Mem[destDataPos + i] = (byte)(prevByte & 0xff);
                     }
                 }
-                break;
+                for (int i = posR, border = dataSize - 2; i < border; i += 3)
+                {
+                    var G = Mem[destDataPos + i + 1];
+                    Mem[destDataPos + i] = (byte)(Mem[destDataPos + i] + G);
+                    Mem[destDataPos + i + 2] = (byte)(Mem[destDataPos + i + 2] + G);
+                }
+            }
+            break;
 
             case VMStandardFilters.VMSF_AUDIO:
 
+            {
+                int dataSize = R[4],
+                    channels = R[0];
+                var srcPos = 0;
+                var destDataPos = dataSize;
+
+                //byte *SrcData=Mem,*DestData=SrcData+DataSize;
+                SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
+                if (dataSize >= VM_GLOBALMEMADDR / 2)
                 {
-                    int dataSize = R[4],
-                        channels = R[0];
-                    var srcPos = 0;
-                    var destDataPos = dataSize;
+                    break;
+                }
+                for (var curChannel = 0; curChannel < channels; curChannel++)
+                {
+                    long prevByte = 0;
+                    long prevDelta = 0;
+                    var Dif = new long[7];
+                    int D1 = 0,
+                        D2 = 0,
+                        D3;
+                    int K1 = 0,
+                        K2 = 0,
+                        K3 = 0;
 
-                    //byte *SrcData=Mem,*DestData=SrcData+DataSize;
-                    SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
-                    if (dataSize >= VM_GLOBALMEMADDR / 2)
+                    for (
+                        int i = curChannel, byteCount = 0;
+                        i < dataSize;
+                        i += channels, byteCount++
+                    )
                     {
-                        break;
-                    }
-                    for (var curChannel = 0; curChannel < channels; curChannel++)
-                    {
-                        long prevByte = 0;
-                        long prevDelta = 0;
-                        var Dif = new long[7];
-                        int D1 = 0,
-                            D2 = 0,
-                            D3;
-                        int K1 = 0,
-                            K2 = 0,
-                            K3 = 0;
+                        D3 = D2;
+                        D2 = (int)(prevDelta - D1);
+                        D1 = (int)prevDelta;
 
-                        for (
-                            int i = curChannel, byteCount = 0;
-                            i < dataSize;
-                            i += channels, byteCount++
-                        )
+                        var predicted = (8 * prevByte) + (K1 * D1) + (K2 * D2) + (K3 * D3);
+                        predicted = (predicted >>> 3) & 0xff;
+
+                        long curByte = Mem[srcPos++];
+
+                        predicted -= curByte;
+                        Mem[destDataPos + i] = (byte)predicted;
+                        prevDelta = (byte)(predicted - prevByte);
+
+                        //fix java byte
+                        if (prevDelta >= 128)
                         {
-                            D3 = D2;
-                            D2 = (int)(prevDelta - D1);
-                            D1 = (int)prevDelta;
+                            prevDelta = 0 - (256 - prevDelta);
+                        }
+                        prevByte = predicted;
 
-                            var predicted = (8 * prevByte) + (K1 * D1) + (K2 * D2) + (K3 * D3);
-                            predicted = (predicted >>> 3) & 0xff;
+                        //fix java byte
+                        if (curByte >= 128)
+                        {
+                            curByte = 0 - (256 - curByte);
+                        }
+                        var D = ((int)curByte) << 3;
 
-                            long curByte = Mem[srcPos++];
+                        Dif[0] += Math.Abs(D);
+                        Dif[1] += Math.Abs(D - D1);
+                        Dif[2] += Math.Abs(D + D1);
+                        Dif[3] += Math.Abs(D - D2);
+                        Dif[4] += Math.Abs(D + D2);
+                        Dif[5] += Math.Abs(D - D3);
+                        Dif[6] += Math.Abs(D + D3);
 
-                            predicted -= curByte;
-                            Mem[destDataPos + i] = (byte)predicted;
-                            prevDelta = (byte)(predicted - prevByte);
-
-                            //fix java byte
-                            if (prevDelta >= 128)
+                        if ((byteCount & 0x1f) == 0)
+                        {
+                            long minDif = Dif[0],
+                                numMinDif = 0;
+                            Dif[0] = 0;
+                            for (var j = 1; j < Dif.Length; j++)
                             {
-                                prevDelta = 0 - (256 - prevDelta);
-                            }
-                            prevByte = predicted;
-
-                            //fix java byte
-                            if (curByte >= 128)
-                            {
-                                curByte = 0 - (256 - curByte);
-                            }
-                            var D = ((int)curByte) << 3;
-
-                            Dif[0] += Math.Abs(D);
-                            Dif[1] += Math.Abs(D - D1);
-                            Dif[2] += Math.Abs(D + D1);
-                            Dif[3] += Math.Abs(D - D2);
-                            Dif[4] += Math.Abs(D + D2);
-                            Dif[5] += Math.Abs(D - D3);
-                            Dif[6] += Math.Abs(D + D3);
-
-                            if ((byteCount & 0x1f) == 0)
-                            {
-                                long minDif = Dif[0],
-                                    numMinDif = 0;
-                                Dif[0] = 0;
-                                for (var j = 1; j < Dif.Length; j++)
+                                if (Dif[j] < minDif)
                                 {
-                                    if (Dif[j] < minDif)
+                                    minDif = Dif[j];
+                                    numMinDif = j;
+                                }
+                                Dif[j] = 0;
+                            }
+                            switch ((int)numMinDif)
+                            {
+                                case 1:
+                                    if (K1 >= -16)
                                     {
-                                        minDif = Dif[j];
-                                        numMinDif = j;
+                                        K1--;
                                     }
-                                    Dif[j] = 0;
-                                }
-                                switch ((int)numMinDif)
-                                {
-                                    case 1:
-                                        if (K1 >= -16)
-                                        {
-                                            K1--;
-                                        }
-                                        break;
+                                    break;
 
-                                    case 2:
-                                        if (K1 < 16)
-                                        {
-                                            K1++;
-                                        }
-                                        break;
+                                case 2:
+                                    if (K1 < 16)
+                                    {
+                                        K1++;
+                                    }
+                                    break;
 
-                                    case 3:
-                                        if (K2 >= -16)
-                                        {
-                                            K2--;
-                                        }
-                                        break;
+                                case 3:
+                                    if (K2 >= -16)
+                                    {
+                                        K2--;
+                                    }
+                                    break;
 
-                                    case 4:
-                                        if (K2 < 16)
-                                        {
-                                            K2++;
-                                        }
-                                        break;
+                                case 4:
+                                    if (K2 < 16)
+                                    {
+                                        K2++;
+                                    }
+                                    break;
 
-                                    case 5:
-                                        if (K3 >= -16)
-                                        {
-                                            K3--;
-                                        }
-                                        break;
+                                case 5:
+                                    if (K3 >= -16)
+                                    {
+                                        K3--;
+                                    }
+                                    break;
 
-                                    case 6:
-                                        if (K3 < 16)
-                                        {
-                                            K3++;
-                                        }
-                                        break;
-                                }
+                                case 6:
+                                    if (K3 < 16)
+                                    {
+                                        K3++;
+                                    }
+                                    break;
                             }
                         }
                     }
                 }
-                break;
+            }
+            break;
 
             case VMStandardFilters.VMSF_UPCASE:
 
+            {
+                int dataSize = R[4],
+                    srcPos = 0,
+                    destPos = dataSize;
+                if (dataSize >= VM_GLOBALMEMADDR / 2)
                 {
-                    int dataSize = R[4],
-                        srcPos = 0,
-                        destPos = dataSize;
-                    if (dataSize >= VM_GLOBALMEMADDR / 2)
-                    {
-                        break;
-                    }
-                    while (srcPos < dataSize)
-                    {
-                        var curByte = Mem[srcPos++];
-                        if (curByte == 2 && (curByte = Mem[srcPos++]) != 2)
-                        {
-                            curByte = (byte)(curByte - 32);
-                        }
-                        Mem[destPos++] = curByte;
-                    }
-                    SetValue(false, Mem, VM_GLOBALMEMADDR + 0x1c, destPos - dataSize);
-                    SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
+                    break;
                 }
-                break;
+                while (srcPos < dataSize)
+                {
+                    var curByte = Mem[srcPos++];
+                    if (curByte == 2 && (curByte = Mem[srcPos++]) != 2)
+                    {
+                        curByte = (byte)(curByte - 32);
+                    }
+                    Mem[destPos++] = curByte;
+                }
+                SetValue(false, Mem, VM_GLOBALMEMADDR + 0x1c, destPos - dataSize);
+                SetValue(false, Mem, VM_GLOBALMEMADDR + 0x20, dataSize);
+            }
+            break;
         }
     }
 
