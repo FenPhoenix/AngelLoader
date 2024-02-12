@@ -12,14 +12,11 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
     private readonly LazyReadOnlyCollection<TVolume> lazyVolumes;
     private readonly LazyReadOnlyCollection<TEntry> lazyEntries;
 
-    protected OptionsBase OptionsBase { get; }
-
     private bool disposed;
     protected readonly SourceStream SrcStream;
 
     internal AbstractArchive(SourceStream srcStream)
     {
-        OptionsBase = srcStream.OptionsBase;
         SrcStream = srcStream;
         lazyVolumes = new LazyReadOnlyCollection<TVolume>(LoadVolumes(SrcStream));
         lazyEntries = new LazyReadOnlyCollection<TEntry>(LoadEntries(Volumes));

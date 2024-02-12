@@ -9,19 +9,17 @@ public sealed class RarHeaderFactory
 {
     private bool _isRar5;
 
-    public RarHeaderFactory(StreamingMode mode, OptionsBase options)
+    public RarHeaderFactory(StreamingMode mode)
     {
         StreamingMode = mode;
-        Options = options;
     }
 
-    public OptionsBase Options { get; }
     public StreamingMode StreamingMode { get; }
     public bool IsEncrypted { get; private set; }
 
     public IEnumerable<IRarHeader> ReadHeaders(Stream stream)
     {
-        var markHeader = MarkHeader.Read(stream, Options.LeaveStreamOpen, lookForHeader: false);
+        var markHeader = MarkHeader.Read(stream, lookForHeader: false);
         _isRar5 = markHeader.IsRar5;
         yield return markHeader;
 

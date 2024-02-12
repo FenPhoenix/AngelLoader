@@ -23,7 +23,7 @@ internal sealed class MarkHeader : IRarHeader
         throw new EndOfStreamException();
     }
 
-    public static MarkHeader Read(Stream stream, bool leaveStreamOpen, bool lookForHeader)
+    public static MarkHeader Read(Stream stream, bool lookForHeader)
     {
         var maxScanIndex = lookForHeader ? MAX_SFX_SIZE : 0;
         try
@@ -118,10 +118,6 @@ internal sealed class MarkHeader : IRarHeader
         }
         catch (Exception e)
         {
-            if (!leaveStreamOpen)
-            {
-                stream.Dispose();
-            }
             throw new InvalidFormatException("Error trying to read rar signature.", e);
         }
 

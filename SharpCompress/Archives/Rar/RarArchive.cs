@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
@@ -20,7 +19,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// Constructor with a SourceStream able to handle FileInfo and Streams.
     /// </summary>
     /// <param name="srcStream"></param>
-    internal RarArchive(SourceStream srcStream)
+    private RarArchive(SourceStream srcStream)
         : base(srcStream) { }
 
     protected override IEnumerable<RarArchiveEntry> LoadEntries(IEnumerable<RarVolume> volumes) =>
@@ -38,12 +37,12 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
             SrcStream.Position = 0;
 
             return srcStream.Streams.Select(
-                a => new StreamRarArchiveVolume(a, OptionsBase, idx++)
+                a => new StreamRarArchiveVolume(a, idx++)
             );
         }
         else //split mode or single file
         {
-            return new StreamRarArchiveVolume(SrcStream, OptionsBase, idx).AsEnumerable();
+            return new StreamRarArchiveVolume(SrcStream, idx).AsEnumerable();
         }
     }
 
@@ -55,15 +54,14 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// </summary>
     /// <param name="filePath"></param>
     /// <param name="options"></param>
-    public static RarArchive Open(string filePath, OptionsBase? options = null)
+    public static RarArchive Open(string filePath)
     {
         filePath.CheckNotNullOrEmpty(nameof(filePath));
         var fileInfo = new FileInfo(filePath);
         return new RarArchive(
             new SourceStream(
                 fileInfo,
-                i => RarArchiveVolumeFactory.GetFilePart(i, fileInfo),
-                options ?? new OptionsBase()
+                i => RarArchiveVolumeFactory.GetFilePart(i, fileInfo)
             )
         );
     }
@@ -73,17 +71,17 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="options"></param>
-    public static RarArchive Open(Stream stream, OptionsBase? options = null)
+    public static RarArchive Open(Stream stream)
     {
         stream.CheckNotNull(nameof(stream));
-        return new RarArchive(new SourceStream(stream, static _ => null, options ?? new OptionsBase()));
+        return new RarArchive(new SourceStream(stream, static _ => null));
     }
 
     public static bool IsRarFile(Stream stream)
     {
         try
         {
-            MarkHeader.Read(stream, true, false);
+            MarkHeader.Read(stream, false);
             return true;
         }
         catch

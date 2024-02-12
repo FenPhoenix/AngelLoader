@@ -8,14 +8,10 @@ public abstract class Volume : IDisposable
 {
     private readonly Stream _actualStream;
 
-    internal Volume(Stream stream, OptionsBase OptionsBase, int index = 0)
+    internal Volume(Stream stream, int index = 0)
     {
         Index = index;
-        if (OptionsBase.LeaveStreamOpen)
-        {
-            stream = NonDisposingStream.Create(stream);
-        }
-        _actualStream = stream;
+        _actualStream = NonDisposingStream.Create(stream);
     }
 
     internal Stream Stream => _actualStream;
