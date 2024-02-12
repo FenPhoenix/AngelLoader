@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Common;
 
@@ -9,11 +8,11 @@ public abstract class Volume : IDisposable
 {
     private readonly Stream _actualStream;
 
-    internal Volume(Stream stream, ReaderOptions readerOptions, int index = 0)
+    internal Volume(Stream stream, OptionsBase OptionsBase, int index = 0)
     {
         Index = index;
-        ReaderOptions = readerOptions;
-        if (readerOptions.LeaveStreamOpen)
+        OptionsBase = OptionsBase;
+        if (OptionsBase.LeaveStreamOpen)
         {
             stream = NonDisposingStream.Create(stream);
         }
@@ -22,7 +21,7 @@ public abstract class Volume : IDisposable
 
     internal Stream Stream => _actualStream;
 
-    protected ReaderOptions ReaderOptions { get; }
+    protected OptionsBase OptionsBase { get; }
 
     public int Index { get; }
 

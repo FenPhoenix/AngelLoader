@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SharpCompress.Common;
 using SharpCompress.IO;
 using SharpCompress.Readers;
 
@@ -13,14 +14,14 @@ public abstract class AbstractArchive<TEntry, TVolume> : IDisposable
     private readonly LazyReadOnlyCollection<TVolume> lazyVolumes;
     private readonly LazyReadOnlyCollection<TEntry> lazyEntries;
 
-    protected ReaderOptions ReaderOptions { get; }
+    protected OptionsBase OptionsBase { get; }
 
     private bool disposed;
     protected readonly SourceStream SrcStream;
 
     internal AbstractArchive(SourceStream srcStream)
     {
-        ReaderOptions = srcStream.ReaderOptions;
+        OptionsBase = srcStream.OptionsBase;
         SrcStream = srcStream;
         lazyVolumes = new LazyReadOnlyCollection<TVolume>(LoadVolumes(SrcStream));
         lazyEntries = new LazyReadOnlyCollection<TEntry>(LoadEntries(Volumes));

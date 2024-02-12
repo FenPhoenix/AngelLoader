@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using AL_Common;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Common.Rar.Headers;
 
@@ -10,13 +9,13 @@ public sealed class RarHeaderFactory
 {
     private bool _isRar5;
 
-    public RarHeaderFactory(StreamingMode mode, ReaderOptions options)
+    public RarHeaderFactory(StreamingMode mode, OptionsBase options)
     {
         StreamingMode = mode;
         Options = options;
     }
 
-    public ReaderOptions Options { get; }
+    public OptionsBase Options { get; }
     public StreamingMode StreamingMode { get; }
     public bool IsEncrypted { get; private set; }
 

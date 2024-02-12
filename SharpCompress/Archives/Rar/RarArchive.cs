@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
@@ -25,7 +26,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
         : base(srcStream) { }
 
     protected override IEnumerable<RarArchiveEntry> LoadEntries(IEnumerable<RarVolume> volumes) =>
-        RarArchiveEntryFactory.GetEntries(this, volumes, ReaderOptions);
+        RarArchiveEntryFactory.GetEntries(this, volumes, OptionsBase);
 
     protected override IEnumerable<RarVolume> LoadVolumes(SourceStream srcStream)
     {
@@ -39,12 +40,12 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
             SrcStream.Position = 0;
 
             return srcStream.Streams.Select(
-                a => new StreamRarArchiveVolume(a, ReaderOptions, idx++)
+                a => new StreamRarArchiveVolume(a, OptionsBase, idx++)
             );
         }
         else //split mode or single file
         {
-            return new StreamRarArchiveVolume(SrcStream, ReaderOptions, idx).AsEnumerable();
+            return new StreamRarArchiveVolume(SrcStream, OptionsBase, idx).AsEnumerable();
         }
     }
 
@@ -52,7 +53,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     {
         var stream = Volumes.First().Stream;
         stream.Position = 0;
-        return RarReader.Open(stream, ReaderOptions);
+        return RarReader.Open(stream, OptionsBase);
     }
 
     public override bool IsSolid => Volumes.First().IsSolidArchive;
@@ -63,7 +64,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// </summary>
     /// <param name="filePath"></param>
     /// <param name="options"></param>
-    public static RarArchive Open(string filePath, ReaderOptions? options = null)
+    public static RarArchive Open(string filePath, OptionsBase? options = null)
     {
         filePath.CheckNotNullOrEmpty(nameof(filePath));
         var fileInfo = new FileInfo(filePath);
@@ -71,7 +72,7 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
             new SourceStream(
                 fileInfo,
                 i => RarArchiveVolumeFactory.GetFilePart(i, fileInfo),
-                options ?? new ReaderOptions()
+                options ?? new OptionsBase()
             )
         );
     }
@@ -81,10 +82,10 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="options"></param>
-    public static RarArchive Open(Stream stream, ReaderOptions? options = null)
+    public static RarArchive Open(Stream stream, OptionsBase? options = null)
     {
         stream.CheckNotNull(nameof(stream));
-        return new RarArchive(new SourceStream(stream, static _ => null, options ?? new ReaderOptions()));
+        return new RarArchive(new SourceStream(stream, static _ => null, options ?? new OptionsBase()));
     }
 
     public static bool IsRarFile(Stream stream)

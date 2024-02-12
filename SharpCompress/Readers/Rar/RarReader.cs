@@ -18,7 +18,7 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
     internal Lazy<IRarUnpack> UnpackV1 { get; } =
         new Lazy<IRarUnpack>(() => new Compressors.Rar.UnpackV1.Unpack());
 
-    internal RarReader(ReaderOptions options)
+    internal RarReader(OptionsBase options)
         : base(options) { }
 
     internal abstract void ValidateArchive(RarVolume archive);
@@ -31,10 +31,10 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
     /// <param name="stream"></param>
     /// <param name="options"></param>
     /// <returns></returns>
-    public static RarReader Open(Stream stream, ReaderOptions? options = null)
+    public static RarReader Open(Stream stream, OptionsBase? options = null)
     {
         stream.CheckNotNull(nameof(stream));
-        return new SingleVolumeRarReader(stream, options ?? new ReaderOptions());
+        return new SingleVolumeRarReader(stream, options ?? new OptionsBase());
     }
 
     protected override IEnumerable<RarReaderEntry> GetEntries(Stream stream)

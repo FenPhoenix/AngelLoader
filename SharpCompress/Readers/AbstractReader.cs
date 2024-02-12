@@ -17,12 +17,12 @@ public abstract class AbstractReader<TEntry, TVolume> : IReader
     private IEnumerator<TEntry>? entriesForCurrentReadStream;
     private bool wroteCurrentEntry;
 
-    internal AbstractReader(ReaderOptions options)
+    internal AbstractReader(OptionsBase options)
     {
         Options = options;
     }
 
-    internal ReaderOptions Options { get; }
+    internal OptionsBase Options { get; }
 
     /// <summary>
     /// Current volume that the current entry resides in

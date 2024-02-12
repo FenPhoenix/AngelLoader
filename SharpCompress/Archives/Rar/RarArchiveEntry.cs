@@ -5,7 +5,6 @@ using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.Compressors.Rar;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
@@ -13,17 +12,17 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 {
     private readonly ICollection<RarFilePart> parts;
     private readonly RarArchive archive;
-    private readonly ReaderOptions readerOptions;
+    private readonly OptionsBase OptionsBase;
 
     internal RarArchiveEntry(
         RarArchive archive,
         IEnumerable<RarFilePart> parts,
-        ReaderOptions readerOptions
+        OptionsBase OptionsBase
     )
     {
         this.parts = parts.ToList();
         this.archive = archive;
-        this.readerOptions = readerOptions;
+        this.OptionsBase = OptionsBase;
         IsSolid = FileHeader.IsSolid;
     }
 

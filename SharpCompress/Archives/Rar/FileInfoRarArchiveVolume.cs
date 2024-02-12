@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SharpCompress.Common;
 using SharpCompress.Common.Rar;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Archives.Rar;
 
@@ -13,14 +13,14 @@ namespace SharpCompress.Archives.Rar;
 /// </summary>
 internal abstract class FileInfoRarArchiveVolume : RarVolume
 {
-    internal FileInfoRarArchiveVolume(FileInfo fileInfo, ReaderOptions options, int index = 0)
+    internal FileInfoRarArchiveVolume(FileInfo fileInfo, OptionsBase options, int index = 0)
         : base(StreamingMode.Seekable, fileInfo.OpenRead(), FixOptions(options), index)
     {
         FileInfo = fileInfo;
         FileParts = GetVolumeFileParts().ToArray().ToReadOnly();
     }
 
-    private static ReaderOptions FixOptions(ReaderOptions options)
+    private static OptionsBase FixOptions(OptionsBase options)
     {
         //make sure we're closing streams with fileinfo
         options.LeaveStreamOpen = false;

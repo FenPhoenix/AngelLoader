@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using SharpCompress.Common.Rar.Headers;
 using SharpCompress.IO;
-using SharpCompress.Readers;
 
 namespace SharpCompress.Common.Rar;
 
@@ -16,7 +15,7 @@ public abstract class RarVolume : Volume
     private readonly RarHeaderFactory _headerFactory;
     internal int _maxCompressionAlgorithm;
 
-    internal RarVolume(StreamingMode mode, Stream stream, ReaderOptions options, int index = 0)
+    internal RarVolume(StreamingMode mode, Stream stream, OptionsBase options, int index = 0)
         : base(stream, options, index) => _headerFactory = new RarHeaderFactory(mode, options);
 
 #nullable disable

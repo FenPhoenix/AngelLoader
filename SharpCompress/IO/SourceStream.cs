@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress.Readers;
+using SharpCompress.Common;
 
 namespace SharpCompress.IO;
 
@@ -15,10 +15,10 @@ public sealed class SourceStream : Stream
     private readonly Func<int, Stream?> _getStreamPart;
     private int _stream;
 
-    public SourceStream(FileInfo file, Func<int, FileInfo?> getPart, ReaderOptions options)
+    public SourceStream(FileInfo file, Func<int, FileInfo?> getPart, OptionsBase options)
         : this(null, null, file, getPart, options) { }
 
-    public SourceStream(Stream stream, Func<int, Stream?> getPart, ReaderOptions options)
+    public SourceStream(Stream stream, Func<int, Stream?> getPart, OptionsBase options)
         : this(stream, getPart, null, null, options) { }
 
     private SourceStream(
@@ -26,10 +26,10 @@ public sealed class SourceStream : Stream
         Func<int, Stream?>? getStreamPart,
         FileInfo? file,
         Func<int, FileInfo?>? getFilePart,
-        ReaderOptions options
+        OptionsBase options
     )
     {
-        ReaderOptions = options;
+        OptionsBase = options;
         _files = new List<FileInfo>();
         _streams = new List<Stream>();
         IsFileMode = file != null;
@@ -64,7 +64,7 @@ public sealed class SourceStream : Stream
 
     public bool IsVolumes { get; set; }
 
-    public ReaderOptions ReaderOptions { get; }
+    public OptionsBase OptionsBase { get; }
     public bool IsFileMode { get; }
 
     public IEnumerable<Stream> Streams => _streams;
@@ -215,7 +215,7 @@ public sealed class SourceStream : Stream
 
     public override void Close()
     {
-        if (IsFileMode || !ReaderOptions.LeaveStreamOpen) //close if file mode or options specify it
+        if (IsFileMode || !OptionsBase.LeaveStreamOpen) //close if file mode or options specify it
         {
             foreach (var stream in _streams)
             {
