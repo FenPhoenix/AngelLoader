@@ -70,7 +70,7 @@ internal static class FileFlagsV4
 {
     public const ushort SPLIT_BEFORE = 0x0001;
     public const ushort SPLIT_AFTER = 0x0002;
-    public const ushort PASSWORD = 0x0004;
+    //public const ushort PASSWORD = 0x0004;
     public const ushort SOLID = 0x0010;
 
     public const ushort WINDOW_MASK = 0x00e0;

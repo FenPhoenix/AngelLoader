@@ -69,7 +69,7 @@ public sealed class LazyReadOnlyCollection<T> : ICollection<T>
         #endregion
     }
 
-    internal void EnsureFullyLoaded()
+    private void EnsureFullyLoaded()
     {
         if (!fullyLoaded)
         {

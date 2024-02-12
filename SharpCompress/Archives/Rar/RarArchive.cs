@@ -53,7 +53,6 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// Constructor with a FileInfo object to an existing file.
     /// </summary>
     /// <param name="filePath"></param>
-    /// <param name="options"></param>
     public static RarArchive Open(string filePath)
     {
         filePath.CheckNotNullOrEmpty(nameof(filePath));
@@ -70,7 +69,6 @@ public sealed class RarArchive : AbstractArchive<RarArchiveEntry, RarVolume>
     /// Takes a seekable Stream as a source
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="options"></param>
     public static RarArchive Open(Stream stream)
     {
         stream.CheckNotNull(nameof(stream));

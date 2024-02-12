@@ -15,8 +15,6 @@ internal static class FileNameDecoder
         var flags = 0;
         var flagBits = 0;
 
-        var low = 0;
-        var high = 0;
         var highByte = GetChar(name, encPos++);
         var buf = new StringBuilder();
         while (encPos < name.Length)
@@ -26,6 +24,7 @@ internal static class FileNameDecoder
                 flags = GetChar(name, encPos++);
                 flagBits = 8;
             }
+            int low;
             switch (flags >> 6)
             {
                 case 0:
@@ -40,7 +39,7 @@ internal static class FileNameDecoder
 
                 case 2:
                     low = GetChar(name, encPos);
-                    high = GetChar(name, encPos + 1);
+                    int high = GetChar(name, encPos + 1);
                     buf.Append((char)((high << 8) + low));
                     ++decPos;
                     encPos += 2;

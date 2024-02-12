@@ -104,8 +104,6 @@ internal sealed class FileHeader : RarHeader
             throw new InvalidFormatException("rar5 header size / extra size inconsistency");
         }
 
-        isEncryptedRar5 = false;
-
         while (RemainingHeaderBytes(reader) > 0)
         {
             var size = reader.ReadRarVIntUInt16();
@@ -117,7 +115,6 @@ internal sealed class FileHeader : RarHeader
                 case 1: // file encryption
 
                     {
-                        isEncryptedRar5 = true;
 
                         //var version = reader.ReadRarVIntByte();
                         //if (version != 0) throw new InvalidFormatException("unknown encryption algorithm " + version);
@@ -139,11 +136,11 @@ internal sealed class FileHeader : RarHeader
                         }
                         if ((flags & 0x4) == 0x4)
                         {
-                            FileCreatedTime = ReadExtendedTimeV5(reader, isWindowsTime);
+                            ReadExtendedTimeV5(reader, isWindowsTime);
                         }
                         if ((flags & 0x8) == 0x8)
                         {
-                            FileLastAccessedTime = ReadExtendedTimeV5(reader, isWindowsTime);
+                            ReadExtendedTimeV5(reader, isWindowsTime);
                         }
                     }
                     break;
@@ -297,7 +294,7 @@ internal sealed class FileHeader : RarHeader
                     }
                     if (datasize > 0)
                     {
-                        SubData = reader.ReadBytes(datasize);
+                        reader.ReadBytes(datasize);
                     }
 
                     if (NewSubHeaderType.SUBHEAD_TYPE_RR.Equals(fileNameBytes))
@@ -324,9 +321,9 @@ internal sealed class FileHeader : RarHeader
                     reader,
                     0
                 );
-                FileCreatedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 1);
-                FileLastAccessedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 2);
-                FileArchivedTime = ProcessExtendedTimeV4(extendedFlags, null, reader, 3);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 1);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 2);
+                ProcessExtendedTimeV4(extendedFlags, null, reader, 3);
             }
         }
     }
@@ -431,7 +428,6 @@ internal sealed class FileHeader : RarHeader
     internal long CompressedSize { get; private set; }
     internal long UncompressedSize { get; private set; }
     internal string FileName { get; private set; }
-    internal byte[] SubData { get; private set; }
     internal long DataStartPosition { get; set; }
     public Stream PackedStream { get; set; }
 
@@ -442,14 +438,5 @@ internal sealed class FileHeader : RarHeader
 
     public bool IsDirectory => HasFlag(IsRar5 ? FileFlagsV5.DIRECTORY : FileFlagsV4.DIRECTORY);
 
-    private bool isEncryptedRar5;
-    public bool IsEncrypted => IsRar5 ? isEncryptedRar5 : HasFlag(FileFlagsV4.PASSWORD);
-
     internal DateTime? FileLastModifiedTime { get; private set; }
-
-    internal DateTime? FileCreatedTime { get; private set; }
-
-    internal DateTime? FileLastAccessedTime { get; private set; }
-
-    internal DateTime? FileArchivedTime { get; private set; }
 }

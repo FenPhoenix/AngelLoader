@@ -16,7 +16,7 @@ public abstract class Volume : IDisposable
 
     internal Stream Stream => _actualStream;
 
-    public int Index { get; }
+    protected int Index { get; }
 
 #if false
     protected OptionsBase OptionsBase { get; }
@@ -24,7 +24,7 @@ public abstract class Volume : IDisposable
     public string FileName => (_actualStream as FileStream)?.Name!;
 #endif
 
-    protected void Dispose(bool disposing)
+    private void Dispose(bool disposing)
     {
         if (disposing)
         {

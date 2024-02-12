@@ -13,21 +13,21 @@ namespace SharpCompress.Common.Rar;
 public abstract class RarVolume : Volume
 {
     private readonly RarHeaderFactory _headerFactory;
-    internal int _maxCompressionAlgorithm;
+    private int _maxCompressionAlgorithm;
 
     internal RarVolume(StreamingMode mode, Stream stream, int index = 0)
         : base(stream, index) => _headerFactory = new RarHeaderFactory(mode);
 
 #nullable disable
-    internal ArchiveHeader ArchiveHeader { get; private set; }
+    private ArchiveHeader ArchiveHeader { get; set; }
 
 #nullable enable
 
-    internal StreamingMode Mode => _headerFactory.StreamingMode;
+    private StreamingMode Mode => _headerFactory.StreamingMode;
 
     internal abstract IEnumerable<RarFilePart> ReadFileParts();
 
-    internal abstract RarFilePart CreateFilePart(MarkHeader markHeader, FileHeader fileHeader);
+    internal abstract RarFilePart CreateFilePart(FileHeader fileHeader);
 
     internal IEnumerable<RarFilePart> GetVolumeFileParts()
     {
@@ -57,7 +57,7 @@ public abstract class RarVolume : Volume
                         _maxCompressionAlgorithm = fh.CompressionAlgorithm;
                     }
 
-                    yield return CreateFilePart(lastMarkHeader!, fh);
+                    yield return CreateFilePart(fh);
                 }
                 break;
                 case HeaderType.Service:
@@ -66,7 +66,7 @@ public abstract class RarVolume : Volume
                     var fh = (FileHeader)header;
                     if (fh.FileName == "CMT")
                     {
-                        var part = CreateFilePart(lastMarkHeader!, fh);
+                        var part = CreateFilePart(fh);
                         var buffer = new byte[fh.CompressedSize];
                         part.GetCompressedStream().Read(buffer, 0, buffer.Length);
                         System.Text.Encoding.UTF8.GetString(

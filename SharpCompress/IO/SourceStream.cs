@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SharpCompress.Common;
 
 namespace SharpCompress.IO;
 
@@ -62,13 +61,13 @@ public sealed class SourceStream : Stream
 
     public bool IsVolumes { get; set; }
 
-    public bool IsFileMode { get; }
+    private readonly bool IsFileMode;
 
     public IEnumerable<Stream> Streams => _streams;
 
     private Stream Current => _streams[_stream];
 
-    public bool LoadStream(int index) //ensure all parts to id are loaded
+    private bool LoadStream(int index) //ensure all parts to id are loaded
     {
         while (_streams.Count <= index)
         {
@@ -103,7 +102,7 @@ public sealed class SourceStream : Stream
         return true;
     }
 
-    public bool SetStream(int idx) //allow caller to switch part in multipart
+    private bool SetStream(int idx) //allow caller to switch part in multipart
     {
         if (LoadStream(idx))
         {
