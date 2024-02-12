@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using static AngelLoader.Forms.ControlUtils;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
@@ -126,7 +127,6 @@ internal sealed class Dialogs : IDialogs
             return (result == DialogResult.OK, d.SelectedItems);
         });
 
-#if !X64
     /// <summary>
     /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
     /// </summary>
@@ -138,7 +138,6 @@ internal sealed class Dialogs : IDialogs
         AssertR(FormsViewEnvironment.ViewCreated, nameof(FormsViewEnvironment) + "." + nameof(FormsViewEnvironment.ViewCreated) + " was false");
         InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal, title, icon));
     }
-#endif
 
     /// <summary>
     /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
