@@ -14,10 +14,10 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
 {
     private RarVolume? volume;
 
-    private Lazy<IRarUnpack> UnpackV2017 { get; } =
+    private readonly Lazy<IRarUnpack> UnpackV2017 =
         new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV2017.Unpack());
 
-    private Lazy<IRarUnpack> UnpackV1 { get; } =
+    private readonly Lazy<IRarUnpack> UnpackV1 =
         new Lazy<IRarUnpack>(static () => new Compressors.Rar.UnpackV1.Unpack());
 
     internal RarReader() { }
@@ -30,7 +30,6 @@ public abstract class RarReader : AbstractReader<RarReaderEntry, RarVolume>
     /// Opens a RarReader for Non-seeking usage with a single volume
     /// </summary>
     /// <param name="stream"></param>
-    /// <param name="options"></param>
     /// <returns></returns>
     public static RarReader Open(Stream stream)
     {

@@ -383,7 +383,7 @@ internal sealed class FileHeader : RarHeader
 
     public override string ToString() => FileName;
 
-    private ushort Flags { get; set; }
+    private ushort Flags;
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;
 
@@ -428,8 +428,8 @@ internal sealed class FileHeader : RarHeader
     internal long CompressedSize { get; private set; }
     internal long UncompressedSize { get; private set; }
     internal string FileName { get; private set; }
-    internal long DataStartPosition { get; set; }
-    public Stream PackedStream { get; set; }
+    internal long DataStartPosition;
+    public Stream PackedStream;
 
     public bool IsSplitBefore =>
         IsRar5 ? HasHeaderFlag(HeaderFlagsV5.SPLIT_BEFORE) : HasFlag(FileFlagsV4.SPLIT_BEFORE);

@@ -24,7 +24,7 @@ internal class BitInput
     /// <summary>  </summary>
     internal BitInput() => InBuf = new byte[MAX_SIZE];
 
-    internal byte[] InBuf { get; }
+    internal readonly byte[] InBuf;
 
     internal void InitBitInput()
     {

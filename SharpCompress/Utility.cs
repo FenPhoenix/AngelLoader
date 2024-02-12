@@ -8,8 +8,6 @@ namespace SharpCompress;
 [CLSCompliant(false)]
 public static class Utility
 {
-    public static ReadOnlyCollection<T> ToReadOnly<T>(this ICollection<T> items) => new(items);
-
     public static void SetSize(this List<byte> list, int count)
     {
         if (count > list.Count)

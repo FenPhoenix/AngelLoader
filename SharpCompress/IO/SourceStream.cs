@@ -59,7 +59,7 @@ public sealed class SourceStream : Stream
         SetStream(0);
     }
 
-    public bool IsVolumes { get; set; }
+    public bool IsVolumes;
 
     private readonly bool IsFileMode;
 

@@ -10,13 +10,10 @@ public abstract class Volume : IDisposable
 
     internal Volume(Stream stream, int index = 0)
     {
-        Index = index;
         _actualStream = NonDisposingStream.Create(stream);
     }
 
     internal Stream Stream => _actualStream;
-
-    protected int Index { get; }
 
 #if false
     protected OptionsBase OptionsBase { get; }

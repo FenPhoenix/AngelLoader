@@ -26,7 +26,7 @@ internal sealed class See2Context
         set => _summ = value & 0xffff;
     }
 
-    public const int SIZE = 4;
+    private const int SIZE = 4;
 
     // ushort Summ;
     private int _summ;

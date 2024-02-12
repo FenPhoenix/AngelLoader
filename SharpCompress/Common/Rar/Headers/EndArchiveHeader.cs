@@ -27,7 +27,7 @@ internal sealed class EndArchiveHeader : RarHeader
         }
     }
 
-    private ushort Flags { get; set; }
+    private ushort Flags;
 
     private bool HasFlag(ushort flag) => (Flags & flag) == flag;
 }

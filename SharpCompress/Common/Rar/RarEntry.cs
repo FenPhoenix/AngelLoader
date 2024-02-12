@@ -20,7 +20,7 @@ public abstract class RarEntry : Entry
     /// <summary>
     /// The File's 32 bit CRC Hash
     /// </summary>
-    public long Crc => FileHeader.FileCrc;
+    private long Crc => FileHeader.FileCrc;
 
     /// <summary>
     /// The path of the file internal to the Rar Archive.

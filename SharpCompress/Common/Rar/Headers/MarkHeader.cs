@@ -7,7 +7,7 @@ internal sealed class MarkHeader : IRarHeader
 {
     private const int MAX_SFX_SIZE = 0x80000 - 16; //archive.cpp line 136
 
-    public bool IsRar5 { get; }
+    public readonly bool IsRar5;
 
     private MarkHeader(bool isRar5) => IsRar5 = isRar5;
 

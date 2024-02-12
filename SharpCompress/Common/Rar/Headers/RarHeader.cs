@@ -103,23 +103,23 @@ internal class RarHeader : IRarHeader
 
     protected bool IsRar5 => _isRar5;
 
-    protected uint HeaderCrc { get; }
+    private readonly uint HeaderCrc;
 
-    internal byte HeaderCode { get; }
+    internal readonly byte HeaderCode;
 
-    protected ushort HeaderFlags { get; }
+    protected readonly ushort HeaderFlags;
 
     protected bool HasHeaderFlag(ushort flag) => (HeaderFlags & flag) == flag;
 
-    protected int HeaderSize { get; }
+    protected readonly int HeaderSize;
 
     /// <summary>
     /// Extra header size.
     /// </summary>
-    protected uint ExtraSize { get; }
+    protected readonly uint ExtraSize;
 
     /// <summary>
     /// Size of additional data (eg file contents)
     /// </summary>
-    protected long AdditionalDataSize { get; }
+    protected readonly long AdditionalDataSize;
 }

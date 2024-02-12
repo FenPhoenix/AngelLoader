@@ -21,7 +21,7 @@ internal sealed class ReadOnlySubStream : NonDisposingStream
         _position = 0;
     }
 
-    private long BytesLeftToRead { get; set; }
+    private long BytesLeftToRead;
 
     public override bool CanRead => true;
 

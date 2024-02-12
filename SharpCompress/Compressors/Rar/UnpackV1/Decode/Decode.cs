@@ -12,17 +12,17 @@ internal class Decode
     /// <summary> returns the decode Length array</summary>
     /// <returns> decodeLength
     /// </returns>
-    internal int[] DecodeLen { get; }
+    internal readonly int[] DecodeLen;
 
     /// <summary> returns the decode num array</summary>
     /// <returns> decodeNum
     /// </returns>
-    internal int[] DecodeNum { get; }
+    internal readonly int[] DecodeNum;
 
     /// <summary> returns the decodePos array</summary>
     /// <returns> decodePos
     /// </returns>
-    internal int[] DecodePos { get; }
+    internal readonly int[] DecodePos;
 
-    internal int MaxNum { get; set; }
+    internal int MaxNum;
 }

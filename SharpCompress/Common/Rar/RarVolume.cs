@@ -19,7 +19,7 @@ public abstract class RarVolume : Volume
         : base(stream, index) => _headerFactory = new RarHeaderFactory(mode);
 
 #nullable disable
-    private ArchiveHeader ArchiveHeader { get; set; }
+    private ArchiveHeader ArchiveHeader;
 
 #nullable enable
 
@@ -31,7 +31,6 @@ public abstract class RarVolume : Volume
 
     internal IEnumerable<RarFilePart> GetVolumeFileParts()
     {
-        MarkHeader? lastMarkHeader = null;
         foreach (var header in _headerFactory.ReadHeaders(Stream))
         {
             switch (header.HeaderType)
@@ -39,7 +38,6 @@ public abstract class RarVolume : Volume
                 case HeaderType.Mark:
 
                 {
-                    lastMarkHeader = (MarkHeader)header;
                 }
                 break;
                 case HeaderType.Archive:

@@ -23,7 +23,7 @@ public class NonDisposingStream : Stream
         ThrowOnDispose = throwOnDispose;
     }
 
-    public bool ThrowOnDispose { get; set; }
+    public bool ThrowOnDispose;
 
     protected override void Dispose(bool disposing)
     {
@@ -35,7 +35,7 @@ public class NonDisposingStream : Stream
         }
     }
 
-    protected Stream Stream { get; }
+    protected readonly Stream Stream;
 
     public override bool CanRead => Stream.CanRead;
 

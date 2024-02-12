@@ -9,31 +9,14 @@ public sealed class PpmdProperties
     private int _allocatorSize;
     internal Allocator? _allocator;
 
-    public PpmdProperties()
-        : this(16 << 20, 6) { }
-
-    public PpmdProperties(int allocatorSize, int modelOrder)
-        : this(allocatorSize, modelOrder, ModelRestorationMethod.Restart) { }
-
-    internal PpmdProperties(
-        int allocatorSize,
-        int modelOrder,
-        ModelRestorationMethod modelRestorationMethod
-    )
-    {
-        AllocatorSize = allocatorSize;
-        ModelOrder = modelOrder;
-        RestorationMethod = modelRestorationMethod;
-    }
-
-    public int ModelOrder { get; }
-    public PpmdVersion Version { get; } = PpmdVersion.I1;
-    internal ModelRestorationMethod RestorationMethod { get; }
+    public readonly int ModelOrder;
+    public readonly PpmdVersion Version = PpmdVersion.I1;
+    internal readonly ModelRestorationMethod RestorationMethod;
 
     public PpmdProperties(byte[] properties)
         : this(properties.AsSpan()) { }
 
-    public PpmdProperties(ReadOnlySpan<byte> properties)
+    private PpmdProperties(ReadOnlySpan<byte> properties)
     {
         if (properties.Length == 2)
         {
@@ -53,7 +36,7 @@ public sealed class PpmdProperties
     public int AllocatorSize
     {
         get => _allocatorSize;
-        set
+        private set
         {
             _allocatorSize = value;
             if (Version == PpmdVersion.I1)
@@ -62,23 +45,6 @@ public sealed class PpmdProperties
 
                 _allocator.Start(_allocatorSize);
             }
-        }
-    }
-
-    public byte[] Properties
-    {
-        get
-        {
-            var bytes = new byte[2];
-            BinaryPrimitives.WriteUInt16LittleEndian(
-                bytes,
-                (ushort)(
-                    (ModelOrder - 1)
-                    + (((AllocatorSize >> 20) - 1) << 4)
-                    + ((ushort)RestorationMethod << 12)
-                )
-            );
-            return bytes;
         }
     }
 }

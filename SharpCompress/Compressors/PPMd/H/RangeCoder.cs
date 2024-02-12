@@ -8,8 +8,8 @@ namespace SharpCompress.Compressors.PPMd.H;
 
 internal sealed class RangeCoder
 {
-    internal const int TOP = 1 << 24;
-    internal const int BOT = 1 << 15;
+    private const int TOP = 1 << 24;
+    private const int BOT = 1 << 15;
     internal const long UINT_MASK = 0xFFFFffffL;
 
     // uint low, code, range;

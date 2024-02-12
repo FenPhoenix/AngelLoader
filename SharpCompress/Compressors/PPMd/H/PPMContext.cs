@@ -98,7 +98,7 @@ internal sealed class PpmContext : Pointer
 
     internal State GetOneState() => _oneState;
 
-    internal void SetOneState(StateRef oneState) => _oneState.SetValues(oneState);
+    private void SetOneState(StateRef oneState) => _oneState.SetValues(oneState);
 
     internal int GetSuffix()
     {
@@ -109,7 +109,7 @@ internal sealed class PpmContext : Pointer
         return _suffix;
     }
 
-    internal void SetSuffix(PpmContext suffix) => SetSuffix(suffix.Address);
+    private void SetSuffix(PpmContext suffix) => SetSuffix(suffix.Address);
 
     internal void SetSuffix(int suffix)
     {
@@ -151,7 +151,7 @@ internal sealed class PpmContext : Pointer
         return pc.Address;
     }
 
-    internal void Rescale(ModelPpm model)
+    private void Rescale(ModelPpm model)
     {
         int oldNs = NumStats,
             i = NumStats - 1,

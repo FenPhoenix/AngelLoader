@@ -252,7 +252,7 @@ internal sealed class ModelPpm
         new Span<int>(CharMask).Clear();
     }
 
-    internal bool DecodeInit(IRarUnpack unpackRead, int escChar)
+    internal bool DecodeInit(IRarUnpack unpackRead)
     {
         var maxOrder = unpackRead.Char & 0xff;
         var reset = ((maxOrder & 0x20) != 0);
@@ -271,7 +271,7 @@ internal sealed class ModelPpm
         }
         if ((maxOrder & 0x40) != 0)
         {
-            escChar = unpackRead.Char;
+            int escChar = unpackRead.Char;
             unpackRead.PpmEscChar = escChar;
         }
         Coder = new RangeCoder(unpackRead);
