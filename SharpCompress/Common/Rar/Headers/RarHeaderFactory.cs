@@ -22,7 +22,7 @@ public sealed class RarHeaderFactory
 
     public IEnumerable<IRarHeader> ReadHeaders(Stream stream)
     {
-        var markHeader = MarkHeader.Read(stream, Options.LeaveStreamOpen, Options.LookForHeader);
+        var markHeader = MarkHeader.Read(stream, Options.LeaveStreamOpen, lookForHeader: false);
         _isRar5 = markHeader.IsRar5;
         yield return markHeader;
 

@@ -79,7 +79,7 @@ public sealed class RarArchiveEntry : RarEntry, IArchiveEntry
 
     private void CheckIncomplete()
     {
-        if (!readerOptions.DisableCheckIncomplete && !IsComplete)
+        if (!IsComplete)
         {
             throw new IncompleteArchiveException(
                 "ArchiveEntry is incomplete and cannot perform this operation."
