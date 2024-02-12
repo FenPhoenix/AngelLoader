@@ -126,28 +126,22 @@ internal sealed class Dialogs : IDialogs
             return (result == DialogResult.OK, d.SelectedItems);
         });
 
-#if false
     /// <summary>
     /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
     /// </summary>
     /// <param name="message"></param>
     /// <param name="title"></param>
     /// <param name="icon"></param>
-    public void ShowError_ViewOwned(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error)
+    public void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error)
     {
-        AssertR(FormsViewEnvironment.ViewCreated, nameof(FormsViewEnvironment) + "." + nameof(FormsViewEnvironment.ViewCreated) + " was false");
-        InvokeIfViewExists(() => ShowError_Internal(message, FormsViewEnvironment.ViewInternal, title, icon));
+        InvokeIfViewExists(() =>
+        {
+            IWin32Window? view = FormsViewEnvironment.ViewCreated && !FormsViewEnvironment.ViewInternal.Disposing
+                ? FormsViewEnvironment.ViewInternal
+                : null;
+            ShowError_Internal(message, view, title, icon);
+        });
     }
-#endif
-
-    /// <summary>
-    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="title"></param>
-    /// <param name="icon"></param>
-    public void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error) =>
-        InvokeIfViewExists(() => ShowError_Internal(message, null, title, icon));
 
     // Private method, not invoked because all calls are
     private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MBoxIcon icon)
