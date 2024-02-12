@@ -19,13 +19,9 @@ internal partial class Unpack
 
     private bool suspended;
 
-    internal bool unpAllBuf;
-
     //private ComprDataIO unpIO;
     private Stream readStream;
     private Stream writeStream;
-
-    internal bool unpSomeRead;
 
     private int readTop;
 
@@ -518,7 +514,6 @@ internal partial class Unpack
                 {
                     for (Length = 0; ((BitField << Length) & 0x8000) == 0; Length++)
                     {
-                        ;
                     }
                     AddBits(Length + 1);
                 }
@@ -810,13 +805,11 @@ internal partial class Unpack
     {
         if (unpPtr != wrPtr)
         {
-            unpSomeRead = true;
         }
         if (unpPtr < wrPtr)
         {
             writeStream.Write(window, wrPtr, -wrPtr & PackDef.MAXWINMASK);
             writeStream.Write(window, 0, unpPtr);
-            unpAllBuf = true;
         }
         else
         {

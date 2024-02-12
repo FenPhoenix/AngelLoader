@@ -10,10 +10,10 @@ internal sealed class RarVM : BitInput
 {
     internal byte[] Mem { get; private set; }
 
-    public const int VM_MEMSIZE = 0x40000;
+    private const int VM_MEMSIZE = 0x40000;
 
     //UPGRADE_NOTE: Final was removed from the declaration of 'VM_MEMMASK '. "ms-help://MS.VSCC.v80/dv_commoner/local/redirect.htm?index='!DefaultContextWindowIndex'&keyword='jlca1003'"
-    public const int VM_MEMMASK = (VM_MEMSIZE - 1);
+    private const int VM_MEMMASK = (VM_MEMSIZE - 1);
 
     public const int VM_GLOBALMEMADDR = 0x3C000;
 
@@ -809,7 +809,7 @@ internal sealed class RarVM : BitInput
         prg.CommandCount = 0;
         if (xorSum == code[0])
         {
-            var filterType = IsStandardFilter(code, codeSize);
+            var filterType = IsStandardFilter(code);
             if (filterType != VMStandardFilters.VMSF_NONE)
             {
                 var curCmd = new VMPreparedCommand();
@@ -1119,7 +1119,7 @@ internal sealed class RarVM : BitInput
         }
     }
 
-    public static VMStandardFilters IsStandardFilter(byte[] code, int codeSize)
+    private static VMStandardFilters IsStandardFilter(byte[] code)
     {
         VMStandardFilterSignature[] stdList =
         {

@@ -272,7 +272,6 @@ internal sealed class ModelPpm
         if ((maxOrder & 0x40) != 0)
         {
             int escChar = unpackRead.Char;
-            unpackRead.PpmEscChar = escChar;
         }
         Coder = new RangeCoder(unpackRead);
         if (reset)
