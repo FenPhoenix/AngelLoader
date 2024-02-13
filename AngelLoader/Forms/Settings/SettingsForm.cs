@@ -34,6 +34,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 {
     #region Private fields
 
+    private readonly Dictionary<Type, IDisposable> _dummyDisposables = new();
+
     private readonly ISettingsChangeableView? _ownerForm;
 
     private readonly Timer _thiefBuddyExistenceCheckTimer;
@@ -214,7 +216,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief2UseSteamCheckBox,
             PathsPage.Thief3UseSteamCheckBox,
             PathsPage.SS2UseSteamCheckBox,
-            new DarkCheckBox() // Dummy
+            GetDummy<DarkCheckBox>()
         };
 
         GameWebSearchUrlLabels = new[]
@@ -2060,6 +2062,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #endregion
 
+    private T GetDummy<T>() where T : IDisposable, new()
+    {
+        if (_dummyDisposables.TryGetValue(typeof(T), out IDisposable? item))
+        {
+            return (T)item;
+        }
+        else
+        {
+            T newItem = new();
+            _dummyDisposables[typeof(T)] = newItem;
+            return newItem;
+        }
+    }
+
     /// <summary>
     /// Clean up any resources being used.
     /// </summary>
@@ -2076,6 +2092,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             for (int i = 0; i < SettingsTabCount; i++)
             {
                 PageControls[i].Page.Dispose();
+            }
+            foreach (KeyValuePair<Type, IDisposable> item in _dummyDisposables)
+            {
+                item.Value.Dispose();
             }
         }
         base.Dispose(disposing);
