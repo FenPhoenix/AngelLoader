@@ -282,7 +282,7 @@ internal static class Import
         //    darkGameSS2 = 4
         //}
 
-        Regex darkLoaderFMRegex = new(@"\.[0123456789]+]$", RegexOptions.Compiled);
+        Regex darkLoaderFMRegex = new(@"\.[0-9]+]$", RegexOptions.Compiled);
 
         const string missionDirsHeader = "[mission directories]";
 

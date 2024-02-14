@@ -546,7 +546,7 @@ public sealed partial class Scanner
         new Regex(@"\s+\)", RegexOptions.Compiled);
 
     private readonly Regex DaySuffixesRegex =
-        new Regex("[0123456789](?<Suffix>(st|nd|rd|th)).+",
+        new Regex("[0-9](?<Suffix>(st|nd|rd|th)).+",
             RegexOptions.ExplicitCapture | IgnoreCaseInvariant | RegexOptions.Compiled);
 
     private readonly Regex AuthorEmailRegex =
@@ -620,7 +620,7 @@ public sealed partial class Scanner
         //language=regexp
         "(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
         //language=regexp
-        "(?(Months)(, ?| ))[0123456789]*( by| to)? (?<Author>.+)";
+        "(?(Months)(, ?| ))[0-9]*( by| to)? (?<Author>.+)";
 
     // Unicode 00A9 = copyright symbol
 
@@ -660,7 +660,7 @@ public sealed partial class Scanner
             @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-    private readonly Regex CopyrightAuthorYearRegex = new Regex(" [0123456789]+.*$", RegexOptions.Compiled);
+    private readonly Regex CopyrightAuthorYearRegex = new Regex(" [0-9]+.*$", RegexOptions.Compiled);
 
     private readonly Regex TitleByAuthorRegex =
         new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
@@ -681,15 +681,15 @@ public sealed partial class Scanner
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex AnyDateNumberRTLRegex =
-        new Regex("(Y2K|[0123456789])",
+        new Regex("(Y2K|[0-9])",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
 
     private readonly Regex NewDarkAndNumberRegex =
-        new Regex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
+        new Regex(@"New ?Dark [0-9]\.[0-9]{1,2}",
             IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex EuropeanDateRegex =
-        new Regex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
+        new Regex(@"\.*[0-9]{1,2}\s*\.\s*[0-9]{1,2}\s*\.\s*([0-9]{4}|[0-9]{2})\.*",
             RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
     private readonly Regex PeriodWithOptionalSurroundingSpacesRegex =
@@ -786,7 +786,7 @@ public sealed partial class Scanner
         new Regex(@"\s{2,}", RegexOptions.Compiled);
 
     private readonly Regex DarkMod_TDM_MapSequence_MissionLine_Regex =
-        new Regex(@"^Mission [0123456789]+\:\s*.+", RegexOptions.Compiled);
+        new Regex(@"^Mission [0-9]+\:\s*.+", RegexOptions.Compiled);
 
     private readonly Regex DarkModTxtFieldsRegex =
         new Regex("(Title:|Author:|Description:|Version:|Required TDM Version:)",

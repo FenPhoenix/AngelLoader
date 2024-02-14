@@ -61,10 +61,10 @@ internal static class FMBackupAndRestore
     private const int _removeFileEqLen = 11;
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
-    private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0123456789]{1,2}[/\\]",
+    private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0-9]{1,2}[/\\]",
         RegexOptions.Compiled | IgnoreCaseInvariant);
 
-    private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0123456789]{1,2}[/\\]?$",
+    private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0-9]{1,2}[/\\]?$",
         RegexOptions.Compiled | IgnoreCaseInvariant);
 
     #endregion
