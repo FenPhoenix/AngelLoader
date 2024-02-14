@@ -61,10 +61,10 @@ internal static partial class FMBackupAndRestore
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
 
-    [GeneratedRegex(@"^save_[0123456789]{1,2}[/\\]", IgnoreCaseInvariant)]
+    [GeneratedRegex(@"^save_[0-9]{1,2}[/\\]", IgnoreCaseInvariant)]
     private static partial Regex SS2SaveDirsInZipRegex();
 
-    [GeneratedRegex(@"[/\\]save_[0123456789]{1,2}[/\\]?$", IgnoreCaseInvariant)]
+    [GeneratedRegex(@"[/\\]save_[0-9]{1,2}[/\\]?$", IgnoreCaseInvariant)]
     private static partial Regex SS2SaveDirsOnDiskRegex();
 
     #endregion

@@ -514,7 +514,7 @@ public sealed partial class Scanner
     [GeneratedRegex(@"\s+\)")]
     private static partial Regex CloseParenSpacesRegex();
 
-    [GeneratedRegex("[0123456789](?<Suffix>(st|nd|rd|th)).+", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
+    [GeneratedRegex("[0-9](?<Suffix>(st|nd|rd|th)).+", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
     private static partial Regex DaySuffixesRegex();
 
     [GeneratedRegex(@"\(?\S+@\S+\.\S{2,5}\)?")]
@@ -609,7 +609,7 @@ public sealed partial class Scanner
         //language=regexp
         "(?<Months>( (Jan|Febr)uary| Ma(rch|y)| A(pril|ugust)| Ju(ne|ly)| (((Sept|Nov|Dec)em)|Octo)ber))?" +
         //language=regexp
-        "(?(Months)(, ?| ))[0123456789]*( by| to)? (?<Author>.+)";
+        "(?(Months)(, ?| ))[0-9]*( by| to)? (?<Author>.+)";
 
     // Unicode 00A9 = copyright symbol
 
@@ -651,7 +651,7 @@ public sealed partial class Scanner
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
     private static partial Regex AuthorGeneralCopyrightRegex();
 
-    [GeneratedRegex(" [0123456789]+.*$")]
+    [GeneratedRegex(" [0-9]+.*$")]
     private static partial Regex CopyrightAuthorYearRegex();
 
     #endregion
@@ -671,15 +671,15 @@ public sealed partial class Scanner
     [GeneratedRegex(@"\u2013{2,}", RegexOptions.ExplicitCapture)]
     private static partial Regex MultipleUnicodeDashesRegex();
 
-    [GeneratedRegex("(Y2K|[0123456789])",
+    [GeneratedRegex("(Y2K|[0-9])",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft)]
     private static partial Regex AnyDateNumberRTLRegex();
 
-    [GeneratedRegex(@"New ?Dark [0123456789]\.[0123456789]{1,2}",
+    [GeneratedRegex(@"New ?Dark [0-9]\.[0-9]{1,2}",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
     private static partial Regex NewDarkAndNumberRegex();
 
-    [GeneratedRegex(@"\.*[0123456789]{1,2}\s*\.\s*[0123456789]{1,2}\s*\.\s*([0123456789]{4}|[0123456789]{2})\.*",
+    [GeneratedRegex(@"\.*[0-9]{1,2}\s*\.\s*[0-9]{1,2}\s*\.\s*([0-9]{4}|[0-9]{2})\.*",
         RegexOptions.ExplicitCapture)]
     private static partial Regex EuropeanDateRegex();
 
@@ -758,7 +758,7 @@ public sealed partial class Scanner
     [GeneratedRegex(@"\s{2,}")]
     private static partial Regex MultipleWhiteSpaceRegex();
 
-    [GeneratedRegex(@"^Mission [0123456789]+\:\s*.+")]
+    [GeneratedRegex(@"^Mission [0-9]+\:\s*.+")]
     private static partial Regex DarkMod_TDM_MapSequence_MissionLine_Regex();
 
     [GeneratedRegex("(Title:|Author:|Description:|Version:|Required TDM Version:)",

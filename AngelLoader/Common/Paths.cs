@@ -184,7 +184,7 @@ internal static class Paths
 
     internal static readonly string ConfigIni = PathCombineFast_NoChecks(Data, "Config.ini");
     internal const string FMDataBakBase = "FMData.bak";
-    internal const string FMDataBakNumberedRegexString = "^" + FMDataBakBase + "[0123456789]+$";
+    internal const string FMDataBakNumberedRegexString = "^" + FMDataBakBase + "[0-9]+$";
     internal static readonly string FMDataIni = PathCombineFast_NoChecks(Data, "FMData.ini");
 
     #endregion
