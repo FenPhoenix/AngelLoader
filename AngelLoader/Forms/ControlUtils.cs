@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
@@ -587,38 +588,31 @@ internal static class ControlUtils
 
     #region Aero Snap window restore hack
 
-    private static bool? _restoredHackReflectable;
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = WinFormsReflection.Form_RestoredWindowBounds)]
+    private static extern ref Rectangle GetRestoredWindowBounds(Form obj);
 
-    private static FieldInfo? _restoredWindowBoundsField;
-    private static FieldInfo? _restoredWindowBoundsSpecifiedField;
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = WinFormsReflection.Form_RestoredWindowBoundsSpecified)]
+    private static extern ref BoundsSpecified GetRestoredWindowBoundsSpecified(Form obj);
+
+    private static bool? _restoredHackSupported;
 
     // This is part of the Aero Snap restore hack; it just stops the form from growing by Size - ClientSize
     // every time it gets restored.
     internal static void SetAeroSnapRestoreHackValues(Form form, Point nominalWindowLocation, Size nominalWindowSize)
     {
-        if (_restoredHackReflectable == false) return;
+        if (_restoredHackSupported == false) return;
 
         try
         {
-            if (_restoredHackReflectable == null)
-            {
-                const BindingFlags bFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+            ref Rectangle restoredWindowBounds = ref GetRestoredWindowBounds(form);
+            ref BoundsSpecified restoredWindowBoundsSpecified = ref GetRestoredWindowBoundsSpecified(form);
 
-                _restoredWindowBoundsField = typeof(Form).GetField(WinFormsReflection.Form_RestoredWindowBounds, bFlags);
-                _restoredWindowBoundsSpecifiedField = typeof(Form).GetField(WinFormsReflection.Form_RestoredWindowBoundsSpecified, bFlags);
-
-                _restoredHackReflectable = _restoredWindowBoundsField != null && _restoredWindowBoundsSpecifiedField != null;
-            }
-
-            if (_restoredHackReflectable == true)
-            {
-                _restoredWindowBoundsField!.SetValue(form, new Rectangle(nominalWindowLocation, nominalWindowSize));
-                _restoredWindowBoundsSpecifiedField!.SetValue(form, BoundsSpecified.None);
-            }
+            restoredWindowBounds = new Rectangle(nominalWindowLocation, nominalWindowSize);
+            restoredWindowBoundsSpecified = BoundsSpecified.None;
         }
         catch
         {
-            _restoredHackReflectable = false;
+            _restoredHackSupported = false;
         }
     }
 
