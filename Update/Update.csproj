@@ -10,6 +10,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

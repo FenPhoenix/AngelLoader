@@ -8,6 +8,7 @@
     <Platforms>AnyCPU;x64;x86</Platforms>
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 	<NeutralLanguage>en-US</NeutralLanguage>
+	<WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

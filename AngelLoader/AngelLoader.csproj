@@ -13,6 +13,8 @@
 
 		<!-- Why would anyone want their version to be "1.7.6+2789dcf7bc0ba4d396db7b10ced1bdf5bee44daa"?! -->
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+		
+		<WarningsAsErrors>Nullable</WarningsAsErrors>
 
 		<Nullable>enable</Nullable>
 
