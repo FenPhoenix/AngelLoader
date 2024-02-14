@@ -839,16 +839,13 @@ internal static class Core
         // This must come first, so below methods can use it
         Config.SetGamePath(gameIndex, gamePath);
 
-        bool checkGameDirWritePermission =
-            !gamePath.IsEmpty() && GameDirNeedsWriteAccess(gameIndex);
-
-        if (checkGameDirWritePermission && !DirectoryHasWritePermission(gamePath))
-        {
-            error |= SetGameDataError.GameDirNotWriteable;
-        }
-
         if (GameIsDark(gameIndex))
         {
+            if (!gamePath.IsEmpty() && !DirectoryHasWritePermission(gamePath))
+            {
+                error |= SetGameDataError.GameDirNotWriteable;
+            }
+
             var data = gameExeSpecified
                 ? GameConfigFiles.GetInfoFromCamModIni(gamePath, langOnly: false, returnAllLines: true)
                 : (
@@ -930,6 +927,12 @@ internal static class Core
         }
         else if (gameIndex == GameIndex.TDM)
         {
+            if (!gamePath.IsEmpty() && !DirectoryHasWritePermission(gamePath))
+            {
+                error |= SetGameDataError.GameDirNotWriteable;
+            }
+
+
             if (gameExeSpecified && !gamePath.IsEmpty())
             {
                 Config.SetFMInstallPath(GameIndex.TDM, Path.Combine(gamePath, "fms"));
@@ -946,6 +949,12 @@ internal static class Core
             if (gameExeSpecified)
             {
                 var t3Data = GameConfigFiles.GetInfoFromSneakyOptionsIni();
+
+                if (!gamePath.IsEmpty() && t3Data.GamePathNeedsWriteCheck && !DirectoryHasWritePermission(gamePath))
+                {
+                    error |= SetGameDataError.GameDirNotWriteable;
+                }
+
                 if (t3Data.Error == Error.None)
                 {
                     Config.SetFMInstallPath(GameIndex.Thief3, t3Data.FMInstallPath);
