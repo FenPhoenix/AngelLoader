@@ -350,16 +350,10 @@ internal partial class Unpack
 
     private void UnpWriteBuf20()
     {
-        if (UnpPtr != WrPtr)
-        {
-            UnpSomeRead = true;
-        }
-
         if (UnpPtr < WrPtr)
         {
             UnpIO_UnpWrite(Window, WrPtr, (uint)(-(int)WrPtr & MaxWinMask));
             UnpIO_UnpWrite(Window, 0, UnpPtr);
-            UnpAllBuf = true;
         }
         else
         {

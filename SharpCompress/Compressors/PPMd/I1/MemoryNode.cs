@@ -42,7 +42,7 @@ internal struct MemoryNode
     /// <summary>
     /// Gets or sets the stamp.
     /// </summary>
-    public uint Stamp
+    public readonly uint Stamp
     {
         get =>
             _memory[_address]
@@ -61,7 +61,7 @@ internal struct MemoryNode
     /// <summary>
     /// Gets or sets the next memory node.
     /// </summary>
-    public MemoryNode Next
+    public readonly MemoryNode Next
     {
         get =>
             new MemoryNode(
@@ -83,9 +83,9 @@ internal struct MemoryNode
     /// <summary>
     /// Gets or sets the unit count.
     /// </summary>
-    public uint UnitCount
+    public readonly uint UnitCount
     {
-        readonly get =>
+        get =>
             _memory[_address + 8]
             | (((uint)_memory[_address + 9]) << 8)
             | (((uint)_memory[_address + 10]) << 16)
@@ -102,7 +102,7 @@ internal struct MemoryNode
     /// <summary>
     /// Gets whether there is a next memory node available.
     /// </summary>
-    public bool Available => Next._address != 0;
+    public readonly bool Available => Next._address != 0;
 
     /// <summary>
     /// Link in the provided memory node.
