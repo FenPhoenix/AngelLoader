@@ -40,7 +40,7 @@ internal static class Language
 
         foreach (IniSection updaterSection in updaterSections)
         {
-            IniSection? mainSection = sections.FirstOrDefault(x => x.Name == updaterSection.Name);
+            IniSection? mainSection = sections.Find(x => x.Name == updaterSection.Name);
             if (mainSection != null)
             {
                 foreach (IniItem updaterSectionItem in updaterSection)
@@ -49,11 +49,11 @@ internal static class Language
                     {
                         mainSection.Add(updaterSectionItem);
                     }
-                    else if (mainSection.FirstOrDefault(x => x.Key == updaterSectionItem.Key) == null)
+                    else if (mainSection.Find(x => x.Key == updaterSectionItem.Key) == null)
                     {
                         IniItem? placeAfterKeyItem = updaterSectionItem.PlaceAfterKey.IsEmpty()
                             ? null
-                            : mainSection.FirstOrDefault(x => x.Key == updaterSectionItem.PlaceAfterKey);
+                            : mainSection.Find(x => x.Key == updaterSectionItem.PlaceAfterKey);
 
                         if (placeAfterKeyItem != null)
                         {

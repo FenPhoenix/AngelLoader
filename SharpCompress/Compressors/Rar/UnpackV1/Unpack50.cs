@@ -19,7 +19,7 @@ internal partial class Unpack
     // so we keep number of buffered filter in unpacker reasonable.
     private const int UNPACK_MAX_WRITE = 0x400000;
 
-    private bool TablesRead5;
+    private readonly bool TablesRead5;
     private int WriteBorder;
 
     // TODO: see logic in unpack.cpp Unpack::Init()
@@ -83,7 +83,7 @@ internal partial class Unpack
 
             // Check TablesRead5 to be sure that we read tables at least once
             // regardless of current block header TablePresent flag.
-            // So we can safefly use these tables below.
+            // So we can safely use these tables below.
             if (!ReadBlockHeader() || !ReadTables() || !TablesRead5)
             {
                 return;

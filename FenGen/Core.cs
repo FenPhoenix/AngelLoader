@@ -78,16 +78,12 @@ internal sealed class LanguageSourceEnum
     internal string LangEnumType = "";
 }
 
-internal sealed class DesignerCSFile
+internal sealed class DesignerCSFile(string fileName, bool splashScreen = false)
 {
-    internal readonly string FileName;
-    internal readonly bool SplashScreen;
+    internal readonly string FileName = fileName;
+    internal readonly bool SplashScreen = splashScreen;
 
-    public DesignerCSFile(string fileName, bool splashScreen = false)
-    {
-        FileName = fileName;
-        SplashScreen = splashScreen;
-    }
+    public override string ToString() => FileName;
 }
 
 // Nasty global state that's really just here to avoid over-parameterization.

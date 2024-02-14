@@ -247,7 +247,7 @@ internal static class Native
 #if X64
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     [StructLayout(LayoutKind.Sequential)]
-    public class ENLINK64
+    public sealed class ENLINK64
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 56)]
         public byte[] contents = new byte[56];

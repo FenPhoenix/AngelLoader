@@ -17,8 +17,6 @@ internal partial class Unpack
 {
     private void Unpack5(bool Solid)
     {
-        FileExtracted = true;
-
         if (!Suspended)
         {
             UnpInitData(Solid);
@@ -85,7 +83,6 @@ internal partial class Unpack
 
                 if (Suspended)
                 {
-                    FileExtracted = false;
                     return;
                 }
             }
@@ -442,7 +439,6 @@ internal partial class Unpack
                             UnpIO_UnpWrite(OutMem, 0, BlockLength);
                         }
 
-                        UnpSomeRead = true;
                         WrittenFileSize += BlockLength;
                         WrittenBorder = BlockEnd;
                         WriteSizeLeft = (UnpPtr - WrittenBorder) & MaxWinMask;
@@ -620,16 +616,6 @@ internal partial class Unpack
 
     private void UnpWriteArea(size_t StartPtr, size_t EndPtr)
     {
-        if (EndPtr != StartPtr)
-        {
-            UnpSomeRead = true;
-        }
-
-        if (EndPtr < StartPtr)
-        {
-            UnpAllBuf = true;
-        }
-
         if (Fragmented)
         {
             var SizeToWrite = (EndPtr - StartPtr) & MaxWinMask;

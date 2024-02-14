@@ -75,7 +75,7 @@ internal sealed class Decoder
                 }
             }
 
-            public byte DecodeNormal(RangeCoder.Decoder rangeDecoder)
+            public readonly byte DecodeNormal(RangeCoder.Decoder rangeDecoder)
             {
                 uint symbol = 1;
                 do
@@ -85,7 +85,7 @@ internal sealed class Decoder
                 return (byte)symbol;
             }
 
-            public byte DecodeWithMatchByte(RangeCoder.Decoder rangeDecoder, byte matchByte)
+            public readonly byte DecodeWithMatchByte(RangeCoder.Decoder rangeDecoder, byte matchByte)
             {
                 uint symbol = 1;
                 do

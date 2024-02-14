@@ -278,10 +278,7 @@ byte *ReadBufMT;
     private int64 DestUnpSize;
 
     //bool Suspended;
-    private bool UnpAllBuf;
-    private bool UnpSomeRead;
     private int64 WrittenFileSize;
-    private bool FileExtracted;
 
 
     /***************************** Unpack v 1.5 *********************************/

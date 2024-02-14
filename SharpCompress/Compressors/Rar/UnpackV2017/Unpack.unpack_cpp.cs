@@ -28,8 +28,6 @@ internal sealed partial class Unpack : BitInput
         Window = null;
         Fragmented = false;
         Suspended = false;
-        UnpAllBuf = false;
-        UnpSomeRead = false;
 #if RarV2017_RAR_SMP
         MaxUserThreads = 1;
         UnpThreadPool = CreateThreadPool();
