@@ -190,13 +190,13 @@ internal static class GameConfigFiles
 
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal static (Error Error, bool UseCentralSaves, string FMInstallPath,
-                     string PrevFMSelectorValue, bool AlwaysShowLoader)
+                     string PrevFMSelectorValue, bool AlwaysShowLoader, bool GamePathNeedsWriteCheck)
     GetInfoFromSneakyOptionsIni()
     {
         (string soIni, bool isPortable) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
-            return (Error.SneakyOptionsNotFound, false, "", "", false);
+            return (Error.SneakyOptionsNotFound, false, "", "", false, isPortable);
         }
 
         bool ignoreSavesKeyFound = false;
@@ -213,7 +213,7 @@ internal static class GameConfigFiles
 
         if (!TryReadAllLines(soIni, out var lines))
         {
-            return (Error.GeneralSneakyOptionsIniError, false, "", "", false);
+            return (Error.GeneralSneakyOptionsIniError, false, "", "", false, isPortable);
         }
 
         for (int i = 0; i < lines.Count; i++)
@@ -296,8 +296,8 @@ internal static class GameConfigFiles
         }
 
         return fmInstPathFound
-            ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader)
-            : (Error.GeneralSneakyOptionsIniError, false, "", prevFMSelectorValue, alwaysShowLoader);
+            ? (Error.None, !ignoreSavesKey, fmInstPath, prevFMSelectorValue, alwaysShowLoader, isPortable)
+            : (Error.GeneralSneakyOptionsIniError, false, "", prevFMSelectorValue, alwaysShowLoader, isPortable);
     }
 
     #endregion
@@ -338,7 +338,7 @@ internal static class GameConfigFiles
                             FixCharacterDetailLine(gameIndex);
                         }
                     }
-                    else
+                    else if (gameIndex == GameIndex.Thief3)
                     {
                         // For Thief 3, we actually just need SneakyOptions.ini. The game itself existing
                         // is not technically a requirement.
