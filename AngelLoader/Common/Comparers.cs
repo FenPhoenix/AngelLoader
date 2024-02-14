@@ -8,6 +8,10 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
+// This is a completely stupid .NET modern thing. We know the comparer objects won't be null. No need to add tons
+// of ! operators or unnecessary null checks.
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+
 namespace AngelLoader;
 
 // TODO(Comparers): Make reverse-sort columns start with arrow down by default

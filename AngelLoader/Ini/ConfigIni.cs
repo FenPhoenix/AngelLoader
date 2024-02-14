@@ -40,7 +40,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(SettingsTab).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.SettingsTab = (SettingsTab)field.GetValue(null);
+            config.SettingsTab = (SettingsTab)field.GetValue(null)!;
         }
     }
 
@@ -117,7 +117,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(RunThiefBuddyOnFMPlay).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.RunThiefBuddyOnFMPlay = (RunThiefBuddyOnFMPlay)field.GetValue(null);
+            config.RunThiefBuddyOnFMPlay = (RunThiefBuddyOnFMPlay)field.GetValue(null)!;
         }
     }
 
@@ -141,7 +141,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(GameOrganization).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.GameOrganization = (GameOrganization)field.GetValue(null);
+            config.GameOrganization = (GameOrganization)field.GetValue(null)!;
         }
     }
 
@@ -171,7 +171,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(RatingDisplayStyle).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null);
+            config.RatingDisplayStyle = (RatingDisplayStyle)field.GetValue(null)!;
         }
     }
 
@@ -187,7 +187,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(DateFormat).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.DateFormat = (DateFormat)field.GetValue(null);
+            config.DateFormat = (DateFormat)field.GetValue(null)!;
         }
     }
 
@@ -276,7 +276,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(ConfirmBeforeInstall).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.ConfirmBeforeInstall = (ConfirmBeforeInstall)field.GetValue(null);
+            config.ConfirmBeforeInstall = (ConfirmBeforeInstall)field.GetValue(null)!;
         }
     }
 
@@ -290,7 +290,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(BackupFMData).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.BackupFMData = (BackupFMData)field.GetValue(null);
+            config.BackupFMData = (BackupFMData)field.GetValue(null)!;
         }
     }
 
@@ -327,7 +327,7 @@ internal static partial class Ini
             FieldInfo? field = typeof(VisualTheme).GetField(valTrimmed.ToString(), _bFlagsEnum);
             if (field != null)
             {
-                config.VisualTheme = (VisualTheme)field.GetValue(null);
+                config.VisualTheme = (VisualTheme)field.GetValue(null)!;
             }
         }
     }
@@ -388,7 +388,7 @@ internal static partial class Ini
             FieldInfo? field = typeof(Game).GetField(iniGame, _bFlagsEnum);
             if (field != null)
             {
-                config.Filter.Games |= (Game)field.GetValue(null);
+                config.Filter.Games |= (Game)field.GetValue(null)!;
             }
         }
     }
@@ -540,7 +540,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(Column).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.SortedColumn = (Column)field.GetValue(null);
+            config.SortedColumn = (Column)field.GetValue(null)!;
         }
     }
     private static void Config_SortDirection_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -548,7 +548,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(SortDirection).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.SortDirection = (SortDirection)field.GetValue(null);
+            config.SortDirection = (SortDirection)field.GetValue(null)!;
         }
     }
 
@@ -637,7 +637,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(WindowState).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.MainWindowState = (WindowState)field.GetValue(null);
+            config.MainWindowState = (WindowState)field.GetValue(null)!;
         }
     }
     private static void Config_MainWindowSize_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -678,7 +678,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(GameIndex).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.GameTab = (GameIndex)field.GetValue(null);
+            config.GameTab = (GameIndex)field.GetValue(null)!;
         }
     }
 
@@ -689,7 +689,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(TopRightTab).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
+            config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null)!;
         }
     }
 
@@ -791,7 +791,7 @@ internal static partial class Ini
         FieldInfo? field = typeof(CheckForUpdates).GetField(valTrimmed.ToString(), _bFlagsEnum);
         if (field != null)
         {
-            config.CheckForUpdates = (CheckForUpdates)field.GetValue(null);
+            config.CheckForUpdates = (CheckForUpdates)field.GetValue(null)!;
         }
     }
 
