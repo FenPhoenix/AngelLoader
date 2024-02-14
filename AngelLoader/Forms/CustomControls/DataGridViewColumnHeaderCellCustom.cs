@@ -1,19 +1,15 @@
 ﻿using System.Drawing;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls;
 
 public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeaderCell
 {
-    private const BindingFlags _bfAll =
-        BindingFlags.Public |
-        BindingFlags.NonPublic |
-        BindingFlags.Instance |
-        BindingFlags.Static;
+    private static bool? _hackSupported;
 
-    private static bool? _reflectionSupported;
-    private static FieldInfo? _selectionModeField;
+    [UnsafeAccessor(UnsafeAccessorKind.Field, Name = WinFormsReflection.DGV_SelectionModeBackingFieldName)]
+    private static extern ref DataGridViewSelectionMode GetSelectionMode(DataGridView dgv);
 
     /// <inheritdoc cref="DataGridViewColumnHeaderCell.Paint"/>
     protected override void Paint(
@@ -51,72 +47,53 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
         from its own cache.
 
         The dark mode check is not strictly necessary: we work fine without it, but having it allows us to skip
-        the reflection stuff in dark mode.
+        the private field access stuff in dark mode.
         */
-        if (rowIndex == -1 && !Global.Config.DarkMode && _reflectionSupported != false)
+        if (rowIndex == -1 && !Global.Config.DarkMode && _hackSupported != false)
         {
             // Do this here because DataGridView will still be null in the ctor. We only do it once app-wide
             // anyway (static) so it's fine.
-            if (_reflectionSupported == null)
+            try
             {
+                ref DataGridViewSelectionMode selectionMode = ref GetSelectionMode(DataGridView);
+
+                DataGridViewSelectionMode oldSelectionMode;
+                DataGridViewSelectionMode oldSelectionModeProperty = DataGridView.SelectionMode;
                 try
                 {
-                    _selectionModeField = typeof(DataGridView).GetField(WinFormsReflection.DGV_SelectionModeBackingFieldName, _bfAll);
-                    if (_selectionModeField == null ||
-                        _selectionModeField.GetValue(DataGridView) is not DataGridViewSelectionMode)
-                    {
-                        CallBase(disableReflection: true);
-                        return;
-                    }
-                    else
-                    {
-                        _reflectionSupported = true;
-                    }
+                    oldSelectionMode = selectionMode;
+                    selectionMode = DataGridViewSelectionMode.CellSelect;
                 }
                 catch
                 {
-                    CallBase(disableReflection: true);
+                    // Force correct selection mode back in this case, because our temp set could have failed
+                    DataGridView.SelectionMode = oldSelectionModeProperty;
+                    CallBase(disableHack: true);
                     return;
                 }
-            }
 
-            if (_selectionModeField == null)
-            {
-                CallBase(disableReflection: true);
-                return;
-            }
-
-            DataGridViewSelectionMode oldSelectionMode;
-            DataGridViewSelectionMode oldSelectionModeProperty = DataGridView.SelectionMode;
-            try
-            {
-                oldSelectionMode = (DataGridViewSelectionMode)_selectionModeField.GetValue(DataGridView)!;
-                _selectionModeField.SetValue(DataGridView, DataGridViewSelectionMode.CellSelect);
+                try
+                {
+                    CallBase();
+                }
+                finally
+                {
+                    try
+                    {
+                        selectionMode = oldSelectionMode;
+                    }
+                    catch
+                    {
+                        // Ditto
+                        DataGridView.SelectionMode = oldSelectionModeProperty;
+                        _hackSupported = false;
+                    }
+                }
             }
             catch
             {
-                // Force correct selection mode back in this case, because our temp set could have failed
-                DataGridView.SelectionMode = oldSelectionModeProperty;
-                CallBase(disableReflection: true);
+                CallBase(disableHack: true);
                 return;
-            }
-
-            try
-            {
-                CallBase();
-            }
-            finally
-            {
-                try
-                {
-                    _selectionModeField.SetValue(DataGridView, oldSelectionMode);
-                }
-                catch
-                {
-                    // Ditto
-                    DataGridView.SelectionMode = oldSelectionModeProperty;
-                    _reflectionSupported = false;
-                }
             }
         }
         else
@@ -126,9 +103,9 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
 
         return;
 
-        void CallBase(bool disableReflection = false)
+        void CallBase(bool disableHack = false)
         {
-            if (disableReflection) _reflectionSupported = false;
+            if (disableHack) _hackSupported = false;
             base.Paint(
                 graphics,
                 clipBounds,
