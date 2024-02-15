@@ -794,10 +794,8 @@ public sealed partial class Scanner
 
     /*
     Catches stuff like "PD" but also "CoS"
-    @vNext(AnyConsecutiveAsciiUppercaseChars):
     Also catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just
     be a perf tweak, as everything works out fine as is in terms of accuracy.
-    @PERF_TODO: We could make this faster with a custom version I guess, but that was annoying so whatever
     */
     private readonly Regex AcronymRegex =
         new Regex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
