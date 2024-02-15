@@ -314,6 +314,9 @@ internal static class GameConfigFiles
             string gameExe = Config.GetGameExe(gameIndex);
             try
             {
+                // @GENGAMES(Reset configs): Make sure the logic is correct here!
+                // Twice now we've had the Thief 3 path running multiple times due to logic bugs or forgetting
+                // about this spot.
                 if ((perGameGoFlags == null || perGameGoFlags[i]) &&
                     // Only try to un-stomp the configs for the game if the game was actually specified
                     !gameExe.IsWhiteSpace())
@@ -329,7 +332,7 @@ internal static class GameConfigFiles
                             FixCharacterDetailLine(gameIndex);
                         }
                     }
-                    else
+                    else if (gameIndex == GameIndex.Thief3)
                     {
                         // For Thief 3, we actually just need SneakyOptions.ini. The game itself existing
                         // is not technically a requirement.
