@@ -304,6 +304,12 @@ public sealed class FanMission
     duplicate a ton of strings either.
     */
     internal readonly FMCategoriesCollection Tags = new();
+    /*
+    @FMDataCompact(TagsString):
+    We can get rid of this and just construct it from Tags at serialization time. For ~1900 FMs we can do this in
+    ~1.1ms (first run). But this scales sub-linearly; for 10x the FMs we only go up to ~3ms (first run).
+    This is probably okay, but carrying TagsString makes the serialization completely free (and alloc-free too).
+    */
     internal string TagsString = "";
 
     internal bool? NewMantle;
