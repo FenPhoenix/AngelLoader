@@ -1535,13 +1535,14 @@ public sealed partial class Scanner : IDisposable
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                Log(fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
+                string fmType = _fmFormat == FMFormat.SevenZip ? "7z" : "rar";
+                Log(fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction", ex);
                 return UnsupportedZip(
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: ex,
                     errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                               fm.Path + ": fm is 7z, exception in 7z.exe extraction"
+                               fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction"
                 );
             }
 
