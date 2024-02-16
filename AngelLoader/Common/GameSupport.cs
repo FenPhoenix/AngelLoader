@@ -20,7 +20,6 @@ public static partial class GameSupport
 
     // This is flags so we can combine its values for filtering by multiple games.
     [Flags, FenGenGameEnum(gameIndexEnumName: "GameIndex")]
-    // @FMDataCompact: Generate type for GameIndex
     public enum Game : byte
     {
         [FenGenIgnore]

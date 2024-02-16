@@ -23,6 +23,9 @@ internal static class Games
 
         var d = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenGameEnum);
         var gameEnum = (EnumDeclarationSyntax)d.Member;
+        ret.EnumType = gameEnum.BaseList?.Types.Count > 0
+            ? gameEnum.BaseList.Types[0].Type.ToString()
+            : "int";
         AttributeSyntax gameEnumAttr = d.Attribute;
         if (gameEnumAttr.ArgumentList == null || gameEnumAttr.ArgumentList.Arguments.Count == 0)
         {
@@ -97,7 +100,7 @@ internal static class Games
         {
             w.WL("private static readonly string[] " + arrayName + " =");
             WriteListBody(w, items, addQuotes: addQuotes);
-            w.WL("public static string " + getterName + "(" + gameIndexName + " index) => " + arrayName + "[(int)index];");
+            w.WL("public static string " + getterName + "(" + gameIndexName + " index) => " + arrayName + "[(" + Cache.GamesEnum.EnumType + ")index];");
             w.WL();
         }
 
@@ -120,7 +123,7 @@ internal static class Games
         w.WL("internal const int ImportSupportingGameCount = " + Cache.GamesEnum.SupportsImport.Count(static x => x) + ";");
         w.WL();
 
-        w.WL("public enum " + gameIndexName + " : uint");
+        w.WL("public enum " + gameIndexName + " : " + Cache.GamesEnum.EnumType);
         WriteListBody(w, gameNames, isEnum: true);
 
         w.WL("#region Per-game constants");
