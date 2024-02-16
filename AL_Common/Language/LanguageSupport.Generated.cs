@@ -16,7 +16,7 @@ public static partial class LanguageSupport
 
     public const int SupportedLanguageCount = 11;
 
-    public enum LanguageIndex : uint
+    public enum LanguageIndex : ushort
     {
         English,
         Czech,
@@ -154,7 +154,7 @@ public static partial class LanguageSupport
         _ => Language.Spanish
     };
 
-    public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(uint)index];
+    public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(ushort)index];
 
     #endregion
 }

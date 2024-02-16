@@ -62,7 +62,7 @@ internal sealed class ExpandableDate_FromTicks
 [Flags]
 [FenGenEnumNames]
 [FenGenEnumCount]
-internal enum CustomResources
+internal enum CustomResources : ushort
 {
     None = 0,
     Map = 1,
