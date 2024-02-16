@@ -607,12 +607,22 @@ internal static class FMData
 
             if (field.IsReadmeEncoding)
             {
-                w.WL("foreach (var item in " + objDotField + ")");
+                w.WL("if (" + objDotField + ".TryGetSingle(out var single))");
+                w.WL("{");
+                w.WL("sw.Write(\"" + fieldIniName + "=\");");
+                w.WL("sw.Write(single.Key);");
+                w.WL("sw.Write(',');");
+                w.WL("sw.WriteLine(single.Value.ToString());");
+                w.WL("}");
+                w.WL("else if (" + objDotField + ".TryGetDictionary(out var dict))");
+                w.WL("{");
+                w.WL("foreach (var item in dict)");
                 w.WL("{");
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(item.Key);");
                 w.WL("sw.Write(',');");
                 w.WL("sw.WriteLine(item.Value.ToString());");
+                w.WL("}");
                 w.WL("}");
             }
             else if (field.Type.StartsWithO("List<"))

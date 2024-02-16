@@ -515,12 +515,22 @@ internal static partial class Ini
                 sw.Write("SelectedReadme=");
                 sw.WriteLine(fm.SelectedReadme);
             }
-            foreach (var item in fm.ReadmeCodePages)
+            if (fm.ReadmeCodePages.TryGetSingle(out var single))
             {
                 sw.Write("ReadmeEncoding=");
-                sw.Write(item.Key);
+                sw.Write(single.Key);
                 sw.Write(',');
-                sw.WriteLine(item.Value.ToString());
+                sw.WriteLine(single.Value.ToString());
+            }
+            else if (fm.ReadmeCodePages.TryGetDictionary(out var dict))
+            {
+                foreach (var item in dict)
+                {
+                    sw.Write("ReadmeEncoding=");
+                    sw.Write(item.Key);
+                    sw.Write(',');
+                    sw.WriteLine(item.Value.ToString());
+                }
             }
             if (fm.SizeBytes != 0)
             {

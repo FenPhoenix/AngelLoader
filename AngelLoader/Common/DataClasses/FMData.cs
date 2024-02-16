@@ -183,18 +183,10 @@ public sealed class FanMission
     // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
     internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
-    /*
-    @FMDataCompact(ReadmeCodePages): We can make this more efficient.
-    A List is half the size of a Dictionary (40 bytes vs. 80 bytes), and we could make another custom list
-    ("CompactList") with even less in it than ListFast, and just use a linear search. The most readmes any known
-    FM has is 8, and it's almost unimaginable that any non-troll FM would have enough for a linear search to
-    become a problem.
-    We could also do a frugal object - 96% of FMs have 0, 1, or 2 readmes; 77% have 0 or 1.
-    */
     [FenGenReadmeEncoding]
     [FenGenDoNotSubstring]
     [FenGenIniName("ReadmeEncoding")]
-    internal readonly DictionaryI<int> ReadmeCodePages = new();
+    internal readonly ReadmeCodePagesCollection ReadmeCodePages = new();
 
     [FenGenNumericEmpty(0)]
     [FenGenMaxDigits(20)]
