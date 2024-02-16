@@ -535,7 +535,17 @@ internal static class FMData
 
             if (field.IsReadmeEncoding)
             {
-                w.WL("if (" + objDotField + ".TryGetDictionary(out var dict))");
+                w.WL("if (" + objDotField + ".TryGetSingle(out var single))");
+                w.WL("{");
+                w.WL("sw.Write(\"" + fieldIniName + "=\");");
+                w.WL("sw.Write(single.Key);");
+                w.WL("sw.Write(\",\");");
+                w.WL("if (single.Value.TryFormat(numberSpan, out int written))");
+                w.WL("{");
+                w.WL("sw.WriteLine(numberSpan[..written]);");
+                w.WL("}");
+                w.WL("}");
+                w.WL("else if (" + objDotField + ".TryGetDictionary(out var dict))");
                 w.WL("{");
                 w.WL("foreach (var item in dict)");
                 w.WL("{");
@@ -546,16 +556,6 @@ internal static class FMData
                 w.WL("{");
                 w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
-                w.WL("}");
-                w.WL("}");
-                w.WL("else if (" + objDotField + ".TryGetSingle(out var single))");
-                w.WL("{");
-                w.WL("sw.Write(\"" + fieldIniName + "=\");");
-                w.WL("sw.Write(single.Key);");
-                w.WL("sw.Write(\",\");");
-                w.WL("if (single.Value.TryFormat(numberSpan, out int written))");
-                w.WL("{");
-                w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
                 w.WL("}");
             }

@@ -505,7 +505,17 @@ internal static partial class Ini
                 sw.Write("SelectedReadme=");
                 sw.WriteLine(fm.SelectedReadme);
             }
-            if (fm.ReadmeCodePages.TryGetDictionary(out var dict))
+            if (fm.ReadmeCodePages.TryGetSingle(out var single))
+            {
+                sw.Write("ReadmeEncoding=");
+                sw.Write(single.Key);
+                sw.Write(",");
+                if (single.Value.TryFormat(numberSpan, out int written))
+                {
+                    sw.WriteLine(numberSpan[..written]);
+                }
+            }
+            else if (fm.ReadmeCodePages.TryGetDictionary(out var dict))
             {
                 foreach (var item in dict)
                 {
@@ -516,16 +526,6 @@ internal static partial class Ini
                     {
                         sw.WriteLine(numberSpan[..written]);
                     }
-                }
-            }
-            else if (fm.ReadmeCodePages.TryGetSingle(out var single))
-            {
-                sw.Write("ReadmeEncoding=");
-                sw.Write(single.Key);
-                sw.Write(",");
-                if (single.Value.TryFormat(numberSpan, out int written))
-                {
-                    sw.WriteLine(numberSpan[..written]);
                 }
             }
             if (fm.SizeBytes != 0)
