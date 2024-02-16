@@ -29,7 +29,7 @@ public sealed class FanMission
     // This is at the cost of branching in the property accesses, but meh. It's way more than fast enough still.
 
     [Flags]
-    private enum BoolBit : ushort
+    private enum FMFlag : ushort
     {
         None = 0,
         NoArchive = 1 << 0,
@@ -47,16 +47,16 @@ public sealed class FanMission
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GetBoolBit(BoolBit boolBit) => (_boolBitset & boolBit) != 0;
+    private bool GetFMFlag(FMFlag fmFlag) => (_fmFlags & fmFlag) != 0;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetBoolBit(BoolBit boolBit, bool value)
+    private void SetFMFlag(FMFlag fmFlag, bool value)
     {
-        if (value) { _boolBitset |= boolBit; } else { _boolBitset &= ~boolBit; }
+        if (value) { _fmFlags |= fmFlag; } else { _fmFlags &= ~fmFlag; }
     }
 
     [FenGenIgnore]
-    private BoolBit _boolBitset = BoolBit.None;
+    private FMFlag _fmFlags = FMFlag.None;
 
     #endregion
 
@@ -66,9 +66,9 @@ public sealed class FanMission
     internal bool NoArchive
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.NoArchive);
+        get => GetFMFlag(FMFlag.NoArchive);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.NoArchive, value);
+        set => SetFMFlag(FMFlag.NoArchive, value);
     }
 
     // Since our scanned values are very complex due to having the option to choose what to scan for as well
@@ -76,26 +76,26 @@ public sealed class FanMission
     internal bool MarkedScanned
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.MarkedScanned);
+        get => GetFMFlag(FMFlag.MarkedScanned);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.MarkedScanned, value);
+        set => SetFMFlag(FMFlag.MarkedScanned, value);
     }
 
     [FenGenIgnore]
     internal bool MarkedRecent
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.MarkedRecent);
+        get => GetFMFlag(FMFlag.MarkedRecent);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.MarkedRecent, value);
+        set => SetFMFlag(FMFlag.MarkedRecent, value);
     }
 
     internal bool Pinned
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.Pinned);
+        get => GetFMFlag(FMFlag.Pinned);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.Pinned, value);
+        set => SetFMFlag(FMFlag.Pinned, value);
     }
 
     // For FMs that have metadata but don't exist on disk
@@ -103,9 +103,9 @@ public sealed class FanMission
     internal bool MarkedUnavailable
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.MarkedUnavailable);
+        get => GetFMFlag(FMFlag.MarkedUnavailable);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.MarkedUnavailable, value);
+        set => SetFMFlag(FMFlag.MarkedUnavailable, value);
     }
 
     internal string Archive = "";
@@ -156,26 +156,26 @@ public sealed class FanMission
     internal bool Installed
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.Installed);
+        get => GetFMFlag(FMFlag.Installed);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.Installed, value);
+        set => SetFMFlag(FMFlag.Installed, value);
     }
 
     internal bool NoReadmes
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.NoReadmes);
+        get => GetFMFlag(FMFlag.NoReadmes);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.NoReadmes, value);
+        set => SetFMFlag(FMFlag.NoReadmes, value);
     }
 
     // Lazy value to say that we should re-cache readmes on next select.
     internal bool ForceReadmeReCache
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.ForceReadmeReCache);
+        get => GetFMFlag(FMFlag.ForceReadmeReCache);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.ForceReadmeReCache, value);
+        set => SetFMFlag(FMFlag.ForceReadmeReCache, value);
     }
 
     [FenGenIgnore]
@@ -223,16 +223,16 @@ public sealed class FanMission
         set
         {
             _finishedOn = (byte)value.Clamp((byte)0, (byte)15);
-            if (_finishedOn > 0) SetBoolBit(BoolBit.FinishedOnUnknown, false);
+            if (_finishedOn > 0) SetFMFlag(FMFlag.FinishedOnUnknown, false);
         }
     }
 
     internal bool FinishedOnUnknown
     {
-        get => GetBoolBit(BoolBit.FinishedOnUnknown);
+        get => GetFMFlag(FMFlag.FinishedOnUnknown);
         set
         {
-            SetBoolBit(BoolBit.FinishedOnUnknown, value);
+            SetFMFlag(FMFlag.FinishedOnUnknown, value);
             if (value) _finishedOn = 0;
         }
     }
@@ -256,18 +256,18 @@ public sealed class FanMission
     internal bool DisableAllMods
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GameSupportsMods(Game) && GetBoolBit(BoolBit.DisableAllMods);
+        get => GameSupportsMods(Game) && GetFMFlag(FMFlag.DisableAllMods);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.DisableAllMods, value);
+        set => SetFMFlag(FMFlag.DisableAllMods, value);
     }
 
     [FenGenIgnore]
     internal bool ResourcesScanned
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.ResourcesScanned);
+        get => GetFMFlag(FMFlag.ResourcesScanned);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.ResourcesScanned, value);
+        set => SetFMFlag(FMFlag.ResourcesScanned, value);
     }
     [FenGenIniName("HasResources")]
     [FenGenDoNotSubstring]
@@ -276,9 +276,9 @@ public sealed class FanMission
     internal bool LangsScanned
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetBoolBit(BoolBit.LangsScanned);
+        get => GetFMFlag(FMFlag.LangsScanned);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetBoolBit(BoolBit.LangsScanned, value);
+        set => SetFMFlag(FMFlag.LangsScanned, value);
     }
 
     [FenGenDoNotSubstring]
