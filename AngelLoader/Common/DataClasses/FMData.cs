@@ -302,6 +302,7 @@ public sealed class FanMission
     FMs will just reference the global collection? That way we don't have to keep them in sync, and we wouldn't
     duplicate a ton of strings either.
     */
+    [FenGenIgnore]
     internal readonly FMCategoriesCollection Tags = new();
     /*
     @FMDataCompact(TagsString):
@@ -309,7 +310,6 @@ public sealed class FanMission
     ~1.1ms (first run). But this scales sub-linearly; for 10x the FMs we only go up to ~3ms (first run).
     This is probably okay, but carrying TagsString makes the serialization completely free (and alloc-free too).
     */
-    [FenGenIgnore]
     internal string TagsString = "";
 
     internal bool? NewMantle;
