@@ -17,19 +17,17 @@ FenGen reads this and outputs fast ini read and write methods.
 Notes to self:
 -Keep names shortish for more performance when reading
 -I told myself to version-header ini files right from the start, but I didn't. Meh.
-
-@MEM(FMData): We could get rid of some stuff in here, like TagsString is an easy candidate
--We could also, if we're clever, get rid of some other stuff we nominally need, like MarkedRecent. We could
- have like an internal hashset where we put all "recent" FMs into and remove them from it as appropriate.
- Same with MarkedUnavailable. In fact, we could do that for all fields expected to _usually_ be false.
--We could squeeze all value types and enums down to their smallest possible representation, sbyte/byte/ushort
- etc.
 */
 
 [FenGenFMDataSourceClass]
 [StructLayout(LayoutKind.Auto)]
 public sealed class FanMission
 {
+    #region Bool bits
+
+    // For compactness of the object - bools now take 1 bit instead of 1 byte.
+    // This is at the cost of branching in the property accesses, but meh. It's way more than fast enough still.
+
     [Flags]
     private enum BoolBit : ushort
     {
@@ -59,6 +57,8 @@ public sealed class FanMission
 
     [FenGenIgnore]
     private BoolBit _boolBitset = BoolBit.None;
+
+    #endregion
 
     // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
     // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are
