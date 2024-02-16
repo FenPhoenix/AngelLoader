@@ -23,7 +23,7 @@ Notes to self:
 [StructLayout(LayoutKind.Auto)]
 public sealed class FanMission
 {
-    #region Bool bits
+    #region FM Flags
 
     // For compactness of the object - bools now take 1 bit instead of 1 byte.
     // This is at the cost of branching in the property accesses, but meh. It's way more than fast enough still.
