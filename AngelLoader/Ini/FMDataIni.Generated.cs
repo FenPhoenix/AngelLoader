@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using AL_Common;
@@ -66,7 +67,7 @@ internal static partial class Ini
     {
         val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        int.TryParse(val, out int result);
+        int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
         fm.TDMVersion = result;
     }
 
@@ -456,7 +457,7 @@ internal static partial class Ini
             if (fm.TDMVersion != 0)
             {
                 sw.Write("TDMVersion=");
-                sw.WriteLine(fm.TDMVersion.ToString());
+                sw.WriteLine(fm.TDMVersion.ToString(NumberFormatInfo.InvariantInfo));
             }
             if (!string.IsNullOrEmpty(fm.Title))
             {
@@ -520,7 +521,7 @@ internal static partial class Ini
                 sw.Write("ReadmeEncoding=");
                 sw.Write(single.Key);
                 sw.Write(',');
-                sw.WriteLine(single.Value.ToString());
+                sw.WriteLine(single.Value.ToString(NumberFormatInfo.InvariantInfo));
             }
             else if (fm.ReadmeCodePages.TryGetDictionary(out var dict))
             {
@@ -529,18 +530,18 @@ internal static partial class Ini
                     sw.Write("ReadmeEncoding=");
                     sw.Write(item.Key);
                     sw.Write(',');
-                    sw.WriteLine(item.Value.ToString());
+                    sw.WriteLine(item.Value.ToString(NumberFormatInfo.InvariantInfo));
                 }
             }
             if (fm.SizeBytes != 0)
             {
                 sw.Write("SizeBytes=");
-                sw.WriteLine(fm.SizeBytes.ToString());
+                sw.WriteLine(fm.SizeBytes.ToString(NumberFormatInfo.InvariantInfo));
             }
             if (fm.Rating != -1)
             {
                 sw.Write("Rating=");
-                sw.WriteLine(fm.Rating.ToString());
+                sw.WriteLine(fm.Rating.ToString(NumberFormatInfo.InvariantInfo));
             }
             if (!string.IsNullOrEmpty(fm.ReleaseDate.UnixDateString))
             {
@@ -560,7 +561,7 @@ internal static partial class Ini
             if (fm.FinishedOn != 0)
             {
                 sw.Write("FinishedOn=");
-                sw.WriteLine(fm.FinishedOn.ToString());
+                sw.WriteLine(fm.FinishedOn.ToString(NumberFormatInfo.InvariantInfo));
             }
             if (fm.FinishedOnUnknown)
             {
@@ -675,7 +676,7 @@ internal static partial class Ini
             if (fm.MisCount != -1)
             {
                 sw.Write("MisCount=");
-                sw.WriteLine(fm.MisCount.ToString());
+                sw.WriteLine(fm.MisCount.ToString(NumberFormatInfo.InvariantInfo));
             }
         }
 

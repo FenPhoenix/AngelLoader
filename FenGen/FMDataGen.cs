@@ -255,7 +255,7 @@ internal static class FMData
         static string GetFloatArgsRead(string fieldType) =>
             IsDecimal(fieldType)
                 ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
-                : "";
+                : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
 
         const string val = "val";
         const string eqIndex = "eqIndex";
@@ -586,10 +586,7 @@ internal static class FMData
         const string toString = "ToString()";
         const string unixDateString = "UnixDateString";
 
-        static string GetFloatArgsWrite(string fieldType) =>
-            IsDecimal(fieldType)
-                ? "NumberFormatInfo.InvariantInfo"
-                : "";
+        const string numericInvariantArgs = "NumberFormatInfo.InvariantInfo";
 
         foreach (Field field in fields)
         {
@@ -612,7 +609,7 @@ internal static class FMData
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(single.Key);");
                 w.WL("sw.Write(',');");
-                w.WL("sw.WriteLine(single.Value.ToString());");
+                w.WL("sw.WriteLine(single.Value.ToString(" + numericInvariantArgs + "));");
                 w.WL("}");
                 w.WL("else if (" + objDotField + ".TryGetDictionary(out var dict))");
                 w.WL("{");
@@ -621,7 +618,7 @@ internal static class FMData
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(item.Key);");
                 w.WL("sw.Write(',');");
-                w.WL("sw.WriteLine(item.Value.ToString());");
+                w.WL("sw.WriteLine(item.Value.ToString(" + numericInvariantArgs + "));");
                 w.WL("}");
                 w.WL("}");
             }
@@ -670,27 +667,24 @@ internal static class FMData
             }
             else if (_numericTypes.Contains(field.Type))
             {
-                string floatArgs = GetFloatArgsWrite(field.Type);
-                if (!floatArgs.IsEmpty()) floatArgs = ", provider: " + floatArgs;
                 if (field.NumericEmpty != null)
                 {
                     w.WL("if (" + objDotField + " != " + ((long)field.NumericEmpty).ToStrInv() + ")");
                     w.WL("{");
-                    swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                    swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                     w.WL("}");
                 }
                 else
                 {
-                    swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                    swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
-                string floatArgs = GetFloatArgsWrite(field.Type);
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 w.WL("}");
             }
             else if (field.Type == Cache.GamesEnum.Name)
