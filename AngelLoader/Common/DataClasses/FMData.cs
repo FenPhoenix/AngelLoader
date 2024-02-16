@@ -183,9 +183,6 @@ public sealed class FanMission
     // @DIRSEP: Always backslashes for backward compatibility and prevention of find misses in readme chooser box
     internal string SelectedReadme { get => _selectedReadme; set => _selectedReadme = value.ToBackSlashes(); }
 
-    [FenGenReadmeEncoding]
-    [FenGenDoNotSubstring]
-    [FenGenIniName("ReadmeEncoding")]
     /*
     @FMDataCompact(ReadmeCodePages): We can make this more efficient.
     A List is half the size of a Dictionary (40 bytes vs. 80 bytes), and we could make another custom list
@@ -194,6 +191,9 @@ public sealed class FanMission
     become a problem.
     We could also do a frugal object - 96% of FMs have 0, 1, or 2 readmes; 77% have 0 or 1.
     */
+    [FenGenReadmeEncoding]
+    [FenGenDoNotSubstring]
+    [FenGenIniName("ReadmeEncoding")]
     internal readonly DictionaryI<int> ReadmeCodePages = new();
 
     [FenGenNumericEmpty(0)]
@@ -296,7 +296,6 @@ public sealed class FanMission
     [FenGenDoNotSubstring]
     internal Language SelectedLang = Language.Default;
 
-    [FenGenIgnore]
     /*
     @FMDataCompact(Cat/tags):
     Could we just fill out the global list with objects and then put those objects into each FMs' list, like the
@@ -310,6 +309,7 @@ public sealed class FanMission
     ~1.1ms (first run). But this scales sub-linearly; for 10x the FMs we only go up to ~3ms (first run).
     This is probably okay, but carrying TagsString makes the serialization completely free (and alloc-free too).
     */
+    [FenGenIgnore]
     internal string TagsString = "";
 
     internal bool? NewMantle;
