@@ -444,7 +444,7 @@ internal static partial class Ini
             }
             if (fm.TDMVersion != 0)
             {
-                fm.TDMVersion.TryFormat(numberSpan, out int written);
+                fm.TDMVersion.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("TDMVersion=");
                 sw.WriteLine(numberSpan[..written]);
             }
@@ -530,13 +530,13 @@ internal static partial class Ini
             }
             if (fm.SizeBytes != 0)
             {
-                fm.SizeBytes.TryFormat(numberSpan, out int written);
+                fm.SizeBytes.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("SizeBytes=");
                 sw.WriteLine(numberSpan[..written]);
             }
             if (fm.Rating != -1)
             {
-                fm.Rating.TryFormat(numberSpan, out int written);
+                fm.Rating.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("Rating=");
                 sw.WriteLine(numberSpan[..written]);
             }
@@ -559,7 +559,7 @@ internal static partial class Ini
             }
             if (fm.FinishedOn != 0)
             {
-                fm.FinishedOn.TryFormat(numberSpan, out int written);
+                fm.FinishedOn.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("FinishedOn=");
                 sw.WriteLine(numberSpan[..written]);
             }
@@ -675,7 +675,7 @@ internal static partial class Ini
             }
             if (fm.MisCount != -1)
             {
-                fm.MisCount.TryFormat(numberSpan, out int written);
+                fm.MisCount.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("MisCount=");
                 sw.WriteLine(numberSpan[..written]);
             }

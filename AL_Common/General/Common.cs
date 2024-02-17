@@ -108,9 +108,9 @@ public static partial class Common
         return charBuffer;
     }
 
-    public static string ToStrInv(this int value) => value.ToString(CultureInfo.InvariantCulture);
+    public static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
-    public static string ToStrInv(this bool value) => value.ToString(CultureInfo.InvariantCulture);
+    public static string ToStrInv(this bool value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     public static bool TryParseTDMDate(string dateString, out DateTime dateTime)
     {

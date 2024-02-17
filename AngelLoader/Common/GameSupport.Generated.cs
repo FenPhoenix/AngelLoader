@@ -14,7 +14,7 @@ public static partial class GameSupport
     internal const int ModSupportingGameCount = 3;
     internal const int ImportSupportingGameCount = 4;
 
-    public enum GameIndex : uint
+    public enum GameIndex : byte
     {
         Thief1,
         Thief2,
@@ -34,7 +34,7 @@ public static partial class GameSupport
         "TDM"
     };
 
-    public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(int)index];
+    public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(byte)index];
 
     private static readonly string[] _steamAppIds =
     {
@@ -45,7 +45,7 @@ public static partial class GameSupport
         ""
     };
 
-    public static string GetGameSteamId(GameIndex index) => _steamAppIds[(int)index];
+    public static string GetGameSteamId(GameIndex index) => _steamAppIds[(byte)index];
 
     private static readonly string[] _gameEditorNames =
     {
@@ -56,7 +56,7 @@ public static partial class GameSupport
         ""
     };
 
-    public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(int)index];
+    public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(byte)index];
 
     #endregion
 

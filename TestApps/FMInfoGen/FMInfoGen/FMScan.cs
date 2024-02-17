@@ -82,9 +82,9 @@ internal static class FMScan
     {
         var fmsList = (zips
                 ? Core.View.GetFMArchives()
-                    .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false, cachePath: "", isTDM: false, displayName: f))
+                    .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false, cachePath: "", isTDM: false, displayName: f, isArchive: true))
                 : Directory.GetDirectories(Paths.CurrentExtractedDir, "*", SearchOption.TopDirectoryOnly)
-                    .Select(static f => new FMToScan(path: f, forceFullScan: false, cachePath: "", isTDM: false, displayName: f)))
+                    .Select(static f => new FMToScan(path: f, forceFullScan: false, cachePath: "", isTDM: false, displayName: f, isArchive: false)))
             .ToList();
 
         string yamlPath = GetYamlPath(zips);
@@ -212,7 +212,7 @@ internal static class FMScan
             string fmPath = zip
                 ? Path.Combine(Config.FMsPath, item)
                 : Path.Combine(Paths.CurrentExtractedDir, item);
-            fmData = scanner.Scan(fmPath, Core.View.GetTempPath(), scanOptions, false, item);
+            fmData = scanner.Scan(fmPath, Core.View.GetTempPath(), scanOptions, false, item, zip);
         }
 
         if (fmData.ScannedFMData == null) return;

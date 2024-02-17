@@ -20,7 +20,7 @@ public static partial class GameSupport
 
     // This is flags so we can combine its values for filtering by multiple games.
     [Flags, FenGenGameEnum(gameIndexEnumName: "GameIndex")]
-    public enum Game : uint
+    public enum Game : byte
     {
         [FenGenIgnore]
         Null = 0,

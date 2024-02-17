@@ -28,7 +28,7 @@ internal static class LanguageSupport
         var d = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenLanguageEnum);
         var langEnum = (EnumDeclarationSyntax)d.Member;
         AttributeSyntax langEnumAttr = d.Attribute;
-        ret.LangEnumType = langEnum.BaseList?.Types.Count > 0
+        ret.EnumType = langEnum.BaseList?.Types.Count > 0
             ? langEnum.BaseList.Types[0].Type.ToString()
             : "int";
         if (langEnumAttr.ArgumentList == null || langEnumAttr.ArgumentList.Arguments.Count == 0)
@@ -93,7 +93,7 @@ internal static class LanguageSupport
         w.WL("public const int SupportedLanguageCount = " + langEnum.LangIndexEnumNames.Count.ToStrInv() + ";");
         w.WL();
 
-        w.WL("public enum " + langEnum.LanguageIndexName + " : " + Cache.LangsEnum.LangEnumType);
+        w.WL("public enum " + langEnum.LanguageIndexName + " : " + Cache.LangsEnum.EnumType);
         WriteListBody(w, langEnum.LangIndexEnumNames, isEnum: true);
 
         w.WL("public static readonly string[] SupportedLanguages =");
@@ -190,7 +190,7 @@ internal static class LanguageSupport
 
         #endregion
 
-        w.WL("public static string GetLanguageString(" + Cache.LangsEnum.LanguageIndexName + " index) => SupportedLanguages[(" + Cache.LangsEnum.LangEnumType + ")index];");
+        w.WL("public static string GetLanguageString(" + Cache.LangsEnum.LanguageIndexName + " index) => SupportedLanguages[(" + Cache.LangsEnum.EnumType + ")index];");
         w.WL();
 
         w.WL("#endregion");

@@ -173,7 +173,8 @@ internal static class FMScan
                                     ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                     : "",
                                 isTDM: fm.Game == Game.TDM,
-                                displayName: fm.Archive
+                                displayName: fm.Archive,
+                                isArchive: true
                             ));
                             if (fm.Game == Game.TDM) tdmDataRequired = true;
                         }
@@ -188,7 +189,8 @@ internal static class FMScan
                                     path: Path.Combine(fmInstalledPath, fm.RealInstalledDir),
                                     forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                                     isTDM: fm.Game == Game.TDM,
-                                    displayName: fm.RealInstalledDir
+                                    displayName: fm.RealInstalledDir,
+                                    isArchive: false
                                 ));
                                 if (fm.Game == Game.TDM) tdmDataRequired = true;
                             }

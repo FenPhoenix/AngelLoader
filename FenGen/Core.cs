@@ -63,6 +63,7 @@ internal sealed class GameSourceEnum
     internal readonly List<string> EditorNames = new();
     internal readonly List<bool> SupportsMods = new();
     internal readonly List<bool> SupportsImport = new();
+    internal string EnumType = "";
 }
 
 internal sealed class LanguageSourceEnum
@@ -75,7 +76,7 @@ internal sealed class LanguageSourceEnum
     internal readonly List<string> LangIndexEnumNamesLowercase = new();
     internal readonly List<string> LangCodes = new();
     internal readonly List<string> LangTranslatedNames = new();
-    internal string LangEnumType = "";
+    internal string EnumType = "";
 }
 
 internal sealed class DesignerCSFile(string fileName, bool splashScreen = false)

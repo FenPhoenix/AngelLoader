@@ -413,10 +413,10 @@ public sealed partial class Scanner : IDisposable
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, bool forceFullIfNew, string name)
+    Scan(string mission, string tempPath, bool forceFullIfNew, string name, bool isArchive)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false, isArchive: isArchive) },
             tempPath, _scanOptions, null, CancellationToken.None)[0];
     }
 
@@ -550,6 +550,8 @@ public sealed partial class Scanner : IDisposable
 
         for (int i = 0; i < missions.Count; i++)
         {
+            FMToScan mission = missions[i];
+
             ResetCachedFields();
 
             bool nullAlreadyAdded = false;
@@ -563,14 +565,17 @@ public sealed partial class Scanner : IDisposable
             }
             else
             {
-                string fmPath = missions[i].Path;
-                _fmFormat = fmPath.ExtIsZip()
-                    ? FMFormat.Zip
-                    : fmPath.ExtIs7z()
-                        ? FMFormat.SevenZip
-                        : fmPath.ExtIsRar()
-                            ? FMFormat.Rar
-                            : FMFormat.NotInArchive;
+                string fmPath = mission.Path;
+                _fmFormat =
+                    !mission.IsArchive
+                        ? FMFormat.NotInArchive
+                        : fmPath.ExtIsZip()
+                            ? FMFormat.Zip
+                            : fmPath.ExtIs7z()
+                                ? FMFormat.SevenZip
+                                : fmPath.ExtIsRar()
+                                    ? FMFormat.Rar
+                                    : FMFormat.NotInArchive;
 
                 _archive?.Dispose();
                 _rarArchive?.Dispose();
@@ -584,7 +589,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     catch (Exception ex)
                     {
-                        Log(missions[i].Path + ": Path.Combine error, paths are probably invalid", ex);
+                        Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
                         scannedFMDataList.Add(new ScannedFMDataAndError());
                         nullAlreadyAdded = true;
                     }
@@ -647,7 +652,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     finally
                     {
-                        if (missions[i].Path.ExtIs7z() || missions[i].Path.ExtIsRar())
+                        if (mission.IsArchive && (missions[i].Path.ExtIs7z() || missions[i].Path.ExtIsRar()))
                         {
                             DeleteFMWorkingPath();
                         }
@@ -1556,13 +1561,14 @@ public sealed partial class Scanner : IDisposable
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                Log(fm.Path + ": fm is 7z, exception in 7z.exe extraction", ex);
+                string fmType = _fmFormat == FMFormat.SevenZip ? "7z" : "rar";
+                Log(fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction", ex);
                 return UnsupportedZip(
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: ex,
                     errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                               fm.Path + ": fm is 7z, exception in 7z.exe extraction"
+                               fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction"
                 );
             }
 

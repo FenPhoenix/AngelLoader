@@ -171,8 +171,15 @@ public sealed class AltTitlesList
     }
 }
 
+/*
+@MEM(Readme code pages collection):
+A List is half the size of a Dictionary (40 bytes vs. 80 bytes). If we wanted to be maximally compact even in the
+worst case, we could use a List. That means linear searches, but the most readmes any known FM has is 8, and it's
+almost unimaginable that any non-troll FM would have enough for a linear search to become a problem.
+*/
 public sealed class ReadmeCodePagesCollection
 {
+    // ~77% of known FMs as of 2024-02-16 have <2 readmes
     private object? _values;
 
     #region Massive disgusting hack
@@ -278,7 +285,7 @@ public sealed class ReadmeCodePagesCollection
 [Flags]
 [FenGenEnumNames]
 [FenGenEnumCount]
-internal enum CustomResources
+internal enum CustomResources : ushort
 {
     None = 0,
     Map = 1,

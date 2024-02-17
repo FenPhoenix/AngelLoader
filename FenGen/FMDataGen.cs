@@ -211,6 +211,7 @@ internal static class FMData
             IsDecimal(fieldType)
                 ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                 : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
+
         const string val = "val";
 
         w.WL("#region Generated code for reader");
@@ -514,10 +515,7 @@ internal static class FMData
         const string toString = "ToString()";
         const string unixDateString = "UnixDateString";
 
-        static string GetFloatArgsWrite(string fieldType) =>
-            IsDecimal(fieldType)
-                ? "NumberFormatInfo.InvariantInfo"
-                : "";
+        const string numericInvariantArgs = "NumberFormatInfo.InvariantInfo";
 
         foreach (Field field in fields)
         {
@@ -604,28 +602,25 @@ internal static class FMData
             }
             else if (_numericTypes.Contains(field.Type))
             {
-                string floatArgs = GetFloatArgsWrite(field.Type);
-                if (!floatArgs.IsEmpty()) floatArgs = ", provider: " + floatArgs;
                 if (field.NumericEmpty != null)
                 {
                     w.WL("if (" + objDotField + " != " + ((long)field.NumericEmpty).ToStrInv() + ")");
                     w.WL("{");
-                    w.WL(objDotField + ".TryFormat(numberSpan, out int written" + floatArgs + ");");
+                    w.WL(objDotField + ".TryFormat(numberSpan, out int written, provider: " + numericInvariantArgs + ");");
                     swlSBAppend(fieldIniName, "numberSpan[..written]");
                     w.WL("}");
                 }
                 else
                 {
-                    swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                    swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
-                string floatArgs = GetFloatArgsWrite(field.Type);
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField, "ToString(" + floatArgs + ")");
+                swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 w.WL("}");
             }
             else if (field.Type == Cache.GamesEnum.Name)

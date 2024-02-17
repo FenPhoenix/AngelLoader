@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
@@ -15,35 +16,96 @@ FenGen reads this and outputs fast ini read and write methods.
 Notes to self:
 -Keep names shortish for more performance when reading
 -I told myself to version-header ini files right from the start, but I didn't. Meh.
-
-@MEM(FMData): We could get rid of some stuff in here, like TagsString is an easy candidate
--We could also, if we're clever, get rid of some other stuff we nominally need, like MarkedRecent. We could
- have like an internal hashset where we put all "recent" FMs into and remove them from it as appropriate.
- Same with MarkedUnavailable. In fact, we could do that for all fields expected to _usually_ be false.
--We could squeeze all value types and enums down to their smallest possible representation, sbyte/byte/ushort
- etc.
 */
 
 [FenGenFMDataSourceClass]
+[StructLayout(LayoutKind.Auto)]
 public sealed class FanMission
 {
+    #region FM Flags
+
+    // For compactness of the object - bools now take 1 bit instead of 1 byte.
+    // This is at the cost of branching in the property accesses, but meh. It's way more than fast enough still.
+
+    [Flags]
+    private enum FMFlag : ushort
+    {
+        None = 0,
+        NoArchive = 1 << 0,
+        MarkedScanned = 1 << 1,
+        MarkedRecent = 1 << 2,
+        Pinned = 1 << 3,
+        MarkedUnavailable = 1 << 4,
+        Installed = 1 << 5,
+        NoReadmes = 1 << 6,
+        ForceReadmeReCache = 1 << 7,
+        FinishedOnUnknown = 1 << 8,
+        DisableAllMods = 1 << 9,
+        ResourcesScanned = 1 << 10,
+        LangsScanned = 1 << 11,
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool GetFMFlag(FMFlag fmFlag) => (_fmFlags & fmFlag) != 0;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetFMFlag(FMFlag fmFlag, bool value)
+    {
+        if (value) { _fmFlags |= fmFlag; } else { _fmFlags &= ~fmFlag; }
+    }
+
+    [FenGenIgnore]
+    private FMFlag _fmFlags = FMFlag.None;
+
+    #endregion
+
     // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
     // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are
     // archive-less FMs in the list.
-    internal bool NoArchive;
+    internal bool NoArchive
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.NoArchive);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.NoArchive, value);
+    }
 
     // Since our scanned values are very complex due to having the option to choose what to scan for as well
     // as being able to import from three other loaders, we need a simple way to say "scan on select or not".
-    internal bool MarkedScanned;
+    internal bool MarkedScanned
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.MarkedScanned);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.MarkedScanned, value);
+    }
 
     [FenGenIgnore]
-    internal bool MarkedRecent;
+    internal bool MarkedRecent
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.MarkedRecent);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.MarkedRecent, value);
+    }
 
-    internal bool Pinned;
+    internal bool Pinned
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.Pinned);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.Pinned, value);
+    }
 
     // For FMs that have metadata but don't exist on disk
     [FenGenIgnore]
-    internal bool MarkedUnavailable;
+    internal bool MarkedUnavailable
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.MarkedUnavailable);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.MarkedUnavailable, value);
+    }
 
     internal string Archive = "";
 
@@ -90,12 +152,30 @@ public sealed class FanMission
 
     internal Game Game = Game.Null;
 
-    internal bool Installed;
+    internal bool Installed
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.Installed);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.Installed, value);
+    }
 
-    internal bool NoReadmes;
+    internal bool NoReadmes
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.NoReadmes);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.NoReadmes, value);
+    }
 
     // Lazy value to say that we should re-cache readmes on next select.
-    internal bool ForceReadmeReCache;
+    internal bool ForceReadmeReCache
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.ForceReadmeReCache);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.ForceReadmeReCache, value);
+    }
 
     [FenGenIgnore]
     private string _selectedReadme = "";
@@ -110,9 +190,9 @@ public sealed class FanMission
     internal ulong SizeBytes = 0;
 
     [FenGenIgnore]
-    private int _rating = -1;
+    private sbyte _rating = -1;
     [FenGenNumericEmpty(-1)]
-    internal int Rating { get => _rating; set => _rating = value.SetRatingClamped(); }
+    internal int Rating { get => _rating; set => _rating = (sbyte)value.SetRatingClamped(); }
 
     internal readonly ExpandableDate ReleaseDate = new();
     internal readonly ExpandableDate LastPlayed = new();
@@ -130,27 +210,25 @@ public sealed class FanMission
     // IMPORTANT: FinishedOnUnknown MUST come AFTER FinishedOn to maintain its override priority!
 
     [FenGenIgnore]
-    private uint _finishedOn;
+    private byte _finishedOn;
     [FenGenNumericEmpty(0)]
     internal uint FinishedOn
     {
         get => _finishedOn;
         set
         {
-            _finishedOn = value.Clamp(0u, 15u);
-            if (_finishedOn > 0) _finishedOnUnknown = false;
+            _finishedOn = (byte)value.Clamp((byte)0, (byte)15);
+            if (_finishedOn > 0) SetFMFlag(FMFlag.FinishedOnUnknown, false);
         }
     }
 
-    [FenGenIgnore]
-    private bool _finishedOnUnknown;
     internal bool FinishedOnUnknown
     {
-        get => _finishedOnUnknown;
+        get => GetFMFlag(FMFlag.FinishedOnUnknown);
         set
         {
-            _finishedOnUnknown = value;
-            if (_finishedOnUnknown) _finishedOn = 0;
+            SetFMFlag(FMFlag.FinishedOnUnknown, value);
+            if (value) _finishedOn = 0;
         }
     }
 
@@ -167,31 +245,55 @@ public sealed class FanMission
         set => _disabledMods = value;
     }
 
-    [FenGenIgnore]
-    private bool _disableAllMods;
     /// <summary>
     /// This is for backward compatibility only. Use only for that purpose.
     /// </summary>
     internal bool DisableAllMods
     {
-        get => GameSupportsMods(Game) && _disableAllMods;
-        set => _disableAllMods = value;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GameSupportsMods(Game) && GetFMFlag(FMFlag.DisableAllMods);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.DisableAllMods, value);
     }
 
     [FenGenIgnore]
-    internal bool ResourcesScanned;
+    internal bool ResourcesScanned
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.ResourcesScanned);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.ResourcesScanned, value);
+    }
     [FenGenIniName("HasResources")]
     internal CustomResources Resources = CustomResources.None;
 
-    internal bool LangsScanned;
+    internal bool LangsScanned
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.LangsScanned);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.LangsScanned, value);
+    }
 
     internal Language Langs = Language.Default;
 
     [FenGenFlagsSingleAssignment]
     internal Language SelectedLang = Language.Default;
 
+    /*
+    @FMDataCompact(Cat/tags):
+    Could we just fill out the global list with objects and then put those objects into each FMs' list, like the
+    FMs will just reference the global collection? That way we don't have to keep them in sync, and we wouldn't
+    duplicate a ton of strings either.
+    */
     [FenGenIgnore]
     internal readonly FMCategoriesCollection Tags = new();
+    /*
+    @FMDataCompact(TagsString):
+    We can get rid of this and just construct it from Tags at serialization time. For ~1900 FMs we can do this in
+    ~1.1ms (first run). But this scales sub-linearly; for 10x the FMs we only go up to ~3ms (first run).
+    This is probably okay, but carrying TagsString makes the serialization completely free (and alloc-free too).
+    */
     internal string TagsString = "";
 
     internal bool? NewMantle;
