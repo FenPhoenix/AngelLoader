@@ -65,6 +65,7 @@ internal sealed class ExpandableDate_FromTicks
 
 public sealed class AltTitlesList
 {
+    // ~65% of known FMs as of 2024-02-16 have <2 alternate titles
     private object? _values;
 
     public int Count;

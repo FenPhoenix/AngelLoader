@@ -27,10 +27,10 @@ internal static class LanguageSupport
 
         var d = GetAttrMarkedItem(tree, SyntaxKind.EnumDeclaration, GenAttributes.FenGenLanguageEnum);
         var langEnum = (EnumDeclarationSyntax)d.Member;
-        AttributeSyntax langEnumAttr = d.Attribute;
         ret.EnumType = langEnum.BaseList?.Types.Count > 0
             ? langEnum.BaseList.Types[0].Type.ToString()
             : "int";
+        AttributeSyntax langEnumAttr = d.Attribute;
         if (langEnumAttr.ArgumentList == null || langEnumAttr.ArgumentList.Arguments.Count == 0)
         {
             ThrowErrorAndTerminate(nameof(GenAttributes.FenGenLanguageEnum) + " had 0 args");
