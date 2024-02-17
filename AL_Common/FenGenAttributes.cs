@@ -278,4 +278,8 @@ public static class FenGenAttributes
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class FenGenRtfDuplicateDestClassAttribute : Attribute;
+
+    [Conditional("compile_FenGen_attributes")]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public sealed class FenGenTreatAsListAttribute(string type) : Attribute;
 }

@@ -63,6 +63,115 @@ internal sealed class ExpandableDate_FromTicks
     }
 }
 
+public sealed class AltTitlesList
+{
+    // ~65% of known FMs as of 2024-02-16 have <2 alternate titles
+    private object? _values;
+
+    public int Count;
+
+    [MemberNotNull(nameof(_values))]
+    private void InitValuesToList()
+    {
+        if (_values is not List<string>)
+        {
+            _values = new List<string>();
+        }
+    }
+
+    public void Add(string value)
+    {
+        if (Count == 0)
+        {
+            _values = value;
+        }
+        else
+        {
+            string? prevSingle = _values as string;
+            InitValuesToList();
+            List<string> list = Unsafe.As<List<string>>(_values);
+            if (prevSingle != null)
+            {
+                list.Add(prevSingle);
+            }
+            list.Add(value);
+        }
+        ++Count;
+    }
+
+    public void ClearAndAdd_Single(string str)
+    {
+        if (_values is null or string)
+        {
+            _values = str;
+        }
+        else
+        {
+            InitValuesToList();
+            Unsafe.As<List<string>>(_values).ClearAndAdd_Single(str);
+        }
+    }
+
+    public void AddRange(string[] collection)
+    {
+        if (collection.Length == 1)
+        {
+            if (_values is null or string)
+            {
+                _values = collection[0];
+            }
+            else
+            {
+                List<string> list = Unsafe.As<List<string>>(_values);
+                list.Add(collection[0]);
+            }
+        }
+        else if (collection.Length > 1)
+        {
+            string? prevSingle = _values as string;
+            InitValuesToList();
+            List<string> list = Unsafe.As<List<string>>(_values);
+            if (prevSingle != null)
+            {
+                list.Add(prevSingle);
+            }
+            list.AddRange_Small(collection);
+        }
+    }
+
+    public void Clear()
+    {
+        if (_values is string)
+        {
+            _values = "";
+        }
+        else if (_values != null)
+        {
+            Unsafe.As<List<string>>(_values).Clear();
+        }
+    }
+
+    public string this[int index]
+    {
+        get
+        {
+            if (index == 0 && _values is string str)
+            {
+                return str;
+            }
+            else if (_values != null)
+            {
+                return Unsafe.As<List<string>>(_values)[index];
+            }
+            else
+            {
+                ThrowHelper.IndexOutOfRange();
+                return null;
+            }
+        }
+    }
+}
+
 /*
 @MEM(Readme code pages collection):
 A List is half the size of a Dictionary (40 bytes vs. 80 bytes). If we wanted to be maximally compact even in the

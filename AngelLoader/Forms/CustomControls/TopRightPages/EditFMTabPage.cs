@@ -272,7 +272,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     private void EditFMAltTitlesArrowButton_Click(object sender, EventArgs e)
     {
-        List<string> fmAltTitles = _owner.FMsDGV.GetMainSelectedFM().AltTitles;
+        AltTitlesList fmAltTitles = _owner.FMsDGV.GetMainSelectedFM().AltTitles;
         if (fmAltTitles.Count == 0) return;
 
         var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
