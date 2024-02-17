@@ -252,7 +252,7 @@ internal static class FMData
 
     private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
     {
-        static string GetFloatArgsRead(string fieldType) =>
+        static string GetTryParseArgsRead(string fieldType) =>
             IsDecimal(fieldType)
                 ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
                 : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
@@ -337,14 +337,14 @@ internal static class FMData
                 }
                 else if (_numericTypes.Contains(listType))
                 {
-                    string floatArgs = GetFloatArgsRead(listType);
+                    string tryParseArgs = GetTryParseArgsRead(listType);
                     if (field.ListType == ListType.MultipleLines)
                     {
                         w.WL("if (" + objDotField + " == null)");
                         w.WL("{");
                         w.WL(objDotField + " = new List<" + listType + ">();");
                         w.WL("}");
-                        w.WL("bool success = " + listType + ".TryParse(" + val + ", " + floatArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(" + val + ", " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -357,7 +357,7 @@ internal static class FMData
                         w.WL("for (int a = 0; a < items.Length; a++)");
                         w.WL("{");
                         w.WL("items[a] = items[a].Trim();");
-                        w.WL("bool success = " + listType + ".TryParse(items[a], " + floatArgs + "out " + listType + " result);");
+                        w.WL("bool success = " + listType + ".TryParse(items[a], " + tryParseArgs + "out " + listType + " result);");
                         w.WL("if(success)");
                         w.WL("{");
                         w.WL(objListSet);
@@ -380,7 +380,7 @@ internal static class FMData
             }
             else if (_numericTypes.Contains(field.Type))
             {
-                string floatArgs = GetFloatArgsRead(field.Type);
+                string tryParseArgs = GetTryParseArgsRead(field.Type);
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
                     if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
@@ -389,7 +389,7 @@ internal static class FMData
                     }
                     else
                     {
-                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);");
                     }
                     w.WL(objDotField + " = success ? result : " + ((long)field.NumericEmpty).ToStrInv() + ";");
                 }
@@ -401,7 +401,7 @@ internal static class FMData
                     }
                     else
                     {
-                        w.WL(field.Type + ".TryParse(" + val + ", " + floatArgs + "out " + field.Type + " result);");
+                        w.WL(field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);");
                     }
                     w.WL(objDotField + " = result;");
                 }
@@ -409,9 +409,9 @@ internal static class FMData
             else if (field.Type[field.Type.Length - 1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
-                string floatArgs = GetFloatArgsRead(field.Type);
+                string tryParseArgs = GetTryParseArgsRead(field.Type);
                 string ftNonNull = field.Type.Substring(0, field.Type.Length - 1);
-                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ", " + floatArgs + "out " + ftNonNull + " result);");
+                w.WL("bool success = " + ftNonNull + ".TryParse(" + val + ", " + tryParseArgs + "out " + ftNonNull + " result);");
                 w.WL("if (success)");
                 w.WL("{");
                 w.WL(objDotField + " = result;");

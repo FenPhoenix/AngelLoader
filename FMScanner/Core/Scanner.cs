@@ -612,7 +612,7 @@ public sealed partial class Scanner : IDisposable
 
                     try
                     {
-                        FMToScan? fm = missions[i];
+                        FMToScan fm = missions[i];
                         scannedFMAndError =
                             fm.IsTDM
                                 ? ScanCurrentDarkModFM(fm)

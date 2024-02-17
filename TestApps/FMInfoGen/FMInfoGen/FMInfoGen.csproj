@@ -101,15 +101,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
-  </Target>
-  <!--
-    "NG7zLibs_net_AfterBuild" is a 7z.libs target. We have to run after it if we want the 7z.dll file to exist so
-    we can copy it. Blah. Also, it underlines the string like it doesn't exist, but it does find it. Tested.
-  -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="post_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot;" WorkingDirectory="$(ProjectDir)" />
-  </Target>
-
 </Project>
