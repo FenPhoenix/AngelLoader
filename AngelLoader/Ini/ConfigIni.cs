@@ -798,7 +798,7 @@ internal static partial class Ini
 
     #endregion
 
-    private sealed unsafe class Config_DelegatePointerWrapper
+    private readonly unsafe struct Config_DelegatePointerWrapper
     {
         internal readonly delegate*<ConfigData, string, string, GameIndex, bool, void> Action;
 

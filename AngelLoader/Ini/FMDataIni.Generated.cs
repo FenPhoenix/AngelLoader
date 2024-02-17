@@ -351,7 +351,7 @@ internal static partial class Ini
 
     #endregion
 
-    private sealed unsafe class FMData_DelegatePointerWrapper
+    private readonly unsafe struct FMData_DelegatePointerWrapper
     {
         internal readonly delegate*<FanMission, string, int, void> Action;
 
