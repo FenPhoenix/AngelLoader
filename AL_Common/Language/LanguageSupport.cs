@@ -8,7 +8,7 @@ namespace AL_Common;
 public static partial class LanguageSupport
 {
     [Flags, FenGenLanguageEnum(languageIndexEnumName: "LanguageIndex")]
-    public enum Language : uint
+    public enum Language : ushort
     {
         [FenGenIgnore]
         Default = 0,
