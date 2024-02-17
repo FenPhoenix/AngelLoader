@@ -422,10 +422,10 @@ public sealed partial class Scanner : IDisposable
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name)
+    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
     {
         return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false) },
+            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false, isArchive: isArchive) },
             tempPath, scanOptions, null, CancellationToken.None)[0];
     }
 
