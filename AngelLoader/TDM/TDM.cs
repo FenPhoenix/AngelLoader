@@ -332,15 +332,15 @@ internal static class TDM
                 // Only add, don't remove any the user has set manually
                 if (localData.MissionCompletedOnNormal)
                 {
-                    fm.FinishedOn |= (int)Difficulty.Normal;
+                    fm.FinishedOn |= (uint)Difficulty.Normal;
                 }
                 if (localData.MissionCompletedOnHard)
                 {
-                    fm.FinishedOn |= (int)Difficulty.Hard;
+                    fm.FinishedOn |= (uint)Difficulty.Hard;
                 }
                 if (localData.MissionCompletedOnExpert)
                 {
-                    fm.FinishedOn |= (int)Difficulty.Expert;
+                    fm.FinishedOn |= (uint)Difficulty.Expert;
                 }
 
                 // Only add last played date if there is none (we set date on play, and ours is more granular)
