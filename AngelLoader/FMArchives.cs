@@ -143,7 +143,7 @@ internal static class FMArchives
                                          "The passed path was:\r\n\r\n" +
                                          di + "\r\n\r\n";
                         Log(message, stackTrace: true);
-                        Core.Dialogs.ShowError_ViewOwned(message);
+                        Core.Dialogs.ShowError(message);
                         return false;
                     }
 #endif
