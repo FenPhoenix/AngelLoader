@@ -2475,32 +2475,42 @@ public sealed partial class Scanner : IDisposable
                 return true;
             }
 
-            string[] nums = dateString.Split(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries);
-            if (nums.Length == 3)
-            {
-                bool unambiguousYearFound = false;
-                bool unambiguousDayFound = false;
+            bool unambiguousYearFound = false;
+            bool unambiguousDayFound = false;
 
-                for (int i = 0; i < nums.Length; i++)
+            // We need there to be exactly 3 date numbers to match previous behavior.
+            // We don't actually have any instances of counts other than 3, and it may be impossible due to prior
+            // checks, but let's just make sure for now...
+            int dateNumsCount = 0;
+            foreach (ReadOnlySpan<char> numStr in ReadOnlySpanExtensions.SplitAny(dateString, CA_DateSeparators,
+                         StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (dateNumsCount > 3)
                 {
-                    if (Int_TryParseInv(nums[i], out int numInt))
+                    unambiguousYearFound = false;
+                    unambiguousDayFound = false;
+                    break;
+                }
+
+                dateNumsCount++;
+
+                if (int.TryParse(numStr, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int numInt))
+                {
+                    switch (numInt)
                     {
-                        switch (numInt)
-                        {
-                            case 0 or (> 31 and <= 9999):
-                                unambiguousYearFound = true;
-                                break;
-                            case > 12 and <= 31:
-                                unambiguousDayFound = true;
-                                break;
-                        }
+                        case 0 or (> 31 and <= 9999):
+                            unambiguousYearFound = true;
+                            break;
+                        case > 12 and <= 31:
+                            unambiguousDayFound = true;
+                            break;
                     }
                 }
+            }
 
-                if (unambiguousYearFound && unambiguousDayFound)
-                {
-                    isAmbiguous = false;
-                }
+            if (dateNumsCount == 3 && unambiguousYearFound && unambiguousDayFound)
+            {
+                isAmbiguous = false;
             }
         }
 
