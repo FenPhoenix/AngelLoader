@@ -363,7 +363,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         const string engLang = "English";
 
-        var langsList = config.LanguageNames.ToList().OrderBy(static x => x.Key, StringComparer.Ordinal);
+        var langsList = config.LanguageNames.OrderBy(static x => x.Key, StringComparer.Ordinal);
 
         using (new UpdateRegion(LangComboBox))
         {
