@@ -262,7 +262,7 @@ sealed partial class MainForm
         this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
         this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
         this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
-        this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.MainSplitContainer_Panel2_Paint);
+        this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeContainer_Paint);
         this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         this.MainSplitContainer.Panel2MinSize = 38;
         this.MainSplitContainer.RefreshSiblingFirst = true;

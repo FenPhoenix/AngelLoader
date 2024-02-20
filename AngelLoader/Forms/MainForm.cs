@@ -397,10 +397,10 @@ public sealed partial class MainForm : DarkFormBase,
                     {
                         TopSplitContainer.Panel2.Focus();
                     }
-                    else if (CursorOverControl(MainSplitContainer.Panel2) &&
+                    else if (CursorOverControl(ReadmeContainer) &&
                              !ReadmeRichTextBox.Focused)
                     {
-                        MainSplitContainer.Panel2.Focus();
+                        ReadmeContainer.Focus();
                     }
                 }
                 if (controlOver is DarkComboBox { SuppressScrollWheelValueChange: true, Focused: false } cb)
@@ -564,7 +564,7 @@ public sealed partial class MainForm : DarkFormBase,
                     AnyControlFocusedInTabPage(TagsTabPage) || TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.TagsTab :
                     AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
                     AnyControlFocusedInTabPage(ModsTabPage) ? HelpSections.ModsTab :
-                    AnyControlFocusedIn(MainSplitContainer.Panel2) ? HelpSections.ReadmeArea :
+                    AnyControlFocusedIn(ReadmeContainer) ? HelpSections.ReadmeArea :
                     HelpSections.MainWindow;
 
                 Core.OpenHelpFile(section);
@@ -1368,7 +1368,7 @@ public sealed partial class MainForm : DarkFormBase,
             System.Diagnostics.Trace.WriteLine("");
         }
 #if DateAccTest
-        else if (e.KeyCode == Keys.Space && (FMsDGV.Focused || ReadmeRichTextBox.Focused || MainSplitContainer.Panel2.Focused))
+        else if (e.KeyCode == Keys.Space && (FMsDGV.Focused || ReadmeRichTextBox.Focused || ReadmeContainer.Focused))
         {
             FanMission? fm = GetMainSelectedFMOrNull();
             if (fm != null)
@@ -4809,18 +4809,18 @@ public sealed partial class MainForm : DarkFormBase,
 
     // Draw a nice separator between the bottom of the readme and the bottom bar. Every other side is already
     // visually separated enough.
-    private void MainSplitContainer_Panel2_Paint(object sender, PaintEventArgs e)
+    private void ReadmeContainer_Paint(object sender, PaintEventArgs e)
     {
-        SplitterPanel panel2 = MainSplitContainer.Panel2;
+        Control rc = ReadmeContainer;
 
         if (MainSplitContainer.DarkModeEnabled)
         {
-            e.Graphics.DrawLine(DarkColors.GreySelectionPen, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
-            e.Graphics.DrawLine(DarkColors.Fen_ControlBackgroundPen, panel2.Left, panel2.Height - 1, panel2.Right, panel2.Height - 1);
+            e.Graphics.DrawLine(DarkColors.GreySelectionPen, rc.Left, rc.Height - 2, rc.Right, rc.Height - 2);
+            e.Graphics.DrawLine(DarkColors.Fen_ControlBackgroundPen, rc.Left, rc.Height - 1, rc.Right, rc.Height - 1);
         }
         else
         {
-            e.Graphics.DrawLine(SystemPens.ControlLight, panel2.Left, panel2.Height - 2, panel2.Right, panel2.Height - 2);
+            e.Graphics.DrawLine(SystemPens.ControlLight, rc.Left, rc.Height - 2, rc.Right, rc.Height - 2);
         }
     }
 
@@ -5026,7 +5026,7 @@ public sealed partial class MainForm : DarkFormBase,
     private bool CursorOverReadmeArea()
     {
         return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
-            ViewHTMLReadmeLLButton.Visible && CursorOverControl(MainSplitContainer.Panel2);
+            ViewHTMLReadmeLLButton.Visible && CursorOverControl(ReadmeContainer);
     }
 
     // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
@@ -5348,4 +5348,7 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_UpdateNotification.SetVisible(show);
         }
     }
+
+    // We might want to change this, if we want something beside the readme or whatever
+    internal Control ReadmeContainer => MainSplitContainer.Panel2;
 }
