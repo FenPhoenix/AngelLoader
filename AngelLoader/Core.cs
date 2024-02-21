@@ -2785,7 +2785,7 @@ internal static class Core
                     // @TDM_CASE: Screenshot FM name comparison
                     if (spaceIndex > -1 && fn.Substring(0, spaceIndex).Trim().EqualsI(fm.TDMInstalledDir))
                     {
-                        screenshotFileNames.Add(item.FullName);
+                        AddIfValidFormat(screenshotFileNames, item.FullName);
                     }
                     else
                     {
@@ -2798,7 +2798,7 @@ internal static class Core
                         // @TDM_CASE: Screenshot FM name comparison
                         if (fn.Substring(0, secondToLastUnderscoreIndex).Trim().EqualsI(fm.TDMInstalledDir))
                         {
-                            screenshotFileNames.Add(item.FullName);
+                            AddIfValidFormat(screenshotFileNames, item.FullName);
                         }
                     }
                 }
@@ -2811,7 +2811,7 @@ internal static class Core
             {
                 for (int i = 0; i < files.Length; i++)
                 {
-                    screenshotFileNames.Add(files[i].FullName);
+                    AddIfValidFormat(screenshotFileNames, files[i].FullName);
                 }
             }
         }
@@ -2824,7 +2824,7 @@ internal static class Core
             [NotNullWhen(true)] out FileInfo[]? screenshots)
         {
             // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
-            // And a custom comparer to avoid OrderBy()
+            // @ScreenshotDisplay: And a custom comparer to avoid OrderBy()
             try
             {
                 string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
@@ -2838,6 +2838,14 @@ internal static class Core
             {
                 screenshots = null;
                 return false;
+            }
+        }
+
+        static void AddIfValidFormat(List<string> screenshotFileNames, string filename)
+        {
+            if (filename.ExtIsUISupportedImage())
+            {
+                screenshotFileNames.Add(filename);
             }
         }
     }
