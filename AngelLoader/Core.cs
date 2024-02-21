@@ -2567,7 +2567,7 @@ internal static class Core
 
         Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
 
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             Config.TopRightTabsData.Tabs[i].DisplayIndex = topRightTabsData.Tabs[i].DisplayIndex;
             Config.TopRightTabsData.Tabs[i].Visible = topRightTabsData.Tabs[i].Visible;

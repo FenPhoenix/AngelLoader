@@ -678,14 +678,16 @@ public sealed partial class MainForm : DarkFormBase,
         _fmsListDefaultFontSizeInPoints = FMsDGV.DefaultCellStyle.Font.SizeInPoints;
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
-        _topRightTabs = new Lazy_TabsBase[]
+        // ReSharper disable once RedundantExplicitArraySize
+        _topRightTabs = new Lazy_TabsBase[TopRightTabCount]
         {
             StatisticsTabPage,
             EditFMTabPage,
             CommentTabPage,
             TagsTabPage,
             PatchTabPage,
-            ModsTabPage
+            ModsTabPage,
+            ScreenshotsTabPage
         };
 
         for (int i = 0; i < _topRightTabs.Length; i++)
@@ -917,23 +919,21 @@ public sealed partial class MainForm : DarkFormBase,
 
         #region Top-right tabs
 
-        AssertR(_topRightTabs.Length == TopRightTabsData.Count, nameof(_topRightTabs) + " length is different than enum length");
-
         var topRightTabsDict = new Dictionary<int, TabPage>();
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             topRightTabsDict.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabs[i]);
         }
 
-        var topRightTabs = new TabPage[TopRightTabsData.Count];
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        var topRightTabs = new TabPage[TopRightTabCount];
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             topRightTabs[i] = topRightTabsDict[i];
         }
 
         TopRightTabControl.SetTabsFull(topRightTabs);
 
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             bool visible = Config.TopRightTabsData.Tabs[i].Visible;
             // They're visible by default - shave off a bit of time
@@ -945,7 +945,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             if ((int)Config.TopRightTabsData.SelectedTab == i)
             {
@@ -1864,6 +1864,8 @@ public sealed partial class MainForm : DarkFormBase,
             TagsTabPage.Text = LText.TagsTab.TabText;
             PatchTabPage.Text = LText.PatchTab.TabText;
             ModsTabPage.Text = LText.ModsTab.TabText;
+            // @ScreenshotDisplay: Localize this
+            ScreenshotsTabPage.Text = "Screenshots";
 
             for (int i = 0; i < _topRightTabs.Length; i++)
             {
@@ -3288,7 +3290,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         var s = (ToolStripMenuItemCustom)sender;
 
-        TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabsData.Count);
+        TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabCount);
 
         if (!s.Checked && TopRightTabControl.TabCount == 1)
         {
@@ -4972,7 +4974,7 @@ public sealed partial class MainForm : DarkFormBase,
             SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs.Cast<TabPage>().ToArray(), TopRightTabControl.SelectedTab)
         };
 
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabs[i]);
             topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabs[i]);

@@ -98,24 +98,29 @@ public enum CheckForUpdates
 #region Top-right tabs
 
 // IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
-internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
+[FenGenEnumCount]
+internal enum TopRightTab
+{
+    Statistics,
+    EditFM,
+    Comment,
+    Tags,
+    Patch,
+    Mods,
+    Screenshots
+}
 
 internal sealed class TopRightTabData
 {
     private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, TopRightTabsData.Count - 1); }
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, TopRightTabCount - 1); }
 
     internal bool Visible = true;
 }
 
 internal sealed class TopRightTabsData
 {
-    /// <summary>
-    /// Returns the number of tabs that have been defined in the <see cref="TopRightTab"/> enum.
-    /// </summary>
-    internal static readonly int Count = Enum.GetValues(typeof(TopRightTab)).Length;
-
-    internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(Count);
+    internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(TopRightTabCount);
 
     internal TopRightTab SelectedTab = TopRightTab.Statistics;
 
@@ -128,7 +133,7 @@ internal sealed class TopRightTabsData
         #region Fallback if multiple tabs have the same display index
 
         var displayIndexesSet = new HashSet<int>();
-        for (int i = 0; i < Count; i++)
+        for (int i = 0; i < TopRightTabCount; i++)
         {
             if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
             {
@@ -144,7 +149,7 @@ internal sealed class TopRightTabsData
         // Fallback if selected tab is not marked as visible
         if (!GetTab(SelectedTab).Visible)
         {
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < TopRightTabCount; i++)
             {
                 if (Tabs[i].Visible)
                 {
@@ -157,18 +162,18 @@ internal sealed class TopRightTabsData
 
     private bool NoneVisible()
     {
-        for (int i = 0; i < Count; i++) if (Tabs[i].Visible) return false;
+        for (int i = 0; i < TopRightTabCount; i++) if (Tabs[i].Visible) return false;
         return true;
     }
 
     private void SetAllVisible(bool visible)
     {
-        for (int i = 0; i < Count; i++) Tabs[i].Visible = visible;
+        for (int i = 0; i < TopRightTabCount; i++) Tabs[i].Visible = visible;
     }
 
     private void ResetAllDisplayIndexes()
     {
-        for (int i = 0; i < Count; i++) Tabs[i].DisplayIndex = i;
+        for (int i = 0; i < TopRightTabCount; i++) Tabs[i].DisplayIndex = i;
     }
 }
 

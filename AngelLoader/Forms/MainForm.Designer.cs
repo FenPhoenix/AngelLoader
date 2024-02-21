@@ -109,6 +109,7 @@ sealed partial class MainForm
         this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
         this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
         this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
+        this.ScreenshotsTabPage = new AngelLoader.Forms.CustomControls.ScreenshotsTabPage();
         this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -906,6 +907,7 @@ sealed partial class MainForm
         this.TopRightTabControl.Controls.Add(this.TagsTabPage);
         this.TopRightTabControl.Controls.Add(this.PatchTabPage);
         this.TopRightTabControl.Controls.Add(this.ModsTabPage);
+        this.TopRightTabControl.Controls.Add(this.ScreenshotsTabPage);
         this.TopRightTabControl.EnableScrollButtonsRefreshHack = true;
         this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
         this.TopRightTabControl.Name = "TopRightTabControl";
@@ -966,6 +968,15 @@ sealed partial class MainForm
         this.ModsTabPage.Size = new System.Drawing.Size(527, 284);
         this.ModsTabPage.TabIndex = 4;
         this.ModsTabPage.Text = "Mods";
+        // 
+        // ScreenshotsTabPage
+        // 
+        this.ScreenshotsTabPage.BackColor = System.Drawing.SystemColors.Control;
+        this.ScreenshotsTabPage.Location = new System.Drawing.Point(4, 22);
+        this.ScreenshotsTabPage.Name = "ScreenshotsTabPage";
+        this.ScreenshotsTabPage.Size = new System.Drawing.Size(527, 284);
+        this.ScreenshotsTabPage.TabIndex = 5;
+        this.ScreenshotsTabPage.Text = "Screenshots";
         // 
         // ReadmeEncodingButton
         // 
@@ -1227,6 +1238,7 @@ sealed partial class MainForm
     internal CustomControls.TagsTabPage TagsTabPage;
     internal CustomControls.PatchTabPage PatchTabPage;
     internal CustomControls.ModsTabPage ModsTabPage;
+    internal CustomControls.ScreenshotsTabPage ScreenshotsTabPage;
 
     internal CustomControls.DarkButton TopRightMenuButton;
     internal CustomControls.DarkArrowButton TopRightCollapseButton;

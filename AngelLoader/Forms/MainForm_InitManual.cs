@@ -86,6 +86,7 @@ public sealed partial class MainForm
         TagsTabPage = new TagsTabPage();
         PatchTabPage = new PatchTabPage();
         ModsTabPage = new ModsTabPage();
+        ScreenshotsTabPage = new ScreenshotsTabPage();
         ReadmeEncodingButton = new DarkButton();
         ReadmeFullScreenButton = new DarkButton();
         ReadmeZoomInButton = new DarkButton();

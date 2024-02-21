@@ -4,13 +4,14 @@ using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
 internal sealed class TopRightLLMenu : IDarkable
 {
     private bool _constructed;
-    private readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
+    private readonly bool[] _checkedStates = InitializedArray(TopRightTabCount, true);
 
     private readonly MainForm _owner;
 
@@ -25,7 +26,7 @@ internal sealed class TopRightLLMenu : IDarkable
 
                 _menu = new DarkContextMenu(_owner);
 
-                var menuItems = new ToolStripItem[TopRightTabsData.Count];
+                var menuItems = new ToolStripItem[TopRightTabCount];
                 for (int i = 0; i < menuItems.Length; i++)
                 {
                     var item = new ToolStripMenuItemCustom
@@ -126,6 +127,8 @@ internal sealed class TopRightLLMenu : IDarkable
         _menu.Items[(int)TopRightTab.Tags].Text = LText.TagsTab.TabText;
         _menu.Items[(int)TopRightTab.Patch].Text = LText.PatchTab.TabText;
         _menu.Items[(int)TopRightTab.Mods].Text = LText.ModsTab.TabText;
+        // @ScreenshotDisplay: Localize this
+        _menu.Items[(int)TopRightTab.Screenshots].Text = "Screenshots";
     }
 
     internal bool Focused => _constructed && _menu.Focused;
