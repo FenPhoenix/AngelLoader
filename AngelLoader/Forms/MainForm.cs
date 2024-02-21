@@ -4,19 +4,17 @@
 
 @ScreenshotDisplay(TDM screenshot filename formats):
 
-We need to check all versions to see if there are any other formats.
-
-Format 1 (2.06 at the very least):
+Format 1 (1.08 - 2.10):
 mapname + "_%Y-%m-%d_%H.%M.%S." + extension
 Example: river1_1_2016-11-03_21.47.21.png
 Extracted fm name should be "river1_1"
 
-Format 2 (2.11 at the very least):
+Format 2 (2.11+):
 mapname + " (%Y-%m-%d %H-%M-%S) (" + playerViewOriginStr + ")." + extension
 Example: written (2023-10-03 20-19-23) (889.44 -1464.35 174.68).jpg
 Extracted fm name should be "written"
 
-So if these are the only two formats, then the FM name extraction logic should be:
+So the FM name extraction logic should be:
 
 If a space exists, substring to the first space
 Else if a second-last underscore exists, substring to that
