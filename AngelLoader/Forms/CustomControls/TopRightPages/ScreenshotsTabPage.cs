@@ -1,17 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AngelLoader.GameSupport;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls;
 
 public sealed class ScreenshotsTabPage : Lazy_TabsBase
 {
     private Lazy_ScreenshotsPage _page = null!;
+
+    private readonly List<string> ScreenshotFileNames = new();
 
     #region Theme
 
@@ -60,72 +59,30 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.ScreenshotsNextButton.Text = "Next";
     }
 
+    // @ScreenshotDisplay: Implement not loading images when hidden, and loading on show
+
     public override void UpdatePage()
     {
         if (!_constructed) return;
 
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
-        if (fm != null)
-        {
-            _page.ScreenshotsPictureBox.Enabled = true;
-            _page.ScreenshotsPrevButton.Enabled = true;
-            _page.ScreenshotsNextButton.Enabled = true;
+        Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
-            LoadScreenshots(fm);
-        }
-        else
+        if (ScreenshotFileNames.Count == 0)
         {
             _page.ScreenshotsPictureBox.Image = null;
             _page.ScreenshotsPictureBox.Enabled = false;
             _page.ScreenshotsPrevButton.Enabled = false;
             _page.ScreenshotsNextButton.Enabled = false;
         }
-    }
-
-    // @ScreenshotDisplay: Move business logic out?
-    private void LoadScreenshots(FanMission fm)
-    {
-        if (!GameIsKnownAndSupported(fm.Game))
-        {
-            _page.ScreenshotsPictureBox.Image = null;
-        }
-        else if (fm.Game == Game.TDM)
-        {
-            // @ScreenshotDisplay: Implement later
-            _page.ScreenshotsPictureBox.Image = null;
-        }
         else
         {
-            // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
-            // And a custom comparer to avoid OrderBy()
-            if (fm.Installed && FMIsReallyInstalled(fm, out string fmInstalledPath))
-            {
-                FileInfo[] files;
-                try
-                {
-                    string ssPath = Path.Combine(fmInstalledPath, "screenshots");
-                    files = new DirectoryInfo(ssPath).GetFiles("*");
-                }
-                catch
-                {
-                    _page.ScreenshotsPictureBox.Image = null;
-                    return;
-                }
-
-                if (files.Length == 0)
-                {
-                    _page.ScreenshotsPictureBox.Image = null;
-                    return;
-                }
-
-                files = files.OrderBy(static x => x.LastWriteTime).ToArray();
-                _page.ScreenshotsPictureBox.Load(files[0].FullName);
-            }
-            else
-            {
-                _page.ScreenshotsPictureBox.Image = null;
-            }
+            // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
+            _page.ScreenshotsPictureBox.Load(ScreenshotFileNames[0]);
+            _page.ScreenshotsPictureBox.Enabled = true;
+            _page.ScreenshotsPrevButton.Enabled = ScreenshotFileNames.Count > 1;
+            _page.ScreenshotsNextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
     }
 

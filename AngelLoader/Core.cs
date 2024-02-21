@@ -2739,4 +2739,106 @@ internal static class Core
 
         return VisualTheme.Classic;
     }
+
+    /// <summary>
+    /// If there are screenshots on disk, <paramref name="screenshotFileNames"/> will contain their full names.
+    /// If there are none, or if <paramref name="fm"/> is <see langword="null"/>, <paramref name="screenshotFileNames"/> will be empty.
+    /// </summary>
+    /// <param name="fm"></param>
+    /// <param name="screenshotFileNames"></param>
+    internal static void PopulateScreenshotFileNames(FanMission? fm, List<string> screenshotFileNames)
+    {
+        screenshotFileNames.Clear();
+        if (fm == null) return;
+        if (!GameIsKnownAndSupported(fm.Game)) return;
+
+        if (fm.Game == Game.TDM)
+        {
+            /*
+            TDM screenshot filename formats:
+
+            Format 1 (1.08 - 2.10):
+            mapname + "_%Y-%m-%d_%H.%M.%S." + extension
+            Example: river1_1_2016-11-03_21.47.21.png
+            Extracted fm name should be "river1_1"
+
+            Format 2 (2.11+):
+            mapname + " (%Y-%m-%d %H-%M-%S) (" + playerViewOriginStr + ")." + extension
+            Example: written (2023-10-03 20-19-23) (889.44 -1464.35 174.68).jpg
+            Extracted fm name should be "written"
+            */
+
+            string tdmGamePath = Config.GetGamePath(GameIndex.TDM);
+            if (!tdmGamePath.IsEmpty() &&
+                /*
+                TDM stores all FMs' screenshots in the same dir. To prevent having to get the entire set (which
+                could be very large), just get ones starting with our FM name and do a proper filter afterwards.
+                */
+                TryGetSortedScreenshotFileInfos(tdmGamePath, fm.TDMInstalledDir + "*.*", out FileInfo[]? files))
+            {
+                for (int i = 0; i < files.Length; i++)
+                {
+                    FileInfo item = files[i];
+                    string fn = item.Name;
+
+                    int spaceIndex = fn.IndexOf(' ');
+                    // @TDM_CASE: Screenshot FM name comparison
+                    if (spaceIndex > -1 && fn.Substring(0, spaceIndex).Trim().EqualsI(fm.TDMInstalledDir))
+                    {
+                        screenshotFileNames.Add(item.FullName);
+                    }
+                    else
+                    {
+                        int underscoreIndex = fn.LastIndexOf('_');
+                        if (underscoreIndex == -1) continue;
+
+                        int secondToLastUnderscoreIndex = fn.LastIndexOf('_', (underscoreIndex - 1).ClampToZero());
+                        if (secondToLastUnderscoreIndex <= -1) continue;
+
+                        // @TDM_CASE: Screenshot FM name comparison
+                        if (fn.Substring(0, secondToLastUnderscoreIndex).Trim().EqualsI(fm.TDMInstalledDir))
+                        {
+                            screenshotFileNames.Add(item.FullName);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (fm.Installed && FMIsReallyInstalled(fm, out string fmInstalledPath) &&
+                TryGetSortedScreenshotFileInfos(fmInstalledPath, "*", out FileInfo[]? files))
+            {
+                for (int i = 0; i < files.Length; i++)
+                {
+                    screenshotFileNames.Add(files[i].FullName);
+                }
+            }
+        }
+
+        return;
+
+        static bool TryGetSortedScreenshotFileInfos(
+            string screenshotsDirParentPath,
+            string pattern,
+            [NotNullWhen(true)] out FileInfo[]? screenshots)
+        {
+            // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
+            // And a custom comparer to avoid OrderBy()
+            try
+            {
+                string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
+                screenshots = new DirectoryInfo(ssPath)
+                    .GetFiles(pattern)
+                    .OrderBy(static x => x.LastWriteTime)
+                    .ToArray();
+                return true;
+            }
+            catch
+            {
+                screenshots = null;
+                return false;
+            }
+        }
+    }
 }
