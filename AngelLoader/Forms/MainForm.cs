@@ -71,7 +71,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region Private fields
 
     // Stupid hack for if event handlers need to know
-    private bool _startupState = true;
+    internal bool StartupState { get; private set; } = true;
 
     private ISplashScreen_Safe? _splashScreen;
 
@@ -1202,7 +1202,7 @@ public sealed partial class MainForm : DarkFormBase,
         _splashScreen?.Hide();
         _splashScreen = null;
 
-        _startupState = false;
+        StartupState = false;
     }
 
     #endregion
@@ -1242,7 +1242,7 @@ public sealed partial class MainForm : DarkFormBase,
     protected override void OnSizeChanged(EventArgs e)
     {
         // Prevent unpleasant visual garbage drawing in the window on startup if we do the full thing
-        if (_startupState)
+        if (StartupState)
         {
             if (WindowState != FormWindowState.Minimized)
             {

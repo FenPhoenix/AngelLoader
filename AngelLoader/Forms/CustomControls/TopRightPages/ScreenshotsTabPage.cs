@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -11,6 +12,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private Lazy_ScreenshotsPage _page = null!;
 
     private readonly List<string> ScreenshotFileNames = new();
+    private string StoredScreenshotFileName = "";
 
     #region Theme
 
@@ -65,24 +67,40 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         if (!_constructed) return;
 
+        if (!_owner.StartupState && !Visible) return;
+
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
         Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
         if (ScreenshotFileNames.Count == 0)
         {
+            StoredScreenshotFileName = "";
             _page.ScreenshotsPictureBox.Image = null;
             _page.ScreenshotsPictureBox.Enabled = false;
             _page.ScreenshotsPrevButton.Enabled = false;
             _page.ScreenshotsNextButton.Enabled = false;
         }
-        else
+        // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
+        // @TDM_CASE (when the FM is TDM)
+        else if (!StoredScreenshotFileName.EqualsI(ScreenshotFileNames[0]))
         {
-            // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
-            _page.ScreenshotsPictureBox.Load(ScreenshotFileNames[0]);
+            // @ScreenshotDisplay: We can't just use the 0th element, we need to use the actual selected one
+            StoredScreenshotFileName = ScreenshotFileNames[0];
+            _page.ScreenshotsPictureBox.Load(StoredScreenshotFileName);
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.ScreenshotsPrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.ScreenshotsNextButton.Enabled = ScreenshotFileNames.Count > 1;
+        }
+    }
+
+    protected override void OnVisibleChanged(EventArgs e)
+    {
+        base.OnVisibleChanged(e);
+
+        if (!_owner.StartupState && Visible)
+        {
+            UpdatePage();
         }
     }
 
