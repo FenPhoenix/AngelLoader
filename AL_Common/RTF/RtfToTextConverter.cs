@@ -1076,6 +1076,7 @@ public sealed partial class RtfToTextConverter
         {
             case SpecialType.SkipNumberOfBytes:
                 if (symbol.UseDefaultParam) param = symbol.DefaultParam;
+                if (param < 0) return RtfError.AbortedForSafety;
                 CurrentPos += param;
                 break;
             case SpecialType.HexEncodedChar:
@@ -1110,7 +1111,7 @@ public sealed partial class RtfToTextConverter
     {
         // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
         // a spec-conforming file.
-        if (_inHandleFontTable) return RtfError.StackOverflow;
+        if (_inHandleFontTable) return RtfError.AbortedForSafety;
         _inHandleFontTable = true;
 
         int fontTableGroupLevel = _ctx.GroupStack.Count;
