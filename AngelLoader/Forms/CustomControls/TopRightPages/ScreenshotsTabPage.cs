@@ -54,8 +54,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.Show();
     }
 
-    // @ScreenshotDisplay: Implement not loading images when hidden, and loading on show
-
     public override void UpdatePage()
     {
         if (!_constructed) return;
@@ -85,6 +83,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
+    /*
+    The standard behavior for lazy loaded tabs is that they don't update until loaded, after which they always
+    update. However, loading an image could take a significant amount of time, and we don't want to punish users
+    with that lag time if they're not actually able to see the image. So we only update when visible (or when we
+    become visible).
+    */
     private void DisplayCurrentScreenshot()
     {
         if (!_constructed) return;
