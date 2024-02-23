@@ -31,7 +31,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.ScreenshotsPictureBox = new DarkPictureBox();
+            this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.DarkPictureBox();
             this.ScreenshotsNextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -61,7 +61,7 @@ public sealed partial class Lazy_ScreenshotsPage
             this.ScreenshotsPrevButton.Location = new System.Drawing.Point(187, 200);
             this.ScreenshotsPrevButton.Name = "ScreenshotsPrevButton";
             this.ScreenshotsPrevButton.Size = new System.Drawing.Size(75, 23);
-            this.ScreenshotsPrevButton.TabIndex = 2;
+            this.ScreenshotsPrevButton.TabIndex = 1;
             // 
             // NumberLabel
             // 
@@ -69,7 +69,7 @@ public sealed partial class Lazy_ScreenshotsPage
             this.NumberLabel.Location = new System.Drawing.Point(8, 204);
             this.NumberLabel.Name = "NumberLabel";
             this.NumberLabel.Size = new System.Drawing.Size(0, 13);
-            this.NumberLabel.TabIndex = 3;
+            this.NumberLabel.TabIndex = 0;
             // 
             // Lazy_ScreenshotsPage
             // 

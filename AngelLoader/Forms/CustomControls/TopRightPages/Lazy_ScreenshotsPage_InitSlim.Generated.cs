@@ -7,7 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.ScreenshotsPictureBox = new DarkPictureBox();
+        this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.DarkPictureBox();
         this.ScreenshotsNextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ScreenshotsPrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -32,7 +32,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.ScreenshotsPrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
         this.ScreenshotsPrevButton.Location = new System.Drawing.Point(187, 200);
         this.ScreenshotsPrevButton.Size = new System.Drawing.Size(75, 23);
-        this.ScreenshotsPrevButton.TabIndex = 2;
+        this.ScreenshotsPrevButton.TabIndex = 1;
         // 
         // NumberLabel
         // 
