@@ -2826,6 +2826,7 @@ internal static class Core
             // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
             try
             {
+                // @ScreenshotDisplay: Support Thief 3 central screenshots
                 string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
                 DirectoryInfo di = new(ssPath);
                 // Standard practice is to let the GetFiles() call throw if the directory doesn't exist, but for
