@@ -6,6 +6,7 @@ using JetBrains.Annotations;
 #pragma warning disable IDE0060 // Remove unused parameter.
 #pragma warning disable RCS1163 // Unused parameter.
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
+#pragma warning disable CS9113 // Parameter is unread.
 
 namespace AL_Common;
 
