@@ -37,7 +37,6 @@ public sealed partial class Lazy_TagsPage
         this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
-        this.TagsTabAutoScrollMarker = new AngelLoader.Forms.CustomControls.DarkControl();
         this.AddRemoveTagFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -116,23 +115,16 @@ public sealed partial class Lazy_TagsPage
         this.TagsTreeView.Size = new System.Drawing.Size(512, 216);
         this.TagsTreeView.TabIndex = 8;
         // 
-        // TagsTabAutoScrollMarker
-        // 
-        this.TagsTabAutoScrollMarker.Location = new System.Drawing.Point(0, 0);
-        this.TagsTabAutoScrollMarker.Name = "TagsTabAutoScrollMarker";
-        this.TagsTabAutoScrollMarker.Size = new System.Drawing.Size(240, 152);
-        this.TagsTabAutoScrollMarker.TabIndex = 10;
-        // 
         // Lazy_TagsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
+        this.AutoScrollMinSize = new System.Drawing.Size(240, 152);
         this.Controls.Add(this.AddTagButton);
         this.Controls.Add(this.AddTagTextBox);
         this.Controls.Add(this.AddRemoveTagFLP);
         this.Controls.Add(this.TagsTreeView);
-        this.Controls.Add(this.TagsTabAutoScrollMarker);
         this.Name = "Lazy_TagsPage";
         this.Size = new System.Drawing.Size(527, 284);
         this.AddRemoveTagFLP.ResumeLayout(false);
@@ -151,5 +143,4 @@ public sealed partial class Lazy_TagsPage
     internal DarkButton RemoveTagButton;
     internal DarkButton AddTagFromListButton;
     internal DarkTreeView TagsTreeView;
-    internal DarkControl TagsTabAutoScrollMarker;
 }
