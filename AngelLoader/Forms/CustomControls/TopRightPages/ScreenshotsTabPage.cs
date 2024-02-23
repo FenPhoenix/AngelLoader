@@ -83,6 +83,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
+    #endregion
+
+    #region Page
+
     /*
     The standard behavior for lazy loaded tabs is that they don't update until loaded, after which they always
     update. However, loading an image could take a significant amount of time, and we don't want to punish users
@@ -110,8 +114,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (Visible) DisplayCurrentScreenshot();
     }
 
-    #region Page
-
     private void ScreenshotsPrevButton_Click(object sender, EventArgs e) => CycleScreenshot(step: -1);
 
     private void ScreenshotsNextButton_Click(object sender, EventArgs e) => CycleScreenshot(step: 1);
@@ -131,8 +133,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         CurrentScreenshotFileName = ScreenshotFileNames[index];
         DisplayCurrentScreenshot();
     }
-
-    #endregion
 
     #endregion
 }
