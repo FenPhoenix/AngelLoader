@@ -7,7 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.ScreenshotsPictureBox = new System.Windows.Forms.PictureBox();
+        this.ScreenshotsPictureBox = new DarkPictureBox();
         this.ScreenshotsNextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ScreenshotsPrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

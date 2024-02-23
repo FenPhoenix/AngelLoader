@@ -31,7 +31,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.ScreenshotsPictureBox = new System.Windows.Forms.PictureBox();
+            this.ScreenshotsPictureBox = new DarkPictureBox();
             this.ScreenshotsNextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -91,7 +91,7 @@ public sealed partial class Lazy_ScreenshotsPage
 
     #endregion
 
-    internal System.Windows.Forms.PictureBox ScreenshotsPictureBox;
+    internal DarkPictureBox ScreenshotsPictureBox;
     internal DarkArrowButton ScreenshotsPrevButton;
     internal DarkArrowButton ScreenshotsNextButton;
     internal DarkLabel NumberLabel;
