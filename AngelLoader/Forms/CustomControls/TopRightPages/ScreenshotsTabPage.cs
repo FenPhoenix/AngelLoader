@@ -1,4 +1,5 @@
 ﻿// @ScreenshotDisplay: Make screenshot scale with resize
+// @ScreenshotDisplay: Watch screenshot folder and reload from disk
 
 using System;
 using System.Collections.Generic;
