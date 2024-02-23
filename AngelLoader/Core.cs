@@ -2824,7 +2824,6 @@ internal static class Core
             [NotNullWhen(true)] out FileInfo[]? screenshots)
         {
             // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
-            // @ScreenshotDisplay: And a custom comparer to avoid OrderBy()
             try
             {
                 string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
@@ -2836,10 +2835,8 @@ internal static class Core
                     screenshots = null;
                     return false;
                 }
-                screenshots = di
-                    .GetFiles(pattern)
-                    .OrderBy(static x => x.LastWriteTime)
-                    .ToArray();
+                screenshots = di.GetFiles(pattern);
+                Array.Sort(screenshots, Comparers.Screenshot);
                 return true;
             }
             catch

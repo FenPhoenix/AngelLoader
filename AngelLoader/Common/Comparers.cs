@@ -45,8 +45,9 @@ internal static class Comparers
 
     #region Misc comparers
 
-    private static FileNameNoExtComparer? _fileNameNoExtComparer;
-    internal static FileNameNoExtComparer FileNameNoExt => _fileNameNoExtComparer ??= new FileNameNoExtComparer();
+    internal static FileNameNoExtComparer FileNameNoExt = new();
+
+    internal static ScreenshotComparer Screenshot = new();
 
     #endregion
 
@@ -440,6 +441,18 @@ internal static class Comparers
                 Path.GetFileNameWithoutExtension(x),
                 Path.GetFileNameWithoutExtension(y),
                 StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal sealed class ScreenshotComparer : IComparer<FileInfo>
+    {
+        public int Compare(FileInfo x, FileInfo y)
+        {
+            int cmp = x.LastWriteTime.CompareTo(y.LastWriteTime);
+            return cmp == 0
+                // @TDM_CASE when file is a TDM screenshot
+                ? string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase)
+                : cmp;
+        }
     }
 
     #endregion
