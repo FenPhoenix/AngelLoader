@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using AL_Common;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -15,23 +13,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
-
-    #region Theme
-
-    [PublicAPI]
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override bool DarkModeEnabled
-    {
-        get => base.DarkModeEnabled;
-        set
-        {
-            if (DarkModeEnabled == value) return;
-            base.DarkModeEnabled = value;
-        }
-    }
-
-    #endregion
 
     #region Public common
 
