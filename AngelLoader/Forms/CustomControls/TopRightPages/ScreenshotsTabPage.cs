@@ -1,4 +1,6 @@
-﻿using System;
+﻿// @ScreenshotDisplay: Make screenshot scale with resize
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AL_Common;
@@ -52,15 +54,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.Show();
     }
 
-    public override void Localize()
-    {
-        if (!_constructed) return;
-
-        // @ScreenshotDisplay: Localize these
-        _page.ScreenshotsPrevButton.Text = "Prev";
-        _page.ScreenshotsNextButton.Text = "Next";
-    }
-
     // @ScreenshotDisplay: Implement not loading images when hidden, and loading on show
 
     public override void UpdatePage()
@@ -79,6 +72,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.ScreenshotsPictureBox.Enabled = false;
             _page.ScreenshotsPrevButton.Enabled = false;
             _page.ScreenshotsNextButton.Enabled = false;
+            _page.NumberLabel.Text = "";
         }
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
@@ -101,6 +95,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             (_page.ScreenshotsPictureBox.ImageLocation?.EqualsI(CurrentScreenshotFileName) != true))
         {
             _page.ScreenshotsPictureBox.Load(CurrentScreenshotFileName);
+            _page.NumberLabel.Text = (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +
+                                     ScreenshotFileNames.Count.ToStrInv();
         }
     }
 
