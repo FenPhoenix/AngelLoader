@@ -75,7 +75,6 @@ sealed partial class PathsPage
             this.Thief3ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief1ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
             this.LayoutFLP.SuspendLayout();
@@ -93,8 +92,8 @@ sealed partial class PathsPage
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
             this.PagePanel.Controls.Add(this.ActualPathsPanel);
-            this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
@@ -557,13 +556,6 @@ sealed partial class PathsPage
             this.Thief1ExePathTextBox.Size = new System.Drawing.Size(320, 20);
             this.Thief1ExePathTextBox.TabIndex = 1;
             // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 200);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-            this.DummyAutoScrollPanel.TabIndex = 13;
-            // 
             // PathsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -618,7 +610,6 @@ sealed partial class PathsPage
     internal AngelLoader.Forms.CustomControls.DarkButton RemoveFMArchivePathButton;
     internal AngelLoader.Forms.CustomControls.DarkListBox FMArchivePathsListBox;
     internal System.Windows.Forms.Panel ActualPathsPanel;
-    internal System.Windows.Forms.Control DummyAutoScrollPanel;
     internal AngelLoader.Forms.CustomControls.DarkLabel SteamExeLabel;
     internal AngelLoader.Forms.CustomControls.DarkTextBox SteamExeTextBox;
     internal AngelLoader.Forms.CustomControls.StandardButton SteamExeBrowseButton;
