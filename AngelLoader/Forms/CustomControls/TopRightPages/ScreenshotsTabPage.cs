@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -74,6 +75,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             CurrentScreenshotFileName = "";
             _page.ScreenshotsPictureBox.Image = null;
+            _page.ScreenshotsPictureBox.ImageLocation = "";
             _page.ScreenshotsPictureBox.Enabled = false;
             _page.ScreenshotsPrevButton.Enabled = false;
             _page.ScreenshotsNextButton.Enabled = false;
@@ -91,7 +93,21 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void DisplayCurrentScreenshot()
     {
-        _page.ScreenshotsPictureBox.Load(CurrentScreenshotFileName);
+        if (!_constructed) return;
+        if (!_owner.StartupState && !Visible) return;
+
+        if (!CurrentScreenshotFileName.IsEmpty() &&
+            // @TDM_CASE when FM is TDM
+            (_page.ScreenshotsPictureBox.ImageLocation?.EqualsI(CurrentScreenshotFileName) != true))
+        {
+            _page.ScreenshotsPictureBox.Load(CurrentScreenshotFileName);
+        }
+    }
+
+    protected override void OnVisibleChanged(EventArgs e)
+    {
+        base.OnVisibleChanged(e);
+        if (Visible) DisplayCurrentScreenshot();
     }
 
     #region Page

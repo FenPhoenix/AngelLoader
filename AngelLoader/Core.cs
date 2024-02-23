@@ -2828,7 +2828,15 @@ internal static class Core
             try
             {
                 string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
-                screenshots = new DirectoryInfo(ssPath)
+                DirectoryInfo di = new(ssPath);
+                // Standard practice is to let the GetFiles() call throw if the directory doesn't exist, but for
+                // some reason that takes ~30ms whereas this check is <2ms (cold) to <.1ms (warm).
+                if (!di.Exists)
+                {
+                    screenshots = null;
+                    return false;
+                }
+                screenshots = di
                     .GetFiles(pattern)
                     .OrderBy(static x => x.LastWriteTime)
                     .ToArray();
