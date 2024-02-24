@@ -127,8 +127,7 @@ internal sealed class TopRightLLMenu : IDarkable
         _menu.Items[(int)TopRightTab.Tags].Text = LText.TagsTab.TabText;
         _menu.Items[(int)TopRightTab.Patch].Text = LText.PatchTab.TabText;
         _menu.Items[(int)TopRightTab.Mods].Text = LText.ModsTab.TabText;
-        // @ScreenshotDisplay: Localize this
-        _menu.Items[(int)TopRightTab.Screenshots].Text = "Screenshots";
+        _menu.Items[(int)TopRightTab.Screenshots].Text = LText.ScreenshotsTabs.TabText;
     }
 
     internal bool Focused => _constructed && _menu.Focused;

@@ -2051,6 +2051,51 @@ internal static class Core
         }
     }
 
+    internal static void OpenFMScreenshotsFolder(FanMission fm, string screenshotFile)
+    {
+        try
+        {
+            if (screenshotFile.IsEmpty())
+            {
+                LogNotFound(fm);
+                return;
+            }
+
+            if (!NativeCommon.OpenFolderAndSelectFile(screenshotFile))
+            {
+                string? ssDir = Path.GetDirectoryName(screenshotFile);
+                if (ssDir.IsEmpty())
+                {
+                    LogNotFound(fm);
+                    return;
+                }
+
+                try
+                {
+                    ProcessStart_UseShellExecute(ssDir);
+                }
+                catch (Exception ex)
+                {
+                    LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
+                    Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderOpenError);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
+            Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderOpenError);
+        }
+
+        return;
+
+        static void LogNotFound(FanMission fm)
+        {
+            LogFMInfo(fm, ErrorText.FMScreenshotsDirNF);
+            Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderNotFound);
+        }
+    }
+
     internal static void OpenWebSearchUrl()
     {
         FanMission? fm = View.GetMainSelectedFMOrNull();
@@ -2752,6 +2797,7 @@ internal static class Core
         if (fm == null) return;
         if (!GameIsKnownAndSupported(fm.Game)) return;
 
+        // @GENGAMES(Screenshots)
         if (fm.Game == Game.TDM)
         {
             /*

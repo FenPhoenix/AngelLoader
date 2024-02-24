@@ -1842,8 +1842,7 @@ public sealed partial class MainForm : DarkFormBase,
             TagsTabPage.Text = LText.TagsTab.TabText;
             PatchTabPage.Text = LText.PatchTab.TabText;
             ModsTabPage.Text = LText.ModsTab.TabText;
-            // @ScreenshotDisplay: Localize this
-            ScreenshotsTabPage.Text = "Screenshots";
+            ScreenshotsTabPage.Text = LText.ScreenshotsTabs.TabText;
 
             for (int i = 0; i < _topRightTabs.Length; i++)
             {

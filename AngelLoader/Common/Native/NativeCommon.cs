@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Win32.SafeHandles;
 
@@ -20,6 +21,46 @@ internal static class NativeCommon
 
     [DllImport("kernel32.dll")]
     internal static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+    #endregion
+
+    #region Open folder and select file
+
+    internal static bool OpenFolderAndSelectFile(string filePath)
+    {
+        try
+        {
+            IntPtr pidl = ILCreateFromPathW(filePath);
+            if (pidl == IntPtr.Zero) return false;
+
+            try
+            {
+                int result = SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                return result == 0;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                ILFree(pidl);
+            }
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr ILCreateFromPathW(string pszPath);
+
+    [DllImport("shell32.dll")]
+    private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
+
+    [DllImport("shell32.dll")]
+    private static extern void ILFree(IntPtr pidl);
 
     #endregion
 }

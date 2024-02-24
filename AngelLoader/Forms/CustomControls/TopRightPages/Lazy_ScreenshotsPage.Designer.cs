@@ -32,38 +32,40 @@ public sealed partial class Lazy_ScreenshotsPage
     private void InitializeComponent()
     {
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.ScreenshotsNextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-            this.ScreenshotsPrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+            this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+            this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.DarkPictureBox();
+            this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenshotsPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // NumberLabel
             // 
-            this.NumberLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.NumberLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.NumberLabel.AutoSize = true;
-            this.NumberLabel.Location = new System.Drawing.Point(8, 260);
+            this.NumberLabel.Location = new System.Drawing.Point(472, 238);
             this.NumberLabel.Name = "NumberLabel";
-            this.NumberLabel.Size = new System.Drawing.Size(0, 13);
-            this.NumberLabel.TabIndex = 0;
+            this.NumberLabel.Size = new System.Drawing.Size(48, 13);
+            this.NumberLabel.TabIndex = 3;
+            this.NumberLabel.Text = "[number]";
             // 
-            // ScreenshotsNextButton
+            // NextButton
             // 
-            this.ScreenshotsNextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ScreenshotsNextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
-            this.ScreenshotsNextButton.Location = new System.Drawing.Point(446, 256);
-            this.ScreenshotsNextButton.Name = "ScreenshotsNextButton";
-            this.ScreenshotsNextButton.Size = new System.Drawing.Size(75, 23);
-            this.ScreenshotsNextButton.TabIndex = 2;
+            this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
+            this.NextButton.Location = new System.Drawing.Point(446, 256);
+            this.NextButton.Name = "NextButton";
+            this.NextButton.Size = new System.Drawing.Size(75, 23);
+            this.NextButton.TabIndex = 2;
             // 
-            // ScreenshotsPrevButton
+            // PrevButton
             // 
-            this.ScreenshotsPrevButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ScreenshotsPrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
-            this.ScreenshotsPrevButton.Location = new System.Drawing.Point(371, 256);
-            this.ScreenshotsPrevButton.Name = "ScreenshotsPrevButton";
-            this.ScreenshotsPrevButton.Size = new System.Drawing.Size(75, 23);
-            this.ScreenshotsPrevButton.TabIndex = 1;
+            this.PrevButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.PrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
+            this.PrevButton.Location = new System.Drawing.Point(371, 256);
+            this.PrevButton.Name = "PrevButton";
+            this.PrevButton.Size = new System.Drawing.Size(75, 23);
+            this.PrevButton.TabIndex = 1;
             // 
             // ScreenshotsPictureBox
             // 
@@ -72,10 +74,18 @@ public sealed partial class Lazy_ScreenshotsPage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ScreenshotsPictureBox.Location = new System.Drawing.Point(8, 8);
             this.ScreenshotsPictureBox.Name = "ScreenshotsPictureBox";
-            this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 248);
+            this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 224);
             this.ScreenshotsPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ScreenshotsPictureBox.TabIndex = 0;
             this.ScreenshotsPictureBox.TabStop = false;
+            // 
+            // OpenScreenshotsFolderButton
+            // 
+            this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(336, 256);
+            this.OpenScreenshotsFolderButton.Name = "OpenScreenshotsFolderButton";
+            this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(35, 23);
+            this.OpenScreenshotsFolderButton.TabIndex = 0;
             // 
             // Lazy_ScreenshotsPage
             // 
@@ -83,9 +93,10 @@ public sealed partial class Lazy_ScreenshotsPage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(220, 100);
+            this.Controls.Add(this.OpenScreenshotsFolderButton);
             this.Controls.Add(this.NumberLabel);
-            this.Controls.Add(this.ScreenshotsNextButton);
-            this.Controls.Add(this.ScreenshotsPrevButton);
+            this.Controls.Add(this.NextButton);
+            this.Controls.Add(this.PrevButton);
             this.Controls.Add(this.ScreenshotsPictureBox);
             this.Name = "Lazy_ScreenshotsPage";
             this.Size = new System.Drawing.Size(527, 284);
@@ -99,7 +110,8 @@ public sealed partial class Lazy_ScreenshotsPage
     #endregion
 
     internal DarkPictureBox ScreenshotsPictureBox;
-    internal DarkArrowButton ScreenshotsPrevButton;
-    internal DarkArrowButton ScreenshotsNextButton;
+    internal DarkArrowButton PrevButton;
+    internal DarkArrowButton NextButton;
     internal DarkLabel NumberLabel;
+    internal DarkButton OpenScreenshotsFolderButton;
 }

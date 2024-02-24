@@ -86,8 +86,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             Controls.Add(_page);
 
-            _page.ScreenshotsPrevButton.Click += ScreenshotsPrevButton_Click;
-            _page.ScreenshotsNextButton.Click += ScreenshotsNextButton_Click;
+            _page.PrevButton.Click += ScreenshotsPrevButton_Click;
+            _page.NextButton.Click += ScreenshotsNextButton_Click;
+            _page.OpenScreenshotsFolderButton.PaintCustom += OpenScreenshotsFolderButton_PaintCustom;
+            _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
 
             FinishConstruct();
         }
@@ -108,8 +110,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CurrentScreenshotFileName = "";
             ClearCurrentScreenshot();
             _page.ScreenshotsPictureBox.Enabled = false;
-            _page.ScreenshotsPrevButton.Enabled = false;
-            _page.ScreenshotsNextButton.Enabled = false;
+            _page.OpenScreenshotsFolderButton.Enabled = false;
+            _page.PrevButton.Enabled = false;
+            _page.NextButton.Enabled = false;
             _page.NumberLabel.Text = "";
         }
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
@@ -118,8 +121,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CurrentScreenshotFileName = ScreenshotFileNames[0];
             DisplayCurrentScreenshot();
             _page.ScreenshotsPictureBox.Enabled = true;
-            _page.ScreenshotsPrevButton.Enabled = ScreenshotFileNames.Count > 1;
-            _page.ScreenshotsNextButton.Enabled = ScreenshotFileNames.Count > 1;
+            _page.OpenScreenshotsFolderButton.Enabled = true;
+            _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
+            _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
     }
 
@@ -179,6 +183,22 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         base.OnVisibleChanged(e);
         if (Visible) DisplayCurrentScreenshot();
+    }
+
+    private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
+    {
+        Core.OpenFMScreenshotsFolder(_owner.FMsDGV.GetMainSelectedFM(), CurrentScreenshotFileName);
+    }
+
+    private void OpenScreenshotsFolderButton_PaintCustom(object sender, PaintEventArgs e)
+    {
+        Image image = Images.Folder;
+        DarkButton button = _page.OpenScreenshotsFolderButton;
+        Images.PaintBitmapButton(
+            button,
+            e,
+            button.Enabled ? image : Images.GetDisabledImage(image),
+            x: (button.Width - image.Width) / 2);
     }
 
     private void ScreenshotsPrevButton_Click(object sender, EventArgs e) => CycleScreenshot(step: -1);
