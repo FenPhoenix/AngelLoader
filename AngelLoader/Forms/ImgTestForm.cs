@@ -38,7 +38,12 @@ public sealed partial class ImgTestForm : Form
 
         _imageAttributes.SetGamma(_gamma, ColorAdjustType.Bitmap);
 
-        e.Graphics.DrawImage(
+        DrawImageOnGraphics(e.Graphics);
+    }
+
+    private void DrawImageOnGraphics(Graphics g)
+    {
+        g.DrawImage(
             _currentScreenshotStream.Img,
             new Rectangle(0, 0, _imageSize.Width, _imageSize.Height),
             0,
@@ -50,10 +55,30 @@ public sealed partial class ImgTestForm : Form
         );
     }
 
+    private Bitmap GetFinalBitmap()
+    {
+        Bitmap bmp = new(
+            _currentScreenshotStream.Img.Width,
+            _currentScreenshotStream.Img.Height,
+            _currentScreenshotStream.Img.PixelFormat);
+
+        using var g = Graphics.FromImage(bmp);
+
+        DrawImageOnGraphics(g);
+
+        return bmp;
+    }
+
     private void GammaTrackBar_Scroll(object sender, System.EventArgs e)
     {
         // @ScreenshotDisplay(Gamma slider): The clamp is a hack to prevent 0 which is invalid, polish it up later
         _gamma = ((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f);
         ImageBox.Invalidate();
+    }
+
+    private void CopyButton_Click(object sender, System.EventArgs e)
+    {
+        using Bitmap bmp = GetFinalBitmap();
+        Clipboard.SetImage(bmp);
     }
 }
