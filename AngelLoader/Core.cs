@@ -2826,7 +2826,15 @@ internal static class Core
             // @ScreenshotDisplay: Performance... we need a custom FileInfo getter without the 8.3 stuff
             try
             {
-                // @ScreenshotDisplay: Support Thief 3 central screenshots
+                /*
+                @ScreenshotDisplay(Thief 3 central screenshots):
+                These get put into one directory with the FM mission name (not overall FM name!) at the start of
+                the file. For example, "All The World's A Stage" screenshots get prefixed "Bohn Street Theatre".
+                These names are listed in \CONTENT\T3\Books\English\String_Tags\Misc.sch but also in other languages
+                so we'd have to check every one of them, which also means we can't make one single search pattern,
+                so we'd have a performance issue too. It's not even close to worth it to try to do this, so we're
+                just not supporting central screenshots for Thief 3 right now.
+                */
                 string ssPath = Path.Combine(screenshotsDirParentPath, "screenshots");
                 DirectoryInfo di = new(ssPath);
                 // Standard practice is to let the GetFiles() call throw if the directory doesn't exist, but for
