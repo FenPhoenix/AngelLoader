@@ -153,19 +153,18 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             try
             {
-                _currentImageBroken = false;
                 _currentScreenshotStream?.Dispose();
                 _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
                 _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 _page.ScreenshotsPictureBox.Image = _currentScreenshotStream.Img;
+                _currentImageBroken = false;
             }
             catch
             {
-                _currentImageBroken = true;
                 ClearCurrentScreenshot();
                 _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
                 _page.ScreenshotsPictureBox.Image = Images.BrokenFile;
-                // @ScreenshotDisplay: Put an error message on top of the PictureBox or something
+                _currentImageBroken = true;
             }
             finally
             {
