@@ -1666,7 +1666,7 @@ public static class Images
         return new GraphicsPath(rawPoints, types);
     }
 
-    private static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
+    internal static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
     {
         if (boundsRect.Width < 1 || boundsRect.Height < 1) return;
 

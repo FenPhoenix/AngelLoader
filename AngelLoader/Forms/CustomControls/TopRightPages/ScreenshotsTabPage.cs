@@ -23,11 +23,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
     displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
     */
-    private sealed class MemoryImage : IDisposable
+    public sealed class MemoryImage : IDisposable
     {
         private readonly MemoryStream _memoryStream;
-        internal readonly Image Img;
-        internal string Path { get; private set; }
+        public readonly Image Img;
+        public string Path { get; private set; }
 
         public MemoryImage(string path)
         {

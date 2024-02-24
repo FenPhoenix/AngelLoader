@@ -252,8 +252,11 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
+    // @ScreenshotDisplay: Remove test code
     private void Test3Button_Click(object sender, EventArgs e)
     {
+        using var f = new ImgTestForm();
+        f.ShowDialog(this);
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
