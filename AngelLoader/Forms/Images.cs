@@ -1081,13 +1081,6 @@ public static class Images
 
     #endregion
 
-    private static Bitmap? _updateIcon;
-    private static Bitmap? _updateIcon_Dark;
-    public static Bitmap UpdateIcon =>
-        Config.DarkMode
-            ? _updateIcon_Dark ??= CreateUpdateIcon()
-            : _updateIcon ??= CreateUpdateIcon();
-
     #region FMs list only
 
     private static Bitmap? _greenCheckCircle;
@@ -1173,6 +1166,20 @@ public static class Images
         Config.DarkMode
             ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
             : _refresh ??= Resources.Refresh;
+
+    private static Bitmap? _updateIcon;
+    private static Bitmap? _updateIcon_Dark;
+    public static Bitmap UpdateIcon =>
+        Config.DarkMode
+            ? _updateIcon_Dark ??= CreateUpdateIcon()
+            : _updateIcon ??= CreateUpdateIcon();
+
+    private static Bitmap? _brokenFile;
+    private static Bitmap? _brokenFile_Dark;
+    public static Bitmap BrokenFile =>
+        Config.DarkMode
+            ? _brokenFile_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.BrokenFile)
+            : _brokenFile ??= Resources.BrokenFile;
 
     #endregion
 

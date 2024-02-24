@@ -2,10 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -45,6 +48,31 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
     private MemoryImage? _currentScreenshotStream;
+    private bool _currentImageBroken;
+
+    #region Theme
+
+    [PublicAPI]
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public override bool DarkModeEnabled
+    {
+        get => base.DarkModeEnabled;
+        set
+        {
+            if (DarkModeEnabled == value) return;
+            base.DarkModeEnabled = value;
+
+            if (!_constructed) return;
+
+            if (_currentImageBroken)
+            {
+                _page.ScreenshotsPictureBox.Image = Images.BrokenFile;
+            }
+        }
+    }
+
+    #endregion
 
     #region Public common
 
@@ -101,6 +129,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void ClearCurrentScreenshot()
     {
+        _currentImageBroken = false;
+        _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
         _page.ScreenshotsPictureBox.Image = null;
         _page.ScreenshotsPictureBox.ImageLocation = "";
         _currentScreenshotStream?.Dispose();
@@ -123,17 +153,25 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             try
             {
+                _currentImageBroken = false;
                 _currentScreenshotStream?.Dispose();
                 _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 _page.ScreenshotsPictureBox.Image = _currentScreenshotStream.Img;
-                _page.NumberLabel.Text =
-                    (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +
-                    ScreenshotFileNames.Count.ToStrInv();
             }
             catch
             {
+                _currentImageBroken = true;
                 ClearCurrentScreenshot();
+                _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
+                _page.ScreenshotsPictureBox.Image = Images.BrokenFile;
                 // @ScreenshotDisplay: Put an error message on top of the PictureBox or something
+            }
+            finally
+            {
+                _page.NumberLabel.Text =
+                    (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +
+                    ScreenshotFileNames.Count.ToStrInv();
             }
         }
     }

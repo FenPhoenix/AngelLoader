@@ -83,6 +83,16 @@ namespace AngelLoader.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BrokenFile {
+            get {
+                object obj = ResourceManager.GetObject("BrokenFile", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap CharEnc {
             get {
                 object obj = ResourceManager.GetObject("CharEnc", resourceCulture);
