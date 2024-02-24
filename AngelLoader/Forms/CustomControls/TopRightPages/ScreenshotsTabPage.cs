@@ -105,8 +105,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     /*
     The standard behavior for lazy loaded tabs is that they don't update until loaded, after which they always
-    update. However, loading an image could take a significant amount of time, and we don't want to punish users
-    with that lag time if they're not actually able to see the image. So we only update when visible (or when we
+    update. However, loading an image could take a significant amount of time, and we don't want users to pay the
+    performance cost if they're not actually able to see the image. So we only update when visible (or when we
     become visible).
     */
     private void DisplayCurrentScreenshot()
