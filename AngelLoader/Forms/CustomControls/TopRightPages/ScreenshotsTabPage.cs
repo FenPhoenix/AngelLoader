@@ -113,7 +113,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.OpenScreenshotsFolderButton.Enabled = false;
             _page.PrevButton.Enabled = false;
             _page.NextButton.Enabled = false;
-            _page.NumberLabel.Text = "";
+            SetNumberLabelText("");
         }
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
@@ -130,6 +130,16 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     #endregion
 
     #region Page
+
+    // Manual right-align to avoid needing a FlowLayoutPanel
+    private void SetNumberLabelText(string text)
+    {
+        _page.NumberLabel.Text = text;
+        _page.NumberLabel.Location = _page.NumberLabel.Location with
+        {
+            X = (_page.ClientSize.Width - 8) - _page.NumberLabel.Width
+        };
+    }
 
     private void ClearCurrentScreenshot()
     {
@@ -172,9 +182,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             }
             finally
             {
-                _page.NumberLabel.Text =
+                SetNumberLabelText(
                     (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +
-                    ScreenshotFileNames.Count.ToStrInv();
+                    ScreenshotFileNames.Count.ToStrInv()
+                );
             }
         }
     }

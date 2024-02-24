@@ -31,13 +31,21 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
+            this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.DarkPictureBox();
-            this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             ((System.ComponentModel.ISupportInitialize)(this.ScreenshotsPictureBox)).BeginInit();
             this.SuspendLayout();
+            // 
+            // OpenScreenshotsFolderButton
+            // 
+            this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(336, 256);
+            this.OpenScreenshotsFolderButton.Name = "OpenScreenshotsFolderButton";
+            this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(35, 23);
+            this.OpenScreenshotsFolderButton.TabIndex = 0;
             // 
             // NumberLabel
             // 
@@ -79,20 +87,12 @@ public sealed partial class Lazy_ScreenshotsPage
             this.ScreenshotsPictureBox.TabIndex = 0;
             this.ScreenshotsPictureBox.TabStop = false;
             // 
-            // OpenScreenshotsFolderButton
-            // 
-            this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(336, 256);
-            this.OpenScreenshotsFolderButton.Name = "OpenScreenshotsFolderButton";
-            this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(35, 23);
-            this.OpenScreenshotsFolderButton.TabIndex = 0;
-            // 
             // Lazy_ScreenshotsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
-            this.AutoScrollMinSize = new System.Drawing.Size(220, 100);
+            this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
             this.Controls.Add(this.OpenScreenshotsFolderButton);
             this.Controls.Add(this.NumberLabel);
             this.Controls.Add(this.NextButton);
