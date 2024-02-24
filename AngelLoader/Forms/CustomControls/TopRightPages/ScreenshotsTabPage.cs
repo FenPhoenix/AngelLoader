@@ -24,9 +24,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         private readonly MemoryStream _memoryStream;
         internal readonly Image Img;
+        internal string Path { get; private set; }
 
         public MemoryImage(string path)
         {
+            Path = path;
             byte[] bytes = File.ReadAllBytes(path);
             _memoryStream = new MemoryStream(bytes);
             Img = Image.FromStream(_memoryStream);
@@ -34,6 +36,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
         public void Dispose()
         {
+            Path = "";
             Img.Dispose();
             _memoryStream.Dispose();
         }
@@ -116,7 +119,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
         if (!CurrentScreenshotFileName.IsEmpty() &&
             // @TDM_CASE when FM is TDM
-            (_page.ScreenshotsPictureBox.ImageLocation?.EqualsI(CurrentScreenshotFileName) != true))
+            _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true)
         {
             try
             {
