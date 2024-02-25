@@ -233,7 +233,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private float GetGamma()
     {
         TrackBar tb = _page.GammaTrackBar;
-        return (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
+        float ret = (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
+        ret = (float)Math.Round(ret, 2, MidpointRounding.AwayFromZero);
+        return ret;
     }
 
     private void GammaTrackBar_MouseDown(object sender, MouseEventArgs e)
