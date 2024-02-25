@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
@@ -36,44 +37,37 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         }
     }
 
-    private readonly ImageAttributes _imageAttributes = new();
-    private Size _imageSize = Size.Empty;
-    private RectangleF _imageRect = RectangleF.Empty;
     private bool _showingErrorImage;
 
-    private float _gamma = 1.0f;
-    [PublicAPI]
-    [Browsable(false)]
-    [DefaultValue(1.0f)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public float Gamma
-    {
-        get => _gamma;
-        set
-        {
-            _gamma = value;
-            Invalidate();
-        }
-    }
+    private readonly ImageAttributes _imageAttributes = new();
 
     private Image? _image;
-    [PublicAPI]
-    [Browsable(false)]
-    [DefaultValue(1.0f)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public Image? Image
+    private Size _imageSize = Size.Empty;
+    private RectangleF _imageRect = RectangleF.Empty;
+
+    private float _gamma = 1.0f;
+
+    public void SetGamma(float gamma)
     {
-        get => _image;
-        set
-        {
-            _showingErrorImage = false;
-            SetImageInternal(value);
-        }
+        _gamma = gamma.ClampToMin(0.01f);
+        Invalidate();
     }
 
-    private void SetImageInternal(Image? image)
+    public void SetImage(Image? image, float? gamma = null)
+    {
+        _showingErrorImage = false;
+        SetImageInternal(image, gamma);
+    }
+
+    private void SetImageInternal(Image? image, float? gamma = null)
     {
         _image = image;
+
+        if (gamma != null)
+        {
+            _gamma = (float)gamma;
+        }
+
         if (_image != null)
         {
             _imageSize = _image.Size;
@@ -135,11 +129,16 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         );
     }
 
-    public Bitmap GetFinalBitmap()
+    /// <summary>
+    /// Returns a new bitmap with all effects applied (an exact visual copy) of the displayed image, or
+    /// <see langword="null"/> if there is no image displayed.
+    /// </summary>
+    /// <returns></returns>
+    public Bitmap? GetSnapshot()
     {
-        if (_image == null)
+        if (_image == null || _showingErrorImage)
         {
-            return new Bitmap(0, 0, PixelFormat.Format32bppPArgb);
+            return null;
         }
 
         Bitmap bmp = new(

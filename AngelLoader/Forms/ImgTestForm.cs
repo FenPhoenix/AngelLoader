@@ -19,7 +19,7 @@ public sealed partial class ImgTestForm : Form
     public ImgTestForm()
     {
         InitializeComponent();
-        ImageBox.Image = _currentScreenshotStream.Img;
+        ImageBox.SetImage(_currentScreenshotStream.Img);
     }
 
     private readonly MemoryImage _currentScreenshotStream = new(@"C:\Thief Games\Thief2-ND-T2Fix\FMs\Calendras_Legacy_v1a\screenshots\dump000.png");
@@ -27,12 +27,15 @@ public sealed partial class ImgTestForm : Form
     private void GammaTrackBar_Scroll(object sender, System.EventArgs e)
     {
         // @ScreenshotDisplay(Gamma slider): The clamp is a hack to prevent 0 which is invalid, polish it up later
-        ImageBox.Gamma = ((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f);
+        ImageBox.SetGamma(((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f));
     }
 
     private void CopyButton_Click(object sender, System.EventArgs e)
     {
-        using Bitmap bmp = ImageBox.GetFinalBitmap();
-        Clipboard.SetImage(bmp);
+        using Bitmap? bmp = ImageBox.GetSnapshot();
+        if (bmp != null)
+        {
+            Clipboard.SetImage(bmp);
+        }
     }
 }

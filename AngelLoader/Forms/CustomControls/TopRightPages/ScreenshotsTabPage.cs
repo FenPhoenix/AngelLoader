@@ -145,7 +145,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void ClearCurrentScreenshot()
     {
-        _page.ScreenshotsPictureBox.Image = null;
+        _page.ScreenshotsPictureBox.SetImage(null);
         _currentScreenshotStream?.Dispose();
     }
 
@@ -168,9 +168,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             {
                 _currentScreenshotStream?.Dispose();
                 _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
-                // @ScreenshotDisplay: Inefficient because it refreshes, improve this later
-                SetGamma();
-                _page.ScreenshotsPictureBox.Image = _currentScreenshotStream.Img;
+                _page.ScreenshotsPictureBox.SetImage(_currentScreenshotStream.Img, GetGamma());
             }
             catch
             {
@@ -229,12 +227,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         DisplayCurrentScreenshot();
     }
 
-    private void GammaTrackBar_Scroll(object sender, EventArgs e) => SetGamma();
+    private void GammaTrackBar_Scroll(object sender, EventArgs e) => _page.ScreenshotsPictureBox.SetGamma(GetGamma());
 
-    private void SetGamma()
+    private float GetGamma()
     {
-        TrackBar? tb = _page.GammaTrackBar;
-        _page.ScreenshotsPictureBox.Gamma = ((tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f))).ClampToMin(0.01f);
+        TrackBar tb = _page.GammaTrackBar;
+        return (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
     }
 
     #endregion
