@@ -101,11 +101,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
         Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
+        // @ScreenshotDisplay: Should we hide everything and just put a label "No screenshots"?
         if (ScreenshotFileNames.Count == 0)
         {
             CurrentScreenshotFileName = "";
             ClearCurrentScreenshot();
+            _page.GammaLabel.Enabled = false;
             _page.ScreenshotsPictureBox.Enabled = false;
+            _page.GammaTrackBar.Enabled = false;
             _page.OpenScreenshotsFolderButton.Enabled = false;
             _page.PrevButton.Enabled = false;
             _page.NextButton.Enabled = false;
@@ -116,7 +119,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             CurrentScreenshotFileName = ScreenshotFileNames[0];
             DisplayCurrentScreenshot();
+            _page.GammaLabel.Enabled = true;
             _page.ScreenshotsPictureBox.Enabled = true;
+            _page.GammaTrackBar.Enabled = true;
             _page.OpenScreenshotsFolderButton.Enabled = true;
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
