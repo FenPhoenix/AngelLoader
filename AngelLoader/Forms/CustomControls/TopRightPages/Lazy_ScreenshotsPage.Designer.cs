@@ -35,8 +35,7 @@ public sealed partial class Lazy_ScreenshotsPage
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-            this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.DarkPictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.ScreenshotsPictureBox)).BeginInit();
+            this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
             this.SuspendLayout();
             // 
             // OpenScreenshotsFolderButton
@@ -83,7 +82,6 @@ public sealed partial class Lazy_ScreenshotsPage
             this.ScreenshotsPictureBox.Location = new System.Drawing.Point(8, 8);
             this.ScreenshotsPictureBox.Name = "ScreenshotsPictureBox";
             this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 224);
-            this.ScreenshotsPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.ScreenshotsPictureBox.TabIndex = 0;
             this.ScreenshotsPictureBox.TabStop = false;
             // 
@@ -100,7 +98,6 @@ public sealed partial class Lazy_ScreenshotsPage
             this.Controls.Add(this.ScreenshotsPictureBox);
             this.Name = "Lazy_ScreenshotsPage";
             this.Size = new System.Drawing.Size(527, 284);
-            ((System.ComponentModel.ISupportInitialize)(this.ScreenshotsPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -109,7 +106,7 @@ public sealed partial class Lazy_ScreenshotsPage
 
     #endregion
 
-    internal DarkPictureBox ScreenshotsPictureBox;
+    internal ImagePanelCustom ScreenshotsPictureBox;
     internal DarkArrowButton PrevButton;
     internal DarkArrowButton NextButton;
     internal DarkLabel NumberLabel;

@@ -48,8 +48,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
     private MemoryImage? _currentScreenshotStream;
-    private bool _currentImageBroken;
-
     #region Theme
 
     [PublicAPI]
@@ -64,11 +62,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             base.DarkModeEnabled = value;
 
             if (!_constructed) return;
-
-            if (_currentImageBroken)
-            {
-                _page.ScreenshotsPictureBox.Image = Images.BrokenFile;
-            }
         }
     }
 
@@ -143,10 +136,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void ClearCurrentScreenshot()
     {
-        _currentImageBroken = false;
-        _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
         _page.ScreenshotsPictureBox.Image = null;
-        _page.ScreenshotsPictureBox.ImageLocation = "";
         _currentScreenshotStream?.Dispose();
     }
 
@@ -169,16 +159,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             {
                 _currentScreenshotStream?.Dispose();
                 _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
-                _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.Zoom;
                 _page.ScreenshotsPictureBox.Image = _currentScreenshotStream.Img;
-                _currentImageBroken = false;
             }
             catch
             {
                 ClearCurrentScreenshot();
-                _page.ScreenshotsPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-                _page.ScreenshotsPictureBox.Image = Images.BrokenFile;
-                _currentImageBroken = true;
+                _page.ScreenshotsPictureBox.SetErrorImage();
             }
             finally
             {

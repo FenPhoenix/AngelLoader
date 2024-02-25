@@ -26,16 +26,26 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         {
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
+
             BackColor = _darkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor;
+
+            if (_showingErrorImage)
+            {
+                SetImageInternal(Images.BrokenFile);
+            }
         }
     }
 
     private readonly ImageAttributes _imageAttributes = new();
     private Size _imageSize = Size.Empty;
     private RectangleF _imageRect = RectangleF.Empty;
+    private bool _showingErrorImage;
 
     private float _gamma = 1.0f;
     [PublicAPI]
+    [Browsable(false)]
+    [DefaultValue(1.0f)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public float Gamma
     {
         get => _gamma;
@@ -44,23 +54,39 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
     private Image? _image;
     [PublicAPI]
+    [Browsable(false)]
+    [DefaultValue(1.0f)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Image? Image
     {
         get => _image;
         set
         {
-            _image = value;
-            if (_image != null)
-            {
-                _imageSize = _image.Size;
-                _imageRect = new RectangleF(0, 0, _imageSize.Width, _imageSize.Height);
-            }
-            else
-            {
-                _imageSize = Size.Empty;
-                _imageRect = RectangleF.Empty;
-            }
+            _showingErrorImage = false;
+            SetImageInternal(value);
         }
+    }
+
+    private void SetImageInternal(Image? image)
+    {
+        _image = image;
+        if (_image != null)
+        {
+            _imageSize = _image.Size;
+            _imageRect = new RectangleF(0, 0, _imageSize.Width, _imageSize.Height);
+        }
+        else
+        {
+            _imageSize = Size.Empty;
+            _imageRect = RectangleF.Empty;
+        }
+        Invalidate();
+    }
+
+    public void SetErrorImage()
+    {
+        _showingErrorImage = true;
+        SetImageInternal(Images.BrokenFile);
     }
 
     public ImagePanelCustom()
@@ -75,11 +101,20 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
         if (_image == null) return;
 
-        Images.FitRectInBounds(e.Graphics, _imageRect, Bounds);
-
-        _imageAttributes.SetGamma(_gamma, ColorAdjustType.Bitmap);
-
-        DrawImageOnGraphics(e.Graphics, _image);
+        if (_showingErrorImage)
+        {
+            e.Graphics.DrawImage(
+                _image,
+                (ClientSize.Width / 2) - (_image.Width / 2),
+                (ClientSize.Height / 2) - (_image.Height / 2)
+            );
+        }
+        else
+        {
+            Images.FitRectInBounds(e.Graphics, _imageRect, Bounds);
+            _imageAttributes.SetGamma(_gamma, ColorAdjustType.Bitmap);
+            DrawImageOnGraphics(e.Graphics, _image);
+        }
     }
 
     private void DrawImageOnGraphics(Graphics g, Image image)
@@ -113,5 +148,16 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         DrawImageOnGraphics(g, _image);
 
         return bmp;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _imageAttributes.Dispose();
+            _image = null;
+        }
+
+        base.Dispose(disposing);
     }
 }
