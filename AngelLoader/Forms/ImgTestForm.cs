@@ -8,7 +8,6 @@
 */
 
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Windows.Forms;
 using AL_Common;
 using static AngelLoader.Forms.CustomControls.ScreenshotsTabPage;
@@ -20,65 +19,21 @@ public sealed partial class ImgTestForm : Form
     public ImgTestForm()
     {
         InitializeComponent();
+        ImageBox.Image = _currentScreenshotStream.Img;
     }
 
     private readonly MemoryImage _currentScreenshotStream = new(@"C:\Thief Games\Thief2-ND-T2Fix\FMs\Calendras_Legacy_v1a\screenshots\dump000.png");
 
-    private readonly ImageAttributes _imageAttributes = new();
-
-    private readonly Size _imageSize = new(2560, 1440);
-
-    private readonly RectangleF _imageRect = new(0, 0, 2560, 1440);
-
-    private float _gamma = 1.0f;
-
-    private void ImageBox_Paint(object sender, PaintEventArgs e)
-    {
-        Images.FitRectInBounds(e.Graphics, _imageRect, ImageBox.Bounds);
-
-        _imageAttributes.SetGamma(_gamma, ColorAdjustType.Bitmap);
-
-        DrawImageOnGraphics(e.Graphics);
-    }
-
-    private void DrawImageOnGraphics(Graphics g)
-    {
-        g.DrawImage(
-            _currentScreenshotStream.Img,
-            new Rectangle(0, 0, _imageSize.Width, _imageSize.Height),
-            0,
-            0,
-            _imageSize.Width,
-            _imageSize.Height,
-            GraphicsUnit.Pixel,
-            _imageAttributes
-        );
-    }
-
-    private Bitmap GetFinalBitmap()
-    {
-        Bitmap bmp = new(
-            _currentScreenshotStream.Img.Width,
-            _currentScreenshotStream.Img.Height,
-            _currentScreenshotStream.Img.PixelFormat);
-
-        using var g = Graphics.FromImage(bmp);
-
-        DrawImageOnGraphics(g);
-
-        return bmp;
-    }
-
     private void GammaTrackBar_Scroll(object sender, System.EventArgs e)
     {
         // @ScreenshotDisplay(Gamma slider): The clamp is a hack to prevent 0 which is invalid, polish it up later
-        _gamma = ((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f);
+        ImageBox.Gamma = ((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f);
         ImageBox.Invalidate();
     }
 
     private void CopyButton_Click(object sender, System.EventArgs e)
     {
-        using Bitmap bmp = GetFinalBitmap();
+        using Bitmap bmp = ImageBox.GetFinalBitmap();
         Clipboard.SetImage(bmp);
     }
 }

@@ -39,11 +39,12 @@ sealed partial class ImgTestForm
             this.ImageBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ImageBox.Gamma = 1F;
+            this.ImageBox.Image = null;
             this.ImageBox.Location = new System.Drawing.Point(8, 8);
             this.ImageBox.Name = "ImageBox";
             this.ImageBox.Size = new System.Drawing.Size(784, 384);
             this.ImageBox.TabIndex = 0;
-            this.ImageBox.Paint += new System.Windows.Forms.PaintEventHandler(this.ImageBox_Paint);
             // 
             // GammaTrackBar
             // 
@@ -59,6 +60,7 @@ sealed partial class ImgTestForm
             // 
             // CopyButton
             // 
+            this.CopyButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.CopyButton.Location = new System.Drawing.Point(336, 464);
             this.CopyButton.Name = "CopyButton";
             this.CopyButton.Size = new System.Drawing.Size(144, 24);
