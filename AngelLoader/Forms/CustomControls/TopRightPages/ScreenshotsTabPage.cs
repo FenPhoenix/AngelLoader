@@ -85,6 +85,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.OpenScreenshotsFolderButton.PaintCustom += OpenScreenshotsFolderButton_PaintCustom;
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
+            _page.GammaTrackBar.MouseDown += GammaTrackBar_MouseDown;
 
             FinishConstruct();
         }
@@ -233,6 +234,15 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         TrackBar tb = _page.GammaTrackBar;
         return (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
+    }
+
+    private void GammaTrackBar_MouseDown(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Middle)
+        {
+            _page.GammaTrackBar.Value = 50;
+            _page.ScreenshotsPictureBox.SetGamma(1.0f);
+        }
     }
 
     /*
