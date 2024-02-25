@@ -7,7 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.GammaTrackBar = new System.Windows.Forms.TrackBar();
+        this.GammaTrackBar = new DarkTrackBar();
         this.GammaResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

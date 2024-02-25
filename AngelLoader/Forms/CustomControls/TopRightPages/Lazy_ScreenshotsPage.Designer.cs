@@ -31,7 +31,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.GammaTrackBar = new System.Windows.Forms.TrackBar();
+            this.GammaTrackBar = new DarkTrackBar();
             this.GammaResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -138,6 +138,6 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkArrowButton NextButton;
     internal DarkLabel NumberLabel;
     internal DarkButton OpenScreenshotsFolderButton;
-    internal System.Windows.Forms.TrackBar GammaTrackBar;
+    internal DarkTrackBar GammaTrackBar;
     internal DarkButton GammaResetButton;
 }
