@@ -37,6 +37,7 @@ public sealed partial class Lazy_ScreenshotsPage
             this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
+            this.GammaLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -99,12 +100,23 @@ public sealed partial class Lazy_ScreenshotsPage
             this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
             this.ScreenshotsPictureBox.TabIndex = 4;
             // 
+            // GammaLabel
+            // 
+            this.GammaLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.GammaLabel.AutoSize = true;
+            this.GammaLabel.Location = new System.Drawing.Point(8, 204);
+            this.GammaLabel.Name = "GammaLabel";
+            this.GammaLabel.Size = new System.Drawing.Size(46, 13);
+            this.GammaLabel.TabIndex = 6;
+            this.GammaLabel.Text = "Gamma:";
+            // 
             // Lazy_ScreenshotsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
+            this.Controls.Add(this.GammaLabel);
             this.Controls.Add(this.NumberLabel);
             this.Controls.Add(this.GammaTrackBar);
             this.Controls.Add(this.OpenScreenshotsFolderButton);
@@ -128,4 +140,5 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkLabel NumberLabel;
     internal DarkButton OpenScreenshotsFolderButton;
     internal DarkTrackBar GammaTrackBar;
+    internal DarkLabel GammaLabel;
 }

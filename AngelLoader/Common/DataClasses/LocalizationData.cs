@@ -631,7 +631,8 @@ internal sealed class LText_Class
     {
         // @ScreenshotDisplay: Finalize this text, improve it if necessary etc.
         internal readonly string TabText = "Screenshots";
-        internal readonly string AdjustGamma = "Adjust gamma. Right-click to reset.";
+        internal readonly string Gamma = "Gamma:";
+        internal readonly string ResetGammaToolTip = "Right-click to reset";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
     }

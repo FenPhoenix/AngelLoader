@@ -126,8 +126,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public override void Localize()
     {
         if (!_constructed) return;
-
-        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.AdjustGamma);
+        _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
+        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
     }
 
     #endregion
