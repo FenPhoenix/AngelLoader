@@ -2077,14 +2077,14 @@ internal static class Core
                 catch (Exception ex)
                 {
                     LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
-                    Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderOpenError);
+                    Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
                 }
             }
         }
         catch (Exception ex)
         {
             LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
-            Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderOpenError);
+            Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
         }
 
         return;
@@ -2092,7 +2092,7 @@ internal static class Core
         static void LogNotFound(FanMission fm)
         {
             LogFMInfo(fm, ErrorText.FMScreenshotsDirNF);
-            Dialogs.ShowError(LText.ScreenshotsTabs.ScreenshotsFolderNotFound);
+            Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderNotFound);
         }
     }
 

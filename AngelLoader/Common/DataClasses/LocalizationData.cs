@@ -43,7 +43,7 @@ internal sealed class LText_Class
     internal readonly TagsTab_Class TagsTab = new();
     internal readonly PatchTab_Class PatchTab = new();
     internal readonly ModsTab_Class ModsTab = new();
-    internal readonly ScreenshotsTab_Class ScreenshotsTabs = new();
+    internal readonly ScreenshotsTab_Class ScreenshotsTab = new();
     internal readonly ReadmeArea_Class ReadmeArea = new();
     internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new();
     internal readonly MainButtons_Class MainButtons = new();
@@ -631,6 +631,7 @@ internal sealed class LText_Class
     {
         // @ScreenshotDisplay: Finalize this text, improve it if necessary etc.
         internal readonly string TabText = "Screenshots";
+        internal readonly string AdjustGamma = "Adjust gamma";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
     }

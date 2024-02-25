@@ -49,7 +49,11 @@ public sealed class ImagePanelCustom : Panel, IDarkable
     public float Gamma
     {
         get => _gamma;
-        set => _gamma = value;
+        set
+        {
+            _gamma = value;
+            Invalidate();
+        }
     }
 
     private Image? _image;

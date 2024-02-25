@@ -28,7 +28,6 @@ public sealed partial class ImgTestForm : Form
     {
         // @ScreenshotDisplay(Gamma slider): The clamp is a hack to prevent 0 which is invalid, polish it up later
         ImageBox.Gamma = ((GammaTrackBar.Maximum - GammaTrackBar.Value) * 0.10f).ClampToMin(0.01f);
-        ImageBox.Invalidate();
     }
 
     private void CopyButton_Click(object sender, System.EventArgs e)

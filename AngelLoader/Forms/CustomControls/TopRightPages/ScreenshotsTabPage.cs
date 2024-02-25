@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -83,6 +84,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.NextButton.Click += ScreenshotsNextButton_Click;
             _page.OpenScreenshotsFolderButton.PaintCustom += OpenScreenshotsFolderButton_PaintCustom;
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
+            _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
 
             FinishConstruct();
         }
@@ -118,6 +120,13 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
+    }
+
+    public override void Localize()
+    {
+        if (!_constructed) return;
+
+        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.AdjustGamma);
     }
 
     #endregion
@@ -159,6 +168,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             {
                 _currentScreenshotStream?.Dispose();
                 _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                // @ScreenshotDisplay: Inefficient because it refreshes, improve this later
+                SetGamma();
                 _page.ScreenshotsPictureBox.Image = _currentScreenshotStream.Img;
             }
             catch
@@ -216,6 +227,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
         CurrentScreenshotFileName = ScreenshotFileNames[index];
         DisplayCurrentScreenshot();
+    }
+
+    private void GammaTrackBar_Scroll(object sender, EventArgs e) => SetGamma();
+
+    private void SetGamma()
+    {
+        TrackBar? tb = _page.GammaTrackBar;
+        _page.ScreenshotsPictureBox.Gamma = ((tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f))).ClampToMin(0.01f);
     }
 
     #endregion
