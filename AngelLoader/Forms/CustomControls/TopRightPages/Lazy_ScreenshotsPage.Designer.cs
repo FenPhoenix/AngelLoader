@@ -46,12 +46,12 @@ public sealed partial class Lazy_ScreenshotsPage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GammaTrackBar.AutoSize = false;
             this.GammaTrackBar.Location = new System.Drawing.Point(8, 208);
-            this.GammaTrackBar.Maximum = 40;
+            this.GammaTrackBar.Maximum = 100;
             this.GammaTrackBar.Name = "GammaTrackBar";
             this.GammaTrackBar.Size = new System.Drawing.Size(512, 24);
             this.GammaTrackBar.TabIndex = 5;
             this.GammaTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
-            this.GammaTrackBar.Value = 20;
+            this.GammaTrackBar.Value = 50;
             // 
             // OpenScreenshotsFolderButton
             // 
