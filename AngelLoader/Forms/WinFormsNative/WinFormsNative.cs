@@ -550,6 +550,71 @@ internal static class Native
     internal const int TMT_FILLCOLOR = 3802;
     internal const int TMT_TEXTCOLOR = 3803;
 
+    #region Trackbar parts
+
+    internal const int TKP_TRACK = 1;
+    //internal const int TKP_TRACKVERT = 2;
+    //internal const int TKP_THUMB = 3;
+    internal const int TKP_THUMBBOTTOM = 4;
+    //internal const int TKP_THUMBTOP = 5;
+    //internal const int TKP_THUMBVERT = 6;
+    //internal const int TKP_THUMBLEFT = 7;
+    //internal const int TKP_THUMBRIGHT = 8;
+    internal const int TKP_TICS = 9;
+    //internal const int TKP_TICSVERT = 10;
+
+#if false
+    internal const int TKS_NORMAL = 1;
+    internal const int TRS_NORMAL = 1;
+    internal const int TRVS_NORMAL = 1;
+
+    internal const int TUS_NORMAL = 1;
+    internal const int TUS_HOT = 2;
+    internal const int TUS_PRESSED = 3;
+    internal const int TUS_FOCUSED = 4;
+    internal const int TUS_DISABLED = 5;
+#endif
+
+    //internal const int TUBS_NORMAL = 1;
+    internal const int TUBS_HOT = 2;
+    internal const int TUBS_PRESSED = 3;
+    //internal const int TUBS_FOCUSED = 4;
+    internal const int TUBS_DISABLED = 5;
+
+#if false
+    internal const int TUTS_NORMAL = 1;
+    internal const int TUTS_HOT = 2;
+    internal const int TUTS_PRESSED = 3;
+    internal const int TUTS_FOCUSED = 4;
+    internal const int TUTS_DISABLED = 5;
+
+    internal const int TUVS_NORMAL = 1;
+    internal const int TUVS_HOT = 2;
+    internal const int TUVS_PRESSED = 3;
+    internal const int TUVS_FOCUSED = 4;
+    internal const int TUVS_DISABLED = 5;
+
+    internal const int TUVLS_NORMAL = 1;
+    internal const int TUVLS_HOT = 2;
+    internal const int TUVLS_PRESSED = 3;
+    internal const int TUVLS_FOCUSED = 4;
+    internal const int TUVLS_DISABLED = 5;
+
+    internal const int TUVRS_NORMAL = 1;
+    internal const int TUVRS_HOT = 2;
+    internal const int TUVRS_PRESSED = 3;
+    internal const int TUVRS_FOCUSED = 4;
+    internal const int TUVRS_DISABLED = 5;
+#endif
+
+    internal const int TSS_NORMAL = 1;
+
+#if false
+    internal const int TSVS_NORMAL = 1;
+#endif
+
+    #endregion
+
     #region ToolTip parts
 
     internal const int TTP_STANDARD = 1;

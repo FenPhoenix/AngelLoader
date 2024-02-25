@@ -7,8 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.GammaTrackBar = new DarkTrackBar();
-        this.GammaResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.GammaTrackBar = new AngelLoader.Forms.CustomControls.DarkTrackBar();
         this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
@@ -22,20 +21,12 @@ public sealed partial class Lazy_ScreenshotsPage
         this.GammaTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.GammaTrackBar.AutoSize = false;
-        this.GammaTrackBar.Location = new System.Drawing.Point(8, 208);
+        this.GammaTrackBar.Location = new System.Drawing.Point(8, 223);
         this.GammaTrackBar.Maximum = 100;
-        this.GammaTrackBar.Size = new System.Drawing.Size(488, 24);
+        this.GammaTrackBar.Size = new System.Drawing.Size(512, 32);
         this.GammaTrackBar.TabIndex = 5;
-        this.GammaTrackBar.TickStyle = System.Windows.Forms.TickStyle.None;
+        this.GammaTrackBar.TickFrequency = 10;
         this.GammaTrackBar.Value = 50;
-        // 
-        // GammaResetButton
-        // 
-        this.GammaResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        this.GammaResetButton.Location = new System.Drawing.Point(496, 208);
-        this.GammaResetButton.Size = new System.Drawing.Size(24, 23);
-        this.GammaResetButton.TabIndex = 0;
-        this.GammaResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.GammaResetButton_PaintCustom);
         // 
         // OpenScreenshotsFolderButton
         // 
@@ -48,7 +39,7 @@ public sealed partial class Lazy_ScreenshotsPage
         // 
         this.NumberLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
         this.NumberLabel.AutoSize = true;
-        this.NumberLabel.Location = new System.Drawing.Point(472, 238);
+        this.NumberLabel.Location = new System.Drawing.Point(472, 204);
         this.NumberLabel.Size = new System.Drawing.Size(54, 13);
         // 
         // NextButton
@@ -73,7 +64,7 @@ public sealed partial class Lazy_ScreenshotsPage
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.ScreenshotsPictureBox.Location = new System.Drawing.Point(8, 8);
-        this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 200);
+        this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
         this.ScreenshotsPictureBox.TabIndex = 4;
         // 
         // Lazy_ScreenshotsPage
@@ -82,10 +73,9 @@ public sealed partial class Lazy_ScreenshotsPage
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
         this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
-        this.Controls.Add(this.GammaResetButton);
+        this.Controls.Add(this.NumberLabel);
         this.Controls.Add(this.GammaTrackBar);
         this.Controls.Add(this.OpenScreenshotsFolderButton);
-        this.Controls.Add(this.NumberLabel);
         this.Controls.Add(this.NextButton);
         this.Controls.Add(this.PrevButton);
         this.Controls.Add(this.ScreenshotsPictureBox);

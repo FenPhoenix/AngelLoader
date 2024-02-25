@@ -96,7 +96,7 @@ public static class DarkColors
     //public static readonly Pen DarkBlueBackgroundPen = new Pen(DarkBlueBackground);
     public static readonly Pen DarkBackgroundPen = new Pen(DarkBackground);
     //public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
-    //public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
+    public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
     public static readonly Pen LighterBackgroundPen = new Pen(LighterBackground);
     //public static readonly Pen LightestBackgroundPen = new Pen(LightestBackground);
     public static readonly Pen LightBorderPen = new Pen(LightBorder);

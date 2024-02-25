@@ -14,6 +14,7 @@ Here's the deal with this thing:
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -203,6 +204,10 @@ internal static class Win32ThemeHooks
             {
                 succeeded = TabScrollButtons_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
             }
+            else if (hTheme == _hThemes[(int)RenderedControl.Trackbar] && TrackBarEnabled())
+            {
+                succeeded = TrackBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
+            }
         }
 
         return succeeded
@@ -231,6 +236,10 @@ internal static class Win32ThemeHooks
             else if (hTheme == _hThemes[(int)RenderedControl.ToolTip] && ToolTipEnabled())
             {
                 succeeded = ToolTip_TryGetThemeColor(iPropId, out pColor);
+            }
+            else if (hTheme == _hThemes[(int)RenderedControl.Trackbar] && TrackBarEnabled())
+            {
+                succeeded = TrackBar_TryGetThemeColor(iPartId, iStateId, out pColor);
             }
         }
 
@@ -412,13 +421,14 @@ internal static class Win32ThemeHooks
 
     #region Arrays
 
-    private const int _renderedControlCount = 4;
+    private const int _renderedControlCount = 5;
     private enum RenderedControl
     {
         ScrollBar,
         ToolTip,
         TreeView,
-        TabScrollButtons
+        TabScrollButtons,
+        Trackbar
     }
 
     private static readonly IntPtr[] _hThemes = new IntPtr[_renderedControlCount];
@@ -428,7 +438,8 @@ internal static class Win32ThemeHooks
         "Scrollbar",
         "ToolTip",
         "TreeView",
-        "Spin"
+        "Spin",
+        "Trackbar"
     };
 
     #endregion
@@ -457,10 +468,82 @@ internal static class Win32ThemeHooks
 
     #region Control rendering
 
+    #region Trackbar
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool TrackBarEnabled() => Global.Config.DarkMode;
+
+    private static bool TrackBar_TryGetThemeColor(
+        int iPartId,
+        int iStateId,
+        out int pColor)
+    {
+        if (iPartId == Native.TKP_TICS && iStateId == Native.TSS_NORMAL)
+        {
+            pColor = ColorTranslator.ToWin32(DarkColors.LightBackground);
+            return true;
+        }
+        else
+        {
+            pColor = 0;
+            return false;
+        }
+    }
+
+    private static readonly PointF[] _trackBarThumbBottomPoints = new PointF[4];
+
+    private static bool TrackBar_TryDrawThemeBackground(
+        IntPtr hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        Rectangle rect = pRect.ToRectangle();
+
+        switch (iPartId)
+        {
+            case Native.TKP_TRACK:
+                g.FillRectangle(DarkColors.DarkBackgroundBrush, rect);
+                Rectangle borderRect = rect with { Width = rect.Width - 1, Height = rect.Height - 1 };
+                g.DrawRectangle(DarkColors.LightBackgroundPen, borderRect);
+                break;
+            case Native.TKP_THUMBBOTTOM:
+            {
+                Brush brush = iStateId switch
+                {
+                    Native.TUBS_HOT => DarkColors.BlueHighlightBrush,
+                    Native.TUBS_PRESSED => DarkColors.BlueBackgroundBrush,
+                    Native.TUBS_DISABLED => DarkColors.LightBackgroundBrush,
+                    //Native.TUBS_NORMAL => DarkColors.BlueSelectionBrush,
+                    //Native.TUBS_FOCUSED => DarkColors.BlueSelectionBrush,
+                    _ => DarkColors.BlueSelectionBrush
+                };
+
+                Rectangle squarePartRect = rect with { Height = rect.Height - 5 };
+                g.FillRectangle(brush, squarePartRect);
+
+                _trackBarThumbBottomPoints[0] = new PointF(rect.X + -0.5f, rect.Y + 13);
+                _trackBarThumbBottomPoints[1] = new PointF(rect.X + 5, rect.Y + 18.5f);
+                _trackBarThumbBottomPoints[2] = new PointF(rect.X + 10.5f, rect.Y + 13);
+                _trackBarThumbBottomPoints[3] = new PointF(rect.X + -0.5f, rect.Y + 13);
+
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.FillPolygon(brush, _trackBarThumbBottomPoints);
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    #endregion
+
     #region Tab scroll buttons
 
-    // This really for all horizontal spinners, as no messages are sent when the tab control's spinner needs to
-    // be painted, so we can't override just for that...
+    // This is really for all horizontal spinners, as no messages are sent when the tab control's spinner needs
+    // to be painted, so we can't override just for that...
     // It's okay because we don't use them anywhere else, but yeah.
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
