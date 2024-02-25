@@ -109,7 +109,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         }
         else
         {
-            Images.FitRectInBounds(e.Graphics, _imageRect, Bounds);
+            Images.FitRectInBounds(e.Graphics, _imageRect, ClientRectangle);
             _imageAttributes.SetGamma(_gamma, ColorAdjustType.Bitmap);
             DrawImageOnGraphics(e.Graphics, _image);
         }
