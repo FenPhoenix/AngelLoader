@@ -235,5 +235,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         return (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
     }
 
+    /*
+    @ScreenshotDisplay: Copy-paste code should be like this
+    using Bitmap? bmp = ImageBox.GetSnapshot();
+    if (bmp != null)
+    {
+        Clipboard.SetImage(bmp);
+    }
+    */
+
     #endregion
 }
