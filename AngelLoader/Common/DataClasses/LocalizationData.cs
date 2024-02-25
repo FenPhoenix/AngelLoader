@@ -635,6 +635,8 @@ internal sealed class LText_Class
         internal readonly string ResetGammaToolTip = "Right-click to reset";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
+        internal readonly string ImageCopied = "Image copied";
+        internal readonly string ImageCopyFailed = "Image copy failed";
     }
 
     internal sealed class ReadmeArea_Class

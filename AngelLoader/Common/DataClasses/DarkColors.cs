@@ -47,6 +47,8 @@ public static class DarkColors
     public static readonly Color DGV_RecentHighlightColorLight = Color.LightGoldenrodYellow;
     public static readonly Color DGV_UnavailableColorLight = Color.MistyRose;
 
+    public static readonly Color SuccessGreenDark = Color.FromArgb(68, 178, 68);
+
     #endregion
 
     #region DarkUI

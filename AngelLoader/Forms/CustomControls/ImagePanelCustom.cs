@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
@@ -91,6 +92,14 @@ public sealed class ImagePanelCustom : Panel, IDarkable
     {
         ResizeRedraw = true;
         DoubleBuffered = true;
+    }
+
+    protected override void OnClick(EventArgs e)
+    {
+        // Force focus on click so we can allow Ctrl+C to copy the image only when the image is focused.
+        // Clicks don't normally focus panel-type controls so we need this.
+        Focus();
+        base.OnClick(e);
     }
 
     protected override void OnPaint(PaintEventArgs e)

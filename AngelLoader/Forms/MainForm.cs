@@ -504,27 +504,6 @@ public sealed partial class MainForm : DarkFormBase,
             int wParam = (int)m.WParam;
             if (wParam == (int)Keys.F1 && CanFocus)
             {
-                static bool AnyControlFocusedIn(Control control, int stackCounter = 0)
-                {
-                    stackCounter++;
-                    if (stackCounter > 100) return false;
-
-                    if (control.Focused) return true;
-
-                    Control.ControlCollection controls = control.Controls;
-                    int count = controls.Count;
-                    for (int i = 0; i < count; i++)
-                    {
-                        if (AnyControlFocusedIn(controls[i], stackCounter)) return true;
-                    }
-
-                    return false;
-                }
-
-                bool AnyControlFocusedInTabPage(TabPage tabPage) =>
-                    (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
-                    AnyControlFocusedIn(tabPage);
-
                 bool mainMenuWasOpen = MainLLMenu.Visible;
 
                 string section =
@@ -1662,6 +1641,13 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     textBox.Focus();
                     textBox.SelectAll();
+                }
+            }
+            else if (e.KeyCode == Keys.C)
+            {
+                if (AnyControlFocusedInTabPage(ScreenshotsTabPage))
+                {
+                    ScreenshotsTabPage.CopyImageToClipboard();
                 }
             }
             else if (e.KeyCode is Keys.Add or Keys.Oemplus)
@@ -4881,6 +4867,27 @@ public sealed partial class MainForm : DarkFormBase,
     #endregion
 
     #region Helpers & misc
+
+    private static bool AnyControlFocusedIn(Control control, int stackCounter = 0)
+    {
+        stackCounter++;
+        if (stackCounter > 100) return false;
+
+        if (control.Focused) return true;
+
+        Control.ControlCollection controls = control.Controls;
+        int count = controls.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (AnyControlFocusedIn(controls[i], stackCounter)) return true;
+        }
+
+        return false;
+    }
+
+    private bool AnyControlFocusedInTabPage(TabPage tabPage) =>
+        (TopRightTabControl.Focused && TopRightTabControl.SelectedTab == tabPage) ||
+        AnyControlFocusedIn(tabPage);
 
     private Zoom GetReadmeZoomButton(DarkButton button) => (Zoom)(Array.IndexOf(_readmeControlButtons, button) - 1);
 

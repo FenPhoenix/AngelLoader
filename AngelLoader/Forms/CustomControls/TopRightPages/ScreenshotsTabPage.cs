@@ -24,7 +24,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
     displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
     */
-    public sealed class MemoryImage : IDisposable
+    private sealed class MemoryImage : IDisposable
     {
         private readonly MemoryStream _memoryStream;
         public readonly Image Img;
@@ -49,6 +49,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
     private MemoryImage? _currentScreenshotStream;
+    private readonly Timer CopiedMessageFadeoutTimer = new();
+
     #region Theme
 
     [PublicAPI]
@@ -79,6 +81,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         using (new DisableEvents(_owner))
         {
             Controls.Add(_page);
+
+            CopiedMessageFadeoutTimer.Interval = 5000;
+            CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
 
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
@@ -257,14 +262,63 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.ScreenshotsPictureBox.SetGamma(1.0f);
     }
 
-    /*
-    @ScreenshotDisplay: Copy-paste code should be like this
-    using Bitmap? bmp = ImageBox.GetSnapshot();
-    if (bmp != null)
+    private void SetCopiedMessageLabelText(string text, bool success)
     {
-        Clipboard.SetImage(bmp);
+        if (!_constructed) return;
+        if (CopiedMessageFadeoutTimer.Enabled) return;
+
+        _page.CopiedMessageLabel.ForeColor = success ? Color.Green : Color.DarkRed;
+        _page.CopiedMessageLabel.DarkModeForeColor = success ? DarkColors.SuccessGreenDark : DarkColors.Fen_CautionText;
+
+        _page.CopiedMessageLabel.Text = text;
+        _page.CopiedMessageLabel.CenterH(_page);
+        _page.CopiedMessageLabel.Show();
+        CopiedMessageFadeoutTimer.Start();
     }
-    */
+
+    private void CopiedMessageFadeoutTimer_Tick(object sender, EventArgs e)
+    {
+        if (!_constructed) return;
+        if (Disposing || _owner.AboutToClose) return;
+        try
+        {
+            _page.CopiedMessageLabel.Hide();
+            CopiedMessageFadeoutTimer.Stop();
+        }
+        catch
+        {
+            // Just in case it happens during dispose or whatever
+        }
+    }
+
+    public void CopyImageToClipboard()
+    {
+        if (!_constructed) return;
+
+        using Bitmap? bmp = _page.ScreenshotsPictureBox.GetSnapshot();
+        if (bmp != null)
+        {
+            try
+            {
+                Clipboard.SetImage(bmp);
+                SetCopiedMessageLabelText(LText.ScreenshotsTab.ImageCopied, success: true);
+            }
+            catch
+            {
+                SetCopiedMessageLabelText(LText.ScreenshotsTab.ImageCopyFailed, success: false);
+            }
+        }
+    }
 
     #endregion
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _currentScreenshotStream?.Dispose();
+            CopiedMessageFadeoutTimer.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
