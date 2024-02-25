@@ -2,13 +2,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -51,25 +49,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private MemoryImage? _currentScreenshotStream;
     private readonly Timer CopiedMessageFadeoutTimer = new();
 
-    #region Theme
-
-    [PublicAPI]
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public override bool DarkModeEnabled
-    {
-        get => base.DarkModeEnabled;
-        set
-        {
-            if (DarkModeEnabled == value) return;
-            base.DarkModeEnabled = value;
-
-            if (!_constructed) return;
-        }
-    }
-
-    #endregion
-
     #region Public common
 
     public override void Construct()
@@ -81,6 +60,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         using (new DisableEvents(_owner))
         {
             Controls.Add(_page);
+
+            _page.GammaTrackBar.Value = Config.ScreenshotGammaPercent;
 
             CopiedMessageFadeoutTimer.Interval = 2500;
             CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
@@ -238,7 +219,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         DisplayCurrentScreenshot();
     }
 
-    private void GammaTrackBar_Scroll(object sender, EventArgs e) => _page.ScreenshotsPictureBox.SetGamma(GetGamma());
+    private void GammaTrackBar_Scroll(object sender, EventArgs e)
+    {
+        Config.ScreenshotGammaPercent = _page.GammaTrackBar.Value;
+        _page.ScreenshotsPictureBox.SetGamma(GetGamma());
+    }
 
     private float GetGamma()
     {
@@ -259,6 +244,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private void ResetGammaSlider()
     {
         _page.GammaTrackBar.Value = 50;
+        Config.ScreenshotGammaPercent = 50;
         _page.ScreenshotsPictureBox.SetGamma(1.0f);
     }
 

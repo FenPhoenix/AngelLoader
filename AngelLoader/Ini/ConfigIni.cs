@@ -796,6 +796,14 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_ScreenshotGammaPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.ScreenshotGammaPercent = result;
+        }
+    }
+
     #endregion
 
     private readonly unsafe struct Config_DelegatePointerWrapper
@@ -986,12 +994,10 @@ internal static partial class Ini
         { "EnableCharacterDetailFix", new Config_DelegatePointerWrapper(&Config_EnableCharacterDetailFix_Set) },
 
         { "PlayOriginalSeparateButtons", new Config_DelegatePointerWrapper(&Config_PlayOriginalSeparateButtons_Set) },
-
         { "AskedToScanForMisCounts", new Config_DelegatePointerWrapper(&Config_AskedToScanForMisCounts_Set) },
-
         { "EnableFuzzySearch", new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
-
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
+        { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
 
         #region Backward compatibility
 
@@ -1382,11 +1388,9 @@ internal static partial class Ini
 
         sw.Append("EnableCharacterDetailFix").Append('=').Append(config.EnableCharacterDetailFix).AppendLine();
         sw.Append("PlayOriginalSeparateButtons").Append('=').Append(config.PlayOriginalSeparateButtons).AppendLine();
-
         sw.Append("AskedToScanForMisCounts").Append('=').Append(config.AskedToScanForMisCounts).AppendLine();
-
         sw.Append("EnableFuzzySearch").Append('=').Append(config.EnableFuzzySearch).AppendLine();
-
         sw.Append("CheckForUpdates").Append('=').Append(config.CheckForUpdates).AppendLine();
+        sw.Append("ScreenshotGammaPercent").Append('=').Append(config.ScreenshotGammaPercent).AppendLine();
     }
 }

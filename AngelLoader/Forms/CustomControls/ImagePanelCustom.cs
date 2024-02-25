@@ -50,9 +50,11 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
     public void SetGamma(float gamma)
     {
-        _gamma = gamma.ClampToMin(0.01f);
+        SetGammaNoRefresh(gamma);
         Invalidate();
     }
+
+    private void SetGammaNoRefresh(float gamma) => _gamma = gamma.ClampToMin(0.01f);
 
     public void SetImage(Image? image, float? gamma = null)
     {
@@ -66,7 +68,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
         if (gamma != null)
         {
-            _gamma = (float)gamma;
+            SetGammaNoRefresh((float)gamma);
         }
 
         if (_image != null)

@@ -462,6 +462,13 @@ public sealed class ConfigData
 
     internal CheckForUpdates CheckForUpdates = CheckForUpdates.FirstTimeAsk;
 
+    private int _screenshotGammaPercent = 50;
+    internal int ScreenshotGammaPercent
+    {
+        get => _screenshotGammaPercent;
+        set => _screenshotGammaPercent = value.Clamp(0, 100);
+    }
+
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
     internal bool ForceWindowed;
