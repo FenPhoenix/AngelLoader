@@ -82,7 +82,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             Controls.Add(_page);
 
-            CopiedMessageFadeoutTimer.Interval = 5000;
+            CopiedMessageFadeoutTimer.Interval = 2500;
             CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
 
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
