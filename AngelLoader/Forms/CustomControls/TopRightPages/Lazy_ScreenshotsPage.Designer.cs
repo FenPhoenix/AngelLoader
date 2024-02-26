@@ -39,7 +39,6 @@ public sealed partial class Lazy_ScreenshotsPage
             this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
-            this.RefreshButton = new AngelLoader.Forms.CustomControls.DarkButton();
             ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
@@ -124,22 +123,12 @@ public sealed partial class Lazy_ScreenshotsPage
             this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
             this.ScreenshotsPictureBox.TabIndex = 0;
             // 
-            // RefreshButton
-            // 
-            this.RefreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.RefreshButton.Location = new System.Drawing.Point(6, 256);
-            this.RefreshButton.Name = "RefreshButton";
-            this.RefreshButton.Size = new System.Drawing.Size(23, 23);
-            this.RefreshButton.TabIndex = 5;
-            this.RefreshButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RefreshButton_PaintCustom);
-            // 
             // Lazy_ScreenshotsPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
-            this.Controls.Add(this.RefreshButton);
             this.Controls.Add(this.CopiedMessageLabel);
             this.Controls.Add(this.GammaLabel);
             this.Controls.Add(this.NumberLabel);
@@ -167,5 +156,4 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkTrackBar GammaTrackBar;
     internal DarkLabel GammaLabel;
     internal DarkLabel CopiedMessageLabel;
-    internal DarkButton RefreshButton;
 }

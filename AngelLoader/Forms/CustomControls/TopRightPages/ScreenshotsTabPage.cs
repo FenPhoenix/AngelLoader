@@ -81,7 +81,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CopiedMessageFadeoutTimer.Interval = 2500;
             CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
 
-            _page.RefreshButton.Click += RefreshButton_Click;
+            _page.ScreenshotsPictureBox.MouseClick += ScreenshotsPictureBox_MouseClick;
+
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
@@ -105,6 +106,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (!_constructed) return;
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
         _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
+        _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
     }
 
     public void RefreshScreenshots()
@@ -224,7 +226,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
-    private void RefreshButton_Click(object sender, EventArgs e) => UpdatePageInternal(forceUpdate: true);
+    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e)
+    {
+        CopyImageToClipboard();
+    }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {

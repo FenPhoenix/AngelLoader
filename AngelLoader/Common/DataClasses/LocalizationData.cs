@@ -631,6 +631,7 @@ internal sealed class LText_Class
     {
         // @ScreenshotDisplay: Finalize this text, improve it if necessary etc.
         internal readonly string TabText = "Screenshots";
+        internal readonly string CopyScreenshotToolTip = "Click to copy";
         internal readonly string Gamma = "Gamma:";
         internal readonly string ResetGammaToolTip = "Right-click to reset";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";

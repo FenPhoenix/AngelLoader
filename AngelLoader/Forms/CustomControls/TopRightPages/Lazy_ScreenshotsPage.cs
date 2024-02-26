@@ -14,19 +14,6 @@ public sealed partial class Lazy_ScreenshotsPage : UserControl
 #endif
     }
 
-    private void RefreshButton_PaintCustom(object sender, PaintEventArgs e)
-    {
-        Rectangle cr = RefreshButton.ClientRectangle;
-        Images.PaintBitmapButton(
-            e,
-            RefreshButton.Enabled ? Images.Refresh : Images.GetDisabledImage(Images.Refresh),
-            scaledRect: new RectangleF(
-                cr.X + 2f,
-                cr.Y + 2f,
-                cr.Width - 4f,
-                cr.Height - 4f));
-    }
-
     private void OpenScreenshotsFolderButton_PaintCustom(object sender, PaintEventArgs e)
     {
         Image image = Images.Folder;
