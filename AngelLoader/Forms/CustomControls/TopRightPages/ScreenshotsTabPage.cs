@@ -226,7 +226,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     // @ScreenshotDisplay(Delete): Somehow convey that this only sends them to the recycle bin
     private void DeleteButton_Click(object sender, EventArgs e)
     {
-        using var fmInstDirModScope = new DisableScreenshotWatchers();
+        using var dsw = new DisableScreenshotWatchers();
 
         if (!CurrentScreenshotFileName.IsEmpty())
         {
