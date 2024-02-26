@@ -15,6 +15,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
+        this.RefreshButton = new AngelLoader.Forms.CustomControls.DarkButton();
         ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
         this.SuspendLayout();
         // 
@@ -57,7 +58,8 @@ public sealed partial class Lazy_ScreenshotsPage
         this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
         this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(336, 256);
         this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(35, 23);
-        this.OpenScreenshotsFolderButton.TabIndex = 5;
+        this.OpenScreenshotsFolderButton.TabIndex = 6;
+        this.OpenScreenshotsFolderButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.OpenScreenshotsFolderButton_PaintCustom);
         // 
         // NextButton
         // 
@@ -65,7 +67,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
         this.NextButton.Location = new System.Drawing.Point(446, 256);
         this.NextButton.Size = new System.Drawing.Size(75, 23);
-        this.NextButton.TabIndex = 7;
+        this.NextButton.TabIndex = 8;
         // 
         // PrevButton
         // 
@@ -73,7 +75,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.PrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
         this.PrevButton.Location = new System.Drawing.Point(371, 256);
         this.PrevButton.Size = new System.Drawing.Size(75, 23);
-        this.PrevButton.TabIndex = 6;
+        this.PrevButton.TabIndex = 7;
         // 
         // ScreenshotsPictureBox
         // 
@@ -84,12 +86,21 @@ public sealed partial class Lazy_ScreenshotsPage
         this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
         this.ScreenshotsPictureBox.TabIndex = 0;
         // 
+        // RefreshButton
+        // 
+        this.RefreshButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.RefreshButton.Location = new System.Drawing.Point(6, 256);
+        this.RefreshButton.Size = new System.Drawing.Size(23, 23);
+        this.RefreshButton.TabIndex = 5;
+        this.RefreshButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RefreshButton_PaintCustom);
+        // 
         // Lazy_ScreenshotsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
         this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
+        this.Controls.Add(this.RefreshButton);
         this.Controls.Add(this.CopiedMessageLabel);
         this.Controls.Add(this.GammaLabel);
         this.Controls.Add(this.NumberLabel);

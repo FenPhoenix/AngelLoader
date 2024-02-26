@@ -66,9 +66,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CopiedMessageFadeoutTimer.Interval = 2500;
             CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
 
+            _page.RefreshButton.Click += RefreshButton_Click;
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
-            _page.OpenScreenshotsFolderButton.PaintCustom += OpenScreenshotsFolderButton_PaintCustom;
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
             _page.GammaTrackBar.MouseDown += GammaTrackBar_MouseDown;
@@ -82,7 +82,22 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public override void UpdatePage()
     {
         if (!_constructed) return;
+        UpdatePageInternal(forceUpdate: false);
+    }
 
+    public override void Localize()
+    {
+        if (!_constructed) return;
+        _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
+        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
+    }
+
+    #endregion
+
+    #region Page
+
+    private void UpdatePageInternal(bool forceUpdate)
+    {
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
 
         Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
@@ -104,7 +119,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         else
         {
             CurrentScreenshotFileName = ScreenshotFileNames[0];
-            DisplayCurrentScreenshot();
+            DisplayCurrentScreenshot(forceUpdate);
             _page.GammaLabel.Enabled = true;
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaTrackBar.Enabled = true;
@@ -113,17 +128,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
     }
-
-    public override void Localize()
-    {
-        if (!_constructed) return;
-        _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
-        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
-    }
-
-    #endregion
-
-    #region Page
 
     // Manual right-align to avoid needing a FlowLayoutPanel
     private void SetNumberLabelText(string text)
@@ -147,14 +151,15 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     performance cost if they're not actually able to see the image. So we only update when visible (or when we
     become visible).
     */
-    private void DisplayCurrentScreenshot()
+    private void DisplayCurrentScreenshot(bool forceUpdate = false)
     {
         if (!_constructed) return;
         if (!_owner.StartupState && !Visible) return;
 
-        if (!CurrentScreenshotFileName.IsEmpty() &&
+        if (forceUpdate ||
+            (!CurrentScreenshotFileName.IsEmpty() &&
             // @TDM_CASE when FM is TDM
-            _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true)
+            _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true))
         {
             try
             {
@@ -183,20 +188,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (Visible) DisplayCurrentScreenshot();
     }
 
+    private void RefreshButton_Click(object sender, EventArgs e) => UpdatePageInternal(forceUpdate: true);
+
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {
         Core.OpenFMScreenshotsFolder(_owner.FMsDGV.GetMainSelectedFM(), CurrentScreenshotFileName);
-    }
-
-    private void OpenScreenshotsFolderButton_PaintCustom(object sender, PaintEventArgs e)
-    {
-        Image image = Images.Folder;
-        DarkButton button = _page.OpenScreenshotsFolderButton;
-        Images.PaintBitmapButton(
-            button,
-            e,
-            button.Enabled ? image : Images.GetDisabledImage(image),
-            x: (button.Width - image.Width) / 2);
     }
 
     private void ScreenshotsPrevButton_Click(object sender, EventArgs e) => CycleScreenshot(step: -1);
