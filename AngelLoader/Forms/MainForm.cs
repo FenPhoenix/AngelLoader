@@ -5336,5 +5336,11 @@ public sealed partial class MainForm : DarkFormBase,
     // We might want to change this, if we want something beside the readme or whatever
     internal Control ReadmeContainer => MainSplitContainer.Panel2;
 
-    public void RefreshCurrentFMScreenshots() => ScreenshotsTabPage.RefreshScreenshots();
+    public void RefreshCurrentFMScreenshots()
+    {
+        if (UIEnabled && !ViewBlocked && CanFocus)
+        {
+            ScreenshotsTabPage.RefreshScreenshots();
+        }
+    }
 }
