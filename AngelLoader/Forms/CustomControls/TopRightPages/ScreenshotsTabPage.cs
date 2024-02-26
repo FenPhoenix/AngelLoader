@@ -122,10 +122,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
         if (fm != null && fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            Config.GetScreenshotWatcher(gameIndex).Construct();
+            Screenshots.GetScreenshotWatcher(gameIndex).Construct();
         }
 
-        Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
+        Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
         // @ScreenshotDisplay: Should we hide everything and just put a label "No screenshots"?
         if (ScreenshotFileNames.Count == 0)
