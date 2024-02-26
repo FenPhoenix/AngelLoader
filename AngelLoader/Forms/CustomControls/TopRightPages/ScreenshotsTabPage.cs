@@ -1,20 +1,4 @@
-﻿/*
-@ScreenshotDisplay: Options for watching screenshot folders and reloading from disk automatically
-
--Have one FileSystemWatcher and change its watch path every FM load. This will add time (up to 20-30ms iirc?)
- to FM selection. It will also need to be turned off any time the FM installed directory is modified in some way
- (install/uninstall/audio convert/etc.) to prevent a tsunami of events (perf).
-
--Have one FileSystemWatcher per game, and watch the FM install base dir (and global screenshots dir for TDM).
- Again, it would need to be disabled during FM dir modifications (to ANY fm subdir!). This would prevent having
- to set the watcher path for every FM selection change. The event handlers give us the affected filename, and we
- can filter to just image types for perf.
-
-We could also have the watchers be wrapped in a lazy-loaded class that only loads them up when the screenshots
-tab shows for the first time per game.
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -121,6 +105,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void UpdatePageInternal(bool forceUpdate)
     {
+        if (!_constructed) return;
+
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
         if (fm != null && fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
@@ -159,12 +145,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     // Manual right-align to avoid needing a FlowLayoutPanel
     private void SetNumberLabelText(string text)
     {
+        if (!_constructed) return;
         _page.NumberLabel.Text = text;
         SetNumberLabelPosition();
     }
 
     private void SetNumberLabelPosition()
     {
+        if (!_constructed) return;
         _page.NumberLabel.Location = _page.NumberLabel.Location with
         {
             X = (_page.ClientSize.Width - 8) - _page.NumberLabel.Width
@@ -173,6 +161,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void ClearCurrentScreenshot()
     {
+        if (!_constructed) return;
         _page.ScreenshotsPictureBox.SetImage(null);
         _currentScreenshotStream?.Dispose();
     }
@@ -226,10 +215,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
-    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e)
-    {
-        CopyImageToClipboard();
-    }
+    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e) => CopyImageToClipboard();
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {
