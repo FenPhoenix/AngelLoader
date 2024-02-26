@@ -829,6 +829,7 @@ internal static class Core
         // This must come first, so below methods can use it
         Config.SetGamePath(gameIndex, gamePath);
 
+        // @GENGAMES(Set game data from disk - main)
         if (GameIsDark(gameIndex))
         {
             if (!gamePath.IsEmpty() && !DirectoryHasWritePermission(gamePath))
@@ -980,6 +981,29 @@ internal static class Core
             }
 
             // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
+        }
+
+        ScreenshotWatcher watcher = Config.GetScreenshotWatcher(gameIndex);
+        string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+        try
+        {
+            if (gameExeSpecified && !fmInstallPath.IsEmpty())
+            {
+                watcher.EnableWatching = false;
+                // @GENGAMES(Set game data from disk - screenshot watchers)
+                watcher.Path = gameIndex == GameIndex.TDM
+                    ? Path.Combine(Config.GetGamePath(GameIndex.TDM), "screenshots")
+                    : fmInstallPath;
+                watcher.EnableWatching = true;
+            }
+            else
+            {
+                watcher.EnableWatching = false;
+            }
+        }
+        catch
+        {
+            watcher.EnableWatching = false;
         }
 
         return (error, enableTDMWatchers, camModIniLines);
@@ -2827,25 +2851,9 @@ internal static class Core
                     FileInfo item = files[i];
                     string fn = item.Name;
 
-                    int spaceIndex = fn.IndexOf(' ');
-                    // @TDM_CASE: Screenshot FM name comparison
-                    if (spaceIndex > -1 && fn.Substring(0, spaceIndex).Trim().EqualsI(fm.TDMInstalledDir))
+                    if (ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fn))
                     {
                         AddIfValidFormat(screenshotFileNames, item.FullName);
-                    }
-                    else
-                    {
-                        int underscoreIndex = fn.LastIndexOf('_');
-                        if (underscoreIndex == -1) continue;
-
-                        int secondToLastUnderscoreIndex = fn.LastIndexOf('_', (underscoreIndex - 1).ClampToZero());
-                        if (secondToLastUnderscoreIndex <= -1) continue;
-
-                        // @TDM_CASE: Screenshot FM name comparison
-                        if (fn.Substring(0, secondToLastUnderscoreIndex).Trim().EqualsI(fm.TDMInstalledDir))
-                        {
-                            AddIfValidFormat(screenshotFileNames, item.FullName);
-                        }
                     }
                 }
             }
@@ -2891,6 +2899,7 @@ internal static class Core
                     return false;
                 }
                 screenshots = di.GetFiles(pattern);
+                Comparers.Screenshot.SortDirection = SortDirection.Descending;
                 Array.Sort(screenshots, Comparers.Screenshot);
                 return true;
             }
@@ -2908,5 +2917,31 @@ internal static class Core
                 screenshotFileNames.Add(filename);
             }
         }
+    }
+
+    internal static bool ScreenshotFileMatchesTDMName(string tdmInstalledDir, string fn)
+    {
+        int spaceIndex = fn.IndexOf(' ');
+        // @TDM_CASE: Screenshot FM name comparison
+        if (spaceIndex > -1 && fn.Substring(0, spaceIndex).Trim().EqualsI(tdmInstalledDir))
+        {
+            return true;
+        }
+        else
+        {
+            int underscoreIndex = fn.LastIndexOf('_');
+            if (underscoreIndex == -1) return false;
+
+            int secondToLastUnderscoreIndex = fn.LastIndexOf('_', (underscoreIndex - 1).ClampToZero());
+            if (secondToLastUnderscoreIndex <= -1) return false;
+
+            // @TDM_CASE: Screenshot FM name comparison
+            if (fn.Substring(0, secondToLastUnderscoreIndex).Trim().EqualsI(tdmInstalledDir))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

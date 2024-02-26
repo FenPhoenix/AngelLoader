@@ -445,13 +445,16 @@ internal static class Comparers
 
     internal sealed class ScreenshotComparer : IComparer<FileInfo>
     {
+        public SortDirection SortDirection = SortDirection.Ascending;
+
         public int Compare(FileInfo x, FileInfo y)
         {
             int cmp = x.LastWriteTime.CompareTo(y.LastWriteTime);
-            return cmp == 0
+            int ret = cmp == 0
                 // @TDM_CASE when file is a TDM screenshot
                 ? string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase)
                 : cmp;
+            return SortDirection == SortDirection.Descending ? -ret : ret;
         }
     }
 

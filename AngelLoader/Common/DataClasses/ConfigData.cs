@@ -37,6 +37,8 @@ public sealed class ConfigData
 
         GameFilterControlVisibilities = new bool[SupportedGameCount];
 
+        _screenshotWatchers = new ScreenshotWatcher[SupportedGameCount];
+
         #endregion
 
         FilterControlVisibilities = InitializedArray(HideableFilterControlsCount, true);
@@ -54,6 +56,8 @@ public sealed class ConfigData
             _startupFMSelectorLines[i] = new List<string>();
 
             GameFilterControlVisibilities[i] = true;
+
+            _screenshotWatchers[i] = new ScreenshotWatcher((GameIndex)i);
         }
 
         // Must set the display indexes, otherwise we crash!
@@ -65,6 +69,19 @@ public sealed class ConfigData
     }
 
     //internal int Version = 1;
+
+    #region Screenshot watchers
+
+    /*
+    @ScreenshotDisplay: These contain disposable objects (not initialized to start with, but still)
+    When Settings instantiates a new Config object, it will construct this set too. That won't currently result
+    in the disposable FileSystemWatcher objects being instantiated so it's fine, but we should maybe put this
+    somewhere else and make it static, because it's supposed to live for the live of the app.
+    */
+    private readonly ScreenshotWatcher[] _screenshotWatchers;
+    internal ScreenshotWatcher GetScreenshotWatcher(GameIndex gameIndex) => _screenshotWatchers[(int)gameIndex];
+
+    #endregion
 
     #region Saved-on-startup loader config values
 

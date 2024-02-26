@@ -197,4 +197,19 @@ public static partial class Misc
 
     internal const int StreamCopyBufferSize = 81920;
     internal const int FileStreamBufferSize = 4096;
+
+    // Another leak of view implementation details into here (GDI+/Bitmap supported formats)
+    // @ScreenshotDisplay: NewDark games can also have .pcx, and TDM can also have .tga
+    // Neither are supported by Bitmap, so, you're kinda outta luck on those.
+    public static readonly string[] SupportedScreenshotExtensions =
+    {
+        // Common/likely ones first
+        ".png",
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".tif",
+        ".tiff"
+    };
 }

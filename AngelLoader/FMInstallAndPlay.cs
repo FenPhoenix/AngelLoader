@@ -26,6 +26,9 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
+// @ScreenshotDisplay(FM dir modification):
+// Make a system for cleanly disabling/enabling screenshot watchers during modification of anything within the
+// watched path (install/uninstall/audio convert etc.)
 internal static class FMInstallAndPlay
 {
     #region Private fields

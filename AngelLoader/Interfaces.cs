@@ -374,4 +374,6 @@ public interface IView : ISettingsChangeableView
     void Close();
 
     void ShowUpdateNotification(bool show);
+
+    void RefreshCurrentFMScreenshots();
 }

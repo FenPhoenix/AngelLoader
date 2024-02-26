@@ -21,6 +21,7 @@ using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -106,6 +107,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
     }
 
+    public void RefreshScreenshots()
+    {
+        if (!_constructed) return;
+        UpdatePageInternal(forceUpdate: true);
+    }
+
     #endregion
 
     #region Page
@@ -113,6 +120,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private void UpdatePageInternal(bool forceUpdate)
     {
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
+        if (fm != null && fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        {
+            Config.GetScreenshotWatcher(gameIndex).Construct();
+        }
 
         Core.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
@@ -147,6 +158,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private void SetNumberLabelText(string text)
     {
         _page.NumberLabel.Text = text;
+        SetNumberLabelPosition();
+    }
+
+    private void SetNumberLabelPosition()
+    {
         _page.NumberLabel.Location = _page.NumberLabel.Location with
         {
             X = (_page.ClientSize.Width - 8) - _page.NumberLabel.Width
@@ -168,7 +184,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private void DisplayCurrentScreenshot(bool forceUpdate = false)
     {
         if (!_constructed) return;
-        if (!_owner.StartupState && !Visible) return;
+        // @ScreenshotDisplay: I think the unconditional-if-force-update check is not quite correct
+        // That would probably make it update even if the tab is hidden? Maybe that's fine?
+        if (!forceUpdate && !_owner.StartupState && !Visible) return;
 
         if (forceUpdate ||
             (!CurrentScreenshotFileName.IsEmpty() &&
@@ -199,7 +217,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     protected override void OnVisibleChanged(EventArgs e)
     {
         base.OnVisibleChanged(e);
-        if (Visible) DisplayCurrentScreenshot();
+        if (Visible)
+        {
+            SetNumberLabelPosition();
+            DisplayCurrentScreenshot();
+        }
     }
 
     private void RefreshButton_Click(object sender, EventArgs e) => UpdatePageInternal(forceUpdate: true);

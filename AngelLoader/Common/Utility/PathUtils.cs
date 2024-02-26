@@ -129,18 +129,14 @@ public static partial class Utils
 
     internal static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
 
-    // Another leak of view implementation details into here (GDI+/Bitmap supported formats)
-    // @ScreenshotDisplay: NewDark games can also have .pcx, and TDM can also have .tga
-    // Neither are supported by Bitmap, so, you're kinda out of luck on those.
-    internal static bool ExtIsUISupportedImage(this string value) =>
-        // Common/likely ones first
-        value.EndsWithI(".png") ||
-        value.EndsWithI(".bmp") ||
-        value.EndsWithI(".jpg") ||
-        value.EndsWithI(".jpeg") ||
-        value.EndsWithI(".gif") ||
-        value.EndsWithI(".tif") ||
-        value.EndsWithI(".tiff");
+    internal static bool ExtIsUISupportedImage(this string value)
+    {
+        for (int i = 0; i < Misc.SupportedScreenshotExtensions.Length; i++)
+        {
+            if (value.EndsWithI(Misc.SupportedScreenshotExtensions[i])) return true;
+        }
+        return false;
+    }
 
     #endregion
 
