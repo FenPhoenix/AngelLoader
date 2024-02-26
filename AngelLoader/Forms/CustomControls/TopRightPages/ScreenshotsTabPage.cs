@@ -281,18 +281,18 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         if (!_constructed) return;
 
-        using Bitmap? bmp = _page.ScreenshotsPictureBox.GetSnapshot();
-        if (bmp != null)
+        try
         {
-            try
+            using Bitmap? bmp = _page.ScreenshotsPictureBox.GetSnapshot();
+            if (bmp != null)
             {
                 Clipboard.SetImage(bmp);
                 SetCopiedMessageLabelText(LText.ScreenshotsTab.ImageCopied, success: true);
             }
-            catch
-            {
-                SetCopiedMessageLabelText(LText.ScreenshotsTab.ImageCopyFailed, success: false);
-            }
+        }
+        catch
+        {
+            SetCopiedMessageLabelText(LText.ScreenshotsTab.ImageCopyFailed, success: false);
         }
     }
 
