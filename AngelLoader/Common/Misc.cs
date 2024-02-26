@@ -3,8 +3,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader;
 
@@ -212,4 +214,46 @@ public static partial class Misc
         ".tif",
         ".tiff"
     };
+
+    public sealed class FMInstalledDirModificationScope : IDisposable
+    {
+        /*
+        IMPORTANT! @THREADING(FMInstalledDirModificationScope):
+        If we ever make it so that things can go in parallel (install/uninstall, scan, delete, etc.), this will
+        no longer be safe! We're threading noobs so we don't know if volatile will solve the problem or what.
+        Needs testing.
+        */
+        private static int _count;
+
+        private readonly bool[] _originalValues = new bool[SupportedGameCount];
+
+        public FMInstalledDirModificationScope()
+        {
+            if (_count == 0)
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    ScreenshotWatcher watcher = Config.GetScreenshotWatcher(gameIndex);
+                    _originalValues[i] = watcher.EnableWatching;
+                    watcher.EnableWatching = false;
+                }
+            }
+            _count++;
+        }
+
+        public void Dispose()
+        {
+            if (_count == 1)
+            {
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    ScreenshotWatcher watcher = Config.GetScreenshotWatcher(gameIndex);
+                    watcher.EnableWatching = _originalValues[i];
+                }
+            }
+            _count = (_count - 1).ClampToZero();
+        }
+    }
 }

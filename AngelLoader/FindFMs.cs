@@ -8,6 +8,7 @@ using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -215,6 +216,8 @@ internal static class FindFMs
         // tasks or anything here... just return an exception and handle it on the main thread...
         try
         {
+            using var fmInstDirModScope = new FMInstalledDirModificationScope();
+
             List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
             splashScreen.SetCheckAtStoredMessageWidth();
             return (fmsViewListUnscanned, null);
@@ -232,6 +235,8 @@ internal static class FindFMs
     internal static List<FanMission> Find()
     {
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
+
+        using var fmInstDirModScope = new FMInstalledDirModificationScope();
 
         List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
         Core.View!.SetAvailableAndFinishedFMCount();

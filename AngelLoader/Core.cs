@@ -1591,6 +1591,8 @@ internal static class Core
             return false;
         }
 
+        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+
         try
         {
             string dmlFile = Path.GetFileName(sourceDMLPath);
@@ -1617,6 +1619,8 @@ internal static class Core
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
             return false;
         }
+
+        using var fmInstDirModScope = new FMInstalledDirModificationScope();
 
         try
         {
