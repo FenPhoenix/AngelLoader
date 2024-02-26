@@ -6,6 +6,9 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
+// @ScreenshotDisplay: TrackBar white flickering on game close
+// TrackBars (even stock ones) seem to have this white-flicker problem on game close (I guess when a game window
+// disappears and the app window is revealed?). See if we can figure out a fix or workaround.
 public sealed class DarkTrackBar : TrackBar, IDarkable
 {
     [PublicAPI]
