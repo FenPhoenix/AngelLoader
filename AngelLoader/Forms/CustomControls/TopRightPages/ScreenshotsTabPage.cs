@@ -1,10 +1,13 @@
-﻿using System;
+﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using Microsoft.VisualBasic.FileIO;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
@@ -67,9 +70,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
             _page.ScreenshotsPictureBox.MouseClick += ScreenshotsPictureBox_MouseClick;
 
+            _page.DeleteButton.Click += DeleteButton_Click;
+            _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
-            _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
             _page.GammaTrackBar.MouseDown += GammaTrackBar_MouseDown;
 
@@ -120,9 +124,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             CurrentScreenshotFileName = "";
             ClearCurrentScreenshot();
-            _page.GammaLabel.Enabled = false;
             _page.ScreenshotsPictureBox.Enabled = false;
+            _page.GammaLabel.Enabled = false;
             _page.GammaTrackBar.Enabled = false;
+            _page.DeleteButton.Enabled = false;
             _page.OpenScreenshotsFolderButton.Enabled = false;
             _page.PrevButton.Enabled = false;
             _page.NextButton.Enabled = false;
@@ -133,9 +138,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             CurrentScreenshotFileName = ScreenshotFileNames[0];
             DisplayCurrentScreenshot(forceUpdate);
-            _page.GammaLabel.Enabled = true;
             _page.ScreenshotsPictureBox.Enabled = true;
+            _page.GammaLabel.Enabled = true;
             _page.GammaTrackBar.Enabled = true;
+            _page.DeleteButton.Enabled = true;
             _page.OpenScreenshotsFolderButton.Enabled = true;
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
@@ -216,6 +222,29 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     }
 
     private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e) => CopyImageToClipboard();
+
+    // @ScreenshotDisplay(Delete): Somehow convey that this only sends them to the recycle bin
+    private void DeleteButton_Click(object sender, EventArgs e)
+    {
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
+
+        if (!CurrentScreenshotFileName.IsEmpty())
+        {
+            try
+            {
+                FileSystem.DeleteFile(
+                    CurrentScreenshotFileName,
+                    UIOption.OnlyErrorDialogs,
+                    RecycleOption.SendToRecycleBin);
+            }
+            catch
+            {
+                // @ScreenshotDisplay: Do we want an error dialog here?
+            }
+        }
+
+        UpdatePageInternal(forceUpdate: true);
+    }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {

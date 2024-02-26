@@ -24,4 +24,15 @@ public sealed partial class Lazy_ScreenshotsPage : UserControl
             button.Enabled ? image : Images.GetDisabledImage(image),
             x: (button.Width - image.Width) / 2);
     }
+
+    private void DeleteButton_PaintCustom(object sender, PaintEventArgs e)
+    {
+        Image image = Images.Trash;
+        DarkButton button = DeleteButton;
+        Images.PaintBitmapButton(
+            button,
+            e,
+            button.Enabled ? image : Images.GetDisabledImage(image),
+            x: (button.Width - image.Width) / 2);
+    }
 }

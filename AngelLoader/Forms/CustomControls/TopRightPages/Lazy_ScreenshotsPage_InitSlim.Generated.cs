@@ -15,6 +15,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
+        this.DeleteButton = new AngelLoader.Forms.CustomControls.DarkButton();
         ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
         this.SuspendLayout();
         // 
@@ -85,12 +86,21 @@ public sealed partial class Lazy_ScreenshotsPage
         this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
         this.ScreenshotsPictureBox.TabIndex = 0;
         // 
+        // DeleteButton
+        // 
+        this.DeleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.DeleteButton.Location = new System.Drawing.Point(8, 256);
+        this.DeleteButton.Size = new System.Drawing.Size(23, 23);
+        this.DeleteButton.TabIndex = 9;
+        this.DeleteButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.DeleteButton_PaintCustom);
+        // 
         // Lazy_ScreenshotsPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
         this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
+        this.Controls.Add(this.DeleteButton);
         this.Controls.Add(this.CopiedMessageLabel);
         this.Controls.Add(this.GammaLabel);
         this.Controls.Add(this.NumberLabel);
