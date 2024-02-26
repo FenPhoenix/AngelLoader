@@ -163,7 +163,7 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
             could fix both cases by keeping a list of filenames and then checking if our name exists in it, and
             refreshing then.
             */
-            //if (gameIndex != GameIndex.TDM || Core.ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fullPath.GetFileNameFast()))
+            //if (gameIndex != GameIndex.TDM || Screenshots.ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fullPath.GetFileNameFast()))
             {
                 //System.Diagnostics.Trace.WriteLine("---------------------------------------------- Refreshing");
                 Core.View.RefreshCurrentFMScreenshots();
