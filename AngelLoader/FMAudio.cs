@@ -43,7 +43,7 @@ internal static class FMAudio
 
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
         if (fms.Count == 0) return;

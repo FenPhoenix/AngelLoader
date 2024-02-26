@@ -215,7 +215,7 @@ public static partial class Misc
         ".tiff"
     };
 
-    public sealed class FMInstalledDirModificationScope : IDisposable
+    public sealed class DisableScreenshotWatchers : IDisposable
     {
         /*
         IMPORTANT! @THREADING(FMInstalledDirModificationScope):
@@ -227,7 +227,7 @@ public static partial class Misc
 
         private readonly bool[] _originalValues = new bool[SupportedGameCount];
 
-        public FMInstalledDirModificationScope()
+        public DisableScreenshotWatchers()
         {
             if (_count == 0)
             {

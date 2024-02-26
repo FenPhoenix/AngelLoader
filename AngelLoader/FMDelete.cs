@@ -196,7 +196,7 @@ internal static class FMDelete
     // * NIGHTMARE REALM *
     internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         int origCount = fms.Count;
 

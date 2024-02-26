@@ -1591,7 +1591,7 @@ internal static class Core
             return false;
         }
 
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         try
         {
@@ -1620,7 +1620,7 @@ internal static class Core
             return false;
         }
 
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         try
         {

@@ -64,7 +64,7 @@ internal static partial class FMInstallAndPlay
 
     internal static async Task InstallOrUninstall(FanMission[] fms)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
         FanMission firstFM = fms[0];
@@ -117,7 +117,7 @@ internal static partial class FMInstallAndPlay
 
     internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
@@ -195,7 +195,7 @@ internal static partial class FMInstallAndPlay
 
     internal static bool PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         try
         {
@@ -261,7 +261,7 @@ internal static partial class FMInstallAndPlay
 
     private static bool PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         (bool success, string gameExe, string gamePath) =
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
@@ -390,7 +390,7 @@ internal static partial class FMInstallAndPlay
 
     internal static bool OpenFMInEditor(FanMission fm)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         try
         {
@@ -1444,7 +1444,7 @@ internal static partial class FMInstallAndPlay
 
     internal static Task<bool> Install(params FanMission[] fms)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
         return InstallInternal(false, false, fms);
     }
 
@@ -2032,7 +2032,7 @@ internal static partial class FMInstallAndPlay
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
-        using var fmInstDirModScope = new FMInstalledDirModificationScope();
+        using var fmInstDirModScope = new DisableScreenshotWatchers();
 
         var fail = (false, false);
 
