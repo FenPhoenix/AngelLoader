@@ -1,5 +1,6 @@
 ﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
 // @ScreenshotDisplay: Have a gamma number/percent indicator, maybe reuse the "copied" label?
+// @ScreenshotDisplay: Move the delete button to somewhere less enticing to click
 
 using System;
 using System.Collections.Generic;
