@@ -1,4 +1,5 @@
 ﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
+// @ScreenshotDisplay: Have a gamma number/percent indicator, maybe reuse the "copied" label?
 
 using System;
 using System.Collections.Generic;
@@ -137,7 +138,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
         {
-            CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : 0];
+            CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : ScreenshotFileNames.Count - 1];
             DisplayCurrentScreenshot(forceUpdate);
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaLabel.Enabled = true;
@@ -245,7 +246,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
 
         int index = ScreenshotFileNames.IndexOf(CurrentScreenshotFileName);
+        // Two different styles... The second one might make more sense for highest-number-is-most-recent?
+#if false
         if (index > 0) index--;
+#else
+        if (index == ScreenshotFileNames.Count - 1) index--;
+#endif
 
         UpdatePageInternal(forceUpdate: true, index);
     }

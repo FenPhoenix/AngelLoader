@@ -323,7 +323,7 @@ internal static class Screenshots
                     return false;
                 }
                 screenshots = di.GetFiles(pattern);
-                Comparers.Screenshot.SortDirection = SortDirection.Descending;
+                Comparers.Screenshot.SortDirection = SortDirection.Ascending;
                 Array.Sort(screenshots, Comparers.Screenshot);
                 return true;
             }
