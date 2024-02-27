@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
@@ -78,6 +79,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.GammaTrackBar.DoubleClickEndingOnMouseDown += GammaTrackBar_MouseDoubleClick;
 
             FinishConstruct();
+
+            SetGammaValueLabelText();
         }
 
         _page.Show();
@@ -251,18 +254,22 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         Config.ScreenshotGammaPercent = _page.GammaTrackBar.Value;
         _page.ScreenshotsPictureBox.SetGamma(GetGamma());
+        SetGammaValueLabelText();
     }
 
-    private float GetGamma()
+    private float GetGamma(bool userFacing = false)
     {
         TrackBar tb = _page.GammaTrackBar;
-        float ret = (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
-        ret = (float)Math.Round(ret, 2, MidpointRounding.AwayFromZero);
 
-        // Utter noob crap.
-        // This gets us more range in the darker half. There's math that will make a nice fast-start/slow-end
-        // curve but I don't know it.
-        if (tb.Value < tb.Maximum / 2) ret *= ret;
+        int param = !userFacing ? tb.Maximum - tb.Value : tb.Maximum - (tb.Maximum - tb.Value);
+        float ret = param * (1.0f / (tb.Maximum / 2.0f));
+
+        // @ScreenshotDisplay(gamma math):
+        // Trial-and-error flailing until we get something with a good range and that has 1.0 in the middle for
+        // non-confusing UX. The last 4 values end up differing by a small enough amount that the image doesn't
+        // change between them (not that I can see anyway). Whatever... I might come back to it later...
+        ret *= ret / 1.18f;
+        ret += 0.15f;
 
         return ret;
     }
@@ -280,6 +287,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.GammaTrackBar.Value = 50;
         Config.ScreenshotGammaPercent = 50;
         _page.ScreenshotsPictureBox.SetGamma(1.0f);
+        SetGammaValueLabelText();
     }
 
     private void SetCopiedMessageLabelText(string text, bool success)
@@ -294,6 +302,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.CopiedMessageLabel.CenterH(_page);
         _page.CopiedMessageLabel.Show();
         CopiedMessageFadeoutTimer.Start();
+    }
+
+    private void SetGammaValueLabelText()
+    {
+        if (!_constructed) return;
+        _page.GammaValueLabel.Text = GetGamma(userFacing: true).ToString("N2", NumberFormatInfo.InvariantInfo);
     }
 
     private void CopiedMessageFadeoutTimer_Tick(object sender, EventArgs e)
