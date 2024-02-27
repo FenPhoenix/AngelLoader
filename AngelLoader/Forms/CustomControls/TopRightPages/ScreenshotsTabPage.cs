@@ -51,6 +51,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     private string CurrentScreenshotFileName = "";
     private MemoryImage? _currentScreenshotStream;
     private readonly Timer CopiedMessageFadeoutTimer = new();
+    private bool _forceUpdateArmed;
 
     #region Public common
 
@@ -87,7 +88,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public override void UpdatePage()
     {
         if (!_constructed) return;
-        UpdatePageInternal(forceUpdate: false);
+        UpdatePageInternal();
     }
 
     public override void Localize()
@@ -101,14 +102,16 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public void RefreshScreenshots()
     {
         if (!_constructed) return;
-        UpdatePageInternal(forceUpdate: true);
+
+        _forceUpdateArmed = true;
+        UpdatePageInternal();
     }
 
     #endregion
 
     #region Page
 
-    private void UpdatePageInternal(bool forceUpdate, int index = -1)
+    private void UpdatePageInternal(int index = -1)
     {
         if (!_constructed) return;
 
@@ -133,12 +136,13 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.PrevButton.Enabled = false;
             _page.NextButton.Enabled = false;
             SetNumberLabelText("");
+            _forceUpdateArmed = false;
         }
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
         {
             CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : ScreenshotFileNames.Count - 1];
-            DisplayCurrentScreenshot(forceUpdate);
+            DisplayCurrentScreenshot();
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaLabel.Enabled = true;
             _page.GammaTrackBar.Enabled = true;
@@ -179,17 +183,15 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     performance cost if they're not actually able to see the image. So we only update when visible (or when we
     become visible).
     */
-    private void DisplayCurrentScreenshot(bool forceUpdate = false)
+    private void DisplayCurrentScreenshot()
     {
         if (!_constructed) return;
-        // @ScreenshotDisplay: I think the unconditional-if-force-update check is not quite correct
-        // That would probably make it update even if the tab is hidden? Maybe that's fine?
-        if (!forceUpdate && !_owner.StartupState && !Visible) return;
+        if (!_owner.StartupState && !Visible) return;
 
-        if (forceUpdate ||
+        if (_forceUpdateArmed ||
             (!CurrentScreenshotFileName.IsEmpty() &&
-            // @TDM_CASE when FM is TDM
-            _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true))
+             // @TDM_CASE when FM is TDM
+             _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true))
         {
             try
             {
@@ -204,6 +206,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             }
             finally
             {
+                _forceUpdateArmed = false;
                 SetNumberLabelText(
                     (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +
                     ScreenshotFileNames.Count.ToStrInv()
@@ -253,7 +256,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (index == ScreenshotFileNames.Count - 1) index--;
 #endif
 
-        UpdatePageInternal(forceUpdate: true, index);
+        _forceUpdateArmed = true;
+        UpdatePageInternal(index);
     }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
