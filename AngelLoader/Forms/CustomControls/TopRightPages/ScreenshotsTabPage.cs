@@ -107,7 +107,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     #region Page
 
-    private void UpdatePageInternal(bool forceUpdate)
+    private void UpdatePageInternal(bool forceUpdate, int index = -1)
     {
         if (!_constructed) return;
 
@@ -136,7 +136,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
         {
-            CurrentScreenshotFileName = ScreenshotFileNames[0];
+            CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : 0];
             DisplayCurrentScreenshot(forceUpdate);
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaLabel.Enabled = true;
@@ -243,7 +243,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             }
         }
 
-        UpdatePageInternal(forceUpdate: true);
+        int index = ScreenshotFileNames.IndexOf(CurrentScreenshotFileName);
+        if (index > 0) index--;
+
+        UpdatePageInternal(forceUpdate: true, index);
     }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
