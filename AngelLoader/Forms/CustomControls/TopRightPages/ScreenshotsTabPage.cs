@@ -76,7 +76,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
-            _page.GammaTrackBar.MouseDown += GammaTrackBar_MouseDown;
+            _page.GammaTrackBar.DoubleClickEndingOnMouseDown += GammaTrackBar_MouseDoubleClick;
 
             FinishConstruct();
         }
@@ -95,7 +95,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (!_constructed) return;
         _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
-        _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
         _owner.MainToolTip.SetToolTip(_page.DeleteButton, LText.ScreenshotsTab.DeleteToolTip);
     }
 
@@ -296,9 +295,9 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         return ret;
     }
 
-    private void GammaTrackBar_MouseDown(object sender, MouseEventArgs e)
+    private void GammaTrackBar_MouseDoubleClick(object sender, MouseEventArgs e)
     {
-        if (e.Button is MouseButtons.Middle or MouseButtons.Right)
+        if (e.Button == MouseButtons.Left)
         {
             ResetGammaSlider();
         }
