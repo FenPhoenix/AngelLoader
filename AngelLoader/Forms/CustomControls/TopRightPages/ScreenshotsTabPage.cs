@@ -1,6 +1,5 @@
 ﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
 // @ScreenshotDisplay: Have a gamma number/percent indicator, maybe reuse the "copied" label?
-// @ScreenshotDisplay: Move the delete button to somewhere less enticing to click
 
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,6 @@ using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
-using Microsoft.VisualBasic.FileIO;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
@@ -260,6 +258,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         TrackBar tb = _page.GammaTrackBar;
         float ret = (tb.Maximum - tb.Value) * (1.0f / (tb.Maximum / 2.0f));
         ret = (float)Math.Round(ret, 2, MidpointRounding.AwayFromZero);
+
+        // Utter noob crap.
+        // This gets us more range in the darker half. There's math that will make a nice fast-start/slow-end
+        // curve but I don't know it.
+        if (tb.Value < tb.Maximum / 2) ret *= ret;
+
         return ret;
     }
 
