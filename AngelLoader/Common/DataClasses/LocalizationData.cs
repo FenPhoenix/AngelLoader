@@ -639,6 +639,7 @@ internal sealed class LText_Class
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
         internal readonly string ImageCopied = "Image copied";
         internal readonly string ImageCopyFailed = "Image copy failed";
+        internal readonly string ScreenshotDeleteFailed = "The screenshot could not be deleted.";
     }
 
     internal sealed class ReadmeArea_Class

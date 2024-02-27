@@ -225,7 +225,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
     private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e) => CopyImageToClipboard();
 
-    // @ScreenshotDisplay(Delete): Somehow convey that this only sends them to the recycle bin
     private void DeleteButton_Click(object sender, EventArgs e)
     {
         using var dsw = new DisableScreenshotWatchers();
@@ -239,9 +238,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
                     UIOption.OnlyErrorDialogs,
                     RecycleOption.SendToRecycleBin);
             }
-            catch
+            catch (Exception ex)
             {
-                // @ScreenshotDisplay: Do we want an error dialog here?
+                Logger.Log(ErrorText.ExTry + "delete screenshot " + CurrentScreenshotFileName, ex);
+                Core.Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotDeleteFailed);
+                return;
             }
         }
 
