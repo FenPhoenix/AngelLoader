@@ -868,6 +868,9 @@ internal static class Native
 
     #region Get system metrics
 
+    // SystemInformation gives us most of these, but it doesn't give us iPaddedBorderWidth and we need that.
+    // All this just for that one thing.
+
     private const int LF_FACESIZE = 32;
 
     private const int SPI_GETNONCLIENTMETRICS = 0x0029;
