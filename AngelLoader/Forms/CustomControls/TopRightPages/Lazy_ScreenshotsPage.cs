@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -12,6 +13,8 @@ public sealed partial class Lazy_ScreenshotsPage : UserControl
 #else
         InitSlim();
 #endif
+
+        DeleteButton.DarkModeBackColor = DarkColors.Fen_ControlBackground;
     }
 
     private void OpenScreenshotsFolderButton_PaintCustom(object sender, PaintEventArgs e)

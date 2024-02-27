@@ -7,6 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
+        this.DeleteButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.GammaLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -15,9 +16,16 @@ public sealed partial class Lazy_ScreenshotsPage
         this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
-        this.DeleteButton = new AngelLoader.Forms.CustomControls.DarkButton();
         ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
         this.SuspendLayout();
+        // 
+        // DeleteButton
+        // 
+        this.DeleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.DeleteButton.Location = new System.Drawing.Point(8, 256);
+        this.DeleteButton.Size = new System.Drawing.Size(24, 23);
+        this.DeleteButton.TabIndex = 9;
+        this.DeleteButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.DeleteButton_PaintCustom);
         // 
         // CopiedMessageLabel
         // 
@@ -85,14 +93,6 @@ public sealed partial class Lazy_ScreenshotsPage
         this.ScreenshotsPictureBox.Location = new System.Drawing.Point(8, 8);
         this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
         this.ScreenshotsPictureBox.TabIndex = 0;
-        // 
-        // DeleteButton
-        // 
-        this.DeleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.DeleteButton.Location = new System.Drawing.Point(8, 256);
-        this.DeleteButton.Size = new System.Drawing.Size(23, 23);
-        this.DeleteButton.TabIndex = 9;
-        this.DeleteButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.DeleteButton_PaintCustom);
         // 
         // Lazy_ScreenshotsPage
         // 

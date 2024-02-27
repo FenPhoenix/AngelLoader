@@ -92,9 +92,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public override void Localize()
     {
         if (!_constructed) return;
+        _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
         _owner.MainToolTip.SetToolTip(_page.GammaTrackBar, LText.ScreenshotsTab.ResetGammaToolTip);
-        _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
+        _owner.MainToolTip.SetToolTip(_page.DeleteButton, LText.ScreenshotsTab.DeleteToolTip);
     }
 
     public void RefreshScreenshots()
