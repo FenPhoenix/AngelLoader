@@ -73,7 +73,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
             _page.ScreenshotsPictureBox.MouseClick += ScreenshotsPictureBox_MouseClick;
 
-            _page.DeleteButton.Click += DeleteButton_Click;
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
@@ -97,7 +96,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (!_constructed) return;
         _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
-        _owner.MainToolTip.SetToolTip(_page.DeleteButton, LText.ScreenshotsTab.DeleteToolTip);
     }
 
     public void RefreshScreenshots()
@@ -132,7 +130,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.ScreenshotsPictureBox.Enabled = false;
             _page.GammaLabel.Enabled = false;
             _page.GammaTrackBar.Enabled = false;
-            _page.DeleteButton.Enabled = false;
             _page.OpenScreenshotsFolderButton.Enabled = false;
             _page.PrevButton.Enabled = false;
             _page.NextButton.Enabled = false;
@@ -147,7 +144,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaLabel.Enabled = true;
             _page.GammaTrackBar.Enabled = true;
-            _page.DeleteButton.Enabled = true;
             _page.OpenScreenshotsFolderButton.Enabled = true;
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
@@ -227,39 +223,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     }
 
     private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e) => CopyImageToClipboard();
-
-    private void DeleteButton_Click(object sender, EventArgs e)
-    {
-        using var dsw = new DisableScreenshotWatchers();
-
-        if (!CurrentScreenshotFileName.IsEmpty())
-        {
-            try
-            {
-                FileSystem.DeleteFile(
-                    CurrentScreenshotFileName,
-                    UIOption.OnlyErrorDialogs,
-                    RecycleOption.SendToRecycleBin);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ErrorText.ExTry + "delete screenshot " + CurrentScreenshotFileName, ex);
-                Core.Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotDeleteFailed);
-                return;
-            }
-        }
-
-        int index = ScreenshotFileNames.IndexOf(CurrentScreenshotFileName);
-        // Two different styles... The second one might make more sense for highest-number-is-most-recent?
-#if false
-        if (index > 0) index--;
-#else
-        if (index == ScreenshotFileNames.Count - 1) index--;
-#endif
-
-        _forceUpdateArmed = true;
-        UpdatePageInternal(index);
-    }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {

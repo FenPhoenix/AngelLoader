@@ -7,7 +7,6 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.DeleteButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.GammaLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -18,14 +17,6 @@ public sealed partial class Lazy_ScreenshotsPage
         this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
         ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
         this.SuspendLayout();
-        // 
-        // DeleteButton
-        // 
-        this.DeleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.DeleteButton.Location = new System.Drawing.Point(8, 256);
-        this.DeleteButton.Size = new System.Drawing.Size(24, 23);
-        this.DeleteButton.TabIndex = 9;
-        this.DeleteButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.DeleteButton_PaintCustom);
         // 
         // CopiedMessageLabel
         // 
@@ -63,9 +54,9 @@ public sealed partial class Lazy_ScreenshotsPage
         // 
         // OpenScreenshotsFolderButton
         // 
-        this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-        this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(336, 256);
-        this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(35, 23);
+        this.OpenScreenshotsFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(8, 256);
+        this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(24, 23);
         this.OpenScreenshotsFolderButton.TabIndex = 6;
         this.OpenScreenshotsFolderButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.OpenScreenshotsFolderButton_PaintCustom);
         // 
@@ -100,7 +91,6 @@ public sealed partial class Lazy_ScreenshotsPage
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
         this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
-        this.Controls.Add(this.DeleteButton);
         this.Controls.Add(this.CopiedMessageLabel);
         this.Controls.Add(this.GammaLabel);
         this.Controls.Add(this.NumberLabel);

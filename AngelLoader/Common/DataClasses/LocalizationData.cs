@@ -633,12 +633,10 @@ internal sealed class LText_Class
         internal readonly string TabText = "Screenshots";
         internal readonly string CopyScreenshotToolTip = "Click to copy";
         internal readonly string Gamma = "Gamma:";
-        internal readonly string DeleteToolTip = "Delete (send to recycle bin)";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
         internal readonly string ImageCopied = "Image copied";
         internal readonly string ImageCopyFailed = "Image copy failed";
-        internal readonly string ScreenshotDeleteFailed = "The screenshot could not be deleted.";
     }
 
     internal sealed class ReadmeArea_Class
