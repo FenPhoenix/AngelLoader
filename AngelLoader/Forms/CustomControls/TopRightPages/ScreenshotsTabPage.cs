@@ -27,6 +27,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         public readonly Image Img;
         public string Path { get; private set; }
 
+        /*
+        @ScreenshotDisplay: This takes substantial time (~42ms for Calendra test screenshot)
+        We should preload this in the same way as rtf readmes
+        */
         public MemoryImage(string path)
         {
             Path = path;
