@@ -257,6 +257,12 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         TrackBar tb = _page.GammaTrackBar;
 
+        // Make sure 1.0 is really 1.0 exactly, not like eg. 1.001234
+        if (tb.Value == tb.Maximum / 2)
+        {
+            return 1.0f;
+        }
+
         int param = tb.Maximum - tb.Value;
         float ret = param * (1.0f / (tb.Maximum / 2.0f));
 
