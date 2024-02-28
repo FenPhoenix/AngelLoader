@@ -410,6 +410,10 @@ internal static class Core
                 splashScreen.Show(Config.VisualTheme);
                 await DoParallelLoad(askForImport);
             }
+            else
+            {
+                return;
+            }
         }
 
         TDMWatchers.DeferredWatchersEnable(enableTDMWatchers);
