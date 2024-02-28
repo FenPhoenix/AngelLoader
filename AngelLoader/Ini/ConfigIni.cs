@@ -754,6 +754,16 @@ internal static partial class Ini
         config.TopRightTabsData.GetTab(TopRightTab.Mods).Visible = valTrimmed.EqualsTrue();
     }
 
+    private static void Config_ScreenshotsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        Int_TryParseInv(valTrimmed, out int result);
+        config.TopRightTabsData.GetTab(TopRightTab.Screenshots).DisplayIndex = result;
+    }
+    private static void Config_ScreenshotsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.TopRightTabsData.GetTab(TopRightTab.Screenshots).Visible = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     private static void Config_ReadmeZoomFactor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -986,6 +996,9 @@ internal static partial class Ini
 
         { "ModsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
         { "ModsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
+
+        { "ScreenshotsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
+        { "ScreenshotsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
 
         #endregion
 
@@ -1373,6 +1386,7 @@ internal static partial class Ini
         sw.Append("TagsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Tags).DisplayIndex).AppendLine();
         sw.Append("PatchTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Patch).DisplayIndex).AppendLine();
         sw.Append("ModsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Mods).DisplayIndex).AppendLine();
+        sw.Append("ScreenshotsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Screenshots).DisplayIndex).AppendLine();
 
         sw.Append("StatsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Statistics).Visible).AppendLine();
         sw.Append("EditFMTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.EditFM).Visible).AppendLine();
@@ -1380,6 +1394,7 @@ internal static partial class Ini
         sw.Append("TagsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Tags).Visible).AppendLine();
         sw.Append("PatchTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Patch).Visible).AppendLine();
         sw.Append("ModsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Mods).Visible).AppendLine();
+        sw.Append("ScreenshotsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Screenshots).Visible).AppendLine();
 
         sw.Append("ReadmeZoomFactor").Append('=').AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("ReadmeUseFixedWidthFont").Append('=').Append(config.ReadmeUseFixedWidthFont).AppendLine();
