@@ -563,7 +563,6 @@ public sealed partial class MainForm
         // 
         LowerSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         LowerSplitContainer.BackColor = SystemColors.ActiveBorder;
-        LowerSplitContainer.Location = new Point(1, 1);
         // 
         // LowerSplitContainer.Panel1
         // 
@@ -576,8 +575,9 @@ public sealed partial class MainForm
         LowerSplitContainer.Panel1.Controls.Add(ChooseReadmeComboBox);
         LowerSplitContainer.Panel1.Controls.Add(ReadmeRichTextBox);
         LowerSplitContainer.Panel2Collapsed = true;
-        LowerSplitContainer.Size = new Size(1670, 356);
+        LowerSplitContainer.Size = new Size(1671, 357);
         LowerSplitContainer.SplitterDistance = 1613;
+        LowerSplitContainer.TabIndex = 0;
 
         void SetReadmeButton(DarkButton button, int x, int tabIndex)
         {
@@ -615,9 +615,9 @@ public sealed partial class MainForm
         // 
         // ReadmeRichTextBox
         // 
+        ReadmeRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         ReadmeRichTextBox.BackColor = SystemColors.Window;
         ReadmeRichTextBox.BorderStyle = BorderStyle.None;
-        ReadmeRichTextBox.Dock = DockStyle.Fill;
         ReadmeRichTextBox.ReadOnly = true;
         ReadmeRichTextBox.TabIndex = 0;
         ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;

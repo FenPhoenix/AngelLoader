@@ -982,7 +982,7 @@ sealed partial class MainForm
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.LowerSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-        this.LowerSplitContainer.Location = new System.Drawing.Point(1, 1);
+        this.LowerSplitContainer.Location = new System.Drawing.Point(0, 0);
         this.LowerSplitContainer.Name = "LowerSplitContainer";
         // 
         // LowerSplitContainer.Panel1
@@ -996,7 +996,7 @@ sealed partial class MainForm
         this.LowerSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
         this.LowerSplitContainer.Panel2Collapsed = true;
-        this.LowerSplitContainer.Size = new System.Drawing.Size(1670, 356);
+        this.LowerSplitContainer.Size = new System.Drawing.Size(1671, 357);
         this.LowerSplitContainer.SplitterDistance = 1613;
         this.LowerSplitContainer.TabIndex = 0;
         // 
@@ -1099,9 +1099,11 @@ sealed partial class MainForm
         // 
         // ReadmeRichTextBox
         // 
+        this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
         this.ReadmeRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-        this.ReadmeRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
         this.ReadmeRichTextBox.Location = new System.Drawing.Point(1, 1);
         this.ReadmeRichTextBox.Name = "ReadmeRichTextBox";
         this.ReadmeRichTextBox.ReadOnly = true;
