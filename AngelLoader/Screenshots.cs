@@ -16,13 +16,11 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
     private sealed class ScreenshotWatcherTimer(double interval) : System.Timers.Timer(interval)
     {
         internal string FullPath { get; private set; } = "";
-        internal WatcherChangeTypes ChangeType { get; private set; }
 
-        internal void ResetWith(string fullPath, WatcherChangeTypes changeType)
+        internal void ResetWith(string fullPath)
         {
             this.Reset();
             FullPath = fullPath;
-            ChangeType = changeType;
         }
     }
 
@@ -115,15 +113,15 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
 
     private void Watcher_ChangedCreatedDeleted(object sender, FileSystemEventArgs e)
     {
-        _timer.ResetWith(e.FullPath, e.ChangeType);
+        _timer.ResetWith(e.FullPath);
     }
 
     private void Watcher_Renamed(object sender, RenamedEventArgs e)
     {
-        _timer.ResetWith(e.OldFullPath, e.ChangeType);
+        _timer.ResetWith(e.OldFullPath);
     }
 
-    private void HandleEvent(string fullPath, WatcherChangeTypes changeType) => Core.View.Invoke(() =>
+    private void HandleEvent(string fullPath) => Core.View.Invoke(() =>
     {
         if (!_constructed) return;
         if (!EnableWatching) return;
@@ -172,7 +170,7 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
     private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
     {
         if (Core.View == null!) return;
-        HandleEvent(_timer.FullPath, _timer.ChangeType);
+        HandleEvent(_timer.FullPath);
     }
 }
 
@@ -341,7 +339,7 @@ internal static class Screenshots
         }
     }
 
-    internal static bool ScreenshotFileMatchesTDMName(string tdmInstalledDir, string fn)
+    private static bool ScreenshotFileMatchesTDMName(string tdmInstalledDir, string fn)
     {
         int spaceIndex = fn.IndexOf(' ');
         // @TDM_CASE: Screenshot FM name comparison
