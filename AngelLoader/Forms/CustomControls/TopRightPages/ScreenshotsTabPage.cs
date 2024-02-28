@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using AL_Common;
@@ -79,8 +78,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.GammaTrackBar.DoubleClickEndingOnMouseDown += GammaTrackBar_MouseDoubleClick;
 
             FinishConstruct();
-
-            SetGammaValueLabelText();
         }
 
         _page.Show();
@@ -254,14 +251,13 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     {
         Config.ScreenshotGammaPercent = _page.GammaTrackBar.Value;
         _page.ScreenshotsPictureBox.SetGamma(GetGamma());
-        SetGammaValueLabelText();
     }
 
-    private float GetGamma(bool userFacing = false)
+    private float GetGamma()
     {
         TrackBar tb = _page.GammaTrackBar;
 
-        int param = !userFacing ? tb.Maximum - tb.Value : tb.Maximum - (tb.Maximum - tb.Value);
+        int param = tb.Maximum - tb.Value;
         float ret = param * (1.0f / (tb.Maximum / 2.0f));
 
         // @ScreenshotDisplay(gamma math):
@@ -287,7 +283,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.GammaTrackBar.Value = 50;
         Config.ScreenshotGammaPercent = 50;
         _page.ScreenshotsPictureBox.SetGamma(1.0f);
-        SetGammaValueLabelText();
     }
 
     private void SetCopiedMessageLabelText(string text, bool success)
@@ -302,12 +297,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _page.CopiedMessageLabel.CenterH(_page);
         _page.CopiedMessageLabel.Show();
         CopiedMessageFadeoutTimer.Start();
-    }
-
-    private void SetGammaValueLabelText()
-    {
-        if (!_constructed) return;
-        _page.GammaValueLabel.Text = GetGamma(userFacing: true).ToString("N2", NumberFormatInfo.InvariantInfo);
     }
 
     private void CopiedMessageFadeoutTimer_Tick(object sender, EventArgs e)

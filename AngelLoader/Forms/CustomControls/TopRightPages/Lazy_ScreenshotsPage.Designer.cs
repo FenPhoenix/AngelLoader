@@ -31,7 +31,6 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.GammaValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.GammaLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -43,21 +42,11 @@ public sealed partial class Lazy_ScreenshotsPage
             ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
             this.SuspendLayout();
             // 
-            // GammaValueLabel
-            // 
-            this.GammaValueLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.GammaValueLabel.Location = new System.Drawing.Point(0, 240);
-            this.GammaValueLabel.Name = "GammaValueLabel";
-            this.GammaValueLabel.Size = new System.Drawing.Size(528, 13);
-            this.GammaValueLabel.TabIndex = 9;
-            this.GammaValueLabel.Text = "[gamma value]";
-            this.GammaValueLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
             // CopiedMessageLabel
             // 
             this.CopiedMessageLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.CopiedMessageLabel.AutoSize = true;
-            this.CopiedMessageLabel.Location = new System.Drawing.Point(240, 183);
+            this.CopiedMessageLabel.Location = new System.Drawing.Point(240, 204);
             this.CopiedMessageLabel.Name = "CopiedMessageLabel";
             this.CopiedMessageLabel.Size = new System.Drawing.Size(46, 13);
             this.CopiedMessageLabel.TabIndex = 2;
@@ -68,7 +57,7 @@ public sealed partial class Lazy_ScreenshotsPage
             // 
             this.GammaLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.GammaLabel.AutoSize = true;
-            this.GammaLabel.Location = new System.Drawing.Point(8, 183);
+            this.GammaLabel.Location = new System.Drawing.Point(8, 204);
             this.GammaLabel.Name = "GammaLabel";
             this.GammaLabel.Size = new System.Drawing.Size(46, 13);
             this.GammaLabel.TabIndex = 1;
@@ -78,7 +67,7 @@ public sealed partial class Lazy_ScreenshotsPage
             // 
             this.NumberLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.NumberLabel.AutoSize = true;
-            this.NumberLabel.Location = new System.Drawing.Point(472, 183);
+            this.NumberLabel.Location = new System.Drawing.Point(472, 204);
             this.NumberLabel.Name = "NumberLabel";
             this.NumberLabel.Size = new System.Drawing.Size(54, 13);
             this.NumberLabel.TabIndex = 3;
@@ -89,7 +78,7 @@ public sealed partial class Lazy_ScreenshotsPage
             this.GammaTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GammaTrackBar.AutoSize = false;
-            this.GammaTrackBar.Location = new System.Drawing.Point(8, 202);
+            this.GammaTrackBar.Location = new System.Drawing.Point(8, 223);
             this.GammaTrackBar.Maximum = 100;
             this.GammaTrackBar.Name = "GammaTrackBar";
             this.GammaTrackBar.Size = new System.Drawing.Size(512, 32);
@@ -131,7 +120,7 @@ public sealed partial class Lazy_ScreenshotsPage
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ScreenshotsPictureBox.Location = new System.Drawing.Point(8, 8);
             this.ScreenshotsPictureBox.Name = "ScreenshotsPictureBox";
-            this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 172);
+            this.ScreenshotsPictureBox.Size = new System.Drawing.Size(512, 192);
             this.ScreenshotsPictureBox.TabIndex = 0;
             // 
             // Lazy_ScreenshotsPage
@@ -140,7 +129,6 @@ public sealed partial class Lazy_ScreenshotsPage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
-            this.Controls.Add(this.GammaValueLabel);
             this.Controls.Add(this.CopiedMessageLabel);
             this.Controls.Add(this.GammaLabel);
             this.Controls.Add(this.NumberLabel);
@@ -168,5 +156,4 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkTrackBar GammaTrackBar;
     internal DarkLabel GammaLabel;
     internal DarkLabel CopiedMessageLabel;
-    internal DarkLabel GammaValueLabel;
 }
