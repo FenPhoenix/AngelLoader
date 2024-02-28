@@ -925,6 +925,9 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
         TopSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
 
+        LowerSplitContainer.Panel1DarkBackColor = DarkColors.Fen_DarkBackground;
+        LowerSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
+
         #endregion
 
         #region FMs DataGridView
@@ -4774,7 +4777,7 @@ public sealed partial class MainForm : DarkFormBase,
     // visually separated enough.
     private void ReadmeContainer_Paint(object sender, PaintEventArgs e)
     {
-        Control rc = ReadmeContainer;
+        Control rc = MainSplitContainer.Panel2;
 
         if (MainSplitContainer.DarkModeEnabled)
         {
@@ -5334,7 +5337,7 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     // We might want to change this, if we want something beside the readme or whatever
-    internal Control ReadmeContainer => MainSplitContainer.Panel2;
+    internal Control ReadmeContainer => LowerSplitContainer.Panel1;
 
     public void RefreshCurrentFMScreenshots()
     {

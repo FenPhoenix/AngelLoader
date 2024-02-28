@@ -110,6 +110,7 @@ sealed partial class MainForm
         this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
         this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
         this.ScreenshotsTabPage = new AngelLoader.Forms.CustomControls.ScreenshotsTabPage();
+        this.LowerSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -117,7 +118,7 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
         this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
-        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
+        this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.BottomRightFLP.SuspendLayout();
         this.BottomLeftFLP.SuspendLayout();
         this.EverythingPanel.SuspendLayout();
@@ -135,6 +136,9 @@ sealed partial class MainForm
         this.FilterIconButtonsToolStrip.SuspendLayout();
         this.RefreshAreaToolStrip.SuspendLayout();
         this.TopRightTabControl.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).BeginInit();
+        this.LowerSplitContainer.Panel1.SuspendLayout();
+        this.LowerSplitContainer.SuspendLayout();
         this.SuspendLayout();
         // 
         // GameTabsImageList
@@ -255,13 +259,7 @@ sealed partial class MainForm
         // MainSplitContainer.Panel2
         // 
         this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeEncodingButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomInButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomOutButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeResetZoomButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
+        this.MainSplitContainer.Panel2.Controls.Add(this.LowerSplitContainer);
         this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
         this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeContainer_Paint);
         this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
@@ -978,6 +976,29 @@ sealed partial class MainForm
         this.ScreenshotsTabPage.TabIndex = 5;
         this.ScreenshotsTabPage.Text = "Screenshots";
         // 
+        // LowerSplitContainer
+        // 
+        this.LowerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.LowerSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+        this.LowerSplitContainer.Location = new System.Drawing.Point(1, 1);
+        this.LowerSplitContainer.Name = "LowerSplitContainer";
+        // 
+        // LowerSplitContainer.Panel1
+        // 
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeEncodingButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeFullScreenButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomInButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomOutButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeResetZoomButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
+        this.LowerSplitContainer.Panel2Collapsed = true;
+        this.LowerSplitContainer.Size = new System.Drawing.Size(1670, 356);
+        this.LowerSplitContainer.SplitterDistance = 1613;
+        this.LowerSplitContainer.TabIndex = 0;
+        // 
         // ReadmeEncodingButton
         // 
         this.ReadmeEncodingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -1127,6 +1148,9 @@ sealed partial class MainForm
         this.RefreshAreaToolStrip.ResumeLayout(false);
         this.RefreshAreaToolStrip.PerformLayout();
         this.TopRightTabControl.ResumeLayout(false);
+        this.LowerSplitContainer.Panel1.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).EndInit();
+        this.LowerSplitContainer.ResumeLayout(false);
         this.ResumeLayout(false);
 
     }
@@ -1255,6 +1279,7 @@ sealed partial class MainForm
     internal CustomControls.DarkButton ReadmeZoomOutButton;
     internal CustomControls.DarkButton ReadmeResetZoomButton;
     internal CustomControls.DarkButton ReadmeFullScreenButton;
+    internal CustomControls.DarkSplitContainerCustom LowerSplitContainer;
 
     #endregion
 

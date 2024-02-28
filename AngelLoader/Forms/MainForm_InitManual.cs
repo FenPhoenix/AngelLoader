@@ -87,6 +87,7 @@ public sealed partial class MainForm
         PatchTabPage = new PatchTabPage();
         ModsTabPage = new ModsTabPage();
         ScreenshotsTabPage = new ScreenshotsTabPage();
+        LowerSplitContainer = new DarkSplitContainerCustom();
         ReadmeEncodingButton = new DarkButton();
         ReadmeFullScreenButton = new DarkButton();
         ReadmeZoomInButton = new DarkButton();
@@ -112,6 +113,9 @@ public sealed partial class MainForm
         FilterIconButtonsToolStrip.SuspendLayout();
         RefreshAreaToolStrip.SuspendLayout();
         TopRightTabControl.SuspendLayout();
+        ((ISupportInitialize)LowerSplitContainer).BeginInit();
+        LowerSplitContainer.Panel1.SuspendLayout();
+        LowerSplitContainer.SuspendLayout();
         SuspendLayout();
         // 
         // GameTabsImageList
@@ -205,17 +209,11 @@ public sealed partial class MainForm
         // MainSplitContainer.Panel2
         // 
         MainSplitContainer.Panel2.BackColor = SystemColors.Control;
-        MainSplitContainer.Panel2.Controls.Add(ReadmeEncodingButton);
-        MainSplitContainer.Panel2.Controls.Add(ReadmeFullScreenButton);
-        MainSplitContainer.Panel2.Controls.Add(ReadmeZoomInButton);
-        MainSplitContainer.Panel2.Controls.Add(ReadmeZoomOutButton);
-        MainSplitContainer.Panel2.Controls.Add(ReadmeResetZoomButton);
-        MainSplitContainer.Panel2.Controls.Add(ChooseReadmeComboBox);
-        MainSplitContainer.Panel2.Controls.Add(ReadmeRichTextBox);
-        MainSplitContainer.Panel2.MouseLeave += ReadmeArea_MouseLeave;
-        MainSplitContainer.Panel2.Paint += ReadmeContainer_Paint;
-        MainSplitContainer.Panel2MinSize = 38;
+        MainSplitContainer.Panel2.Controls.Add(LowerSplitContainer);
         MainSplitContainer.Panel2.Padding = new Padding(1, 1, 2, 2);
+        MainSplitContainer.Panel2.Paint += ReadmeContainer_Paint;
+        MainSplitContainer.Panel2.MouseLeave += ReadmeArea_MouseLeave;
+        MainSplitContainer.Panel2MinSize = 38;
         MainSplitContainer.RefreshSiblingFirst = true;
         MainSplitContainer.Size = new Size(1671, 672);
         MainSplitContainer.SplitterDistance = 309;
@@ -560,6 +558,25 @@ public sealed partial class MainForm
         TopRightTabControl.EnableScrollButtonsRefreshHack = true;
         TopRightTabControl.Size = new Size(535, 310);
         TopRightTabControl.TabIndex = 15;
+        // 
+        // LowerSplitContainer
+        // 
+        LowerSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        LowerSplitContainer.BackColor = SystemColors.ActiveBorder;
+        LowerSplitContainer.Location = new Point(1, 1);
+        // 
+        // LowerSplitContainer.Panel1
+        // 
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeEncodingButton);
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeFullScreenButton);
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeZoomInButton);
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeZoomOutButton);
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeResetZoomButton);
+        LowerSplitContainer.Panel1.Controls.Add(ChooseReadmeComboBox);
+        LowerSplitContainer.Panel1.Controls.Add(ReadmeRichTextBox);
+        LowerSplitContainer.Panel2Collapsed = true;
+        LowerSplitContainer.Size = new Size(1670, 356);
+        LowerSplitContainer.SplitterDistance = 1613;
 
         void SetReadmeButton(DarkButton button, int x, int tabIndex)
         {
@@ -640,6 +657,9 @@ public sealed partial class MainForm
         RefreshAreaToolStrip.ResumeLayout(false);
         RefreshAreaToolStrip.PerformLayout();
         TopRightTabControl.ResumeLayout(false);
+        LowerSplitContainer.Panel1.ResumeLayout(false);
+        ((ISupportInitialize)LowerSplitContainer).EndInit();
+        LowerSplitContainer.ResumeLayout(false);
         ResumeLayout(false);
     }
 }
