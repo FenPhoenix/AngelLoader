@@ -997,8 +997,8 @@ internal static partial class Ini
         { "ModsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
         { "ModsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
 
-        { "ScreenshotsTabPosition", new Config_DelegatePointerWrapper(&Config_ModsTabPosition_Set) },
-        { "ScreenshotsTabVisible", new Config_DelegatePointerWrapper(&Config_ModsTabVisible_Set) },
+        { "ScreenshotsTabPosition", new Config_DelegatePointerWrapper(&Config_ScreenshotsTabPosition_Set) },
+        { "ScreenshotsTabVisible", new Config_DelegatePointerWrapper(&Config_ScreenshotsTabVisible_Set) },
 
         #endregion
 
