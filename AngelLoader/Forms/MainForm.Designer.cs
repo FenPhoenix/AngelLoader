@@ -987,6 +987,7 @@ sealed partial class MainForm
         // 
         // LowerSplitContainer.Panel1
         // 
+        this.LowerSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeEncodingButton);
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeFullScreenButton);
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomInButton);
