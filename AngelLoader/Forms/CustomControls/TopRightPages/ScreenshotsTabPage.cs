@@ -296,7 +296,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         // Trial-and-error flailing until we get something with a good range and that has 1.0 in the middle for
         // non-confusing UX. The last 4 values end up differing by a small enough amount that the image doesn't
         // change between them (not that I can see anyway). Whatever... I might come back to it later...
-        ret *= ret / 1.18f;
+        ret = (ret * ret) / 1.18f;
         ret += 0.15f;
 
         return ret;
