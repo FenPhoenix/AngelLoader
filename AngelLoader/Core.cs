@@ -359,10 +359,13 @@ internal static class Core
                 (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
                 if (ex == null)
                 {
+                    // Do this before anything, because it modifies the FMs list
+                    TDM.UpdateTDMDataFromDisk(refresh: false);
+
+                    // Do this one first, because it starts a thread that will run behind all of the loading work
+                    viewEnv.PreloadScreenshot(Config, FMsViewList);
                     ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
                 }
-
-                TDM.UpdateTDMDataFromDisk(refresh: false);
             });
 
             // Construct and init the view right here, because it's a heavy operation and we want it to run

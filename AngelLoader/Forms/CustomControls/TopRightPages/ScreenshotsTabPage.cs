@@ -1,7 +1,8 @@
-﻿using System;
+﻿//#define TESTING
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -13,39 +14,6 @@ namespace AngelLoader.Forms.CustomControls;
 public sealed class ScreenshotsTabPage : Lazy_TabsBase
 {
     private Lazy_ScreenshotsPage _page = null!;
-
-    /*
-    Images loaded from files keep the file stream alive for their entire lifetime, insanely. This means the file
-    is "in use" and will cause delete attempts (like FM uninstallation) to fail. So we need to use this workaround
-    of loading the file into a memory stream first, so it's only the memory stream being kept alive. This does
-    mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
-    displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
-    */
-    private sealed class MemoryImage : IDisposable
-    {
-        private readonly MemoryStream _memoryStream;
-        public readonly Image Img;
-        public string Path { get; private set; }
-
-        /*
-        @ScreenshotDisplay: This takes substantial time (~42ms for Calendra test screenshot)
-        We should preload this in the same way as rtf readmes
-        */
-        public MemoryImage(string path)
-        {
-            Path = path;
-            byte[] bytes = File.ReadAllBytes(path);
-            _memoryStream = new MemoryStream(bytes);
-            Img = Image.FromStream(_memoryStream);
-        }
-
-        public void Dispose()
-        {
-            Path = "";
-            Img.Dispose();
-            _memoryStream.Dispose();
-        }
-    }
 
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
@@ -120,7 +88,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             Screenshots.GetScreenshotWatcher(gameIndex).Construct();
         }
 
-        Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
+        if (_owner.StartupState && ScreenshotsPreprocessing.HasBeenActivated)
+        {
+            ScreenshotFileNames.ClearAndAdd_Small(ScreenshotsPreprocessing.ScreenshotFileNames);
+        }
+        else
+        {
+            Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
+        }
 
         if (ScreenshotFileNames.Count == 0)
         {
@@ -137,7 +112,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
         else
         {
-            CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : ScreenshotFileNames.Count - 1];
+            SetCurrentScreenshotFileName(index);
             DisplayCurrentScreenshot();
             _page.ScreenshotsPictureBox.Enabled = true;
             _page.GammaLabel.Enabled = true;
@@ -146,6 +121,11 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
+    }
+
+    private void SetCurrentScreenshotFileName(int index = -1)
+    {
+        CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : ScreenshotFileNames.Count - 1];
     }
 
     // Manual right-align to avoid needing a FlowLayoutPanel
@@ -183,6 +163,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         if (!_constructed) return;
         if (!_owner.StartupState && !Visible) return;
 
+#if TESTING
+        System.Diagnostics.Trace.WriteLine("Startup state: " + _owner.StartupState);
+#endif
+
         if (_forceUpdateArmed ||
             (!CurrentScreenshotFileName.IsEmpty() &&
              // @TDM_CASE when FM is TDM
@@ -190,8 +174,49 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         {
             try
             {
-                _currentScreenshotStream?.Dispose();
-                _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                if (_owner.StartupState)
+                {
+                    FanMission? fm = _owner.GetMainSelectedFMOrNull();
+                    try
+                    {
+                        MemoryImage? mi = ScreenshotsPreprocessing.GetMemoryImage(fm);
+                        if (mi != null)
+                        {
+#if TESTING
+                            System.Diagnostics.Trace.WriteLine("Preload succeeded");
+#endif
+                            _currentScreenshotStream = mi;
+                        }
+                        else
+                        {
+#if TESTING
+                            System.Diagnostics.Trace.WriteLine("Preload failed");
+#endif
+                            Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
+                            SetCurrentScreenshotFileName();
+                            _currentScreenshotStream?.Dispose();
+                            _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                        }
+                    }
+                    catch
+                    {
+#if TESTING
+                        System.Diagnostics.Trace.WriteLine("Preload failed");
+#endif
+                        Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
+                        SetCurrentScreenshotFileName();
+                        _currentScreenshotStream?.Dispose();
+                        _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                    }
+                }
+                else
+                {
+#if TESTING
+                    System.Diagnostics.Trace.WriteLine("Didn't preload");
+#endif
+                    _currentScreenshotStream?.Dispose();
+                    _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                }
                 _page.ScreenshotsPictureBox.SetImage(_currentScreenshotStream.Img, GetGamma());
             }
             catch
@@ -201,6 +226,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             }
             finally
             {
+                ScreenshotsPreprocessing.Clear();
                 _forceUpdateArmed = false;
                 SetNumberLabelText(
                     (ScreenshotFileNames.IndexOf(CurrentScreenshotFileName) + 1).ToStrInv() + " / " +

@@ -43,6 +43,40 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public string ProductVersion => Application.ProductVersion;
 
+    public void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList)
+    {
+        // @ScreenshotDisplay: UI-specific preload conditions
+        // If we allow moving the screenshots tab beside the readme or wherever else, we'll have to update
+        // this code to match whatever the UI setup is.
+        if (config.TopRightPanelCollapsed ||
+            config.TopRightTabsData.SelectedTab != TopRightTab.Screenshots)
+        {
+            return;
+        }
+
+        SelectedFM selFM = config.GameOrganization == GameOrganization.OneList
+            ? config.SelFM
+            : config.GameTabsState.GetSelectedFM(config.GameTab);
+
+        if (selFM.InstalledName.IsWhiteSpace()) return;
+
+        FanMission? fm = fmsViewList.Find(x => x.InstalledDir.EqualsI(selFM.InstalledName));
+        if (fm == null) return;
+        if (!Utils.FMIsReallyInstalled(fm, out _)) return;
+
+        // @ScreenshotDisplay: If we save the position in the screenshot cycle, we'll have to update this to match!
+        List<string> screenshotFileNames = new();
+        Screenshots.PopulateScreenshotFileNames(fm, screenshotFileNames);
+        if (screenshotFileNames.Count == 0) return;
+
+        string currentScreenshotFileName = screenshotFileNames[screenshotFileNames.Count - 1];
+
+        ScreenshotsPreprocessing.Run(
+            fm.InstalledDir,
+            currentScreenshotFileName,
+            screenshotFileNames);
+    }
+
     public void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned)
     {
         SelectedFM selFM = config.GameOrganization == GameOrganization.OneList

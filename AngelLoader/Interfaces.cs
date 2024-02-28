@@ -44,6 +44,7 @@ public interface IViewEnvironment
     IDialogs GetDialogs();
     ISplashScreen GetSplashScreen();
     IView GetView();
+    void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList);
     void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
     (bool Accepted, ConfigData OutConfig, bool AskForImport)
     ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
