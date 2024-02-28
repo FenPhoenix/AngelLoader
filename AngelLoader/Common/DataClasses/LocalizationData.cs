@@ -629,7 +629,6 @@ internal sealed class LText_Class
 
     internal sealed class ScreenshotsTab_Class
     {
-        // @ScreenshotDisplay: Finalize this text, improve it if necessary etc.
         internal readonly string TabText = "Screenshots";
         internal readonly string CopyScreenshotToolTip = "Click to copy";
         internal readonly string Gamma = "Gamma:";

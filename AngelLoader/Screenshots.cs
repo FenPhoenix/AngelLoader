@@ -11,7 +11,6 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
-// @ScreenshotDisplay: Cleanup test Trace.WriteLines etc.
 public sealed class ScreenshotWatcher(GameIndex _gameIndex)
 {
     private sealed class ScreenshotWatcherTimer(double interval) : System.Timers.Timer(interval)
@@ -116,13 +115,11 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
 
     private void Watcher_ChangedCreatedDeleted(object sender, FileSystemEventArgs e)
     {
-        //Trace.WriteLine(nameof(Watcher_ChangedCreatedDeleted) + ": " + e.ChangeType + "\r\n" + e.FullPath);
         _timer.ResetWith(e.FullPath, e.ChangeType);
     }
 
     private void Watcher_Renamed(object sender, RenamedEventArgs e)
     {
-        //Trace.WriteLine(nameof(Watcher_Renamed) + ": " + e.ChangeType + "\r\n" + e.OldFullPath);
         _timer.ResetWith(e.OldFullPath, e.ChangeType);
     }
 
@@ -159,13 +156,14 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
             /*
             @ScreenshotDisplay: If this is enabled, it's possible a non-matching change will override the matching one.
             Unlikely, but meh. But if we disable it, then any TDM FM will attempt refresh if anything in the
-            central screenshots dir gets modified, even if doesn't match our FM name. Also not a big deal. We
+            central screenshots dir gets modified, even if it doesn't match our FM name. Also not a big deal. We
             could fix both cases by keeping a list of filenames and then checking if our name exists in it, and
             refreshing then.
             */
-            //if (gameIndex != GameIndex.TDM || Screenshots.ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fullPath.GetFileNameFast()))
+#if false
+            if (gameIndex != GameIndex.TDM || ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fullPath.GetFileNameFast()))
+#endif
             {
-                //System.Diagnostics.Trace.WriteLine("---------------------------------------------- Refreshing");
                 Core.View.RefreshCurrentFMScreenshots();
             }
         }

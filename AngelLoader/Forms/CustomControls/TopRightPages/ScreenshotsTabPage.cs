@@ -1,6 +1,4 @@
-﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -120,7 +118,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
 
         Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
 
-        // @ScreenshotDisplay: Should we hide everything and just put a label "No screenshots"?
         if (ScreenshotFileNames.Count == 0)
         {
             CurrentScreenshotFileName = "";
@@ -134,7 +131,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             SetNumberLabelText("");
             _forceUpdateArmed = false;
         }
-        // @ScreenshotDisplay: Should we save the selected screenshot in the FM object?
         else
         {
             CurrentScreenshotFileName = ScreenshotFileNames[index > -1 ? index : ScreenshotFileNames.Count - 1];
