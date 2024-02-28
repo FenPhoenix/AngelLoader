@@ -1,5 +1,4 @@
 ﻿// @ScreenshotDisplay: Keep the place in the screenshot set on reload?
-// @ScreenshotDisplay: Have a gamma number/percent indicator, maybe reuse the "copied" label?
 
 using System;
 using System.Collections.Generic;
@@ -75,6 +74,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
+            _page.GammaTrackBar.MouseDown += GammaTrackBar_MouseDown;
             _page.GammaTrackBar.DoubleClickEndingOnMouseDown += GammaTrackBar_MouseDoubleClick;
 
             FinishConstruct();
@@ -268,6 +268,14 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         ret += 0.15f;
 
         return ret;
+    }
+
+    private void GammaTrackBar_MouseDown(object sender, MouseEventArgs e)
+    {
+        if ((ModifierKeys & Keys.Control) != 0 && e.Button == MouseButtons.Left)
+        {
+            ResetGammaSlider();
+        }
     }
 
     private void GammaTrackBar_MouseDoubleClick(object sender, MouseEventArgs e)
