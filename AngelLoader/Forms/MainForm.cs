@@ -1,4 +1,11 @@
-﻿/* NOTE: MainForm notes:
+﻿/*
+@DockUI general notes:
+ We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the readme is
+ fullscreened? Or should we hide the beside-readme area too?
+
+----------------------
+
+NOTE: MainForm notes:
 
 @LazyLoad: Controls that can be lazy-loaded in principle:
 -Game buttons and game tabs (one or the other will be invisible on startup)
