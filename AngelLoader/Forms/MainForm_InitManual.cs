@@ -618,7 +618,9 @@ public sealed partial class MainForm
         ReadmeRichTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         ReadmeRichTextBox.BackColor = SystemColors.Window;
         ReadmeRichTextBox.BorderStyle = BorderStyle.None;
+        ReadmeRichTextBox.Location = new Point(1, 1);
         ReadmeRichTextBox.ReadOnly = true;
+        ReadmeRichTextBox.Size = new Size(1668, 356);
         ReadmeRichTextBox.TabIndex = 0;
         ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
         // 
