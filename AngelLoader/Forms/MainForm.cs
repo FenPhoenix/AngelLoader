@@ -195,6 +195,8 @@ public sealed partial class MainForm : DarkFormBase,
     // Cache visible state because calling Visible redoes the work even if the value is the same
     private bool _readmeControlsOtherThanComboBoxVisible;
 
+    private readonly List<DarkTabControl.BackingTab> _topRightBackingTabs = new(TopRightTabCount);
+
     #endregion
 
     #region Non-public-release methods
@@ -636,6 +638,8 @@ public sealed partial class MainForm : DarkFormBase,
         // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
         InitComponentManual();
 #endif
+
+        TopRightTabControl.SetBackingList(_topRightBackingTabs);
 
         ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
