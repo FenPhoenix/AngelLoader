@@ -1,6 +1,6 @@
 ﻿/*
 @DockUI general notes:
- We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the readme is
+-We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the readme is
  fullscreened? Or should we hide the beside-readme area too?
 
 ----------------------
