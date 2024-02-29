@@ -189,6 +189,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
     internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
+    private readonly Lazy_LowerTabControl Lazy_LowerTabControl;
 
     #endregion
 
@@ -263,6 +264,16 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
+        /*
+        @DockUI: Adding a tab to a tab control appears to remove it from any other it was in.
+        Convenient! So we should just be able to add a way to set the backing collection with visibilities right
+        off the bat without also adding to the physical collection, and then we can handle both collections in
+        what way we need to or whatever.
+        */
+        LowerSplitContainer.Panel2Collapsed = false;
+        //TopRightTabControl.ShowTab(EditFMTabPage, false);
+        Lazy_LowerTabControl.TabControl.SetTabsFull(new TabPage[] { EditFMTabPage });
+        LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
@@ -587,7 +598,8 @@ public sealed partial class MainForm : DarkFormBase,
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
-            Lazy_UpdateNotification = new Lazy_UpdateNotification(this)
+            Lazy_UpdateNotification = new Lazy_UpdateNotification(this),
+            Lazy_LowerTabControl = new Lazy_LowerTabControl(this)
         };
 
         #endregion
