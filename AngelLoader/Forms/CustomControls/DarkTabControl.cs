@@ -19,7 +19,13 @@ update the backing list ourselves.
 public sealed class DarkTabControl : TabControl, IDarkable
 {
     #region Private fields
-
+    /*
+    @DockUI(Moving tab pages between controls)
+    To avoid having a duplicate set of tab pages, we should physically move the tab pages from one control to the
+    other. But this backing tabs list doesn't really support that. To allow it, we could make this list global
+    and make Visible into a three-state enum value for Visible Top, Visible Bottom, or Not Visible. That way, we
+    would minimize the amount of backing tab code we'd have to re-do.
+    */
     private sealed class BackingTab
     {
         internal TabPage TabPage;
