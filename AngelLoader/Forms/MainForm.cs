@@ -46,6 +46,7 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -264,17 +265,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
-        /*
-        @DockUI: Make this proper functionality, accessed by dragging or a menu "send up/down" option or whatnot
-        */
-        LowerSplitContainer.Panel2Collapsed = false;
-        Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
-        Lazy_LowerTabControl.TabControl.ShowTab(EditFMTabPage, true);
-        if (Lazy_LowerTabControl.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
-        {
-            lazyTab.ConstructWithSuspendResume();
-        }
-        LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
@@ -5439,6 +5429,106 @@ public sealed partial class MainForm : DarkFormBase,
         if (UIEnabled && !ViewBlocked && CanFocus)
         {
             ScreenshotsTabPage.RefreshScreenshots();
+        }
+    }
+
+    #region Tab dragging
+
+    // @DockUI: Working/testing code, finalize before release
+
+    private bool _inTabDragArea;
+
+    private void TopFMTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
+    {
+        DarkSplitContainerCustom lsp = LowerSplitContainer;
+
+        Point cp = Native.GetCursorPosition_Fast();
+
+        // @DockUI: Make light and dark mode colors
+        Color overlayColor = Color.FromArgb(
+            alpha: 64,
+            red: DarkColors.BlueSelection.R,
+            green: DarkColors.BlueSelection.G,
+            blue: DarkColors.BlueSelection.B);
+
+        if (lsp.Panel2Collapsed && lsp.ClientRectangle.Contains(lsp.PointToClient_Fast(cp)))
+        {
+            if (!_inTabDragArea)
+            {
+                _inTabDragArea = true;
+                Trace.WriteLine("Hit closed");
+                using var gc = new Native.GraphicsContext(lsp.Handle);
+                using var b = new SolidBrush(overlayColor);
+                gc.G.FillRectangle(
+                    b,
+                    new Rectangle(
+                        TopSplitContainer.SplitterDistance,
+                        0,
+                        lsp.ClientRectangle.Width - TopSplitContainer.SplitterDistance,
+                        lsp.ClientRectangle.Height)
+                );
+            }
+        }
+        else if (lsp.Panel2.ClientRectangle.Contains(lsp.Panel2.PointToClient_Fast(cp)))
+        {
+            if (!_inTabDragArea)
+            {
+                _inTabDragArea = true;
+                Trace.WriteLine("Hit open");
+                using var gc = new Native.GraphicsContext(lsp.Panel2.Handle);
+                using var b = new SolidBrush(overlayColor);
+                gc.G.FillRectangle(
+                    b,
+                    lsp.Panel2.ClientRectangle with { X = 0, Y = 0 }
+                );
+            }
+        }
+        else
+        {
+            if (_inTabDragArea)
+            {
+                _inTabDragArea = false;
+                Trace.WriteLine("Miss");
+                lsp.Refresh();
+            }
+        }
+    }
+
+    #endregion
+
+    private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
+    {
+        if (!_inTabDragArea) return;
+
+        try
+        {
+            EverythingPanel.SuspendDrawing();
+
+            TabPage? dragTab = TopFMTabControl.DragTab;
+            if (dragTab == null) return;
+
+            if (!Lazy_LowerTabControl.Constructed)
+            {
+                LowerSplitContainer.Panel2Collapsed = false;
+                LowerSplitContainer.SplitterDistance = TopSplitContainer.SplitterDistance;
+
+                Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
+                LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
+
+                if (Lazy_LowerTabControl.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
+                {
+                    lazyTab.ConstructWithSuspendResume();
+                }
+            }
+            TopFMTabControl.ShowTab(dragTab, false);
+            Lazy_LowerTabControl.TabControl.ShowTab(dragTab, true);
+
+            Lazy_LowerTabControl.TabControl.SelectedTab = dragTab;
+        }
+        finally
+        {
+            _inTabDragArea = false;
+            EverythingPanel.ResumeDrawing();
         }
     }
 }

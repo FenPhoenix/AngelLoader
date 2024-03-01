@@ -558,6 +558,8 @@ public sealed partial class MainForm
         TopFMTabControl.EnableScrollButtonsRefreshHack = true;
         TopFMTabControl.Size = new Size(535, 310);
         TopFMTabControl.TabIndex = 15;
+        TopFMTabControl.MouseMoveCustom += TopFMTabControl_MouseMoveCustom;
+        TopFMTabControl.MouseUp += TopFMTabControl_MouseUp;
         // 
         // LowerSplitContainer
         // 

@@ -912,6 +912,8 @@ sealed partial class MainForm
         this.TopFMTabControl.SelectedIndex = 0;
         this.TopFMTabControl.Size = new System.Drawing.Size(535, 310);
         this.TopFMTabControl.TabIndex = 15;
+        this.TopFMTabControl.MouseMoveCustom += new System.Windows.Forms.MouseEventHandler(this.TopFMTabControl_MouseMoveCustom);
+        this.TopFMTabControl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopFMTabControl_MouseUp);
         // 
         // StatisticsTabPage
         // 

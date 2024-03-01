@@ -40,7 +40,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
         internal BackingTab(TabPage tabPage) => TabPage = tabPage;
     }
 
-    private TabPage? _dragTab;
+    internal TabPage? DragTab { get; private set; }
 
     private List<BackingTab> _backingTabList = new(0);
 
@@ -89,6 +89,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
     }
 
+    public event MouseEventHandler? MouseMoveCustom;
+
     [PublicAPI]
     [DefaultValue(false)]
     public bool AllowReordering { get; set; }
@@ -126,10 +128,6 @@ public sealed class DarkTabControl : TabControl, IDarkable
             if (indexVisibleOnly && backingTab.Visible) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
-
-#if DEBUG
-        if (DesignMode) return (-1, null!);
-#endif
 
         // We should never get here! (unless we're in infernal-forsaken design mode...!)
         throw new InvalidOperationException("Can't find backing tab?!");
@@ -308,7 +306,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return;
         }
 
-        if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
+        if (e.Button == MouseButtons.Left) (_, DragTab) = GetTabAtPoint(e.Location);
         base.OnMouseDown(e);
     }
 
@@ -320,9 +318,11 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return;
         }
 
-        // Fix: Ensure we don't start dragging a tab again after we've released the button.
-        _dragTab = null;
+        // Do this first so DragTab is still valid when we handle drag-and-drop between tab controls
         base.OnMouseUp(e);
+
+        // Fix: Ensure we don't start dragging a tab again after we've released the button.
+        DragTab = null;
     }
 
     protected override void OnMouseMove(MouseEventArgs e)
@@ -334,17 +334,18 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
 
         // Run the base event handler if we're not actually dragging a tab
-        if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1)
+        if (e.Button != MouseButtons.Left || DragTab == null || TabCount <= 1)
         {
             base.OnMouseMove(e);
             return;
         }
 
-        // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
-        // weird happens
+        // If we are dragging a tab, don't run the normal handler, because we want to be "modal" and block s
+        // nothing weird happens
+        MouseMoveCustom?.Invoke(this, e);
 
-        int dragTabIndex = TabPages.IndexOf(_dragTab);
-        var (bDragTabIndex, _) = FindBackingTab(_backingTabList, _dragTab);
+        int dragTabIndex = TabPages.IndexOf(DragTab);
+        var (bDragTabIndex, _) = FindBackingTab(_backingTabList, DragTab);
 
         Rectangle dragTabRect = GetTabRect(dragTabIndex);
 
@@ -361,16 +362,16 @@ public sealed class DarkTabControl : TabControl, IDarkable
         // If the user has moved the mouse off of the tab bar vertically, still stay in the move. This prevents
         // a mis-ordering bug if the user drags a tab off the bar then back onto the bar at a different position.
         var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location, xOnly: true);
-        if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
+        if (bNewTabIndex == -1 || newTab == null || newTab == DragTab) return;
 
         int newTabIndex = TabPages.IndexOf(newTab);
         TabPages[dragTabIndex] = newTab;
-        TabPages[newTabIndex] = _dragTab;
+        TabPages[newTabIndex] = DragTab;
 
         _backingTabList[bDragTabIndex].TabPage = newTab;
-        _backingTabList[bNewTabIndex].TabPage = _dragTab;
+        _backingTabList[bNewTabIndex].TabPage = DragTab;
 
-        SelectedTab = _dragTab;
+        SelectedTab = DragTab;
 
         // Otherwise the first control within the tab page gets selected
         SelectedTab.Focus();
