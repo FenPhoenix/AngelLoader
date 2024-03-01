@@ -334,8 +334,15 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
 
         // Run the base event handler if we're not actually dragging a tab
-        if (e.Button != MouseButtons.Left || DragTab == null || TabCount <= 1)
+        if (e.Button != MouseButtons.Left || DragTab == null)
         {
+            base.OnMouseMove(e);
+            return;
+        }
+
+        if (TabCount <= 1)
+        {
+            MouseMoveCustom?.Invoke(this, e);
             base.OnMouseMove(e);
             return;
         }
