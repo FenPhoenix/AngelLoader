@@ -457,7 +457,12 @@ public sealed class DarkTabControl : TabControl, IDarkable
         else
         {
             bt.Visible = false;
-            if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
+            if (TabPages.Contains(bt.TabPage))
+            {
+                TabPages.Remove(bt.TabPage);
+                // Otherwise the first control within the tab page gets selected
+                if (TabCount > 0) TabPages[0].Focus();
+            }
         }
     }
 
