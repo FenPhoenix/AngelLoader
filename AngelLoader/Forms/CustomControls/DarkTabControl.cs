@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -99,7 +100,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public Control[] BackingTabPages
+    public Control[] BackingTabPagesAsControls
     {
         get
         {
@@ -111,6 +112,10 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return ret;
         }
     }
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    internal ReadOnlyCollection<BackingTab> BackingTabPages => _backingTabList.AsReadOnly();
 
     // Double-buffering prevents flickering when mouse is moved over in dark mode
     public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);

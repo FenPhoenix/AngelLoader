@@ -271,8 +271,8 @@ public sealed partial class MainForm : DarkFormBase,
         what way we need to or whatever.
         */
         LowerSplitContainer.Panel2Collapsed = false;
-        //TopRightTabControl.ShowTab(EditFMTabPage, false);
-        Lazy_LowerTabControl.TabControl.SetTabsFull(new TabPage[] { EditFMTabPage });
+        Lazy_LowerTabControl.TabControl.SetBackingList(_topRightBackingTabs);
+        Lazy_LowerTabControl.TabControl.ShowTab(EditFMTabPage, true);
         LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
@@ -3287,7 +3287,15 @@ public sealed partial class MainForm : DarkFormBase,
             return;
         }
 
+        // @DockUI: Partially works, finish this logic - need another menu for lower one that will show/hide on its side
         TopRightTabControl.ShowTab(tab, s.Checked);
+        if (!s.Checked)
+        {
+            if (Lazy_LowerTabControl.Constructed)
+            {
+                Lazy_LowerTabControl.TabControl.ShowTab(tab, false);
+            }
+        }
     }
 
     private void SetTopRightBlockerVisible()

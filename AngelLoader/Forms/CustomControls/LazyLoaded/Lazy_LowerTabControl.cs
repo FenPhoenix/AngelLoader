@@ -5,7 +5,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
 internal sealed class Lazy_LowerTabControl : IDarkable
 {
-    private bool _constructed;
+    internal bool Constructed { get; private set; }
 
     private readonly MainForm _owner;
 
@@ -27,7 +27,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         {
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
-            if (!_constructed) return;
+            if (!Constructed) return;
 
             TabControl.DarkModeEnabled = value;
         }
@@ -37,7 +37,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     private void Construct()
     {
-        if (_constructed) return;
+        if (Constructed) return;
 
         var container = _owner.LowerSplitContainer.Panel2;
 
@@ -55,6 +55,6 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _ = _tabControl.Handle;
         _tabControl.DarkModeEnabled = _darkModeEnabled;
 
-        _constructed = true;
+        Constructed = true;
     }
 }

@@ -726,7 +726,7 @@ internal static class ControlUtils
         */
         if (control is DarkTabControl dtc)
         {
-            Control[] backingPages = dtc.BackingTabPages;
+            Control[] backingPages = dtc.BackingTabPagesAsControls;
             int count = backingPages.Length;
             for (int i = 0; i < count; i++)
             {
