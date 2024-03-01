@@ -1194,11 +1194,12 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_firstShowDone)
         {
+            // @DockUI: We need to handle the bottom tab control / collapsed state here too
             if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
             {
                 lazyTab.Construct();
             }
-            TopFMTabControl.Selected += TopRightTabControl_Selected;
+            TopFMTabControl.Selected += FMTabControl_Selected;
 
             _firstShowDone = true;
         }
@@ -3234,7 +3235,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Top-right area
 
-    private static void TopRightTabControl_Selected(object sender, TabControlEventArgs e)
+    internal void FMTabControl_Selected(object sender, TabControlEventArgs e)
     {
         if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
         {
@@ -3248,6 +3249,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetTopRightCollapsedState(TopSplitContainer.FullScreen);
     }
 
+    // @DockUI: We need to handle the bottom tab control / collapsed state here too
     private void SetTopRightCollapsedState(bool collapsed)
     {
         if (collapsed)

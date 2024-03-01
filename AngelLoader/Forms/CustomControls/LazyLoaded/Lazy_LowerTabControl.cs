@@ -58,6 +58,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
         _owner.LowerSplitContainer.Panel2.MouseClick += _owner.LowerFMTabsBar_MouseClick;
 
+        _tabControl.Selected += _owner.FMTabControl_Selected;
+
         Constructed = true;
     }
 }
