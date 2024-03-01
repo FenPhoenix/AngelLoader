@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+@DockUI: Figure out how we want to allow moving of the new cross-section which can now be 4-way (3 splitters)
+*/
+
+using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
