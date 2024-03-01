@@ -184,7 +184,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly MainLLMenu MainLLMenu;
     private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
     private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
-    private readonly TopRightLLMenu TopRightLLMenu;
+    private readonly Lazy_FMTabsMenu Lazy_FMTabsMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
@@ -532,7 +532,7 @@ public sealed partial class MainForm : DarkFormBase,
                     FMsDGV_FM_LLMenu.Visible ? HelpSections.FMContextMenu :
                     FMsDGV_ColumnHeaderLLMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
                     AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
-                    TopRightMenuButton.Focused || TopRightLLMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
+                    TopRightMenuButton.Focused || Lazy_FMTabsMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
                     AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
                     AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
                     // Add tag dropdown is in EverythingPanel, not tags tab page
@@ -594,7 +594,7 @@ public sealed partial class MainForm : DarkFormBase,
             MainLLMenu = new MainLLMenu(this),
             PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this),
             PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
-            TopRightLLMenu = new TopRightLLMenu(this),
+            Lazy_FMTabsMenu = new Lazy_FMTabsMenu(this),
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
@@ -921,7 +921,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 TopRightTabControl.ShowTab(_topRightTabs[i], false);
             }
-            TopRightLLMenu.SetItemChecked(i, visible);
+            Lazy_FMTabsMenu.SetItemChecked(i, visible);
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
@@ -1846,7 +1846,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount(), forceRefresh: true);
 
-            TopRightLLMenu.Localize();
+            Lazy_FMTabsMenu.Localize();
 
             StatisticsTabPage.Text = LText.StatisticsTab.TabText;
             EditFMTabPage.Text = LText.EditFMTab.TabText;
@@ -3273,20 +3273,20 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopRightMenuButton_Click(object sender, EventArgs e)
     {
-        TopRightLLMenu.Menu.Data = WhichTabControl.Top;
-        ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
+        Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Top;
+        ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
     internal void TopRightMenu_Opening(object sender, CancelEventArgs e)
     {
-        DarkTabControl tabControl = TopRightLLMenu.Menu.Data is WhichTabControl.Bottom
+        DarkTabControl tabControl = Lazy_FMTabsMenu.Menu.Data is WhichTabControl.Bottom
             ? Lazy_LowerTabControl.TabControl
             : TopRightTabControl;
 
         for (int i = 0; i < _topRightTabs.Length; i++)
         {
             Lazy_TabsBase item = _topRightTabs[i];
-            TopRightLLMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
+            Lazy_FMTabsMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
         }
     }
 
@@ -3294,7 +3294,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         var s = (ToolStripMenuItemCustom)sender;
 
-        TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabCount);
+        TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _topRightTabs, TopRightTabCount);
 
         // @DockUI: It's possible to have zero tabs in one or the other tab controls now
         // This is ultimately what we want, but we need to add proper support for this scenario, because we
@@ -5382,8 +5382,8 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (rect.Contains(tabControl.ClientCursorPos()))
         {
-            TopRightLLMenu.Menu.Data = which;
-            TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
+            Lazy_FMTabsMenu.Menu.Data = which;
+            Lazy_FMTabsMenu.Menu.Show(Native.GetCursorPosition_Fast());
         }
     }
 

@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class TopRightLLMenu : IDarkable
+internal sealed class Lazy_FMTabsMenu : IDarkable
 {
     private bool _constructed;
     private readonly bool[] _checkedStates = InitializedArray(TopRightTabCount, true);
@@ -104,7 +104,7 @@ internal sealed class TopRightLLMenu : IDarkable
         }
     }
 
-    internal TopRightLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_FMTabsMenu(MainForm owner) => _owner = owner;
 
     internal void SetItemChecked(int index, bool value)
     {
