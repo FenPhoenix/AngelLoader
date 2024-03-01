@@ -643,6 +643,7 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 
         TopFMTabControl.SetBackingList(_backingFMTabs);
+        TopFMTabControl.SetIsTop(true);
 
         ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
@@ -906,13 +907,18 @@ public sealed partial class MainForm : DarkFormBase,
 
         for (int i = 0; i < FMTabCount; i++)
         {
-            bool visible = Config.FMTabsData.Tabs[i].Visible;
+            FMTabVisibleIn visible = Config.FMTabsData.Tabs[i].Visible;
             // They're visible by default - shave off a bit of time
-            if (!visible)
+            if (visible != FMTabVisibleIn.Top)
             {
                 TopFMTabControl.ShowTab(_fmTabs[i], false);
             }
-            Lazy_FMTabsMenu.SetItemChecked(i, visible);
+            if (visible == FMTabVisibleIn.Bottom)
+            {
+                ConstructLazyLowerTabControl();
+                Lazy_LowerTabControl.TabControl.ShowTab(_fmTabs[i], true);
+            }
+            Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
@@ -933,8 +939,6 @@ public sealed partial class MainForm : DarkFormBase,
         MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, setIfFullScreen: true, suspendResume: false);
         TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, setIfFullScreen: false, suspendResume: false);
         LowerSplitContainer.SetSplitterPercent(Config.LowerSplitterPercent, setIfFullScreen: false, suspendResume: false);
-        // @DockUI: We need to save/restore which tab control each tab is in (or none for invisible in both)
-        LowerSplitContainer.Panel2Collapsed = true;
 
         MainSplitContainer.SetSibling(TopSplitContainer);
         MainSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
@@ -5039,7 +5043,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             Lazy_TabsBase fmTab = _fmTabs[i];
             fmTabs.Tabs[i].DisplayIndex = DarkTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
-            fmTabs.Tabs[i].Visible = _backingFMTabs.Any(x => x.TabPage == fmTab && x.Visible);
+            fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.Visible ?? FMTabVisibleIn.Top;
         }
 
         #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
@@ -5516,18 +5520,7 @@ public sealed partial class MainForm : DarkFormBase,
             TabPage? dragTab = TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
-            LowerSplitContainer.Panel2Collapsed = false;
-
-            if (!Lazy_LowerTabControl.Constructed)
-            {
-                Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
-                LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
-
-                if (Lazy_LowerTabControl.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
-                {
-                    lazyTab.ConstructWithSuspendResume();
-                }
-            }
+            ConstructLazyLowerTabControl();
             TopFMTabControl.ShowTab(dragTab, false);
             Lazy_LowerTabControl.TabControl.ShowTab(dragTab, true);
             if (TopFMTabControl.TabCount == 0)
@@ -5541,6 +5534,16 @@ public sealed partial class MainForm : DarkFormBase,
         {
             _inTabDragArea = false;
             EverythingPanel.ResumeDrawing();
+        }
+    }
+
+    private void ConstructLazyLowerTabControl()
+    {
+        if (!Lazy_LowerTabControl.Constructed)
+        {
+            LowerSplitContainer.Panel2Collapsed = false;
+            Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
+            LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
         }
     }
 

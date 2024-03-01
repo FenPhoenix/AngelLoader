@@ -714,6 +714,26 @@ internal static partial class Ini
         }
     }
 
+    private static void SetFMTabVisibility(ConfigData config, FMTab fmTab, string valTrimmed)
+    {
+        // Backward compatibility - match old behavior exactly
+        if (valTrimmed.EqualsTrue())
+        {
+            config.FMTabsData.GetTab(fmTab).Visible = FMTabVisibleIn.Top;
+        }
+        else if (valTrimmed.EqualsFalse())
+        {
+            config.FMTabsData.GetTab(fmTab).Visible = FMTabVisibleIn.None;
+        }
+        else
+        {
+            FieldInfo? field = typeof(FMTabVisibleIn).GetField(valTrimmed, _bFlagsEnum);
+            config.FMTabsData.GetTab(fmTab).Visible = field != null
+                ? (FMTabVisibleIn)field.GetValue(null)
+                : FMTabVisibleIn.None;
+        }
+    }
+
     private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
@@ -721,7 +741,7 @@ internal static partial class Ini
     }
     private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Statistics).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Statistics, valTrimmed);
     }
 
     private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -731,7 +751,7 @@ internal static partial class Ini
     }
     private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.EditFM).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.EditFM, valTrimmed);
     }
 
     private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -741,7 +761,7 @@ internal static partial class Ini
     }
     private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Comment).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Comment, valTrimmed);
     }
 
     private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -751,7 +771,7 @@ internal static partial class Ini
     }
     private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Tags).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Tags, valTrimmed);
     }
 
     private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -761,7 +781,7 @@ internal static partial class Ini
     }
     private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Patch).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Patch, valTrimmed);
     }
 
     private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -771,7 +791,7 @@ internal static partial class Ini
     }
     private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Mods).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Mods, valTrimmed);
     }
 
     private static void Config_ScreenshotsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -781,7 +801,7 @@ internal static partial class Ini
     }
     private static void Config_ScreenshotsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.FMTabsData.GetTab(FMTab.Screenshots).Visible = valTrimmed.EqualsTrue();
+        SetFMTabVisibility(config, FMTab.Screenshots, valTrimmed);
     }
 
     #endregion

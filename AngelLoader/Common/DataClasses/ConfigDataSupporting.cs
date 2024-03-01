@@ -110,12 +110,19 @@ internal enum FMTab
     Screenshots
 }
 
+public enum FMTabVisibleIn
+{
+    None,
+    Top,
+    Bottom
+}
+
 internal sealed class FMTabData
 {
     private int _displayIndex;
     internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, FMTabCount - 1); }
 
-    internal bool Visible = true;
+    internal FMTabVisibleIn Visible = FMTabVisibleIn.Top;
 }
 
 internal sealed class FMTabsData
@@ -129,6 +136,7 @@ internal sealed class FMTabsData
 
     internal FMTabData GetTab(FMTab tab) => Tabs[(int)tab];
 
+    // @DockUI: Test to make sure this works in all cases with the new tab code!
     internal void EnsureValidity()
     {
         #region Fallback if multiple tabs have the same display index
@@ -145,25 +153,25 @@ internal sealed class FMTabsData
 
         #endregion
 
-        if (NoneVisible()) SetAllVisible(true);
+        if (NoneVisible()) SetAllVisible(FMTabVisibleIn.Top);
 
         // Fallback if selected tab is not marked as visible
-        if (!GetTab(SelectedTab).Visible)
+        if (GetTab(SelectedTab).Visible == FMTabVisibleIn.None)
         {
             for (int i = 0; i < FMTabCount; i++)
             {
-                if (Tabs[i].Visible)
+                if (Tabs[i].Visible == FMTabVisibleIn.Top)
                 {
                     SelectedTab = (FMTab)i;
                     break;
                 }
             }
         }
-        if (!GetTab(SelectedTab2).Visible)
+        if (GetTab(SelectedTab2).Visible == FMTabVisibleIn.None)
         {
             for (int i = 0; i < FMTabCount; i++)
             {
-                if (Tabs[i].Visible)
+                if (Tabs[i].Visible == FMTabVisibleIn.Bottom)
                 {
                     SelectedTab2 = (FMTab)i;
                     break;
@@ -174,11 +182,11 @@ internal sealed class FMTabsData
 
     private bool NoneVisible()
     {
-        for (int i = 0; i < FMTabCount; i++) if (Tabs[i].Visible) return false;
+        for (int i = 0; i < FMTabCount; i++) if (Tabs[i].Visible != FMTabVisibleIn.None) return false;
         return true;
     }
 
-    private void SetAllVisible(bool visible)
+    private void SetAllVisible(FMTabVisibleIn visible)
     {
         for (int i = 0; i < FMTabCount; i++) Tabs[i].Visible = visible;
     }

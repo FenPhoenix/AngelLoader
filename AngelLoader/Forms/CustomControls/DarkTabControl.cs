@@ -36,7 +36,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     internal sealed class BackingTab
     {
         internal TabPage TabPage;
-        internal bool Visible = true;
+        internal FMTabVisibleIn Visible = FMTabVisibleIn.Top;
         internal BackingTab(TabPage tabPage) => TabPage = tabPage;
     }
 
@@ -50,6 +50,9 @@ public sealed class DarkTabControl : TabControl, IDarkable
     /// </summary>
     /// <param name="list"></param>
     internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
+
+    private bool _isTop;
+    internal void SetIsTop(bool value) => _isTop = value;
 
     #endregion
 
@@ -125,7 +128,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
         for (int i = 0, vi = 0; i < backingTabs.Count; i++)
         {
             BackingTab backingTab = backingTabs[i];
-            if (indexVisibleOnly && backingTab.Visible) vi++;
+            // @DockUI: Could we make this our specific top/bottom value and get better ordering between moves?
+            if (indexVisibleOnly && backingTab.Visible != FMTabVisibleIn.None) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
 
@@ -454,12 +458,12 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
         if (show)
         {
-            bt.Visible = true;
+            bt.Visible = _isTop ? FMTabVisibleIn.Top : FMTabVisibleIn.Bottom;
             if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
         }
         else
         {
-            bt.Visible = false;
+            bt.Visible = FMTabVisibleIn.None;
             if (TabPages.Contains(bt.TabPage))
             {
                 TabPages.Remove(bt.TabPage);

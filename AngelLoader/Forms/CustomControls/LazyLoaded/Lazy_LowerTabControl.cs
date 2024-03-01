@@ -61,7 +61,16 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _tabControl.Selected += _owner.FMTabControl_Selected;
         _tabControl.MouseMoveCustom += _owner.Lazy_LowerTabControl_MouseMoveCustom;
         _tabControl.MouseUp += _owner.Lazy_LowerTabControl_MouseUp;
+        _tabControl.VisibleChanged += TabControl_VisibleChanged;
 
         Constructed = true;
+    }
+
+    private void TabControl_VisibleChanged(object sender, System.EventArgs e)
+    {
+        if (_tabControl is { Visible: true, SelectedTab: Lazy_TabsBase lazyTab })
+        {
+            lazyTab.ConstructWithSuspendResume();
+        }
     }
 }
