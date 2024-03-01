@@ -995,6 +995,10 @@ sealed partial class MainForm
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeResetZoomButton);
         this.LowerSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
         this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
+        // 
+        // LowerSplitContainer.Panel2
+        // 
+        this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
         this.LowerSplitContainer.Panel2Collapsed = true;
         this.LowerSplitContainer.Size = new System.Drawing.Size(1671, 357);
         this.LowerSplitContainer.SplitterDistance = 1613;
