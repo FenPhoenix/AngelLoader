@@ -46,6 +46,7 @@ internal sealed class TopRightLLMenu : IDarkable
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
 
+                _menu.Opening += _owner.TopRightMenu_Opening;
                 _menu.Closed += MenuClosed;
 
                 _constructed = true;

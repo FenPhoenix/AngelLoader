@@ -3277,22 +3277,37 @@ public sealed partial class MainForm : DarkFormBase,
         ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
+    internal void TopRightMenu_Opening(object sender, CancelEventArgs e)
+    {
+        DarkTabControl tabControl = TopRightLLMenu.Menu.Data is WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopRightTabControl;
+
+        for (int i = 0; i < _topRightTabs.Length; i++)
+        {
+            Lazy_TabsBase item = _topRightTabs[i];
+            TopRightLLMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
+        }
+    }
+
     internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
     {
         var s = (ToolStripMenuItemCustom)sender;
 
         TabPage tab = GetObjectFromMenuItem(TopRightLLMenu.Menu, s, _topRightTabs, TopRightTabCount);
 
-        if (!s.Checked && TopRightTabControl.TabCount == 1)
+        // @DockUI: It's possible to have zero tabs in one or the other tab controls now
+        // This is ultimately what we want, but we need to add proper support for this scenario, because we
+        // currently assume it can't happen (because it couldn't before).
+        DarkTabControl tabControl = s.Owner is DarkContextMenu { Data: WhichTabControl.Bottom }
+            ? Lazy_LowerTabControl.TabControl
+            : TopRightTabControl;
+
+        if (!s.Checked && tabControl.TabCount == 1)
         {
             s.Checked = true;
             return;
         }
-
-        // @DockUI: We should have menu items' checked states match the tab control you clicked on
-        DarkTabControl tabControl = s.Owner is DarkContextMenu { Data: WhichTabControl.Bottom }
-            ? Lazy_LowerTabControl.TabControl
-            : TopRightTabControl;
 
         tabControl.ShowTab(tab, s.Checked);
     }
