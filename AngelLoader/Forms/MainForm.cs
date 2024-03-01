@@ -2161,7 +2161,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(GameFilterControlsLLMenu.Menu,
+        ControlUtils.ShowMenu(
+            GameFilterControlsLLMenu.Menu,
             GameFilterControlsShowHideButtonToolStrip,
             MenuPos.RightDown,
             -GameFilterControlsShowHideButton.Width,
@@ -3272,6 +3273,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopRightMenuButton_Click(object sender, EventArgs e)
     {
+        TopRightLLMenu.Menu.Data = WhichTabControl.Top;
         ControlUtils.ShowMenu(TopRightLLMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
@@ -3287,15 +3289,12 @@ public sealed partial class MainForm : DarkFormBase,
             return;
         }
 
-        // @DockUI: Partially works, finish this logic - need another menu for lower one that will show/hide on its side
-        TopRightTabControl.ShowTab(tab, s.Checked);
-        if (!s.Checked)
-        {
-            if (Lazy_LowerTabControl.Constructed)
-            {
-                Lazy_LowerTabControl.TabControl.ShowTab(tab, false);
-            }
-        }
+        // @DockUI: We should have menu items' checked states match the tab control you clicked on
+        DarkTabControl tabControl = s.Owner is DarkContextMenu { Data: WhichTabControl.Bottom }
+            ? Lazy_LowerTabControl.TabControl
+            : TopRightTabControl;
+
+        tabControl.ShowTab(tab, s.Checked);
     }
 
     private void SetTopRightBlockerVisible()
@@ -5348,14 +5347,28 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)
+    private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
+
+    internal void LowerTabBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
+
+    private void HandleTabsMenu(MouseEventArgs e, WhichTabControl which)
     {
-        if (e.Button == MouseButtons.Right)
+        if (e.Button != MouseButtons.Right) return;
+
+        DarkTabControl tabControl = which == WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopRightTabControl;
+
+        Rectangle rect = tabControl.GetTabBarRect();
+        if (rect == Rectangle.Empty)
         {
-            if (TopRightTabControl.GetTabBarRect().Contains(TopRightTabControl.ClientCursorPos()))
-            {
-                TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
-            }
+            rect = tabControl.ClientRectangle;
+        }
+
+        if (rect.Contains(tabControl.ClientCursorPos()))
+        {
+            TopRightLLMenu.Menu.Data = which;
+            TopRightLLMenu.Menu.Show(Native.GetCursorPosition_Fast());
         }
     }
 

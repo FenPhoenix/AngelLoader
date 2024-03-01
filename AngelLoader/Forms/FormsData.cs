@@ -21,6 +21,12 @@ public enum Direction { Left, Right, Up, Down }
 // IMPORTANT: Don't change the order, they're used as indices!
 public enum Zoom { In, Out, Reset }
 
+public enum WhichTabControl
+{
+    Top,
+    Bottom
+}
+
 /*
 Images loaded from files keep the file stream alive for their entire lifetime, insanely. This means the file
 is "in use" and will cause delete attempts (like FM uninstallation) to fail. So we need to use this workaround

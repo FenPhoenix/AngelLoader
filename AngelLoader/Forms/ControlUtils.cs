@@ -629,7 +629,7 @@ internal static class ControlUtils
     #region Show menu
 
     internal static void ShowMenu(
-        ContextMenuStrip menu,
+        DarkContextMenu menu,
         Control control,
         MenuPos pos,
         int xOffset = 0,
