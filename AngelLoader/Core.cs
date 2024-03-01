@@ -2646,6 +2646,7 @@ internal static class Core
         #region Top-right panel
 
         Config.FMTabsData.SelectedTab = fmTabsData.SelectedTab;
+        Config.FMTabsData.SelectedTab2 = fmTabsData.SelectedTab2;
 
         for (int i = 0; i < FMTabCount; i++)
         {

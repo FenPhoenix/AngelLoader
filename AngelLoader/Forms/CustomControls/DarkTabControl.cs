@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -113,21 +112,17 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
     }
 
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    internal ReadOnlyCollection<BackingTab> BackingTabPages => _backingTabList.AsReadOnly();
-
     // Double-buffering prevents flickering when mouse is moved over in dark mode
     public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
     #region Private methods
 
-    private (int Index, BackingTab BackingTab)
-    FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
+    internal static (int Index, BackingTab BackingTab)
+    FindBackingTab(List<BackingTab> backingTabs, TabPage tabPage, bool indexVisibleOnly = false)
     {
-        for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
+        for (int i = 0, vi = 0; i < backingTabs.Count; i++)
         {
-            BackingTab backingTab = _backingTabList[i];
+            BackingTab backingTab = backingTabs[i];
             if (indexVisibleOnly && backingTab.Visible) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
@@ -155,7 +150,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
             if (contains)
             {
                 TabPage tabPage = TabPages[i];
-                var (index, backingTab) = FindBackingTab(tabPage);
+                var (index, backingTab) = FindBackingTab(_backingTabList, tabPage);
 
                 return index == -1 || backingTab == null! ? (-1, null) : (index, tabPage);
             }
@@ -349,7 +344,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
         // weird happens
 
         int dragTabIndex = TabPages.IndexOf(_dragTab);
-        var (bDragTabIndex, _) = FindBackingTab(_dragTab);
+        var (bDragTabIndex, _) = FindBackingTab(_backingTabList, _dragTab);
 
         Rectangle dragTabRect = GetTabRect(dragTabIndex);
 
@@ -446,7 +441,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     [PublicAPI]
     public void ShowTab(TabPage tabPage, bool show)
     {
-        var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
+        var (index, bt) = FindBackingTab(_backingTabList, tabPage, indexVisibleOnly: true);
         if (index < 0 || bt == null!) return;
 
         if (show)
@@ -465,14 +460,6 @@ public sealed class DarkTabControl : TabControl, IDarkable
             }
         }
     }
-
-    /// <summary>
-    /// Returns the display index of the specified <see cref="TabPage"/>.
-    /// </summary>
-    /// <param name="tabPage"></param>
-    /// <returns></returns>
-    [PublicAPI]
-    public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
 
     public Rectangle GetTabBarRect() =>
         TabCount == 0

@@ -694,6 +694,15 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_FMTab2_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(FMTab).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.FMTabsData.SelectedTab2 = (FMTab)field.GetValue(null);
+        }
+    }
+
     private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
@@ -978,6 +987,7 @@ internal static partial class Ini
         #region Top-right tabs
 
         { "TopRightTab", new Config_DelegatePointerWrapper(&Config_FMTab_Set) },
+        { "TopRightTab2", new Config_DelegatePointerWrapper(&Config_FMTab2_Set) },
 
         { "StatsTabPosition", new Config_DelegatePointerWrapper(&Config_StatsTabPosition_Set) },
         { "StatsTabVisible", new Config_DelegatePointerWrapper(&Config_StatsTabVisible_Set) },
@@ -1379,6 +1389,7 @@ internal static partial class Ini
 
         sw.Append("GameTab").Append('=').Append(config.GameTab).AppendLine();
         sw.Append("TopRightTab").Append('=').Append(config.FMTabsData.SelectedTab).AppendLine();
+        sw.Append("TopRightTab2").Append('=').Append(config.FMTabsData.SelectedTab2).AppendLine();
 
         sw.Append("StatsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex).AppendLine();
         sw.Append("EditFMTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex).AppendLine();

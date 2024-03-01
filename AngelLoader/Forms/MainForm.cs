@@ -926,6 +926,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
+        // @DockUI: Set selected tab on bottom (if constructed and has at least one tab)
         for (int i = 0; i < FMTabCount; i++)
         {
             if ((int)Config.FMTabsData.SelectedTab == i)
@@ -5024,15 +5025,27 @@ public sealed partial class MainForm : DarkFormBase,
 
         SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
 
-        var fmTabs = new FMTabsData
+        FMTabsData fmTabs = new();
+
+        int selectedTabIndex = -1;
+        if (TopFMTabControl.TabCount > 0)
         {
-            SelectedTab = (FMTab)Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab)
-        };
+            selectedTabIndex = Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab);
+        }
+        fmTabs.SelectedTab = selectedTabIndex > -1 ? (FMTab)selectedTabIndex : Config.FMTabsData.SelectedTab;
+
+        int selectedTab2Index = -1;
+        if (Lazy_LowerTabControl is { Constructed: true, TabControl.TabCount: > 0 })
+        {
+            selectedTab2Index = Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.TabControl.SelectedTab);
+        }
+        fmTabs.SelectedTab2 = selectedTab2Index > -1 ? (FMTab)selectedTab2Index : Config.FMTabsData.SelectedTab2;
 
         for (int i = 0; i < FMTabCount; i++)
         {
-            fmTabs.Tabs[i].DisplayIndex = TopFMTabControl.GetTabDisplayIndex(_fmTabs[i]);
-            fmTabs.Tabs[i].Visible = TopFMTabControl.Contains(_fmTabs[i]);
+            Lazy_TabsBase fmTab = _fmTabs[i];
+            fmTabs.Tabs[i].DisplayIndex = DarkTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
+            fmTabs.Tabs[i].Visible = _backingFMTabs.Any(x => x.TabPage == fmTab && x.Visible);
         }
 
         #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized

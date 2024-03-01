@@ -123,6 +123,7 @@ internal sealed class FMTabsData
     internal readonly FMTabData[] Tabs = InitializedArray<FMTabData>(FMTabCount);
 
     internal FMTab SelectedTab = FMTab.Statistics;
+    internal FMTab SelectedTab2 = FMTab.Statistics;
 
     internal FMTabsData() => ResetAllDisplayIndexes();
 
@@ -154,6 +155,17 @@ internal sealed class FMTabsData
                 if (Tabs[i].Visible)
                 {
                     SelectedTab = (FMTab)i;
+                    break;
+                }
+            }
+        }
+        if (!GetTab(SelectedTab2).Visible)
+        {
+            for (int i = 0; i < FMTabCount; i++)
+            {
+                if (Tabs[i].Visible)
+                {
+                    SelectedTab2 = (FMTab)i;
                     break;
                 }
             }

@@ -48,6 +48,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         // @ScreenshotDisplay: UI-specific preload conditions
         // If we allow moving the screenshots tab beside the readme or wherever else, we'll have to update
         // this code to match whatever the UI setup is.
+        // @DockUI: Finalize these conditions
         if (config.TopRightPanelCollapsed ||
             config.FMTabsData.SelectedTab != FMTab.Screenshots)
         {
