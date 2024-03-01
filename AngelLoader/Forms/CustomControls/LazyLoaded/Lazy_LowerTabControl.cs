@@ -55,6 +55,9 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _ = _tabControl.Handle;
         _tabControl.DarkModeEnabled = _darkModeEnabled;
 
+        _tabControl.MouseClick += _owner.TopRightTabBar_MouseClick;
+        _owner.LowerSplitContainer.Panel2.MouseClick += _owner.TopRightTabBar_MouseClick;
+
         Constructed = true;
     }
 }

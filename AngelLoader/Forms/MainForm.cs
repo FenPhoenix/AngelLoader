@@ -5348,7 +5348,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)
+    internal void TopRightTabBar_MouseClick(object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {
