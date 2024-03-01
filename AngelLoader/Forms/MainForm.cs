@@ -3010,6 +3010,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         MainSplitContainer.SetSplitterPercent(Defaults.MainSplitterPercent, setIfFullScreen: true);
         TopSplitContainer.SetSplitterPercent(Defaults.TopSplitterPercent, setIfFullScreen: false);
+        LowerSplitContainer.SetSplitterPercent(Defaults.LowerSplitterPercent, setIfFullScreen: false);
         if (FilterBarScrollRightButton.Visible) SetFilterBarScrollButtons();
     }
 
