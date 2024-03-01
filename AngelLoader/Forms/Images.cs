@@ -1782,7 +1782,7 @@ public static class Images
         e.Graphics.FillPath(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, XGPath);
     }
 
-    internal static void PaintHamburgerMenuButton_TopRight(Button button, PaintEventArgs e)
+    internal static void PaintHamburgerMenuButton_FMTabs(Button button, PaintEventArgs e)
     {
         e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _hamRects_fmTabsMenu);
     }

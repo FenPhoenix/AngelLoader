@@ -100,9 +100,9 @@ sealed partial class MainForm
         this.ClearFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
         this.ResetLayoutButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.GamesTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
-        this.TopRightMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-        this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
+        this.TopFMTabsMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.TopFMTabsCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+        this.TopFMTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
         this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.StatsTabPage();
         this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
         this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
@@ -135,7 +135,7 @@ sealed partial class MainForm
         this.GameFilterControlsShowHideButtonToolStrip.SuspendLayout();
         this.FilterIconButtonsToolStrip.SuspendLayout();
         this.RefreshAreaToolStrip.SuspendLayout();
-        this.TopRightTabControl.SuspendLayout();
+        this.TopFMTabControl.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).BeginInit();
         this.LowerSplitContainer.Panel1.SuspendLayout();
         this.LowerSplitContainer.SuspendLayout();
@@ -294,9 +294,9 @@ sealed partial class MainForm
         // TopSplitContainer.Panel2
         // 
         this.TopSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightMenuButton);
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsMenuButton);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsCollapseButton);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabControl);
         this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
         this.TopSplitContainer.SplitterDistance = 1116;
         this.TopSplitContainer.TabIndex = 0;
@@ -868,50 +868,50 @@ sealed partial class MainForm
         this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
         this.GamesTabControl.TabIndex = 1;
         // 
-        // TopRightMenuButton
+        // TopFMTabsMenuButton
         // 
-        this.TopRightMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightMenuButton.FlatAppearance.BorderSize = 0;
-        this.TopRightMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.TopRightMenuButton.Location = new System.Drawing.Point(533, 0);
-        this.TopRightMenuButton.Name = "TopRightMenuButton";
-        this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
-        this.TopRightMenuButton.TabIndex = 13;
-        this.TopRightMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.TopRightMenuButton_Paint);
-        this.TopRightMenuButton.Click += new System.EventHandler(this.TopFMTabsMenuButton_Click);
+        this.TopFMTabsMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.TopFMTabsMenuButton.FlatAppearance.BorderSize = 0;
+        this.TopFMTabsMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.TopFMTabsMenuButton.Location = new System.Drawing.Point(533, 0);
+        this.TopFMTabsMenuButton.Name = "TopFMTabsMenuButton";
+        this.TopFMTabsMenuButton.Size = new System.Drawing.Size(18, 20);
+        this.TopFMTabsMenuButton.TabIndex = 13;
+        this.TopFMTabsMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsMenuButton_Paint);
+        this.TopFMTabsMenuButton.Click += new System.EventHandler(this.TopFMTabsMenuButton_Click);
         // 
-        // TopRightCollapseButton
+        // TopFMTabsCollapseButton
         // 
-        this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        this.TopFMTabsCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
-        this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
-        this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);
-        this.TopRightCollapseButton.Name = "TopRightCollapseButton";
-        this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 289);
-        this.TopRightCollapseButton.TabIndex = 14;
-        this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
+        this.TopFMTabsCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
+        this.TopFMTabsCollapseButton.FlatAppearance.BorderSize = 0;
+        this.TopFMTabsCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.TopFMTabsCollapseButton.Location = new System.Drawing.Point(533, 20);
+        this.TopFMTabsCollapseButton.Name = "TopFMTabsCollapseButton";
+        this.TopFMTabsCollapseButton.Size = new System.Drawing.Size(18, 289);
+        this.TopFMTabsCollapseButton.TabIndex = 14;
+        this.TopFMTabsCollapseButton.Click += new System.EventHandler(this.TopFMTabsCollapseButton_Click);
         // 
-        // TopRightTabControl
+        // TopFMTabControl
         // 
-        this.TopRightTabControl.AllowReordering = true;
-        this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        this.TopFMTabControl.AllowReordering = true;
+        this.TopFMTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
-        this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
-        this.TopRightTabControl.Controls.Add(this.CommentTabPage);
-        this.TopRightTabControl.Controls.Add(this.TagsTabPage);
-        this.TopRightTabControl.Controls.Add(this.PatchTabPage);
-        this.TopRightTabControl.Controls.Add(this.ModsTabPage);
-        this.TopRightTabControl.Controls.Add(this.ScreenshotsTabPage);
-        this.TopRightTabControl.EnableScrollButtonsRefreshHack = true;
-        this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
-        this.TopRightTabControl.Name = "TopRightTabControl";
-        this.TopRightTabControl.SelectedIndex = 0;
-        this.TopRightTabControl.Size = new System.Drawing.Size(535, 310);
-        this.TopRightTabControl.TabIndex = 15;
+        this.TopFMTabControl.Controls.Add(this.StatisticsTabPage);
+        this.TopFMTabControl.Controls.Add(this.EditFMTabPage);
+        this.TopFMTabControl.Controls.Add(this.CommentTabPage);
+        this.TopFMTabControl.Controls.Add(this.TagsTabPage);
+        this.TopFMTabControl.Controls.Add(this.PatchTabPage);
+        this.TopFMTabControl.Controls.Add(this.ModsTabPage);
+        this.TopFMTabControl.Controls.Add(this.ScreenshotsTabPage);
+        this.TopFMTabControl.EnableScrollButtonsRefreshHack = true;
+        this.TopFMTabControl.Location = new System.Drawing.Point(0, 0);
+        this.TopFMTabControl.Name = "TopFMTabControl";
+        this.TopFMTabControl.SelectedIndex = 0;
+        this.TopFMTabControl.Size = new System.Drawing.Size(535, 310);
+        this.TopFMTabControl.TabIndex = 15;
         // 
         // StatisticsTabPage
         // 
@@ -1154,7 +1154,7 @@ sealed partial class MainForm
         this.FilterIconButtonsToolStrip.PerformLayout();
         this.RefreshAreaToolStrip.ResumeLayout(false);
         this.RefreshAreaToolStrip.PerformLayout();
-        this.TopRightTabControl.ResumeLayout(false);
+        this.TopFMTabControl.ResumeLayout(false);
         this.LowerSplitContainer.Panel1.ResumeLayout(false);
         ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).EndInit();
         this.LowerSplitContainer.ResumeLayout(false);
@@ -1262,7 +1262,7 @@ sealed partial class MainForm
 
     #region Top-right
 
-    internal CustomControls.DarkTabControl TopRightTabControl;
+    internal CustomControls.DarkTabControl TopFMTabControl;
     internal CustomControls.StatsTabPage StatisticsTabPage;
     internal CustomControls.EditFMTabPage EditFMTabPage;
     internal CustomControls.CommentTabPage CommentTabPage;
@@ -1271,8 +1271,8 @@ sealed partial class MainForm
     internal CustomControls.ModsTabPage ModsTabPage;
     internal CustomControls.ScreenshotsTabPage ScreenshotsTabPage;
 
-    internal CustomControls.DarkButton TopRightMenuButton;
-    internal CustomControls.DarkArrowButton TopRightCollapseButton;
+    internal CustomControls.DarkButton TopFMTabsMenuButton;
+    internal CustomControls.DarkArrowButton TopFMTabsCollapseButton;
 
     #endregion
 

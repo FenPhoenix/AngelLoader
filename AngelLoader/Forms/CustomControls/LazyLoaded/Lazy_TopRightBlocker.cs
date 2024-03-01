@@ -56,7 +56,7 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
             Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
-                container.Width - _owner.TopRightCollapseButton.Width,
+                container.Width - _owner.TopFMTabsCollapseButton.Width,
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,
 

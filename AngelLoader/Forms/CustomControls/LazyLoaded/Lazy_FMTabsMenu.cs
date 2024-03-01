@@ -86,7 +86,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
         */
         if (Config.DarkMode)
         {
-            _owner.TopRightTabControl.Invalidate(_owner.TopRightTabControl.GetTabBarRect());
+            _owner.TopFMTabControl.Invalidate(_owner.TopFMTabControl.GetTabBarRect());
         }
     }
 
