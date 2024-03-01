@@ -5510,9 +5510,10 @@ public sealed partial class MainForm : DarkFormBase,
             TabPage? dragTab = TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
+            LowerSplitContainer.Panel2Collapsed = false;
+
             if (!Lazy_LowerTabControl.Constructed)
             {
-                LowerSplitContainer.Panel2Collapsed = false;
                 LowerSplitContainer.SplitterDistance = TopSplitContainer.SplitterDistance;
 
                 Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
@@ -5525,6 +5526,10 @@ public sealed partial class MainForm : DarkFormBase,
             }
             TopFMTabControl.ShowTab(dragTab, false);
             Lazy_LowerTabControl.TabControl.ShowTab(dragTab, true);
+            if (TopFMTabControl.TabCount == 0)
+            {
+                TopSplitContainer.Panel2Collapsed = true;
+            }
 
             Lazy_LowerTabControl.TabControl.SelectedTab = dragTab;
         }
@@ -5597,14 +5602,9 @@ public sealed partial class MainForm : DarkFormBase,
             TabPage? dragTab = Lazy_LowerTabControl.TabControl.DragTab;
             if (dragTab == null) return;
 
-            if (false)
+            if (TopSplitContainer.Panel2Collapsed)
             {
-                LowerSplitContainer.Panel2Collapsed = false;
-                LowerSplitContainer.SplitterDistance = TopSplitContainer.SplitterDistance;
-
-                TopFMTabControl.SetBackingList(_backingFMTabs);
-                LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
-
+                TopSplitContainer.Panel2Collapsed = false;
                 if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab)
                 {
                     lazyTab.ConstructWithSuspendResume();
@@ -5612,6 +5612,10 @@ public sealed partial class MainForm : DarkFormBase,
             }
             Lazy_LowerTabControl.TabControl.ShowTab(dragTab, false);
             TopFMTabControl.ShowTab(dragTab, true);
+            if (Lazy_LowerTabControl.TabControl.TabCount == 0)
+            {
+                LowerSplitContainer.Panel2Collapsed = true;
+            }
 
             TopFMTabControl.SelectedTab = dragTab;
         }
