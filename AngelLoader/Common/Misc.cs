@@ -160,6 +160,7 @@ public static partial class Misc
 
         internal const float TopSplitterPercent = 0.741f;
         internal const float MainSplitterPercent = 0.4425f;
+        internal const float LowerSplitterPercent = 0.741f;
 
         // @NET5: Remember to change this to match the new font
         internal const float FMsListFontSizeInPoints = 8.25f;

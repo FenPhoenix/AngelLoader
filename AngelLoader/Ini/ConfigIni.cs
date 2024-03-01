@@ -663,6 +663,7 @@ internal static partial class Ini
             config.MainSplitterPercent = result;
         }
     }
+
     private static void Config_TopSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
@@ -670,10 +671,20 @@ internal static partial class Ini
             config.TopSplitterPercent = result;
         }
     }
+
+    private static void Config_LowerSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Float_TryParseInv(valTrimmed, out float result))
+        {
+            config.LowerSplitterPercent = result;
+        }
+    }
+
     private static void Config_TopRightPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.TopRightPanelCollapsed = valTrimmed.EqualsTrue();
     }
+
     private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         FieldInfo? field = typeof(GameIndex).GetField(valTrimmed, _bFlagsEnum);
@@ -981,6 +992,7 @@ internal static partial class Ini
 
         { "MainSplitterPercent", new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
         { "TopSplitterPercent", new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
+        { "LowerSplitterPercent", new Config_DelegatePointerWrapper(&Config_LowerSplitterPercent_Set) },
         { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopRightPanelCollapsed_Set) },
         { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
 
@@ -1385,6 +1397,7 @@ internal static partial class Ini
 
         sw.Append("MainSplitterPercent").Append('=').AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("TopSplitterPercent").Append('=').AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("LowerSplitterPercent").Append('=').AppendLine(config.LowerSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopRightPanelCollapsed).AppendLine();
 
         sw.Append("GameTab").Append('=').Append(config.GameTab).AppendLine();

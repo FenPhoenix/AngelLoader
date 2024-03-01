@@ -932,6 +932,9 @@ public sealed partial class MainForm : DarkFormBase,
 
         MainSplitContainer.SetSplitterPercent(Config.MainSplitterPercent, setIfFullScreen: true, suspendResume: false);
         TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, setIfFullScreen: false, suspendResume: false);
+        LowerSplitContainer.SetSplitterPercent(Config.LowerSplitterPercent, setIfFullScreen: false, suspendResume: false);
+        // @DockUI: We need to save/restore which tab control each tab is in (or none for invisible in both)
+        LowerSplitContainer.Panel2Collapsed = true;
 
         MainSplitContainer.SetSibling(TopSplitContainer);
         MainSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
@@ -5051,6 +5054,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         float mainSplitterPercent = MainSplitContainer.SplitterPercentReal;
         float topSplitterPercent = TopSplitContainer.SplitterPercentReal;
+        float lowerSplitterPercent = LowerSplitContainer.SplitterPercentReal;
 
         if (minimized) WindowState = nominalState;
 
@@ -5062,6 +5066,7 @@ public sealed partial class MainForm : DarkFormBase,
             _nominalWindowLocation,
             mainSplitterPercent,
             topSplitterPercent,
+            lowerSplitterPercent,
             FMsDGV.GetColumnData(),
             FMsDGV.CurrentSortedColumn,
             FMsDGV.CurrentSortDirection,
@@ -5514,8 +5519,6 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (!Lazy_LowerTabControl.Constructed)
             {
-                LowerSplitContainer.SplitterDistance = TopSplitContainer.SplitterDistance;
-
                 Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
                 LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
 

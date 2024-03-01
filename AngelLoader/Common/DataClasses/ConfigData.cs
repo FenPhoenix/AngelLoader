@@ -344,6 +344,9 @@ public sealed class ConfigData
     private float _topSplitterPercent = Defaults.TopSplitterPercent;
     internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.ClampZeroToOne(); }
 
+    private float _lowerSplitterPercent = Defaults.LowerSplitterPercent;
+    internal float LowerSplitterPercent { get => _lowerSplitterPercent; set => _lowerSplitterPercent = value.ClampZeroToOne(); }
+
     internal bool TopRightPanelCollapsed;
 
     internal readonly FMTabsData FMTabsData = new();

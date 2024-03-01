@@ -2601,6 +2601,7 @@ internal static class Core
         Point mainWindowLocation,
         float mainSplitterPercent,
         float topSplitterPercent,
+        float lowerSplitterPercent,
         ColumnData[] columns,
         Column sortedColumn,
         SortDirection sortDirection,
@@ -2622,6 +2623,7 @@ internal static class Core
         Config.MainWindowLocation = mainWindowLocation;
         Config.MainSplitterPercent = mainSplitterPercent;
         Config.TopSplitterPercent = topSplitterPercent;
+        Config.LowerSplitterPercent = lowerSplitterPercent;
 
         #endregion
 
