@@ -537,7 +537,7 @@ public sealed partial class MainForm
         TopRightMenuButton.Location = new Point(533, 0);
         TopRightMenuButton.Size = new Size(18, 20);
         TopRightMenuButton.TabIndex = 13;
-        TopRightMenuButton.Click += TopRightMenuButton_Click;
+        TopRightMenuButton.Click += TopFMTabsMenuButton_Click;
         TopRightMenuButton.PaintCustom += TopRightMenuButton_Paint;
         // 
         // TopRightCollapseButton

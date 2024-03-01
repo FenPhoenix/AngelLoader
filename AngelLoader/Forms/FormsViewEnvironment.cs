@@ -49,7 +49,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         // If we allow moving the screenshots tab beside the readme or wherever else, we'll have to update
         // this code to match whatever the UI setup is.
         if (config.TopRightPanelCollapsed ||
-            config.TopRightTabsData.SelectedTab != TopRightTab.Screenshots)
+            config.FMTabsData.SelectedTab != FMTab.Screenshots)
         {
             return;
         }

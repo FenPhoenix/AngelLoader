@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class Lazy_TopRightBlocker : IDarkable
+internal sealed class Lazy_FMTabsBlocker : IDarkable
 {
     private readonly MainForm _owner;
 
@@ -31,7 +31,7 @@ internal sealed class Lazy_TopRightBlocker : IDarkable
         }
     }
 
-    internal Lazy_TopRightBlocker(MainForm owner) => _owner = owner;
+    internal Lazy_FMTabsBlocker(MainForm owner) => _owner = owner;
 
     internal void SetText(string text)
     {

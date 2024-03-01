@@ -802,7 +802,7 @@ internal static partial class Ini
 
         #endregion
 
-        config.TopRightTabsData.EnsureValidity();
+        config.FMTabsData.EnsureValidity();
 
         // TODO: Make it insert new columns at their default index (currently their position is semi-undefined)
         // Because they end up being subject to that weird-ass behavior of DisplayIndex setting where one

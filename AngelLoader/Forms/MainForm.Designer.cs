@@ -878,7 +878,7 @@ sealed partial class MainForm
         this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
         this.TopRightMenuButton.TabIndex = 13;
         this.TopRightMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.TopRightMenuButton_Paint);
-        this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
+        this.TopRightMenuButton.Click += new System.EventHandler(this.TopFMTabsMenuButton_Click);
         // 
         // TopRightCollapseButton
         // 

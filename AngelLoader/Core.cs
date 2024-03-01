@@ -2611,7 +2611,7 @@ internal static class Core
         SelectedFM selectedFM,
         GameTabsState gameTabsState,
         GameIndex gameTab,
-        TopRightTabsData topRightTabsData,
+        FMTabsData fmTabsData,
         bool topRightPanelCollapsed,
         float readmeZoomFactor)
     {
@@ -2645,15 +2645,15 @@ internal static class Core
 
         #region Top-right panel
 
-        Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
+        Config.FMTabsData.SelectedTab = fmTabsData.SelectedTab;
 
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            Config.TopRightTabsData.Tabs[i].DisplayIndex = topRightTabsData.Tabs[i].DisplayIndex;
-            Config.TopRightTabsData.Tabs[i].Visible = topRightTabsData.Tabs[i].Visible;
+            Config.FMTabsData.Tabs[i].DisplayIndex = fmTabsData.Tabs[i].DisplayIndex;
+            Config.FMTabsData.Tabs[i].Visible = fmTabsData.Tabs[i].Visible;
         }
 
-        Config.TopRightTabsData.EnsureValidity();
+        Config.FMTabsData.EnsureValidity();
 
         Config.TopRightPanelCollapsed = topRightPanelCollapsed;
 

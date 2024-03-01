@@ -118,7 +118,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly TabPage[] _gameTabs;
     private readonly ToolStripButtonCustom[] _filterByGameButtons;
-    private readonly Lazy_TabsBase[] _topRightTabs;
+    private readonly Lazy_TabsBase[] _fmTabs;
 
     private readonly Control[] _filterLabels;
     private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -187,7 +187,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly Lazy_FMTabsMenu Lazy_FMTabsMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
-    private readonly Lazy_TopRightBlocker Lazy_TopRightBlocker;
+    private readonly Lazy_FMTabsBlocker Lazy_FMTabsBlocker;
     internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
     private readonly Lazy_LowerTabControl Lazy_LowerTabControl;
 
@@ -196,7 +196,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Cache visible state because calling Visible redoes the work even if the value is the same
     private bool _readmeControlsOtherThanComboBoxVisible;
 
-    private readonly List<DarkTabControl.BackingTab> _topRightBackingTabs = new(TopRightTabCount);
+    private readonly List<DarkTabControl.BackingTab> _backingFMTabs = new(FMTabCount);
 
     #endregion
 
@@ -271,7 +271,7 @@ public sealed partial class MainForm : DarkFormBase,
         what way we need to or whatever.
         */
         LowerSplitContainer.Panel2Collapsed = false;
-        Lazy_LowerTabControl.TabControl.SetBackingList(_topRightBackingTabs);
+        Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
         Lazy_LowerTabControl.TabControl.ShowTab(EditFMTabPage, true);
         LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
@@ -597,7 +597,7 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_FMTabsMenu = new Lazy_FMTabsMenu(this),
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
-            Lazy_TopRightBlocker = new Lazy_TopRightBlocker(this),
+            Lazy_FMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_UpdateNotification = new Lazy_UpdateNotification(this),
             Lazy_LowerTabControl = new Lazy_LowerTabControl(this)
         };
@@ -651,7 +651,7 @@ public sealed partial class MainForm : DarkFormBase,
         InitComponentManual();
 #endif
 
-        TopRightTabControl.SetBackingList(_topRightBackingTabs);
+        TopRightTabControl.SetBackingList(_backingFMTabs);
 
         ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
@@ -659,7 +659,7 @@ public sealed partial class MainForm : DarkFormBase,
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
         // ReSharper disable once RedundantExplicitArraySize
-        _topRightTabs = new Lazy_TabsBase[TopRightTabCount]
+        _fmTabs = new Lazy_TabsBase[FMTabCount]
         {
             StatisticsTabPage,
             EditFMTabPage,
@@ -670,16 +670,16 @@ public sealed partial class MainForm : DarkFormBase,
             ScreenshotsTabPage
         };
 
-        for (int i = 0; i < _topRightTabs.Length; i++)
+        for (int i = 0; i < _fmTabs.Length; i++)
         {
-            _topRightTabs[i].SetOwner(this);
+            _fmTabs[i].SetOwner(this);
         }
 
         // For right-clicking on tabs
-        TopRightTabControl.MouseClick += TopRightTabBar_MouseClick;
+        TopRightTabControl.MouseClick += TopFMTabsBar_MouseClick;
 
         // For right-clicking on blank space in tab bar
-        TopSplitContainer.Panel2.MouseClick += TopRightTabBar_MouseClick;
+        TopSplitContainer.Panel2.MouseClick += TopFMTabsBar_MouseClick;
 
         #region Construct + init non-public-release controls
 
@@ -900,36 +900,36 @@ public sealed partial class MainForm : DarkFormBase,
         #region Top-right tabs
 
         var topRightTabsDict = new Dictionary<int, TabPage>();
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            topRightTabsDict.Add(Config.TopRightTabsData.Tabs[i].DisplayIndex, _topRightTabs[i]);
+            topRightTabsDict.Add(Config.FMTabsData.Tabs[i].DisplayIndex, _fmTabs[i]);
         }
 
-        var topRightTabs = new TabPage[TopRightTabCount];
-        for (int i = 0; i < TopRightTabCount; i++)
+        var topRightTabs = new TabPage[FMTabCount];
+        for (int i = 0; i < FMTabCount; i++)
         {
             topRightTabs[i] = topRightTabsDict[i];
         }
 
         TopRightTabControl.SetTabsFull(topRightTabs);
 
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            bool visible = Config.TopRightTabsData.Tabs[i].Visible;
+            bool visible = Config.FMTabsData.Tabs[i].Visible;
             // They're visible by default - shave off a bit of time
             if (!visible)
             {
-                TopRightTabControl.ShowTab(_topRightTabs[i], false);
+                TopRightTabControl.ShowTab(_fmTabs[i], false);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible);
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            if ((int)Config.TopRightTabsData.SelectedTab == i)
+            if ((int)Config.FMTabsData.SelectedTab == i)
             {
-                TopRightTabControl.SelectedTab = _topRightTabs[i];
+                TopRightTabControl.SelectedTab = _fmTabs[i];
                 break;
             }
         }
@@ -1856,9 +1856,9 @@ public sealed partial class MainForm : DarkFormBase,
             ModsTabPage.Text = LText.ModsTab.TabText;
             ScreenshotsTabPage.Text = LText.ScreenshotsTab.TabText;
 
-            for (int i = 0; i < _topRightTabs.Length; i++)
+            for (int i = 0; i < _fmTabs.Length; i++)
             {
-                _topRightTabs[i].Localize();
+                _fmTabs[i].Localize();
             }
 
             #endregion
@@ -1982,7 +1982,7 @@ public sealed partial class MainForm : DarkFormBase,
                 (//x != TopSplitContainer &&
                  //x != TopSplitContainer.Panel2 &&
                     x != TopRightTabControl &&
-                    !_topRightTabs.Contains(x));
+                    !_fmTabs.Contains(x));
 #endif
 
             if (startup && !darkMode)
@@ -3259,7 +3259,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             TopRightCollapseButton.ArrowDirection = Direction.Right;
 
-            if (!Lazy_TopRightBlocker.Visible)
+            if (!Lazy_FMTabsBlocker.Visible)
             {
                 TopRightTabControl.Enabled = true;
             }
@@ -3271,30 +3271,30 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopRightMenuButton_Click(object sender, EventArgs e)
+    private void TopFMTabsMenuButton_Click(object sender, EventArgs e)
     {
         Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Top;
         ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, TopRightMenuButton, MenuPos.BottomLeft);
     }
 
-    internal void TopRightMenu_Opening(object sender, CancelEventArgs e)
+    internal void FMTabsMenu_Opening(object sender, CancelEventArgs e)
     {
         DarkTabControl tabControl = Lazy_FMTabsMenu.Menu.Data is WhichTabControl.Bottom
             ? Lazy_LowerTabControl.TabControl
             : TopRightTabControl;
 
-        for (int i = 0; i < _topRightTabs.Length; i++)
+        for (int i = 0; i < _fmTabs.Length; i++)
         {
-            Lazy_TabsBase item = _topRightTabs[i];
+            Lazy_TabsBase item = _fmTabs[i];
             Lazy_FMTabsMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
         }
     }
 
-    internal void TopRightMenu_MenuItems_Click(object sender, EventArgs e)
+    internal void FMTabsMenu_MenuItems_Click(object sender, EventArgs e)
     {
         var s = (ToolStripMenuItemCustom)sender;
 
-        TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _topRightTabs, TopRightTabCount);
+        TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _fmTabs, FMTabCount);
 
         // @DockUI: It's possible to have zero tabs in one or the other tab controls now
         // This is ultimately what we want, but we need to add proper support for this scenario, because we
@@ -3317,13 +3317,13 @@ public sealed partial class MainForm : DarkFormBase,
         // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
         if (FMsDGV.MultipleFMsSelected())
         {
-            Lazy_TopRightBlocker.Visible = true;
+            Lazy_FMTabsBlocker.Visible = true;
             if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = false;
         }
         else
         {
             if (!TopSplitContainer.FullScreen) TopRightTabControl.Enabled = true;
-            Lazy_TopRightBlocker.Visible = false;
+            Lazy_FMTabsBlocker.Visible = false;
         }
     }
 
@@ -4617,13 +4617,13 @@ public sealed partial class MainForm : DarkFormBase,
         {
             SetTopRightBlockerVisible();
 
-            Lazy_TopRightBlocker.SuspendDrawing();
+            Lazy_FMTabsBlocker.SuspendDrawing();
 
             SetFMSelectedCountMessage(selRowsCount);
         }
         finally
         {
-            Lazy_TopRightBlocker.ResumeDrawing();
+            Lazy_FMTabsBlocker.ResumeDrawing();
         }
 
         #endregion
@@ -4679,9 +4679,9 @@ public sealed partial class MainForm : DarkFormBase,
     {
         using (new DisableEvents(this))
         {
-            for (int i = 0; i < _topRightTabs.Length; i++)
+            for (int i = 0; i < _fmTabs.Length; i++)
             {
-                _topRightTabs[i].UpdatePage();
+                _fmTabs[i].UpdatePage();
             }
         }
     }
@@ -5001,15 +5001,15 @@ public sealed partial class MainForm : DarkFormBase,
 
         SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
 
-        var topRightTabs = new TopRightTabsData
+        var topRightTabs = new FMTabsData
         {
-            SelectedTab = (TopRightTab)Array.IndexOf(_topRightTabs.Cast<TabPage>().ToArray(), TopRightTabControl.SelectedTab)
+            SelectedTab = (FMTab)Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), TopRightTabControl.SelectedTab)
         };
 
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_topRightTabs[i]);
-            topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_topRightTabs[i]);
+            topRightTabs.Tabs[i].DisplayIndex = TopRightTabControl.GetTabDisplayIndex(_fmTabs[i]);
+            topRightTabs.Tabs[i].Visible = TopRightTabControl.Contains(_fmTabs[i]);
         }
 
         #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
@@ -5251,7 +5251,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         _fmsSelectedCountText = text;
 
-        Lazy_TopRightBlocker.SetText(text);
+        Lazy_FMTabsBlocker.SetText(text);
 
         RefreshFMStatsLabel();
     }
@@ -5362,9 +5362,9 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopRightTabBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
+    private void TopFMTabsBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
 
-    internal void LowerTabBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
+    internal void LowerFMTabsBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
 
     private void HandleTabsMenu(MouseEventArgs e, WhichTabControl which)
     {

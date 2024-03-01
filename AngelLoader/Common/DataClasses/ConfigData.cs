@@ -346,7 +346,7 @@ public sealed class ConfigData
 
     internal bool TopRightPanelCollapsed;
 
-    internal readonly TopRightTabsData TopRightTabsData = new();
+    internal readonly FMTabsData FMTabsData = new();
 
     #endregion
 

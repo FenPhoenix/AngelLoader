@@ -685,83 +685,83 @@ internal static partial class Ini
 
     #region Top-right tabs
 
-    private static void Config_TopRightTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_FMTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(TopRightTab).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(FMTab).GetField(valTrimmed, _bFlagsEnum);
         if (field != null)
         {
-            config.TopRightTabsData.SelectedTab = (TopRightTab)field.GetValue(null);
+            config.FMTabsData.SelectedTab = (FMTab)field.GetValue(null);
         }
     }
 
     private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Statistics).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex = result;
     }
     private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Statistics).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Statistics).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.EditFM).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex = result;
     }
     private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.EditFM).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.EditFM).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Comment).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Comment).DisplayIndex = result;
     }
     private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Comment).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Comment).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Tags).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Tags).DisplayIndex = result;
     }
     private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Tags).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Tags).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Patch).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Patch).DisplayIndex = result;
     }
     private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Patch).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Patch).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Mods).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Mods).DisplayIndex = result;
     }
     private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Mods).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Mods).Visible = valTrimmed.EqualsTrue();
     }
 
     private static void Config_ScreenshotsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         Int_TryParseInv(valTrimmed, out int result);
-        config.TopRightTabsData.GetTab(TopRightTab.Screenshots).DisplayIndex = result;
+        config.FMTabsData.GetTab(FMTab.Screenshots).DisplayIndex = result;
     }
     private static void Config_ScreenshotsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightTabsData.GetTab(TopRightTab.Screenshots).Visible = valTrimmed.EqualsTrue();
+        config.FMTabsData.GetTab(FMTab.Screenshots).Visible = valTrimmed.EqualsTrue();
     }
 
     #endregion
@@ -977,7 +977,7 @@ internal static partial class Ini
 
         #region Top-right tabs
 
-        { "TopRightTab", new Config_DelegatePointerWrapper(&Config_TopRightTab_Set) },
+        { "TopRightTab", new Config_DelegatePointerWrapper(&Config_FMTab_Set) },
 
         { "StatsTabPosition", new Config_DelegatePointerWrapper(&Config_StatsTabPosition_Set) },
         { "StatsTabVisible", new Config_DelegatePointerWrapper(&Config_StatsTabVisible_Set) },
@@ -1378,23 +1378,23 @@ internal static partial class Ini
         sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopRightPanelCollapsed).AppendLine();
 
         sw.Append("GameTab").Append('=').Append(config.GameTab).AppendLine();
-        sw.Append("TopRightTab").Append('=').Append(config.TopRightTabsData.SelectedTab).AppendLine();
+        sw.Append("TopRightTab").Append('=').Append(config.FMTabsData.SelectedTab).AppendLine();
 
-        sw.Append("StatsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Statistics).DisplayIndex).AppendLine();
-        sw.Append("EditFMTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.EditFM).DisplayIndex).AppendLine();
-        sw.Append("CommentTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Comment).DisplayIndex).AppendLine();
-        sw.Append("TagsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Tags).DisplayIndex).AppendLine();
-        sw.Append("PatchTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Patch).DisplayIndex).AppendLine();
-        sw.Append("ModsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Mods).DisplayIndex).AppendLine();
-        sw.Append("ScreenshotsTabPosition").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Screenshots).DisplayIndex).AppendLine();
+        sw.Append("StatsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex).AppendLine();
+        sw.Append("EditFMTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex).AppendLine();
+        sw.Append("CommentTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Comment).DisplayIndex).AppendLine();
+        sw.Append("TagsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Tags).DisplayIndex).AppendLine();
+        sw.Append("PatchTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Patch).DisplayIndex).AppendLine();
+        sw.Append("ModsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Mods).DisplayIndex).AppendLine();
+        sw.Append("ScreenshotsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Screenshots).DisplayIndex).AppendLine();
 
-        sw.Append("StatsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Statistics).Visible).AppendLine();
-        sw.Append("EditFMTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.EditFM).Visible).AppendLine();
-        sw.Append("CommentTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Comment).Visible).AppendLine();
-        sw.Append("TagsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Tags).Visible).AppendLine();
-        sw.Append("PatchTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Patch).Visible).AppendLine();
-        sw.Append("ModsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Mods).Visible).AppendLine();
-        sw.Append("ScreenshotsTabVisible").Append('=').Append(config.TopRightTabsData.GetTab(TopRightTab.Screenshots).Visible).AppendLine();
+        sw.Append("StatsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Statistics).Visible).AppendLine();
+        sw.Append("EditFMTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.EditFM).Visible).AppendLine();
+        sw.Append("CommentTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Comment).Visible).AppendLine();
+        sw.Append("TagsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Tags).Visible).AppendLine();
+        sw.Append("PatchTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Patch).Visible).AppendLine();
+        sw.Append("ModsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Mods).Visible).AppendLine();
+        sw.Append("ScreenshotsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Screenshots).Visible).AppendLine();
 
         sw.Append("ReadmeZoomFactor").Append('=').AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("ReadmeUseFixedWidthFont").Append('=').Append(config.ReadmeUseFixedWidthFont).AppendLine();

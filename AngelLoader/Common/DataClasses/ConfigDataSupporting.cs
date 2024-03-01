@@ -97,9 +97,9 @@ public enum CheckForUpdates
 
 #region Top-right tabs
 
-// IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
+// IMPORTANT(FM tabs enum): Do not rename members, they're used in the config file
 [FenGenEnumCount]
-internal enum TopRightTab
+internal enum FMTab
 {
     Statistics,
     EditFM,
@@ -110,30 +110,30 @@ internal enum TopRightTab
     Screenshots
 }
 
-internal sealed class TopRightTabData
+internal sealed class FMTabData
 {
     private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, TopRightTabCount - 1); }
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, FMTabCount - 1); }
 
     internal bool Visible = true;
 }
 
-internal sealed class TopRightTabsData
+internal sealed class FMTabsData
 {
-    internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(TopRightTabCount);
+    internal readonly FMTabData[] Tabs = InitializedArray<FMTabData>(FMTabCount);
 
-    internal TopRightTab SelectedTab = TopRightTab.Statistics;
+    internal FMTab SelectedTab = FMTab.Statistics;
 
-    internal TopRightTabsData() => ResetAllDisplayIndexes();
+    internal FMTabsData() => ResetAllDisplayIndexes();
 
-    internal TopRightTabData GetTab(TopRightTab tab) => Tabs[(int)tab];
+    internal FMTabData GetTab(FMTab tab) => Tabs[(int)tab];
 
     internal void EnsureValidity()
     {
         #region Fallback if multiple tabs have the same display index
 
         var displayIndexesSet = new HashSet<int>();
-        for (int i = 0; i < TopRightTabCount; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
             if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
             {
@@ -149,11 +149,11 @@ internal sealed class TopRightTabsData
         // Fallback if selected tab is not marked as visible
         if (!GetTab(SelectedTab).Visible)
         {
-            for (int i = 0; i < TopRightTabCount; i++)
+            for (int i = 0; i < FMTabCount; i++)
             {
                 if (Tabs[i].Visible)
                 {
-                    SelectedTab = (TopRightTab)i;
+                    SelectedTab = (FMTab)i;
                     break;
                 }
             }
@@ -162,18 +162,18 @@ internal sealed class TopRightTabsData
 
     private bool NoneVisible()
     {
-        for (int i = 0; i < TopRightTabCount; i++) if (Tabs[i].Visible) return false;
+        for (int i = 0; i < FMTabCount; i++) if (Tabs[i].Visible) return false;
         return true;
     }
 
     private void SetAllVisible(bool visible)
     {
-        for (int i = 0; i < TopRightTabCount; i++) Tabs[i].Visible = visible;
+        for (int i = 0; i < FMTabCount; i++) Tabs[i].Visible = visible;
     }
 
     private void ResetAllDisplayIndexes()
     {
-        for (int i = 0; i < TopRightTabCount; i++) Tabs[i].DisplayIndex = i;
+        for (int i = 0; i < FMTabCount; i++) Tabs[i].DisplayIndex = i;
     }
 }
 

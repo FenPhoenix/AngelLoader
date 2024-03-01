@@ -11,7 +11,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 internal sealed class Lazy_FMTabsMenu : IDarkable
 {
     private bool _constructed;
-    private readonly bool[] _checkedStates = InitializedArray(TopRightTabCount, true);
+    private readonly bool[] _checkedStates = InitializedArray(FMTabCount, true);
 
     private readonly MainForm _owner;
 
@@ -26,7 +26,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
 
                 _menu = new DarkContextMenu(_owner);
 
-                var menuItems = new ToolStripItem[TopRightTabCount];
+                var menuItems = new ToolStripItem[FMTabCount];
                 for (int i = 0; i < menuItems.Length; i++)
                 {
                     var item = new ToolStripMenuItemCustom
@@ -34,7 +34,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
                         CheckOnClick = true,
                         Checked = _checkedStates[i]
                     };
-                    item.Click += _owner.TopRightMenu_MenuItems_Click;
+                    item.Click += _owner.FMTabsMenu_MenuItems_Click;
                     menuItems[i] = item;
                 }
 
@@ -46,7 +46,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
 
-                _menu.Opening += _owner.TopRightMenu_Opening;
+                _menu.Opening += _owner.FMTabsMenu_Opening;
                 _menu.Closed += MenuClosed;
 
                 _constructed = true;
@@ -122,13 +122,13 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
     {
         if (!_constructed) return;
 
-        _menu.Items[(int)TopRightTab.Statistics].Text = LText.StatisticsTab.TabText;
-        _menu.Items[(int)TopRightTab.EditFM].Text = LText.EditFMTab.TabText;
-        _menu.Items[(int)TopRightTab.Comment].Text = LText.CommentTab.TabText;
-        _menu.Items[(int)TopRightTab.Tags].Text = LText.TagsTab.TabText;
-        _menu.Items[(int)TopRightTab.Patch].Text = LText.PatchTab.TabText;
-        _menu.Items[(int)TopRightTab.Mods].Text = LText.ModsTab.TabText;
-        _menu.Items[(int)TopRightTab.Screenshots].Text = LText.ScreenshotsTab.TabText;
+        _menu.Items[(int)FMTab.Statistics].Text = LText.StatisticsTab.TabText;
+        _menu.Items[(int)FMTab.EditFM].Text = LText.EditFMTab.TabText;
+        _menu.Items[(int)FMTab.Comment].Text = LText.CommentTab.TabText;
+        _menu.Items[(int)FMTab.Tags].Text = LText.TagsTab.TabText;
+        _menu.Items[(int)FMTab.Patch].Text = LText.PatchTab.TabText;
+        _menu.Items[(int)FMTab.Mods].Text = LText.ModsTab.TabText;
+        _menu.Items[(int)FMTab.Screenshots].Text = LText.ScreenshotsTab.TabText;
     }
 
     internal bool Focused => _constructed && _menu.Focused;

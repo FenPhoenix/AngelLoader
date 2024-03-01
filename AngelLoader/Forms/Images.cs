@@ -348,7 +348,7 @@ public static class Images
 
     #region Hamburger
 
-    private static readonly Rectangle[] _hamRects_TopRightMenu =
+    private static readonly Rectangle[] _hamRects_fmTabsMenu =
     {
         new Rectangle(2, 3, 14, 2),
         new Rectangle(2, 9, 14, 2),
@@ -1784,7 +1784,7 @@ public static class Images
 
     internal static void PaintHamburgerMenuButton_TopRight(Button button, PaintEventArgs e)
     {
-        e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _hamRects_TopRightMenu);
+        e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _hamRects_fmTabsMenu);
     }
 
     internal static void PaintHamburgerMenuButton24(Button button, PaintEventArgs e)
