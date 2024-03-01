@@ -265,14 +265,15 @@ public sealed partial class MainForm : DarkFormBase,
     private void Test3Button_Click(object sender, EventArgs e)
     {
         /*
-        @DockUI: Adding a tab to a tab control appears to remove it from any other it was in.
-        Convenient! So we should just be able to add a way to set the backing collection with visibilities right
-        off the bat without also adding to the physical collection, and then we can handle both collections in
-        what way we need to or whatever.
+        @DockUI: Make this proper functionality, accessed by dragging or a menu "send up/down" option or whatnot
         */
         LowerSplitContainer.Panel2Collapsed = false;
         Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
         Lazy_LowerTabControl.TabControl.ShowTab(EditFMTabPage, true);
+        if (Lazy_LowerTabControl.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
+        {
+            lazyTab.ConstructWithSuspendResume();
+        }
         LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
