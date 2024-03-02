@@ -33,6 +33,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         }
     }
 
+    public event TabControlEventHandler? Selected;
+
     public Lazy_LowerTabControl(MainForm owner) => _owner = owner;
 
     private void Construct()
@@ -68,9 +70,27 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         Constructed = true;
     }
 
-    private void TabControl_Selected(object sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
+    public void ShowTab(TabPage tabPage, bool show)
+    {
+        if (show)
+        {
+            Construct();
+            _tabControl.ShowTab(tabPage, true);
+        }
+        else
+        {
+            if (!Constructed) return;
+            _tabControl.ShowTab(tabPage, false);
+        }
+    }
 
-    public event TabControlEventHandler? Selected;
+    public int TabCount => Constructed ? _tabControl.TabCount : 0;
+
+    public TabPage? SelectedTab => Constructed ? _tabControl.SelectedTab : null;
+
+    public TabPage? DragTab => Constructed ? _tabControl.DragTab : null;
+
+    private void TabControl_Selected(object sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
 
     private void TabControl_VisibleChanged(object sender, System.EventArgs e)
     {

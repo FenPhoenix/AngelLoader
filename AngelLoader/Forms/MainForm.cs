@@ -3341,10 +3341,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if (tabControl == TopFMTabControl)
             {
-                if (Lazy_LowerTabControl.Constructed)
-                {
-                    Lazy_LowerTabControl.TabControl.ShowTab(tab, false);
-                }
+                Lazy_LowerTabControl.ShowTab(tab, false);
             }
             else
             {
@@ -5048,14 +5045,15 @@ public sealed partial class MainForm : DarkFormBase,
         int selectedTabIndex = -1;
         if (TopFMTabControl.TabCount > 0)
         {
+            // @DockUI: Duplicate Cast/ToArray()
             selectedTabIndex = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab);
         }
         fmTabs.SelectedTab = selectedTabIndex > -1 ? (FMTab)selectedTabIndex : Config.FMTabsData.SelectedTab;
 
         int selectedTab2Index = -1;
-        if (Lazy_LowerTabControl is { Constructed: true, TabControl.TabCount: > 0 })
+        if (Lazy_LowerTabControl.TabCount > 0)
         {
-            selectedTab2Index = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.TabControl.SelectedTab);
+            selectedTab2Index = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.SelectedTab);
         }
         fmTabs.SelectedTab2 = selectedTab2Index > -1 ? (FMTab)selectedTab2Index : Config.FMTabsData.SelectedTab2;
 
@@ -5510,7 +5508,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             EverythingPanel.SuspendDrawing();
 
-            TabPage? dragTab = Lazy_LowerTabControl.TabControl.DragTab;
+            TabPage? dragTab = Lazy_LowerTabControl.DragTab;
             if (dragTab == null) return;
 
             if (TopSplitContainer.Panel2Collapsed)
@@ -5573,12 +5571,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ConstructLazyLowerTabControl()
     {
-        if (!Lazy_LowerTabControl.Constructed)
-        {
-            LowerSplitContainer.Panel2Collapsed = false;
-            Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
-            LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
-        }
+        if (Lazy_LowerTabControl.Constructed) return;
+        LowerSplitContainer.Panel2Collapsed = false;
+        Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
+        LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
     private void HandleTabDrag(DarkSplitContainerCustom sc)
