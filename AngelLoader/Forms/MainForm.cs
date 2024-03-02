@@ -3281,14 +3281,26 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void FMTabsMenu_Opening(object sender, CancelEventArgs e)
     {
-        DarkTabControl tabControl = Lazy_FMTabsMenu.Menu.Data is WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
+        (FMTabVisibleIn which, DarkTabControl tabControl) = Lazy_FMTabsMenu.Menu.Data is WhichTabControl.Bottom
+            ? (FMTabVisibleIn.Bottom, Lazy_LowerTabControl.TabControl)
+            : (FMTabVisibleIn.Top, TopFMTabControl);
 
         for (int i = 0; i < _fmTabs.Length; i++)
         {
             Lazy_TabsBase item = _fmTabs[i];
             Lazy_FMTabsMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
+            /*
+            @DockUI(FM per-tab show/hide menu logic)
+            I'm not sure which style is the best/most intuitive/principle-of-least-surprise etc.
+            They're all a little weird. Decide on something for the final release.
+            */
+#if true
+            DarkTabControl.BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
+            if (backingTab != null)
+            {
+                Lazy_FMTabsMenu.SetItemVisible(i, backingTab.Visible == FMTabVisibleIn.None || backingTab.Visible == which);
+            }
+#endif
         }
     }
 
