@@ -31,7 +31,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
     /// <param name="list"></param>
     internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
 
-    private WhichTabControl _whichTabControl;
+    private WhichTabControl _whichTabControl = WhichTabControl.Top;
     internal void SetWhich(WhichTabControl value) => _whichTabControl = value;
 
     #endregion
