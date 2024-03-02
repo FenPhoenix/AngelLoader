@@ -51,8 +51,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
     /// <param name="list"></param>
     internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
 
-    private bool _isTop;
-    internal void SetIsTop(bool value) => _isTop = value;
+    private WhichTabControl _whichTabControl;
+    internal void SetWhich(WhichTabControl value) => _whichTabControl = value;
 
     #endregion
 
@@ -458,7 +458,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
         if (show)
         {
-            bt.Visible = _isTop ? FMTabVisibleIn.Top : FMTabVisibleIn.Bottom;
+            bt.Visible = _whichTabControl == WhichTabControl.Bottom ? FMTabVisibleIn.Bottom : FMTabVisibleIn.Top;
             if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
         }
         else

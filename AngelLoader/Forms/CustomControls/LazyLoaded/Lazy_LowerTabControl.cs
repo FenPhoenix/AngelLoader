@@ -51,6 +51,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
             Size = container.Size,
         };
 
+        _tabControl.SetWhich(WhichTabControl.Bottom);
+
         // Handle hack here instead, because it needs to be for whatever finicky goddamn reason
         _ = _tabControl.Handle;
         _tabControl.DarkModeEnabled = _darkModeEnabled;

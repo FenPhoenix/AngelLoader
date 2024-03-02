@@ -643,7 +643,7 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 
         TopFMTabControl.SetBackingList(_backingFMTabs);
-        TopFMTabControl.SetIsTop(true);
+        TopFMTabControl.SetWhich(WhichTabControl.Top);
 
         ChangeReadmeBoxFont(Config.ReadmeUseFixedWidthFont);
 
@@ -5455,8 +5455,11 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     #region Tab dragging
-
-    // @DockUI: Working/testing code, finalize before release
+    /*
+    @DockUI: Working/testing code, finalize before release
+    @DockUI: Detect the position dragged to, and if it's in the tab bar, insert the tab at that location
+    @DockUI: Focus tab when moving between tab controls, to prevent first-control-select issue again
+    */
 
     private bool _inTabDragArea;
 
