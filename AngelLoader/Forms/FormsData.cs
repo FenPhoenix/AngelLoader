@@ -61,5 +61,5 @@ public sealed class MemoryImage : IDisposable
 public sealed class BackingTab(TabPage tabPage)
 {
     public TabPage TabPage = tabPage;
-    public FMTabVisibleIn Visible = FMTabVisibleIn.Top;
+    public FMTabVisibleIn VisibleIn = FMTabVisibleIn.Top;
 }

@@ -3306,7 +3306,7 @@ public sealed partial class MainForm : DarkFormBase,
             BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
             if (backingTab != null)
             {
-                Lazy_FMTabsMenu.SetItemVisible(i, backingTab.Visible == FMTabVisibleIn.None || backingTab.Visible == which);
+                Lazy_FMTabsMenu.SetItemVisible(i, backingTab.VisibleIn == FMTabVisibleIn.None || backingTab.VisibleIn == which);
             }
 #endif
         }
@@ -5061,7 +5061,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             Lazy_TabsBase fmTab = _fmTabPages[i];
             fmTabs.Tabs[i].DisplayIndex = DarkTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
-            fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.Visible ?? FMTabVisibleIn.Top;
+            fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.VisibleIn ?? FMTabVisibleIn.Top;
         }
 
         #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
