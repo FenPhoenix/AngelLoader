@@ -5470,12 +5470,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     private bool _inTabDragArea;
 
-    private void TopFMTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
+    private void TopFMTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
         HandleTabDrag(LowerSplitContainer);
     }
 
-    internal void Lazy_LowerTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
+    internal void Lazy_LowerTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
         HandleTabDrag(TopSplitContainer);
     }
