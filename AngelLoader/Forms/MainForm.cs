@@ -5443,7 +5443,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    // We might want to change this, if we want something beside the readme or whatever
+    // @DockUI: Could make this a field that gets set in the ctor (efficiency)
     internal Control ReadmeContainer => LowerSplitContainer.Panel1;
 
     public void RefreshCurrentFMScreenshots()
