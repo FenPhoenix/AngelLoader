@@ -5470,66 +5470,15 @@ public sealed partial class MainForm : DarkFormBase,
 
     private bool _inTabDragArea;
 
-    private static Color GetOverlayColor()
-    {
-        // @DockUI: Make light and dark mode colors
-        return Color.FromArgb(
-            alpha: 64,
-            red: DarkColors.BlueSelection.R,
-            green: DarkColors.BlueSelection.G,
-            blue: DarkColors.BlueSelection.B);
-    }
-
     private void TopFMTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
     {
-        Point cp = Native.GetCursorPosition_Fast();
-        Color overlayColor = GetOverlayColor();
-
-        DarkSplitContainerCustom lsp = LowerSplitContainer;
-
-        if (lsp.Panel2Collapsed && lsp.ClientRectangle.Contains(lsp.PointToClient_Fast(cp)))
-        {
-            if (!_inTabDragArea)
-            {
-                _inTabDragArea = true;
-                Trace.WriteLine("Hit closed");
-                using var gc = new Native.GraphicsContext(lsp.Handle);
-                using var b = new SolidBrush(overlayColor);
-                gc.G.FillRectangle(
-                    b,
-                    new Rectangle(
-                        lsp.SplitterDistanceLogical,
-                        0,
-                        lsp.ClientRectangle.Width - lsp.SplitterDistanceLogical,
-                        lsp.ClientRectangle.Height)
-                );
-            }
-        }
-        else if (lsp.Panel2.ClientRectangle.Contains(lsp.Panel2.PointToClient_Fast(cp)))
-        {
-            if (!_inTabDragArea)
-            {
-                _inTabDragArea = true;
-                Trace.WriteLine("Hit open");
-                using var gc = new Native.GraphicsContext(lsp.Panel2.Handle);
-                using var b = new SolidBrush(overlayColor);
-                gc.G.FillRectangle(
-                    b,
-                    lsp.Panel2.ClientRectangle with { X = 0, Y = 0 }
-                );
-            }
-        }
-        else
-        {
-            if (_inTabDragArea)
-            {
-                _inTabDragArea = false;
-                Trace.WriteLine("Miss");
-                lsp.Refresh();
-            }
-        }
+        HandleTabDrag(LowerSplitContainer);
     }
 
+    internal void Lazy_LowerTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
+    {
+        HandleTabDrag(TopSplitContainer);
+    }
 
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
     {
@@ -5550,6 +5499,44 @@ public sealed partial class MainForm : DarkFormBase,
             _inTabDragArea = false;
             EverythingPanel.ResumeDrawing();
         }
+    }
+
+    internal void Lazy_LowerTabControl_MouseUp(object sender, MouseEventArgs e)
+    {
+        if (!_inTabDragArea) return;
+
+        try
+        {
+            EverythingPanel.SuspendDrawing();
+
+            TabPage? dragTab = Lazy_LowerTabControl.TabControl.DragTab;
+            if (dragTab == null) return;
+
+            if (TopSplitContainer.Panel2Collapsed)
+            {
+                TopSplitContainer.Panel2Collapsed = false;
+                if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+                {
+                    lazyTab.ConstructWithSuspendResume();
+                }
+            }
+            MoveTab(WhichTabControl.Bottom, WhichTabControl.Top, dragTab);
+        }
+        finally
+        {
+            _inTabDragArea = false;
+            EverythingPanel.ResumeDrawing();
+        }
+    }
+
+    private static Color GetOverlayColor()
+    {
+        // @DockUI: Make light and dark mode colors
+        return Color.FromArgb(
+            alpha: 64,
+            red: DarkColors.BlueSelection.R,
+            green: DarkColors.BlueSelection.G,
+            blue: DarkColors.BlueSelection.B);
     }
 
     private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage)
@@ -5593,81 +5580,44 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void Lazy_LowerTabControl_MouseMoveCustom(object sender, MouseEventArgs e)
+    private void HandleTabDrag(DarkSplitContainerCustom sc)
     {
         Point cp = Native.GetCursorPosition_Fast();
-        Color overlayColor = GetOverlayColor();
 
-        DarkSplitContainerCustom tsp = TopSplitContainer;
-
-        if ((tsp.Panel2Collapsed || tsp.FullScreen) && tsp.ClientRectangle.Contains(tsp.PointToClient_Fast(cp)))
+        if ((sc.Panel2Collapsed || sc.FullScreen) && sc.ClientRectangle.Contains(sc.PointToClient_Fast(cp)))
         {
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                Trace.WriteLine("Hit closed");
-                using var gc = new Native.GraphicsContext(tsp.Handle);
-                using var b = new SolidBrush(overlayColor);
+                Trace.WriteLine("Hit collapsed");
+                using var gc = new Native.GraphicsContext(sc.Handle);
+                using var b = new SolidBrush(GetOverlayColor());
+                int splitterDistance = sc.SplitterDistanceLogical;
                 gc.G.FillRectangle(
                     b,
                     new Rectangle(
-                        tsp.SplitterDistanceLogical,
+                        splitterDistance,
                         0,
-                        tsp.ClientRectangle.Width - tsp.SplitterDistanceLogical,
-                        tsp.ClientRectangle.Height)
-                );
+                        sc.ClientRectangle.Width - splitterDistance,
+                        sc.ClientRectangle.Height));
             }
         }
-        else if (tsp.Panel2.ClientRectangle.Contains(tsp.Panel2.PointToClient_Fast(cp)))
+        else if (sc.Panel2.ClientRectangle.Contains(sc.Panel2.PointToClient_Fast(cp)))
         {
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
                 Trace.WriteLine("Hit open");
-                using var gc = new Native.GraphicsContext(tsp.Panel2.Handle);
-                using var b = new SolidBrush(overlayColor);
-                gc.G.FillRectangle(
-                    b,
-                    tsp.Panel2.ClientRectangle with { X = 0, Y = 0 }
-                );
+                using var gc = new Native.GraphicsContext(sc.Panel2.Handle);
+                using var b = new SolidBrush(GetOverlayColor());
+                gc.G.FillRectangle(b, sc.Panel2.ClientRectangle with { X = 0, Y = 0 });
             }
         }
-        else
-        {
-            if (_inTabDragArea)
-            {
-                _inTabDragArea = false;
-                Trace.WriteLine("Miss");
-                tsp.Refresh();
-            }
-        }
-    }
-
-    internal void Lazy_LowerTabControl_MouseUp(object sender, MouseEventArgs e)
-    {
-        if (!_inTabDragArea) return;
-
-        try
-        {
-            EverythingPanel.SuspendDrawing();
-
-            TabPage? dragTab = Lazy_LowerTabControl.TabControl.DragTab;
-            if (dragTab == null) return;
-
-            if (TopSplitContainer.Panel2Collapsed)
-            {
-                TopSplitContainer.Panel2Collapsed = false;
-                if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab)
-                {
-                    lazyTab.ConstructWithSuspendResume();
-                }
-            }
-            MoveTab(WhichTabControl.Bottom, WhichTabControl.Top, dragTab);
-        }
-        finally
+        else if (_inTabDragArea)
         {
             _inTabDragArea = false;
-            EverythingPanel.ResumeDrawing();
+            Trace.WriteLine("Miss");
+            sc.Refresh();
         }
     }
 
