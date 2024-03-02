@@ -119,7 +119,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly TabPage[] _gameTabs;
     private readonly ToolStripButtonCustom[] _filterByGameButtons;
-    private readonly Lazy_TabsBase[] _fmTabs;
+    private readonly Lazy_TabsBase[] _fmTabPages;
 
     private readonly Control[] _filterLabels;
     private readonly ToolStripItem[] _filtersToolStripSeparatedItems;
@@ -651,7 +651,7 @@ public sealed partial class MainForm : DarkFormBase,
         _fmsListDefaultRowHeight = FMsDGV.RowTemplate.Height;
 
         // ReSharper disable once RedundantExplicitArraySize
-        _fmTabs = new Lazy_TabsBase[FMTabCount]
+        _fmTabPages = new Lazy_TabsBase[FMTabCount]
         {
             StatisticsTabPage,
             EditFMTabPage,
@@ -662,9 +662,9 @@ public sealed partial class MainForm : DarkFormBase,
             ScreenshotsTabPage
         };
 
-        for (int i = 0; i < _fmTabs.Length; i++)
+        for (int i = 0; i < _fmTabPages.Length; i++)
         {
-            _fmTabs[i].SetOwner(this);
+            _fmTabPages[i].SetOwner(this);
         }
 
         // For right-clicking on tabs
@@ -894,7 +894,7 @@ public sealed partial class MainForm : DarkFormBase,
         var fmTabsDict = new Dictionary<int, TabPage>();
         for (int i = 0; i < FMTabCount; i++)
         {
-            fmTabsDict.Add(Config.FMTabsData.Tabs[i].DisplayIndex, _fmTabs[i]);
+            fmTabsDict.Add(Config.FMTabsData.Tabs[i].DisplayIndex, _fmTabPages[i]);
         }
 
         var fmTabs = new TabPage[FMTabCount];
@@ -907,16 +907,23 @@ public sealed partial class MainForm : DarkFormBase,
 
         for (int i = 0; i < FMTabCount; i++)
         {
+            Lazy_TabsBase fmTabPage = _fmTabPages[i];
+
             FMTabVisibleIn visible = Config.FMTabsData.Tabs[i].Visible;
             // They're visible by default - shave off a bit of time
-            if (visible != FMTabVisibleIn.Top)
+            if (visible == FMTabVisibleIn.None)
             {
-                TopFMTabControl.ShowTab(_fmTabs[i], false);
+                TopFMTabControl.ShowTab(fmTabPage, false);
+                // @DockUI: Duplicate code - brittle
+                if (TopFMTabControl.TabCount == 0)
+                {
+                    TopSplitContainer.Panel2Collapsed = true;
+                }
             }
-            if (visible == FMTabVisibleIn.Bottom)
+            else if (visible == FMTabVisibleIn.Bottom)
             {
                 ConstructLazyLowerTabControl();
-                Lazy_LowerTabControl.TabControl.ShowTab(_fmTabs[i], true);
+                MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
         }
@@ -927,7 +934,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if ((int)Config.FMTabsData.SelectedTab == i)
             {
-                TopFMTabControl.SelectedTab = _fmTabs[i];
+                TopFMTabControl.SelectedTab = _fmTabPages[i];
                 break;
             }
         }
@@ -1856,9 +1863,9 @@ public sealed partial class MainForm : DarkFormBase,
             ModsTabPage.Text = LText.ModsTab.TabText;
             ScreenshotsTabPage.Text = LText.ScreenshotsTab.TabText;
 
-            for (int i = 0; i < _fmTabs.Length; i++)
+            for (int i = 0; i < _fmTabPages.Length; i++)
             {
-                _fmTabs[i].Localize();
+                _fmTabPages[i].Localize();
             }
 
             #endregion
@@ -1982,7 +1989,7 @@ public sealed partial class MainForm : DarkFormBase,
                 (//x != TopSplitContainer &&
                  //x != TopSplitContainer.Panel2 &&
                     x != TopFMTabControl &&
-                    !_fmTabs.Contains(x));
+                    !_fmTabPages.Contains(x));
 #endif
 
             if (startup && !darkMode)
@@ -3285,9 +3292,9 @@ public sealed partial class MainForm : DarkFormBase,
             ? (FMTabVisibleIn.Bottom, Lazy_LowerTabControl.TabControl)
             : (FMTabVisibleIn.Top, TopFMTabControl);
 
-        for (int i = 0; i < _fmTabs.Length; i++)
+        for (int i = 0; i < _fmTabPages.Length; i++)
         {
-            Lazy_TabsBase item = _fmTabs[i];
+            Lazy_TabsBase item = _fmTabPages[i];
             Lazy_FMTabsMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
             /*
             @DockUI(FM per-tab show/hide menu logic)
@@ -3308,7 +3315,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         var s = (ToolStripMenuItemCustom)sender;
 
-        TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _fmTabs, FMTabCount);
+        TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _fmTabPages, FMTabCount);
 
         // @DockUI: It's possible to have zero tabs in one or the other tab controls now
         // This is ultimately what we want, but we need to add proper support for this scenario, because we
@@ -4713,9 +4720,9 @@ public sealed partial class MainForm : DarkFormBase,
     {
         using (new DisableEvents(this))
         {
-            for (int i = 0; i < _fmTabs.Length; i++)
+            for (int i = 0; i < _fmTabPages.Length; i++)
             {
-                _fmTabs[i].UpdatePage();
+                _fmTabPages[i].UpdatePage();
             }
         }
     }
@@ -5040,20 +5047,20 @@ public sealed partial class MainForm : DarkFormBase,
         int selectedTabIndex = -1;
         if (TopFMTabControl.TabCount > 0)
         {
-            selectedTabIndex = Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab);
+            selectedTabIndex = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab);
         }
         fmTabs.SelectedTab = selectedTabIndex > -1 ? (FMTab)selectedTabIndex : Config.FMTabsData.SelectedTab;
 
         int selectedTab2Index = -1;
         if (Lazy_LowerTabControl is { Constructed: true, TabControl.TabCount: > 0 })
         {
-            selectedTab2Index = Array.IndexOf(_fmTabs.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.TabControl.SelectedTab);
+            selectedTab2Index = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.TabControl.SelectedTab);
         }
         fmTabs.SelectedTab2 = selectedTab2Index > -1 ? (FMTab)selectedTab2Index : Config.FMTabsData.SelectedTab2;
 
         for (int i = 0; i < FMTabCount; i++)
         {
-            Lazy_TabsBase fmTab = _fmTabs[i];
+            Lazy_TabsBase fmTab = _fmTabPages[i];
             fmTabs.Tabs[i].DisplayIndex = DarkTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
             fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.Visible ?? FMTabVisibleIn.Top;
         }
@@ -5536,20 +5543,44 @@ public sealed partial class MainForm : DarkFormBase,
             if (dragTab == null) return;
 
             ConstructLazyLowerTabControl();
-            TopFMTabControl.ShowTab(dragTab, false);
-            Lazy_LowerTabControl.TabControl.ShowTab(dragTab, true);
-            if (TopFMTabControl.TabCount == 0)
-            {
-                TopSplitContainer.Panel2Collapsed = true;
-            }
-
-            Lazy_LowerTabControl.TabControl.SelectedTab = dragTab;
+            MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, dragTab);
         }
         finally
         {
             _inTabDragArea = false;
             EverythingPanel.ResumeDrawing();
         }
+    }
+
+    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage)
+    {
+        if (source == dest) return;
+
+        DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopFMTabControl;
+
+        DarkTabControl destTabControl = dest == WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopFMTabControl;
+
+        DarkSplitContainerCustom sourceSplitContainer = source == WhichTabControl.Bottom
+            ? LowerSplitContainer
+            : TopSplitContainer;
+
+        DarkSplitContainerCustom destSplitContainer = dest == WhichTabControl.Bottom
+            ? LowerSplitContainer
+            : TopSplitContainer;
+
+        sourceTabControl.ShowTab(tabPage, false);
+        destTabControl.ShowTab(tabPage, true);
+        if (sourceTabControl.TabCount == 0)
+        {
+            sourceSplitContainer.Panel2Collapsed = true;
+        }
+        destSplitContainer.Panel2Collapsed = false;
+        destTabControl.SelectedTab = tabPage;
+        tabPage.Focus();
     }
 
     private void ConstructLazyLowerTabControl()
@@ -5632,14 +5663,7 @@ public sealed partial class MainForm : DarkFormBase,
                     lazyTab.ConstructWithSuspendResume();
                 }
             }
-            Lazy_LowerTabControl.TabControl.ShowTab(dragTab, false);
-            TopFMTabControl.ShowTab(dragTab, true);
-            if (Lazy_LowerTabControl.TabControl.TabCount == 0)
-            {
-                LowerSplitContainer.Panel2Collapsed = true;
-            }
-
-            TopFMTabControl.SelectedTab = dragTab;
+            MoveTab(WhichTabControl.Bottom, WhichTabControl.Top, dragTab);
         }
         finally
         {
