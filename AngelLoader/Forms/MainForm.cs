@@ -5498,9 +5498,9 @@ public sealed partial class MainForm : DarkFormBase,
                 gc.G.FillRectangle(
                     b,
                     new Rectangle(
-                        TopSplitContainer.SplitterDistance,
+                        lsp.SplitterDistanceLogical,
                         0,
-                        lsp.ClientRectangle.Width - TopSplitContainer.SplitterDistance,
+                        lsp.ClientRectangle.Width - lsp.SplitterDistanceLogical,
                         lsp.ClientRectangle.Height)
                 );
             }
@@ -5599,7 +5599,6 @@ public sealed partial class MainForm : DarkFormBase,
         Color overlayColor = GetOverlayColor();
 
         DarkSplitContainerCustom tsp = TopSplitContainer;
-        DarkSplitContainerCustom lsp = LowerSplitContainer;
 
         if ((tsp.Panel2Collapsed || tsp.FullScreen) && tsp.ClientRectangle.Contains(tsp.PointToClient_Fast(cp)))
         {
@@ -5612,9 +5611,9 @@ public sealed partial class MainForm : DarkFormBase,
                 gc.G.FillRectangle(
                     b,
                     new Rectangle(
-                        lsp.SplitterDistance,
+                        tsp.SplitterDistanceLogical,
                         0,
-                        tsp.ClientRectangle.Width - lsp.SplitterDistance,
+                        tsp.ClientRectangle.Width - tsp.SplitterDistanceLogical,
                         tsp.ClientRectangle.Height)
                 );
             }

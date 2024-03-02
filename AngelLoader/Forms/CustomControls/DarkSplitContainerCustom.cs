@@ -101,6 +101,11 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     internal float SplitterPercentReal => FullScreen ? _storedSplitterPercent : SplitterPercent;
 
+    internal int SplitterDistanceLogical =>
+        FullScreen
+            ? (int)Math.Round(_storedSplitterPercent * CrossLength)
+            : SplitterDistance;
+
     internal bool FullScreen { get; private set; }
     internal int CollapsedSize;
 
