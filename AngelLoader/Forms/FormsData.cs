@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
+using AngelLoader.DataClasses;
 
 namespace AngelLoader.Forms;
 
@@ -54,4 +56,10 @@ public sealed class MemoryImage : IDisposable
         Img.Dispose();
         _memoryStream.Dispose();
     }
+}
+
+public sealed class BackingTab(TabPage tabPage)
+{
+    public TabPage TabPage = tabPage;
+    public FMTabVisibleIn Visible = FMTabVisibleIn.Top;
 }

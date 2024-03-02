@@ -19,26 +19,6 @@ update the backing list ourselves.
 public sealed class DarkTabControl : TabControl, IDarkable
 {
     #region Private fields
-    /*
-    @DockUI(Moving tab pages between controls)
-    To avoid having a duplicate set of tab pages, we should physically move the tab pages from one control to the
-    other. But this backing tabs list doesn't really support that. To allow it, we could make this list global
-    and make Visible into a three-state enum value for Visible Top, Visible Bottom, or Not Visible. That way, we
-    would minimize the amount of backing tab code we'd have to re-do.
-    -But this needs a concrete enum variable in the backing tab class that only applies to one situation, but
-     all other tab controls will have to carry it and ignore it...
-
-    -Another idea is we could have the tab pages be nullable in the list?
-     That way we could have two lists of the same length, and swapping tabs' positions would maintain the same
-     positions for non-null tabs between the two lists.
-     But actually this would still require doing every operation on both lists at once, so never mind I guess...
-    */
-    internal sealed class BackingTab
-    {
-        internal TabPage TabPage;
-        internal FMTabVisibleIn Visible = FMTabVisibleIn.Top;
-        internal BackingTab(TabPage tabPage) => TabPage = tabPage;
-    }
 
     internal TabPage? DragTab { get; private set; }
 

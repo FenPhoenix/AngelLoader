@@ -197,7 +197,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Cache visible state because calling Visible redoes the work even if the value is the same
     private bool _readmeControlsOtherThanComboBoxVisible;
 
-    private readonly List<DarkTabControl.BackingTab> _backingFMTabs = new(FMTabCount);
+    private readonly List<BackingTab> _backingFMTabs = new(FMTabCount);
 
     #endregion
 
@@ -3302,7 +3302,7 @@ public sealed partial class MainForm : DarkFormBase,
             They're all a little weird. Decide on something for the final release.
             */
 #if true
-            DarkTabControl.BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
+            BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
             if (backingTab != null)
             {
                 Lazy_FMTabsMenu.SetItemVisible(i, backingTab.Visible == FMTabVisibleIn.None || backingTab.Visible == which);
