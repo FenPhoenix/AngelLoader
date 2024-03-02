@@ -1206,6 +1206,7 @@ public sealed partial class MainForm : DarkFormBase,
                 lazyTab.Construct();
             }
             TopFMTabControl.Selected += FMTabControl_Selected;
+            Lazy_LowerTabControl.Selected += FMTabControl_Selected;
 
             _firstShowDone = true;
         }

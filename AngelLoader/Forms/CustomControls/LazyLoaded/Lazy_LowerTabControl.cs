@@ -60,13 +60,17 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
         _owner.LowerSplitContainer.Panel2.MouseClick += _owner.LowerFMTabsBar_MouseClick;
 
-        _tabControl.Selected += _owner.FMTabControl_Selected;
+        _tabControl.Selected += TabControl_Selected;
         _tabControl.MouseDragCustom += _owner.Lazy_LowerTabControl_MouseDragCustom;
         _tabControl.MouseUp += _owner.Lazy_LowerTabControl_MouseUp;
         _tabControl.VisibleChanged += TabControl_VisibleChanged;
 
         Constructed = true;
     }
+
+    private void TabControl_Selected(object sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
+
+    public event TabControlEventHandler? Selected;
 
     private void TabControl_VisibleChanged(object sender, System.EventArgs e)
     {
