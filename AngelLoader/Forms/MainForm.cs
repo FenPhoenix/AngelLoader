@@ -927,7 +927,6 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else if (visible == FMTabVisibleIn.Bottom)
             {
-                Lazy_LowerTabControl.Construct();
                 MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
@@ -5548,7 +5547,6 @@ public sealed partial class MainForm : DarkFormBase,
             dragTab = TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
-            Lazy_LowerTabControl.Construct();
             MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, dragTab);
         }
         finally

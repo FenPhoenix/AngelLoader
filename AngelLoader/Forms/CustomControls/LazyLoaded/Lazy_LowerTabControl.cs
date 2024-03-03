@@ -45,8 +45,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     public Lazy_LowerTabControl(MainForm owner) => _owner = owner;
 
-    // @DockUI: We may be able to just call this implicitly through accessing TabControl
-    internal void Construct()
+    private void Construct()
     {
         if (Constructed) return;
 
