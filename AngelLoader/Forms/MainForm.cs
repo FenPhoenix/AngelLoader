@@ -1,10 +1,4 @@
 ﻿/*
-@DockUI general notes:
--We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the readme is
- fullscreened? Or should we hide the beside-readme area too?
-
-----------------------
-
 NOTE: MainForm notes:
 
 @LazyLoad: Controls that can be lazy-loaded in principle:
@@ -4267,6 +4261,11 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (sender == ReadmeFullScreenButton)
         {
+            /*
+            @DockUI(readme fullscreen):
+            We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the
+            readme is fullscreened? Or should we hide the beside-readme area too?
+            */
             MainSplitContainer.ToggleFullScreen();
             ShowReadmeControls(CursorOverReadmeArea());
         }
@@ -5473,8 +5472,6 @@ public sealed partial class MainForm : DarkFormBase,
     #region Tab dragging
     /*
     @DockUI: Working/testing code, finalize before release
-    @DockUI: Detect the position dragged to, and if it's in the tab bar, insert the tab at that location
-    @DockUI: Focus tab when moving between tab controls, to prevent first-control-select issue again
     */
 
     private bool _inTabDragArea;
