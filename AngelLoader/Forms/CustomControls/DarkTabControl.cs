@@ -523,6 +523,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
             {
                 TabPages.Remove(bt.TabPage);
                 // Otherwise the first control within the tab page gets selected
+                // @DockUI: We should probably select the nearest tab when we remove one
                 if (TabCount > 0) TabPages[0].Focus();
             }
         }
