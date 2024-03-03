@@ -10,8 +10,8 @@ NOTE: MainForm notes:
  in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then."
 -All filter controls (they're hideable)
 -FM tab pages themselves (even though they're blank containers of lazy-loaded contents now)
-@DockUI: We're going to lazy-load both of these in the final release - remove this comment then
--FM tab controls (the containers of the tab pages)
+-FM tab controls (the containers of the tab pages) (but can't really, because tab pages need to be added to a tab
+ control before they can be considered to be in a proper working state)
 -Rating columns (text or image) - one or the other will not be shown
 
 @NET5: Fonts will change and control sizes will all change too.
@@ -902,11 +902,11 @@ public sealed partial class MainForm : DarkFormBase,
             fmTabs[i] = fmTabsDict[i];
         }
 
-        // @DockUI: We'll need to change this logic when we lazy-load both tab controls
         /*
         @DockUI: Tab pages need to be added to a tab control once in order to work properly.
-        At the very least, setting tab text throws an ArgumentOutOfRangeException in release mode.
-        This being the case, we should just keep the top control non-lazy-loaded and keep the logic as it is.
+        If they haven't been added, then at the very least, setting tab text throws an ArgumentOutOfRangeException
+        in release mode. This being the case, we should just keep the top control non-lazy-loaded and keep the
+        logic as it is.
         */
         TopFMTabControl.SetTabsFull(fmTabs);
 
@@ -1222,7 +1222,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_firstShowDone)
         {
-            // @DockUI: We need to handle the bottom tab control / collapsed state here too
+            // @DockUI: Bottom (lazy-loaded) control handles this itself
             if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopFMTabsPanelCollapsed)
             {
                 lazyTab.Construct();
@@ -3313,7 +3313,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    // @DockUI: Could we combine these eventually?
     private void TopFMTabsMenuButton_Click(object sender, EventArgs e)
     {
         Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Top;
@@ -3357,9 +3356,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _fmTabPages, FMTabCount);
 
-        // @DockUI: It's possible to have zero tabs in one or the other tab controls now
-        // This is ultimately what we want, but we need to add proper support for this scenario, because we
-        // currently assume it can't happen (because it couldn't before).
         DarkTabControl tabControl = s.Owner is DarkContextMenu { Data: WhichTabControl.Bottom }
             ? Lazy_LowerTabControl.TabControl
             : TopFMTabControl;
