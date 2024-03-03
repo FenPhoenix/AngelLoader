@@ -903,6 +903,11 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // @DockUI: We'll need to change this logic when we lazy-load both tab controls
+        /*
+        @DockUI: Tab pages need to be added to a tab control once in order to work properly.
+        At the very least, setting tab text throws an ArgumentOutOfRangeException in release mode.
+        This being the case, we should just keep the top control non-lazy-loaded and keep the logic as it is.
+        */
         TopFMTabControl.SetTabsFull(fmTabs);
 
         for (int i = 0; i < FMTabCount; i++)
