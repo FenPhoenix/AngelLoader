@@ -405,49 +405,37 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
         int newTabIndex = TabPages.IndexOf(newTab);
 
-        int distance = Math.Abs(newTabIndex - dragTabIndex);
-        if (distance == 1)
-        {
-            TabPages[dragTabIndex] = newTab;
-            TabPages[newTabIndex] = DragTab;
+        // Handle the case where the tab is moving more than one position in one go.
+        // The easy way would be to insert/remove, but that results in terrible flickering for the TabPages
+        // collection, and suspend/resume doesn't fix it either. So just move everything over manually.
 
-            _backingTabList[bDragTabIndex].TabPage = newTab;
-            _backingTabList[bNewTabIndex].TabPage = DragTab;
+        if (newTabIndex > dragTabIndex)
+        {
+            for (int i = dragTabIndex; i < newTabIndex; i++)
+            {
+                TabPages[i] = TabPages[i + 1];
+            }
+            for (int i = bDragTabIndex; i < bNewTabIndex; i++)
+            {
+                _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
+                _backingTabList[i].VisibleIn = _backingTabList[i + 1].VisibleIn;
+            }
         }
         else
         {
-            // Handle the case where the tab is moving more than one position in one go.
-            // The easy way would be to insert/remove, but that results in terrible flickering for the TabPages
-            // collection, and suspend/resume doesn't fix it either. So just move everything over manually.
-
-            if (newTabIndex > dragTabIndex)
+            for (int i = dragTabIndex - 1; i >= newTabIndex; i--)
             {
-                for (int i = dragTabIndex; i < newTabIndex; i++)
-                {
-                    TabPages[i] = TabPages[i + 1];
-                }
-                for (int i = bDragTabIndex; i < bNewTabIndex; i++)
-                {
-                    _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
-                    _backingTabList[i].VisibleIn = _backingTabList[i + 1].VisibleIn;
-                }
+                TabPages[i + 1] = TabPages[i];
             }
-            else
+            for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
             {
-                for (int i = dragTabIndex - 1; i >= newTabIndex; i--)
-                {
-                    TabPages[i + 1] = TabPages[i];
-                }
-                for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
-                {
-                    _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
-                    _backingTabList[i + 1].VisibleIn = _backingTabList[i].VisibleIn;
-                }
+                _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
+                _backingTabList[i + 1].VisibleIn = _backingTabList[i].VisibleIn;
             }
-
-            TabPages[newTabIndex] = DragTab;
-            _backingTabList[bNewTabIndex].TabPage = DragTab;
         }
+
+        TabPages[newTabIndex] = DragTab;
+        _backingTabList[bNewTabIndex].TabPage = DragTab;
 
         SelectedTab = DragTab;
 
