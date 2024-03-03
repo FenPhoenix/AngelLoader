@@ -61,9 +61,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable
             AllowReordering = true,
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
             EnableScrollButtonsRefreshHack = true,
-            Size = new Size(container.Width - 16, container.Height + 1),
-
-            DarkModeEnabled = _darkModeEnabled
+            Size = new Size(container.Width - 16, container.Height + 1)
         };
 
         _tabControl.SetWhich(WhichTabControl.Bottom);
@@ -71,6 +69,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
         // Handle hack here instead, because it needs to be for whatever finicky goddamn reason
         _ = _tabControl.Handle;
+        // Dark mode set MUST come AFTER the handle hack, otherwise it doesn't work!
+        _tabControl.DarkModeEnabled = _darkModeEnabled;
 
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
         container.MouseClick += _owner.LowerFMTabsBar_MouseClick;
