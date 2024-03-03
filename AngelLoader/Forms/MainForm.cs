@@ -9,8 +9,9 @@ NOTE: MainForm notes:
  "Don't lazy load the filter bar scroll buttons, as they screw the whole thing up (FMsDGV doesn't anchor
  in its panel correctly, etc.). If we figure out how to solve this later, we can lazy load them then."
 -All filter controls (they're hideable)
--Top-right tab pages themselves (even though they're blank containers of lazy-loaded contents now)
--Top-right tab control (the container of the tab pages)
+-FM tab pages themselves (even though they're blank containers of lazy-loaded contents now)
+@DockUI: We're going to lazy-load both of these in the final release - remove this comment then
+-FM tab controls (the containers of the tab pages)
 -Rating columns (text or image) - one or the other will not be shown
 
 @NET5: Fonts will change and control sizes will all change too.
@@ -887,7 +888,7 @@ public sealed partial class MainForm : DarkFormBase,
         // Set here specifically (before anything else) so that splitter positioning etc. works right.
         SetWindowStateAndSize();
 
-        #region Top-right tabs
+        #region FM tabs
 
         var fmTabsDict = new Dictionary<int, TabPage>();
         for (int i = 0; i < FMTabCount; i++)
@@ -901,6 +902,7 @@ public sealed partial class MainForm : DarkFormBase,
             fmTabs[i] = fmTabsDict[i];
         }
 
+        // @DockUI: We'll need to change this logic when we lazy-load both tab controls
         TopFMTabControl.SetTabsFull(fmTabs);
 
         for (int i = 0; i < FMTabCount; i++)
@@ -1866,7 +1868,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             #endregion
 
-            #region Top-right tabs area
+            #region FM tabs
 
             if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount(), forceRefresh: true);
 
@@ -3257,7 +3259,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    #region Top-right area
+    #region FM tabs
 
     private void FMTabControl_Selected(object sender, TabControlEventArgs e)
     {
@@ -4524,7 +4526,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region FM display
 
-    // Perpetual TODO: Make sure this clears everything including the top right tab stuff
+    // Perpetual TODO: Make sure this clears everything including the FM tab stuff
     private void ClearShownData()
     {
         // Hack to stop this being run when we clear selection for the purpose of selecting just one immediately

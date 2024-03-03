@@ -477,8 +477,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
     {
         /*
         Create handle before adding tabs to prevent the following:
-        -You start the app in dark mode and with the top-right area hidden
-        -You show the top-right area
+        -You start the app in dark mode and with the FM tabs area(s) hidden
+        -You show the FM tabs area(s)
         -The tabs are all the same width, and if you switch to light mode, they have a crappy bold font instead
          of the intended one
         */

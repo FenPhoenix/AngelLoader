@@ -1263,7 +1263,7 @@ sealed partial class MainForm
 
     #endregion
 
-    #region Top-right
+    #region FM tabs
 
     internal CustomControls.DarkTabControl TopFMTabControl;
     internal CustomControls.StatsTabPage StatisticsTabPage;

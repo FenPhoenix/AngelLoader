@@ -2646,7 +2646,7 @@ internal static class Core
 
         filter.DeepCopyTo(Config.Filter);
 
-        #region Top-right panel
+        #region FM tabs
 
         Config.FMTabsData.SelectedTab = fmTabsData.SelectedTab;
         Config.FMTabsData.SelectedTab2 = fmTabsData.SelectedTab2;

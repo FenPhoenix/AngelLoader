@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-// @ViewBusinessLogic: Lots of it in the lazy-loaded top-right tabs now.
+// @ViewBusinessLogic: Lots of it in the lazy-loaded FM tabs now.
 public class Lazy_TabsBase : DarkTabPageCustom
 {
     internal enum ScanSender

@@ -699,7 +699,7 @@ internal static partial class Ini
         }
     }
 
-    #region Top-right tabs
+    #region FM tabs
 
     private static void Config_FMTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
@@ -1022,7 +1022,7 @@ internal static partial class Ini
         { "BottomRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_BottomFMTabsPanelCollapsed_Set) },
         { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
 
-        #region Top-right tabs
+        #region FM tabs
 
         { "TopRightTab", new Config_DelegatePointerWrapper(&Config_FMTab_Set) },
         { "TopRightTab2", new Config_DelegatePointerWrapper(&Config_FMTab2_Set) },

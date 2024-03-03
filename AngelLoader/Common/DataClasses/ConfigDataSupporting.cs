@@ -95,7 +95,7 @@ public enum CheckForUpdates
     False
 }
 
-#region Top-right tabs
+#region FM tabs
 
 // IMPORTANT(FM tabs enum): Do not rename members, they're used in the config file
 [FenGenEnumCount]
