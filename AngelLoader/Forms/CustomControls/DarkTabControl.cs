@@ -16,9 +16,13 @@ In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a
 When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
 update the backing list ourselves.
 */
-public sealed class DarkTabControl : TabControl, IDarkable
+public sealed class DarkTabControl : TabControl, IDarkable, IEventDisabler
 {
     #region Private fields
+
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public int EventsDisabled { get; set; }
 
     internal TabPage? DragTab { get; private set; }
 
@@ -395,16 +399,84 @@ public sealed class DarkTabControl : TabControl, IDarkable
         if (bNewTabIndex == -1 || newTab == null || newTab == DragTab) return;
 
         int newTabIndex = TabPages.IndexOf(newTab);
+
+#if true
         TabPages[dragTabIndex] = newTab;
         TabPages[newTabIndex] = DragTab;
 
         _backingTabList[bDragTabIndex].TabPage = newTab;
         _backingTabList[bNewTabIndex].TabPage = DragTab;
 
+#else
+        // This results in terrible flickering, as expected of removing/inserting from a live tab collection.
+        // Suspend/resume doesn't help either. Looks like we have to do the other idea, of bumping them all over
+        // by one.
+        try
+        {
+            using (new DisableEvents(this))
+            {
+                this.SuspendDrawing();
+                if (newTabIndex > dragTabIndex)
+                {
+                    TabPages.Remove(DragTab);
+                    TabPages.Insert(newTabIndex, DragTab);
+
+                    BackingTab backingDragTab = _backingTabList[bDragTabIndex];
+                    _backingTabList.Remove(backingDragTab);
+                    _backingTabList.Insert(bNewTabIndex, backingDragTab);
+                }
+                else // newTabIndex < dragTabIndex
+                {
+                    TabPages.Remove(DragTab);
+                    TabPages.Insert(newTabIndex, DragTab);
+
+                    BackingTab backingDragTab = _backingTabList[bDragTabIndex];
+                    _backingTabList.Remove(backingDragTab);
+                    _backingTabList.Insert(bNewTabIndex, backingDragTab);
+
+                }
+            }
+        }
+        finally
+        {
+            this.ResumeDrawing();
+        }
+#endif
+
         SelectedTab = DragTab;
 
         // Otherwise the first control within the tab page gets selected
         SelectedTab.Focus();
+    }
+
+    protected override void OnDeselecting(TabControlCancelEventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        base.OnDeselecting(e);
+    }
+
+    protected override void OnDeselected(TabControlEventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        base.OnDeselected(e);
+    }
+
+    protected override void OnSelecting(TabControlCancelEventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        base.OnSelecting(e);
+    }
+
+    protected override void OnSelected(TabControlEventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        base.OnSelected(e);
+    }
+
+    protected override void OnSelectedIndexChanged(EventArgs e)
+    {
+        if (EventsDisabled > 0) return;
+        base.OnSelectedIndexChanged(e);
     }
 
     #endregion
