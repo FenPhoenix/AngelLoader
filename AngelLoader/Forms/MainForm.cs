@@ -5492,12 +5492,12 @@ public sealed partial class MainForm : DarkFormBase,
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
     {
         if (!_inTabDragArea) return;
-
+        TabPage? dragTab = null;
         try
         {
             EverythingPanel.SuspendDrawing();
 
-            TabPage? dragTab = TopFMTabControl.DragTab;
+            dragTab = TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
             ConstructLazyLowerTabControl();
@@ -5506,7 +5506,7 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             _inTabDragArea = false;
-            EverythingPanel.ResumeDrawing();
+            EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
         }
     }
 
@@ -5514,11 +5514,12 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_inTabDragArea) return;
 
+        TabPage? dragTab = null;
         try
         {
             EverythingPanel.SuspendDrawing();
 
-            TabPage? dragTab = Lazy_LowerTabControl.DragTab;
+            dragTab = Lazy_LowerTabControl.DragTab;
             if (dragTab == null) return;
 
             if (TopSplitContainer.Panel2Collapsed)
@@ -5534,7 +5535,7 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             _inTabDragArea = false;
-            EverythingPanel.ResumeDrawing();
+            EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
         }
     }
 

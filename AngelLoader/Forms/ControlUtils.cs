@@ -43,6 +43,30 @@ internal static class ControlUtils
         }
     }
 
+    internal static void ResumeDrawingAndFocusControl(this Control control, Control? controlToFocus, bool invalidateInsteadOfRefresh = false)
+    {
+        if (!control.IsHandleCreated || !control.Visible) return;
+        Native.SendMessage(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+
+        /*
+        Focus after the enable-redraw message but before the refresh.
+        If we put it before the enable-redraw message, the focus will be lost; if we put it after, there's a
+        short visible blip of the default focus before we change it.
+
+        Designed originally for the tab control, but use it for whatever...
+        */
+        controlToFocus?.Focus();
+
+        if (invalidateInsteadOfRefresh)
+        {
+            control.Invalidate();
+        }
+        else
+        {
+            control.Refresh();
+        }
+    }
+
     #endregion
 
     #region Centering
