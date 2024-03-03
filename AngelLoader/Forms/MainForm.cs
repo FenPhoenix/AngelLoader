@@ -5049,20 +5049,23 @@ public sealed partial class MainForm : DarkFormBase,
 
         SelectedFM selectedFM = FMsDGV.GetMainSelectedFMPosInfo();
 
+        #region FM tabs
+
         FMTabsData fmTabs = new();
+
+        TabPage[] fmTabPagesAsTabPages = _fmTabPages.Cast<TabPage>().ToArray();
 
         int selectedTabIndex = -1;
         if (TopFMTabControl.TabCount > 0)
         {
-            // @DockUI: Duplicate Cast/ToArray()
-            selectedTabIndex = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), TopFMTabControl.SelectedTab);
+            selectedTabIndex = Array.IndexOf(fmTabPagesAsTabPages, TopFMTabControl.SelectedTab);
         }
         fmTabs.SelectedTab = selectedTabIndex > -1 ? (FMTab)selectedTabIndex : Config.FMTabsData.SelectedTab;
 
         int selectedTab2Index = -1;
         if (Lazy_LowerTabControl.TabCount > 0)
         {
-            selectedTab2Index = Array.IndexOf(_fmTabPages.Cast<TabPage>().ToArray(), Lazy_LowerTabControl.SelectedTab);
+            selectedTab2Index = Array.IndexOf(fmTabPagesAsTabPages, Lazy_LowerTabControl.SelectedTab);
         }
         fmTabs.SelectedTab2 = selectedTab2Index > -1 ? (FMTab)selectedTab2Index : Config.FMTabsData.SelectedTab2;
 
@@ -5072,6 +5075,8 @@ public sealed partial class MainForm : DarkFormBase,
             fmTabs.Tabs[i].DisplayIndex = TopFMTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
             fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.VisibleIn ?? FMTabVisibleIn.Top;
         }
+
+        #endregion
 
         #region Quick hack to prevent splitter distances from freaking out if we're closing while minimized
 
