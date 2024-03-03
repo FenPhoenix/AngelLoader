@@ -142,19 +142,22 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     #region Private methods
 
-    internal static (int Index, BackingTab BackingTab)
+    internal (int Index, BackingTab BackingTab)
     FindBackingTab(List<BackingTab> backingTabs, TabPage tabPage, bool indexVisibleOnly = false)
     {
         for (int i = 0, vi = 0; i < backingTabs.Count; i++)
         {
             BackingTab backingTab = backingTabs[i];
-            // @DockUI: Could we make this our specific top/bottom value and get better ordering between moves?
-            if (indexVisibleOnly && backingTab.VisibleIn != FMTabVisibleIn.None) vi++;
+            if (indexVisibleOnly && VisibleInEqualsWhich(backingTab.VisibleIn, _whichTabControl)) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
 
         // We should never get here! (unless we're in infernal-forsaken design mode...!)
         throw new InvalidOperationException("Can't find backing tab?!");
+
+        static bool VisibleInEqualsWhich(FMTabVisibleIn visibleIn, WhichTabControl which) =>
+            (visibleIn == FMTabVisibleIn.Top && which == WhichTabControl.Top) ||
+            (visibleIn == FMTabVisibleIn.Bottom && which == WhichTabControl.Bottom);
     }
 
     private (int BackingTabIndex, TabPage? TabPage)

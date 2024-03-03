@@ -929,13 +929,23 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
-        // @DockUI: Set selected tab on bottom (if constructed and has at least one tab)
         for (int i = 0; i < FMTabCount; i++)
         {
             if ((int)Config.FMTabsData.SelectedTab == i)
             {
                 TopFMTabControl.SelectedTab = _fmTabPages[i];
                 break;
+            }
+        }
+        if (Lazy_LowerTabControl.Constructed)
+        {
+            for (int i = 0; i < FMTabCount; i++)
+            {
+                if ((int)Config.FMTabsData.SelectedTab2 == i)
+                {
+                    Lazy_LowerTabControl.TabControl.SelectedTab = _fmTabPages[i];
+                    break;
+                }
             }
         }
 
@@ -5060,7 +5070,7 @@ public sealed partial class MainForm : DarkFormBase,
         for (int i = 0; i < FMTabCount; i++)
         {
             Lazy_TabsBase fmTab = _fmTabPages[i];
-            fmTabs.Tabs[i].DisplayIndex = DarkTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
+            fmTabs.Tabs[i].DisplayIndex = TopFMTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
             fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.VisibleIn ?? FMTabVisibleIn.Top;
         }
 
@@ -5616,6 +5626,17 @@ public sealed partial class MainForm : DarkFormBase,
             _inTabDragArea = false;
             Trace.WriteLine("Miss");
             sc.Refresh();
+        }
+    }
+
+    // @DockUI: Test code, remove for final release
+    internal void PrintBackingTabs()
+    {
+        Trace.WriteLine("=========================");
+        for (int i = 0; i < _backingFMTabs.Count; i++)
+        {
+            BackingTab backingTab = _backingFMTabs[i];
+            Trace.WriteLine(i.ToStrInv() + ": Tab: " + backingTab.TabPage.Text + ", VisibleIn: " + backingTab.VisibleIn);
         }
     }
 
