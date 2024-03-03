@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
@@ -19,6 +20,9 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         }
     }
 
+    internal DarkButton MenuButton = null!;
+    internal DarkArrowButton CollapseButton = null!;
+
     private bool _darkModeEnabled;
     [PublicAPI]
     public bool DarkModeEnabled
@@ -29,6 +33,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
             _darkModeEnabled = value;
             if (!Constructed) return;
 
+            MenuButton.DarkModeEnabled = value;
+            CollapseButton.DarkModeEnabled = value;
             TabControl.DarkModeEnabled = value;
         }
     }
@@ -37,11 +43,14 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     public Lazy_LowerTabControl(MainForm owner) => _owner = owner;
 
-    private void Construct()
+    // @DockUI: We may be able to just call this implicitly through accessing TabControl
+    internal void Construct()
     {
         if (Constructed) return;
 
         var container = _owner.LowerSplitContainer.Panel2;
+
+        _owner.LowerSplitContainer.Panel2Collapsed = false;
 
         _tabControl = new DarkTabControl
         {
@@ -50,22 +59,60 @@ internal sealed class Lazy_LowerTabControl : IDarkable
             AllowReordering = true,
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
             EnableScrollButtonsRefreshHack = true,
-            Size = container.Size,
+            Size = new Size(container.Width - 16, container.Height + 1),
+
+            DarkModeEnabled = _darkModeEnabled
         };
 
         _tabControl.SetWhich(WhichTabControl.Bottom);
+        _tabControl.SetBackingList(_owner._backingFMTabs);
 
         // Handle hack here instead, because it needs to be for whatever finicky goddamn reason
         _ = _tabControl.Handle;
-        _tabControl.DarkModeEnabled = _darkModeEnabled;
 
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
-        _owner.LowerSplitContainer.Panel2.MouseClick += _owner.LowerFMTabsBar_MouseClick;
+        container.MouseClick += _owner.LowerFMTabsBar_MouseClick;
 
         _tabControl.Selected += TabControl_Selected;
         _tabControl.MouseDragCustom += _owner.Lazy_LowerTabControl_MouseDragCustom;
         _tabControl.MouseUp += _owner.Lazy_LowerTabControl_MouseUp;
         _tabControl.VisibleChanged += TabControl_VisibleChanged;
+
+        MenuButton = new DarkButton
+        {
+            Tag = LoadType.Lazy,
+
+            Anchor = AnchorStyles.Top | AnchorStyles.Right,
+            FlatAppearance = { BorderSize = 0 },
+            FlatStyle = FlatStyle.Flat,
+            Location = new Point(container.Width - 18, 0),
+            Size = new Size(18, 20),
+            TabIndex = 1,
+
+            DarkModeEnabled = _darkModeEnabled
+        };
+        MenuButton.Click += _owner.LowerFMTabsMenuButton_Click;
+        MenuButton.PaintCustom += _owner.FMTabsMenuButton_Paint;
+
+        CollapseButton = new DarkArrowButton
+        {
+            Tag = LoadType.Lazy,
+
+            Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right,
+            ArrowDirection = Direction.Right,
+            FlatAppearance = { BorderSize = 0 },
+            FlatStyle = FlatStyle.Flat,
+            Location = new Point(container.Width - 18, 20),
+            Size = new Size(18, container.Height - 20),
+            TabIndex = 2,
+
+            DarkModeEnabled = _darkModeEnabled
+        };
+        CollapseButton.Click += _owner.LowerFMTabsCollapseButton_Click;
+
+        container.Controls.Add(MenuButton);
+        container.Controls.Add(CollapseButton);
+        container.Controls.Add(_tabControl);
 
         Constructed = true;
     }

@@ -191,7 +191,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Cache visible state because calling Visible redoes the work even if the value is the same
     private bool _readmeControlsOtherThanComboBoxVisible;
 
-    private readonly List<BackingTab> _backingFMTabs = new(FMTabCount);
+    internal readonly List<BackingTab> _backingFMTabs = new(FMTabCount);
 
     #endregion
 
@@ -916,7 +916,7 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else if (visible == FMTabVisibleIn.Bottom)
             {
-                ConstructLazyLowerTabControl();
+                Lazy_LowerTabControl.Construct();
                 MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
@@ -3261,6 +3261,13 @@ public sealed partial class MainForm : DarkFormBase,
         SetTopRightCollapsedState(TopSplitContainer.FullScreen);
     }
 
+    internal void LowerFMTabsCollapseButton_Click(object sender, EventArgs e)
+    {
+        // @DockUI: Implement
+        //TopSplitContainer.ToggleFullScreen();
+        //SetTopRightCollapsedState(TopSplitContainer.FullScreen);
+    }
+
     // @DockUI: We need to handle the bottom tab control / collapsed state here too
     private void SetTopRightCollapsedState(bool collapsed)
     {
@@ -3285,10 +3292,17 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    // @DockUI: Could we combine these eventually?
     private void TopFMTabsMenuButton_Click(object sender, EventArgs e)
     {
         Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Top;
         ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, TopFMTabsMenuButton, MenuPos.BottomLeft);
+    }
+
+    internal void LowerFMTabsMenuButton_Click(object sender, EventArgs e)
+    {
+        Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Bottom;
+        ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, Lazy_LowerTabControl.MenuButton, MenuPos.BottomLeft);
     }
 
     internal void FMTabsMenu_Opening(object sender, CancelEventArgs e)
@@ -4936,7 +4950,7 @@ public sealed partial class MainForm : DarkFormBase,
         SettingsButton.Enabled ? Images.Settings : Images.GetDisabledImage(Images.Settings),
         x: 10);
 
-    private void FMTabsMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_FMTabs(TopFMTabsMenuButton, e);
+    internal void FMTabsMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton_FMTabs((Button)sender, e);
 
     private void MainMenuButton_Paint(object sender, PaintEventArgs e) => Images.PaintHamburgerMenuButton24(MainMenuButton, e);
 
@@ -5502,7 +5516,7 @@ public sealed partial class MainForm : DarkFormBase,
             dragTab = TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
-            ConstructLazyLowerTabControl();
+            Lazy_LowerTabControl.Construct();
             MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, dragTab);
         }
         finally
@@ -5581,14 +5595,6 @@ public sealed partial class MainForm : DarkFormBase,
         destSplitContainer.Panel2Collapsed = false;
         destTabControl.SelectedTab = tabPage;
         tabPage.Focus();
-    }
-
-    private void ConstructLazyLowerTabControl()
-    {
-        if (Lazy_LowerTabControl.Constructed) return;
-        LowerSplitContainer.Panel2Collapsed = false;
-        Lazy_LowerTabControl.TabControl.SetBackingList(_backingFMTabs);
-        LowerSplitContainer.Panel2.Controls.Add(Lazy_LowerTabControl.TabControl);
     }
 
     private void HandleTabDrag(DarkSplitContainerCustom sc)
