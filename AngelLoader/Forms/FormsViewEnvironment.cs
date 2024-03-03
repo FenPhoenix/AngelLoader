@@ -53,13 +53,14 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         */
         var screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
         if (screenshotsTab.Visible == FMTabVisibleIn.Top &&
-            (config.TopRightPanelCollapsed ||
+            (config.TopFMTabsPanelCollapsed ||
              config.FMTabsData.SelectedTab != FMTab.Screenshots))
         {
             return;
         }
         else if (screenshotsTab.Visible == FMTabVisibleIn.Bottom &&
-                 config.FMTabsData.SelectedTab2 != FMTab.Screenshots)
+                 (config.BottomFMTabsPanelCollapsed ||
+                  config.FMTabsData.SelectedTab2 != FMTab.Screenshots))
         {
             return;
         }

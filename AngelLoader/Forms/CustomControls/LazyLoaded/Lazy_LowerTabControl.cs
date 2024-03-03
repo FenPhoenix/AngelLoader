@@ -20,6 +20,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         }
     }
 
+    private bool _enabled = true;
+
     internal DarkButton MenuButton = null!;
     internal DarkArrowButton CollapseButton = null!;
 
@@ -114,6 +116,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         container.Controls.Add(CollapseButton);
         container.Controls.Add(_tabControl);
 
+        _tabControl.Enabled = _enabled;
+
         Constructed = true;
     }
 
@@ -128,6 +132,22 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         {
             if (!Constructed) return;
             _tabControl.ShowTab(tabPage, false);
+        }
+    }
+
+    public bool Enabled
+    {
+        get => Constructed ? _tabControl.Enabled : _enabled;
+        set
+        {
+            if (Constructed)
+            {
+                _tabControl.Enabled = value;
+            }
+            else
+            {
+                _enabled = value;
+            }
         }
     }
 

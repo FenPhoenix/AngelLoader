@@ -347,7 +347,8 @@ public sealed class ConfigData
     private float _lowerSplitterPercent = Defaults.LowerSplitterPercent;
     internal float LowerSplitterPercent { get => _lowerSplitterPercent; set => _lowerSplitterPercent = value.ClampZeroToOne(); }
 
-    internal bool TopRightPanelCollapsed;
+    internal bool TopFMTabsPanelCollapsed;
+    internal bool BottomFMTabsPanelCollapsed;
 
     internal readonly FMTabsData FMTabsData = new();
 

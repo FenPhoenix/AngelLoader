@@ -2613,7 +2613,8 @@ internal static class Core
         GameTabsState gameTabsState,
         GameIndex gameTab,
         FMTabsData fmTabsData,
-        bool topRightPanelCollapsed,
+        bool topFMTabsPanelCollapsed,
+        bool bottomFMTabsPanelCollapsed,
         float readmeZoomFactor)
     {
         #region Main window state
@@ -2658,7 +2659,8 @@ internal static class Core
 
         Config.FMTabsData.EnsureValidity();
 
-        Config.TopRightPanelCollapsed = topRightPanelCollapsed;
+        Config.TopFMTabsPanelCollapsed = topFMTabsPanelCollapsed;
+        Config.BottomFMTabsPanelCollapsed = bottomFMTabsPanelCollapsed;
 
         #endregion
 

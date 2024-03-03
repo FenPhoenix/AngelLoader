@@ -11,6 +11,8 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
 
     private bool _constructed;
 
+    private WhichTabControl _which;
+
     private string _text = "";
 
     private DrawnPanel Panel = null!;
@@ -33,6 +35,8 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
 
     internal Lazy_FMTabsBlocker(MainForm owner) => _owner = owner;
 
+    internal void SetWhich(WhichTabControl which) => _which = which;
+
     internal void SetText(string text)
     {
         if (_constructed)
@@ -49,13 +53,18 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
     {
         if (_constructed) return;
 
-        var container = _owner.TopSplitContainer.Panel2;
+        var container =
+            _which == WhichTabControl.Bottom
+                ? _owner.LowerSplitContainer.Panel2
+                : _owner.TopSplitContainer.Panel2;
 
         Panel = new DrawnPanel
         {
             Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
+                // @DockUI: Button widths are the same so this works for now, but make it better
+                // Maybe once we lazy-load the top control, we can have a global constant for width
                 container.Width - _owner.TopFMTabsCollapseButton.Width,
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,

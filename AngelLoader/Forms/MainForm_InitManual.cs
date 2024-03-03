@@ -565,6 +565,7 @@ public sealed partial class MainForm
         // 
         LowerSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         LowerSplitContainer.BackColor = SystemColors.ActiveBorder;
+        LowerSplitContainer.FullScreenCollapsePanel = DarkSplitContainerCustom.Panel.Panel2;
         // 
         // LowerSplitContainer.Panel1
         // 

@@ -984,6 +984,7 @@ sealed partial class MainForm
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.LowerSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+        this.LowerSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
         this.LowerSplitContainer.Location = new System.Drawing.Point(0, 0);
         this.LowerSplitContainer.Name = "LowerSplitContainer";
         // 

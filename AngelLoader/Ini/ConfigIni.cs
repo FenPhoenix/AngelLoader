@@ -680,9 +680,14 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_TopRightPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_TopFMTabsPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.TopRightPanelCollapsed = valTrimmed.EqualsTrue();
+        config.TopFMTabsPanelCollapsed = valTrimmed.EqualsTrue();
+    }
+
+    private static void Config_BottomFMTabsPanelCollapsed_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.BottomFMTabsPanelCollapsed = valTrimmed.EqualsTrue();
     }
 
     private static void Config_GameTab_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -1013,7 +1018,8 @@ internal static partial class Ini
         { "MainSplitterPercent", new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
         { "TopSplitterPercent", new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
         { "LowerSplitterPercent", new Config_DelegatePointerWrapper(&Config_LowerSplitterPercent_Set) },
-        { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopRightPanelCollapsed_Set) },
+        { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopFMTabsPanelCollapsed_Set) },
+        { "BottomRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_BottomFMTabsPanelCollapsed_Set) },
         { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
 
         #region Top-right tabs
@@ -1418,7 +1424,8 @@ internal static partial class Ini
         sw.Append("MainSplitterPercent").Append('=').AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("TopSplitterPercent").Append('=').AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("LowerSplitterPercent").Append('=').AppendLine(config.LowerSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopRightPanelCollapsed).AppendLine();
+        sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopFMTabsPanelCollapsed).AppendLine();
+        sw.Append("BottomRightPanelCollapsed").Append('=').Append(config.BottomFMTabsPanelCollapsed).AppendLine();
 
         sw.Append("GameTab").Append('=').Append(config.GameTab).AppendLine();
         sw.Append("TopRightTab").Append('=').Append(config.FMTabsData.SelectedTab).AppendLine();

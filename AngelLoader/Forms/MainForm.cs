@@ -182,7 +182,8 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly Lazy_FMTabsMenu Lazy_FMTabsMenu;
     private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
-    private readonly Lazy_FMTabsBlocker Lazy_FMTabsBlocker;
+    private readonly Lazy_FMTabsBlocker Lazy_TopFMTabsBlocker;
+    private readonly Lazy_FMTabsBlocker Lazy_BottomFMTabsBlocker;
     internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
     private readonly Lazy_LowerTabControl Lazy_LowerTabControl;
 
@@ -582,10 +583,13 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_FMTabsMenu = new Lazy_FMTabsMenu(this),
             ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
-            Lazy_FMTabsBlocker = new Lazy_FMTabsBlocker(this),
+            Lazy_TopFMTabsBlocker = new Lazy_FMTabsBlocker(this),
+            Lazy_BottomFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_UpdateNotification = new Lazy_UpdateNotification(this),
             Lazy_LowerTabControl = new Lazy_LowerTabControl(this)
         };
+        Lazy_TopFMTabsBlocker.SetWhich(WhichTabControl.Top);
+        Lazy_BottomFMTabsBlocker.SetWhich(WhichTabControl.Bottom);
 
         #endregion
 
@@ -1044,10 +1048,18 @@ public sealed partial class MainForm : DarkFormBase,
         if (!Config.HideWebSearchButton) ShowWebSearchButton(true);
 
         TopSplitContainer.CollapsedSize = TopFMTabsCollapseButton.Width;
-        if (Config.TopRightPanelCollapsed)
+        // @DockUI: Button widths are the same so this works for now, but make it better
+        LowerSplitContainer.CollapsedSize = TopFMTabsCollapseButton.Width;
+
+        if (Config.TopFMTabsPanelCollapsed)
         {
             TopSplitContainer.SetFullScreen(true, suspendResume: false);
-            SetTopRightCollapsedState(true);
+            SetFMTabsCollapsedState(WhichTabControl.Top, true);
+        }
+        if (Config.BottomFMTabsPanelCollapsed)
+        {
+            LowerSplitContainer.SetFullScreen(true, suspendResume: false);
+            SetFMTabsCollapsedState(WhichTabControl.Bottom, true);
         }
 
         #endregion
@@ -1205,7 +1217,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (!_firstShowDone)
         {
             // @DockUI: We need to handle the bottom tab control / collapsed state here too
-            if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopRightPanelCollapsed)
+            if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopFMTabsPanelCollapsed)
             {
                 lazyTab.Construct();
             }
@@ -1489,7 +1501,7 @@ public sealed partial class MainForm : DarkFormBase,
                     {
                         _displayedFM = await Core.DisplayFM();
                     }
-                    SetTopRightBlockerVisible();
+                    SetFMTabBlockersVisible();
 
                     if (selectionSyncHack)
                     {
@@ -1543,7 +1555,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 SelectAndSuppress(edgeRow.Index, singleSelect: !e.Shift, selectionSyncHack: true);
                 // Have to do these manually because we're suppressing the normal chain of selection logic
-                SetTopRightBlockerVisible();
+                SetFMTabBlockersVisible();
                 UpdateUIControlsForMultiSelectState(FMsDGV.GetMainSelectedFM());
             }
         }
@@ -3247,7 +3259,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Top-right area
 
-    internal void FMTabControl_Selected(object sender, TabControlEventArgs e)
+    private void FMTabControl_Selected(object sender, TabControlEventArgs e)
     {
         if (e.Action == TabControlAction.Selected && e.TabPage is Lazy_TabsBase lazyTab)
         {
@@ -3258,34 +3270,37 @@ public sealed partial class MainForm : DarkFormBase,
     private void TopFMTabsCollapseButton_Click(object sender, EventArgs e)
     {
         TopSplitContainer.ToggleFullScreen();
-        SetTopRightCollapsedState(TopSplitContainer.FullScreen);
+        SetFMTabsCollapsedState(WhichTabControl.Top, TopSplitContainer.FullScreen);
     }
 
     internal void LowerFMTabsCollapseButton_Click(object sender, EventArgs e)
     {
-        // @DockUI: Implement
-        //TopSplitContainer.ToggleFullScreen();
-        //SetTopRightCollapsedState(TopSplitContainer.FullScreen);
+        LowerSplitContainer.ToggleFullScreen();
+        SetFMTabsCollapsedState(WhichTabControl.Bottom, LowerSplitContainer.FullScreen);
     }
 
-    // @DockUI: We need to handle the bottom tab control / collapsed state here too
-    private void SetTopRightCollapsedState(bool collapsed)
+    private void SetFMTabsCollapsedState(WhichTabControl which, bool collapsed)
     {
+        (DarkArrowButton collapseButton, DarkTabControl tabControl, Lazy_FMTabsBlocker blocker) =
+            which == WhichTabControl.Bottom
+                ? (Lazy_LowerTabControl.CollapseButton, Lazy_LowerTabControl.TabControl, Lazy_TopFMTabsBlocker)
+                : (TopFMTabsCollapseButton, TopFMTabControl, Lazy_BottomFMTabsBlocker);
+
         if (collapsed)
         {
-            TopFMTabsCollapseButton.ArrowDirection = Direction.Left;
-            TopFMTabControl.Enabled = false;
+            collapseButton.ArrowDirection = Direction.Left;
+            tabControl.Enabled = false;
         }
         else
         {
-            TopFMTabsCollapseButton.ArrowDirection = Direction.Right;
+            collapseButton.ArrowDirection = Direction.Right;
 
-            if (!Lazy_FMTabsBlocker.Visible)
+            if (!blocker.Visible)
             {
-                TopFMTabControl.Enabled = true;
+                tabControl.Enabled = true;
             }
 
-            if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            if (tabControl.SelectedTab is Lazy_TabsBase lazyTab)
             {
                 lazyTab.ConstructWithSuspendResume();
             }
@@ -3369,18 +3384,24 @@ public sealed partial class MainForm : DarkFormBase,
         tabControl.ShowTab(tab, s.Checked);
     }
 
-    private void SetTopRightBlockerVisible()
+    private void SetFMTabBlockersVisible()
     {
         // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
         if (FMsDGV.MultipleFMsSelected())
         {
-            Lazy_FMTabsBlocker.Visible = true;
+            Lazy_TopFMTabsBlocker.Visible = true;
             if (!TopSplitContainer.FullScreen) TopFMTabControl.Enabled = false;
+
+            Lazy_BottomFMTabsBlocker.Visible = true;
+            if (!LowerSplitContainer.FullScreen) Lazy_LowerTabControl.Enabled = false;
         }
         else
         {
             if (!TopSplitContainer.FullScreen) TopFMTabControl.Enabled = true;
-            Lazy_FMTabsBlocker.Visible = false;
+            Lazy_TopFMTabsBlocker.Visible = false;
+
+            if (!LowerSplitContainer.FullScreen) Lazy_LowerTabControl.Enabled = true;
+            Lazy_BottomFMTabsBlocker.Visible = false;
         }
     }
 
@@ -4543,7 +4564,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         _displayedFM = null;
 
-        SetTopRightBlockerVisible();
+        SetFMTabBlockersVisible();
     }
 
     /*
@@ -4674,18 +4695,20 @@ public sealed partial class MainForm : DarkFormBase,
             anyAreTDM = gameIsTDMCount > 0;
         }
 
-        // Exactly this order or we get the top-right tabs not being in a properly refreshed state
+        // Exactly this order or we get the FM tabs not being in a properly refreshed state
         try
         {
-            SetTopRightBlockerVisible();
+            SetFMTabBlockersVisible();
 
-            Lazy_FMTabsBlocker.SuspendDrawing();
+            Lazy_TopFMTabsBlocker.SuspendDrawing();
+            Lazy_BottomFMTabsBlocker.SuspendDrawing();
 
             SetFMSelectedCountMessage(selRowsCount);
         }
         finally
         {
-            Lazy_FMTabsBlocker.ResumeDrawing();
+            Lazy_BottomFMTabsBlocker.ResumeDrawing();
+            Lazy_TopFMTabsBlocker.ResumeDrawing();
         }
 
         #endregion
@@ -5130,6 +5153,7 @@ public sealed partial class MainForm : DarkFormBase,
             gameTab,
             fmTabs,
             TopSplitContainer.FullScreen,
+            LowerSplitContainer.FullScreen,
             ReadmeRichTextBox.ZoomFactor);
     }
 
@@ -5333,7 +5357,8 @@ public sealed partial class MainForm : DarkFormBase,
 
         _fmsSelectedCountText = text;
 
-        Lazy_FMTabsBlocker.SetText(text);
+        Lazy_TopFMTabsBlocker.SetText(text);
+        Lazy_BottomFMTabsBlocker.SetText(text);
 
         RefreshFMStatsLabel();
     }
