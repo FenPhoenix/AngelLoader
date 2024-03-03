@@ -5558,6 +5558,7 @@ public sealed partial class MainForm : DarkFormBase,
             ? LowerSplitContainer
             : TopSplitContainer;
 
+        sourceTabControl.RestoreBackedUpBackingTabs();
         sourceTabControl.ShowTab(tabPage, false);
         destTabControl.ShowTab(tabPage, true);
         if (sourceTabControl.TabCount == 0)

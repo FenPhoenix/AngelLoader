@@ -24,6 +24,46 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     private List<BackingTab> _backingTabList = new(0);
 
+    #region Back up backing tabs
+
+    /*
+    The user can drag tabs horizontally in the same move as they're trying to drag them into the other tab
+    control. In that case, if the user commits the move, we want to revert the horizontal movement they did
+    and put the tab in the new control at the same relative position as it was before the user started the
+    drag. The easiest way to do that is to simply save the backing tabs list before the move and then restore
+    it if and only if the user commits the between-tab-control move.
+    */
+
+    private List<BackingTab>? _backedUpBackingTabs;
+
+    private void BackUpBackingTabs()
+    {
+        _backedUpBackingTabs = new List<BackingTab>(_backingTabList.Count);
+        foreach (BackingTab backingTab in _backingTabList)
+        {
+            _backedUpBackingTabs.Add(new BackingTab(backingTab.TabPage) { VisibleIn = backingTab.VisibleIn });
+        }
+    }
+
+    internal void RestoreBackedUpBackingTabs()
+    {
+        if (_backedUpBackingTabs == null || _backedUpBackingTabs.Count != _backingTabList.Count)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _backingTabList.Count; i++)
+        {
+            BackingTab backingTab = _backingTabList[i];
+            BackingTab backedUpBackingTab = _backedUpBackingTabs[i];
+            backingTab.TabPage = backedUpBackingTab.TabPage;
+            backingTab.VisibleIn = backedUpBackingTab.VisibleIn;
+        }
+        _backedUpBackingTabs = null;
+    }
+
+    #endregion
+
     /// <summary>
     /// Use this to use an external list rather than the internal one.
     /// Use when you want multiple controls to use the same list.
@@ -290,7 +330,11 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return;
         }
 
-        if (e.Button == MouseButtons.Left) (_, DragTab) = GetTabAtPoint(e.Location);
+        if (e.Button == MouseButtons.Left)
+        {
+            (_, DragTab) = GetTabAtPoint(e.Location);
+            if (DragTab != null) BackUpBackingTabs();
+        }
         base.OnMouseDown(e);
     }
 
@@ -307,6 +351,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
         // Fix: Ensure we don't start dragging a tab again after we've released the button.
         DragTab = null;
+        _backedUpBackingTabs = null;
     }
 
     protected override void OnMouseMove(MouseEventArgs e)
