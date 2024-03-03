@@ -16,13 +16,9 @@ In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a
 When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
 update the backing list ourselves.
 */
-public sealed class DarkTabControl : TabControl, IDarkable, IEventDisabler
+public sealed class DarkTabControl : TabControl, IDarkable
 {
     #region Private fields
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public int EventsDisabled { get; set; }
 
     internal TabPage? DragTab { get; private set; }
 
@@ -335,45 +331,6 @@ public sealed class DarkTabControl : TabControl, IDarkable, IEventDisabler
             return;
         }
 
-        /*
-        @DockUI: The mis-ordering of tabs on quick moving occurs when a tab moves by more than one position in one go.
-
-        Debug log demonstrates:
-        -The first entry is moving Statistics from 0 to 1. The order is still correct.
-        -The second entry is moving Statistics from 1 to 5. Statistics displaces Screenshots, and Screenshots
-         is swapped to Statistics' old position, which is 1. The order is now incorrect.
-
-        I believe all items should be shifted back by 1 in order for this to work. Either that or we can just
-        do remove/insert and it will work out on its own (but we may need to disable events during the remove/
-        insert for the TabPages collection).
-
-        Debug log:
-        ===============================
-        Edit FM, newTabIndex: 1, dragTabIndex: 0
-        NEW TAB INDEX PAGE: Edit FM
-        -------------
-        Backing list:
-        0: TabPage: EditFM, VisibleIn: Top
-        1: TabPage: Statistics, VisibleIn: Top
-        2: TabPage: Comment, VisibleIn: Top
-        3: TabPage: Patch, VisibleIn: None
-        4: TabPage: Tags, VisibleIn: Top
-        5: TabPage: Mods, VisibleIn: Top
-        6: TabPage: Screenshots, VisibleIn: Top
-        ===============================
-        Screenshots, newTabIndex: 5, dragTabIndex: 1
-        NEW TAB INDEX PAGE: Screenshots
-        -------------
-        Backing list:
-        0: TabPage: EditFM, VisibleIn: Top
-        1: TabPage: Screenshots, VisibleIn: Top
-        2: TabPage: Comment, VisibleIn: Top
-        3: TabPage: Patch, VisibleIn: None
-        4: TabPage: Tags, VisibleIn: Top
-        5: TabPage: Mods, VisibleIn: Top
-        6: TabPage: Statistics, VisibleIn: Top
-        */
-
         // If we are dragging a tab, don't run the normal handler, because we want to be "modal" and block so
         // nothing weird happens
         MouseDragCustom?.Invoke(this, e);
@@ -400,83 +357,52 @@ public sealed class DarkTabControl : TabControl, IDarkable, IEventDisabler
 
         int newTabIndex = TabPages.IndexOf(newTab);
 
-#if true
-        TabPages[dragTabIndex] = newTab;
-        TabPages[newTabIndex] = DragTab;
-
-        _backingTabList[bDragTabIndex].TabPage = newTab;
-        _backingTabList[bNewTabIndex].TabPage = DragTab;
-
-#else
-        // This results in terrible flickering, as expected of removing/inserting from a live tab collection.
-        // Suspend/resume doesn't help either. Looks like we have to do the other idea, of bumping them all over
-        // by one.
-        try
+        int distance = Math.Abs(newTabIndex - dragTabIndex);
+        if (distance == 1)
         {
-            using (new DisableEvents(this))
+            TabPages[dragTabIndex] = newTab;
+            TabPages[newTabIndex] = DragTab;
+
+            _backingTabList[bDragTabIndex].TabPage = newTab;
+            _backingTabList[bNewTabIndex].TabPage = DragTab;
+        }
+        else
+        {
+            // Handle the case where the tab is moving more than one position in one go.
+            // The easy way would be to insert/remove, but that results in terrible flickering for the TabPages
+            // collection, and suspend/resume doesn't fix it either. So just move everything over manually.
+
+            if (newTabIndex > dragTabIndex)
             {
-                this.SuspendDrawing();
-                if (newTabIndex > dragTabIndex)
+                for (int i = dragTabIndex; i < newTabIndex; i++)
                 {
-                    TabPages.Remove(DragTab);
-                    TabPages.Insert(newTabIndex, DragTab);
-
-                    BackingTab backingDragTab = _backingTabList[bDragTabIndex];
-                    _backingTabList.Remove(backingDragTab);
-                    _backingTabList.Insert(bNewTabIndex, backingDragTab);
+                    TabPages[i] = TabPages[i + 1];
                 }
-                else // newTabIndex < dragTabIndex
+                for (int i = bDragTabIndex; i < bNewTabIndex; i++)
                 {
-                    TabPages.Remove(DragTab);
-                    TabPages.Insert(newTabIndex, DragTab);
-
-                    BackingTab backingDragTab = _backingTabList[bDragTabIndex];
-                    _backingTabList.Remove(backingDragTab);
-                    _backingTabList.Insert(bNewTabIndex, backingDragTab);
-
+                    _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
                 }
             }
+            else
+            {
+                for (int i = dragTabIndex - 1; i >= newTabIndex; i--)
+                {
+                    TabPages[i + 1] = TabPages[i];
+                }
+                for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
+                {
+                    _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
+                }
+            }
+
+            TabPages[newTabIndex] = DragTab;
+            _backingTabList[bNewTabIndex].TabPage = DragTab;
         }
-        finally
-        {
-            this.ResumeDrawing();
-        }
-#endif
 
         SelectedTab = DragTab;
 
         // Otherwise the first control within the tab page gets selected
         SelectedTab.Focus();
-    }
-
-    protected override void OnDeselecting(TabControlCancelEventArgs e)
-    {
-        if (EventsDisabled > 0) return;
-        base.OnDeselecting(e);
-    }
-
-    protected override void OnDeselected(TabControlEventArgs e)
-    {
-        if (EventsDisabled > 0) return;
-        base.OnDeselected(e);
-    }
-
-    protected override void OnSelecting(TabControlCancelEventArgs e)
-    {
-        if (EventsDisabled > 0) return;
-        base.OnSelecting(e);
-    }
-
-    protected override void OnSelected(TabControlEventArgs e)
-    {
-        if (EventsDisabled > 0) return;
-        base.OnSelected(e);
-    }
-
-    protected override void OnSelectedIndexChanged(EventArgs e)
-    {
-        if (EventsDisabled > 0) return;
-        base.OnSelectedIndexChanged(e);
     }
 
     #endregion
