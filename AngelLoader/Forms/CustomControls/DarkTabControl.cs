@@ -429,6 +429,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
                 for (int i = bDragTabIndex; i < bNewTabIndex; i++)
                 {
                     _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
+                    _backingTabList[i].VisibleIn = _backingTabList[i + 1].VisibleIn;
                 }
             }
             else
@@ -440,6 +441,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
                 for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
                 {
                     _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
+                    _backingTabList[i + 1].VisibleIn = _backingTabList[i].VisibleIn;
                 }
             }
 
