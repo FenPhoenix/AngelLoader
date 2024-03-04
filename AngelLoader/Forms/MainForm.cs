@@ -5516,11 +5516,13 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     #region Tab dragging
+
     /*
     @DockUI: Working/testing code, finalize before release
     */
 
     private bool _inTabDragArea;
+    private TabControlImageCursor? _imageCursor;
 
     private void TopFMTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
@@ -5534,132 +5536,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
     {
-        TabPage? dragTab = null;
-        bool refresh = true;
-        try
-        {
-            if (!_inTabDragArea)
-            {
-                refresh = false;
-                return;
-            }
-
-            EverythingPanel.SuspendDrawing();
-
-            dragTab = TopFMTabControl.DragTab;
-            if (dragTab == null) return;
-
-            MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, dragTab);
-        }
-        finally
-        {
-            DestroyImageCursor();
-            _inTabDragArea = false;
-            if (refresh)
-            {
-                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
-            }
-        }
+        HandleTabDragFinish(WhichTabControl.Top, WhichTabControl.Bottom);
     }
 
     internal void Lazy_LowerTabControl_MouseUp(object sender, MouseEventArgs e)
     {
-        TabPage? dragTab = null;
-        bool refresh = true;
-        try
-        {
-            if (!_inTabDragArea)
-            {
-                refresh = false;
-                return;
-            }
-
-            EverythingPanel.SuspendDrawing();
-
-            dragTab = Lazy_LowerTabControl.DragTab;
-            if (dragTab == null) return;
-
-            if (TopSplitContainer.Panel2Collapsed)
-            {
-                TopSplitContainer.Panel2Collapsed = false;
-                if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab)
-                {
-                    lazyTab.ConstructWithSuspendResume();
-                }
-            }
-            MoveTab(WhichTabControl.Bottom, WhichTabControl.Top, dragTab);
-        }
-        finally
-        {
-            DestroyImageCursor();
-            _inTabDragArea = false;
-            if (refresh)
-            {
-                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
-            }
-        }
+        HandleTabDragFinish(WhichTabControl.Bottom, WhichTabControl.Top);
     }
-
-    private void DestroyImageCursor()
-    {
-        Cursor = Cursors.Default;
-        _imageCursor?.Dispose();
-        _imageCursor = null;
-    }
-
-    private static Color GetOverlayColor()
-    {
-        // @DockUI: Make light and dark mode colors
-        return Color.FromArgb(
-            alpha: 64,
-            red: DarkColors.BlueSelection.R,
-            green: DarkColors.BlueSelection.G,
-            blue: DarkColors.BlueSelection.B);
-    }
-
-    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
-    {
-        if (source == dest) return;
-
-        DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
-
-        DarkTabControl destTabControl = dest == WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
-
-        DarkSplitContainerCustom sourceSplitContainer = source == WhichTabControl.Bottom
-            ? LowerSplitContainer
-            : TopSplitContainer;
-
-        DarkSplitContainerCustom destSplitContainer = dest == WhichTabControl.Bottom
-            ? LowerSplitContainer
-            : TopSplitContainer;
-
-        sourceTabControl.RestoreBackedUpBackingTabs();
-        sourceTabControl.ShowTab(tabPage, false);
-        destTabControl.ShowTab(tabPage, true);
-        if (sourceTabControl.TabCount == 0)
-        {
-            sourceSplitContainer.Panel2Collapsed = true;
-        }
-        destSplitContainer.Panel2Collapsed = false;
-
-        if (expandCollapsed)
-        {
-            if (destSplitContainer.FullScreen)
-            {
-                destSplitContainer.ToggleFullScreen();
-                SetFMTabsCollapsedState(dest, false);
-            }
-        }
-
-        destTabControl.SelectedTab = tabPage;
-        tabPage.Focus();
-    }
-
-    private TabControlImageCursor? _imageCursor;
 
     private void HandleTabDrag(WhichTabControl dest)
     {
@@ -5708,6 +5591,95 @@ public sealed partial class MainForm : DarkFormBase,
             Trace.WriteLine("Miss");
             sc.Refresh();
         }
+    }
+
+    private void HandleTabDragFinish(WhichTabControl source, WhichTabControl dest)
+    {
+        TabPage? dragTab = null;
+        bool refresh = true;
+        try
+        {
+            if (!_inTabDragArea || source == dest)
+            {
+                refresh = false;
+                return;
+            }
+
+            EverythingPanel.SuspendDrawing();
+
+            dragTab = source == WhichTabControl.Bottom ? Lazy_LowerTabControl.DragTab : TopFMTabControl.DragTab;
+            if (dragTab == null) return;
+
+            MoveTab(source, dest, dragTab);
+        }
+        finally
+        {
+            DestroyImageCursor();
+            _inTabDragArea = false;
+            if (refresh)
+            {
+                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+            }
+        }
+    }
+
+    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
+    {
+        if (source == dest) return;
+
+        DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopFMTabControl;
+
+        DarkTabControl destTabControl = dest == WhichTabControl.Bottom
+            ? Lazy_LowerTabControl.TabControl
+            : TopFMTabControl;
+
+        DarkSplitContainerCustom sourceSplitContainer = source == WhichTabControl.Bottom
+            ? LowerSplitContainer
+            : TopSplitContainer;
+
+        DarkSplitContainerCustom destSplitContainer = dest == WhichTabControl.Bottom
+            ? LowerSplitContainer
+            : TopSplitContainer;
+
+        sourceTabControl.RestoreBackedUpBackingTabs();
+        sourceTabControl.ShowTab(tabPage, false);
+        destTabControl.ShowTab(tabPage, true);
+        if (sourceTabControl.TabCount == 0)
+        {
+            sourceSplitContainer.Panel2Collapsed = true;
+        }
+        destSplitContainer.Panel2Collapsed = false;
+
+        if (expandCollapsed)
+        {
+            if (destSplitContainer.FullScreen)
+            {
+                destSplitContainer.ToggleFullScreen();
+                SetFMTabsCollapsedState(dest, false);
+            }
+        }
+
+        destTabControl.SelectedTab = tabPage;
+        tabPage.Focus();
+    }
+
+    private void DestroyImageCursor()
+    {
+        Cursor = Cursors.Default;
+        _imageCursor?.Dispose();
+        _imageCursor = null;
+    }
+
+    private static Color GetOverlayColor()
+    {
+        // @DockUI: Make light and dark mode colors
+        return Color.FromArgb(
+            alpha: 64,
+            red: DarkColors.BlueSelection.R,
+            green: DarkColors.BlueSelection.G,
+            blue: DarkColors.BlueSelection.B);
     }
 
     // @DockUI: Test code, remove for final release
