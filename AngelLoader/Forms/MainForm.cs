@@ -5655,6 +5655,8 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
+    // @DockUI: Original control nearest tab should be the one from before the drag moved the tab in the bar.
+    // That drag is supposed to have all its effects completely canceled when we commit the between-control drag.
     private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
     {
         if (source == dest) return;
