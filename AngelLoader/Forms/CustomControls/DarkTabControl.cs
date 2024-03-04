@@ -531,22 +531,19 @@ public sealed class DarkTabControl : TabControl, IDarkable
             bt.VisibleIn = FMTabVisibleIn.None;
             if (TabPages.Contains(bt.TabPage))
             {
-                if (TabPages.Count > 1 && SelectedIndex > 0)
+                if (TabPages.Count > 1 && SelectedIndex > 0 && SelectedTab == bt.TabPage)
                 {
-                    if (SelectedTab == bt.TabPage)
+                    Control? parent = Parent;
+                    try
                     {
-                        Control? parent = Parent;
-                        try
-                        {
-                            parent?.SuspendDrawing();
-                            int newIndex = SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
-                            SelectedTab = TabPages[newIndex];
-                            TabPages.Remove(bt.TabPage);
-                        }
-                        finally
-                        {
-                            parent?.ResumeDrawing();
-                        }
+                        parent?.SuspendDrawing();
+                        int newIndex = SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
+                        SelectedTab = TabPages[newIndex];
+                        TabPages.Remove(bt.TabPage);
+                    }
+                    finally
+                    {
+                        parent?.ResumeDrawing();
                     }
                 }
                 else
