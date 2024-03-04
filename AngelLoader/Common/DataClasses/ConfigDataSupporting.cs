@@ -136,7 +136,6 @@ internal sealed class FMTabsData
 
     internal FMTabData GetTab(FMTab tab) => Tabs[(int)tab];
 
-    // @DockUI: Test to make sure this works in all cases with the new tab code!
     internal void EnsureValidity()
     {
         #region Fallback if multiple tabs have the same display index
@@ -156,7 +155,7 @@ internal sealed class FMTabsData
         if (NoneVisible()) SetAllVisible(FMTabVisibleIn.Top);
 
         // Fallback if selected tab is not marked as visible
-        if (GetTab(SelectedTab).Visible == FMTabVisibleIn.None)
+        if (GetTab(SelectedTab).Visible != FMTabVisibleIn.Top)
         {
             for (int i = 0; i < FMTabCount; i++)
             {
@@ -167,7 +166,7 @@ internal sealed class FMTabsData
                 }
             }
         }
-        if (GetTab(SelectedTab2).Visible == FMTabVisibleIn.None)
+        if (GetTab(SelectedTab2).Visible != FMTabVisibleIn.Bottom)
         {
             for (int i = 0; i < FMTabCount; i++)
             {
