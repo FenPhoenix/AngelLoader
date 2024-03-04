@@ -160,7 +160,8 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     private void TabControl_VisibleChanged(object sender, System.EventArgs e)
     {
-        if (_tabControl is { Visible: true, SelectedTab: Lazy_TabsBase lazyTab })
+        if (_tabControl is { Visible: true, SelectedTab: Lazy_TabsBase lazyTab } &&
+            !_owner.LowerSplitContainer.FullScreen)
         {
             lazyTab.ConstructWithSuspendResume();
         }
