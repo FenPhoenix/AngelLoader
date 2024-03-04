@@ -259,28 +259,8 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    /*
-    @DockUI(Cursor image plan):
-    -Create a disposable class to wrap up the bitmap and cursor. Make it one field that just gets disposed and
-     re-instantiated, that way even in the worst case if somehow our drag doesn't get properly ended, we'll only
-     ever leak one cursor and one bitmap at maximum.
-    -Cut out the parts of the tab bar around the selected tab in the image, so it will be the only tab visible.
-    */
     private void Test3Button_Click(object sender, EventArgs e)
     {
-        Control c = TopFMTabControl;
-
-        using Bitmap bmpPre = new(c.Width, c.Height);
-        c.DrawToBitmap(bmpPre, new Rectangle(0, 0, c.Width, c.Height));
-
-        Bitmap? bmpFinal = bmpPre.CloneWithOpacity(0.88f);
-        if (bmpFinal != null)
-        {
-            if (ControlUtils.TryCreateCursor(bmpFinal, 0, 0, out Cursor? cursor))
-            {
-                Cursor = cursor;
-            }
-        }
     }
 
     private void Test4Button_Click(object sender, EventArgs e)
@@ -5544,20 +5524,21 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopFMTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
-        HandleTabDrag(LowerSplitContainer);
+        HandleTabDrag(dest: WhichTabControl.Bottom);
     }
 
     internal void Lazy_LowerTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
-        HandleTabDrag(TopSplitContainer);
+        HandleTabDrag(dest: WhichTabControl.Top);
     }
 
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
     {
-        if (!_inTabDragArea) return;
         TabPage? dragTab = null;
         try
         {
+            if (!_inTabDragArea) return;
+
             EverythingPanel.SuspendDrawing();
 
             dragTab = TopFMTabControl.DragTab;
@@ -5567,6 +5548,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         finally
         {
+            DestroyImageCursor();
             _inTabDragArea = false;
             EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
         }
@@ -5574,11 +5556,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void Lazy_LowerTabControl_MouseUp(object sender, MouseEventArgs e)
     {
-        if (!_inTabDragArea) return;
-
         TabPage? dragTab = null;
         try
         {
+            if (!_inTabDragArea) return;
+
             EverythingPanel.SuspendDrawing();
 
             dragTab = Lazy_LowerTabControl.DragTab;
@@ -5596,9 +5578,17 @@ public sealed partial class MainForm : DarkFormBase,
         }
         finally
         {
+            DestroyImageCursor();
             _inTabDragArea = false;
             EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
         }
+    }
+
+    private void DestroyImageCursor()
+    {
+        Cursor = Cursors.Default;
+        _imageCursor?.Dispose();
+        _imageCursor = null;
     }
 
     private static Color GetOverlayColor()
@@ -5643,8 +5633,18 @@ public sealed partial class MainForm : DarkFormBase,
         tabPage.Focus();
     }
 
-    private void HandleTabDrag(DarkSplitContainerCustom sc)
+    private ImageCursor? _imageCursor;
+
+    private void HandleTabDrag(WhichTabControl dest)
     {
+        (DarkTabControl tabControl, DarkSplitContainerCustom sc) =
+            (dest == WhichTabControl.Bottom)
+                ? (TopFMTabControl, LowerSplitContainer)
+                : (Lazy_LowerTabControl.TabControl, TopSplitContainer);
+
+        _imageCursor ??= new ImageCursor(tabControl);
+        Cursor = _imageCursor.Cursor;
+
         Point cp = Native.GetCursorPosition_Fast();
 
         if ((sc.Panel2Collapsed || sc.FullScreen) && sc.ClientRectangle.Contains(sc.PointToClient_Fast(cp)))

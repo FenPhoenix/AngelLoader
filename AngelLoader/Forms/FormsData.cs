@@ -63,3 +63,46 @@ public sealed class BackingTab(TabPage tabPage)
     public TabPage TabPage = tabPage;
     public FMTabVisibleIn VisibleIn = FMTabVisibleIn.Top;
 }
+
+/*
+@DockUI(Cursor image plan):
+-Cut out the parts of the tab bar around the selected tab in the image, so it will be the only tab visible.
+*/
+public sealed class ImageCursor : IDisposable
+{
+    private readonly Bitmap? _bitmap;
+    public readonly Cursor Cursor;
+
+    public ImageCursor(Control c)
+    {
+        try
+        {
+            using Bitmap bmpPre = new(c.Width, c.Height);
+            c.DrawToBitmap(bmpPre, new Rectangle(0, 0, c.Width, c.Height));
+
+            Bitmap? bmpFinal = bmpPre.CloneWithOpacity(0.88f);
+            if (bmpFinal != null &&
+                ControlUtils.TryCreateCursor(bmpFinal, 0, 0, out Cursor? cursor))
+            {
+                _bitmap = bmpFinal;
+                Cursor = cursor;
+            }
+            else
+            {
+                _bitmap = null;
+                Cursor = Cursors.Default;
+            }
+        }
+        catch
+        {
+            _bitmap = null;
+            Cursor = Cursors.Default;
+        }
+    }
+
+    public void Dispose()
+    {
+        Cursor.Dispose();
+        _bitmap?.Dispose();
+    }
+}
