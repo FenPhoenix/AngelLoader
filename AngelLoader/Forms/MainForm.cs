@@ -3370,8 +3370,7 @@ public sealed partial class MainForm : DarkFormBase,
         // Although adding a tab to another control automatically removes it from the first one, we need to
         // explicitly run our custom ShowTab() method in order to keep the backing list synced. Otherwise, the
         // tab order gets messed up.
-        // @DockUI: Could we make this happen automatically on tab remove?
-        // We'd need an event disabler and so on, but it might work.
+        // @DockUI: The show/hide logic needs to also do whatever extra logic MoveTab() does
         if (s.Checked)
         {
             if (tabControl == TopFMTabControl)
