@@ -531,10 +531,29 @@ public sealed class DarkTabControl : TabControl, IDarkable
             bt.VisibleIn = FMTabVisibleIn.None;
             if (TabPages.Contains(bt.TabPage))
             {
-                TabPages.Remove(bt.TabPage);
-                // Otherwise the first control within the tab page gets selected
-                // @DockUI: We should probably select the nearest tab when we remove one
-                if (TabCount > 0) TabPages[0].Focus();
+                if (TabPages.Count > 1 && SelectedIndex > 0)
+                {
+                    if (SelectedTab == bt.TabPage)
+                    {
+                        Control? parent = Parent;
+                        try
+                        {
+                            parent?.SuspendDrawing();
+                            int newIndex = SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
+                            SelectedTab = TabPages[newIndex];
+                            TabPages.Remove(bt.TabPage);
+                        }
+                        finally
+                        {
+                            parent?.ResumeDrawing();
+                        }
+                    }
+                }
+                else
+                {
+                    TabPages.Remove(bt.TabPage);
+                }
+                if (TabCount > 0) SelectedTab.Focus();
             }
         }
     }
