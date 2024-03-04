@@ -927,7 +927,7 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else if (visible == FMTabVisibleIn.Bottom)
             {
-                MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage);
+                MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage, expandCollapsed: false);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
         }
@@ -5617,7 +5617,7 @@ public sealed partial class MainForm : DarkFormBase,
             blue: DarkColors.BlueSelection.B);
     }
 
-    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage)
+    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
     {
         if (source == dest) return;
 
@@ -5645,6 +5645,16 @@ public sealed partial class MainForm : DarkFormBase,
             sourceSplitContainer.Panel2Collapsed = true;
         }
         destSplitContainer.Panel2Collapsed = false;
+
+        if (expandCollapsed)
+        {
+            if (destSplitContainer.FullScreen)
+            {
+                destSplitContainer.ToggleFullScreen();
+                SetFMTabsCollapsedState(dest, false);
+            }
+        }
+
         destTabControl.SelectedTab = tabPage;
         tabPage.Focus();
     }
