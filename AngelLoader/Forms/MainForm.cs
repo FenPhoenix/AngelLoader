@@ -5535,9 +5535,14 @@ public sealed partial class MainForm : DarkFormBase,
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
     {
         TabPage? dragTab = null;
+        bool refresh = true;
         try
         {
-            if (!_inTabDragArea) return;
+            if (!_inTabDragArea)
+            {
+                refresh = false;
+                return;
+            }
 
             EverythingPanel.SuspendDrawing();
 
@@ -5550,16 +5555,24 @@ public sealed partial class MainForm : DarkFormBase,
         {
             DestroyImageCursor();
             _inTabDragArea = false;
-            EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+            if (refresh)
+            {
+                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+            }
         }
     }
 
     internal void Lazy_LowerTabControl_MouseUp(object sender, MouseEventArgs e)
     {
         TabPage? dragTab = null;
+        bool refresh = true;
         try
         {
-            if (!_inTabDragArea) return;
+            if (!_inTabDragArea)
+            {
+                refresh = false;
+                return;
+            }
 
             EverythingPanel.SuspendDrawing();
 
@@ -5580,7 +5593,10 @@ public sealed partial class MainForm : DarkFormBase,
         {
             DestroyImageCursor();
             _inTabDragArea = false;
-            EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+            if (refresh)
+            {
+                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+            }
         }
     }
 

@@ -357,6 +357,16 @@ public sealed class DarkTabControl : TabControl, IDarkable
         _backedUpBackingTabs = null;
     }
 
+    private void InvokeMouseDragCustomIfNeeded(MouseEventArgs e)
+    {
+        Rectangle tabBarExpanded = GetTabBarRect();
+        tabBarExpanded.Inflate(4, 16);
+        if (!tabBarExpanded.Contains(e.Location))
+        {
+            MouseDragCustom?.Invoke(this, e);
+        }
+    }
+
     protected override void OnMouseMove(MouseEventArgs e)
     {
         if (DesignMode || !AllowReordering)
@@ -374,14 +384,14 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
         if (TabCount <= 1)
         {
-            MouseDragCustom?.Invoke(this, e);
+            InvokeMouseDragCustomIfNeeded(e);
             base.OnMouseMove(e);
             return;
         }
 
         // If we are dragging a tab, don't run the normal handler, because we want to be "modal" and block so
         // nothing weird happens
-        MouseDragCustom?.Invoke(this, e);
+        InvokeMouseDragCustomIfNeeded(e);
 
         int dragTabIndex = TabPages.IndexOf(DragTab);
         var (bDragTabIndex, _) = FindBackingTab(_backingTabList, DragTab);
