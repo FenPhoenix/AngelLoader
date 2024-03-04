@@ -919,7 +919,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (visible == FMTabVisibleIn.None)
             {
                 TopFMTabControl.ShowTab(fmTabPage, false);
-                // @DockUI: Duplicate code - brittle
+                // @DockUI: This panel collapse logic always happens after a ShowTab(false). We should put the two into a function
                 if (TopFMTabControl.TabCount == 0)
                 {
                     TopSplitContainer.Panel2Collapsed = true;
@@ -3340,7 +3340,7 @@ public sealed partial class MainForm : DarkFormBase,
             I'm not sure which style is the best/most intuitive/principle-of-least-surprise etc.
             They're all a little weird. Decide on something for the final release.
             */
-#if true
+#if false
             BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
             if (backingTab != null)
             {
@@ -3366,23 +3366,56 @@ public sealed partial class MainForm : DarkFormBase,
             return;
         }
 
-        // @DockUI: Explicitly hide tab
-        // Although adding a tab to another control automatically removes it from the first one, we need to
-        // explicitly run our custom ShowTab() method in order to keep the backing list synced. Otherwise, the
-        // tab order gets messed up.
-        // @DockUI: The show/hide logic needs to also do whatever extra logic MoveTab() does
-        if (s.Checked)
+        try
         {
-            if (tabControl == TopFMTabControl)
+            // MUST suspend drawing or we get crashes!
+            EverythingPanel.SuspendDrawing();
+
+            /*
+            @DockUI: Explicitly hide tab
+            Although adding a tab to another control automatically removes it from the first one, we need to
+            explicitly run our custom ShowTab() method in order to keep the backing list synced. Otherwise, the
+            tab order gets messed up.
+
+            @DockUI: We could have three-state menu items - top, bottom, and none.
+            Because when you click a checkbox and it hides the other tab control, it's not a great UX because you
+            think "crap, how do I get it back?"
+            */
+            if (s.Checked)
             {
-                Lazy_LowerTabControl.ShowTab(tab, false);
+                if (tabControl == TopFMTabControl)
+                {
+                    Lazy_LowerTabControl.ShowTab(tab, false);
+                    if (Lazy_LowerTabControl.TabCount == 0)
+                    {
+                        LowerSplitContainer.Panel2Collapsed = true;
+                    }
+                }
+                else
+                {
+                    TopFMTabControl.ShowTab(tab, false);
+                    if (TopFMTabControl.TabCount == 0)
+                    {
+                        TopSplitContainer.Panel2Collapsed = true;
+                    }
+                }
+            }
+            tabControl.ShowTab(tab, s.Checked);
+        }
+        finally
+        {
+            if (s.Checked)
+            {
+                TabPage? selectedTab = tabControl == TopFMTabControl
+                    ? TopFMTabControl.SelectedTab
+                    : Lazy_LowerTabControl.SelectedTab;
+                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { tab, selectedTab });
             }
             else
             {
-                TopFMTabControl.ShowTab(tab, false);
+                EverythingPanel.ResumeDrawing();
             }
         }
-        tabControl.ShowTab(tab, s.Checked);
     }
 
     private void SetFMTabBlockersVisible()
@@ -5617,7 +5650,7 @@ public sealed partial class MainForm : DarkFormBase,
             _inTabDragArea = false;
             if (refresh)
             {
-                EverythingPanel.ResumeDrawingAndFocusControl(dragTab);
+                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { dragTab });
             }
         }
     }

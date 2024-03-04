@@ -44,7 +44,10 @@ internal static class ControlUtils
         }
     }
 
-    internal static void ResumeDrawingAndFocusControl(this Control control, Control? controlToFocus, bool invalidateInsteadOfRefresh = false)
+    internal static void ResumeDrawingAndFocusControl(
+        this Control control,
+        Control?[]? controlsToFocus,
+        bool invalidateInsteadOfRefresh = false)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
         Native.SendMessage(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
@@ -56,7 +59,13 @@ internal static class ControlUtils
 
         Designed originally for the tab control, but use it for whatever...
         */
-        controlToFocus?.Focus();
+        if (controlsToFocus != null)
+        {
+            foreach (Control? c in controlsToFocus)
+            {
+                c?.Focus();
+            }
+        }
 
         if (invalidateInsteadOfRefresh)
         {
