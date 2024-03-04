@@ -5633,7 +5633,7 @@ public sealed partial class MainForm : DarkFormBase,
         tabPage.Focus();
     }
 
-    private ImageCursor? _imageCursor;
+    private TabControlImageCursor? _imageCursor;
 
     private void HandleTabDrag(WhichTabControl dest)
     {
@@ -5642,7 +5642,7 @@ public sealed partial class MainForm : DarkFormBase,
                 ? (TopFMTabControl, LowerSplitContainer)
                 : (Lazy_LowerTabControl.TabControl, TopSplitContainer);
 
-        _imageCursor ??= new ImageCursor(tabControl);
+        _imageCursor ??= new TabControlImageCursor(tabControl);
         Cursor = _imageCursor.Cursor;
 
         Point cp = Native.GetCursorPosition_Fast();

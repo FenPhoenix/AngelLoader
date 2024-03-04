@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -64,23 +65,54 @@ public sealed class BackingTab(TabPage tabPage)
     public FMTabVisibleIn VisibleIn = FMTabVisibleIn.Top;
 }
 
-/*
-@DockUI(Cursor image plan):
--Cut out the parts of the tab bar around the selected tab in the image, so it will be the only tab visible.
-*/
-public sealed class ImageCursor : IDisposable
+public sealed class TabControlImageCursor : IDisposable
 {
     private readonly Bitmap? _bitmap;
     public readonly Cursor Cursor;
 
-    public ImageCursor(Control c)
+    public TabControlImageCursor(TabControl tabControl)
     {
+        Bitmap? bmpChopped = null;
         try
         {
-            using Bitmap bmpPre = new(c.Width, c.Height);
-            c.DrawToBitmap(bmpPre, new Rectangle(0, 0, c.Width, c.Height));
+            using Bitmap bmpPre = new(tabControl.Width, tabControl.Height);
+            tabControl.DrawToBitmap(bmpPre, new Rectangle(0, 0, tabControl.Width, tabControl.Height));
 
-            Bitmap? bmpFinal = bmpPre.CloneWithOpacity(0.88f);
+            Rectangle tabRect = tabControl.SelectedIndex > -1
+                ? tabControl.GetTabRect(tabControl.SelectedIndex)
+                : Rectangle.Empty;
+
+            if (tabRect != Rectangle.Empty)
+            {
+                // Remove all other tabs from the image and show only the selected tab at the left side, for more
+                // visual clarity and a clean look
+                int tabRectHeight = tabRect.Height + (Global.Config.DarkMode ? 2 : 3);
+                int tabRectWidth = tabRect.Width + (Global.Config.DarkMode ? 1 : 2);
+
+                bmpChopped = new Bitmap(bmpPre.Width, bmpPre.Height, PixelFormat.Format32bppPArgb);
+                using Graphics g = Graphics.FromImage(bmpChopped);
+                g.DrawImage(
+                    image: bmpPre,
+                    destRect: new Rectangle(0, tabRectHeight, bmpPre.Width, bmpPre.Height - tabRectHeight),
+                    srcX: 0,
+                    srcY: tabRectHeight,
+                    srcWidth: bmpPre.Width,
+                    srcHeight: bmpPre.Height - tabRectHeight,
+                    srcUnit: GraphicsUnit.Pixel
+                );
+
+                g.DrawImage(
+                    image: bmpPre,
+                    destRect: new Rectangle(0, 0, tabRectWidth, tabRectHeight),
+                    srcX: tabRect.Left,
+                    srcY: 0,
+                    srcWidth: tabRectWidth,
+                    srcHeight: tabRectHeight,
+                    srcUnit: GraphicsUnit.Pixel
+                );
+            }
+
+            Bitmap? bmpFinal = (bmpChopped ?? bmpPre).CloneWithOpacity(0.88f);
             if (bmpFinal != null &&
                 ControlUtils.TryCreateCursor(bmpFinal, 0, 0, out Cursor? cursor))
             {
@@ -95,8 +127,12 @@ public sealed class ImageCursor : IDisposable
         }
         catch
         {
-            _bitmap = null;
             Cursor = Cursors.Default;
+            _bitmap = null;
+        }
+        finally
+        {
+            bmpChopped?.Dispose();
         }
     }
 
