@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
@@ -113,7 +114,8 @@ public sealed class TabControlImageCursor : IDisposable
                 // Remove all other tabs from the image and show only the selected tab at the left side, for more
                 // visual clarity and a clean look
                 int tabRectHeight = tabRect.Height + (Global.Config.DarkMode ? 2 : 3);
-                int tabRectWidth = tabRect.Width + (Global.Config.DarkMode ? 1 : 2);
+                int tabRectWidth = tabRect.Width + (Global.Config.DarkMode ? 1 : 4);
+                int tabRectLeft = (tabRect.Left - (Global.Config.DarkMode ? 0 : 2).ClampToZero());
 
                 bmpChopped = new Bitmap(bmpPre.Width, bmpPre.Height, PixelFormat.Format32bppPArgb);
                 using Graphics g = Graphics.FromImage(bmpChopped);
@@ -130,7 +132,7 @@ public sealed class TabControlImageCursor : IDisposable
                 g.DrawImage(
                     image: bmpPre,
                     destRect: new Rectangle(0, 0, tabRectWidth, tabRectHeight),
-                    srcX: tabRect.Left,
+                    srcX: tabRectLeft,
                     srcY: 0,
                     srcWidth: tabRectWidth,
                     srcHeight: tabRectHeight,
