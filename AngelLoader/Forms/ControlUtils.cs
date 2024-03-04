@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -961,4 +962,84 @@ internal static class ControlUtils
             }
         }
     }
+
+    #region Cursor
+
+    public static bool TryCreateCursor(Bitmap bitmap, int xHotspot, int yHotspot, [NotNullWhen(true)] out Cursor? cursor)
+    {
+        cursor = null;
+
+        Native.ICONINFO iconInfo = new();
+        IntPtr iconHandle = IntPtr.Zero;
+        IntPtr cursorPtr = IntPtr.Zero;
+        try
+        {
+            iconHandle = bitmap.GetHicon();
+
+            if (!Native.GetIconInfo(iconHandle, ref iconInfo) || iconHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            iconInfo.xHotspot = xHotspot;
+            iconInfo.yHotspot = yHotspot;
+
+            // false means it's a cursor (not an icon)
+            iconInfo.fIcon = false;
+
+            cursorPtr = Native.CreateIconIndirect(ref iconInfo);
+            if (cursorPtr == IntPtr.Zero)
+            {
+                Native.DeleteObject(cursorPtr);
+                return false;
+            }
+
+            cursor = new Cursor(cursorPtr);
+            return true;
+        }
+        catch
+        {
+            Native.DeleteObject(cursorPtr);
+            return false;
+        }
+        finally
+        {
+            Native.DeleteObject(iconInfo.hbmMask);
+            Native.DeleteObject(iconInfo.hbmColor);
+            Native.DestroyIcon(iconHandle);
+        }
+    }
+
+    public static Bitmap? CloneWithOpacity(this Bitmap bitmap, float opacity)
+    {
+        try
+        {
+            Bitmap retBmp = new(bitmap.Width, bitmap.Height);
+
+            using Graphics g = Graphics.FromImage(retBmp);
+
+            using ImageAttributes imgAttrib = new();
+
+            ColorMatrix opacityMatrix = new() { Matrix33 = opacity };
+            imgAttrib.SetColorMatrix(opacityMatrix);
+
+            g.DrawImage(
+                image: bitmap,
+                destRect: new Rectangle(0, 0, retBmp.Width, retBmp.Height),
+                srcX: 0,
+                srcY: 0,
+                srcWidth: bitmap.Width,
+                srcHeight: bitmap.Height,
+                srcUnit: GraphicsUnit.Pixel,
+                imageAttr: imgAttrib);
+
+            return retBmp;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    #endregion
 }

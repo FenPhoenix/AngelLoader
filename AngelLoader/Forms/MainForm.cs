@@ -259,8 +259,28 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
+    /*
+    @DockUI(Cursor image plan):
+    -Create a disposable class to wrap up the bitmap and cursor. Make it one field that just gets disposed and
+     re-instantiated, that way even in the worst case if somehow our drag doesn't get properly ended, we'll only
+     ever leak one cursor and one bitmap at maximum.
+    -Cut out the parts of the tab bar around the selected tab in the image, so it will be the only tab visible.
+    */
     private void Test3Button_Click(object sender, EventArgs e)
     {
+        Control c = TopFMTabControl;
+
+        using Bitmap bmpPre = new(c.Width, c.Height);
+        c.DrawToBitmap(bmpPre, new Rectangle(0, 0, c.Width, c.Height));
+
+        Bitmap? bmpFinal = bmpPre.CloneWithOpacity(0.88f);
+        if (bmpFinal != null)
+        {
+            if (ControlUtils.TryCreateCursor(bmpFinal, 0, 0, out Cursor? cursor))
+            {
+                Cursor = cursor;
+            }
+        }
     }
 
     private void Test4Button_Click(object sender, EventArgs e)

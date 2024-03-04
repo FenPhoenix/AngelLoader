@@ -929,4 +929,28 @@ internal static class Native
     }
 
     #endregion
+
+    #region Cursor
+
+    [PublicAPI]
+    internal struct ICONINFO
+    {
+        public bool fIcon;
+        public int xHotspot;
+        public int yHotspot;
+        public IntPtr hbmMask;
+        public IntPtr hbmColor;
+    }
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
+
+    [DllImport("gdi32.dll")]
+    internal static extern bool DeleteObject(IntPtr handle);
+
+    #endregion
 }
