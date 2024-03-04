@@ -115,10 +115,12 @@ public sealed class TabControlImageCursor : IDisposable
                 // visual clarity and a clean look
                 int tabRectHeight = tabRect.Height + (Global.Config.DarkMode ? 2 : 3);
                 int tabRectWidth = tabRect.Width + (Global.Config.DarkMode ? 1 : 4);
-                int tabRectLeft = (tabRect.Left - (Global.Config.DarkMode ? 0 : 2).ClampToZero());
+                int tabRectLeft = (tabRect.Left - (Global.Config.DarkMode ? 0 : 2)).ClampToZero();
 
                 bmpChopped = new Bitmap(bmpPre.Width, bmpPre.Height, PixelFormat.Format32bppPArgb);
                 using Graphics g = Graphics.FromImage(bmpChopped);
+
+                // Main body
                 g.DrawImage(
                     image: bmpPre,
                     destRect: new Rectangle(0, tabRectHeight, bmpPre.Width, bmpPre.Height - tabRectHeight),
@@ -129,6 +131,7 @@ public sealed class TabControlImageCursor : IDisposable
                     srcUnit: GraphicsUnit.Pixel
                 );
 
+                // Top bar
                 g.DrawImage(
                     image: bmpPre,
                     destRect: new Rectangle(0, 0, tabRectWidth, tabRectHeight),
