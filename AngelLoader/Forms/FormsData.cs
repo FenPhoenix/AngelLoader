@@ -137,11 +137,14 @@ public sealed class TabControlImageCursor : IDisposable
                     srcUnit: GraphicsUnit.Pixel
                 );
 
-                DrawDateTimePickers(
-                    tabControl.SelectedTab,
-                    g,
-                    tabControl
-                );
+                if (Global.Config.DarkMode)
+                {
+                    DrawDateTimePickers(
+                        tabControl.SelectedTab,
+                        g,
+                        tabControl
+                    );
+                }
             }
 
             Bitmap? bmpFinal = (bmpChopped ?? bmpPre).CloneWithOpacity(0.88f);
