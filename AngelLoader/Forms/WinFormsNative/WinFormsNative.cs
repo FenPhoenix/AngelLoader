@@ -36,6 +36,9 @@ internal static class Native
 
     internal const int WM_SETTINGCHANGE = 0x001A;
 
+    internal const int WM_PRINT = 0x0317;
+    internal const int WM_PRINTCLIENT = 0x0318;
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT

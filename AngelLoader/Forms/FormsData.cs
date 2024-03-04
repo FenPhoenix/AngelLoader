@@ -4,6 +4,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms;
 
@@ -70,6 +72,30 @@ public sealed class TabControlImageCursor : IDisposable
     private readonly Bitmap? _bitmap;
     public readonly Cursor Cursor;
 
+    // Draw the themed DateTimePickers manually onto the image, because their themes don't get fully captured.
+    private static void DrawDateTimePickers(
+        Control control,
+        Graphics g,
+        TabControl tabControl,
+        int stackCounter = 0)
+    {
+        stackCounter++;
+        if (stackCounter > 100) return;
+
+        if (control is DarkDateTimePicker dtp)
+        {
+            Point offset = tabControl.PointToClient_Fast(dtp.Parent.PointToScreen_Fast(dtp.Location));
+            dtp.PaintCustom(g, offset);
+        }
+
+        Control.ControlCollection controls = control.Controls;
+        int count = controls.Count;
+        for (int i = 0; i < count; i++)
+        {
+            DrawDateTimePickers(controls[i], g, tabControl, stackCounter);
+        }
+    }
+
     public TabControlImageCursor(TabControl tabControl)
     {
         Bitmap? bmpChopped = null;
@@ -109,6 +135,12 @@ public sealed class TabControlImageCursor : IDisposable
                     srcWidth: tabRectWidth,
                     srcHeight: tabRectHeight,
                     srcUnit: GraphicsUnit.Pixel
+                );
+
+                DrawDateTimePickers(
+                    tabControl.SelectedTab,
+                    g,
+                    tabControl
                 );
             }
 
