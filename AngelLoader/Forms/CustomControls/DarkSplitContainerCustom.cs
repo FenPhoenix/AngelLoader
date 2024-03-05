@@ -1,5 +1,8 @@
 ﻿/*
 @DockUI: Figure out how we want to allow moving of the new cross-section which can now be 4-way (3 splitters)
+@DockUI(Splitters): This whole dependency-injection "sibling" thing is OOP crap once again, let's control from MainForm
+Then we can just use the already-existent mouse move tracking to easily see where the mouse is and control the
+splitters all from a central location.
 */
 
 using System;
@@ -37,7 +40,6 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
     // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
-    // @DockUI: We need to be able to have two siblings now (main splitter: one above, one below)
     private DarkSplitContainerCustom? _sibling;
 
     // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
