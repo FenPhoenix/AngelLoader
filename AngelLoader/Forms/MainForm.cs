@@ -5627,6 +5627,11 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             DestroyImageCursor();
+            // @DockUI: Have a better way to choose controls than this bulky ternary all the time
+            DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
+                ? Lazy_LowerTabControl.TabControl
+                : TopFMTabControl;
+            sourceTabControl.ResetTempDragData();
             _inTabDragArea = false;
             if (refresh)
             {
@@ -5635,8 +5640,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    // @DockUI: Original control nearest tab should be the one from before the drag moved the tab in the bar.
-    // That drag is supposed to have all its effects completely canceled when we commit the between-control drag.
     private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
     {
         if (source == dest) return;
@@ -5648,10 +5651,6 @@ public sealed partial class MainForm : DarkFormBase,
         DarkTabControl destTabControl = dest == WhichTabControl.Bottom
             ? Lazy_LowerTabControl.TabControl
             : TopFMTabControl;
-
-        DarkSplitContainerCustom sourceSplitContainer = source == WhichTabControl.Bottom
-            ? LowerSplitContainer
-            : TopSplitContainer;
 
         DarkSplitContainerCustom destSplitContainer = dest == WhichTabControl.Bottom
             ? LowerSplitContainer

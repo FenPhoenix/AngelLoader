@@ -35,13 +35,18 @@ public sealed class DarkTabControl : TabControl, IDarkable
     */
 
     private List<BackingTab>? _backedUpBackingTabs;
+    private TabPage? _backedUpNearestTabPage;
 
-    private void BackUpBackingTabs()
+    private void BackUpTempDragData()
     {
         _backedUpBackingTabs = new List<BackingTab>(_backingTabList.Count);
         foreach (BackingTab backingTab in _backingTabList)
         {
             _backedUpBackingTabs.Add(new BackingTab(backingTab.TabPage) { VisibleIn = backingTab.VisibleIn });
+        }
+        if (TabCount > 1 && SelectedIndex > 0)
+        {
+            _backedUpNearestTabPage = TabPages[GetNearestIndex_NoBoundsChecks()];
         }
     }
 
@@ -60,6 +65,12 @@ public sealed class DarkTabControl : TabControl, IDarkable
             backingTab.VisibleIn = backedUpBackingTab.VisibleIn;
         }
         _backedUpBackingTabs = null;
+    }
+
+    internal void ResetTempDragData()
+    {
+        _backedUpBackingTabs = null;
+        _backedUpNearestTabPage = null;
     }
 
     #endregion
@@ -336,7 +347,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
         if (e.Button == MouseButtons.Left)
         {
             (_, DragTab) = GetTabAtPoint(e.Location);
-            if (DragTab != null) BackUpBackingTabs();
+            if (DragTab != null) BackUpTempDragData();
         }
         base.OnMouseDown(e);
     }
@@ -531,14 +542,26 @@ public sealed class DarkTabControl : TabControl, IDarkable
             bt.VisibleIn = FMTabVisibleIn.None;
             if (TabPages.Contains(bt.TabPage))
             {
-                if (TabPages.Count > 1 && SelectedIndex > 0 && SelectedTab == bt.TabPage)
+                Control? parent = Parent;
+                if (_backedUpNearestTabPage != null && TabPages.Contains(_backedUpNearestTabPage))
                 {
-                    Control? parent = Parent;
                     try
                     {
                         parent?.SuspendDrawing();
-                        int newIndex = SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
-                        SelectedTab = TabPages[newIndex];
+                        SelectedTab = _backedUpNearestTabPage;
+                        TabPages.Remove(bt.TabPage);
+                    }
+                    finally
+                    {
+                        parent?.ResumeDrawing();
+                    }
+                }
+                else if (TabPages.Count > 1 && SelectedIndex > 0 && SelectedTab == bt.TabPage)
+                {
+                    try
+                    {
+                        parent?.SuspendDrawing();
+                        SelectedTab = TabPages[GetNearestIndex_NoBoundsChecks()];
                         TabPages.Remove(bt.TabPage);
                     }
                     finally
@@ -550,9 +573,15 @@ public sealed class DarkTabControl : TabControl, IDarkable
                 {
                     TabPages.Remove(bt.TabPage);
                 }
+                _backedUpNearestTabPage = null;
                 if (TabCount > 0) SelectedTab.Focus();
             }
         }
+    }
+
+    private int GetNearestIndex_NoBoundsChecks()
+    {
+        return SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
     }
 
     public Rectangle GetTabBarRect() =>
