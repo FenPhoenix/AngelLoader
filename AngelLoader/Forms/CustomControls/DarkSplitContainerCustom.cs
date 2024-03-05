@@ -37,6 +37,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
     // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
+    // @DockUI: We need to be able to have two siblings now (main splitter: one above, one below)
     private DarkSplitContainerCustom? _sibling;
 
     // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
