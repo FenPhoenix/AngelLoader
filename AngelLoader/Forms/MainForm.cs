@@ -5531,6 +5531,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     /*
     @DockUI: Working/testing code, finalize before release
+    @DockUI: Remove Trace.WriteLines
     */
 
     private bool _inTabDragArea;
