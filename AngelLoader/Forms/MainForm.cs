@@ -918,12 +918,7 @@ public sealed partial class MainForm : DarkFormBase,
             // They're visible by default - shave off a bit of time
             if (visible == FMTabVisibleIn.None)
             {
-                TopFMTabControl.ShowTab(fmTabPage, false);
-                // @DockUI: This panel collapse logic always happens after a ShowTab(false). We should put the two into a function
-                if (TopFMTabControl.TabCount == 0)
-                {
-                    TopSplitContainer.Panel2Collapsed = true;
-                }
+                HideTab(WhichTabControl.Top, fmTabPage);
             }
             else if (visible == FMTabVisibleIn.Bottom)
             {
@@ -3383,22 +3378,7 @@ public sealed partial class MainForm : DarkFormBase,
             */
             if (s.Checked)
             {
-                if (tabControl == TopFMTabControl)
-                {
-                    Lazy_LowerTabControl.ShowTab(tab, false);
-                    if (Lazy_LowerTabControl.TabCount == 0)
-                    {
-                        LowerSplitContainer.Panel2Collapsed = true;
-                    }
-                }
-                else
-                {
-                    TopFMTabControl.ShowTab(tab, false);
-                    if (TopFMTabControl.TabCount == 0)
-                    {
-                        TopSplitContainer.Panel2Collapsed = true;
-                    }
-                }
+                HideTab(tabControl == TopFMTabControl ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
             }
             tabControl.ShowTab(tab, s.Checked);
         }
@@ -5678,12 +5658,8 @@ public sealed partial class MainForm : DarkFormBase,
             : TopSplitContainer;
 
         sourceTabControl.RestoreBackedUpBackingTabs();
-        sourceTabControl.ShowTab(tabPage, false);
+        HideTab(source, tabPage);
         destTabControl.ShowTab(tabPage, true);
-        if (sourceTabControl.TabCount == 0)
-        {
-            sourceSplitContainer.Panel2Collapsed = true;
-        }
         destSplitContainer.Panel2Collapsed = false;
 
         if (expandCollapsed)
@@ -5697,6 +5673,20 @@ public sealed partial class MainForm : DarkFormBase,
 
         destTabControl.SelectedTab = tabPage;
         tabPage.Focus();
+    }
+
+    private void HideTab(WhichTabControl which, TabPage tabPage)
+    {
+        (DarkTabControl tabControl, DarkSplitContainerCustom splitter) =
+            which == WhichTabControl.Bottom
+                ? (Lazy_LowerTabControl.TabControl, LowerSplitContainer)
+                : (TopFMTabControl, TopSplitContainer);
+
+        tabControl.ShowTab(tabPage, false);
+        if (tabControl.TabCount == 0)
+        {
+            splitter.Panel2Collapsed = true;
+        }
     }
 
     private void DestroyImageCursor()
