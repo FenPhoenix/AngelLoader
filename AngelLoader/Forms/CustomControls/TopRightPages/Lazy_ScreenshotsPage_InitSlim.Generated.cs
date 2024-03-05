@@ -90,7 +90,7 @@ public sealed partial class Lazy_ScreenshotsPage
         this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
         this.AutoScroll = true;
-        this.AutoScrollMinSize = new System.Drawing.Size(200, 100);
+        this.AutoScrollMinSize = new System.Drawing.Size(200, 200);
         this.Controls.Add(this.CopiedMessageLabel);
         this.Controls.Add(this.GammaLabel);
         this.Controls.Add(this.NumberLabel);
