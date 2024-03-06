@@ -3385,12 +3385,21 @@ public sealed partial class MainForm : DarkFormBase,
             */
             if (s.Checked)
             {
-                // @DockUI: Expand tab panels when a tab is shown via the menu
                 HideFMTab(tabControl == TopFMTabControl ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
                 ShowFMTab(tabControl == TopFMTabControl ? WhichTabControl.Top : WhichTabControl.Bottom, tab);
                 if (tab is Lazy_TabsBase lazyTab)
                 {
                     lazyTab.Construct();
+                }
+
+                (DarkSplitContainerCustom splitter, WhichTabControl which) = tabControl == TopFMTabControl
+                    ? (TopSplitContainer, WhichTabControl.Top)
+                    : (LowerSplitContainer, WhichTabControl.Bottom);
+
+                if (splitter.FullScreen)
+                {
+                    splitter.ToggleFullScreen();
+                    SetFMTabsCollapsedState(which, false);
                 }
             }
             else
