@@ -13,6 +13,7 @@ NOTE: MainForm notes:
 -FM tab controls (the containers of the tab pages) (but can't really, because tab pages need to be added to a tab
  control before they can be considered to be in a proper working state)
 -Rating columns (text or image) - one or the other will not be shown
+-Tab area empty message labels (but a pain due to Show() needing to be lazy executed as well)
 
 @NET5: Fonts will change and control sizes will all change too.
 -.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
