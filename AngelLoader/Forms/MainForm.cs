@@ -4314,9 +4314,10 @@ public sealed partial class MainForm : DarkFormBase,
         if (sender == ReadmeFullScreenButton)
         {
             /*
-            @DockUI(readme fullscreen):
-            We need to handle the readme fullscreening thing. Is it safe to allow interacting with tabs while the
-            readme is fullscreened? Or should we hide the beside-readme area too?
+            @DockUI(readme fullscreen): This needs the always-show-collapse-button-for-both-panels thing to really work
+            Because of toggling collapsed state of lower splitter panel 2.
+            We could store the previous collapsed state, but we want to get rid of the auto-collapse-on-no-tabs
+            anyway, because it's kind of not super great UX.
             */
             MainSplitContainer.ToggleFullScreen();
             ShowReadmeControls(CursorOverReadmeArea());
