@@ -591,6 +591,7 @@ public sealed partial class MainForm
         LowerSplitContainer.Panel1.Controls.Add(ReadmeResetZoomButton);
         LowerSplitContainer.Panel1.Controls.Add(ChooseReadmeComboBox);
         LowerSplitContainer.Panel1.Controls.Add(ReadmeRichTextBox);
+        LowerSplitContainer.Panel1MinSize = 0;
         // 
         // LowerSplitContainer.Panel2
         // 
