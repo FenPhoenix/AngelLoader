@@ -1723,7 +1723,8 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else if (e.KeyCode == Keys.C)
             {
-                if (AnyControlFocusedInTabPage(ScreenshotsTabPage))
+                if (CursorOverControl(ScreenshotsTabPage) ||
+                    AnyControlFocusedInTabPage(ScreenshotsTabPage))
                 {
                     ScreenshotsTabPage.CopyImageToClipboard();
                 }

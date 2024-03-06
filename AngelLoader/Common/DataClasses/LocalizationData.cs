@@ -636,8 +636,9 @@ internal sealed class LText_Class
     internal sealed class ScreenshotsTab_Class
     {
         internal readonly string TabText = "Screenshots";
-        internal readonly string CopyScreenshotToolTip = "Right-click to copy";
         internal readonly string Gamma = "Gamma:";
+        internal readonly string OpenScreenshotsFolderToolTip = "Open screenshots folder";
+        internal readonly string CopyImageToolTip = "Copy image (Ctrl+C)";
         internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
         internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
         internal readonly string ImageCopied = "Image copied";

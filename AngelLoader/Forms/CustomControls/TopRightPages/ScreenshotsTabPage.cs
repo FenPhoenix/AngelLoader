@@ -41,6 +41,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             _page.ScreenshotsPictureBox.MouseClick += ScreenshotsPictureBox_MouseClick;
 
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
+            _page.CopyButton.Click += CopyButton_Click;
             _page.PrevButton.Click += ScreenshotsPrevButton_Click;
             _page.NextButton.Click += ScreenshotsNextButton_Click;
             _page.GammaTrackBar.Scroll += GammaTrackBar_Scroll;
@@ -62,7 +63,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     public override void Localize()
     {
         if (!_constructed) return;
-        _owner.MainToolTip.SetToolTip(_page.ScreenshotsPictureBox, LText.ScreenshotsTab.CopyScreenshotToolTip);
+        _owner.MainToolTip.SetToolTip(_page.OpenScreenshotsFolderButton, LText.ScreenshotsTab.OpenScreenshotsFolderToolTip);
+        _owner.MainToolTip.SetToolTip(_page.CopyButton, LText.ScreenshotsTab.CopyImageToolTip);
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
     }
 
@@ -253,6 +255,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CopyImageToClipboard();
         }
     }
+
+    private void CopyButton_Click(object sender, EventArgs e) => CopyImageToClipboard();
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {

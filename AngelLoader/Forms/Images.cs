@@ -41,12 +41,28 @@ public static class Preload
 // Also performance hack for the splash screen as above.
 file static class DarkModeImageConversion
 {
+    internal enum Matrix
+    {
+        Dark,
+        DarkDim,
+        DarkDisabled
+    }
+
     private static readonly ColorMatrix DarkColorMatrix = new(new[]
     {
         new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
         new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
         new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
         new[] { 0, 0, 0, /* The value: */ 0.8425f, 0 },
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+    });
+
+    private static readonly ColorMatrix DarkDimColorMatrix = new(new[]
+    {
+        new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
+        new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
+        new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
+        new[] { 0, 0, 0, /* The value: */ 0.7425f, 0 },
         new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
     });
 
@@ -59,13 +75,19 @@ file static class DarkModeImageConversion
         new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
     });
 
-    public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
+    public static Bitmap CreateDarkModeVersion(Bitmap normalImage, Matrix matrix = Matrix.Dark)
     {
         using ImageAttributes imgAttrib = new();
 
         imgAttrib.ClearColorKey();
 
-        imgAttrib.SetColorMatrix(disabled ? DarkDisabledColorMatrix : DarkColorMatrix);
+        imgAttrib.SetColorMatrix(
+            matrix switch
+            {
+                Matrix.DarkDisabled => DarkDisabledColorMatrix,
+                Matrix.DarkDim => DarkDimColorMatrix,
+                _ => DarkColorMatrix
+            });
 
         Size size = normalImage.Size;
 
@@ -1008,7 +1030,7 @@ public static class Images
     private static Image? _charEncLetter_Disabled_Dark;
     public static Image CharEncLetter_Disabled =>
         Config.DarkMode
-            ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, true)
+            ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, DarkModeImageConversion.Matrix.DarkDisabled)
             : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharEnc);
 
     #endregion
@@ -1180,6 +1202,20 @@ public static class Images
         Config.DarkMode
             ? _brokenFile_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.BrokenFile)
             : _brokenFile ??= Resources.BrokenFile;
+
+    private static Bitmap? _folderDim;
+    private static Bitmap? _folderDim_Dark;
+    public static Bitmap FolderDim =>
+        Config.DarkMode
+            ? _folderDim_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Folder16, DarkModeImageConversion.Matrix.DarkDim)
+            : _folderDim ??= Resources.Folder16;
+
+    private static Bitmap? _copy21;
+    private static Bitmap? _copy21_Dark;
+    public static Bitmap Copy21 =>
+        Config.DarkMode
+            ? _copy21_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Copy_21, DarkModeImageConversion.Matrix.DarkDim)
+            : _copy21 ??= Resources.Copy_21;
 
     #endregion
 

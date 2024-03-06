@@ -31,16 +31,49 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
+            this.ButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+            this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+            this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.CopyButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.GammaLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NumberLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.GammaTrackBar = new AngelLoader.Forms.CustomControls.DarkTrackBar();
             this.OpenScreenshotsFolderButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-            this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.ScreenshotsPictureBox = new AngelLoader.Forms.CustomControls.ImagePanelCustom();
+            this.ButtonsFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).BeginInit();
             this.SuspendLayout();
+            // 
+            // ButtonsFLP
+            // 
+            this.ButtonsFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonsFLP.Controls.Add(this.NextButton);
+            this.ButtonsFLP.Controls.Add(this.PrevButton);
+            this.ButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.ButtonsFLP.Location = new System.Drawing.Point(56, 256);
+            this.ButtonsFLP.Name = "ButtonsFLP";
+            this.ButtonsFLP.Size = new System.Drawing.Size(466, 24);
+            this.ButtonsFLP.TabIndex = 6;
+            // 
+            // NextButton
+            // 
+            this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
+            this.NextButton.Location = new System.Drawing.Point(391, 0);
+            this.NextButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 3);
+            this.NextButton.Name = "NextButton";
+            this.NextButton.Size = new System.Drawing.Size(75, 23);
+            this.NextButton.TabIndex = 2;
+            // 
+            // PrevButton
+            // 
+            this.PrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
+            this.PrevButton.Location = new System.Drawing.Point(313, 0);
+            this.PrevButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 3);
+            this.PrevButton.Name = "PrevButton";
+            this.PrevButton.Size = new System.Drawing.Size(75, 23);
+            this.PrevButton.TabIndex = 1;
             // 
             // CopiedMessageLabel
             // 
@@ -52,6 +85,16 @@ public sealed partial class Lazy_ScreenshotsPage
             this.CopiedMessageLabel.TabIndex = 2;
             this.CopiedMessageLabel.Text = "[Copied]";
             this.CopiedMessageLabel.Visible = false;
+            // 
+            // CopyButton
+            // 
+            this.CopyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.CopyButton.Location = new System.Drawing.Point(32, 256);
+            this.CopyButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 3);
+            this.CopyButton.Name = "CopyButton";
+            this.CopyButton.Size = new System.Drawing.Size(24, 23);
+            this.CopyButton.TabIndex = 0;
+            this.CopyButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.CopyButton_PaintCustom);
             // 
             // GammaLabel
             // 
@@ -92,26 +135,8 @@ public sealed partial class Lazy_ScreenshotsPage
             this.OpenScreenshotsFolderButton.Location = new System.Drawing.Point(8, 256);
             this.OpenScreenshotsFolderButton.Name = "OpenScreenshotsFolderButton";
             this.OpenScreenshotsFolderButton.Size = new System.Drawing.Size(24, 23);
-            this.OpenScreenshotsFolderButton.TabIndex = 6;
+            this.OpenScreenshotsFolderButton.TabIndex = 5;
             this.OpenScreenshotsFolderButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.OpenScreenshotsFolderButton_PaintCustom);
-            // 
-            // NextButton
-            // 
-            this.NextButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
-            this.NextButton.Location = new System.Drawing.Point(446, 256);
-            this.NextButton.Name = "NextButton";
-            this.NextButton.Size = new System.Drawing.Size(75, 23);
-            this.NextButton.TabIndex = 8;
-            // 
-            // PrevButton
-            // 
-            this.PrevButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.PrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
-            this.PrevButton.Location = new System.Drawing.Point(371, 256);
-            this.PrevButton.Name = "PrevButton";
-            this.PrevButton.Size = new System.Drawing.Size(75, 23);
-            this.PrevButton.TabIndex = 7;
             // 
             // ScreenshotsPictureBox
             // 
@@ -129,16 +154,17 @@ public sealed partial class Lazy_ScreenshotsPage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoScroll = true;
             this.AutoScrollMinSize = new System.Drawing.Size(200, 200);
+            this.Controls.Add(this.ButtonsFLP);
             this.Controls.Add(this.CopiedMessageLabel);
+            this.Controls.Add(this.CopyButton);
             this.Controls.Add(this.GammaLabel);
             this.Controls.Add(this.NumberLabel);
             this.Controls.Add(this.GammaTrackBar);
             this.Controls.Add(this.OpenScreenshotsFolderButton);
-            this.Controls.Add(this.NextButton);
-            this.Controls.Add(this.PrevButton);
             this.Controls.Add(this.ScreenshotsPictureBox);
             this.Name = "Lazy_ScreenshotsPage";
             this.Size = new System.Drawing.Size(527, 284);
+            this.ButtonsFLP.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.GammaTrackBar)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -156,4 +182,6 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkTrackBar GammaTrackBar;
     internal DarkLabel GammaLabel;
     internal DarkLabel CopiedMessageLabel;
+    private DarkFlowLayoutPanel ButtonsFLP;
+    internal DarkButton CopyButton;
 }
