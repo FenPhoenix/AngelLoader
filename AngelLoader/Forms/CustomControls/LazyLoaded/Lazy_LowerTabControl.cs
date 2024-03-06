@@ -4,8 +4,6 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-// @DockUI: This is always constructed - make it unloaded until panel un-fullscreened
-
 internal sealed class Lazy_LowerTabControl : IDarkable
 {
     internal bool Constructed { get; private set; }
@@ -68,6 +66,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
         container.MouseClick += _owner.LowerFMTabsBar_MouseClick;
+        _owner.BottomFMTabsEmptyMessageLabel.MouseClick += _owner.LowerFMTabsBar_MouseClick;
 
         _tabControl.Selected += TabControl_Selected;
         _tabControl.MouseDragCustom += _owner.Lazy_LowerTabControl_MouseDragCustom;
@@ -75,8 +74,6 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         _tabControl.VisibleChanged += TabControl_VisibleChanged;
 
         container.Controls.Add(_tabControl);
-
-        _owner.Lazy_BottomFMTabsEmptyMessageLabel.Show(true);
 
         _tabControl.Enabled = _enabled;
 
