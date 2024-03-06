@@ -1,11 +1,4 @@
-﻿/*
-@DockUI: Figure out how we want to allow moving of the new cross-section which can now be 4-way (3 splitters)
-@DockUI(Splitters): This whole dependency-injection "sibling" thing is OOP crap once again, let's control from MainForm
-Then we can just use the already-existent mouse move tracking to easily see where the mouse is and control the
-splitters all from a central location.
-*/
-
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
@@ -40,14 +33,20 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     // This is so you can drag both directions by grabbing the corner between the two. One SplitContainer can
     // control both its own SplitterDistance and that of its orthogonally-oriented sibling at the same time.
-    private DarkSplitContainerCustom? _sibling;
+    private DarkSplitContainerCustom? _sibling1;
+    private DarkSplitContainerCustom? _sibling2;
 
     // This realtime-draw resize stuff still flickers a bit, but it's better than no redraw at all.
     private int _originalDistance;
-    private bool _mouseOverCrossSection;
+    private bool _mouseOverCrossSection1;
     [Browsable(false)]
-    [MemberNotNullWhen(true, nameof(_sibling))]
-    private bool MouseOverCrossSection => _sibling != null && _mouseOverCrossSection;
+    [MemberNotNullWhen(true, nameof(_sibling1))]
+    private bool MouseOverCrossSection1 => _sibling1 != null && _mouseOverCrossSection1;
+
+    private bool _mouseOverCrossSection2;
+    [Browsable(false)]
+    [MemberNotNullWhen(true, nameof(_sibling2))]
+    private bool MouseOverCrossSection2 => _sibling2 != null && _mouseOverCrossSection2;
 
     private Color? _origBackColor;
     private Color? _origPanel1BackColor;
@@ -145,7 +144,8 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
     #region Public methods
 
-    internal void SetSibling(DarkSplitContainerCustom sibling) => _sibling = sibling;
+    internal void SetSibling1(DarkSplitContainerCustom sibling) => _sibling1 = sibling;
+    internal void SetSibling2(DarkSplitContainerCustom sibling) => _sibling2 = sibling;
 
     internal void ToggleFullScreen() => SetFullScreen(!FullScreen);
 
@@ -227,8 +227,10 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
         Resizing = false;
         SplitterDistance = _originalDistance;
-        if (MouseOverCrossSection) _sibling.SplitterDistance = _sibling._originalDistance;
-        _mouseOverCrossSection = false;
+        if (MouseOverCrossSection1) _sibling1.SplitterDistance = _sibling1._originalDistance;
+        if (MouseOverCrossSection2) _sibling2.SplitterDistance = _sibling2._originalDistance;
+        _mouseOverCrossSection1 = false;
+        _mouseOverCrossSection2 = false;
     }
 
     #endregion
@@ -277,7 +279,8 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
              (!IsStacked && Cursor.Current == Cursors.VSplit)))
         {
             _originalDistance = SplitterDistance;
-            if (MouseOverCrossSection) _sibling._originalDistance = _sibling.SplitterDistance;
+            if (MouseOverCrossSection1) _sibling1._originalDistance = _sibling1.SplitterDistance;
+            if (MouseOverCrossSection2) _sibling2._originalDistance = _sibling2.SplitterDistance;
             Resizing = true;
         }
         else
@@ -298,7 +301,8 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
         if (FullScreen) return;
 
-        _mouseOverCrossSection = false;
+        _mouseOverCrossSection1 = false;
+        _mouseOverCrossSection2 = false;
         Resizing = false;
 
         base.OnMouseUp(e);
@@ -314,34 +318,61 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
         if (FullScreen) return;
 
-        if (!Resizing && _sibling != null)
+        // @DockUI: Semantic compress this
+        if (!Resizing && _sibling1 != null)
         {
             int sibCursorPos = IsStacked
-                ? _sibling.Panel1.ClientCursorPos().X
-                : _sibling.Panel1.ClientCursorPos().Y;
+                ? _sibling1.Panel1.ClientCursorPos().X
+                : _sibling1.Panel1.ClientCursorPos().Y;
 
             int sibSplitterPos = IsStacked
-                ? _sibling.Panel1.Width
-                : _sibling.Panel1.Height;
+                ? _sibling1.Panel1.Width
+                : _sibling1.Panel1.Height;
 
             // Don't do the both-directional-drag if the sibling has a panel collapsed
-            if (!_sibling.FullScreen &&
+            if (!_sibling1.FullScreen &&
                 sibCursorPos >= sibSplitterPos - 7 &&
-                sibCursorPos <= sibSplitterPos + _sibling.SplitterWidth + 6)
+                sibCursorPos <= sibSplitterPos + _sibling1.SplitterWidth + 6)
             {
                 Cursor.Current = Cursors.SizeAll;
-                _mouseOverCrossSection = true;
+                _mouseOverCrossSection1 = true;
             }
             else
             {
-                _mouseOverCrossSection = false;
+                _mouseOverCrossSection1 = false;
+            }
+        }
+        if (!Resizing && _sibling2 != null)
+        {
+            int sibCursorPos = IsStacked
+                ? _sibling2.Panel1.ClientCursorPos().X
+                : _sibling2.Panel1.ClientCursorPos().Y;
+
+            int sibSplitterPos = IsStacked
+                ? _sibling2.Panel1.Width
+                : _sibling2.Panel1.Height;
+
+            // Don't do the both-directional-drag if the sibling has a panel collapsed
+            if (!_sibling2.FullScreen &&
+                sibCursorPos >= sibSplitterPos - 7 &&
+                sibCursorPos <= sibSplitterPos + _sibling2.SplitterWidth + 6)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                _mouseOverCrossSection2 = true;
+            }
+            else
+            {
+                _mouseOverCrossSection2 = false;
             }
         }
         if (Resizing)
         {
             if (e.Button == MouseButtons.Left)
             {
-                if (MouseOverCrossSection) Cursor.Current = Cursors.SizeAll;
+                if (MouseOverCrossSection1 || MouseOverCrossSection2)
+                {
+                    Cursor.Current = Cursors.SizeAll;
+                }
 
                 // SuspendDrawing() / ResumeDrawing() reduces visual artifacts
                 int axis = IsStacked ? e.Y : e.X;
@@ -349,20 +380,51 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
                 // Things need to happen in different orders depending on who we are, in order to avoid
                 // flickering. We could also Suspend/Resume them one at a time, but that's perceptibly
                 // laggier.
-                if (MouseOverCrossSection)
+                if (MouseOverCrossSection1)
                 {
                     if (RefreshSiblingFirst)
                     {
-                        _sibling.SuspendDrawing();
+                        _sibling1.SuspendDrawing();
+                        if (MouseOverCrossSection2) _sibling2.SuspendDrawing();
                         this.SuspendDrawing();
                     }
                     else
                     {
                         this.SuspendDrawing();
-                        _sibling.SuspendDrawing();
+                        if (MouseOverCrossSection2) _sibling2.ResumeDrawing();
+                        _sibling1.SuspendDrawing();
                     }
 
-                    _sibling.SplitterDistance = (axis == e.X ? e.Y : e.X).ClampToZero();
+                    Point pt1 = _sibling1.ClientCursorPos();
+                    _sibling1.SplitterDistance = (axis == e.X ? pt1.Y : pt1.X).ClampToZero();
+                    if (MouseOverCrossSection2)
+                    {
+                        Point pt2 = _sibling2.ClientCursorPos();
+                        _sibling2.SplitterDistance = (axis == e.X ? pt2.Y : pt2.X).ClampToZero();
+                    }
+                }
+                else if (MouseOverCrossSection2)
+                {
+                    if (RefreshSiblingFirst)
+                    {
+                        if (MouseOverCrossSection1) _sibling1.SuspendDrawing();
+                        _sibling2.SuspendDrawing();
+                        this.SuspendDrawing();
+                    }
+                    else
+                    {
+                        this.SuspendDrawing();
+                        _sibling2.SuspendDrawing();
+                        if (MouseOverCrossSection1) _sibling1.ResumeDrawing();
+                    }
+
+                    Point pt2 = _sibling2.ClientCursorPos();
+                    _sibling2.SplitterDistance = (axis == e.X ? pt2.Y : pt2.X).ClampToZero();
+                    if (MouseOverCrossSection1)
+                    {
+                        Point pt1 = _sibling1.ClientCursorPos();
+                        _sibling1.SplitterDistance = (axis == e.X ? pt1.Y : pt1.X).ClampToZero();
+                    }
                 }
                 else
                 {
@@ -371,17 +433,34 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
 
                 SplitterDistance = axis.ClampToZero();
 
-                if (MouseOverCrossSection)
+                if (MouseOverCrossSection1)
                 {
                     if (RefreshSiblingFirst)
                     {
-                        _sibling.ResumeDrawing();
+                        if (MouseOverCrossSection2) _sibling2.ResumeDrawing();
+                        _sibling1.ResumeDrawing();
                         this.ResumeDrawing();
                     }
                     else
                     {
                         this.ResumeDrawing();
-                        _sibling.ResumeDrawing();
+                        if (MouseOverCrossSection2) _sibling2.ResumeDrawing();
+                        _sibling1.ResumeDrawing();
+                    }
+                }
+                else if (MouseOverCrossSection2)
+                {
+                    if (RefreshSiblingFirst)
+                    {
+                        _sibling2.ResumeDrawing();
+                        if (MouseOverCrossSection1) _sibling1.ResumeDrawing();
+                        this.ResumeDrawing();
+                    }
+                    else
+                    {
+                        this.ResumeDrawing();
+                        _sibling2.ResumeDrawing();
+                        if (MouseOverCrossSection1) _sibling1.ResumeDrawing();
                     }
                 }
                 else

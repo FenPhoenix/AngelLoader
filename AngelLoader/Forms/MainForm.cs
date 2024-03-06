@@ -956,13 +956,16 @@ public sealed partial class MainForm : DarkFormBase,
         TopSplitContainer.SetSplitterPercent(Config.TopSplitterPercent, setIfFullScreen: false, suspendResume: false);
         LowerSplitContainer.SetSplitterPercent(Config.LowerSplitterPercent, setIfFullScreen: false, suspendResume: false);
 
-        MainSplitContainer.SetSibling(TopSplitContainer);
+        MainSplitContainer.SetSibling1(TopSplitContainer);
+        MainSplitContainer.SetSibling2(LowerSplitContainer);
         MainSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
         MainSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
-        TopSplitContainer.SetSibling(MainSplitContainer);
+
+        TopSplitContainer.SetSibling1(MainSplitContainer);
         TopSplitContainer.Panel1DarkBackColor = DarkColors.Fen_ControlBackground;
         TopSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
 
+        LowerSplitContainer.SetSibling1(MainSplitContainer);
         LowerSplitContainer.Panel1DarkBackColor = DarkColors.Fen_DarkBackground;
         LowerSplitContainer.Panel2DarkBackColor = DarkColors.Fen_DarkBackground;
 
