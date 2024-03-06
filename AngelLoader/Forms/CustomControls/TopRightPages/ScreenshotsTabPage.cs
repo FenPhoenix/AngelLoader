@@ -246,7 +246,13 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
-    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e) => CopyImageToClipboard();
+    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Right)
+        {
+            CopyImageToClipboard();
+        }
+    }
 
     private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
     {
