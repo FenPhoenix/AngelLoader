@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Windows.Forms;
 using AL_Common;
 
 namespace AngelLoader.Forms;
@@ -137,4 +138,10 @@ public interface IListControlWithBackingItems : IUpdateRegion
 #endif
 
     #endregion
+}
+
+public interface IOptionallyLazyTabControl
+{
+    public bool Enabled { get; set; }
+    public TabPage? SelectedTab { get; }
 }

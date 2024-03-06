@@ -16,7 +16,7 @@ In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a
 When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
 update the backing list ourselves.
 */
-public sealed class DarkTabControl : TabControl, IDarkable
+public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabControl
 {
     #region Private fields
 

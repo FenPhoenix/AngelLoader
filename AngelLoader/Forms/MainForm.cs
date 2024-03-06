@@ -3294,9 +3294,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void SetFMTabsCollapsedState(WhichTabControl which, bool collapsed)
     {
-        (DarkArrowButton collapseButton, DarkTabControl tabControl, Lazy_FMTabsBlocker blocker) =
+        (DarkArrowButton collapseButton, IOptionallyLazyTabControl tabControl, Lazy_FMTabsBlocker blocker) =
             which == WhichTabControl.Bottom
-                ? (BottomFMTabsCollapseButton, Lazy_LowerTabControl.TabControl, Lazy_TopFMTabsBlocker)
+                ? (BottomFMTabsCollapseButton, (IOptionallyLazyTabControl)Lazy_LowerTabControl, Lazy_TopFMTabsBlocker)
                 : (TopFMTabsCollapseButton, TopFMTabControl, Lazy_BottomFMTabsBlocker);
 
         if (collapsed)
@@ -3311,6 +3311,11 @@ public sealed partial class MainForm : DarkFormBase,
             if (!blocker.Visible)
             {
                 tabControl.Enabled = true;
+            }
+
+            if (tabControl == Lazy_LowerTabControl)
+            {
+                Lazy_LowerTabControl.Construct();
             }
 
             if (tabControl.SelectedTab is Lazy_TabsBase lazyTab)

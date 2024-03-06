@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class Lazy_LowerTabControl : IDarkable
+internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabControl
 {
     internal bool Constructed { get; private set; }
 
