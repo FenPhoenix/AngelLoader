@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms;
@@ -13,6 +14,7 @@ namespace AngelLoader.Forms;
 internal static class FormsData
 {
     internal const int ZoomTypesCount = 3;
+    internal const int WhichTabCount = 2;
 }
 
 /// <summary>
@@ -31,6 +33,20 @@ public enum WhichTabControl
 {
     Top,
     Bottom
+}
+
+internal sealed class FMTabControlGroup(
+    IOptionallyLazyTabControl tabControl,
+    DarkArrowButton collapseButton,
+    Lazy_FMTabsBlocker blocker,
+    DarkSplitContainerCustom splitter,
+    DarkLabel emptyMessageLabel)
+{
+    internal readonly IOptionallyLazyTabControl TabControl = tabControl;
+    internal readonly DarkArrowButton CollapseButton = collapseButton;
+    internal readonly Lazy_FMTabsBlocker Blocker = blocker;
+    internal readonly DarkSplitContainerCustom Splitter = splitter;
+    internal readonly DarkLabel EmptyMessageLabel = emptyMessageLabel;
 }
 
 /*
@@ -77,7 +93,7 @@ public sealed class TabControlImageCursor : IDisposable
     private static void DrawDateTimePickers(
         Control control,
         Graphics g,
-        TabControl tabControl,
+        IOptionallyLazyTabControl tabControl,
         int stackCounter = 0)
     {
         stackCounter++;
@@ -97,7 +113,7 @@ public sealed class TabControlImageCursor : IDisposable
         }
     }
 
-    public TabControlImageCursor(TabControl tabControl)
+    public TabControlImageCursor(IOptionallyLazyTabControl tabControl)
     {
         Bitmap? bmpChopped = null;
         try
@@ -142,7 +158,7 @@ public sealed class TabControlImageCursor : IDisposable
                     srcUnit: GraphicsUnit.Pixel
                 );
 
-                if (Global.Config.DarkMode)
+                if (Global.Config.DarkMode && tabControl.SelectedTab != null)
                 {
                     DrawDateTimePickers(
                         tabControl.SelectedTab,

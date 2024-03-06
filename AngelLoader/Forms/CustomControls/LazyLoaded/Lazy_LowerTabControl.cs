@@ -85,12 +85,12 @@ internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabContro
         if (show)
         {
             Construct();
-            _owner.ShowFMTab(WhichTabControl.Bottom, tabPage);
+            _tabControl.ShowTab(tabPage, true);
         }
         else
         {
             if (!Constructed) return;
-            _owner.HideFMTab(WhichTabControl.Bottom, tabPage);
+            _tabControl.ShowTab(tabPage, false);
         }
     }
 
@@ -112,7 +112,51 @@ internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabContro
 
     public int TabCount => Constructed ? _tabControl.TabCount : 0;
 
-    public TabPage? SelectedTab => Constructed ? _tabControl.SelectedTab : null;
+    public TabPage? SelectedTab
+    {
+        get => Constructed ? _tabControl.SelectedTab : null;
+        set
+        {
+            if (!Constructed) return;
+            _tabControl.SelectedTab = value;
+        }
+    }
+
+    public bool TabPagesContains(TabPage tabPage) => Constructed && _tabControl.TabPages.Contains(tabPage);
+
+    public Rectangle GetTabRect(int index) => Constructed ? _tabControl.GetTabRect(index) : Rectangle.Empty;
+
+    public Rectangle GetTabBarRect() => Constructed ? _tabControl.GetTabBarRect() : Rectangle.Empty;
+
+    public Rectangle ClientRectangle => Constructed ? _tabControl.ClientRectangle : Rectangle.Empty;
+
+    public Point ClientCursorPos() => Constructed ? _tabControl.ClientCursorPos() : Point.Empty;
+
+    public int Width => Constructed ? _tabControl.Width : 0;
+
+    public int Height => Constructed ? _tabControl.Height : 0;
+
+    public int SelectedIndex => Constructed ? _tabControl.SelectedIndex : -1;
+
+    public void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
+    {
+        if (!Constructed) return;
+        _tabControl.DrawToBitmap(bitmap, targetBounds);
+    }
+
+    public Point PointToClient_Fast(Point point) => Constructed ? _tabControl.PointToClient_Fast(point) : Point.Empty;
+
+    public void RestoreBackedUpBackingTabs()
+    {
+        if (!Constructed) return;
+        _tabControl.RestoreBackedUpBackingTabs();
+    }
+
+    public void ResetTempDragData()
+    {
+        if (!Constructed) return;
+        _tabControl.ResetTempDragData();
+    }
 
     public TabPage? DragTab => Constructed ? _tabControl.DragTab : null;
 

@@ -125,6 +125,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly DarkButton[] _readmeControlButtons;
 
+    private readonly FMTabControlGroup[] _fmTabControlGroups = new FMTabControlGroup[FormsData.WhichTabCount];
+    private FMTabControlGroup GetFMTabControlGroup(WhichTabControl which) => _fmTabControlGroups[(int)which];
+
     #endregion
 
     #region Enums
@@ -640,6 +643,21 @@ public sealed partial class MainForm : DarkFormBase,
         // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
         InitComponentManual();
 #endif
+
+        _fmTabControlGroups[(int)WhichTabControl.Top] = new FMTabControlGroup(
+            TopFMTabControl,
+            TopFMTabsCollapseButton,
+            Lazy_TopFMTabsBlocker,
+            TopSplitContainer,
+            TopFMTabsEmptyMessageLabel
+        );
+        _fmTabControlGroups[(int)WhichTabControl.Bottom] = new FMTabControlGroup(
+            Lazy_LowerTabControl,
+            BottomFMTabsCollapseButton,
+            Lazy_BottomFMTabsBlocker,
+            LowerSplitContainer,
+            BottomFMTabsEmptyMessageLabel
+        );
 
         TopFMTabControl.SetBackingList(_backingFMTabs);
         TopFMTabControl.SetWhich(WhichTabControl.Top);
@@ -3294,31 +3312,28 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void SetFMTabsCollapsedState(WhichTabControl which, bool collapsed)
     {
-        (DarkArrowButton collapseButton, IOptionallyLazyTabControl tabControl, Lazy_FMTabsBlocker blocker) =
-            which == WhichTabControl.Bottom
-                ? (BottomFMTabsCollapseButton, (IOptionallyLazyTabControl)Lazy_LowerTabControl, Lazy_TopFMTabsBlocker)
-                : (TopFMTabsCollapseButton, TopFMTabControl, Lazy_BottomFMTabsBlocker);
+        FMTabControlGroup group = GetFMTabControlGroup(which);
 
         if (collapsed)
         {
-            collapseButton.ArrowDirection = Direction.Left;
-            tabControl.Enabled = false;
+            group.CollapseButton.ArrowDirection = Direction.Left;
+            group.TabControl.Enabled = false;
         }
         else
         {
-            collapseButton.ArrowDirection = Direction.Right;
+            group.CollapseButton.ArrowDirection = Direction.Right;
 
-            if (!blocker.Visible)
+            if (!group.Blocker.Visible)
             {
-                tabControl.Enabled = true;
+                group.TabControl.Enabled = true;
             }
 
-            if (tabControl == Lazy_LowerTabControl)
+            if (group.TabControl == Lazy_LowerTabControl)
             {
                 Lazy_LowerTabControl.Construct();
             }
 
-            if (tabControl.SelectedTab is Lazy_TabsBase lazyTab)
+            if (group.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
             {
                 lazyTab.ConstructWithSuspendResume();
             }
@@ -3339,26 +3354,16 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void FMTabsMenu_Opening(object sender, CancelEventArgs e)
     {
-        (FMTabVisibleIn which, DarkTabControl tabControl) = Lazy_FMTabsMenu.Menu.Data is WhichTabControl.Bottom
-            ? (FMTabVisibleIn.Bottom, Lazy_LowerTabControl.TabControl)
-            : (FMTabVisibleIn.Top, TopFMTabControl);
+        WhichTabControl which = Lazy_FMTabsMenu.Menu.Data is WhichTabControl dataWhich
+            ? dataWhich
+            : WhichTabControl.Top;
+
+        FMTabControlGroup group = GetFMTabControlGroup(which);
 
         for (int i = 0; i < _fmTabPages.Length; i++)
         {
             Lazy_TabsBase item = _fmTabPages[i];
-            Lazy_FMTabsMenu.SetItemChecked(i, tabControl.TabPages.Contains(item));
-            /*
-            @DockUI(FM per-tab show/hide menu logic)
-            I'm not sure which style is the best/most intuitive/principle-of-least-surprise etc.
-            They're all a little weird. Decide on something for the final release.
-            */
-#if false
-            BackingTab? backingTab = _backingFMTabs.FirstOrDefault(x => x.TabPage == item);
-            if (backingTab != null)
-            {
-                Lazy_FMTabsMenu.SetItemVisible(i, backingTab.VisibleIn == FMTabVisibleIn.None || backingTab.VisibleIn == which);
-            }
-#endif
+            Lazy_FMTabsMenu.SetItemChecked(i, group.TabControl.TabPagesContains(item));
         }
     }
 
@@ -3368,9 +3373,11 @@ public sealed partial class MainForm : DarkFormBase,
 
         TabPage tab = GetObjectFromMenuItem(Lazy_FMTabsMenu.Menu, s, _fmTabPages, FMTabCount);
 
-        DarkTabControl tabControl = s.Owner is DarkContextMenu { Data: WhichTabControl.Bottom }
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
+        WhichTabControl which = s.Owner is DarkContextMenu { Data: WhichTabControl dataWhich }
+            ? dataWhich
+            : WhichTabControl.Top;
+
+        FMTabControlGroup group = GetFMTabControlGroup(which);
 
         try
         {
@@ -3389,36 +3396,29 @@ public sealed partial class MainForm : DarkFormBase,
             */
             if (s.Checked)
             {
-                HideFMTab(tabControl == TopFMTabControl ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
-                ShowFMTab(tabControl == TopFMTabControl ? WhichTabControl.Top : WhichTabControl.Bottom, tab);
+                HideFMTab(which == WhichTabControl.Top ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
+                ShowFMTab(which, tab);
                 if (tab is Lazy_TabsBase lazyTab)
                 {
                     lazyTab.Construct();
                 }
 
-                (DarkSplitContainerCustom splitter, WhichTabControl which) = tabControl == TopFMTabControl
-                    ? (TopSplitContainer, WhichTabControl.Top)
-                    : (LowerSplitContainer, WhichTabControl.Bottom);
-
-                if (splitter.FullScreen)
+                if (group.Splitter.FullScreen)
                 {
-                    splitter.ToggleFullScreen();
+                    group.Splitter.ToggleFullScreen();
                     SetFMTabsCollapsedState(which, false);
                 }
             }
             else
             {
-                HideFMTab(tabControl == TopFMTabControl ? WhichTabControl.Top : WhichTabControl.Bottom, tab);
+                HideFMTab(which, tab);
             }
         }
         finally
         {
             if (s.Checked)
             {
-                TabPage? selectedTab = tabControl == TopFMTabControl
-                    ? TopFMTabControl.SelectedTab
-                    : Lazy_LowerTabControl.SelectedTab;
-                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { tab, selectedTab });
+                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { tab, group.TabControl.SelectedTab });
             }
             else
             {
@@ -5516,17 +5516,15 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (e.Button != MouseButtons.Right) return;
 
-        DarkTabControl tabControl = which == WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
+        FMTabControlGroup group = GetFMTabControlGroup(which);
 
-        Rectangle rect = tabControl.GetTabBarRect();
+        Rectangle rect = group.TabControl.GetTabBarRect();
         if (rect == Rectangle.Empty)
         {
-            rect = tabControl.ClientRectangle;
+            rect = group.TabControl.ClientRectangle;
         }
 
-        if (rect.Contains(tabControl.ClientCursorPos()))
+        if (rect.Contains(group.TabControl.ClientCursorPos()))
         {
             Lazy_FMTabsMenu.Menu.Data = which;
             Lazy_FMTabsMenu.Menu.Show(Native.GetCursorPosition_Fast());
@@ -5559,12 +5557,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void TopFMTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
-        HandleTabDrag(dest: WhichTabControl.Bottom);
+        HandleTabDrag(source: WhichTabControl.Top, dest: WhichTabControl.Bottom);
     }
 
     internal void Lazy_LowerTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
-        HandleTabDrag(dest: WhichTabControl.Top);
+        HandleTabDrag(source: WhichTabControl.Bottom, dest: WhichTabControl.Top);
     }
 
     private void TopFMTabControl_MouseUp(object sender, MouseEventArgs e)
@@ -5577,49 +5575,50 @@ public sealed partial class MainForm : DarkFormBase,
         HandleTabDragFinish(WhichTabControl.Bottom, WhichTabControl.Top);
     }
 
-    private void HandleTabDrag(WhichTabControl dest)
+    private void HandleTabDrag(WhichTabControl source, WhichTabControl dest)
     {
-        (DarkTabControl tabControl, DarkSplitContainerCustom sc) =
-            (dest == WhichTabControl.Bottom)
-                ? (TopFMTabControl, LowerSplitContainer)
-                : (Lazy_LowerTabControl.TabControl, TopSplitContainer);
+        if (source == dest) return;
 
-        _tabControlImageCursor ??= new TabControlImageCursor(tabControl);
+        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
+
+        _tabControlImageCursor ??= new TabControlImageCursor(sourceGroup.TabControl);
         Cursor = _tabControlImageCursor.Cursor;
 
         Point cp = Native.GetCursorPosition_Fast();
 
-        if (sc.FullScreen && sc.ClientRectangle.Contains(sc.PointToClient_Fast(cp)))
+        if (destGroup.Splitter.FullScreen &&
+            destGroup.Splitter.ClientRectangle.Contains(destGroup.Splitter.PointToClient_Fast(cp)))
         {
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(sc.Handle);
+                using var gc = new Native.GraphicsContext(destGroup.Splitter.Handle);
                 using var b = new SolidBrush(GetOverlayColor());
-                int splitterDistance = sc.SplitterDistanceLogical;
+                int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
                 gc.G.FillRectangle(
                     b,
                     new Rectangle(
                         splitterDistance,
                         0,
-                        sc.ClientRectangle.Width - splitterDistance,
-                        sc.ClientRectangle.Height));
+                        destGroup.Splitter.ClientRectangle.Width - splitterDistance,
+                        destGroup.Splitter.ClientRectangle.Height));
             }
         }
-        else if (sc.Panel2.ClientRectangle.Contains(sc.Panel2.PointToClient_Fast(cp)))
+        else if (destGroup.Splitter.Panel2.ClientRectangle.Contains(destGroup.Splitter.Panel2.PointToClient_Fast(cp)))
         {
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(sc.Panel2.Handle);
+                using var gc = new Native.GraphicsContext(destGroup.Splitter.Panel2.Handle);
                 using var b = new SolidBrush(GetOverlayColor());
-                gc.G.FillRectangle(b, sc.Panel2.ClientRectangle with { X = 0, Y = 0 });
+                gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
             }
         }
         else if (_inTabDragArea)
         {
             _inTabDragArea = false;
-            sc.Refresh();
+            destGroup.Splitter.Refresh();
         }
     }
 
@@ -5645,11 +5644,9 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             DestroyImageCursor();
-            // @DockUI: Have a better way to choose controls than this bulky ternary all the time
-            DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
-                ? Lazy_LowerTabControl.TabControl
-                : TopFMTabControl;
-            sourceTabControl.ResetTempDragData();
+
+            FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+            sourceGroup.TabControl.ResetTempDragData();
             _inTabDragArea = false;
             if (refresh)
             {
@@ -5662,36 +5659,27 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (source == dest) return;
 
-        DarkTabControl sourceTabControl = source == WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
+        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
 
-        DarkTabControl destTabControl = dest == WhichTabControl.Bottom
-            ? Lazy_LowerTabControl.TabControl
-            : TopFMTabControl;
-
-        DarkSplitContainerCustom destSplitContainer = dest == WhichTabControl.Bottom
-            ? LowerSplitContainer
-            : TopSplitContainer;
-
-        sourceTabControl.RestoreBackedUpBackingTabs();
+        sourceGroup.TabControl.RestoreBackedUpBackingTabs();
         HideFMTab(source, tabPage);
         ShowFMTab(dest, tabPage);
 
         if (expandCollapsed)
         {
-            if (destSplitContainer.FullScreen)
+            if (destGroup.Splitter.FullScreen)
             {
-                destSplitContainer.ToggleFullScreen();
+                destGroup.Splitter.ToggleFullScreen();
                 SetFMTabsCollapsedState(dest, false);
             }
         }
 
-        destTabControl.SelectedTab = tabPage;
+        destGroup.TabControl.SelectedTab = tabPage;
         tabPage.Focus();
     }
 
-    internal void ShowFMTab(WhichTabControl which, TabPage tabPage)
+    private void ShowFMTab(WhichTabControl which, TabPage tabPage)
     {
         if (which == WhichTabControl.Bottom)
         {
@@ -5705,18 +5693,15 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    internal void HideFMTab(WhichTabControl which, TabPage tabPage)
+    private void HideFMTab(WhichTabControl which, TabPage tabPage)
     {
-        (DarkTabControl tabControl, DarkLabel emptyMessageLabel) =
-            which == WhichTabControl.Bottom
-                ? (Lazy_LowerTabControl.TabControl, BottomFMTabsEmptyMessageLabel)
-                : (TopFMTabControl, TopFMTabsEmptyMessageLabel);
+        FMTabControlGroup group = GetFMTabControlGroup(which);
 
-        tabControl.ShowTab(tabPage, false);
-        if (tabControl.TabCount == 0)
+        group.TabControl.ShowTab(tabPage, false);
+        if (group.TabControl.TabCount == 0)
         {
-            emptyMessageLabel.BringToFront();
-            emptyMessageLabel.Show();
+            group.EmptyMessageLabel.BringToFront();
+            group.EmptyMessageLabel.Show();
         }
     }
 

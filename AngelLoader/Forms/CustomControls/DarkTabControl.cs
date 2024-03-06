@@ -50,7 +50,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         }
     }
 
-    internal void RestoreBackedUpBackingTabs()
+    public void RestoreBackedUpBackingTabs()
     {
         if (_backedUpBackingTabs == null || _backedUpBackingTabs.Count != _backingTabList.Count)
         {
@@ -67,7 +67,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         _backedUpBackingTabs = null;
     }
 
-    internal void ResetTempDragData()
+    public void ResetTempDragData()
     {
         _backedUpBackingTabs = null;
         _backedUpNearestTabPage = null;
@@ -588,6 +588,12 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         TabCount == 0
             ? Rectangle.Empty
             : new Rectangle(0, 0, Width, GetTabRect(0).Height);
+
+    public bool TabPagesContains(TabPage tabPage) => TabPages.Contains(tabPage);
+
+    public Point ClientCursorPos() => Native.ClientCursorPos(this);
+
+    public Point PointToClient_Fast(Point point) => Native.PointToClient_Fast(this, point);
 
     #endregion
 }
