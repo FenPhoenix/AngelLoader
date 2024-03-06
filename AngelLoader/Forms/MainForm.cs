@@ -5549,7 +5549,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region Tab dragging
 
     private bool _inTabDragArea;
-    private TabControlImageCursor? _imageCursor;
+    private TabControlImageCursor? _tabControlImageCursor;
 
     private void TopFMTabControl_MouseDragCustom(object sender, MouseEventArgs e)
     {
@@ -5578,8 +5578,8 @@ public sealed partial class MainForm : DarkFormBase,
                 ? (TopFMTabControl, LowerSplitContainer)
                 : (Lazy_LowerTabControl.TabControl, TopSplitContainer);
 
-        _imageCursor ??= new TabControlImageCursor(tabControl);
-        Cursor = _imageCursor.Cursor;
+        _tabControlImageCursor ??= new TabControlImageCursor(tabControl);
+        Cursor = _tabControlImageCursor.Cursor;
 
         Point cp = Native.GetCursorPosition_Fast();
 
@@ -5717,8 +5717,8 @@ public sealed partial class MainForm : DarkFormBase,
     private void DestroyImageCursor()
     {
         Cursor = Cursors.Default;
-        _imageCursor?.Dispose();
-        _imageCursor = null;
+        _tabControlImageCursor?.Dispose();
+        _tabControlImageCursor = null;
     }
 
     private static Color GetOverlayColor()
