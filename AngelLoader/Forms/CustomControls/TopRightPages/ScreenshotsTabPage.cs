@@ -2,24 +2,45 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls.LazyLoaded;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class ScreenshotsTabPage : Lazy_TabsBase
+public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 {
     private Lazy_ScreenshotsPage _page = null!;
+
+    private readonly Lazy_ScreenshotCopyMenu CopyMenu;
 
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
     private MemoryImage? _currentScreenshotStream;
     private readonly Timer CopiedMessageFadeoutTimer = new();
     private bool _forceUpdateArmed;
+
+    [PublicAPI]
+    public override bool DarkModeEnabled
+    {
+        get => base.DarkModeEnabled;
+        set
+        {
+            if (base.DarkModeEnabled == value) return;
+            base.DarkModeEnabled = value;
+            if (!_constructed) return;
+
+            CopyMenu.DarkModeEnabled = value;
+        }
+    }
+
+    public ScreenshotsTabPage() => CopyMenu = new Lazy_ScreenshotCopyMenu(this);
 
     #region Public common
 
@@ -38,7 +59,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
             CopiedMessageFadeoutTimer.Interval = 2500;
             CopiedMessageFadeoutTimer.Tick += CopiedMessageFadeoutTimer_Tick;
 
-            _page.ScreenshotsPictureBox.MouseClick += ScreenshotsPictureBox_MouseClick;
+            _page.ScreenshotsPictureBox.MouseDown += ScreenshotsPictureBox_MouseDown;
 
             _page.OpenScreenshotsFolderButton.Click += OpenScreenshotsFolderButton_Click;
             _page.CopyButton.Click += CopyButton_Click;
@@ -66,6 +87,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         _owner.MainToolTip.SetToolTip(_page.OpenScreenshotsFolderButton, LText.ScreenshotsTab.OpenScreenshotsFolderToolTip);
         _owner.MainToolTip.SetToolTip(_page.CopyButton, LText.ScreenshotsTab.CopyImageToolTip);
         _page.GammaLabel.Text = LText.ScreenshotsTab.Gamma;
+        CopyMenu.Localize();
     }
 
     public void RefreshScreenshots()
@@ -248,12 +270,27 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
         }
     }
 
-    private void ScreenshotsPictureBox_MouseClick(object sender, MouseEventArgs e)
+    private void ScreenshotsPictureBox_MouseDown(object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {
-            CopyImageToClipboard();
+            _page.ScreenshotsPictureBox.ContextMenuStrip ??= CopyMenu.Menu;
         }
+    }
+
+    internal void CopyMenu_Opening(object sender, CancelEventArgs e)
+    {
+        if (!_constructed || _page.ScreenshotsPictureBox.ShowingErrorImage)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    internal void CopyMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    {
+        // Otherwise it won't hide until after the blocking copy operation is finished
+        CopyMenu.Menu.Hide();
+        CopyImageToClipboard();
     }
 
     private void CopyButton_Click(object sender, EventArgs e) => CopyImageToClipboard();
@@ -384,6 +421,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase
     }
 
     #endregion
+
+    public bool ViewBlocked => _owner.ViewBlocked;
+
+    public IContainer GetComponents() => _owner.GetComponents();
 
     protected override void Dispose(bool disposing)
     {

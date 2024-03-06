@@ -31,14 +31,14 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
             BackColor = _darkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor;
 
-            if (_showingErrorImage)
+            if (ShowingErrorImage)
             {
                 SetImageInternal(Images.BrokenFile);
             }
         }
     }
 
-    private bool _showingErrorImage;
+    internal bool ShowingErrorImage { get; private set; }
 
     private readonly ImageAttributes _imageAttributes = new();
 
@@ -58,7 +58,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
     public void SetImage(Image? image, float? gamma = null)
     {
-        _showingErrorImage = false;
+        ShowingErrorImage = false;
         SetImageInternal(image, gamma);
     }
 
@@ -86,7 +86,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
     public void SetErrorImage()
     {
-        _showingErrorImage = true;
+        ShowingErrorImage = true;
         SetImageInternal(Images.BrokenFile);
     }
 
@@ -110,7 +110,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
 
         if (_image == null) return;
 
-        if (_showingErrorImage)
+        if (ShowingErrorImage)
         {
             e.Graphics.DrawImage(
                 _image,
@@ -147,7 +147,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
     /// <returns></returns>
     public Bitmap? GetSnapshot()
     {
-        if (_image == null || _showingErrorImage)
+        if (_image == null || ShowingErrorImage)
         {
             return null;
         }
