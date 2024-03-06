@@ -122,16 +122,33 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 
         if (ScreenshotFileNames.Count == 0)
         {
-            CurrentScreenshotFileName = "";
-            ClearCurrentScreenshot();
-            _page.ScreenshotsPictureBox.Enabled = false;
-            _page.GammaLabel.Enabled = false;
-            _page.GammaTrackBar.Enabled = false;
-            _page.OpenScreenshotsFolderButton.Enabled = false;
-            _page.PrevButton.Enabled = false;
-            _page.NextButton.Enabled = false;
-            SetNumberLabelText("");
-            _forceUpdateArmed = false;
+            try
+            {
+                if (_owner.StartupState && ScreenshotsPreprocessing.HasBeenActivated)
+                {
+#if TESTING
+                    System.Diagnostics.Trace.WriteLine("Startup state, screenshot preload activated, but didn't match FM and current FM has no screenshots. Clearing...");
+#endif
+                    ScreenshotsPreprocessing.WaitOnThread();
+                }
+                CurrentScreenshotFileName = "";
+                ClearCurrentScreenshot();
+                _page.ScreenshotsPictureBox.Enabled = false;
+                _page.GammaLabel.Enabled = false;
+                _page.GammaTrackBar.Enabled = false;
+                _page.OpenScreenshotsFolderButton.Enabled = false;
+                _page.PrevButton.Enabled = false;
+                _page.NextButton.Enabled = false;
+                SetNumberLabelText("");
+                _forceUpdateArmed = false;
+            }
+            finally
+            {
+                if (_owner.StartupState && ScreenshotsPreprocessing.HasBeenActivated)
+                {
+                    ScreenshotsPreprocessing.Clear();
+                }
+            }
         }
         else
         {
@@ -202,7 +219,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
                     FanMission? fm = _owner.GetMainSelectedFMOrNull();
                     try
                     {
-                        MemoryImage? mi = ScreenshotsPreprocessing.GetMemoryImage(fm);
+                        MemoryImage? mi = ScreenshotsPreprocessing.GetMemoryImage(fm, CurrentScreenshotFileName);
                         if (mi != null)
                         {
 #if TESTING

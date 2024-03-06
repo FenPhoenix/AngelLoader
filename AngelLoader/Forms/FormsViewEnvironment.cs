@@ -45,9 +45,6 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList)
     {
-        /*
-        @DockUI: Finalize these conditions
-        */
         FMTabData screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
         if (screenshotsTab.Visible == FMTabVisibleIn.Top &&
             (config.TopFMTabsPanelCollapsed ||

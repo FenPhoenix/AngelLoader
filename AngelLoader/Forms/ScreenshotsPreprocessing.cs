@@ -10,6 +10,7 @@ internal static class ScreenshotsPreprocessing
     private static Thread? _thread;
     private static MemoryImage? _memoryImage;
     private static string _fmInstalledDir = "";
+    private static string _currentScreenshotName = "";
     internal static readonly List<string> ScreenshotFileNames = new();
     internal static bool HasBeenActivated;
 
@@ -18,6 +19,7 @@ internal static class ScreenshotsPreprocessing
         _thread = null;
         _memoryImage = null;
         _fmInstalledDir = "";
+        _currentScreenshotName = "";
         ScreenshotFileNames.Clear();
         try
         {
@@ -29,7 +31,7 @@ internal static class ScreenshotsPreprocessing
         }
     }
 
-    internal static MemoryImage? GetMemoryImage(FanMission? fm)
+    internal static MemoryImage? GetMemoryImage(FanMission? fm, string currentScreenshotName)
     {
         WaitOnThread();
 
@@ -37,6 +39,7 @@ internal static class ScreenshotsPreprocessing
 
         if (!fm.InstalledDir.IsWhiteSpace() &&
             !_fmInstalledDir.IsWhiteSpace() &&
+            currentScreenshotName.PathEqualsI(_currentScreenshotName) &&
             fm.InstalledDir.EqualsI(_fmInstalledDir))
         {
             return _memoryImage;
@@ -47,7 +50,7 @@ internal static class ScreenshotsPreprocessing
         }
     }
 
-    private static void WaitOnThread()
+    internal static void WaitOnThread()
     {
         if (_thread == null) return;
         try
@@ -71,6 +74,7 @@ internal static class ScreenshotsPreprocessing
     {
         HasBeenActivated = true;
         _fmInstalledDir = fmInstalledDir;
+        _currentScreenshotName = currentScreenshotFileName;
         ScreenshotFileNames.ClearAndAdd_Small(screenshotFileNames);
 
         try
