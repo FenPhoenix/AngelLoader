@@ -63,9 +63,7 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
             Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
-                // @DockUI: Button widths are the same so this works for now, but make it better
-                // Maybe once we lazy-load the top control, we can have a global constant for width
-                container.Width - _owner.TopFMTabsCollapseButton.Width,
+                container.Width - _owner.BottomFMTabsCollapseButton.Width,
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,
 

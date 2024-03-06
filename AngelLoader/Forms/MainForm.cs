@@ -41,7 +41,6 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -1055,8 +1054,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (!Config.HideWebSearchButton) ShowWebSearchButton(true);
 
         TopSplitContainer.CollapsedSize = TopFMTabsCollapseButton.Width;
-        // @DockUI: Button widths are the same so this works for now, but make it better
-        LowerSplitContainer.CollapsedSize = TopFMTabsCollapseButton.Width;
+        LowerSplitContainer.CollapsedSize = BottomFMTabsCollapseButton.Width;
 
         if (Config.TopFMTabsPanelCollapsed)
         {
@@ -5550,11 +5548,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Tab dragging
 
-    /*
-    @DockUI: Working/testing code, finalize before release
-    @DockUI: Remove Trace.WriteLines
-    */
-
     private bool _inTabDragArea;
     private TabControlImageCursor? _imageCursor;
 
@@ -5595,7 +5588,6 @@ public sealed partial class MainForm : DarkFormBase,
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                Trace.WriteLine("Hit collapsed");
                 using var gc = new Native.GraphicsContext(sc.Handle);
                 using var b = new SolidBrush(GetOverlayColor());
                 int splitterDistance = sc.SplitterDistanceLogical;
@@ -5613,7 +5605,6 @@ public sealed partial class MainForm : DarkFormBase,
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                Trace.WriteLine("Hit open");
                 using var gc = new Native.GraphicsContext(sc.Panel2.Handle);
                 using var b = new SolidBrush(GetOverlayColor());
                 gc.G.FillRectangle(b, sc.Panel2.ClientRectangle with { X = 0, Y = 0 });
@@ -5622,7 +5613,6 @@ public sealed partial class MainForm : DarkFormBase,
         else if (_inTabDragArea)
         {
             _inTabDragArea = false;
-            Trace.WriteLine("Miss");
             sc.Refresh();
         }
     }
@@ -5739,17 +5729,6 @@ public sealed partial class MainForm : DarkFormBase,
             red: DarkColors.BlueSelection.R,
             green: DarkColors.BlueSelection.G,
             blue: DarkColors.BlueSelection.B);
-    }
-
-    // @DockUI: Test code, remove for final release
-    internal void PrintBackingTabs()
-    {
-        Trace.WriteLine("=========================");
-        for (int i = 0; i < _backingFMTabs.Count; i++)
-        {
-            BackingTab backingTab = _backingFMTabs[i];
-            Trace.WriteLine(i.ToStrInv() + ": Tab: " + backingTab.TabPage.Text + ", VisibleIn: " + backingTab.VisibleIn);
-        }
     }
 
     #endregion
