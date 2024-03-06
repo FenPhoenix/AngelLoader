@@ -928,7 +928,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         /*
-        @DockUI: Tab pages need to be added to a tab control once in order to work properly.
+        Tab pages need to be added to a tab control once in order to work properly.
         If they haven't been added, then at the very least, setting tab text throws an ArgumentOutOfRangeException
         in release mode. This being the case, we should just keep the top control non-lazy-loaded and keep the
         logic as it is.
@@ -3390,14 +3390,9 @@ public sealed partial class MainForm : DarkFormBase,
             EverythingPanel.SuspendDrawing();
 
             /*
-            @DockUI: Explicitly hide tab
             Although adding a tab to another control automatically removes it from the first one, we need to
             explicitly run our custom ShowTab() method in order to keep the backing list synced. Otherwise, the
             tab order gets messed up.
-
-            @DockUI: We could have three-state menu items - top, bottom, and none.
-            Because when you click a checkbox and it hides the other tab control, it's not a great UX because you
-            think "crap, how do I get it back?"
             */
             if (s.Checked)
             {
