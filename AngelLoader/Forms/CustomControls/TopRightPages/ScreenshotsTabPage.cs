@@ -34,7 +34,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         {
             if (base.DarkModeEnabled == value) return;
             base.DarkModeEnabled = value;
-            if (!_constructed) return;
 
             CopyMenu.DarkModeEnabled = value;
         }
