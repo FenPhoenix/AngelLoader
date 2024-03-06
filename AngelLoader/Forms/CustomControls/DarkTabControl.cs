@@ -366,17 +366,30 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         // Fix: Ensure we don't start dragging a tab again after we've released the button.
         DragTab = null;
         _backedUpBackingTabs = null;
+        _dragging = false;
     }
 
     private void InvokeMouseDragCustomIfNeeded(MouseEventArgs e)
     {
-        Rectangle tabBarExpanded = GetTabBarRect();
-        tabBarExpanded.Inflate(4, 16);
-        if (!tabBarExpanded.Contains(e.Location))
+        if (_dragging)
         {
             MouseDragCustom?.Invoke(this, e);
         }
+        else
+        {
+            Rectangle tabBarExpanded = TabCount == 1
+                ? GetTabRect(0)
+                : GetTabBarRect();
+            tabBarExpanded.Inflate(4, 16);
+            if (!tabBarExpanded.Contains(e.Location))
+            {
+                _dragging = true;
+                MouseDragCustom?.Invoke(this, e);
+            }
+        }
     }
+
+    private bool _dragging;
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
