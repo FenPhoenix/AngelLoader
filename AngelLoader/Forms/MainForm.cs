@@ -5713,15 +5713,10 @@ public sealed partial class MainForm : DarkFormBase,
         _tabControlImageCursor = null;
     }
 
-    private static Color GetOverlayColor()
-    {
-        // @DockUI: Make light and dark mode colors
-        return Color.FromArgb(
-            alpha: 64,
-            red: DarkColors.BlueSelection.R,
-            green: DarkColors.BlueSelection.G,
-            blue: DarkColors.BlueSelection.B);
-    }
+    private static Color GetOverlayColor() =>
+        Config.DarkMode
+            ? DarkColors.TabDragOverlay_Dark
+            : DarkColors.TabDragOverlay_Light;
 
     #endregion
 

@@ -49,6 +49,12 @@ public static class DarkColors
 
     public static readonly Color SuccessGreenDark = Color.FromArgb(68, 178, 68);
 
+    public static readonly Color TabDragOverlay_Light = Color.FromArgb(60,
+        SystemColors.Highlight.R,
+        SystemColors.Highlight.G,
+        SystemColors.Highlight.B);
+    public static readonly Color TabDragOverlay_Dark = Color.FromArgb(64, 75, 110, 175);
+
     #endregion
 
     #region DarkUI
