@@ -186,6 +186,8 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly Lazy_FMTabsBlocker Lazy_BottomFMTabsBlocker;
     internal readonly Lazy_UpdateNotification Lazy_UpdateNotification;
     private readonly Lazy_LowerTabControl Lazy_LowerTabControl;
+    private readonly Lazy_EmptyTabAreaMessageLabel Lazy_TopFMTabsEmptyMessageLabel;
+    internal readonly Lazy_EmptyTabAreaMessageLabel Lazy_BottomFMTabsEmptyMessageLabel;
 
     #endregion
 
@@ -586,10 +588,14 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_TopFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_BottomFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_UpdateNotification = new Lazy_UpdateNotification(this),
-            Lazy_LowerTabControl = new Lazy_LowerTabControl(this)
+            Lazy_LowerTabControl = new Lazy_LowerTabControl(this),
+            Lazy_TopFMTabsEmptyMessageLabel = new Lazy_EmptyTabAreaMessageLabel(this),
+            Lazy_BottomFMTabsEmptyMessageLabel = new Lazy_EmptyTabAreaMessageLabel(this)
         };
         Lazy_TopFMTabsBlocker.SetWhich(WhichTabControl.Top);
         Lazy_BottomFMTabsBlocker.SetWhich(WhichTabControl.Bottom);
+        Lazy_TopFMTabsEmptyMessageLabel.SetWhich(WhichTabControl.Top);
+        Lazy_BottomFMTabsEmptyMessageLabel.SetWhich(WhichTabControl.Bottom);
 
         #endregion
 
@@ -670,9 +676,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         // For right-clicking on blank space in tab bar
         TopSplitContainer.Panel2.MouseClick += TopFMTabsBar_MouseClick;
-
-        // For right-clicking on the tab area when no tabs are present
-        TopFMTabsEmptyMessageLabel.MouseClick += TopFMTabsBar_MouseClick;
 
         #region Construct + init non-public-release controls
 
@@ -1881,8 +1884,8 @@ public sealed partial class MainForm : DarkFormBase,
 
             Lazy_FMTabsMenu.Localize();
 
-            TopFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
-            BottomFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
+            Lazy_TopFMTabsEmptyMessageLabel.SetText(LText.FMTabs.EmptyTabAreaMessage);
+            Lazy_BottomFMTabsEmptyMessageLabel.SetText(LText.FMTabs.EmptyTabAreaMessage);
 
             StatisticsTabPage.Text = LText.StatisticsTab.TabText;
             EditFMTabPage.Text = LText.EditFMTab.TabText;
@@ -5502,7 +5505,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopFMTabsBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
+    internal void TopFMTabsBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
 
     internal void LowerFMTabsBar_MouseClick(object sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
 
@@ -5689,28 +5692,27 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (which == WhichTabControl.Bottom)
         {
-            BottomFMTabsEmptyMessageLabel.Hide();
+            Lazy_BottomFMTabsEmptyMessageLabel.Show(false);
             Lazy_LowerTabControl.TabControl.ShowTab(tabPage, true);
         }
         else
         {
-            TopFMTabsEmptyMessageLabel.Hide();
+            Lazy_TopFMTabsEmptyMessageLabel.Show(false);
             TopFMTabControl.ShowTab(tabPage, true);
         }
     }
 
     internal void HideFMTab(WhichTabControl which, TabPage tabPage)
     {
-        (DarkTabControl tabControl, DarkLabel emptyMessageLabel) =
+        (DarkTabControl tabControl, Lazy_EmptyTabAreaMessageLabel emptyMessageLabel) =
             which == WhichTabControl.Bottom
-                ? (Lazy_LowerTabControl.TabControl, BottomFMTabsEmptyMessageLabel)
-                : (TopFMTabControl, TopFMTabsEmptyMessageLabel);
+                ? (Lazy_LowerTabControl.TabControl, Lazy_BottomFMTabsEmptyMessageLabel)
+                : (TopFMTabControl, Lazy_TopFMTabsEmptyMessageLabel);
 
         tabControl.ShowTab(tabPage, false);
         if (tabControl.TabCount == 0)
         {
-            emptyMessageLabel.BringToFront();
-            emptyMessageLabel.Show();
+            emptyMessageLabel.Show(true);
         }
     }
 
@@ -5732,13 +5734,4 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     #endregion
-
-    // @DockUI: Lazy-load the empty message labels
-    private void FMTabsEmptyMessageLabels_Paint(object sender, PaintEventArgs e)
-    {
-        DarkLabel label = BottomFMTabsEmptyMessageLabel;
-        e.Graphics.DrawRectangle(
-            Config.DarkMode ? DarkColors.LighterBackgroundPen : SystemPens.ControlLight,
-            new Rectangle(0, 0, label.ClientRectangle.Width - 1, label.ClientRectangle.Height - 1));
-    }
 }

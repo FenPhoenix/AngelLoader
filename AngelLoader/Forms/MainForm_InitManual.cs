@@ -87,7 +87,6 @@ public sealed partial class MainForm
         PatchTabPage = new PatchTabPage();
         ModsTabPage = new ModsTabPage();
         ScreenshotsTabPage = new ScreenshotsTabPage();
-        TopFMTabsEmptyMessageLabel = new DarkLabel();
         LowerSplitContainer = new DarkSplitContainerCustom();
         ReadmeEncodingButton = new DarkButton();
         ReadmeFullScreenButton = new DarkButton();
@@ -96,7 +95,6 @@ public sealed partial class MainForm
         ReadmeResetZoomButton = new DarkButton();
         ChooseReadmeComboBox = new DarkComboBoxWithBackingItems();
         ReadmeRichTextBox = new RichTextBoxCustom();
-        BottomFMTabsEmptyMessageLabel = new DarkLabel();
         BottomFMTabsMenuButton = new DarkButton();
         BottomFMTabsCollapseButton = new DarkArrowButton();
 
@@ -251,7 +249,6 @@ public sealed partial class MainForm
         TopSplitContainer.Panel2.Controls.Add(TopFMTabsMenuButton);
         TopSplitContainer.Panel2.Controls.Add(TopFMTabsCollapseButton);
         TopSplitContainer.Panel2.Controls.Add(TopFMTabControl);
-        TopSplitContainer.Panel2.Controls.Add(TopFMTabsEmptyMessageLabel);
         TopSplitContainer.Size = new Size(1671, 309);
         TopSplitContainer.SplitterDistance = 1116;
         TopSplitContainer.TabIndex = 0;
@@ -568,13 +565,6 @@ public sealed partial class MainForm
         TopFMTabControl.MouseDragCustom += TopFMTabControl_MouseDragCustom;
         TopFMTabControl.MouseUp += TopFMTabControl_MouseUp;
         // 
-        // TopFMTabsEmptyMessageLabel
-        // 
-        TopFMTabsEmptyMessageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        TopFMTabsEmptyMessageLabel.Size = new Size(533, 309);
-        TopFMTabsEmptyMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
-        TopFMTabsEmptyMessageLabel.PaintCustom += FMTabsEmptyMessageLabels_Paint;
-        // 
         // LowerSplitContainer
         // 
         LowerSplitContainer.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -596,7 +586,6 @@ public sealed partial class MainForm
         // LowerSplitContainer.Panel2
         // 
         LowerSplitContainer.Panel2.BackColor = SystemColors.Control;
-        LowerSplitContainer.Panel2.Controls.Add(BottomFMTabsEmptyMessageLabel);
         LowerSplitContainer.Panel2.Controls.Add(BottomFMTabsMenuButton);
         LowerSplitContainer.Panel2.Controls.Add(BottomFMTabsCollapseButton);
         LowerSplitContainer.Size = new Size(1671, 357);
@@ -647,13 +636,6 @@ public sealed partial class MainForm
         ReadmeRichTextBox.Size = new Size(1113, 356);
         ReadmeRichTextBox.TabIndex = 0;
         ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
-        // 
-        // BottomFMTabsEmptyMessageLabel
-        // 
-        BottomFMTabsEmptyMessageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        BottomFMTabsEmptyMessageLabel.Size = new Size(533, 357);
-        BottomFMTabsEmptyMessageLabel.TextAlign = ContentAlignment.MiddleCenter;
-        BottomFMTabsEmptyMessageLabel.PaintCustom += FMTabsEmptyMessageLabels_Paint;
         // 
         // BottomFMTabsMenuButton
         // 

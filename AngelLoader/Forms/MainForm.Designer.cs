@@ -110,7 +110,6 @@ sealed partial class MainForm
         this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
         this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
         this.ScreenshotsTabPage = new AngelLoader.Forms.CustomControls.ScreenshotsTabPage();
-        this.TopFMTabsEmptyMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.LowerSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -119,7 +118,6 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
         this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
-        this.BottomFMTabsEmptyMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BottomFMTabsMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.BottomFMTabsCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
@@ -302,7 +300,6 @@ sealed partial class MainForm
         this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsMenuButton);
         this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsCollapseButton);
         this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabControl);
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsEmptyMessageLabel);
         this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
         this.TopSplitContainer.SplitterDistance = 1116;
         this.TopSplitContainer.TabIndex = 0;
@@ -984,19 +981,6 @@ sealed partial class MainForm
         this.ScreenshotsTabPage.TabIndex = 5;
         this.ScreenshotsTabPage.Text = "Screenshots";
         // 
-        // TopFMTabsEmptyMessageLabel
-        // 
-        this.TopFMTabsEmptyMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-        | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopFMTabsEmptyMessageLabel.Location = new System.Drawing.Point(0, 0);
-        this.TopFMTabsEmptyMessageLabel.Name = "TopFMTabsEmptyMessageLabel";
-        this.TopFMTabsEmptyMessageLabel.Size = new System.Drawing.Size(533, 309);
-        this.TopFMTabsEmptyMessageLabel.TabIndex = 16;
-        this.TopFMTabsEmptyMessageLabel.Text = "[empty message]";
-        this.TopFMTabsEmptyMessageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-        this.TopFMTabsEmptyMessageLabel.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsEmptyMessageLabels_Paint);
-        // 
         // LowerSplitContainer
         // 
         this.LowerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -1022,7 +1006,6 @@ sealed partial class MainForm
         // LowerSplitContainer.Panel2
         // 
         this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsEmptyMessageLabel);
         this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsMenuButton);
         this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsCollapseButton);
         this.LowerSplitContainer.Size = new System.Drawing.Size(1671, 357);
@@ -1140,19 +1123,6 @@ sealed partial class MainForm
         this.ReadmeRichTextBox.TabIndex = 0;
         this.ReadmeRichTextBox.Text = "";
         this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
-        // 
-        // BottomFMTabsEmptyMessageLabel
-        // 
-        this.BottomFMTabsEmptyMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-        | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.BottomFMTabsEmptyMessageLabel.Location = new System.Drawing.Point(0, 0);
-        this.BottomFMTabsEmptyMessageLabel.Name = "BottomFMTabsEmptyMessageLabel";
-        this.BottomFMTabsEmptyMessageLabel.Size = new System.Drawing.Size(533, 357);
-        this.BottomFMTabsEmptyMessageLabel.TabIndex = 17;
-        this.BottomFMTabsEmptyMessageLabel.Text = "[empty message]";
-        this.BottomFMTabsEmptyMessageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-        this.BottomFMTabsEmptyMessageLabel.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsEmptyMessageLabels_Paint);
         // 
         // BottomFMTabsMenuButton
         // 
@@ -1337,11 +1307,9 @@ sealed partial class MainForm
 
     internal CustomControls.DarkButton TopFMTabsMenuButton;
     internal CustomControls.DarkArrowButton TopFMTabsCollapseButton;
-    internal CustomControls.DarkLabel TopFMTabsEmptyMessageLabel;
 
     internal CustomControls.DarkButton BottomFMTabsMenuButton;
     internal CustomControls.DarkArrowButton BottomFMTabsCollapseButton;
-    internal CustomControls.DarkLabel BottomFMTabsEmptyMessageLabel;
 
     #endregion
 
