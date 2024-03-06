@@ -37,6 +37,7 @@ internal sealed class LText_Class
     internal readonly FilterBar_Class FilterBar = new();
     internal readonly FMsList_Class FMsList = new();
     internal readonly FMSelectedStats_Class FMSelectedStats = new();
+    internal readonly FMTabs_Class FMTabs = new();
     internal readonly StatisticsTab_Class StatisticsTab = new();
     internal readonly EditFMTab_Class EditFMTab = new();
     internal readonly CommentTab_Class CommentTab = new();
@@ -495,6 +496,11 @@ internal sealed class LText_Class
         internal readonly string FMsFinished_Single_AfterNumber = " FM finished";
         internal readonly string FMsFinished_Plural_BeforeNumber = "";
         internal readonly string FMsFinished_Plural_AfterNumber = " FMs finished";
+    }
+
+    internal sealed class FMTabs_Class
+    {
+        internal readonly string EmptyTabAreaMessage = "Drag a tab here, or right-click to add a tab.";
     }
 
     internal sealed class StatisticsTab_Class

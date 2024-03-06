@@ -22,9 +22,6 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     private bool _enabled = true;
 
-    internal DarkButton MenuButton = null!;
-    internal DarkArrowButton CollapseButton = null!;
-
     private bool _darkModeEnabled;
     [PublicAPI]
     public bool DarkModeEnabled
@@ -35,8 +32,6 @@ internal sealed class Lazy_LowerTabControl : IDarkable
             _darkModeEnabled = value;
             if (!Constructed) return;
 
-            MenuButton.DarkModeEnabled = value;
-            CollapseButton.DarkModeEnabled = value;
             TabControl.DarkModeEnabled = value;
         }
     }
@@ -45,13 +40,11 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
     public Lazy_LowerTabControl(MainForm owner) => _owner = owner;
 
-    private void Construct()
+    internal void Construct()
     {
         if (Constructed) return;
 
         var container = _owner.LowerSplitContainer.Panel2;
-
-        _owner.LowerSplitContainer.Panel2Collapsed = false;
 
         _tabControl = new DarkTabControl
         {
@@ -73,46 +66,13 @@ internal sealed class Lazy_LowerTabControl : IDarkable
 
         _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
         container.MouseClick += _owner.LowerFMTabsBar_MouseClick;
+        _owner.BottomFMTabsEmptyMessageLabel.MouseClick += _owner.LowerFMTabsBar_MouseClick;
 
         _tabControl.Selected += TabControl_Selected;
         _tabControl.MouseDragCustom += _owner.Lazy_LowerTabControl_MouseDragCustom;
         _tabControl.MouseUp += _owner.Lazy_LowerTabControl_MouseUp;
         _tabControl.VisibleChanged += TabControl_VisibleChanged;
 
-        MenuButton = new DarkButton
-        {
-            Tag = LoadType.Lazy,
-
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            FlatAppearance = { BorderSize = 0 },
-            FlatStyle = FlatStyle.Flat,
-            Location = new Point(container.Width - 18, 0),
-            Size = new Size(18, 20),
-            TabIndex = 1,
-
-            DarkModeEnabled = _darkModeEnabled
-        };
-        MenuButton.Click += _owner.LowerFMTabsMenuButton_Click;
-        MenuButton.PaintCustom += _owner.FMTabsMenuButton_Paint;
-
-        CollapseButton = new DarkArrowButton
-        {
-            Tag = LoadType.Lazy,
-
-            Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right,
-            ArrowDirection = Direction.Right,
-            FlatAppearance = { BorderSize = 0 },
-            FlatStyle = FlatStyle.Flat,
-            Location = new Point(container.Width - 18, 20),
-            Size = new Size(18, container.Height - 20),
-            TabIndex = 2,
-
-            DarkModeEnabled = _darkModeEnabled
-        };
-        CollapseButton.Click += _owner.LowerFMTabsCollapseButton_Click;
-
-        container.Controls.Add(MenuButton);
-        container.Controls.Add(CollapseButton);
         container.Controls.Add(_tabControl);
 
         _tabControl.Enabled = _enabled;
@@ -125,12 +85,12 @@ internal sealed class Lazy_LowerTabControl : IDarkable
         if (show)
         {
             Construct();
-            _tabControl.ShowTab(tabPage, true);
+            _owner.ShowFMTab(WhichTabControl.Bottom, tabPage);
         }
         else
         {
             if (!Constructed) return;
-            _tabControl.ShowTab(tabPage, false);
+            _owner.HideFMTab(WhichTabControl.Bottom, tabPage);
         }
     }
 

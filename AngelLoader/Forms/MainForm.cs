@@ -672,6 +672,9 @@ public sealed partial class MainForm : DarkFormBase,
         // For right-clicking on blank space in tab bar
         TopSplitContainer.Panel2.MouseClick += TopFMTabsBar_MouseClick;
 
+        // For right-clicking on the tab area when no tabs are present
+        TopFMTabsEmptyMessageLabel.MouseClick += TopFMTabsBar_MouseClick;
+
         #region Construct + init non-public-release controls
 
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
@@ -918,11 +921,11 @@ public sealed partial class MainForm : DarkFormBase,
             // They're visible by default - shave off a bit of time
             if (visible == FMTabVisibleIn.None)
             {
-                HideTab(WhichTabControl.Top, fmTabPage);
+                HideFMTab(WhichTabControl.Top, fmTabPage);
             }
             else if (visible == FMTabVisibleIn.Bottom)
             {
-                MoveTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage, expandCollapsed: false);
+                MoveFMTab(WhichTabControl.Top, WhichTabControl.Bottom, fmTabPage, expandCollapsed: false);
             }
             Lazy_FMTabsMenu.SetItemChecked(i, visible != FMTabVisibleIn.None);
         }
@@ -1224,6 +1227,10 @@ public sealed partial class MainForm : DarkFormBase,
             if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopFMTabsPanelCollapsed)
             {
                 lazyTab.Construct();
+            }
+            if (!LowerSplitContainer.FullScreen)
+            {
+                Lazy_LowerTabControl.Construct();
             }
             TopFMTabControl.Selected += FMTabControl_Selected;
             Lazy_LowerTabControl.Selected += FMTabControl_Selected;
@@ -1875,6 +1882,9 @@ public sealed partial class MainForm : DarkFormBase,
             if (!startup) SetFMSelectedCountMessage(FMsDGV.GetRowSelectedCount(), forceRefresh: true);
 
             Lazy_FMTabsMenu.Localize();
+
+            TopFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
+            BottomFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
 
             StatisticsTabPage.Text = LText.StatisticsTab.TabText;
             EditFMTabPage.Text = LText.EditFMTab.TabText;
@@ -3277,7 +3287,7 @@ public sealed partial class MainForm : DarkFormBase,
         SetFMTabsCollapsedState(WhichTabControl.Top, TopSplitContainer.FullScreen);
     }
 
-    internal void LowerFMTabsCollapseButton_Click(object sender, EventArgs e)
+    private void LowerFMTabsCollapseButton_Click(object sender, EventArgs e)
     {
         LowerSplitContainer.ToggleFullScreen();
         SetFMTabsCollapsedState(WhichTabControl.Bottom, LowerSplitContainer.FullScreen);
@@ -3287,7 +3297,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         (DarkArrowButton collapseButton, DarkTabControl tabControl, Lazy_FMTabsBlocker blocker) =
             which == WhichTabControl.Bottom
-                ? (Lazy_LowerTabControl.CollapseButton, Lazy_LowerTabControl.TabControl, Lazy_TopFMTabsBlocker)
+                ? (BottomFMTabsCollapseButton, Lazy_LowerTabControl.TabControl, Lazy_TopFMTabsBlocker)
                 : (TopFMTabsCollapseButton, TopFMTabControl, Lazy_BottomFMTabsBlocker);
 
         if (collapsed)
@@ -3317,10 +3327,10 @@ public sealed partial class MainForm : DarkFormBase,
         ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, TopFMTabsMenuButton, MenuPos.BottomLeft);
     }
 
-    internal void LowerFMTabsMenuButton_Click(object sender, EventArgs e)
+    private void LowerFMTabsMenuButton_Click(object sender, EventArgs e)
     {
         Lazy_FMTabsMenu.Menu.Data = WhichTabControl.Bottom;
-        ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, Lazy_LowerTabControl.MenuButton, MenuPos.BottomLeft);
+        ControlUtils.ShowMenu(Lazy_FMTabsMenu.Menu, BottomFMTabsMenuButton, MenuPos.BottomLeft);
     }
 
     internal void FMTabsMenu_Opening(object sender, CancelEventArgs e)
@@ -3358,12 +3368,6 @@ public sealed partial class MainForm : DarkFormBase,
             ? Lazy_LowerTabControl.TabControl
             : TopFMTabControl;
 
-        if (!s.Checked && tabControl.TabCount == 1)
-        {
-            s.Checked = true;
-            return;
-        }
-
         try
         {
             // MUST suspend drawing or we get crashes!
@@ -3381,9 +3385,18 @@ public sealed partial class MainForm : DarkFormBase,
             */
             if (s.Checked)
             {
-                HideTab(tabControl == TopFMTabControl ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
+                // @DockUI: Expand tab panels when a tab is shown via the menu
+                HideFMTab(tabControl == TopFMTabControl ? WhichTabControl.Bottom : WhichTabControl.Top, tab);
+                ShowFMTab(tabControl == TopFMTabControl ? WhichTabControl.Top : WhichTabControl.Bottom, tab);
+                if (tab is Lazy_TabsBase lazyTab)
+                {
+                    lazyTab.Construct();
+                }
             }
-            tabControl.ShowTab(tab, s.Checked);
+            else
+            {
+                HideFMTab(tabControl == TopFMTabControl ? WhichTabControl.Top : WhichTabControl.Bottom, tab);
+            }
         }
         finally
         {
@@ -5573,7 +5586,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         Point cp = Native.GetCursorPosition_Fast();
 
-        if ((sc.Panel2Collapsed || sc.FullScreen) && sc.ClientRectangle.Contains(sc.PointToClient_Fast(cp)))
+        if (sc.FullScreen && sc.ClientRectangle.Contains(sc.PointToClient_Fast(cp)))
         {
             if (!_inTabDragArea)
             {
@@ -5627,7 +5640,7 @@ public sealed partial class MainForm : DarkFormBase,
             dragTab = source == WhichTabControl.Bottom ? Lazy_LowerTabControl.DragTab : TopFMTabControl.DragTab;
             if (dragTab == null) return;
 
-            MoveTab(source, dest, dragTab);
+            MoveFMTab(source, dest, dragTab);
         }
         finally
         {
@@ -5645,7 +5658,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void MoveTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
+    private void MoveFMTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
     {
         if (source == dest) return;
 
@@ -5662,9 +5675,8 @@ public sealed partial class MainForm : DarkFormBase,
             : TopSplitContainer;
 
         sourceTabControl.RestoreBackedUpBackingTabs();
-        HideTab(source, tabPage);
-        destTabControl.ShowTab(tabPage, true);
-        destSplitContainer.Panel2Collapsed = false;
+        HideFMTab(source, tabPage);
+        ShowFMTab(dest, tabPage);
 
         if (expandCollapsed)
         {
@@ -5679,17 +5691,32 @@ public sealed partial class MainForm : DarkFormBase,
         tabPage.Focus();
     }
 
-    private void HideTab(WhichTabControl which, TabPage tabPage)
+    internal void ShowFMTab(WhichTabControl which, TabPage tabPage)
     {
-        (DarkTabControl tabControl, DarkSplitContainerCustom splitter) =
+        if (which == WhichTabControl.Bottom)
+        {
+            BottomFMTabsEmptyMessageLabel.Hide();
+            Lazy_LowerTabControl.TabControl.ShowTab(tabPage, true);
+        }
+        else
+        {
+            TopFMTabsEmptyMessageLabel.Hide();
+            TopFMTabControl.ShowTab(tabPage, true);
+        }
+    }
+
+    internal void HideFMTab(WhichTabControl which, TabPage tabPage)
+    {
+        (DarkTabControl tabControl, DarkLabel emptyMessageLabel) =
             which == WhichTabControl.Bottom
-                ? (Lazy_LowerTabControl.TabControl, LowerSplitContainer)
-                : (TopFMTabControl, TopSplitContainer);
+                ? (Lazy_LowerTabControl.TabControl, BottomFMTabsEmptyMessageLabel)
+                : (TopFMTabControl, TopFMTabsEmptyMessageLabel);
 
         tabControl.ShowTab(tabPage, false);
         if (tabControl.TabCount == 0)
         {
-            splitter.Panel2Collapsed = true;
+            emptyMessageLabel.BringToFront();
+            emptyMessageLabel.Show();
         }
     }
 
@@ -5722,4 +5749,13 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     #endregion
+
+    // @DockUI: Lazy-load the empty message labels
+    private void FMTabsEmptyMessageLabels_Paint(object sender, PaintEventArgs e)
+    {
+        DarkLabel label = BottomFMTabsEmptyMessageLabel;
+        e.Graphics.DrawRectangle(
+            Config.DarkMode ? DarkColors.LighterBackgroundPen : SystemPens.ControlLight,
+            new Rectangle(0, 0, label.ClientRectangle.Width - 1, label.ClientRectangle.Height - 1));
+    }
 }
