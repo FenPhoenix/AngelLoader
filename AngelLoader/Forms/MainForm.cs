@@ -98,6 +98,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
+    internal readonly Control ReadmeContainer;
+
     #region FMs list
 
     private readonly float _fmsListDefaultFontSizeInPoints;
@@ -643,6 +645,8 @@ public sealed partial class MainForm : DarkFormBase,
         // This path doesn't support working with the designer, or at least shouldn't be trusted to do so.
         InitComponentManual();
 #endif
+
+        ReadmeContainer = LowerSplitContainer.Panel1;
 
         _fmTabControlGroups[(int)WhichTabControl.Top] = new FMTabControlGroup(
             TopFMTabControl,
@@ -5538,9 +5542,6 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_UpdateNotification.SetVisible(show);
         }
     }
-
-    // @DockUI: Could make this a field that gets set in the ctor (efficiency)
-    internal Control ReadmeContainer => LowerSplitContainer.Panel1;
 
     public void RefreshCurrentFMScreenshots()
     {
