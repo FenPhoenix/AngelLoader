@@ -61,7 +61,7 @@ public sealed partial class Lazy_ScreenshotsPage
             // 
             this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
             this.NextButton.Location = new System.Drawing.Point(391, 0);
-            this.NextButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.NextButton.Margin = new System.Windows.Forms.Padding(0);
             this.NextButton.Name = "NextButton";
             this.NextButton.Size = new System.Drawing.Size(75, 23);
             this.NextButton.TabIndex = 2;
@@ -69,7 +69,7 @@ public sealed partial class Lazy_ScreenshotsPage
             // PrevButton
             // 
             this.PrevButton.ArrowDirection = AngelLoader.Forms.Direction.Left;
-            this.PrevButton.Location = new System.Drawing.Point(313, 0);
+            this.PrevButton.Location = new System.Drawing.Point(316, 0);
             this.PrevButton.Margin = new System.Windows.Forms.Padding(0);
             this.PrevButton.Name = "PrevButton";
             this.PrevButton.Size = new System.Drawing.Size(75, 23);

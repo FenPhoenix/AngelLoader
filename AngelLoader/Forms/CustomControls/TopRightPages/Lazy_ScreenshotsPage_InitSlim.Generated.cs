@@ -35,7 +35,7 @@ public sealed partial class Lazy_ScreenshotsPage
         // NextButton
         // 
         this.NextButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
-        this.NextButton.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+        this.NextButton.Margin = new System.Windows.Forms.Padding(0);
         this.NextButton.Size = new System.Drawing.Size(75, 23);
         this.NextButton.TabIndex = 2;
         // 
