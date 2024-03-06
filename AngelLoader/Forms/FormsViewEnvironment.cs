@@ -46,12 +46,9 @@ public sealed class FormsViewEnvironment : IViewEnvironment
     public void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList)
     {
         /*
-        @ScreenshotDisplay: UI-specific preload conditions
-        If we allow moving the screenshots tab beside the readme or wherever else, we'll have to update this code
-        to match whatever the UI setup is.
         @DockUI: Finalize these conditions
         */
-        var screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
+        FMTabData screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
         if (screenshotsTab.Visible == FMTabVisibleIn.Top &&
             (config.TopFMTabsPanelCollapsed ||
              config.FMTabsData.SelectedTab != FMTab.Screenshots))

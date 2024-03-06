@@ -1240,7 +1240,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (!_firstShowDone)
         {
-            // @DockUI: Bottom (lazy-loaded) control handles this itself
+            // Bottom (lazy-loaded) control handles this itself
             if (TopFMTabControl.SelectedTab is Lazy_TabsBase lazyTab && !Config.TopFMTabsPanelCollapsed)
             {
                 lazyTab.Construct();
@@ -5723,7 +5723,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    // @DockUI: Lazy-load the empty message labels
     private void FMTabsEmptyMessageLabels_Paint(object sender, PaintEventArgs e)
     {
         DarkLabel label = BottomFMTabsEmptyMessageLabel;
