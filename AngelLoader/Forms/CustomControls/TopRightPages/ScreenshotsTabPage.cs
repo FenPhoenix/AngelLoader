@@ -137,6 +137,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
                 _page.GammaLabel.Enabled = false;
                 _page.GammaTrackBar.Enabled = false;
                 _page.OpenScreenshotsFolderButton.Enabled = false;
+                _page.CopyButton.Enabled = false;
                 _page.PrevButton.Enabled = false;
                 _page.NextButton.Enabled = false;
                 SetNumberLabelText("");
@@ -158,6 +159,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
             _page.GammaLabel.Enabled = true;
             _page.GammaTrackBar.Enabled = true;
             _page.OpenScreenshotsFolderButton.Enabled = true;
+            _page.CopyButton.Enabled = true;
             _page.PrevButton.Enabled = ScreenshotFileNames.Count > 1;
             _page.NextButton.Enabled = ScreenshotFileNames.Count > 1;
         }
