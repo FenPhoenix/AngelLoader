@@ -5519,10 +5519,9 @@ public sealed partial class MainForm : DarkFormBase,
         FMTabControlGroup group = GetFMTabControlGroup(which);
 
         Rectangle rect = group.TabControl.GetTabBarRect();
-        if (rect == Rectangle.Empty)
-        {
-            rect = group.TabControl.ClientRectangle;
-        }
+        rect = rect == Rectangle.Empty
+            ? group.TabControl.ClientRectangle
+            : rect with { Height = rect.Height + 3 };
 
         if (rect.Contains(group.TabControl.ClientCursorPos()))
         {
