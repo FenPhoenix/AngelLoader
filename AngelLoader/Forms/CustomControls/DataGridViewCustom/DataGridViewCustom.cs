@@ -265,7 +265,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         {
             if (suppressSelectionChangedEvent) SuppressSelectionEvent = true;
 
-            // Stops the no-FM-selected code from being run (would clear the top-right area etc.) causing flicker.
+            // Stops the no-FM-selected code from being run (would clear the FM tabs area(s) etc.) causing flicker.
             // Because clearing the selection is just some stupid crap we have to do to make one be selected,
             // so it shouldn't count as actually having none selected.
             using (new DisableZeroSelectCode(_owner))

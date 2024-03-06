@@ -100,15 +100,18 @@ sealed partial class MainForm
         this.ClearFiltersButton = new AngelLoader.Forms.CustomControls.ToolStripButtonCustom();
         this.ResetLayoutButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.GamesTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
-        this.TopRightMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.TopRightCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
-        this.TopRightTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
+        this.TopFMTabsMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.TopFMTabsCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+        this.TopFMTabControl = new AngelLoader.Forms.CustomControls.DarkTabControl();
         this.StatisticsTabPage = new AngelLoader.Forms.CustomControls.StatsTabPage();
         this.EditFMTabPage = new AngelLoader.Forms.CustomControls.EditFMTabPage();
         this.CommentTabPage = new AngelLoader.Forms.CustomControls.CommentTabPage();
         this.TagsTabPage = new AngelLoader.Forms.CustomControls.TagsTabPage();
         this.PatchTabPage = new AngelLoader.Forms.CustomControls.PatchTabPage();
         this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
+        this.ScreenshotsTabPage = new AngelLoader.Forms.CustomControls.ScreenshotsTabPage();
+        this.TopFMTabsEmptyMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.LowerSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -116,7 +119,10 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ChooseReadmeComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
         this.ReadmeRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
-        this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
+        this.BottomFMTabsEmptyMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.BottomFMTabsMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.BottomFMTabsCollapseButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
+        this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.BottomRightFLP.SuspendLayout();
         this.BottomLeftFLP.SuspendLayout();
         this.EverythingPanel.SuspendLayout();
@@ -133,7 +139,11 @@ sealed partial class MainForm
         this.GameFilterControlsShowHideButtonToolStrip.SuspendLayout();
         this.FilterIconButtonsToolStrip.SuspendLayout();
         this.RefreshAreaToolStrip.SuspendLayout();
-        this.TopRightTabControl.SuspendLayout();
+        this.TopFMTabControl.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).BeginInit();
+        this.LowerSplitContainer.Panel1.SuspendLayout();
+        this.LowerSplitContainer.Panel2.SuspendLayout();
+        this.LowerSplitContainer.SuspendLayout();
         this.SuspendLayout();
         // 
         // GameTabsImageList
@@ -254,15 +264,9 @@ sealed partial class MainForm
         // MainSplitContainer.Panel2
         // 
         this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeEncodingButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeFullScreenButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomInButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeZoomOutButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeResetZoomButton);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ChooseReadmeComboBox);
-        this.MainSplitContainer.Panel2.Controls.Add(this.ReadmeRichTextBox);
+        this.MainSplitContainer.Panel2.Controls.Add(this.LowerSplitContainer);
         this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
-        this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.MainSplitContainer_Panel2_Paint);
+        this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeContainer_Paint);
         this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
         this.MainSplitContainer.Panel2MinSize = 38;
         this.MainSplitContainer.RefreshSiblingFirst = true;
@@ -295,9 +299,10 @@ sealed partial class MainForm
         // TopSplitContainer.Panel2
         // 
         this.TopSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightMenuButton);
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightCollapseButton);
-        this.TopSplitContainer.Panel2.Controls.Add(this.TopRightTabControl);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsMenuButton);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsCollapseButton);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabControl);
+        this.TopSplitContainer.Panel2.Controls.Add(this.TopFMTabsEmptyMessageLabel);
         this.TopSplitContainer.Size = new System.Drawing.Size(1671, 309);
         this.TopSplitContainer.SplitterDistance = 1116;
         this.TopSplitContainer.TabIndex = 0;
@@ -869,49 +874,52 @@ sealed partial class MainForm
         this.GamesTabControl.Size = new System.Drawing.Size(1075, 24);
         this.GamesTabControl.TabIndex = 1;
         // 
-        // TopRightMenuButton
+        // TopFMTabsMenuButton
         // 
-        this.TopRightMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightMenuButton.FlatAppearance.BorderSize = 0;
-        this.TopRightMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.TopRightMenuButton.Location = new System.Drawing.Point(533, 0);
-        this.TopRightMenuButton.Name = "TopRightMenuButton";
-        this.TopRightMenuButton.Size = new System.Drawing.Size(18, 20);
-        this.TopRightMenuButton.TabIndex = 13;
-        this.TopRightMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.TopRightMenuButton_Paint);
-        this.TopRightMenuButton.Click += new System.EventHandler(this.TopRightMenuButton_Click);
+        this.TopFMTabsMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.TopFMTabsMenuButton.FlatAppearance.BorderSize = 0;
+        this.TopFMTabsMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.TopFMTabsMenuButton.Location = new System.Drawing.Point(533, 0);
+        this.TopFMTabsMenuButton.Name = "TopFMTabsMenuButton";
+        this.TopFMTabsMenuButton.Size = new System.Drawing.Size(18, 20);
+        this.TopFMTabsMenuButton.TabIndex = 13;
+        this.TopFMTabsMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsMenuButton_Paint);
+        this.TopFMTabsMenuButton.Click += new System.EventHandler(this.TopFMTabsMenuButton_Click);
         // 
-        // TopRightCollapseButton
+        // TopFMTabsCollapseButton
         // 
-        this.TopRightCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        this.TopFMTabsCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
-        this.TopRightCollapseButton.FlatAppearance.BorderSize = 0;
-        this.TopRightCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.TopRightCollapseButton.Location = new System.Drawing.Point(533, 20);
-        this.TopRightCollapseButton.Name = "TopRightCollapseButton";
-        this.TopRightCollapseButton.Size = new System.Drawing.Size(18, 289);
-        this.TopRightCollapseButton.TabIndex = 14;
-        this.TopRightCollapseButton.Click += new System.EventHandler(this.TopRightCollapseButton_Click);
+        this.TopFMTabsCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
+        this.TopFMTabsCollapseButton.FlatAppearance.BorderSize = 0;
+        this.TopFMTabsCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.TopFMTabsCollapseButton.Location = new System.Drawing.Point(533, 20);
+        this.TopFMTabsCollapseButton.Name = "TopFMTabsCollapseButton";
+        this.TopFMTabsCollapseButton.Size = new System.Drawing.Size(18, 289);
+        this.TopFMTabsCollapseButton.TabIndex = 14;
+        this.TopFMTabsCollapseButton.Click += new System.EventHandler(this.TopFMTabsCollapseButton_Click);
         // 
-        // TopRightTabControl
+        // TopFMTabControl
         // 
-        this.TopRightTabControl.AllowReordering = true;
-        this.TopRightTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        this.TopFMTabControl.AllowReordering = true;
+        this.TopFMTabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.TopRightTabControl.Controls.Add(this.StatisticsTabPage);
-        this.TopRightTabControl.Controls.Add(this.EditFMTabPage);
-        this.TopRightTabControl.Controls.Add(this.CommentTabPage);
-        this.TopRightTabControl.Controls.Add(this.TagsTabPage);
-        this.TopRightTabControl.Controls.Add(this.PatchTabPage);
-        this.TopRightTabControl.Controls.Add(this.ModsTabPage);
-        this.TopRightTabControl.EnableScrollButtonsRefreshHack = true;
-        this.TopRightTabControl.Location = new System.Drawing.Point(0, 0);
-        this.TopRightTabControl.Name = "TopRightTabControl";
-        this.TopRightTabControl.SelectedIndex = 0;
-        this.TopRightTabControl.Size = new System.Drawing.Size(535, 310);
-        this.TopRightTabControl.TabIndex = 15;
+        this.TopFMTabControl.Controls.Add(this.StatisticsTabPage);
+        this.TopFMTabControl.Controls.Add(this.EditFMTabPage);
+        this.TopFMTabControl.Controls.Add(this.CommentTabPage);
+        this.TopFMTabControl.Controls.Add(this.TagsTabPage);
+        this.TopFMTabControl.Controls.Add(this.PatchTabPage);
+        this.TopFMTabControl.Controls.Add(this.ModsTabPage);
+        this.TopFMTabControl.Controls.Add(this.ScreenshotsTabPage);
+        this.TopFMTabControl.EnableScrollButtonsRefreshHack = true;
+        this.TopFMTabControl.Location = new System.Drawing.Point(0, 0);
+        this.TopFMTabControl.Name = "TopFMTabControl";
+        this.TopFMTabControl.SelectedIndex = 0;
+        this.TopFMTabControl.Size = new System.Drawing.Size(535, 310);
+        this.TopFMTabControl.TabIndex = 15;
+        this.TopFMTabControl.MouseDragCustom += new System.Windows.Forms.MouseEventHandler(this.TopFMTabControl_MouseDragCustom);
+        this.TopFMTabControl.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TopFMTabControl_MouseUp);
         // 
         // StatisticsTabPage
         // 
@@ -967,13 +975,67 @@ sealed partial class MainForm
         this.ModsTabPage.TabIndex = 4;
         this.ModsTabPage.Text = "Mods";
         // 
+        // ScreenshotsTabPage
+        // 
+        this.ScreenshotsTabPage.BackColor = System.Drawing.SystemColors.Control;
+        this.ScreenshotsTabPage.Location = new System.Drawing.Point(4, 22);
+        this.ScreenshotsTabPage.Name = "ScreenshotsTabPage";
+        this.ScreenshotsTabPage.Size = new System.Drawing.Size(527, 284);
+        this.ScreenshotsTabPage.TabIndex = 5;
+        this.ScreenshotsTabPage.Text = "Screenshots";
+        // 
+        // TopFMTabsEmptyMessageLabel
+        // 
+        this.TopFMTabsEmptyMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.TopFMTabsEmptyMessageLabel.Location = new System.Drawing.Point(0, 0);
+        this.TopFMTabsEmptyMessageLabel.Name = "TopFMTabsEmptyMessageLabel";
+        this.TopFMTabsEmptyMessageLabel.Size = new System.Drawing.Size(533, 309);
+        this.TopFMTabsEmptyMessageLabel.TabIndex = 16;
+        this.TopFMTabsEmptyMessageLabel.Text = "[empty message]";
+        this.TopFMTabsEmptyMessageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+        this.TopFMTabsEmptyMessageLabel.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsEmptyMessageLabels_Paint);
+        // 
+        // LowerSplitContainer
+        // 
+        this.LowerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.LowerSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+        this.LowerSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
+        this.LowerSplitContainer.Location = new System.Drawing.Point(0, 0);
+        this.LowerSplitContainer.Name = "LowerSplitContainer";
+        // 
+        // LowerSplitContainer.Panel1
+        // 
+        this.LowerSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeEncodingButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeFullScreenButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomInButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomOutButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeResetZoomButton);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
+        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
+        this.LowerSplitContainer.Panel1MinSize = 0;
+        // 
+        // LowerSplitContainer.Panel2
+        // 
+        this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsEmptyMessageLabel);
+        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsMenuButton);
+        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsCollapseButton);
+        this.LowerSplitContainer.Size = new System.Drawing.Size(1671, 357);
+        this.LowerSplitContainer.SplitterDistance = 1116;
+        this.LowerSplitContainer.TabIndex = 0;
+        // 
         // ReadmeEncodingButton
         // 
         this.ReadmeEncodingButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
         this.ReadmeEncodingButton.BackColor = System.Drawing.SystemColors.Window;
         this.ReadmeEncodingButton.FlatAppearance.BorderSize = 0;
         this.ReadmeEncodingButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.ReadmeEncodingButton.Location = new System.Drawing.Point(1502, 8);
+        this.ReadmeEncodingButton.Location = new System.Drawing.Point(947, 8);
         this.ReadmeEncodingButton.Name = "ReadmeEncodingButton";
         this.ReadmeEncodingButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeEncodingButton.TabIndex = 2;
@@ -989,7 +1051,7 @@ sealed partial class MainForm
         this.ReadmeFullScreenButton.BackColor = System.Drawing.SystemColors.Window;
         this.ReadmeFullScreenButton.FlatAppearance.BorderSize = 0;
         this.ReadmeFullScreenButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1616, 8);
+        this.ReadmeFullScreenButton.Location = new System.Drawing.Point(1061, 8);
         this.ReadmeFullScreenButton.Name = "ReadmeFullScreenButton";
         this.ReadmeFullScreenButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeFullScreenButton.TabIndex = 6;
@@ -1006,7 +1068,7 @@ sealed partial class MainForm
         this.ReadmeZoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
         this.ReadmeZoomInButton.FlatAppearance.BorderSize = 0;
         this.ReadmeZoomInButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.ReadmeZoomInButton.Location = new System.Drawing.Point(1534, 8);
+        this.ReadmeZoomInButton.Location = new System.Drawing.Point(979, 8);
         this.ReadmeZoomInButton.Name = "ReadmeZoomInButton";
         this.ReadmeZoomInButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeZoomInButton.TabIndex = 3;
@@ -1023,7 +1085,7 @@ sealed partial class MainForm
         this.ReadmeZoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
         this.ReadmeZoomOutButton.FlatAppearance.BorderSize = 0;
         this.ReadmeZoomOutButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1559, 8);
+        this.ReadmeZoomOutButton.Location = new System.Drawing.Point(1004, 8);
         this.ReadmeZoomOutButton.Name = "ReadmeZoomOutButton";
         this.ReadmeZoomOutButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeZoomOutButton.TabIndex = 4;
@@ -1040,7 +1102,7 @@ sealed partial class MainForm
         this.ReadmeResetZoomButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
         this.ReadmeResetZoomButton.FlatAppearance.BorderSize = 0;
         this.ReadmeResetZoomButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1584, 8);
+        this.ReadmeResetZoomButton.Location = new System.Drawing.Point(1029, 8);
         this.ReadmeResetZoomButton.Name = "ReadmeResetZoomButton";
         this.ReadmeResetZoomButton.Size = new System.Drawing.Size(21, 21);
         this.ReadmeResetZoomButton.TabIndex = 5;
@@ -1055,7 +1117,7 @@ sealed partial class MainForm
         this.ChooseReadmeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
         this.ChooseReadmeComboBox.FireMouseLeaveOnLeaveWindow = true;
         this.ChooseReadmeComboBox.FormattingEnabled = true;
-        this.ChooseReadmeComboBox.Location = new System.Drawing.Point(1321, 8);
+        this.ChooseReadmeComboBox.Location = new System.Drawing.Point(766, 8);
         this.ChooseReadmeComboBox.Name = "ChooseReadmeComboBox";
         this.ChooseReadmeComboBox.Size = new System.Drawing.Size(170, 21);
         this.ChooseReadmeComboBox.TabIndex = 1;
@@ -1066,16 +1128,56 @@ sealed partial class MainForm
         // 
         // ReadmeRichTextBox
         // 
+        this.ReadmeRichTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.ReadmeRichTextBox.BackColor = System.Drawing.SystemColors.Window;
         this.ReadmeRichTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-        this.ReadmeRichTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
         this.ReadmeRichTextBox.Location = new System.Drawing.Point(1, 1);
         this.ReadmeRichTextBox.Name = "ReadmeRichTextBox";
         this.ReadmeRichTextBox.ReadOnly = true;
-        this.ReadmeRichTextBox.Size = new System.Drawing.Size(1668, 356);
+        this.ReadmeRichTextBox.Size = new System.Drawing.Size(1113, 356);
         this.ReadmeRichTextBox.TabIndex = 0;
         this.ReadmeRichTextBox.Text = "";
         this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
+        // 
+        // BottomFMTabsEmptyMessageLabel
+        // 
+        this.BottomFMTabsEmptyMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomFMTabsEmptyMessageLabel.Location = new System.Drawing.Point(0, 0);
+        this.BottomFMTabsEmptyMessageLabel.Name = "BottomFMTabsEmptyMessageLabel";
+        this.BottomFMTabsEmptyMessageLabel.Size = new System.Drawing.Size(533, 357);
+        this.BottomFMTabsEmptyMessageLabel.TabIndex = 17;
+        this.BottomFMTabsEmptyMessageLabel.Text = "[empty message]";
+        this.BottomFMTabsEmptyMessageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+        this.BottomFMTabsEmptyMessageLabel.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsEmptyMessageLabels_Paint);
+        // 
+        // BottomFMTabsMenuButton
+        // 
+        this.BottomFMTabsMenuButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomFMTabsMenuButton.FlatAppearance.BorderSize = 0;
+        this.BottomFMTabsMenuButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.BottomFMTabsMenuButton.Location = new System.Drawing.Point(533, 0);
+        this.BottomFMTabsMenuButton.Name = "BottomFMTabsMenuButton";
+        this.BottomFMTabsMenuButton.Size = new System.Drawing.Size(18, 20);
+        this.BottomFMTabsMenuButton.TabIndex = 15;
+        this.BottomFMTabsMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsMenuButton_Paint);
+        this.BottomFMTabsMenuButton.Click += new System.EventHandler(this.LowerFMTabsMenuButton_Click);
+        // 
+        // BottomFMTabsCollapseButton
+        // 
+        this.BottomFMTabsCollapseButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.BottomFMTabsCollapseButton.ArrowDirection = AngelLoader.Forms.Direction.Right;
+        this.BottomFMTabsCollapseButton.FlatAppearance.BorderSize = 0;
+        this.BottomFMTabsCollapseButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+        this.BottomFMTabsCollapseButton.Location = new System.Drawing.Point(533, 20);
+        this.BottomFMTabsCollapseButton.Name = "BottomFMTabsCollapseButton";
+        this.BottomFMTabsCollapseButton.Size = new System.Drawing.Size(18, 337);
+        this.BottomFMTabsCollapseButton.TabIndex = 16;
+        this.BottomFMTabsCollapseButton.Click += new System.EventHandler(this.LowerFMTabsCollapseButton_Click);
         // 
         // MainForm
         // 
@@ -1115,7 +1217,11 @@ sealed partial class MainForm
         this.FilterIconButtonsToolStrip.PerformLayout();
         this.RefreshAreaToolStrip.ResumeLayout(false);
         this.RefreshAreaToolStrip.PerformLayout();
-        this.TopRightTabControl.ResumeLayout(false);
+        this.TopFMTabControl.ResumeLayout(false);
+        this.LowerSplitContainer.Panel1.ResumeLayout(false);
+        this.LowerSplitContainer.Panel2.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).EndInit();
+        this.LowerSplitContainer.ResumeLayout(false);
         this.ResumeLayout(false);
 
     }
@@ -1218,18 +1324,24 @@ sealed partial class MainForm
 
     #endregion
 
-    #region Top-right
+    #region FM tabs
 
-    internal CustomControls.DarkTabControl TopRightTabControl;
+    internal CustomControls.DarkTabControl TopFMTabControl;
     internal CustomControls.StatsTabPage StatisticsTabPage;
     internal CustomControls.EditFMTabPage EditFMTabPage;
     internal CustomControls.CommentTabPage CommentTabPage;
     internal CustomControls.TagsTabPage TagsTabPage;
     internal CustomControls.PatchTabPage PatchTabPage;
     internal CustomControls.ModsTabPage ModsTabPage;
+    internal CustomControls.ScreenshotsTabPage ScreenshotsTabPage;
 
-    internal CustomControls.DarkButton TopRightMenuButton;
-    internal CustomControls.DarkArrowButton TopRightCollapseButton;
+    internal CustomControls.DarkButton TopFMTabsMenuButton;
+    internal CustomControls.DarkArrowButton TopFMTabsCollapseButton;
+    internal CustomControls.DarkLabel TopFMTabsEmptyMessageLabel;
+
+    internal CustomControls.DarkButton BottomFMTabsMenuButton;
+    internal CustomControls.DarkArrowButton BottomFMTabsCollapseButton;
+    internal CustomControls.DarkLabel BottomFMTabsEmptyMessageLabel;
 
     #endregion
 
@@ -1243,6 +1355,7 @@ sealed partial class MainForm
     internal CustomControls.DarkButton ReadmeZoomOutButton;
     internal CustomControls.DarkButton ReadmeResetZoomButton;
     internal CustomControls.DarkButton ReadmeFullScreenButton;
+    internal CustomControls.DarkSplitContainerCustom LowerSplitContainer;
 
     #endregion
 

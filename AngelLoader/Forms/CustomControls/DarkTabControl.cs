@@ -16,20 +16,74 @@ In OnControlAdded()/OnControlRemoved(), add/remove from backing list, but have a
 When we show/hide tabs, set the bool so that OnControlAdded()/OnControlRemoved() don't do anything while we
 update the backing list ourselves.
 */
-public sealed class DarkTabControl : TabControl, IDarkable
+public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabControl
 {
     #region Private fields
 
-    private sealed class BackingTab
+    internal TabPage? DragTab { get; private set; }
+
+    private List<BackingTab> _backingTabList = new(0);
+
+    #region Back up backing tabs
+
+    /*
+    The user can drag tabs horizontally in the same move as they're trying to drag them into the other tab
+    control. In that case, if the user commits the move, we want to revert the horizontal movement they did
+    and put the tab in the new control at the same relative position as it was before the user started the
+    drag. The easiest way to do that is to simply save the backing tabs list before the move and then restore
+    it if and only if the user commits the between-tab-control move.
+    */
+
+    private List<BackingTab>? _backedUpBackingTabs;
+    private TabPage? _backedUpNearestTabPage;
+
+    private void BackUpTempDragData()
     {
-        internal TabPage TabPage;
-        internal bool Visible = true;
-        internal BackingTab(TabPage tabPage) => TabPage = tabPage;
+        _backedUpBackingTabs = new List<BackingTab>(_backingTabList.Count);
+        foreach (BackingTab backingTab in _backingTabList)
+        {
+            _backedUpBackingTabs.Add(new BackingTab(backingTab.TabPage) { VisibleIn = backingTab.VisibleIn });
+        }
+        if (TabCount > 1 && SelectedIndex > 0)
+        {
+            _backedUpNearestTabPage = TabPages[GetNearestIndex_NoBoundsChecks()];
+        }
     }
 
-    private TabPage? _dragTab;
+    public void RestoreBackedUpBackingTabs()
+    {
+        if (_backedUpBackingTabs == null || _backedUpBackingTabs.Count != _backingTabList.Count)
+        {
+            return;
+        }
 
-    private readonly List<BackingTab> _backingTabList = new(0);
+        for (int i = 0; i < _backingTabList.Count; i++)
+        {
+            BackingTab backingTab = _backingTabList[i];
+            BackingTab backedUpBackingTab = _backedUpBackingTabs[i];
+            backingTab.TabPage = backedUpBackingTab.TabPage;
+            backingTab.VisibleIn = backedUpBackingTab.VisibleIn;
+        }
+        _backedUpBackingTabs = null;
+    }
+
+    public void ResetTempDragData()
+    {
+        _backedUpBackingTabs = null;
+        _backedUpNearestTabPage = null;
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Use this to use an external list rather than the internal one.
+    /// Use when you want multiple controls to use the same list.
+    /// </summary>
+    /// <param name="list"></param>
+    internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
+
+    private WhichTabControl _whichTabControl = WhichTabControl.Top;
+    internal void SetWhich(WhichTabControl value) => _whichTabControl = value;
 
     #endregion
 
@@ -69,6 +123,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
     }
 
+    public event MouseEventHandler? MouseDragCustom;
+
     [PublicAPI]
     [DefaultValue(false)]
     public bool AllowReordering { get; set; }
@@ -79,7 +135,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public Control[] BackingTabPages
+    public Control[] BackingTabPagesAsControls
     {
         get
         {
@@ -97,22 +153,22 @@ public sealed class DarkTabControl : TabControl, IDarkable
 
     #region Private methods
 
-    private (int Index, BackingTab BackingTab)
-    FindBackingTab(TabPage tabPage, bool indexVisibleOnly = false)
+    internal (int Index, BackingTab BackingTab)
+    FindBackingTab(List<BackingTab> backingTabs, TabPage tabPage, bool indexVisibleOnly = false)
     {
-        for (int i = 0, vi = 0; i < _backingTabList.Count; i++)
+        for (int i = 0, vi = 0; i < backingTabs.Count; i++)
         {
-            BackingTab backingTab = _backingTabList[i];
-            if (indexVisibleOnly && backingTab.Visible) vi++;
+            BackingTab backingTab = backingTabs[i];
+            if (indexVisibleOnly && VisibleInEqualsWhich(backingTab.VisibleIn, _whichTabControl)) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
 
-#if DEBUG
-        if (DesignMode) return (-1, null!);
-#endif
-
         // We should never get here! (unless we're in infernal-forsaken design mode...!)
         throw new InvalidOperationException("Can't find backing tab?!");
+
+        static bool VisibleInEqualsWhich(FMTabVisibleIn visibleIn, WhichTabControl which) =>
+            (visibleIn == FMTabVisibleIn.Top && which == WhichTabControl.Top) ||
+            (visibleIn == FMTabVisibleIn.Bottom && which == WhichTabControl.Bottom);
     }
 
     private (int BackingTabIndex, TabPage? TabPage)
@@ -130,7 +186,7 @@ public sealed class DarkTabControl : TabControl, IDarkable
             if (contains)
             {
                 TabPage tabPage = TabPages[i];
-                var (index, backingTab) = FindBackingTab(tabPage);
+                var (index, backingTab) = FindBackingTab(_backingTabList, tabPage);
 
                 return index == -1 || backingTab == null! ? (-1, null) : (index, tabPage);
             }
@@ -288,7 +344,11 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return;
         }
 
-        if (e.Button == MouseButtons.Left) (_, _dragTab) = GetTabAtPoint(e.Location);
+        if (e.Button == MouseButtons.Left)
+        {
+            (_, DragTab) = GetTabAtPoint(e.Location);
+            if (DragTab != null) BackUpTempDragData();
+        }
         base.OnMouseDown(e);
     }
 
@@ -300,10 +360,36 @@ public sealed class DarkTabControl : TabControl, IDarkable
             return;
         }
 
-        // Fix: Ensure we don't start dragging a tab again after we've released the button.
-        _dragTab = null;
+        // Do this first so DragTab is still valid when we handle drag-and-drop between tab controls
         base.OnMouseUp(e);
+
+        // Fix: Ensure we don't start dragging a tab again after we've released the button.
+        DragTab = null;
+        _backedUpBackingTabs = null;
+        _dragging = false;
     }
+
+    private void InvokeMouseDragCustomIfNeeded(MouseEventArgs e)
+    {
+        if (_dragging)
+        {
+            MouseDragCustom?.Invoke(this, e);
+        }
+        else
+        {
+            Rectangle tabBarExpanded = TabCount == 1
+                ? GetTabRect(0)
+                : GetTabBarRect();
+            tabBarExpanded.Inflate(4, 16);
+            if (!tabBarExpanded.Contains(e.Location))
+            {
+                _dragging = true;
+                MouseDragCustom?.Invoke(this, e);
+            }
+        }
+    }
+
+    private bool _dragging;
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
@@ -314,17 +400,25 @@ public sealed class DarkTabControl : TabControl, IDarkable
         }
 
         // Run the base event handler if we're not actually dragging a tab
-        if (e.Button != MouseButtons.Left || _dragTab == null || TabCount <= 1)
+        if (e.Button != MouseButtons.Left || DragTab == null)
         {
             base.OnMouseMove(e);
             return;
         }
 
-        // If we are dragging a tab, don't run the handler, because we want to be "modal" and block so nothing
-        // weird happens
+        if (TabCount <= 1)
+        {
+            InvokeMouseDragCustomIfNeeded(e);
+            base.OnMouseMove(e);
+            return;
+        }
 
-        int dragTabIndex = TabPages.IndexOf(_dragTab);
-        var (bDragTabIndex, _) = FindBackingTab(_dragTab);
+        // If we are dragging a tab, don't run the normal handler, because we want to be "modal" and block so
+        // nothing weird happens
+        InvokeMouseDragCustomIfNeeded(e);
+
+        int dragTabIndex = TabPages.IndexOf(DragTab);
+        var (bDragTabIndex, _) = FindBackingTab(_backingTabList, DragTab);
 
         Rectangle dragTabRect = GetTabRect(dragTabIndex);
 
@@ -341,16 +435,43 @@ public sealed class DarkTabControl : TabControl, IDarkable
         // If the user has moved the mouse off of the tab bar vertically, still stay in the move. This prevents
         // a mis-ordering bug if the user drags a tab off the bar then back onto the bar at a different position.
         var (bNewTabIndex, newTab) = GetTabAtPoint(e.Location, xOnly: true);
-        if (bNewTabIndex == -1 || newTab == null || newTab == _dragTab) return;
+        if (bNewTabIndex == -1 || newTab == null || newTab == DragTab) return;
 
         int newTabIndex = TabPages.IndexOf(newTab);
-        TabPages[dragTabIndex] = newTab;
-        TabPages[newTabIndex] = _dragTab;
 
-        _backingTabList[bDragTabIndex].TabPage = newTab;
-        _backingTabList[bNewTabIndex].TabPage = _dragTab;
+        // Handle the case where the tab is moving more than one position in one go.
+        // The easy way would be to insert/remove, but that results in terrible flickering for the TabPages
+        // collection, and suspend/resume doesn't fix it either. So just move everything over manually.
 
-        SelectedTab = _dragTab;
+        if (newTabIndex > dragTabIndex)
+        {
+            for (int i = dragTabIndex; i < newTabIndex; i++)
+            {
+                TabPages[i] = TabPages[i + 1];
+            }
+            for (int i = bDragTabIndex; i < bNewTabIndex; i++)
+            {
+                _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
+                _backingTabList[i].VisibleIn = _backingTabList[i + 1].VisibleIn;
+            }
+        }
+        else
+        {
+            for (int i = dragTabIndex - 1; i >= newTabIndex; i--)
+            {
+                TabPages[i + 1] = TabPages[i];
+            }
+            for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
+            {
+                _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
+                _backingTabList[i + 1].VisibleIn = _backingTabList[i].VisibleIn;
+            }
+        }
+
+        TabPages[newTabIndex] = DragTab;
+        _backingTabList[bNewTabIndex].TabPage = DragTab;
+
+        SelectedTab = DragTab;
 
         // Otherwise the first control within the tab page gets selected
         SelectedTab.Focus();
@@ -390,8 +511,8 @@ public sealed class DarkTabControl : TabControl, IDarkable
     {
         /*
         Create handle before adding tabs to prevent the following:
-        -You start the app in dark mode and with the top-right area hidden
-        -You show the top-right area
+        -You start the app in dark mode and with the FM tabs area(s) hidden
+        -You show the FM tabs area(s)
         -The tabs are all the same width, and if you switch to light mode, they have a crappy bold font instead
          of the intended one
         */
@@ -421,30 +542,71 @@ public sealed class DarkTabControl : TabControl, IDarkable
     [PublicAPI]
     public void ShowTab(TabPage tabPage, bool show)
     {
-        var (index, bt) = FindBackingTab(tabPage, indexVisibleOnly: true);
+        var (index, bt) = FindBackingTab(_backingTabList, tabPage, indexVisibleOnly: true);
         if (index < 0 || bt == null!) return;
 
         if (show)
         {
-            bt.Visible = true;
+            bt.VisibleIn = _whichTabControl == WhichTabControl.Bottom ? FMTabVisibleIn.Bottom : FMTabVisibleIn.Top;
             if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
         }
         else
         {
-            bt.Visible = false;
-            if (TabPages.Contains(bt.TabPage)) TabPages.Remove(bt.TabPage);
+            bt.VisibleIn = FMTabVisibleIn.None;
+            if (TabPages.Contains(bt.TabPage))
+            {
+                Control? parent = Parent;
+                if (_backedUpNearestTabPage != null && TabPages.Contains(_backedUpNearestTabPage))
+                {
+                    try
+                    {
+                        parent?.SuspendDrawing();
+                        SelectedTab = _backedUpNearestTabPage;
+                        TabPages.Remove(bt.TabPage);
+                    }
+                    finally
+                    {
+                        parent?.ResumeDrawing();
+                    }
+                }
+                else if (TabPages.Count > 1 && SelectedIndex > 0 && SelectedTab == bt.TabPage)
+                {
+                    try
+                    {
+                        parent?.SuspendDrawing();
+                        SelectedTab = TabPages[GetNearestIndex_NoBoundsChecks()];
+                        TabPages.Remove(bt.TabPage);
+                    }
+                    finally
+                    {
+                        parent?.ResumeDrawing();
+                    }
+                }
+                else
+                {
+                    TabPages.Remove(bt.TabPage);
+                }
+                _backedUpNearestTabPage = null;
+                if (TabCount > 0) SelectedTab.Focus();
+            }
         }
     }
 
-    /// <summary>
-    /// Returns the display index of the specified <see cref="TabPage"/>.
-    /// </summary>
-    /// <param name="tabPage"></param>
-    /// <returns></returns>
-    [PublicAPI]
-    public int GetTabDisplayIndex(TabPage tabPage) => FindBackingTab(tabPage).Index;
+    private int GetNearestIndex_NoBoundsChecks()
+    {
+        return SelectedIndex == TabCount - 1 ? SelectedIndex - 1 : SelectedIndex + 1;
+    }
 
-    public Rectangle GetTabBarRect() => new(0, 0, Width, GetTabRect(0).Height);
+    public Rectangle GetTabBarRect() =>
+        TabCount == 0
+            ? Rectangle.Empty
+            : new Rectangle(0, 0, Width, GetTabRect(0).Height);
+
+    public bool TabPagesContains(TabPage tabPage) => TabPages.Contains(tabPage);
+
+    public Point ClientCursorPos() => Native.ClientCursorPos(this);
+
+    public Point PointToClient_Fast(Point point) => Native.PointToClient_Fast(this, point);
 
     #endregion
 }

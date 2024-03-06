@@ -47,6 +47,14 @@ public static class DarkColors
     public static readonly Color DGV_RecentHighlightColorLight = Color.LightGoldenrodYellow;
     public static readonly Color DGV_UnavailableColorLight = Color.MistyRose;
 
+    public static readonly Color SuccessGreenDark = Color.FromArgb(68, 178, 68);
+
+    public static readonly Color TabDragOverlay_Light = Color.FromArgb(60,
+        SystemColors.Highlight.R,
+        SystemColors.Highlight.G,
+        SystemColors.Highlight.B);
+    public static readonly Color TabDragOverlay_Dark = Color.FromArgb(64, 75, 110, 175);
+
     #endregion
 
     #region DarkUI
@@ -96,7 +104,7 @@ public static class DarkColors
     //public static readonly Pen DarkBlueBackgroundPen = new Pen(DarkBlueBackground);
     public static readonly Pen DarkBackgroundPen = new Pen(DarkBackground);
     //public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
-    //public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
+    public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
     public static readonly Pen LighterBackgroundPen = new Pen(LighterBackground);
     //public static readonly Pen LightestBackgroundPen = new Pen(LightestBackground);
     public static readonly Pen LightBorderPen = new Pen(LightBorder);

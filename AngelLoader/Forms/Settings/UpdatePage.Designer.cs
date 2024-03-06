@@ -34,7 +34,6 @@ sealed partial class UpdatePage
             this.PagePanel = new System.Windows.Forms.Panel();
             this.UpdateOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.CheckForUpdatesOnStartupCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.UpdateOptionsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -42,8 +41,8 @@ sealed partial class UpdatePage
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
             this.PagePanel.Controls.Add(this.UpdateOptionsGroupBox);
-            this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
@@ -73,13 +72,6 @@ sealed partial class UpdatePage
             this.CheckForUpdatesOnStartupCheckBox.TabIndex = 0;
             this.CheckForUpdatesOnStartupCheckBox.Text = "Check for updates on startup";
             // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-            this.DummyAutoScrollPanel.TabIndex = 0;
-            // 
             // UpdatePage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -98,6 +90,5 @@ sealed partial class UpdatePage
 
     internal System.Windows.Forms.Panel PagePanel;
     internal CustomControls.DarkGroupBox UpdateOptionsGroupBox;
-    internal System.Windows.Forms.Control DummyAutoScrollPanel;
     internal CustomControls.DarkCheckBox CheckForUpdatesOnStartupCheckBox;
 }

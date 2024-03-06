@@ -46,34 +46,6 @@ internal static class FMScan
         bool setForceReCacheReadmes = false,
         string? scanMessage = null)
     {
-        #region Local functions
-
-        static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
-            scanTitle: true,
-            scanAuthor: true,
-            scanGameType: true,
-            scanCustomResources: true,
-            scanSize: true,
-            scanReleaseDate: true,
-            scanTags: true,
-            scanMissionCount: true);
-
-        void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
-            message1:
-            scanMessage ??
-            (LText.ProgressBox.ReportScanningFirst +
-             pr.FMNumber.ToString(NumberFormatInfo.CurrentInfo) +
-             (pr.CachedString ??=
-                 (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                  pr.FMsTotal.ToString(NumberFormatInfo.CurrentInfo) +
-                  LText.ProgressBox.ReportScanningLast))),
-            message2:
-            pr.FMName,
-            percent: pr.Percent
-        );
-
-        #endregion
-
         scanOptions ??= GetDefaultScanOptions();
 
         if (fmsToScan.Count == 0) return false;
@@ -478,6 +450,34 @@ internal static class FMScan
             Core.View.Block(false);
             Core.View.HideProgressBox();
         }
+
+        #region Local functions
+
+        static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
+            scanTitle: true,
+            scanAuthor: true,
+            scanGameType: true,
+            scanCustomResources: true,
+            scanSize: true,
+            scanReleaseDate: true,
+            scanTags: true,
+            scanMissionCount: true);
+
+        void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
+            message1:
+            scanMessage ??
+            (LText.ProgressBox.ReportScanningFirst +
+             pr.FMNumber.ToString(NumberFormatInfo.CurrentInfo) +
+             (pr.CachedString ??=
+                 (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                  pr.FMsTotal.ToString(NumberFormatInfo.CurrentInfo) +
+                  LText.ProgressBox.ReportScanningLast))),
+            message2:
+            pr.FMName,
+            percent: pr.Percent
+        );
+
+        #endregion
     }
 
     internal static Task ScanNewFMs(List<FanMission> fmsViewListUnscanned)

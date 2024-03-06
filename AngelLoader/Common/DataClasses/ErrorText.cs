@@ -41,6 +41,7 @@ internal static class ErrorText
     internal static readonly string FoundRegKey = "Found the registry key but ";
     internal static readonly string RegKeyPath = "Registry key path was: ";
     internal static readonly string FMInstDirNF = "FM install directory not found.";
+    internal static readonly string FMScreenshotsDirNF = "FM screenshot directory not found.";
     internal static readonly string ExInLWT = Ex + "in last write time compare ";
 }
 #pragma warning restore RCS1187 // Use constant instead of field.

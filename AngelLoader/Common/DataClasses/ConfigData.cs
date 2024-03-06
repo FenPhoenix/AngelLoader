@@ -344,9 +344,13 @@ public sealed class ConfigData
     private float _topSplitterPercent = Defaults.TopSplitterPercent;
     internal float TopSplitterPercent { get => _topSplitterPercent; set => _topSplitterPercent = value.ClampZeroToOne(); }
 
-    internal bool TopRightPanelCollapsed;
+    private float _lowerSplitterPercent = Defaults.LowerSplitterPercent;
+    internal float LowerSplitterPercent { get => _lowerSplitterPercent; set => _lowerSplitterPercent = value.ClampZeroToOne(); }
 
-    internal readonly TopRightTabsData TopRightTabsData = new();
+    internal bool TopFMTabsPanelCollapsed;
+    internal bool BottomFMTabsPanelCollapsed = true;
+
+    internal readonly FMTabsData FMTabsData = new();
 
     #endregion
 
@@ -461,6 +465,13 @@ public sealed class ConfigData
     #endregion
 
     internal CheckForUpdates CheckForUpdates = CheckForUpdates.FirstTimeAsk;
+
+    private int _screenshotGammaPercent = 50;
+    internal int ScreenshotGammaPercent
+    {
+        get => _screenshotGammaPercent;
+        set => _screenshotGammaPercent = value.Clamp(0, 100);
+    }
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

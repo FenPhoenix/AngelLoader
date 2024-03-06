@@ -129,6 +129,15 @@ public static partial class Utils
 
     internal static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
 
+    internal static bool ExtIsUISupportedImage(this string value)
+    {
+        for (int i = 0; i < Misc.SupportedScreenshotExtensions.Length; i++)
+        {
+            if (value.EndsWithI(Misc.SupportedScreenshotExtensions[i])) return true;
+        }
+        return false;
+    }
+
     #endregion
 
     #endregion

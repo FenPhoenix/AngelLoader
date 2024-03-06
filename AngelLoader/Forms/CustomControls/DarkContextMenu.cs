@@ -10,6 +10,12 @@ public sealed class DarkContextMenu : ContextMenuStrip
     private bool _preventClose;
     private ToolStripMenuItemCustom[]? _preventCloseItems;
 
+    /// <summary>
+    /// Since event driven architecture is Good Architecture(tm), of course that means you can't simply just pass
+    /// data from a menu open call to a menu item click handler. So set this data and it will be nulled out on close.
+    /// </summary>
+    public object? Data;
+
     private readonly IDarkContextMenuOwner _owner;
 
     private bool _darkModeEnabled;
@@ -64,6 +70,12 @@ public sealed class DarkContextMenu : ContextMenuStrip
         }
 
         base.OnClosing(e);
+    }
+
+    protected override void OnClosed(ToolStripDropDownClosedEventArgs e)
+    {
+        Data = null;
+        base.OnClosed(e);
     }
 
     internal void RefreshDarkModeState()

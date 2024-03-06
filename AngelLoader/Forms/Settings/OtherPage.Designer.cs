@@ -69,7 +69,6 @@ sealed partial class OtherPage
             this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
             this.PagePanel.SuspendLayout();
             this.FilteringGroupBox.SuspendLayout();
             this.InstallingFMsGroupBox.SuspendLayout();
@@ -82,13 +81,13 @@ sealed partial class OtherPage
             // PagePanel
             // 
             this.PagePanel.AutoScroll = true;
+            this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
             this.PagePanel.Controls.Add(this.FilteringGroupBox);
             this.PagePanel.Controls.Add(this.InstallingFMsGroupBox);
             this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
             this.PagePanel.Controls.Add(this.WebSearchGroupBox);
             this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
             this.PagePanel.Controls.Add(this.FMSettingsGroupBox);
-            this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
@@ -495,13 +494,6 @@ sealed partial class OtherPage
             this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
             this.ConvertWAVsTo16BitOnInstallCheckBox.Text = "Convert .wavs to 16 bit on install";
             // 
-            // DummyAutoScrollPanel
-            // 
-            this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-            this.DummyAutoScrollPanel.Name = "DummyAutoScrollPanel";
-            this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
-            this.DummyAutoScrollPanel.TabIndex = 12;
-            // 
             // OtherPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -544,7 +536,6 @@ sealed partial class OtherPage
     internal AngelLoader.Forms.CustomControls.DarkGroupBox FMSettingsGroupBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertOGGsToWAVsOnInstallCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ConvertWAVsTo16BitOnInstallCheckBox;
-    internal System.Windows.Forms.Control DummyAutoScrollPanel;
     internal CustomControls.DarkGroupBox InstallingFMsGroupBox;
     internal CustomControls.DarkRadioButton Install_ConfirmNeverRadioButton;
     internal CustomControls.DarkRadioButton Install_ConfirmMultipleOnlyRadioButton;

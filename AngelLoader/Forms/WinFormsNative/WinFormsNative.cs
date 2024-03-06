@@ -36,6 +36,9 @@ internal static class Native
 
     internal const int WM_SETTINGCHANGE = 0x001A;
 
+    internal const int WM_PRINT = 0x0317;
+    internal const int WM_PRINTCLIENT = 0x0318;
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT
@@ -550,6 +553,71 @@ internal static class Native
     internal const int TMT_FILLCOLOR = 3802;
     internal const int TMT_TEXTCOLOR = 3803;
 
+    #region Trackbar parts
+
+    internal const int TKP_TRACK = 1;
+    //internal const int TKP_TRACKVERT = 2;
+    //internal const int TKP_THUMB = 3;
+    internal const int TKP_THUMBBOTTOM = 4;
+    //internal const int TKP_THUMBTOP = 5;
+    //internal const int TKP_THUMBVERT = 6;
+    //internal const int TKP_THUMBLEFT = 7;
+    //internal const int TKP_THUMBRIGHT = 8;
+    internal const int TKP_TICS = 9;
+    //internal const int TKP_TICSVERT = 10;
+
+#if false
+    internal const int TKS_NORMAL = 1;
+    internal const int TRS_NORMAL = 1;
+    internal const int TRVS_NORMAL = 1;
+
+    internal const int TUS_NORMAL = 1;
+    internal const int TUS_HOT = 2;
+    internal const int TUS_PRESSED = 3;
+    internal const int TUS_FOCUSED = 4;
+    internal const int TUS_DISABLED = 5;
+#endif
+
+    //internal const int TUBS_NORMAL = 1;
+    internal const int TUBS_HOT = 2;
+    internal const int TUBS_PRESSED = 3;
+    //internal const int TUBS_FOCUSED = 4;
+    internal const int TUBS_DISABLED = 5;
+
+#if false
+    internal const int TUTS_NORMAL = 1;
+    internal const int TUTS_HOT = 2;
+    internal const int TUTS_PRESSED = 3;
+    internal const int TUTS_FOCUSED = 4;
+    internal const int TUTS_DISABLED = 5;
+
+    internal const int TUVS_NORMAL = 1;
+    internal const int TUVS_HOT = 2;
+    internal const int TUVS_PRESSED = 3;
+    internal const int TUVS_FOCUSED = 4;
+    internal const int TUVS_DISABLED = 5;
+
+    internal const int TUVLS_NORMAL = 1;
+    internal const int TUVLS_HOT = 2;
+    internal const int TUVLS_PRESSED = 3;
+    internal const int TUVLS_FOCUSED = 4;
+    internal const int TUVLS_DISABLED = 5;
+
+    internal const int TUVRS_NORMAL = 1;
+    internal const int TUVRS_HOT = 2;
+    internal const int TUVRS_PRESSED = 3;
+    internal const int TUVRS_FOCUSED = 4;
+    internal const int TUVRS_DISABLED = 5;
+#endif
+
+    internal const int TSS_NORMAL = 1;
+
+#if false
+    internal const int TSVS_NORMAL = 1;
+#endif
+
+    #endregion
+
     #region ToolTip parts
 
     internal const int TTP_STANDARD = 1;
@@ -803,6 +871,9 @@ internal static class Native
 
     #region Get system metrics
 
+    // SystemInformation gives us most of these, but it doesn't give us iPaddedBorderWidth and we need that.
+    // All this just for that one thing.
+
     private const int LF_FACESIZE = 32;
 
     private const int SPI_GETNONCLIENTMETRICS = 0x0029;
@@ -859,6 +930,30 @@ internal static class Native
         SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
     }
+
+    #endregion
+
+    #region Cursor
+
+    [PublicAPI]
+    internal struct ICONINFO
+    {
+        public bool fIcon;
+        public int xHotspot;
+        public int yHotspot;
+        public IntPtr hbmMask;
+        public IntPtr hbmColor;
+    }
+
+    [DllImport("user32.dll")]
+    internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
+
+    [DllImport("gdi32.dll")]
+    internal static extern bool DeleteObject(IntPtr handle);
 
     #endregion
 }

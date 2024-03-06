@@ -37,12 +37,14 @@ internal sealed class LText_Class
     internal readonly FilterBar_Class FilterBar = new();
     internal readonly FMsList_Class FMsList = new();
     internal readonly FMSelectedStats_Class FMSelectedStats = new();
+    internal readonly FMTabs_Class FMTabs = new();
     internal readonly StatisticsTab_Class StatisticsTab = new();
     internal readonly EditFMTab_Class EditFMTab = new();
     internal readonly CommentTab_Class CommentTab = new();
     internal readonly TagsTab_Class TagsTab = new();
     internal readonly PatchTab_Class PatchTab = new();
     internal readonly ModsTab_Class ModsTab = new();
+    internal readonly ScreenshotsTab_Class ScreenshotsTab = new();
     internal readonly ReadmeArea_Class ReadmeArea = new();
     internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new();
     internal readonly MainButtons_Class MainButtons = new();
@@ -496,6 +498,11 @@ internal sealed class LText_Class
         internal readonly string FMsFinished_Plural_AfterNumber = " FMs finished";
     }
 
+    internal sealed class FMTabs_Class
+    {
+        internal readonly string EmptyTabAreaMessage = "Drag a tab here, or right-click to add a tab.";
+    }
+
     internal sealed class StatisticsTab_Class
     {
         internal readonly string TabText = "Statistics";
@@ -624,6 +631,18 @@ internal sealed class LText_Class
         [FenGenComment("This is for when the selected FM has an unknown or unsupported game type.")]
         internal readonly string Generic_ModsNotSupported = "Mod management is not supported for unknown FMs.";
         // @GENGAMES (Localization - ModsTab_Class) - End
+    }
+
+    internal sealed class ScreenshotsTab_Class
+    {
+        internal readonly string TabText = "Screenshots";
+        internal readonly string Gamma = "Gamma:";
+        internal readonly string OpenScreenshotsFolderToolTip = "Open screenshots folder";
+        internal readonly string CopyImageToolTip = "Copy image (Ctrl+C)";
+        internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
+        internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
+        internal readonly string ImageCopied = "Image copied";
+        internal readonly string ImageCopyFailed = "Image copy failed";
     }
 
     internal sealed class ReadmeArea_Class

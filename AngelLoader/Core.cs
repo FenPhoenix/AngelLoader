@@ -359,10 +359,13 @@ internal static class Core
                 (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
                 if (ex == null)
                 {
+                    // Do this before anything, because it modifies the FMs list
+                    TDM.UpdateTDMDataFromDisk(refresh: false);
+
+                    // Do this one first, because it starts a thread that will run behind all of the loading work
+                    viewEnv.PreloadScreenshot(Config, FMsViewList);
                     ViewEnv.PreprocessRTFReadme(Config, FMsViewList, fmsViewListUnscanned);
                 }
-
-                TDM.UpdateTDMDataFromDisk(refresh: false);
             });
 
             // Construct and init the view right here, because it's a heavy operation and we want it to run
@@ -406,6 +409,10 @@ internal static class Core
             {
                 splashScreen.Show(Config.VisualTheme);
                 await DoParallelLoad(askForImport);
+            }
+            else
+            {
+                return;
             }
         }
 
@@ -829,6 +836,7 @@ internal static class Core
         // This must come first, so below methods can use it
         Config.SetGamePath(gameIndex, gamePath);
 
+        // @GENGAMES(Set game data from disk - main)
         if (GameIsDark(gameIndex))
         {
             if (!gamePath.IsEmpty() && !DirectoryHasWritePermission(gamePath))
@@ -980,6 +988,29 @@ internal static class Core
             }
 
             // We don't set mod dirs for Thief 3 because it doesn't support programmatic mod enabling/disabling
+        }
+
+        ScreenshotWatcher watcher = Screenshots.GetScreenshotWatcher(gameIndex);
+        string fmInstallPath = Config.GetFMInstallPath(gameIndex);
+        try
+        {
+            if (gameExeSpecified && !fmInstallPath.IsEmpty())
+            {
+                watcher.EnableWatching = false;
+                // @GENGAMES(Set game data from disk - screenshot watchers)
+                watcher.Path = gameIndex == GameIndex.TDM
+                    ? Path.Combine(Config.GetGamePath(GameIndex.TDM), "screenshots")
+                    : fmInstallPath;
+                watcher.EnableWatching = true;
+            }
+            else
+            {
+                watcher.EnableWatching = false;
+            }
+        }
+        catch
+        {
+            watcher.EnableWatching = false;
         }
 
         return (error, enableTDMWatchers, camModIniLines);
@@ -1567,6 +1598,8 @@ internal static class Core
             return false;
         }
 
+        using var dsw = new DisableScreenshotWatchers();
+
         try
         {
             string dmlFile = Path.GetFileName(sourceDMLPath);
@@ -1593,6 +1626,8 @@ internal static class Core
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
             return false;
         }
+
+        using var dsw = new DisableScreenshotWatchers();
 
         try
         {
@@ -2048,6 +2083,51 @@ internal static class Core
         {
             LogFMInfo(fm, ErrorText.ExTry + "open FM folder " + fmDir, ex);
             Dialogs.ShowError(ErrorText.UnOpenFMDir);
+        }
+    }
+
+    internal static void OpenFMScreenshotsFolder(FanMission fm, string screenshotFile)
+    {
+        try
+        {
+            if (screenshotFile.IsEmpty())
+            {
+                LogNotFound(fm);
+                return;
+            }
+
+            if (!NativeCommon.OpenFolderAndSelectFile(screenshotFile))
+            {
+                string? ssDir = Path.GetDirectoryName(screenshotFile);
+                if (ssDir.IsEmpty())
+                {
+                    LogNotFound(fm);
+                    return;
+                }
+
+                try
+                {
+                    ProcessStart_UseShellExecute(ssDir);
+                }
+                catch (Exception ex)
+                {
+                    LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
+                    Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
+            Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
+        }
+
+        return;
+
+        static void LogNotFound(FanMission fm)
+        {
+            LogFMInfo(fm, ErrorText.FMScreenshotsDirNF);
+            Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderNotFound);
         }
     }
 
@@ -2521,6 +2601,7 @@ internal static class Core
         Point mainWindowLocation,
         float mainSplitterPercent,
         float topSplitterPercent,
+        float lowerSplitterPercent,
         ColumnData[] columns,
         Column sortedColumn,
         SortDirection sortDirection,
@@ -2531,8 +2612,9 @@ internal static class Core
         SelectedFM selectedFM,
         GameTabsState gameTabsState,
         GameIndex gameTab,
-        TopRightTabsData topRightTabsData,
-        bool topRightPanelCollapsed,
+        FMTabsData fmTabsData,
+        bool topFMTabsPanelCollapsed,
+        bool bottomFMTabsPanelCollapsed,
         float readmeZoomFactor)
     {
         #region Main window state
@@ -2542,6 +2624,7 @@ internal static class Core
         Config.MainWindowLocation = mainWindowLocation;
         Config.MainSplitterPercent = mainSplitterPercent;
         Config.TopSplitterPercent = topSplitterPercent;
+        Config.LowerSplitterPercent = lowerSplitterPercent;
 
         #endregion
 
@@ -2563,19 +2646,21 @@ internal static class Core
 
         filter.DeepCopyTo(Config.Filter);
 
-        #region Top-right panel
+        #region FM tabs
 
-        Config.TopRightTabsData.SelectedTab = topRightTabsData.SelectedTab;
+        Config.FMTabsData.SelectedTab = fmTabsData.SelectedTab;
+        Config.FMTabsData.SelectedTab2 = fmTabsData.SelectedTab2;
 
-        for (int i = 0; i < TopRightTabsData.Count; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
-            Config.TopRightTabsData.Tabs[i].DisplayIndex = topRightTabsData.Tabs[i].DisplayIndex;
-            Config.TopRightTabsData.Tabs[i].Visible = topRightTabsData.Tabs[i].Visible;
+            Config.FMTabsData.Tabs[i].DisplayIndex = fmTabsData.Tabs[i].DisplayIndex;
+            Config.FMTabsData.Tabs[i].Visible = fmTabsData.Tabs[i].Visible;
         }
 
-        Config.TopRightTabsData.EnsureValidity();
+        Config.FMTabsData.EnsureValidity();
 
-        Config.TopRightPanelCollapsed = topRightPanelCollapsed;
+        Config.TopFMTabsPanelCollapsed = topFMTabsPanelCollapsed;
+        Config.BottomFMTabsPanelCollapsed = bottomFMTabsPanelCollapsed;
 
         #endregion
 

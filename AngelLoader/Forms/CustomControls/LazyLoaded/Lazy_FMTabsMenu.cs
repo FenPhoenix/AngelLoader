@@ -4,13 +4,15 @@ using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class TopRightLLMenu : IDarkable
+internal sealed class Lazy_FMTabsMenu : IDarkable
 {
     private bool _constructed;
-    private readonly bool[] _checkedStates = InitializedArray(TopRightTabsData.Count, true);
+    private readonly bool[] _checkedStates = InitializedArray(FMTabCount, true);
+    private readonly bool[] _visibleStates = InitializedArray(FMTabCount, true);
 
     private readonly MainForm _owner;
 
@@ -25,15 +27,16 @@ internal sealed class TopRightLLMenu : IDarkable
 
                 _menu = new DarkContextMenu(_owner);
 
-                var menuItems = new ToolStripItem[TopRightTabsData.Count];
+                var menuItems = new ToolStripItem[FMTabCount];
                 for (int i = 0; i < menuItems.Length; i++)
                 {
                     var item = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
-                        Checked = _checkedStates[i]
+                        Checked = _checkedStates[i],
+                        Visible = _visibleStates[i]
                     };
-                    item.Click += _owner.TopRightMenu_MenuItems_Click;
+                    item.Click += _owner.FMTabsMenu_MenuItems_Click;
                     menuItems[i] = item;
                 }
 
@@ -45,6 +48,7 @@ internal sealed class TopRightLLMenu : IDarkable
 
                 _menu.DarkModeEnabled = _darkModeEnabled;
 
+                _menu.Opening += _owner.FMTabsMenu_Opening;
                 _menu.Closed += MenuClosed;
 
                 _constructed = true;
@@ -84,7 +88,7 @@ internal sealed class TopRightLLMenu : IDarkable
         */
         if (Config.DarkMode)
         {
-            _owner.TopRightTabControl.Invalidate(_owner.TopRightTabControl.GetTabBarRect());
+            _owner.TopFMTabControl.Invalidate(_owner.TopFMTabControl.GetTabBarRect());
         }
     }
 
@@ -102,7 +106,7 @@ internal sealed class TopRightLLMenu : IDarkable
         }
     }
 
-    internal TopRightLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_FMTabsMenu(MainForm owner) => _owner = owner;
 
     internal void SetItemChecked(int index, bool value)
     {
@@ -116,16 +120,29 @@ internal sealed class TopRightLLMenu : IDarkable
         }
     }
 
+    internal void SetItemVisible(int index, bool value)
+    {
+        if (_constructed)
+        {
+            ((ToolStripMenuItemCustom)_menu.Items[index]).Visible = value;
+        }
+        else
+        {
+            _visibleStates[index] = value;
+        }
+    }
+
     internal void Localize()
     {
         if (!_constructed) return;
 
-        _menu.Items[(int)TopRightTab.Statistics].Text = LText.StatisticsTab.TabText;
-        _menu.Items[(int)TopRightTab.EditFM].Text = LText.EditFMTab.TabText;
-        _menu.Items[(int)TopRightTab.Comment].Text = LText.CommentTab.TabText;
-        _menu.Items[(int)TopRightTab.Tags].Text = LText.TagsTab.TabText;
-        _menu.Items[(int)TopRightTab.Patch].Text = LText.PatchTab.TabText;
-        _menu.Items[(int)TopRightTab.Mods].Text = LText.ModsTab.TabText;
+        _menu.Items[(int)FMTab.Statistics].Text = LText.StatisticsTab.TabText;
+        _menu.Items[(int)FMTab.EditFM].Text = LText.EditFMTab.TabText;
+        _menu.Items[(int)FMTab.Comment].Text = LText.CommentTab.TabText;
+        _menu.Items[(int)FMTab.Tags].Text = LText.TagsTab.TabText;
+        _menu.Items[(int)FMTab.Patch].Text = LText.PatchTab.TabText;
+        _menu.Items[(int)FMTab.Mods].Text = LText.ModsTab.TabText;
+        _menu.Items[(int)FMTab.Screenshots].Text = LText.ScreenshotsTab.TabText;
     }
 
     internal bool Focused => _constructed && _menu.Focused;

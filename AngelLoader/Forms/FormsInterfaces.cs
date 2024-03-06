@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 using AL_Common;
 
 namespace AngelLoader.Forms;
@@ -137,4 +139,24 @@ public interface IListControlWithBackingItems : IUpdateRegion
 #endif
 
     #endregion
+}
+
+public interface IOptionallyLazyTabControl
+{
+    public bool Enabled { get; set; }
+    public TabPage? SelectedTab { get; set; }
+    void ShowTab(TabPage tabPage, bool show);
+    int TabCount { get; }
+    bool TabPagesContains(TabPage tabPage);
+    Rectangle GetTabRect(int index);
+    Rectangle GetTabBarRect();
+    Rectangle ClientRectangle { get; }
+    Point ClientCursorPos();
+    int Width { get; }
+    int Height { get; }
+    int SelectedIndex { get; }
+    void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds);
+    Point PointToClient_Fast(Point point);
+    void ResetTempDragData();
+    void RestoreBackedUpBackingTabs();
 }

@@ -389,13 +389,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    internal ContextMenuStrip GetRatingMenu()
+    internal DarkContextMenu GetRatingMenu()
     {
         Construct();
         return RatingMenu;
     }
 
-    internal ContextMenuStrip GetFinishedOnMenu()
+    internal DarkContextMenu GetFinishedOnMenu()
     {
         Construct();
         return FinishedOnMenu;

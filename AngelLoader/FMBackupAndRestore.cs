@@ -30,7 +30,7 @@ for writing. Even if you put it after the using block, it throws. So always set 
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
 */
 
-internal static class FMBackupAndRestore
+internal static partial class FMInstallAndPlay
 {
     #region Private fields
     // fmsel source code says:
