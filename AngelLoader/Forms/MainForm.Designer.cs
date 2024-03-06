@@ -1136,7 +1136,7 @@ sealed partial class MainForm
         this.ReadmeRichTextBox.Location = new System.Drawing.Point(1, 1);
         this.ReadmeRichTextBox.Name = "ReadmeRichTextBox";
         this.ReadmeRichTextBox.ReadOnly = true;
-        this.ReadmeRichTextBox.Size = new System.Drawing.Size(1113, 356);
+        this.ReadmeRichTextBox.Size = new System.Drawing.Size(1114, 356);
         this.ReadmeRichTextBox.TabIndex = 0;
         this.ReadmeRichTextBox.Text = "";
         this.ReadmeRichTextBox.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);

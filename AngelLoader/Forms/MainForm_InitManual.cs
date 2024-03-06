@@ -644,7 +644,7 @@ public sealed partial class MainForm
         ReadmeRichTextBox.BorderStyle = BorderStyle.None;
         ReadmeRichTextBox.Location = new Point(1, 1);
         ReadmeRichTextBox.ReadOnly = true;
-        ReadmeRichTextBox.Size = new Size(1113, 356);
+        ReadmeRichTextBox.Size = new Size(1114, 356);
         ReadmeRichTextBox.TabIndex = 0;
         ReadmeRichTextBox.MouseLeave += ReadmeArea_MouseLeave;
         // 
