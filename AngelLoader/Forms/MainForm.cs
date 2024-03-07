@@ -4461,7 +4461,7 @@ public sealed partial class MainForm : DarkFormBase,
         else
         {
             Core.Dialogs.ShowAlert(
-                GetLocalizedNoModSupportText(gameIndex),
+                GetLocalizedGameSettingsNotSupportedMessage(gameIndex),
                 LText.AlertMessages.Alert,
                 MBoxIcon.None);
         }

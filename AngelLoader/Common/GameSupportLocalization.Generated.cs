@@ -64,6 +64,15 @@ public static partial class GameSupport
         _ => LText.PlayOriginalGameMenu.TheDarkMod_PlayOriginal
     };
 
+    internal static string GetLocalizedGameSettingsNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.PlayOriginalGameMenu.Mods_Thief1NotSupported,
+        GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_Thief2NotSupported,
+        GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+        GameIndex.SS2 => LText.PlayOriginalGameMenu.Mods_SS2NotSupported,
+        _ => LText.PlayOriginalGameMenu.Mods_TDMNotSupported
+    };
+
     internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex) => gameIndex switch
     {
         GameIndex.Thief1 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief1,

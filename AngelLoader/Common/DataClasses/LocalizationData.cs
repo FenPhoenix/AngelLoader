@@ -685,10 +685,9 @@ internal sealed class LText_Class
         internal readonly string UnableToLoadReadme = "Unable to load this readme.";
     }
 
+    // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - Begin
     internal sealed class PlayOriginalGameMenu_Class
     {
-        // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - Begin
-
         internal readonly string Thief2_Multiplayer = "Thief 2 (multiplayer)";
 
         [FenGenGameSet("GetLocalizedGamePlayOriginalText")]
@@ -699,7 +698,15 @@ internal sealed class LText_Class
         internal readonly string TheDarkMod_PlayOriginal = "Play The Dark Mod without FM";
 
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
+
+        [FenGenGameSet("GetLocalizedGameSettingsNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_Thief1NotSupported = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_Thief2NotSupported = "";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_SS2NotSupported = "";
         internal readonly string Mods_TDMNotSupported = "AngelLoader does not support managing settings for The Dark Mod.";
 
         [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
@@ -711,10 +718,9 @@ internal sealed class LText_Class
         [FenGenDoNotWrite] // Dummy to keep the game count the same
         internal readonly string Mods_EnableOrDisableModsForTDM = "";
 
-        // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End
-
         internal readonly string Mods_SubMenu = "Settings";
     }
+    // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End
 
     internal sealed class MainButtons_Class
     {

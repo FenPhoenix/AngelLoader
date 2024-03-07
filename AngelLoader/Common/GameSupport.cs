@@ -174,13 +174,6 @@ public static partial class GameSupport
     internal static bool GameSupportsMods(Game game) => GameIsDark(game);
     internal static bool GameSupportsMods(GameIndex game) => GameIsDark(game);
 
-    internal static string GetLocalizedNoModSupportText(GameIndex gameIndex) => gameIndex switch
-    {
-        GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
-        GameIndex.TDM => LText.PlayOriginalGameMenu.Mods_TDMNotSupported,
-        _ => ""
-    };
-
     #endregion
 
     internal static bool GameSupportsLanguages(Game game) => GameIsDark(game);
