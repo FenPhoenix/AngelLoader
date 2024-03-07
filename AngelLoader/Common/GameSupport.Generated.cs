@@ -1,5 +1,6 @@
 #define FenGen_GameSupportMainGenDest
 
+using System;
 using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
 
@@ -25,7 +26,7 @@ public static partial class GameSupport
 
     #region Per-game constants
 
-    private static readonly string[] _gamePrefixes =
+    private static readonly String[] _gamePrefixes =
     {
         "T1",
         "T2",
@@ -34,9 +35,9 @@ public static partial class GameSupport
         "TDM"
     };
 
-    public static string GetGamePrefix(GameIndex index) => _gamePrefixes[(byte)index];
+    public static String GetGamePrefix(GameIndex index) => _gamePrefixes[(byte)index];
 
-    private static readonly string[] _steamAppIds =
+    private static readonly String[] _steamAppIds =
     {
         "211600",
         "211740",
@@ -45,9 +46,9 @@ public static partial class GameSupport
         ""
     };
 
-    public static string GetGameSteamId(GameIndex index) => _steamAppIds[(byte)index];
+    public static String GetGameSteamId(GameIndex index) => _steamAppIds[(byte)index];
 
-    private static readonly string[] _gameEditorNames =
+    private static readonly String[] _gameEditorNames =
     {
         "DromEd",
         "DromEd",
@@ -56,7 +57,7 @@ public static partial class GameSupport
         ""
     };
 
-    public static string GetGameEditorName(GameIndex index) => _gameEditorNames[(byte)index];
+    public static String GetGameEditorName(GameIndex index) => _gameEditorNames[(byte)index];
 
     #endregion
 

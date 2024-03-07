@@ -90,17 +90,18 @@ internal static class Games
     {
         #region Local functions
 
-        static void WriteArrayAndGetter(
+        static void WriteArrayAndGetter<T>(
             CodeWriters.IndentingWriter w,
             string arrayName,
             string getterName,
-            List<string> items,
+            List<T> items,
             string gameIndexName,
             bool addQuotes = true)
         {
-            w.WL("private static readonly string[] " + arrayName + " =");
+            string typeName = items[0].GetTypeName();
+            w.WL("private static readonly " + typeName + "[] " + arrayName + " =");
             WriteListBody(w, items, addQuotes: addQuotes);
-            w.WL("public static string " + getterName + "(" + gameIndexName + " index) => " + arrayName + "[(" + Cache.GamesEnum.EnumType + ")index];");
+            w.WL("public static " + typeName + " " + getterName + "(" + gameIndexName + " index) => " + arrayName + "[(" + Cache.GamesEnum.EnumType + ")index];");
             w.WL();
         }
 
@@ -132,6 +133,9 @@ internal static class Games
         WriteArrayAndGetter(w, "_gamePrefixes", "GetGamePrefix", Cache.GamesEnum.GamePrefixes, gameIndexName);
         WriteArrayAndGetter(w, "_steamAppIds", "GetGameSteamId", Cache.GamesEnum.SteamIds, gameIndexName);
         WriteArrayAndGetter(w, "_gameEditorNames", "GetGameEditorName", Cache.GamesEnum.EditorNames, gameIndexName);
+        // Maybe implement later
+        //WriteArrayAndGetter(w, "_supportsMods", "GameSupportsMods", Cache.GamesEnum.SupportsMods, gameIndexName, addQuotes: false);
+        //WriteArrayAndGetter(w, "_supportsImport", "GameSupportsImport", Cache.GamesEnum.SupportsImport, gameIndexName, addQuotes: false);
 
         w.WL("#endregion");
         w.WL();
