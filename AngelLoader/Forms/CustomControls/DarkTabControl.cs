@@ -82,8 +82,8 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
     /// <param name="list"></param>
     internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
 
-    private WhichTabControl _whichTabControl = WhichTabControl.Top;
-    internal void SetWhich(WhichTabControl value) => _whichTabControl = value;
+    internal WhichTabControl WhichTabControl { get; private set; } = WhichTabControl.Top;
+    internal void SetWhich(WhichTabControl value) => WhichTabControl = value;
 
     #endregion
 
@@ -159,7 +159,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         for (int i = 0, vi = 0; i < backingTabs.Count; i++)
         {
             BackingTab backingTab = backingTabs[i];
-            if (indexVisibleOnly && VisibleInEqualsWhich(backingTab.VisibleIn, _whichTabControl)) vi++;
+            if (indexVisibleOnly && VisibleInEqualsWhich(backingTab.VisibleIn, WhichTabControl)) vi++;
             if (backingTab.TabPage == tabPage) return (indexVisibleOnly ? vi : i, backingTab);
         }
 
@@ -547,7 +547,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 
         if (show)
         {
-            bt.VisibleIn = _whichTabControl == WhichTabControl.Bottom ? FMTabVisibleIn.Bottom : FMTabVisibleIn.Top;
+            bt.VisibleIn = WhichTabControl == WhichTabControl.Bottom ? FMTabVisibleIn.Bottom : FMTabVisibleIn.Top;
             if (!TabPages.Contains(bt.TabPage)) TabPages.Insert(Math.Min(index, TabCount), bt.TabPage);
         }
         else
