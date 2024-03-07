@@ -53,22 +53,16 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
     {
         if (_constructed) return;
 
-        var container =
-            _which == WhichTabControl.Bottom
-                ? _owner.LowerSplitContainer.Panel2
-                : _owner.TopSplitContainer.Panel2;
+        FMTabControlGroup group = _owner.GetFMTabControlGroup(_which);
 
-        DarkArrowButton collapseButton =
-            _which == WhichTabControl.Bottom
-                ? _owner.BottomFMTabsCollapseButton
-                : _owner.TopFMTabsCollapseButton;
+        var container = group.Splitter.Panel2;
 
         Panel = new DrawnPanel
         {
             Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
-                container.Width - collapseButton.Width,
+                container.Width - group.CollapseButton.Width,
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,
 

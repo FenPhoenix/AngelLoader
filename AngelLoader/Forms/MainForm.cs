@@ -128,7 +128,7 @@ public sealed partial class MainForm : DarkFormBase,
     private readonly DarkButton[] _readmeControlButtons;
 
     private readonly FMTabControlGroup[] _fmTabControlGroups = new FMTabControlGroup[FormsData.WhichTabCount];
-    private FMTabControlGroup GetFMTabControlGroup(WhichTabControl which) => _fmTabControlGroups[(int)which];
+    internal FMTabControlGroup GetFMTabControlGroup(WhichTabControl which) => _fmTabControlGroups[(int)which];
 
     #endregion
 
@@ -5677,16 +5677,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ShowFMTab(WhichTabControl which, TabPage tabPage)
     {
-        if (which == WhichTabControl.Bottom)
-        {
-            BottomFMTabsEmptyMessageLabel.Hide();
-            Lazy_LowerTabControl.TabControl.ShowTab(tabPage, true);
-        }
-        else
-        {
-            TopFMTabsEmptyMessageLabel.Hide();
-            TopFMTabControl.ShowTab(tabPage, true);
-        }
+        FMTabControlGroup group = GetFMTabControlGroup(which);
+        group.EmptyMessageLabel.Hide();
+        group.TabControl.ShowTab(tabPage, true);
     }
 
     private void HideFMTab(WhichTabControl which, TabPage tabPage)
