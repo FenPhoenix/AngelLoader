@@ -519,7 +519,14 @@ internal sealed class LText_Class
         internal readonly string CustomResources = "Custom resources:";
         internal readonly string CustomResourcesNotScanned = "Custom resources not scanned.";
         // @GENGAMES (Localization - Custom resource detection not supported): Begin
+        [FenGenGameSet("GetLocalizedCustomResourcesNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForThief1 = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForThief2 = "";
         internal readonly string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForSS2 = "";
         internal readonly string CustomResourcesNotSupportedForTDM = "Custom resource detection is not supported for Dark Mod FMs.";
         // @GENGAMES (Localization - Custom resource detection not supported): End
         internal readonly string NoFMSelected = "No FM selected.";
@@ -626,7 +633,14 @@ internal sealed class LText_Class
         internal readonly string DisabledMods = "Disabled mods:";
         [FenGenBlankLine]
         // @GENGAMES (Localization - ModsTab_Class) - Begin
+        [FenGenGameSet("GetLocalizedModsNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Thief1_ModsNotSupported = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Thief2_ModsNotSupported = "";
         internal readonly string Thief3_ModsNotSupported = "Mod management is not supported for Thief: Deadly Shadows.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string SS2_ModsNotSupported = "";
         internal readonly string TDM_ModsNotSupported = "Mod management is not supported for The Dark Mod.";
         [FenGenComment("This is for when the selected FM has an unknown or unsupported game type.")]
         internal readonly string Generic_ModsNotSupported = "Mod management is not supported for unknown FMs.";

@@ -63,15 +63,11 @@ public sealed class ModsTabPage : Lazy_TabsBase
 
     private void UpdateNotSupportedMessage(FanMission? fm)
     {
-        // @GENGAMES(Mods tab/UpdateNotSupportedMessage())
         ModsTabNotSupportedMessageLabel.Text =
             fm != null
-                ? fm.Game switch
-                {
-                    Game.TDM => LText.ModsTab.TDM_ModsNotSupported,
-                    Game.Thief3 => LText.ModsTab.Thief3_ModsNotSupported,
-                    _ => LText.ModsTab.Generic_ModsNotSupported
-                }
+                ? fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) && !GameSupportsMods(gameIndex)
+                    ? GetLocalizedModsNotSupportedMessage(gameIndex)
+                    : LText.ModsTab.Generic_ModsNotSupported
                 : "";
     }
 
