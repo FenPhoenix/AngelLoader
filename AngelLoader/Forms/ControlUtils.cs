@@ -730,7 +730,8 @@ internal static class ControlUtils
         const int maxStackCount = 100;
 #endif
 
-        if (control is not Lazy_TabsBase lazyTab || (_lazyTabs ??= new HashSet<Lazy_TabsBase>(FMTabCount)).Add(lazyTab))
+        if (controlColors == null ||
+            control is not Lazy_TabsBase lazyTab || (_lazyTabs ??= new HashSet<Lazy_TabsBase>(FMTabCount)).Add(lazyTab))
         {
             if (controlColors != null && control.Tag is not LoadType.Lazy)
             {
