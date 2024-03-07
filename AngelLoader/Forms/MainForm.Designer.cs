@@ -111,7 +111,7 @@ sealed partial class MainForm
         this.ModsTabPage = new AngelLoader.Forms.CustomControls.ModsTabPage();
         this.ScreenshotsTabPage = new AngelLoader.Forms.CustomControls.ScreenshotsTabPage();
         this.TopFMTabsEmptyMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.LowerSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
+        this.BottomSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.ReadmeEncodingButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeFullScreenButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ReadmeZoomInButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -140,10 +140,10 @@ sealed partial class MainForm
         this.FilterIconButtonsToolStrip.SuspendLayout();
         this.RefreshAreaToolStrip.SuspendLayout();
         this.TopFMTabControl.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).BeginInit();
-        this.LowerSplitContainer.Panel1.SuspendLayout();
-        this.LowerSplitContainer.Panel2.SuspendLayout();
-        this.LowerSplitContainer.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.BottomSplitContainer)).BeginInit();
+        this.BottomSplitContainer.Panel1.SuspendLayout();
+        this.BottomSplitContainer.Panel2.SuspendLayout();
+        this.BottomSplitContainer.SuspendLayout();
         this.SuspendLayout();
         // 
         // GameTabsImageList
@@ -264,7 +264,7 @@ sealed partial class MainForm
         // MainSplitContainer.Panel2
         // 
         this.MainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.MainSplitContainer.Panel2.Controls.Add(this.LowerSplitContainer);
+        this.MainSplitContainer.Panel2.Controls.Add(this.BottomSplitContainer);
         this.MainSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(1, 1, 2, 2);
         this.MainSplitContainer.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.ReadmeContainer_Paint);
         this.MainSplitContainer.Panel2.MouseLeave += new System.EventHandler(this.ReadmeArea_MouseLeave);
@@ -997,37 +997,37 @@ sealed partial class MainForm
         this.TopFMTabsEmptyMessageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.TopFMTabsEmptyMessageLabel.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsEmptyMessageLabels_Paint);
         // 
-        // LowerSplitContainer
+        // BottomSplitContainer
         // 
-        this.LowerSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+        this.BottomSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
         | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.LowerSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
-        this.LowerSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
-        this.LowerSplitContainer.Location = new System.Drawing.Point(0, 0);
-        this.LowerSplitContainer.Name = "LowerSplitContainer";
+        this.BottomSplitContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;
+        this.BottomSplitContainer.FullScreenCollapsePanel = AngelLoader.Forms.CustomControls.DarkSplitContainerCustom.Panel.Panel2;
+        this.BottomSplitContainer.Location = new System.Drawing.Point(0, 0);
+        this.BottomSplitContainer.Name = "BottomSplitContainer";
         // 
-        // LowerSplitContainer.Panel1
+        // BottomSplitContainer.Panel1
         // 
-        this.LowerSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeEncodingButton);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeFullScreenButton);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomInButton);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeZoomOutButton);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeResetZoomButton);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
-        this.LowerSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
-        this.LowerSplitContainer.Panel1MinSize = 0;
+        this.BottomSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeEncodingButton);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeFullScreenButton);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeZoomInButton);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeZoomOutButton);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeResetZoomButton);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ChooseReadmeComboBox);
+        this.BottomSplitContainer.Panel1.Controls.Add(this.ReadmeRichTextBox);
+        this.BottomSplitContainer.Panel1MinSize = 0;
         // 
-        // LowerSplitContainer.Panel2
+        // BottomSplitContainer.Panel2
         // 
-        this.LowerSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
-        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsEmptyMessageLabel);
-        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsMenuButton);
-        this.LowerSplitContainer.Panel2.Controls.Add(this.BottomFMTabsCollapseButton);
-        this.LowerSplitContainer.Size = new System.Drawing.Size(1671, 357);
-        this.LowerSplitContainer.SplitterDistance = 1116;
-        this.LowerSplitContainer.TabIndex = 0;
+        this.BottomSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
+        this.BottomSplitContainer.Panel2.Controls.Add(this.BottomFMTabsEmptyMessageLabel);
+        this.BottomSplitContainer.Panel2.Controls.Add(this.BottomFMTabsMenuButton);
+        this.BottomSplitContainer.Panel2.Controls.Add(this.BottomFMTabsCollapseButton);
+        this.BottomSplitContainer.Size = new System.Drawing.Size(1671, 357);
+        this.BottomSplitContainer.SplitterDistance = 1116;
+        this.BottomSplitContainer.TabIndex = 0;
         // 
         // ReadmeEncodingButton
         // 
@@ -1164,7 +1164,7 @@ sealed partial class MainForm
         this.BottomFMTabsMenuButton.Size = new System.Drawing.Size(18, 20);
         this.BottomFMTabsMenuButton.TabIndex = 15;
         this.BottomFMTabsMenuButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.FMTabsMenuButton_Paint);
-        this.BottomFMTabsMenuButton.Click += new System.EventHandler(this.LowerFMTabsMenuButton_Click);
+        this.BottomFMTabsMenuButton.Click += new System.EventHandler(this.BottomFMTabsMenuButton_Click);
         // 
         // BottomFMTabsCollapseButton
         // 
@@ -1177,7 +1177,7 @@ sealed partial class MainForm
         this.BottomFMTabsCollapseButton.Name = "BottomFMTabsCollapseButton";
         this.BottomFMTabsCollapseButton.Size = new System.Drawing.Size(18, 337);
         this.BottomFMTabsCollapseButton.TabIndex = 16;
-        this.BottomFMTabsCollapseButton.Click += new System.EventHandler(this.LowerFMTabsCollapseButton_Click);
+        this.BottomFMTabsCollapseButton.Click += new System.EventHandler(this.BottomFMTabsCollapseButton_Click);
         // 
         // MainForm
         // 
@@ -1218,10 +1218,10 @@ sealed partial class MainForm
         this.RefreshAreaToolStrip.ResumeLayout(false);
         this.RefreshAreaToolStrip.PerformLayout();
         this.TopFMTabControl.ResumeLayout(false);
-        this.LowerSplitContainer.Panel1.ResumeLayout(false);
-        this.LowerSplitContainer.Panel2.ResumeLayout(false);
-        ((System.ComponentModel.ISupportInitialize)(this.LowerSplitContainer)).EndInit();
-        this.LowerSplitContainer.ResumeLayout(false);
+        this.BottomSplitContainer.Panel1.ResumeLayout(false);
+        this.BottomSplitContainer.Panel2.ResumeLayout(false);
+        ((System.ComponentModel.ISupportInitialize)(this.BottomSplitContainer)).EndInit();
+        this.BottomSplitContainer.ResumeLayout(false);
         this.ResumeLayout(false);
 
     }
@@ -1355,7 +1355,7 @@ sealed partial class MainForm
     internal CustomControls.DarkButton ReadmeZoomOutButton;
     internal CustomControls.DarkButton ReadmeResetZoomButton;
     internal CustomControls.DarkButton ReadmeFullScreenButton;
-    internal CustomControls.DarkSplitContainerCustom LowerSplitContainer;
+    internal CustomControls.DarkSplitContainerCustom BottomSplitContainer;
 
     #endregion
 

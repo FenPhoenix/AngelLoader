@@ -672,11 +672,11 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_LowerSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_BottomSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Float_TryParseInv(valTrimmed, out float result))
         {
-            config.LowerSplitterPercent = result;
+            config.BottomSplitterPercent = result;
         }
     }
 
@@ -1017,7 +1017,7 @@ internal static partial class Ini
 
         { "MainSplitterPercent", new Config_DelegatePointerWrapper(&Config_MainSplitterPercent_Set) },
         { "TopSplitterPercent", new Config_DelegatePointerWrapper(&Config_TopSplitterPercent_Set) },
-        { "BottomSplitterPercent", new Config_DelegatePointerWrapper(&Config_LowerSplitterPercent_Set) },
+        { "BottomSplitterPercent", new Config_DelegatePointerWrapper(&Config_BottomSplitterPercent_Set) },
         { "TopRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_TopFMTabsPanelCollapsed_Set) },
         { "BottomRightPanelCollapsed", new Config_DelegatePointerWrapper(&Config_BottomFMTabsPanelCollapsed_Set) },
         { "GameTab", new Config_DelegatePointerWrapper(&Config_GameTab_Set) },
@@ -1425,7 +1425,7 @@ internal static partial class Ini
 
         sw.Append("MainSplitterPercent").Append('=').AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("TopSplitterPercent").Append('=').AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("BottomSplitterPercent").Append('=').AppendLine(config.LowerSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("BottomSplitterPercent").Append('=').AppendLine(config.BottomSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
         sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopFMTabsPanelCollapsed).AppendLine();
         sw.Append("BottomRightPanelCollapsed").Append('=').Append(config.BottomFMTabsPanelCollapsed).AppendLine();
 

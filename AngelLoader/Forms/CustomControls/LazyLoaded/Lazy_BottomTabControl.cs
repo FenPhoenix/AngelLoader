@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabControl
+internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabControl
 {
     internal bool Constructed { get; private set; }
 
@@ -38,13 +38,13 @@ internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabContro
 
     public event TabControlEventHandler? Selected;
 
-    public Lazy_LowerTabControl(MainForm owner) => _owner = owner;
+    public Lazy_BottomTabControl(MainForm owner) => _owner = owner;
 
     internal void Construct()
     {
         if (Constructed) return;
 
-        var container = _owner.LowerSplitContainer.Panel2;
+        var container = _owner.BottomSplitContainer.Panel2;
 
         _tabControl = new DarkTabControl
         {
@@ -64,13 +64,13 @@ internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabContro
         // Dark mode set MUST come AFTER the handle hack, otherwise it doesn't work!
         _tabControl.DarkModeEnabled = _darkModeEnabled;
 
-        _tabControl.MouseClick += _owner.LowerFMTabsBar_MouseClick;
-        container.MouseClick += _owner.LowerFMTabsBar_MouseClick;
-        _owner.BottomFMTabsEmptyMessageLabel.MouseClick += _owner.LowerFMTabsBar_MouseClick;
+        _tabControl.MouseClick += _owner.BottomFMTabsBar_MouseClick;
+        container.MouseClick += _owner.BottomFMTabsBar_MouseClick;
+        _owner.BottomFMTabsEmptyMessageLabel.MouseClick += _owner.BottomFMTabsBar_MouseClick;
 
         _tabControl.Selected += TabControl_Selected;
-        _tabControl.MouseDragCustom += _owner.Lazy_LowerTabControl_MouseDragCustom;
-        _tabControl.MouseUp += _owner.Lazy_LowerTabControl_MouseUp;
+        _tabControl.MouseDragCustom += _owner.Lazy_BottomTabControl_MouseDragCustom;
+        _tabControl.MouseUp += _owner.Lazy_BottomTabControl_MouseUp;
         _tabControl.VisibleChanged += TabControl_VisibleChanged;
 
         container.Controls.Add(_tabControl);
@@ -165,7 +165,7 @@ internal sealed class Lazy_LowerTabControl : IDarkable, IOptionallyLazyTabContro
     private void TabControl_VisibleChanged(object sender, System.EventArgs e)
     {
         if (_tabControl is { Visible: true, SelectedTab: Lazy_TabsBase lazyTab } &&
-            !_owner.LowerSplitContainer.FullScreen)
+            !_owner.BottomSplitContainer.FullScreen)
         {
             lazyTab.ConstructWithSuspendResume();
         }
