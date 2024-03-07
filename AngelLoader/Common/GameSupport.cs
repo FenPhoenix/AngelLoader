@@ -195,5 +195,13 @@ public static partial class GameSupport
     {
         return gameIndex != GameIndex.Thief3 || Paths.SneakyUpgradeIsPortable();
     }
+
+    internal static string GetLocalizedOpenInEditorMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.FMsList.FMMenu_OpenInDromEd,
+        GameIndex.Thief2 => LText.FMsList.FMMenu_OpenInDromEd,
+        GameIndex.SS2 => LText.FMsList.FMMenu_OpenInShockEd,
+        _ => ""
+    };
 }
 // @GENGAMES (GameSupport): End

@@ -4777,7 +4777,7 @@ public sealed partial class MainForm : DarkFormBase,
         FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemVisible(noneAreAvailable);
         FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemText(multiSelected);
 
-        FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(sayShockEd: fm.Game == Game.SS2);
+        FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fm);
         FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected &&
                                                 fm.Game.ConvertsToDark(out GameIndex gameIndex)
                                                 && Config.GetGameEditorDetected(gameIndex));
