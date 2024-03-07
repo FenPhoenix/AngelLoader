@@ -20,7 +20,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 {
     #region Private fields
 
-    internal TabPage? DragTab { get; private set; }
+    public TabPage? DragTab { get; private set; }
 
     private List<BackingTab> _backingTabList = new(0);
 

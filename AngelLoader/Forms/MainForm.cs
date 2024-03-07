@@ -5632,7 +5632,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             EverythingPanel.SuspendDrawing();
 
-            dragTab = source == WhichTabControl.Bottom ? Lazy_LowerTabControl.DragTab : TopFMTabControl.DragTab;
+            dragTab = GetFMTabControlGroup(source).TabControl.DragTab;
             if (dragTab == null) return;
 
             MoveFMTab(source, dest, dragTab);

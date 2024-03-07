@@ -145,6 +145,7 @@ public interface IOptionallyLazyTabControl
 {
     public bool Enabled { get; set; }
     public TabPage? SelectedTab { get; set; }
+    public TabPage? DragTab { get; }
     void ShowTab(TabPage tabPage, bool show);
     int TabCount { get; }
     bool TabPagesContains(TabPage tabPage);
