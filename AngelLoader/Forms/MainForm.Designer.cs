@@ -1028,6 +1028,7 @@ sealed partial class MainForm
         this.BottomSplitContainer.Size = new System.Drawing.Size(1671, 357);
         this.BottomSplitContainer.SplitterDistance = 1116;
         this.BottomSplitContainer.TabIndex = 0;
+        this.BottomSplitContainer.FullScreenChanged += new System.EventHandler(BottomSplitContainer_FullScreenChanged);
         // 
         // ReadmeEncodingButton
         // 

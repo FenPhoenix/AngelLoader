@@ -140,6 +140,23 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     public int SelectedIndex => Constructed ? _tabControl.SelectedIndex : -1;
 
+    public bool Visible
+    {
+        get => Constructed && _tabControl.Visible;
+        set
+        {
+            if (value)
+            {
+                Construct();
+                _tabControl.Show();
+            }
+            else
+            {
+                if (Constructed) _tabControl.Hide();
+            }
+        }
+    }
+
     public void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
     {
         if (!Constructed) return;

@@ -602,6 +602,7 @@ public sealed partial class MainForm
         BottomSplitContainer.Size = new Size(1671, 357);
         BottomSplitContainer.SplitterDistance = 1116;
         BottomSplitContainer.TabIndex = 0;
+        BottomSplitContainer.FullScreenChanged += BottomSplitContainer_FullScreenChanged;
 
         void SetReadmeButton(DarkButton button, int x, int tabIndex)
         {

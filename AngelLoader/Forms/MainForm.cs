@@ -381,9 +381,9 @@ public sealed partial class MainForm : DarkFormBase,
                     {
                         Native.SendMessage(controlOver.Handle, m.Msg, m.WParam, m.LParam);
                     }
-                    else if (CursorOverControl(TopSplitContainer.Panel2))
+                    else if (TryCursorOverFMTabControl(out SplitterPanel? panel))
                     {
-                        TopSplitContainer.Panel2.Focus();
+                        panel.Focus();
                     }
                     else if (CursorOverControl(ReadmeContainer) &&
                              !ReadmeRichTextBox.Focused)
@@ -952,24 +952,10 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // EnsureValidity() guarantees selected tab will not be invisible
-        for (int i = 0; i < FMTabCount; i++)
-        {
-            if ((int)Config.FMTabsData.SelectedTab == i)
-            {
-                TopFMTabControl.SelectedTab = _fmTabPages[i];
-                break;
-            }
-        }
+        TopFMTabControl.SelectedTab = _fmTabPages[(int)Config.FMTabsData.SelectedTab];
         if (Lazy_BottomTabControl.Constructed)
         {
-            for (int i = 0; i < FMTabCount; i++)
-            {
-                if ((int)Config.FMTabsData.SelectedTab2 == i)
-                {
-                    Lazy_BottomTabControl.TabControl.SelectedTab = _fmTabPages[i];
-                    break;
-                }
-            }
+            Lazy_BottomTabControl.TabControl.SelectedTab = _fmTabPages[(int)Config.FMTabsData.SelectedTab2];
         }
 
         #endregion
@@ -1075,8 +1061,11 @@ public sealed partial class MainForm : DarkFormBase,
         if (!Config.HideExitButton) ShowExitButton(true);
         if (!Config.HideWebSearchButton) ShowWebSearchButton(true);
 
-        TopSplitContainer.CollapsedSize = TopFMTabsCollapseButton.Width;
-        BottomSplitContainer.CollapsedSize = BottomFMTabsCollapseButton.Width;
+        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        {
+            FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+            group.Splitter.CollapsedSize = group.CollapseButton.Width;
+        }
 
         if (Config.TopFMTabsPanelCollapsed)
         {
@@ -1252,8 +1241,11 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 Lazy_BottomTabControl.Construct();
             }
-            TopFMTabControl.Selected += FMTabControl_Selected;
-            Lazy_BottomTabControl.Selected += FMTabControl_Selected;
+            for (int i = 0; i < FormsData.WhichTabCount; i++)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                group.TabControl.Selected += FMTabControl_Selected;
+            }
 
             _firstShowDone = true;
         }
@@ -1904,8 +1896,11 @@ public sealed partial class MainForm : DarkFormBase,
 
             Lazy_FMTabsMenu.Localize();
 
-            TopFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
-            BottomFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
+            for (int i = 0; i < FormsData.WhichTabCount; i++)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                group.EmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
+            }
 
             for (int i = 0; i < _fmTabPages.Length; i++)
             {
@@ -2021,7 +2016,11 @@ public sealed partial class MainForm : DarkFormBase,
                 (!TopSplitContainer.FullScreen && x == TopSplitContainer);
 #else
             /*
-            @PERF_TODO(Startup window drawn state completeness/speed tradeoff):
+             @PERF_TODO(Startup window drawn state completeness/speed tradeoff):
+            Now that we have two tab areas, the old logic in here was weird and removing it doesn't seem to cause
+            any issues, so... let's just leave it out for now?
+
+            OLD COMMENT:
             Use this for a more conservative visual ux. With this method, the window shows all bg color
             and then refreshes all at once, but is slower. With the faster method above, the window shows
             in a mostly-but-not-quite-fully-drawn state, but if you have window animations on (which is
@@ -2030,12 +2029,19 @@ public sealed partial class MainForm : DarkFormBase,
             Also, I think the faster method above may not actually be any faster to usability, but may
             just be faster to _something_ being displayed, so it _appears_ that the app "loads faster".
             */
-            bool CreateHandlePredicate(Control x) =>
-                !TopSplitContainer.FullScreen ||
-                (//x != TopSplitContainer &&
-                 //x != TopSplitContainer.Panel2 &&
-                    x != TopFMTabControl &&
-                    !_fmTabPages.Contains(x));
+            static bool CreateHandlePredicate(Control x)
+            {
+                return true;
+#if false
+                return !TopSplitContainer.FullScreen ||
+                       (
+                           //x != TopSplitContainer &&
+                           //x != TopSplitContainer.Panel2 &&
+                           x != TopFMTabControl &&
+                           !_fmTabPages.Contains(x)
+                       );
+#endif
+            }
 #endif
 
             if (startup && !darkMode)
@@ -3326,11 +3332,6 @@ public sealed partial class MainForm : DarkFormBase,
                 group.TabControl.Enabled = true;
             }
 
-            if (group.TabControl == Lazy_BottomTabControl)
-            {
-                Lazy_BottomTabControl.Construct();
-            }
-
             if (group.TabControl.SelectedTab is Lazy_TabsBase lazyTab)
             {
                 lazyTab.ConstructWithSuspendResume();
@@ -3425,19 +3426,21 @@ public sealed partial class MainForm : DarkFormBase,
         // Always make sure the blocker is covering up the enabled changed work, to prevent flicker of it
         if (FMsDGV.MultipleFMsSelected())
         {
-            Lazy_TopFMTabsBlocker.Visible = true;
-            if (!TopSplitContainer.FullScreen) TopFMTabControl.Enabled = false;
-
-            Lazy_BottomFMTabsBlocker.Visible = true;
-            if (!BottomSplitContainer.FullScreen) Lazy_BottomTabControl.Enabled = false;
+            for (int i = 0; i < FormsData.WhichTabCount; i++)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                group.Blocker.Visible = true;
+                if (!group.Splitter.FullScreen) group.TabControl.Enabled = false;
+            }
         }
         else
         {
-            if (!TopSplitContainer.FullScreen) TopFMTabControl.Enabled = true;
-            Lazy_TopFMTabsBlocker.Visible = false;
-
-            if (!BottomSplitContainer.FullScreen) Lazy_BottomTabControl.Enabled = true;
-            Lazy_BottomFMTabsBlocker.Visible = false;
+            for (int i = 0; i < FormsData.WhichTabCount; i++)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                if (!group.Splitter.FullScreen) group.TabControl.Enabled = true;
+                group.Blocker.Visible = false;
+            }
         }
     }
 
@@ -4732,15 +4735,21 @@ public sealed partial class MainForm : DarkFormBase,
         {
             SetFMTabBlockersVisible();
 
-            Lazy_TopFMTabsBlocker.SuspendDrawing();
-            Lazy_BottomFMTabsBlocker.SuspendDrawing();
+            for (int i = 0; i < FormsData.WhichTabCount; i++)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                group.Blocker.SuspendDrawing();
+            }
 
             SetFMSelectedCountMessage(selRowsCount);
         }
         finally
         {
-            Lazy_BottomFMTabsBlocker.ResumeDrawing();
-            Lazy_TopFMTabsBlocker.ResumeDrawing();
+            for (int i = FormsData.WhichTabCount - 1; i >= 0; i--)
+            {
+                FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+                group.Blocker.ResumeDrawing();
+            }
         }
 
         #endregion
@@ -5033,6 +5042,22 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Helpers & misc
 
+    private bool TryCursorOverFMTabControl([NotNullWhen(true)] out SplitterPanel? panel)
+    {
+        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        {
+            FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+            if (CursorOverControl(group.Splitter.Panel2))
+            {
+                panel = group.Splitter.Panel2;
+                return true;
+            }
+        }
+
+        panel = null;
+        return false;
+    }
+
     private static bool AnyControlFocusedIn(Control control, int stackCounter = 0)
     {
         stackCounter++;
@@ -5098,8 +5123,12 @@ public sealed partial class MainForm : DarkFormBase,
     private void CancelResizables()
     {
         FMsDGV.CancelColumnResize();
-        MainSplitContainer.CancelResize();
-        TopSplitContainer.CancelResize();
+
+        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        {
+            FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+            group.Splitter.CancelResize();
+        }
     }
 
     public void Block(bool block) => Invoke(() =>
@@ -5414,8 +5443,11 @@ public sealed partial class MainForm : DarkFormBase,
 
         _fmsSelectedCountText = text;
 
-        Lazy_TopFMTabsBlocker.SetText(text);
-        Lazy_BottomFMTabsBlocker.SetText(text);
+        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        {
+            FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
+            group.Blocker.SetText(text);
+        }
 
         RefreshFMStatsLabel();
     }
@@ -5494,6 +5526,11 @@ public sealed partial class MainForm : DarkFormBase,
     private void TopSplitContainer_FullScreenChanged(object sender, EventArgs e)
     {
         TopFMTabControl.Visible = !TopSplitContainer.FullScreen;
+    }
+
+    private void BottomSplitContainer_FullScreenChanged(object sender, EventArgs e)
+    {
+        Lazy_BottomTabControl.Visible = !BottomSplitContainer.FullScreen;
     }
 
     internal int _storedFMsDGVFirstDisplayedScrollingRowIndex;
