@@ -21,7 +21,7 @@ internal static class TaskBarProgress
     [ComImport]
     [Guid("56fdf344-fd6d-11d0-958a-006097c9a090")]
     [ClassInterface(ClassInterfaceType.None)]
-    private class TaskbarInstance { }
+    private class TaskbarInstance;
 
     [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
     private static readonly ITaskbarList3 _instance = (ITaskbarList3)new TaskbarInstance();

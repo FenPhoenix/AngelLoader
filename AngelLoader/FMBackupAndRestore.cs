@@ -232,7 +232,7 @@ internal static partial class FMInstallAndPlay
         return ret;
     }
 
-    internal static Task BackupFM(
+    private static Task BackupFM(
         FanMission fm,
         string fmInstalledPath,
         string fmArchivePath,
@@ -372,7 +372,7 @@ internal static partial class FMInstallAndPlay
         });
     }
 
-    internal static Task RestoreFM(
+    private static Task RestoreFM(
         FanMission fm,
         List<string> archivePaths,
         byte[] zipExtractTempBuffer,

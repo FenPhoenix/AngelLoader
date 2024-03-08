@@ -38,7 +38,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     public event TabControlEventHandler? Selected;
 
-    public Lazy_BottomTabControl(MainForm owner) => _owner = owner;
+    internal Lazy_BottomTabControl(MainForm owner) => _owner = owner;
 
     internal void Construct()
     {

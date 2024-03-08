@@ -12,7 +12,6 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
 {
     private bool _constructed;
     private readonly bool[] _checkedStates = InitializedArray(FMTabCount, true);
-    private readonly bool[] _visibleStates = InitializedArray(FMTabCount, true);
 
     private readonly MainForm _owner;
 
@@ -33,8 +32,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
                     var item = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
-                        Checked = _checkedStates[i],
-                        Visible = _visibleStates[i]
+                        Checked = _checkedStates[i]
                     };
                     item.Click += _owner.FMTabsMenu_MenuItems_Click;
                     menuItems[i] = item;
@@ -117,18 +115,6 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
         else
         {
             _checkedStates[index] = value;
-        }
-    }
-
-    internal void SetItemVisible(int index, bool value)
-    {
-        if (_constructed)
-        {
-            ((ToolStripMenuItemCustom)_menu.Items[index]).Visible = value;
-        }
-        else
-        {
-            _visibleStates[index] = value;
         }
     }
 
