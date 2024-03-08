@@ -115,12 +115,22 @@ public static partial class Misc
         internal static readonly string ColumnHeaderContextMenu = "#column_header_context_menu";
         internal static readonly string FMContextMenu = "#fm_context_menu";
 
-        internal static readonly string StatsTab = "#stats_tab";
-        internal static readonly string EditFMTab = "#edit_fm_tab";
-        internal static readonly string CommentTab = "#comment_tab";
-        internal static readonly string TagsTab = "#tags_tab";
-        internal static readonly string PatchTab = "#patch_tab";
-        internal static readonly string ModsTab = "#mods_tab";
+#pragma warning disable IDE0300 // Simplify collection initialization
+        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+        private static readonly string[] FMTabs = new string[FMTabCount]
+        {
+            "#stats_tab",
+            "#edit_fm_tab",
+            "#comment_tab",
+            "#tags_tab",
+            "#patch_tab",
+            "#mods_tab",
+            // @ScreenshotDisplay: Add to doc
+            "#screenshots_tab"
+        };
+#pragma warning restore IDE0300 // Simplify collection initialization
+
+        internal static string GetFMTab(FMTab fmTab) => FMTabs[(int)fmTab];
 
         internal static readonly string ReadmeArea = "#readme_area";
 

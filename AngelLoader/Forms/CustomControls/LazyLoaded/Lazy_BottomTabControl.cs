@@ -122,6 +122,8 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
         }
     }
 
+    public bool Focused => Constructed && _tabControl.Focused;
+
     public bool TabPagesContains(TabPage tabPage) => Constructed && _tabControl.TabPages.Contains(tabPage);
 
     public Rectangle GetTabRect(int index) => Constructed ? _tabControl.GetTabRect(index) : Rectangle.Empty;

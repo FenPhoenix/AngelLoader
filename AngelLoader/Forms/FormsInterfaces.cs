@@ -156,6 +156,8 @@ public interface IOptionallyLazyTabControl
     int Width { get; }
     int Height { get; }
     int SelectedIndex { get; }
+    bool Focused { get; }
+
     void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds);
     Point PointToClient_Fast(Point point);
     void ResetTempDragData();

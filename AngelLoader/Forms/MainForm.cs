@@ -524,13 +524,12 @@ public sealed partial class MainForm : DarkFormBase,
                     FMsDGV_FM_LLMenu.Visible ? HelpSections.FMContextMenu :
                     FMsDGV_ColumnHeaderLLMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
                     AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
-                    TopFMTabsMenuButton.Focused || Lazy_FMTabsMenu.Focused || AnyControlFocusedInTabPage(StatisticsTabPage) ? HelpSections.StatsTab :
-                    AnyControlFocusedInTabPage(EditFMTabPage) ? HelpSections.EditFMTab :
-                    AnyControlFocusedInTabPage(CommentTabPage) ? HelpSections.CommentTab :
+                    TopFMTabsMenuButton.Focused ||
+                    BottomFMTabsMenuButton.Focused ||
+                    Lazy_FMTabsMenu.Focused ? HelpSections.GetFMTab(default) :
                     // Add tag dropdown is in EverythingPanel, not tags tab page
-                    AnyControlFocusedInTabPage(TagsTabPage) || TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.TagsTab :
-                    AnyControlFocusedInTabPage(PatchTabPage) ? HelpSections.PatchTab :
-                    AnyControlFocusedInTabPage(ModsTabPage) ? HelpSections.ModsTab :
+                    TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.GetFMTab(FMTab.Tags) :
+                    TryAnyFMTabFocused(out string? fmTabSection) ? fmTabSection :
                     AnyControlFocusedIn(ReadmeContainer) ? HelpSections.ReadmeArea :
                     HelpSections.MainWindow;
 
@@ -5057,9 +5056,34 @@ public sealed partial class MainForm : DarkFormBase,
         return false;
     }
 
-    private bool AnyControlFocusedInTabPage(TabPage tabPage) =>
-        (TopFMTabControl.Focused && TopFMTabControl.SelectedTab == tabPage) ||
-        AnyControlFocusedIn(tabPage);
+    private bool TryAnyFMTabFocused([NotNullWhen(true)] out string? section)
+    {
+        for (int i = 0; i < FMTabCount; i++)
+        {
+            if (AnyControlFocusedInTabPage(_fmTabPages[i]))
+            {
+                section = HelpSections.GetFMTab((FMTab)i);
+                return true;
+            }
+        }
+
+        section = null;
+        return false;
+    }
+
+    private bool AnyControlFocusedInTabPage(TabPage tabPage)
+    {
+        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        {
+            FMTabControlGroup group = _fmTabControlGroups[i];
+            if (group.TabControl.Focused && group.TabControl.SelectedTab == tabPage)
+            {
+                return true;
+            }
+        }
+
+        return AnyControlFocusedIn(tabPage);
+    }
 
     private Zoom GetReadmeZoomButton(DarkButton button) => (Zoom)(Array.IndexOf(_readmeControlButtons, button) - 1);
 
