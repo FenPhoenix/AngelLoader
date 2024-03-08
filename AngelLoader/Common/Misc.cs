@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader;
 
@@ -222,5 +223,17 @@ public static partial class Misc
         ".gif",
         ".tif",
         ".tiff"
+    };
+
+    [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+    public static readonly Func<string>[] FMTabTextLocalizedStrings = new Func<string>[FMTabCount]
+    {
+        static () => LText.StatisticsTab.TabText,
+        static () => LText.EditFMTab.TabText,
+        static () => LText.CommentTab.TabText,
+        static () => LText.TagsTab.TabText,
+        static () => LText.PatchTab.TabText,
+        static () => LText.ModsTab.TabText,
+        static () => LText.ScreenshotsTab.TabText
     };
 }

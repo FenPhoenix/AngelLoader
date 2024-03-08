@@ -1907,17 +1907,11 @@ public sealed partial class MainForm : DarkFormBase,
             TopFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
             BottomFMTabsEmptyMessageLabel.Text = LText.FMTabs.EmptyTabAreaMessage;
 
-            StatisticsTabPage.Text = LText.StatisticsTab.TabText;
-            EditFMTabPage.Text = LText.EditFMTab.TabText;
-            CommentTabPage.Text = LText.CommentTab.TabText;
-            TagsTabPage.Text = LText.TagsTab.TabText;
-            PatchTabPage.Text = LText.PatchTab.TabText;
-            ModsTabPage.Text = LText.ModsTab.TabText;
-            ScreenshotsTabPage.Text = LText.ScreenshotsTab.TabText;
-
             for (int i = 0; i < _fmTabPages.Length; i++)
             {
-                _fmTabPages[i].Localize();
+                Lazy_TabsBase tabPage = _fmTabPages[i];
+                tabPage.Text = FMTabTextLocalizedStrings[i].Invoke();
+                tabPage.Localize();
             }
 
             #endregion
