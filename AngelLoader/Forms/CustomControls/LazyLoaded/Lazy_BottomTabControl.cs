@@ -40,6 +40,9 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     internal Lazy_BottomTabControl(MainForm owner) => _owner = owner;
 
+    // NOTE: We construct if we have any tab controls assigned to us, even if we're hidden
+    // That's not a huge deal because the tab control itself is relatively lightweight compared to the tab pages'
+    // contents and those are still unloaded until they show.
     internal void Construct()
     {
         if (Constructed) return;
