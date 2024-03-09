@@ -107,11 +107,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (_state.IsStartup())
         {
-            if (m.Msg == Native.WM_WININICHANGE)
-            {
-                ControlUtils.RecreateAllToolTipHandles();
-            }
-            else if (m.Msg == Native.WM_THEMECHANGED)
+            if (m.Msg == Native.WM_THEMECHANGED)
             {
                 Win32ThemeHooks.ReloadTheme();
             }

@@ -553,8 +553,6 @@ internal static class Native
     internal const int TMT_FILLCOLOR = 3802;
     internal const int TMT_TEXTCOLOR = 3803;
 
-    internal const int WM_WININICHANGE = 0x001A;
-
     #region Trackbar parts
 
     internal const int TKP_TRACK = 1;
