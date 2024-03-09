@@ -76,7 +76,7 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
-            return true;
+            return false;
         }
     }
 
@@ -154,7 +154,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotDark(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameIsDark(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 
@@ -187,7 +201,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotModSupporting(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameSupportsMods(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 
@@ -220,7 +248,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotImportSupporting(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameSupportsImport(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 
@@ -253,7 +295,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotLanguageSupporting(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameSupportsLanguages(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 
@@ -286,7 +342,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotResourceDetectionSupporting(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameSupportsResourceDetection(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 
@@ -319,7 +389,21 @@ public static partial class GameSupport
         else
         {
             gameIndex = default;
+            return false;
+        }
+    }
+
+    public static bool ConvertsToKnownButNotBackupPathRequiring(this Game game, out GameIndex gameIndex)
+    {
+        if (GameIsKnownAndSupported(game) && !GameRequiresBackupPath(game))
+        {
+            gameIndex = GameToGameIndex(game);
             return true;
+        }
+        else
+        {
+            gameIndex = default;
+            return false;
         }
     }
 

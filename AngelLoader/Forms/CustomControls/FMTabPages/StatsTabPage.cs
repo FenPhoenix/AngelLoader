@@ -73,8 +73,7 @@ public sealed class StatsTabPage : Lazy_TabsBase
         _page.CustomResourcesLabel.Text =
             fm == null
                 ? LText.StatisticsTab.CustomResources
-                : fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) &&
-                  !GameSupportsResourceDetection(fm.Game)
+                : fm.Game.ConvertsToKnownButNotResourceDetectionSupporting(out GameIndex gameIndex)
                     ? GetLocalizedCustomResourcesNotSupportedMessage(gameIndex)
                     : fm.ResourcesScanned
                         ? LText.StatisticsTab.CustomResources

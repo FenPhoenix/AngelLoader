@@ -65,7 +65,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
     {
         ModsTabNotSupportedMessageLabel.Text =
             fm != null
-                ? fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex) && !GameSupportsMods(gameIndex)
+                ? fm.Game.ConvertsToKnownButNotModSupporting(out GameIndex gameIndex)
                     ? GetLocalizedModsNotSupportedMessage(gameIndex)
                     : LText.ModsTab.Generic_ModsNotSupported
                 : "";

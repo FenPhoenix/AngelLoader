@@ -271,7 +271,27 @@ internal static class Games
             w.WL("else");
             w.WL("{");
             w.WL(gameIndexNameVarCase + " = default;");
+            w.WL("return false;");
+            w.WL("}");
+            w.WL("}");
+            w.WL();
+        }
+
+        void WriteConvertsToKnownButNotFunction(
+            string convertsToSuffix,
+            string getterName)
+        {
+            w.WL("public static bool ConvertsToKnownButNot" + convertsToSuffix + "(this " + gameName + " " + gameNameVarCase + ", out " + gameIndexName + " " + gameIndexNameVarCase + ")");
+            w.WL("{");
+            w.WL("if (" + gameIsKnownAndSupportedFuncName + "(" + gameNameVarCase + ") && !" + getterName + "(" + gameNameVarCase + "))");
+            w.WL("{");
+            w.WL(gameIndexNameVarCase + " = " + gameToGameIndexFuncName + "(" + gameNameVarCase + ");");
             w.WL("return true;");
+            w.WL("}");
+            w.WL("else");
+            w.WL("{");
+            w.WL(gameIndexNameVarCase + " = default;");
+            w.WL("return false;");
             w.WL("}");
             w.WL("}");
             w.WL();
@@ -288,6 +308,7 @@ internal static class Games
             WriteArrayAndGetter(arrayName, getterName, boolsList, addQuotes: false, addRegion: false);
             WriteGetterForGameNonIndex(getterName);
             WriteConvertsToFunction(convertsToSuffix, getterName);
+            WriteConvertsToKnownButNotFunction(convertsToSuffix, getterName);
             w.WL("#endregion");
             w.WL();
         }

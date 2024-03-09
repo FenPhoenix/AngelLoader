@@ -174,5 +174,19 @@ public static partial class GameSupport
         GameIndex.SS2 => LText.FMsList.FMMenu_OpenInShockEd,
         _ => ""
     };
+
+    //public static bool ConvertsToKnownButNotModSupporting(this Game game, out GameIndex gameIndex)
+    //{
+    //    if (GameIsKnownAndSupported(game) && !GameSupportsMods(game))
+    //    {
+    //        gameIndex = GameToGameIndex(game);
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        gameIndex = default;
+    //        return true;
+    //    }
+    //}
 }
 // @GENGAMES (GameSupport): End
