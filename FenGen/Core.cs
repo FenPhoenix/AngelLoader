@@ -58,11 +58,16 @@ internal sealed class GameSourceEnum
     internal string GameIndexName = "";
     internal readonly List<string> GameEnumNames = new();
     internal readonly List<string> GameIndexEnumNames = new();
+    internal readonly List<string> NotKnownAndSupportedEnumNames = new();
     internal readonly List<string> GamePrefixes = new();
     internal readonly List<string> SteamIds = new();
     internal readonly List<string> EditorNames = new();
+    internal readonly List<bool> IsDarkEngine = new();
     internal readonly List<bool> SupportsMods = new();
     internal readonly List<bool> SupportsImport = new();
+    internal readonly List<bool> SupportsLanguages = new();
+    internal readonly List<bool> SupportsResourceDetection = new();
+    internal readonly List<bool> RequiresBackupPath = new();
     internal string EnumType = "";
 }
 

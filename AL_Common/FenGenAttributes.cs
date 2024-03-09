@@ -214,8 +214,12 @@ public static class FenGenAttributes
             string prefix,
             string steamId,
             string editorName,
+            bool isDarkEngine,
             bool supportsMods,
-            bool supportsImport)
+            bool supportsImport,
+            bool supportsLanguages,
+            bool supportsResourceDetection,
+            bool RequiresBackupPath)
         {
         }
     }
