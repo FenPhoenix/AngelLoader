@@ -133,7 +133,7 @@ If you've specified game executables for Thief 1, Thief 2, Thief: Deadly Shadows
 If you've only specified a Dark Mod game executable, then this path is not used or required.
 
 <h4>FM archive paths</h4>
-Here you can set the directory or directories where your fan mission archives (.zip or .7z files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
+Here you can set the directory or directories where your fan mission archives (.zip, .7z, or .rar files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
 A note on fan mission archive directories: Because multiple directories are allowed, there is the potential for duplicate files. In this case, AngelLoader will simply use the first file it finds, and ignore any further files with the same name. It is recommended that you don't put duplicate files in your archive directories, but if you do, then as long as they're exact copies (ie., not different files with the same name) then it will be fine. It's also recommended that your archive directories should <b>only</b> contain fan missions and/or FMSel/NewDarkLoader backup files. While AngelLoader does attempt to reject non-mission archives on scan, it's still best to keep unrelated files out of your FM directories.
 
 <hr>
@@ -203,7 +203,7 @@ Clears all filters.
 Resets the main window to its default proportions.
 
 <h4>Draggable splitters</h4>
-You can drag these horizontally or vertically to resize the sections of the window. If you drag at the corner between the two splitters, you can resize all three main sections at once.
+You can drag these horizontally or vertically to resize the sections of the window. If you drag at the corner between two splitters, you can resize them both at once.
 
 <hr>
 
@@ -406,11 +406,11 @@ Click this to search the web for the selected mission. You can set the search UR
 <p/>
 <hr>
 
-<h3><a id="fm_details"></a>FM details area</h3>
+<h3><a id="fm_details"></a>FM tabs</h3>
 
-This section allows you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order if you wish, and they can also be selectively hidden using the menu button at the top-right.
+These tabs allow you to edit the selected FM's data and to view more detailed information about it. The tabs can be dragged to change their order, and they can also be selectively hidden using the menu button. They can also be dragged between the top and bottom sections.
 <p/>
-Information can only be displayed for one FM at a time, so when multiple FMs are selected, this section will be disabled.
+Information can only be displayed for one FM at a time, so when multiple FMs are selected, these tabs will be disabled.
 
 <h4>Collapse / expand button</h4>
 Click this to collapse (hide) the FM details section. Click it again to expand it.
@@ -493,6 +493,16 @@ There are some mods that are vital to the normal functioning of an up-to-date Th
 
 <h4>Enable all / Disable all buttons</h4>
 The <b>Enable all</b> button will enable all mods, including those marked "important". The <b>Disable all</b> button will disable all mods that are <b>not</b> marked "important".
+
+<p/>
+
+<h4><a id="screenshots_tab"></a>Screenshots tab</h4>
+
+<p><img src="images/screenshots_tab.png" /></p>
+
+If an FM is installed and has had screenshots taken, they'll show up here. You can adjust the gamma and copy the image so you can easily paste it into other apps.
+<p/>
+<b>Note:</b> If Thief 3 has been set to use centralized saves and screenshots, then Thief 3 screenshots will not show up in this tab. This is a technical limitation.
 
 <p/>
 
