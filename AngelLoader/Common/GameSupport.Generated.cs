@@ -19,6 +19,15 @@ public static partial class GameSupport
     public const int ResourceDetectionSupportingGameCount = 3;
     public const int BackupRequiringGameCount = 4;
 
+    public static readonly string[] SupportedGameNames =
+    {
+        "Thief1",
+        "Thief2",
+        "Thief3",
+        "SS2",
+        "TDM"
+    };
+
     public enum GameIndex : byte
     {
         Thief1,

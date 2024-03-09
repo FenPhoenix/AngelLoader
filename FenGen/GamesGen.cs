@@ -134,6 +134,9 @@ internal static class Games
         w.WL("public const int BackupRequiringGameCount = " + Cache.GamesEnum.RequiresBackupPath.Count(static x => x) + ";");
         w.WL();
 
+        w.WL("public static readonly string[] SupportedGameNames =");
+        WriteListBody(w, Cache.GamesEnum.GameIndexEnumNames, addQuotes: true);
+
         w.WL("public enum " + gameIndexName + " : " + Cache.GamesEnum.EnumType);
         WriteListBody(w, gameNames, isEnum: true);
 
