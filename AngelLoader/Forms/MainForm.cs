@@ -299,7 +299,11 @@ public sealed partial class MainForm : DarkFormBase,
 
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg == Native.WM_THEMECHANGED)
+        if (m.Msg == Native.WM_WININICHANGE)
+        {
+            ControlUtils.RecreateAllToolTipHandles();
+        }
+        else if (m.Msg == Native.WM_THEMECHANGED)
         {
             Win32ThemeHooks.ReloadTheme();
         }
