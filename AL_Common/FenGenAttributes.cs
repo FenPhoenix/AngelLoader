@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using JetBrains.Annotations;
+#pragma warning disable CS9113 // Parameter is unread.
 
 // ReSharper disable UnusedParameter.Local
 #pragma warning disable IDE0060 // Remove unused parameter.
 #pragma warning disable RCS1163 // Unused parameter.
 #pragma warning disable RCS1139 // Add summary element to documentation comment.
-#pragma warning disable CS9113 // Parameter is unread.
 
 namespace AL_Common;
 
@@ -64,10 +64,7 @@ public static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenIniNameAttribute : Attribute
-    {
-        public FenGenIniNameAttribute(string value) { }
-    }
+    public sealed class FenGenIniNameAttribute(string value) : Attribute;
 
     /// <summary>
     /// Specifies a number to be considered "empty" for the purposes of writeout. Empty values will not be
@@ -75,10 +72,7 @@ public static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenNumericEmptyAttribute : Attribute
-    {
-        public FenGenNumericEmptyAttribute(long value) { }
-    }
+    public sealed class FenGenNumericEmptyAttribute(long value) : Attribute;
 
     /// <summary>
     /// A perf/alloc optimization that's only for numeric fields where you don't need to parse negatives<br/>
@@ -89,21 +83,15 @@ public static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenMaxDigitsAttribute : Attribute
-    {
-        public FenGenMaxDigitsAttribute(int value) { }
-    }
+    public sealed class FenGenMaxDigitsAttribute(int value) : Attribute;
 
     /// <summary>
     /// List type can be "MultipleLines" or "CommaSeparated".
     /// </summary>
+    /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenListTypeAttribute : Attribute
-    {
-        /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
-        public FenGenListTypeAttribute(string value) { }
-    }
+    public sealed class FenGenListTypeAttribute(string value) : Attribute;
 
     /// <summary>
     /// Specifies that the value of this field or property (assumed to be a string) will not have whitespace
@@ -161,13 +149,10 @@ public static class FenGenAttributes
     /// For multiple-line comments, each line should be a separate parameter. Concatenating parameters is<br/>
     /// not supported and will not achieve the desired effect.
     /// </summary>
+    /// <param name="comments">Each comment will be placed on a separate line.</param>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenCommentAttribute : Attribute
-    {
-        /// <param name="comments">Each comment will be placed on a separate line.</param>
-        public FenGenCommentAttribute(params string[] comments) { }
-    }
+    public sealed class FenGenCommentAttribute(params string[] comments) : Attribute;
 
     /// <summary>
     /// Cheap and crappy way to specify blank lines that should be written to the lang ini, until I can
@@ -186,10 +171,7 @@ public static class FenGenAttributes
     /// </summary>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenGameSetAttribute : Attribute
-    {
-        public FenGenGameSetAttribute(string getterName) { }
-    }
+    public sealed class FenGenGameSetAttribute(string getterName) : Attribute;
 
     #endregion
 
@@ -201,28 +183,20 @@ public static class FenGenAttributes
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Enum)]
-    public sealed class FenGenGameEnumAttribute : Attribute
-    {
-        public FenGenGameEnumAttribute(string gameIndexEnumName) { }
-    }
+    public sealed class FenGenGameEnumAttribute(string gameIndexEnumName) : Attribute;
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
-    public sealed class FenGenGameAttribute : Attribute
-    {
-        public FenGenGameAttribute(
-            string prefix,
-            string steamId,
-            string editorName,
-            bool isDarkEngine,
-            bool supportsMods,
-            bool supportsImport,
-            bool supportsLanguages,
-            bool supportsResourceDetection,
-            bool RequiresBackupPath)
-        {
-        }
-    }
+    public sealed class FenGenGameAttribute(
+        string prefix,
+        string steamId,
+        string editorName,
+        bool isDarkEngine,
+        bool supportsMods,
+        bool supportsImport,
+        bool supportsLanguages,
+        bool supportsResourceDetection,
+        bool RequiresBackupPath) : Attribute;
 
     #endregion
 
@@ -234,17 +208,11 @@ public static class FenGenAttributes
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Enum)]
-    public sealed class FenGenLanguageEnumAttribute : Attribute
-    {
-        public FenGenLanguageEnumAttribute(string languageIndexEnumName) { }
-    }
+    public sealed class FenGenLanguageEnumAttribute(string languageIndexEnumName) : Attribute;
 
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field)]
-    public sealed class FenGenLanguageAttribute : Attribute
-    {
-        public FenGenLanguageAttribute(string langCodes, string translatedName) { }
-    }
+    public sealed class FenGenLanguageAttribute(string langCodes, string translatedName) : Attribute;
 
     #endregion
 
