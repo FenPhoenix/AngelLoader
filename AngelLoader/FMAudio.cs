@@ -43,44 +43,7 @@ internal static class FMAudio
 
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
-        #region Local functions
-
-        static bool ChecksPassed(List<FanMission> fms)
-        {
-            bool[] gamesChecked = new bool[SupportedGameCount];
-
-            for (int i = 0; i < fms.Count; i++)
-            {
-                FanMission fm = fms[i];
-
-                AssertR(GameIsKnownAndSupported(fm.Game), nameof(fm) + "." + nameof(fm.Game) + " is not known or supported (not convertible to GameIndex).");
-
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-                int intGameIndex = (int)gameIndex;
-
-                if (!gamesChecked[intGameIndex])
-                {
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    string gameName = GetLocalizedGameName(gameIndex);
-
-                    if (GameIsRunning(gameExe))
-                    {
-                        Core.Dialogs.ShowAlert(
-                            gameName + ":\r\n" +
-                            LText.AlertMessages.AudioConversion_GameIsRunning,
-                            LText.AlertMessages.Alert);
-
-                        return false;
-                    }
-
-                    gamesChecked[intGameIndex] = true;
-                }
-            }
-
-            return true;
-        }
-
-        #endregion
+        using var dsw = new DisableScreenshotWatchers();
 
         List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
         if (fms.Count == 0) return;
@@ -147,13 +110,57 @@ internal static class FMAudio
             Core.View.HideProgressBox();
             _conversionCts.Dispose();
         }
+
+        return;
+
+        #region Local functions
+
+        static bool ChecksPassed(List<FanMission> fms)
+        {
+            bool[] gamesChecked = new bool[SupportedGameCount];
+
+            for (int i = 0; i < fms.Count; i++)
+            {
+                FanMission fm = fms[i];
+
+                AssertR(GameIsKnownAndSupported(fm.Game), nameof(fm) + "." + nameof(fm.Game) + " is not known or supported (not convertible to GameIndex).");
+
+                GameIndex gameIndex = GameToGameIndex(fm.Game);
+                int intGameIndex = (int)gameIndex;
+
+                if (!gamesChecked[intGameIndex])
+                {
+                    string gameExe = Config.GetGameExe(gameIndex);
+                    string gameName = GetLocalizedGameName(gameIndex);
+
+                    if (GameIsRunning(gameExe))
+                    {
+                        Core.Dialogs.ShowAlert(
+                            gameName + ":\r\n" +
+                            LText.AlertMessages.AudioConversion_GameIsRunning,
+                            LText.AlertMessages.Alert);
+
+                        return false;
+                    }
+
+                    gamesChecked[intGameIndex] = true;
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
     }
 
-    internal static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    internal static Task ConvertAsPartOfInstall(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    {
+        return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
+    }
+
+    private static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
     {
         if (!GameIsDark(fm.Game)) return Task.CompletedTask;
-
-        static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
 
         return Task.Run(async () =>
         {
@@ -365,6 +372,8 @@ internal static class FMAudio
                 }
             }
         });
+
+        static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
     }
 
     #endregion

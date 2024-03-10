@@ -6,6 +6,24 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.9.0:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.8.0_1.9.0.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.8.0_1.9.0.html)
+
+New images:  
+`screenshots_tab.png`  
+
+Updated images: 
+`main_window_full_960.png`  
+`stats_tab.png`  
+`edit_fm_tab.png`  
+`comment_tab.png`  
+`tags_tab.png`  
+`patch_tab.png`  
+`mods_tab.png`  
+
 ### v1.8.0:
 
 #### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.7.9_1.8.0.html)

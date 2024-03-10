@@ -51,8 +51,6 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
     {
         if (_constructed) return;
 
-        Control container = _owner.MainSplitContainer.Panel2;
-
         OKButton = new StandardButton
         {
             Tag = LoadType.Lazy,
@@ -103,6 +101,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
         Panel.Controls.Add(_listBox);
         Panel.Controls.Add(OK_FLP);
 
+        Control container = _owner.ReadmeContainer;
         container.Controls.Add(Panel);
         Panel.CenterHV(container);
 

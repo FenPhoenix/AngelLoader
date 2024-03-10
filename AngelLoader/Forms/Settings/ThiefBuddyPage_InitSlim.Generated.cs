@@ -16,7 +16,6 @@ sealed partial class ThiefBuddyPage
         this.RunTBNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.RunTBAskRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.GetTBLinkLabel = new AngelLoader.Forms.CustomControls.DarkLinkLabel();
-        this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
         this.TBHelpPictureBox = new System.Windows.Forms.PictureBox();
         this.WhatIsTBHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.PagePanel.SuspendLayout();
@@ -28,9 +27,9 @@ sealed partial class ThiefBuddyPage
         // PagePanel
         // 
         this.PagePanel.AutoScroll = true;
+        this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
         this.PagePanel.Controls.Add(this.ThiefBuddyOptionsGroupBox);
         this.PagePanel.Controls.Add(this.GetTBLinkLabel);
-        this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Controls.Add(this.TBHelpPictureBox);
         this.PagePanel.Controls.Add(this.WhatIsTBHelpLabel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -96,11 +95,6 @@ sealed partial class ThiefBuddyPage
         this.GetTBLinkLabel.Location = new System.Drawing.Point(27, 208);
         this.GetTBLinkLabel.TabIndex = 2;
         this.GetTBLinkLabel.TabStop = true;
-        // 
-        // DummyAutoScrollPanel
-        // 
-        this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-        this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
         // 
         // TBHelpPictureBox
         // 

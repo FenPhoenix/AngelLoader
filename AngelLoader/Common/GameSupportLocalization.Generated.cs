@@ -37,6 +37,24 @@ public static partial class GameSupport
         _ => LText.Global.TheDarkMod_Colon
     };
 
+    internal static string GetLocalizedCustomResourcesNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.StatisticsTab.CustomResourcesNotSupportedForThief1,
+        GameIndex.Thief2 => LText.StatisticsTab.CustomResourcesNotSupportedForThief2,
+        GameIndex.Thief3 => LText.StatisticsTab.CustomResourcesNotSupportedForThief3,
+        GameIndex.SS2 => LText.StatisticsTab.CustomResourcesNotSupportedForSS2,
+        _ => LText.StatisticsTab.CustomResourcesNotSupportedForTDM
+    };
+
+    internal static string GetLocalizedModsNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.ModsTab.Thief1_ModsNotSupported,
+        GameIndex.Thief2 => LText.ModsTab.Thief2_ModsNotSupported,
+        GameIndex.Thief3 => LText.ModsTab.Thief3_ModsNotSupported,
+        GameIndex.SS2 => LText.ModsTab.SS2_ModsNotSupported,
+        _ => LText.ModsTab.TDM_ModsNotSupported
+    };
+
     internal static string GetLocalizedGamePlayOriginalText(GameIndex gameIndex) => gameIndex switch
     {
         GameIndex.Thief1 => LText.PlayOriginalGameMenu.Thief1_PlayOriginal,
@@ -44,6 +62,15 @@ public static partial class GameSupport
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Thief3_PlayOriginal,
         GameIndex.SS2 => LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal,
         _ => LText.PlayOriginalGameMenu.TheDarkMod_PlayOriginal
+    };
+
+    internal static string GetLocalizedGameSettingsNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.PlayOriginalGameMenu.Mods_Thief1NotSupported,
+        GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_Thief2NotSupported,
+        GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
+        GameIndex.SS2 => LText.PlayOriginalGameMenu.Mods_SS2NotSupported,
+        _ => LText.PlayOriginalGameMenu.Mods_TDMNotSupported
     };
 
     internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex) => gameIndex switch

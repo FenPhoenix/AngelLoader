@@ -41,12 +41,28 @@ public static class Preload
 // Also performance hack for the splash screen as above.
 file static class DarkModeImageConversion
 {
+    internal enum Matrix
+    {
+        Dark,
+        DarkDim,
+        DarkDisabled
+    }
+
     private static readonly ColorMatrix DarkColorMatrix = new(new[]
     {
         new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
         new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
         new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
         new[] { 0, 0, 0, /* The value: */ 0.8425f, 0 },
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+    });
+
+    private static readonly ColorMatrix DarkDimColorMatrix = new(new[]
+    {
+        new[] { 0.2125f, 0.2125f, 0.2125f, 0, 0 },
+        new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
+        new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
+        new[] { 0, 0, 0, /* The value: */ 0.7425f, 0 },
         new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
     });
 
@@ -59,13 +75,19 @@ file static class DarkModeImageConversion
         new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
     });
 
-    public static Bitmap CreateDarkModeVersion(Bitmap normalImage, bool disabled = false)
+    public static Bitmap CreateDarkModeVersion(Bitmap normalImage, Matrix matrix = Matrix.Dark)
     {
         using ImageAttributes imgAttrib = new();
 
         imgAttrib.ClearColorKey();
 
-        imgAttrib.SetColorMatrix(disabled ? DarkDisabledColorMatrix : DarkColorMatrix);
+        imgAttrib.SetColorMatrix(
+            matrix switch
+            {
+                Matrix.DarkDisabled => DarkDisabledColorMatrix,
+                Matrix.DarkDim => DarkDimColorMatrix,
+                _ => DarkColorMatrix
+            });
 
         Size size = normalImage.Size;
 
@@ -348,7 +370,7 @@ public static class Images
 
     #region Hamburger
 
-    private static readonly Rectangle[] _hamRects_TopRightMenu =
+    private static readonly Rectangle[] _hamRects_fmTabsMenu =
     {
         new Rectangle(2, 3, 14, 2),
         new Rectangle(2, 9, 14, 2),
@@ -1008,7 +1030,7 @@ public static class Images
     private static Image? _charEncLetter_Disabled_Dark;
     public static Image CharEncLetter_Disabled =>
         Config.DarkMode
-            ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, true)
+            ? _charEncLetter_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.CharEnc, DarkModeImageConversion.Matrix.DarkDisabled)
             : _charEncLetter_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.CharEnc);
 
     #endregion
@@ -1080,13 +1102,6 @@ public static class Images
             : _ratingExample_FMSel_Number ??= CreateRatingExample_Number(outOfFive: true);
 
     #endregion
-
-    private static Bitmap? _updateIcon;
-    private static Bitmap? _updateIcon_Dark;
-    public static Bitmap UpdateIcon =>
-        Config.DarkMode
-            ? _updateIcon_Dark ??= CreateUpdateIcon()
-            : _updateIcon ??= CreateUpdateIcon();
 
     #region FMs list only
 
@@ -1173,6 +1188,34 @@ public static class Images
         Config.DarkMode
             ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
             : _refresh ??= Resources.Refresh;
+
+    private static Bitmap? _updateIcon;
+    private static Bitmap? _updateIcon_Dark;
+    public static Bitmap UpdateIcon =>
+        Config.DarkMode
+            ? _updateIcon_Dark ??= CreateUpdateIcon()
+            : _updateIcon ??= CreateUpdateIcon();
+
+    private static Bitmap? _brokenFile;
+    private static Bitmap? _brokenFile_Dark;
+    public static Bitmap BrokenFile =>
+        Config.DarkMode
+            ? _brokenFile_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.BrokenFile)
+            : _brokenFile ??= Resources.BrokenFile;
+
+    private static Bitmap? _folderDim;
+    private static Bitmap? _folderDim_Dark;
+    public static Bitmap FolderDim =>
+        Config.DarkMode
+            ? _folderDim_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Folder16, DarkModeImageConversion.Matrix.DarkDim)
+            : _folderDim ??= Resources.Folder16;
+
+    private static Bitmap? _copy21;
+    private static Bitmap? _copy21_Dark;
+    public static Bitmap Copy21 =>
+        Config.DarkMode
+            ? _copy21_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Copy_21, DarkModeImageConversion.Matrix.DarkDim)
+            : _copy21 ??= Resources.Copy_21;
 
     #endregion
 
@@ -1659,7 +1702,7 @@ public static class Images
         return new GraphicsPath(rawPoints, types);
     }
 
-    private static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
+    internal static void FitRectInBounds(Graphics g, RectangleF drawRect, RectangleF boundsRect)
     {
         if (boundsRect.Width < 1 || boundsRect.Height < 1) return;
 
@@ -1775,9 +1818,9 @@ public static class Images
         e.Graphics.FillPath(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, XGPath);
     }
 
-    internal static void PaintHamburgerMenuButton_TopRight(Button button, PaintEventArgs e)
+    internal static void PaintHamburgerMenuButton_FMTabs(Button button, PaintEventArgs e)
     {
-        e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _hamRects_TopRightMenu);
+        e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _hamRects_fmTabsMenu);
     }
 
     internal static void PaintHamburgerMenuButton24(Button button, PaintEventArgs e)

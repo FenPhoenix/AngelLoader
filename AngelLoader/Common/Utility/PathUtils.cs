@@ -59,6 +59,15 @@ public static partial class Utils
         value.ExtIs7z() ||
         value.ExtIsRar();
 
+    internal static bool ExtIsUISupportedImage(this string value)
+    {
+        for (int i = 0; i < Misc.SupportedScreenshotExtensions.Length; i++)
+        {
+            if (value.EndsWithI(Misc.SupportedScreenshotExtensions[i])) return true;
+        }
+        return false;
+    }
+
     #endregion
 
     #endregion

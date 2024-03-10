@@ -313,11 +313,9 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         // Some menu items' text depends on FM state. Because this could be run after startup, we need to
         // make sure those items' text is set correctly.
-        FanMission? selFM = _owner.GetMainSelectedFMOrNull();
-        bool sayInstall = selFM is not { Installed: true };
-        // @GENGAMES - Localize FM context menu - "sayShockEd"
-        bool sayShockEd = selFM is { Game: Game.SS2 };
-        bool sayPin = selFM is not { Pinned: true };
+        FanMission? fm = _owner.GetMainSelectedFMOrNull();
+        bool sayInstall = fm is not { Installed: true };
+        bool sayPin = fm is not { Pinned: true };
 
         bool multiSelected = _owner.FMsDGV.MultipleFMsSelected();
 
@@ -330,7 +328,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #endregion
 
-        SetInstallUninstallMenuItemText(sayInstall, multiSelected, selFM?.Game ?? Game.Null);
+        SetInstallUninstallMenuItemText(sayInstall, multiSelected, fm?.Game ?? Game.Null);
 
         SetPinOrUnpinMenuItemState(sayPin);
         ExplicitPinToTopMenuItem.Text = LText.FMsList.FMMenu_PinFM;
@@ -339,7 +337,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         SetDeleteFMMenuItemText(multiSelected);
         SetDeleteFromDBMenuItemText(multiSelected);
 
-        SetOpenInDromEdMenuItemText(sayShockEd);
+        SetOpenInDromEdMenuItemText(fm);
 
         OpenFMFolderMenuItem.Text = LText.FMsList.FMMenu_OpenFMFolder;
 
@@ -364,7 +362,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         FinishedOnMenuItem.Text = LText.FMsList.FMMenu_FinishedOn;
 
-        SetGameSpecificFinishedOnMenuItemsText(selFM?.Game ?? Game.Null);
+        SetGameSpecificFinishedOnMenuItemsText(fm?.Game ?? Game.Null);
         FinishedOnUnknownMenuItem.Text = LText.Difficulties.Unknown;
 
         #endregion
@@ -389,13 +387,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    internal ContextMenuStrip GetRatingMenu()
+    internal DarkContextMenu GetRatingMenu()
     {
         Construct();
         return RatingMenu;
     }
 
-    internal ContextMenuStrip GetFinishedOnMenu()
+    internal DarkContextMenu GetFinishedOnMenu()
     {
         Construct();
         return FinishedOnMenu;
@@ -587,13 +585,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         }
     }
 
-    internal void SetOpenInDromEdMenuItemText(bool sayShockEd)
+    internal void SetOpenInDromEdMenuItemText(FanMission? fm)
     {
         if (!_constructed) return;
 
-        OpenInDromEdMenuItem.Text = sayShockEd
-            ? LText.FMsList.FMMenu_OpenInShockEd
-            : LText.FMsList.FMMenu_OpenInDromEd;
+        OpenInDromEdMenuItem.Text = fm != null && fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
+            ? GetLocalizedOpenInEditorMessage(gameIndex)
+            : "";
     }
 
     internal void SetOpenFMFolderVisible(bool value)

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -34,6 +35,39 @@ internal static class ControlUtils
     {
         if (!control.IsHandleCreated || !control.Visible) return;
         Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+        if (invalidateInsteadOfRefresh)
+        {
+            control.Invalidate();
+        }
+        else
+        {
+            control.Refresh();
+        }
+    }
+
+    internal static void ResumeDrawingAndFocusControl(
+        this Control control,
+        Control?[]? controlsToFocus,
+        bool invalidateInsteadOfRefresh = false)
+    {
+        if (!control.IsHandleCreated || !control.Visible) return;
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+
+        /*
+        Focus after the enable-redraw message but before the refresh.
+        If we put it before the enable-redraw message, the focus will be lost; if we put it after, there's a
+        short visible blip of the default focus before we change it.
+
+        Designed originally for the tab control, but use it for whatever...
+        */
+        if (controlsToFocus != null)
+        {
+            foreach (Control? c in controlsToFocus)
+            {
+                c?.Focus();
+            }
+        }
+
         if (invalidateInsteadOfRefresh)
         {
             control.Invalidate();
@@ -623,7 +657,7 @@ internal static class ControlUtils
     #region Show menu
 
     internal static void ShowMenu(
-        ContextMenuStrip menu,
+        DarkContextMenu menu,
         Control control,
         MenuPos pos,
         int xOffset = 0,
@@ -673,6 +707,9 @@ internal static class ControlUtils
         }
     }
 
+    // Lazy-loaded tab pages are weird so we need this to make sure we don't add duplicates to the theme list
+    private static HashSet<Lazy_TabsBase>? _lazyTabs;
+
     private static void FillControlColorList(
         Control control,
         List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
@@ -687,19 +724,24 @@ internal static class ControlUtils
         const int maxStackCount = 100;
 #endif
 
-        if (controlColors != null && control.Tag is not LoadType.Lazy)
+        if (controlColors == null ||
+            control is not Lazy_TabsBase lazyTab || (_lazyTabs ??= new HashSet<Lazy_TabsBase>(FMTabCount)).Add(lazyTab))
         {
-            ControlOriginalColors? origColors = control is IDarkable
-                ? null
-                : new ControlOriginalColors(control.ForeColor, control.BackColor);
-            controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
-        }
+            if (controlColors != null && control.Tag is not LoadType.Lazy)
+            {
+                ControlOriginalColors? origColors = control is IDarkable
+                    ? null
+                    : new ControlOriginalColors(control.ForeColor, control.BackColor);
 
-        if (createControlHandles &&
-            createHandlePredicate?.Invoke(control) != false &&
-            !control.IsHandleCreated)
-        {
-            _ = control.Handle;
+                controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
+            }
+
+            if (createControlHandles &&
+                createHandlePredicate?.Invoke(control) != false &&
+                !control.IsHandleCreated)
+            {
+                _ = control.Handle;
+            }
         }
 
 #if !ReleasePublic && !NoAsserts
@@ -720,19 +762,23 @@ internal static class ControlUtils
         */
         if (control is DarkTabControl dtc)
         {
-            Control[] backingPages = dtc.BackingTabPages;
-            int count = backingPages.Length;
-            for (int i = 0; i < count; i++)
+            // Hack: Since the top and bottom FM tab controls now share a backing list, don't traverse it twice
+            if (dtc.WhichTabControl == WhichTabControl.Top)
             {
-                FillControlColorList(
-                    control: backingPages[i],
-                    controlColors: controlColors,
-                    createControlHandles: createControlHandles,
-                    createHandlePredicate: createHandlePredicate
+                Control[] backingPages = dtc.BackingTabPagesAsControls;
+                int count = backingPages.Length;
+                for (int i = 0; i < count; i++)
+                {
+                    FillControlColorList(
+                        control: backingPages[i],
+                        controlColors: controlColors,
+                        createControlHandles: createControlHandles,
+                        createHandlePredicate: createHandlePredicate
 #if !ReleasePublic && !NoAsserts
-                    , stackCounter: stackCounter
+                        , stackCounter: stackCounter
 #endif
-                );
+                    );
+                }
             }
         }
         else
@@ -931,4 +977,84 @@ internal static class ControlUtils
             }
         }
     }
+
+    #region Cursor
+
+    public static bool TryCreateCursor(Bitmap bitmap, int xHotspot, int yHotspot, [NotNullWhen(true)] out Cursor? cursor)
+    {
+        cursor = null;
+
+        Native.ICONINFO iconInfo = new();
+        IntPtr iconHandle = IntPtr.Zero;
+        IntPtr cursorPtr = IntPtr.Zero;
+        try
+        {
+            iconHandle = bitmap.GetHicon();
+
+            if (!Native.GetIconInfo(iconHandle, ref iconInfo) || iconHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            iconInfo.xHotspot = xHotspot;
+            iconInfo.yHotspot = yHotspot;
+
+            // false means it's a cursor (not an icon)
+            iconInfo.fIcon = false;
+
+            cursorPtr = Native.CreateIconIndirect(ref iconInfo);
+            if (cursorPtr == IntPtr.Zero)
+            {
+                Native.DeleteObject(cursorPtr);
+                return false;
+            }
+
+            cursor = new Cursor(cursorPtr);
+            return true;
+        }
+        catch
+        {
+            Native.DeleteObject(cursorPtr);
+            return false;
+        }
+        finally
+        {
+            Native.DeleteObject(iconInfo.hbmMask);
+            Native.DeleteObject(iconInfo.hbmColor);
+            Native.DestroyIcon(iconHandle);
+        }
+    }
+
+    public static Bitmap? CloneWithOpacity(this Bitmap bitmap, float opacity)
+    {
+        try
+        {
+            Bitmap retBmp = new(bitmap.Width, bitmap.Height);
+
+            using Graphics g = Graphics.FromImage(retBmp);
+
+            using ImageAttributes imgAttrib = new();
+
+            ColorMatrix opacityMatrix = new() { Matrix33 = opacity };
+            imgAttrib.SetColorMatrix(opacityMatrix);
+
+            g.DrawImage(
+                image: bitmap,
+                destRect: new Rectangle(0, 0, retBmp.Width, retBmp.Height),
+                srcX: 0,
+                srcY: 0,
+                srcWidth: bitmap.Width,
+                srcHeight: bitmap.Height,
+                srcUnit: GraphicsUnit.Pixel,
+                imageAttr: imgAttrib);
+
+            return retBmp;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    #endregion
 }

@@ -217,6 +217,8 @@ internal static class FindFMs
         // tasks or anything here... just return an exception and handle it on the main thread...
         try
         {
+            using var dsw = new DisableScreenshotWatchers();
+
             List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
             splashScreen.SetCheckAtStoredMessageWidth();
             return (fmsViewListUnscanned, null);
@@ -234,6 +236,8 @@ internal static class FindFMs
     internal static List<FanMission> Find()
     {
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
+
+        using var dsw = new DisableScreenshotWatchers();
 
         List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
         Core.View!.SetAvailableAndFinishedFMCount();

@@ -32,6 +32,7 @@ public sealed class DarkArrowButton : DarkButton
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
+        if (DesignMode) return;
         Images.PaintArrow7x4(
             g: e.Graphics,
             direction: _arrowDirection,

@@ -29,7 +29,7 @@ for writing. Even if you put it after the using block, it throws. So always set 
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
 */
 
-internal static partial class FMBackupAndRestore
+internal static partial class FMInstallAndPlay
 {
     #region Private fields
     // fmsel source code says:
@@ -232,7 +232,7 @@ internal static partial class FMBackupAndRestore
         return ret;
     }
 
-    internal static Task BackupFM(
+    private static Task BackupFM(
         FanMission fm,
         string fmInstalledPath,
         string fmArchivePath,
@@ -372,7 +372,7 @@ internal static partial class FMBackupAndRestore
         });
     }
 
-    internal static Task RestoreFM(
+    private static Task RestoreFM(
         FanMission fm,
         List<string> archivePaths,
         byte[] fileStreamBuffer,

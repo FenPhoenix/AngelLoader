@@ -179,6 +179,7 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             case SpecialType.SkipNumberOfBytes:
                 if (symbol.UseDefaultParam) param = symbol.DefaultParam;
+                if (param < 0) return RtfError.AbortedForSafety;
                 CurrentPos += param;
                 break;
             case SpecialType.SkipDest:

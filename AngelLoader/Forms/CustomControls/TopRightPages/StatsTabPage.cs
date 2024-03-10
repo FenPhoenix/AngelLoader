@@ -70,13 +70,14 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
     private void UpdateCustomResourcesLabel(FanMission? fm)
     {
-        // @GENGAMES(Stats tab/UpdateCustomResourcesLabel())
         _page.CustomResourcesLabel.Text =
-            fm == null ? LText.StatisticsTab.CustomResources :
-            fm.Game == Game.Thief3 ? LText.StatisticsTab.CustomResourcesNotSupportedForThief3 :
-            fm.Game == Game.TDM ? LText.StatisticsTab.CustomResourcesNotSupportedForTDM :
-            fm.ResourcesScanned ? LText.StatisticsTab.CustomResources :
-            LText.StatisticsTab.CustomResourcesNotScanned;
+            fm == null
+                ? LText.StatisticsTab.CustomResources
+                : fm.Game.ConvertsToKnownButNotResourceDetectionSupporting(out GameIndex gameIndex)
+                    ? GetLocalizedCustomResourcesNotSupportedMessage(gameIndex)
+                    : fm.ResourcesScanned
+                        ? LText.StatisticsTab.CustomResources
+                        : LText.StatisticsTab.CustomResourcesNotScanned;
     }
 
     public override void UpdatePage()

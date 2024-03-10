@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader;
 
@@ -114,12 +115,21 @@ public static partial class Misc
         internal static readonly string ColumnHeaderContextMenu = "#column_header_context_menu";
         internal static readonly string FMContextMenu = "#fm_context_menu";
 
-        internal static readonly string StatsTab = "#stats_tab";
-        internal static readonly string EditFMTab = "#edit_fm_tab";
-        internal static readonly string CommentTab = "#comment_tab";
-        internal static readonly string TagsTab = "#tags_tab";
-        internal static readonly string PatchTab = "#patch_tab";
-        internal static readonly string ModsTab = "#mods_tab";
+#pragma warning disable IDE0300 // Simplify collection initialization
+        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+        private static readonly string[] FMTabs = new string[FMTabCount]
+        {
+            "#stats_tab",
+            "#edit_fm_tab",
+            "#comment_tab",
+            "#tags_tab",
+            "#patch_tab",
+            "#mods_tab",
+            "#screenshots_tab"
+        };
+#pragma warning restore IDE0300 // Simplify collection initialization
+
+        internal static string GetFMTab(FMTab fmTab) => FMTabs[(int)fmTab];
 
         internal static readonly string ReadmeArea = "#readme_area";
 
@@ -157,6 +167,7 @@ public static partial class Misc
 
         internal const float TopSplitterPercent = 0.741f;
         internal const float MainSplitterPercent = 0.4425f;
+        internal const float BottomSplitterPercent = 0.741f;
 
         // @NET5: Remember to change this to match the new font
         internal const float FMsListFontSizeInPoints = 8.25f;
@@ -191,4 +202,31 @@ public static partial class Misc
         internal const uint DaysRecent = 15;
         internal const uint MaxDaysRecent = 99999;
     }
+
+    // Another leak of view implementation details into here (GDI+/Bitmap supported formats)
+    // @ScreenshotDisplay: NewDark games can also have .pcx, and TDM can also have .tga
+    // Neither are supported by Bitmap, so, you're kinda outta luck on those.
+    public static readonly string[] SupportedScreenshotExtensions =
+    {
+        // Common/likely ones first
+        ".png",
+        ".bmp",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".tif",
+        ".tiff"
+    };
+
+    [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+    public static readonly Func<string>[] FMTabTextLocalizedStrings = new Func<string>[FMTabCount]
+    {
+        static () => LText.StatisticsTab.TabText,
+        static () => LText.EditFMTab.TabText,
+        static () => LText.CommentTab.TabText,
+        static () => LText.TagsTab.TabText,
+        static () => LText.PatchTab.TabText,
+        static () => LText.ModsTab.TabText,
+        static () => LText.ScreenshotsTab.TabText
+    };
 }

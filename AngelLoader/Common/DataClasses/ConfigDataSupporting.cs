@@ -95,40 +95,53 @@ public enum CheckForUpdates
     False
 }
 
-#region Top-right tabs
+#region FM tabs
 
-// IMPORTANT(TopRightTab enum): Do not rename members, they're used in the config file
-internal enum TopRightTab { Statistics, EditFM, Comment, Tags, Patch, Mods }
-
-internal sealed class TopRightTabData
+// IMPORTANT(FM tabs enum): Do not rename members, they're used in the config file
+[FenGenEnumCount]
+internal enum FMTab
 {
-    private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, TopRightTabsData.Count - 1); }
-
-    internal bool Visible = true;
+    Statistics,
+    EditFM,
+    Comment,
+    Tags,
+    Patch,
+    Mods,
+    Screenshots
 }
 
-internal sealed class TopRightTabsData
+public enum FMTabVisibleIn
 {
-    /// <summary>
-    /// Returns the number of tabs that have been defined in the <see cref="TopRightTab"/> enum.
-    /// </summary>
-    internal static readonly int Count = Enum.GetValues(typeof(TopRightTab)).Length;
+    None,
+    Top,
+    Bottom
+}
 
-    internal readonly TopRightTabData[] Tabs = InitializedArray<TopRightTabData>(Count);
+internal sealed class FMTabData
+{
+    private int _displayIndex;
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, FMTabCount - 1); }
 
-    internal TopRightTab SelectedTab = TopRightTab.Statistics;
+    internal FMTabVisibleIn Visible = FMTabVisibleIn.Top;
+}
 
-    internal TopRightTabsData() => ResetAllDisplayIndexes();
+internal sealed class FMTabsData
+{
+    internal readonly FMTabData[] Tabs = InitializedArray<FMTabData>(FMTabCount);
 
-    internal TopRightTabData GetTab(TopRightTab tab) => Tabs[(int)tab];
+    internal FMTab SelectedTab = FMTab.Statistics;
+    internal FMTab SelectedTab2 = FMTab.Statistics;
+
+    internal FMTabsData() => ResetAllDisplayIndexes();
+
+    internal FMTabData GetTab(FMTab tab) => Tabs[(int)tab];
 
     internal void EnsureValidity()
     {
         #region Fallback if multiple tabs have the same display index
 
         var displayIndexesSet = new HashSet<int>();
-        for (int i = 0; i < Count; i++)
+        for (int i = 0; i < FMTabCount; i++)
         {
             if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
             {
@@ -139,16 +152,27 @@ internal sealed class TopRightTabsData
 
         #endregion
 
-        if (NoneVisible()) SetAllVisible(true);
+        if (NoneVisible()) SetAllVisible(FMTabVisibleIn.Top);
 
         // Fallback if selected tab is not marked as visible
-        if (!GetTab(SelectedTab).Visible)
+        if (GetTab(SelectedTab).Visible != FMTabVisibleIn.Top)
         {
-            for (int i = 0; i < Count; i++)
+            for (int i = 0; i < FMTabCount; i++)
             {
-                if (Tabs[i].Visible)
+                if (Tabs[i].Visible == FMTabVisibleIn.Top)
                 {
-                    SelectedTab = (TopRightTab)i;
+                    SelectedTab = (FMTab)i;
+                    break;
+                }
+            }
+        }
+        if (GetTab(SelectedTab2).Visible != FMTabVisibleIn.Bottom)
+        {
+            for (int i = 0; i < FMTabCount; i++)
+            {
+                if (Tabs[i].Visible == FMTabVisibleIn.Bottom)
+                {
+                    SelectedTab2 = (FMTab)i;
                     break;
                 }
             }
@@ -157,18 +181,18 @@ internal sealed class TopRightTabsData
 
     private bool NoneVisible()
     {
-        for (int i = 0; i < Count; i++) if (Tabs[i].Visible) return false;
+        for (int i = 0; i < FMTabCount; i++) if (Tabs[i].Visible != FMTabVisibleIn.None) return false;
         return true;
     }
 
-    private void SetAllVisible(bool visible)
+    private void SetAllVisible(FMTabVisibleIn visible)
     {
-        for (int i = 0; i < Count; i++) Tabs[i].Visible = visible;
+        for (int i = 0; i < FMTabCount; i++) Tabs[i].Visible = visible;
     }
 
     private void ResetAllDisplayIndexes()
     {
-        for (int i = 0; i < Count; i++) Tabs[i].DisplayIndex = i;
+        for (int i = 0; i < FMTabCount; i++) Tabs[i].DisplayIndex = i;
     }
 }
 

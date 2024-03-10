@@ -77,13 +77,10 @@ public static class FenGenAttributes
     /// <summary>
     /// List type can be "MultipleLines" or "CommaSeparated".
     /// </summary>
+    /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenListTypeAttribute : Attribute
-    {
-        /// <param name="value">Can be "MultipleLines" or "CommaSeparated".</param>
-        public FenGenListTypeAttribute(string value) { }
-    }
+    public sealed class FenGenListTypeAttribute(string value) : Attribute;
 
     /// <summary>
     /// Specifies that the value of this field or property (assumed to be a string) will not have whitespace
@@ -133,13 +130,10 @@ public static class FenGenAttributes
     /// For multiple-line comments, each line should be a separate parameter. Concatenating parameters is<br/>
     /// not supported and will not achieve the desired effect.
     /// </summary>
+    /// <param name="comments">Each comment will be placed on a separate line.</param>
     [Conditional("compile_FenGen_attributes")]
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public sealed class FenGenCommentAttribute : Attribute
-    {
-        /// <param name="comments">Each comment will be placed on a separate line.</param>
-        public FenGenCommentAttribute(params string[] comments) { }
-    }
+    public sealed class FenGenCommentAttribute(params string[] comments) : Attribute;
 
     /// <summary>
     /// Cheap and crappy way to specify blank lines that should be written to the lang ini, until I can
@@ -178,9 +172,12 @@ public static class FenGenAttributes
         string prefix,
         string steamId,
         string editorName,
+        bool isDarkEngine,
         bool supportsMods,
-        bool supportsImport)
-        : Attribute;
+        bool supportsImport,
+        bool supportsLanguages,
+        bool supportsResourceDetection,
+        bool RequiresBackupPath) : Attribute;
 
     #endregion
 

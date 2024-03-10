@@ -18,7 +18,6 @@ using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
-using static AngelLoader.FMBackupAndRestore;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -26,7 +25,7 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
-internal static class FMInstallAndPlay
+internal static partial class FMInstallAndPlay
 {
     #region Private fields
 
@@ -52,6 +51,8 @@ internal static class FMInstallAndPlay
 
     internal static async Task InstallOrUninstall(FanMission[] fms)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
         FanMission firstFM = fms[0];
 
@@ -103,6 +104,8 @@ internal static class FMInstallAndPlay
 
     internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
@@ -179,6 +182,8 @@ internal static class FMInstallAndPlay
 
     internal static bool PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         try
         {
             Core.View.SetWaitCursor(true);
@@ -243,6 +248,8 @@ internal static class FMInstallAndPlay
 
     private static bool PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         (bool success, string gameExe, string gamePath) =
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
         if (!success) return false;
@@ -370,6 +377,8 @@ internal static class FMInstallAndPlay
 
     internal static bool OpenFMInEditor(FanMission fm)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         try
         {
             Core.View.SetWaitCursor(true);
@@ -1417,7 +1426,11 @@ internal static class FMInstallAndPlay
         internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
     }
 
-    internal static Task<bool> Install(params FanMission[] fms) => InstallInternal(false, false, fms);
+    internal static Task<bool> Install(params FanMission[] fms)
+    {
+        using var dsw = new DisableScreenshotWatchers();
+        return InstallInternal(false, false, fms);
+    }
 
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
@@ -1542,8 +1555,10 @@ internal static class FMInstallAndPlay
                 progressType: ProgressType.Indeterminate,
                 cancelAction: CancelInstallToken
             );
+
             (bool success, List<string> archivePaths) =
                 await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
+
             if (!success) return false;
 
             Core.View.SetProgressBoxState(
@@ -1638,7 +1653,7 @@ internal static class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                        await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1648,7 +1663,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1659,7 +1674,7 @@ internal static class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertToWAVs(fmData.FM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1997,6 +2012,8 @@ internal static class FMInstallAndPlay
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
+        using var dsw = new DisableScreenshotWatchers();
+
         var fail = (false, false);
 
         var fmDataList = new FMData[fms.Length];

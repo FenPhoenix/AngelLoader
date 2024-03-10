@@ -79,7 +79,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
         }
     }
 
-    private void DrawButton(Graphics g)
+    private void DrawButton(Graphics g, Point? offset = null)
     {
         var (dtpInfo, buttonRect) = GetDTPInfoAndButtonRect();
 
@@ -90,19 +90,57 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
                     ? DarkColors.LighterBackgroundBrush
                     : DarkColors.LightBackgroundBrush;
 
+        if (offset != null)
+        {
+            buttonRect = buttonRect with
+            {
+                X = buttonRect.X + offset.Value.X,
+                Y = buttonRect.Y + offset.Value.Y
+            };
+        }
+
         g.FillRectangle(buttonBrush, buttonRect);
 
         Images.PaintArrow7x4(g, Direction.Down, buttonRect, Enabled);
     }
 
-    private void PaintCustom()
+    // This thing's theme doesn't get fully captured in the control DrawToBitmap() image, so we also use this
+    // method to paint the themed visuals directly onto the image after the fact.
+    public void PaintCustom(Graphics? g = null, Point? offset = null)
     {
-        using var gc = new Native.GraphicsContext(Handle);
+        if (g == null)
+        {
+            using var gc = new Native.GraphicsContext(Handle);
+            PaintCustomInternal(gc.G);
+        }
+        else if (offset != null)
+        {
+            PaintCustomInternal(g, offset);
+        }
+    }
 
-        gc.G.DrawRectangle(DarkColors.LightBorderPen, 0, 0, Width - 1, Height - 1);
-        gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, 1, 1, Width - 3, Height - 3);
+    private void PaintCustomInternal(Graphics g, Point? offset = null)
+    {
+        int x1, y1, x2, y2;
+        if (offset != null)
+        {
+            x1 = offset.Value.X;
+            y1 = offset.Value.Y;
+            x2 = offset.Value.X + 1;
+            y2 = offset.Value.Y + 1;
+        }
+        else
+        {
+            x1 = 0;
+            y1 = 0;
+            x2 = 1;
+            y2 = 1;
+        }
 
-        DrawButton(gc.G);
+        g.DrawRectangle(DarkColors.LightBorderPen, x1, y1, Width - 1, Height - 1);
+        g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, x2, y2, Width - 3, Height - 3);
+
+        DrawButton(g, offset);
     }
 
     protected override void WndProc(ref Message m)
@@ -115,6 +153,16 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
 
         switch (m.Msg)
         {
+            case Native.WM_PRINT:
+            case Native.WM_PRINTCLIENT:
+            {
+                using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.Full))
+                {
+                    base.WndProc(ref m);
+                }
+                PaintCustom();
+                break;
+            }
             // @DarkModeNote(DateTimePicker): Still flickers the classic border somewhat on move/resize
             // Not the end of the world, but if we find a quick way to fix it, we should do it. Otherwise,
             // we'll just call it done.

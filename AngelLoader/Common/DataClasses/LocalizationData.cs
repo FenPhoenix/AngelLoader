@@ -37,12 +37,14 @@ internal sealed class LText_Class
     internal readonly FilterBar_Class FilterBar = new();
     internal readonly FMsList_Class FMsList = new();
     internal readonly FMSelectedStats_Class FMSelectedStats = new();
+    internal readonly FMTabs_Class FMTabs = new();
     internal readonly StatisticsTab_Class StatisticsTab = new();
     internal readonly EditFMTab_Class EditFMTab = new();
     internal readonly CommentTab_Class CommentTab = new();
     internal readonly TagsTab_Class TagsTab = new();
     internal readonly PatchTab_Class PatchTab = new();
     internal readonly ModsTab_Class ModsTab = new();
+    internal readonly ScreenshotsTab_Class ScreenshotsTab = new();
     internal readonly ReadmeArea_Class ReadmeArea = new();
     internal readonly PlayOriginalGameMenu_Class PlayOriginalGameMenu = new();
     internal readonly MainButtons_Class MainButtons = new();
@@ -91,28 +93,36 @@ internal sealed class LText_Class
         internal readonly string MegabyteShort = "MB";
         internal readonly string GigabyteShort = "GB";
         [FenGenBlankLine]
+
         // @GENGAMES (Localization - Global): Begin
+
         [FenGenGameSet("GetLocalizedGameName")]
         internal readonly string Thief1 = "Thief 1";
         internal readonly string Thief2 = "Thief 2";
         internal readonly string Thief3 = "Thief 3";
         internal readonly string SystemShock2 = "System Shock 2";
         internal readonly string TheDarkMod = "The Dark Mod";
+
         [FenGenBlankLine]
+
         [FenGenGameSet("GetShortLocalizedGameName")]
         internal readonly string Thief1_Short = "T1";
         internal readonly string Thief2_Short = "T2";
         internal readonly string Thief3_Short = "T3";
         internal readonly string SystemShock2_Short = "SS2";
         internal readonly string TheDarkMod_Short = "TDM";
+
         [FenGenBlankLine]
+
         [FenGenGameSet("GetLocalizedGameNameColon")]
         internal readonly string Thief1_Colon = "Thief 1:";
         internal readonly string Thief2_Colon = "Thief 2:";
         internal readonly string Thief3_Colon = "Thief 3:";
         internal readonly string SystemShock2_Colon = "System Shock 2:";
         internal readonly string TheDarkMod_Colon = "The Dark Mod:";
+
         // @GENGAMES (Localization - Global): End
+
         [FenGenBlankLine]
         internal readonly string ZoomIn = "Zoom in (Ctrl++)";
         internal readonly string ZoomOut = "Zoom out (Ctrl+-)";
@@ -496,6 +506,11 @@ internal sealed class LText_Class
         internal readonly string FMsFinished_Plural_AfterNumber = " FMs finished";
     }
 
+    internal sealed class FMTabs_Class
+    {
+        internal readonly string EmptyTabAreaMessage = "Drag a tab here, or right-click to add a tab.";
+    }
+
     internal sealed class StatisticsTab_Class
     {
         internal readonly string TabText = "Statistics";
@@ -511,10 +526,21 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string CustomResources = "Custom resources:";
         internal readonly string CustomResourcesNotScanned = "Custom resources not scanned.";
+
         // @GENGAMES (Localization - Custom resource detection not supported): Begin
+
+        [FenGenGameSet("GetLocalizedCustomResourcesNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForThief1 = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForThief2 = "";
         internal readonly string CustomResourcesNotSupportedForThief3 = "Custom resource detection is not supported for Thief 3 FMs.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string CustomResourcesNotSupportedForSS2 = "";
         internal readonly string CustomResourcesNotSupportedForTDM = "Custom resource detection is not supported for Dark Mod FMs.";
+
         // @GENGAMES (Localization - Custom resource detection not supported): End
+
         internal readonly string NoFMSelected = "No FM selected.";
         [FenGenBlankLine]
         internal readonly string Map = "Map";
@@ -618,12 +644,35 @@ internal sealed class LText_Class
         internal readonly string DisableAllToolTip = "Disables all mods that are not marked \"important\"";
         internal readonly string DisabledMods = "Disabled mods:";
         [FenGenBlankLine]
+
         // @GENGAMES (Localization - ModsTab_Class) - Begin
+
+        [FenGenGameSet("GetLocalizedModsNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Thief1_ModsNotSupported = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Thief2_ModsNotSupported = "";
         internal readonly string Thief3_ModsNotSupported = "Mod management is not supported for Thief: Deadly Shadows.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string SS2_ModsNotSupported = "";
         internal readonly string TDM_ModsNotSupported = "Mod management is not supported for The Dark Mod.";
+
         [FenGenComment("This is for when the selected FM has an unknown or unsupported game type.")]
         internal readonly string Generic_ModsNotSupported = "Mod management is not supported for unknown FMs.";
+
         // @GENGAMES (Localization - ModsTab_Class) - End
+    }
+
+    internal sealed class ScreenshotsTab_Class
+    {
+        internal readonly string TabText = "Screenshots";
+        internal readonly string Gamma = "Gamma:";
+        internal readonly string OpenScreenshotsFolderToolTip = "Open screenshots folder";
+        internal readonly string CopyImageToolTip = "Copy image (Ctrl+C)";
+        internal readonly string ScreenshotsFolderNotFound = "Screenshots folder not found.";
+        internal readonly string ScreenshotsFolderOpenError = "There was an error trying to open the screenshots folder.";
+        internal readonly string ImageCopied = "Image copied";
+        internal readonly string ImageCopyFailed = "Image copy failed";
     }
 
     internal sealed class ReadmeArea_Class
@@ -640,15 +689,26 @@ internal sealed class LText_Class
     internal sealed class PlayOriginalGameMenu_Class
     {
         internal readonly string Thief2_Multiplayer = "Thief 2 (multiplayer)";
+
         [FenGenGameSet("GetLocalizedGamePlayOriginalText")]
         internal readonly string Thief1_PlayOriginal = "Play Thief 1 without FM";
         internal readonly string Thief2_PlayOriginal = "Play Thief 2 without FM";
         internal readonly string Thief3_PlayOriginal = "Play Thief 3 without FM";
         internal readonly string SystemShock2_PlayOriginal = "Play System Shock 2 without FM";
         internal readonly string TheDarkMod_PlayOriginal = "Play The Dark Mod without FM";
+
         internal readonly string Mods_ToolTipMessage = "Right-click to manage settings for this game.";
+
+        [FenGenGameSet("GetLocalizedGameSettingsNotSupportedMessage")]
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_Thief1NotSupported = "";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_Thief2NotSupported = "";
         internal readonly string Mods_Thief3NotSupported = "AngelLoader does not support managing settings for Thief: Deadly Shadows.";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string Mods_SS2NotSupported = "";
         internal readonly string Mods_TDMNotSupported = "AngelLoader does not support managing settings for The Dark Mod.";
+
         [FenGenGameSet("GetLocalizedOriginalModHeaderText")]
         internal readonly string Mods_EnableOrDisableModsForThief1 = "Enable or disable mods for Thief 1:";
         internal readonly string Mods_EnableOrDisableModsForThief2 = "Enable or disable mods for Thief 2:";
@@ -657,6 +717,7 @@ internal sealed class LText_Class
         internal readonly string Mods_EnableOrDisableModsForSS2 = "Enable or disable mods for System Shock 2:";
         [FenGenDoNotWrite] // Dummy to keep the game count the same
         internal readonly string Mods_EnableOrDisableModsForTDM = "";
+
         internal readonly string Mods_SubMenu = "Settings";
     }
     // @GENGAMES (Localization - PlayOriginalGameMenu_Class) - End

@@ -33,15 +33,14 @@ sealed partial class ModsControl
     {
         this.components = new System.ComponentModel.Container();
         this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.ResetFLP = new DarkFlowLayoutPanel();
+        this.ResetFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
         this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.DisabledModsTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.DisabledModsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.CheckList = new AngelLoader.Forms.CustomControls.ModsPanel();
-        this.AutoScrollDummyPanel = new DrawnPanel();
-        this.MainToolTip = new ToolTipCustom(this.components);
+        this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.ResetFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -138,24 +137,17 @@ sealed partial class ModsControl
         this.CheckList.Size = new System.Drawing.Size(512, 184);
         this.CheckList.TabIndex = 6;
         // 
-        // AutoScrollDummyPanel
-        // 
-        this.AutoScrollDummyPanel.Location = new System.Drawing.Point(7, 8);
-        this.AutoScrollDummyPanel.Name = "AutoScrollDummyPanel";
-        this.AutoScrollDummyPanel.Size = new System.Drawing.Size(280, 208);
-        this.AutoScrollDummyPanel.TabIndex = 11;
-        // 
         // ModsControl
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.AutoScroll = true;
+        this.AutoScrollMinSize = new System.Drawing.Size(287, 216);
         this.Controls.Add(this.HeaderLabel);
         this.Controls.Add(this.ResetFLP);
         this.Controls.Add(this.DisabledModsTextBox);
         this.Controls.Add(this.DisabledModsLabel);
         this.Controls.Add(this.CheckList);
-        this.Controls.Add(this.AutoScrollDummyPanel);
         this.Name = "ModsControl";
         this.Size = new System.Drawing.Size(527, 284);
         this.ResetFLP.ResumeLayout(false);
@@ -176,6 +168,5 @@ sealed partial class ModsControl
     internal DarkTextBox DisabledModsTextBox;
     internal DarkLabel DisabledModsLabel;
     internal ModsPanel CheckList;
-    internal DrawnPanel AutoScrollDummyPanel;
     internal ToolTipCustom MainToolTip;
 }

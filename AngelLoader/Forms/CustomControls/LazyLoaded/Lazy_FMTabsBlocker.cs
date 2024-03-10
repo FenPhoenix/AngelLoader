@@ -5,11 +5,13 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class Lazy_TopRightBlocker : IDarkable
+internal sealed class Lazy_FMTabsBlocker : IDarkable
 {
     private readonly MainForm _owner;
 
     private bool _constructed;
+
+    private WhichTabControl _which;
 
     private string _text = "";
 
@@ -31,7 +33,9 @@ internal sealed class Lazy_TopRightBlocker : IDarkable
         }
     }
 
-    internal Lazy_TopRightBlocker(MainForm owner) => _owner = owner;
+    internal Lazy_FMTabsBlocker(MainForm owner) => _owner = owner;
+
+    internal void SetWhich(WhichTabControl which) => _which = which;
 
     internal void SetText(string text)
     {
@@ -49,14 +53,16 @@ internal sealed class Lazy_TopRightBlocker : IDarkable
     {
         if (_constructed) return;
 
-        var container = _owner.TopSplitContainer.Panel2;
+        FMTabControlGroup group = _owner.GetFMTabControlGroup(_which);
+
+        var container = group.Splitter.Panel2;
 
         Panel = new DrawnPanel
         {
             Location = Point.Empty,
             Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right | AnchorStyles.Bottom,
             Size = new Size(
-                container.Width - _owner.TopRightCollapseButton.Width,
+                container.Width - group.CollapseButton.Width,
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,
 

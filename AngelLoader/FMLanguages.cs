@@ -109,7 +109,7 @@ internal static class FMLanguages
 
     internal static void FillFMSupportedLangs(FanMission fm)
     {
-        if (!GameIsDark(fm.Game)) return;
+        if (!GameSupportsLanguages(fm.Game)) return;
 
         List<string>? langs;
         if (FMIsReallyInstalled(fm, out string fmInstalledPath))

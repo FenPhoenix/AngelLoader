@@ -70,4 +70,44 @@ internal static partial class NativeCommon
     }
 
     #endregion
+
+    #region Open folder and select file
+
+    internal static bool OpenFolderAndSelectFile(string filePath)
+    {
+        try
+        {
+            IntPtr pidl = ILCreateFromPathW(filePath);
+            if (pidl == IntPtr.Zero) return false;
+
+            try
+            {
+                int result = SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                return result == 0;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                ILFree(pidl);
+            }
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr ILCreateFromPathW(string pszPath);
+
+    [DllImport("shell32.dll")]
+    private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
+
+    [DllImport("shell32.dll")]
+    private static extern void ILFree(IntPtr pidl);
+
+    #endregion
 }

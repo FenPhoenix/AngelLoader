@@ -33,7 +33,7 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
         if (!_constructed) return;
 
         Button.Text = LText.ReadmeArea.ViewHTMLReadme;
-        Button.CenterHV(_owner.MainSplitContainer.Panel2);
+        Button.CenterHV(_owner.ReadmeContainer);
     }
 
     internal bool Visible => _constructed && Button.Visible;
@@ -47,8 +47,6 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
     {
         if (!_constructed)
         {
-            var container = _owner.MainSplitContainer.Panel2;
-
             Button = new DarkButton
             {
                 Tag = LoadType.Lazy,
@@ -65,6 +63,7 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
                 DarkModeEnabled = _darkModeEnabled
             };
 
+            Control container = _owner.ReadmeContainer;
             container.Controls.Add(Button);
             Button.Click += _owner.ViewHTMLReadmeButton_Click;
             Button.MouseLeave += _owner.ReadmeArea_MouseLeave;

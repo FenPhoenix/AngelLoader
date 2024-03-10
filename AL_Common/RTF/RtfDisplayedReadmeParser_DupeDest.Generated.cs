@@ -133,7 +133,7 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
         // a spec-conforming file.
-        if (_inHandleSkippableHexData) return RtfError.StackOverflow;
+        if (_inHandleSkippableHexData) return RtfError.AbortedForSafety;
         _inHandleSkippableHexData = true;
 
         int startGroupLevel = _ctx.GroupStack.Count;

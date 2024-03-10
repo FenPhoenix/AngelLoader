@@ -10,7 +10,6 @@ sealed partial class UpdatePage
         this.PagePanel = new System.Windows.Forms.Panel();
         this.UpdateOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.CheckForUpdatesOnStartupCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
         this.PagePanel.SuspendLayout();
         this.UpdateOptionsGroupBox.SuspendLayout();
         this.SuspendLayout();
@@ -18,8 +17,8 @@ sealed partial class UpdatePage
         // PagePanel
         // 
         this.PagePanel.AutoScroll = true;
+        this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
         this.PagePanel.Controls.Add(this.UpdateOptionsGroupBox);
-        this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.PagePanel.Size = new System.Drawing.Size(440, 692);
         this.PagePanel.TabIndex = 0;
@@ -42,11 +41,6 @@ sealed partial class UpdatePage
         this.CheckForUpdatesOnStartupCheckBox.Location = new System.Drawing.Point(16, 16);
         this.CheckForUpdatesOnStartupCheckBox.Size = new System.Drawing.Size(392, 32);
         this.CheckForUpdatesOnStartupCheckBox.TabIndex = 0;
-        // 
-        // DummyAutoScrollPanel
-        // 
-        this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 48);
-        this.DummyAutoScrollPanel.Size = new System.Drawing.Size(424, 8);
         // 
         // UpdatePage
         // 

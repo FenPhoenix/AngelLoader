@@ -58,7 +58,6 @@ sealed partial class AppearancePage
         this.ClassicThemeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.LanguageGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.LanguageComboBox = new AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems();
-        this.DummyAutoScrollPanel = new System.Windows.Forms.Control();
         this.PagePanel.SuspendLayout();
         this.PlayWithoutFMGroupBox.SuspendLayout();
         this.FMsListGroupBox.SuspendLayout();
@@ -78,13 +77,13 @@ sealed partial class AppearancePage
         // PagePanel
         // 
         this.PagePanel.AutoScroll = true;
+        this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(488, 0);
         this.PagePanel.Controls.Add(this.PlayWithoutFMGroupBox);
         this.PagePanel.Controls.Add(this.FMsListGroupBox);
         this.PagePanel.Controls.Add(this.ReadmeGroupBox);
         this.PagePanel.Controls.Add(this.ShowOrHideUIElementsGroupBox);
         this.PagePanel.Controls.Add(this.VisualThemeGroupBox);
         this.PagePanel.Controls.Add(this.LanguageGroupBox);
-        this.PagePanel.Controls.Add(this.DummyAutoScrollPanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.PagePanel.Size = new System.Drawing.Size(496, 1219);
         this.PagePanel.TabIndex = 0;
@@ -512,11 +511,6 @@ sealed partial class AppearancePage
         this.LanguageComboBox.Location = new System.Drawing.Point(16, 24);
         this.LanguageComboBox.Size = new System.Drawing.Size(184, 21);
         this.LanguageComboBox.TabIndex = 0;
-        // 
-        // DummyAutoScrollPanel
-        // 
-        this.DummyAutoScrollPanel.Location = new System.Drawing.Point(8, 288);
-        this.DummyAutoScrollPanel.Size = new System.Drawing.Size(480, 8);
         // 
         // AppearancePage
         // 

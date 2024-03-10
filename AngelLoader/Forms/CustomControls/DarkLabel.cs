@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -30,35 +31,39 @@ public sealed class DarkLabel : Label, IDarkable
     [PublicAPI]
     public Color? DarkModeBackColor;
 
+    public event EventHandler<PaintEventArgs>? PaintCustom;
+
     protected override void OnPaint(PaintEventArgs e)
     {
-        if (DarkModeEnabled)
+        if (!DarkModeEnabled)
         {
-            TextFormatFlags textFormatFlags =
-                ControlUtils.GetTextAlignmentFlags(TextAlign)
-                | TextFormatFlags.NoPrefix
-                | TextFormatFlags.NoClipping
-                // This allows long lines with no spaces to still wrap. Matches stock behavior.
-                // (actually doesn't quite match - we wrap at a different point, but as long as we still wrap
-                // somewhere then whatever.)
-                | TextFormatFlags.TextBoxControl
-                | TextFormatFlags.WordBreak;
+            base.OnPaint(e);
+            PaintCustom?.Invoke(this, e);
+            return;
+        }
 
-            Color color = Enabled ? DarkModeForeColor ?? DarkColors.LightText : DarkColors.DisabledText;
-            if (DarkModeBackColor == null)
-            {
-                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
-            }
-            else
-            {
-                using var bgBrush = new SolidBrush((Color)DarkModeBackColor);
-                e.Graphics.FillRectangle(bgBrush, ClientRectangle);
-                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, (Color)DarkModeBackColor, textFormatFlags);
-            }
+        TextFormatFlags textFormatFlags =
+            ControlUtils.GetTextAlignmentFlags(TextAlign)
+            | TextFormatFlags.NoPrefix
+            | TextFormatFlags.NoClipping
+            // This allows long lines with no spaces to still wrap. Matches stock behavior.
+            // (actually doesn't quite match - we wrap at a different point, but as long as we still wrap
+            // somewhere then whatever.)
+            | TextFormatFlags.TextBoxControl
+            | TextFormatFlags.WordBreak;
+
+        Color color = Enabled ? DarkModeForeColor ?? DarkColors.LightText : DarkColors.DisabledText;
+        if (DarkModeBackColor == null)
+        {
+            TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, textFormatFlags);
         }
         else
         {
-            base.OnPaint(e);
+            using var bgBrush = new SolidBrush((Color)DarkModeBackColor);
+            e.Graphics.FillRectangle(bgBrush, ClientRectangle);
+            TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, (Color)DarkModeBackColor, textFormatFlags);
         }
+
+        PaintCustom?.Invoke(this, e);
     }
 }

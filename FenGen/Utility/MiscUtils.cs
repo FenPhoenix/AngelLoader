@@ -29,9 +29,16 @@ internal static partial class Misc
 
     #region Common gen utils
 
-    internal static void WriteListBody(
+    private static string ToStringGenFriendly(this object? obj)
+    {
+        return obj is bool boolean ? boolean ? "true" : "false" : obj?.ToString() ?? "";
+    }
+
+    internal static string GetTypeName(this object? obj) => obj?.GetType().Name ?? "";
+
+    internal static void WriteListBody<T>(
         CodeWriters.IndentingWriter w,
-        List<string> list,
+        List<T> list,
         bool addQuotes = false,
         bool isEnum = false)
     {
@@ -40,9 +47,9 @@ internal static partial class Misc
         w.WL("{");
         for (int i = 0; i < list.Count; i++)
         {
-            string item = list[i];
+            T item = list[i];
             string suffix = i < list.Count - 1 ? "," : "";
-            w.WL(quote + item + quote + suffix);
+            w.WL(quote + item.ToStringGenFriendly() + quote + suffix);
         }
         w.WL("}" + (isEnum ? "" : ";"));
         w.WL();
