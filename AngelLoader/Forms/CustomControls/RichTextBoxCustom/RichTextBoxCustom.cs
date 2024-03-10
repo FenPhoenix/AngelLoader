@@ -111,7 +111,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             SaveZoom();
             this.SuspendDrawing();
 
-            Font = useFixed ? MonospaceFont : DefaultFont;
+            SetFontProperty(useFixed);
 
             string savedText = Text;
 
@@ -127,6 +127,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             this.ResumeDrawing();
         }
     }
+
+    private void SetFontProperty(bool useFixed) => Font = useFixed ? MonospaceFont : DefaultFont;
 
     private void SuspendState(bool toggleReadOnly)
     {
@@ -462,9 +464,34 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
     protected override void OnEnabledChanged(EventArgs e)
     {
+        /*
+        Slightly more complicated system to handle the theme changing while disabled (can happen when following
+        system theme). Otherwise, in this scenario, the dark mode readme turns light-mode-disabled and doesn't
+        re-enable again.
+        */
+        if (Enabled || _changedThemeWhileDisabled)
+        {
+            if (Enabled && _changedThemeWhileDisabled && _currentReadmeType == ReadmeType.PlainText)
+            {
+                Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(Handle, Native.SB_VERT);
+                try
+                {
+                    // Force the disabled colors back to normal (otherwise you have to select an RTF readme to
+                    // get the normal disabled colors back)
+                    ResetFont();
+                    SetFontProperty(_useFixedFont);
+                }
+                finally
+                {
+                    ControlUtils.RepositionScroll(Handle, si, Native.SB_VERT);
+                }
+            }
+            _changedThemeWhileDisabled = false;
+            base.OnEnabledChanged(e);
+            return;
+        }
+
         if (!_darkModeEnabled) base.OnEnabledChanged(e);
-        // Just suppress the base method call and done, no recoloring. Argh! I totally didn't make a huge
-        // ridiculous system for getting around it! I totally knew all along!
     }
 
     protected override void OnVScroll(EventArgs e)

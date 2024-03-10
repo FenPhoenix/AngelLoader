@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -11,6 +12,8 @@ namespace AngelLoader.Forms.CustomControls;
 
 internal sealed partial class RichTextBoxCustom
 {
+    private bool _changedThemeWhileDisabled;
+
     private bool _darkModeEnabled;
     [PublicAPI]
     [Browsable(false)]
@@ -26,6 +29,12 @@ internal sealed partial class RichTextBoxCustom
             // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
             // selected or whatever
             if (Visible) RefreshDarkModeState(preProcessedRtf: null, skipSuspend: false);
+
+            if (Visible && !Enabled)
+            {
+                _changedThemeWhileDisabled = true;
+                Native.EnableWindow(new HandleRef(this, Handle), _darkModeEnabled);
+            }
         }
     }
 

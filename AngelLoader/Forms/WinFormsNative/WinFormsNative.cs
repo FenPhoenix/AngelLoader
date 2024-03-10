@@ -956,4 +956,7 @@ internal static class Native
     internal static extern bool DeleteObject(IntPtr handle);
 
     #endregion
+
+    [DllImport("user32.dll")]
+    internal static extern bool EnableWindow(HandleRef hWnd, bool enable);
 }
