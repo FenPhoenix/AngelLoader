@@ -26,7 +26,6 @@ sealed partial class MainForm
             this.Message1Label.Size = new System.Drawing.Size(54, 13);
             this.Message1Label.TabIndex = 0;
             this.Message1Label.Text = "Copying...";
-            this.Message1Label.UseMnemonic = false;
             // 
             // CopyProgressBar
             // 
@@ -43,7 +42,6 @@ sealed partial class MainForm
             this.Message2Label.Size = new System.Drawing.Size(54, 13);
             this.Message2Label.TabIndex = 0;
             this.Message2Label.Text = "Copying...";
-            this.Message2Label.UseMnemonic = false;
             // 
             // MainForm
             // 

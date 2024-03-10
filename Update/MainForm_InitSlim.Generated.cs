@@ -16,7 +16,6 @@ sealed partial class MainForm
         // 
         this.Message1Label.AutoSize = true;
         this.Message1Label.Location = new System.Drawing.Point(260, 24);
-        this.Message1Label.UseMnemonic = false;
         // 
         // CopyProgressBar
         // 
@@ -27,7 +26,6 @@ sealed partial class MainForm
         // 
         this.Message2Label.AutoSize = true;
         this.Message2Label.Location = new System.Drawing.Point(260, 40);
-        this.Message2Label.UseMnemonic = false;
         // 
         // MainForm
         // 
