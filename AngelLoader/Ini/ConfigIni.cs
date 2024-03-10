@@ -316,7 +316,7 @@ internal static partial class Ini
 
     private static void Config_VisualTheme_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (valTrimmed == "FollowSystemTheme")
+        if (valTrimmed is "FollowSystemTheme")
         {
             config.FollowSystemTheme = true;
             config.VisualTheme = Core.GetSystemTheme();
