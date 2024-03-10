@@ -122,13 +122,10 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
     {
         if (!_constructed) return;
 
-        _menu.Items[(int)FMTab.Statistics].Text = LText.StatisticsTab.TabText;
-        _menu.Items[(int)FMTab.EditFM].Text = LText.EditFMTab.TabText;
-        _menu.Items[(int)FMTab.Comment].Text = LText.CommentTab.TabText;
-        _menu.Items[(int)FMTab.Tags].Text = LText.TagsTab.TabText;
-        _menu.Items[(int)FMTab.Patch].Text = LText.PatchTab.TabText;
-        _menu.Items[(int)FMTab.Mods].Text = LText.ModsTab.TabText;
-        _menu.Items[(int)FMTab.Screenshots].Text = LText.ScreenshotsTab.TabText;
+        for (int i = 0; i < FMTabCount; i++)
+        {
+            _menu.Items[i].Text = FMTabTextLocalizedStrings[i].Invoke();
+        }
     }
 
     internal bool Focused => _constructed && _menu.Focused;

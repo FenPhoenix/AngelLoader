@@ -126,7 +126,6 @@ public static partial class Misc
             "#tags_tab",
             "#patch_tab",
             "#mods_tab",
-            // @ScreenshotDisplay: Add to doc
             "#screenshots_tab"
         };
 #pragma warning restore IDE0300 // Simplify collection initialization

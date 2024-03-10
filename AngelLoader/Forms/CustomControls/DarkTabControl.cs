@@ -587,7 +587,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
                     TabPages.Remove(bt.TabPage);
                 }
                 _backedUpNearestTabPage = null;
-                if (TabCount > 0) SelectedTab.Focus();
+                if (TabCount > 0) SelectedTab?.Focus();
             }
         }
     }
