@@ -10,7 +10,7 @@ namespace Update;
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 [SuppressMessage("ReSharper", "CommentTypo")]
 [SuppressMessage("ReSharper", "StringLiteralTypo")]
-internal static class Native
+internal static partial class Native
 {
     internal const int WM_NCPAINT = 0x0085;
     internal const int WM_PAINT = 0x000F;
@@ -27,8 +27,8 @@ internal static class Native
 
     #region SendMessage/PostMessage
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    [LibraryImport("user32.dll")]
+    internal static partial IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     #endregion
 
@@ -48,21 +48,21 @@ internal static class Native
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct SHSTOCKICONINFO
+    internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
-        internal string szPath;
+        internal fixed char szPath[260];
     }
 
-    [DllImport("Shell32.dll", SetLastError = false)]
-    internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
+    [LibraryImport("Shell32.dll", SetLastError = false)]
+    internal static partial int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
-    [DllImport("user32.dll", SetLastError = true)]
-    internal static extern bool DestroyIcon(IntPtr hIcon);
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool DestroyIcon(IntPtr hIcon);
 
     #endregion
 
@@ -70,11 +70,12 @@ internal static class Native
 
     #region Device context
 
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetWindowDC(IntPtr hWnd);
+    [LibraryImport("user32.dll")]
+    private static partial IntPtr GetWindowDC(IntPtr hWnd);
 
-    [DllImport("user32.dll")]
-    private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
     public readonly ref struct GraphicsContext
     {
@@ -100,15 +101,15 @@ internal static class Native
 
     #region Theming
 
-    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-    internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+    [LibraryImport("uxtheme.dll", EntryPoint = "SetWindowThemeW", StringMarshalling = StringMarshalling.Utf16)]
+    internal static partial int SetWindowThemeW(IntPtr hWnd, string appname, string idlist);
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-    [DllImport("dwmapi.dll")]
-    internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
+    [LibraryImport("dwmapi.dll")]
+    internal static partial int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
 }

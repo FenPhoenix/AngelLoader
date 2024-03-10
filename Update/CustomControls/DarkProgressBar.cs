@@ -25,7 +25,7 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
     {
         if (_darkModeEnabled)
         {
-            Native.SetWindowTheme(Handle, "", "");
+            Native.SetWindowThemeW(Handle, "", "");
             BackColor = DarkColors.Fen_ControlBackground;
             ForeColor = DarkColors.BlueHighlight;
         }

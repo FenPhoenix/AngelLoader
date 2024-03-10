@@ -320,7 +320,7 @@ internal static partial class Ini
 
         fm.Langs = Language.Default;
 
-        foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.Split(langsSpan, ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        foreach (ReadOnlySpan<char> item in langsSpan.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (Langs_TryGetValue(item, 0, item.Length, out Language result))
             {
@@ -335,7 +335,7 @@ internal static partial class Ini
         fm.Resources = CustomResources.None;
 
         bool first = true;
-        foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.Split(fieldsSpan, ',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        foreach (ReadOnlySpan<char> item in fieldsSpan.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (first && item.SequenceEqual(nameof(CustomResources.None)))
             {
@@ -439,7 +439,7 @@ internal static partial class Ini
         ColumnData col = new() { Id = columnType };
 
         int i = 0;
-        foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.Split(valTrimmed, ','))
+        foreach (ReadOnlySpan<char> part in valTrimmed.Split(','))
         {
             switch (i)
             {
@@ -466,7 +466,7 @@ internal static partial class Ini
         // form "category:" (with no tags list). This is because we allow filtering by entire category,
         // whereas we don't allow FMs to have categories with no tags in them.
 
-        foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.SplitAny(tagsToAdd, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
+        foreach (ReadOnlySpan<char> part in tagsToAdd.SplitAny(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
         {
             if (!FMTags.TryGetCatAndTag(part, out string cat, out string tag) ||
                 cat.IsEmpty())
@@ -489,7 +489,7 @@ internal static partial class Ini
 
     private static void ReadFinishedStates(Filter filter, ReadOnlySpan<char> val)
     {
-        foreach (ReadOnlySpan<char> finishedState in ReadOnlySpanExtensions.Split(val, ','))
+        foreach (ReadOnlySpan<char> finishedState in val.Split(','))
         {
             switch (finishedState.Trim())
             {

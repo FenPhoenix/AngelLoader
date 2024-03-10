@@ -925,7 +925,7 @@ internal static class ControlUtils
     {
         if (m.Msg == Native.WM_SETTINGCHANGE &&
             Config.FollowSystemTheme &&
-            (string?)Marshal.PtrToStringUni(m.LParam) is "ImmersiveColorSet")
+            Marshal.PtrToStringUni(m.LParam) is "ImmersiveColorSet")
         {
             newTheme = Core.GetSystemTheme();
             if (newTheme != Config.VisualTheme)

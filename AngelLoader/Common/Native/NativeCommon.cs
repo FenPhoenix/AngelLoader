@@ -100,14 +100,14 @@ internal static partial class NativeCommon
         }
     }
 
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-    private static extern IntPtr ILCreateFromPathW(string pszPath);
+    [LibraryImport("shell32.dll", EntryPoint = "ILCreateFromPathW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial IntPtr ILCreateFromPathW(string pszPath);
 
-    [DllImport("shell32.dll")]
-    private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
+    [LibraryImport("shell32.dll")]
+    private static partial int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
 
-    [DllImport("shell32.dll")]
-    private static extern void ILFree(IntPtr pidl);
+    [LibraryImport("shell32.dll")]
+    private static partial void ILFree(IntPtr pidl);
 
     #endregion
 }
