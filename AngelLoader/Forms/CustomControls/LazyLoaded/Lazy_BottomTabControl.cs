@@ -166,7 +166,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
         _tabControl.DrawToBitmap(bitmap, targetBounds);
     }
 
-    public Point PointToClient_Fast(Point point) => Constructed ? _tabControl.PointToClient_Fast(point) : Point.Empty;
+    public Point PointToClient(Point point) => Constructed ? _tabControl.PointToClient(point) : Point.Empty;
 
     public void RestoreBackedUpBackingTabs()
     {

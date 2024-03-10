@@ -606,8 +606,5 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 
     public Point ClientCursorPos() => Native.ClientCursorPos(this);
 
-    // @DockUI: Convert the "fast" versions of cursor/point stuff to built-in since we're .NET 8
-    public Point PointToClient_Fast(Point point) => PointToClient(point);
-
     #endregion
 }
