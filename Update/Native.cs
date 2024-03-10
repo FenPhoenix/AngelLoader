@@ -19,18 +19,6 @@ internal static class Native
     internal const int WM_SIZE = 0x0005;
     internal const int WM_WINDOWPOSCHANGED = 0x0047;
 
-    [PublicAPI]
-    [StructLayout(LayoutKind.Sequential)]
-    public readonly struct RECT
-    {
-        public readonly int left;
-        public readonly int top;
-        public readonly int right;
-        public readonly int bottom;
-
-        internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     private sealed class POINT
     {
@@ -159,55 +147,6 @@ internal static class Native
 
     [DllImport("dwmapi.dll")]
     internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
-
-    #endregion
-
-    #region Get system metrics
-
-    private const int LF_FACESIZE = 32;
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    [PublicAPI]
-    internal struct LOGFONTW
-    {
-        internal int lfHeight;
-        internal int lfWidth;
-        internal int lfEscapement;
-        internal int lfOrientation;
-        internal int lfWeight;
-        internal byte lfItalic;
-        internal byte lfUnderline;
-        internal byte lfStrikeOut;
-        internal byte lfCharSet;
-        internal byte lfOutPrecision;
-        internal byte lfClipPrecision;
-        internal byte lfQuality;
-        internal byte lfPitchAndFamily;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
-        internal string lfFaceName;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    [PublicAPI]
-    internal struct NONCLIENTMETRICSW
-    {
-        internal int cbSize;
-        internal int iBorderWidth;
-        internal int iScrollWidth;
-        internal int iScrollHeight;
-        internal int iCaptionWidth;
-        internal int iCaptionHeight;
-        internal LOGFONTW lfCaptionFont;
-        internal int iSMCaptionWidth;
-        internal int iSMCaptionHeight;
-        internal LOGFONTW lfSMCaptionFont;
-        internal int iMenuWidth;
-        internal int iMenuHeight;
-        internal LOGFONTW lfMenuFont;
-        internal LOGFONTW lfStatusFont;
-        internal LOGFONTW lfMessageFont;
-        internal int iPaddedBorderWidth;
-    }
 
     #endregion
 }
