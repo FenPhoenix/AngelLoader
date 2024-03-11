@@ -332,8 +332,6 @@ public sealed partial class MainForm : DarkFormBase,
             return control != null;
         }
 
-        // Note: CanFocus will be false if there are modal windows open
-
         // This allows controls to be scrolled with the mousewheel when the mouse is over them, without
         // needing to actually be focused. Vital for a good user experience.
 
@@ -350,7 +348,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
             int delta = Native.SignedHIWORD(m.WParam);
-            if (CanFocus && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
+            if (!ModalDialogUp() && CursorOverControl(FilterBarFLP) && !CursorOverControl(FMsDGV))
             {
                 // Allow the filter bar to be mousewheel-scrolled with the buttons properly appearing and
                 // disappearing as appropriate
@@ -366,7 +364,7 @@ public sealed partial class MainForm : DarkFormBase,
                     FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                 }
             }
-            else if (CanFocus && CursorOverControl(FMsDGV) && Native.LOWORD(m.WParam) == Native.MK_CONTROL)
+            else if (!ModalDialogUp() && CursorOverControl(FMsDGV) && Native.LOWORD(m.WParam) == Native.MK_CONTROL)
             {
                 if (delta != 0) ZoomFMsDGV(delta > 0 ? ZoomFMsDGVType.ZoomIn : ZoomFMsDGVType.ZoomOut);
             }
@@ -415,7 +413,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (ViewBlocked) return BlockMessage;
 
-            if (CanFocus && CursorOverControl(FMsDGV))
+            if (!ModalDialogUp() && CursorOverControl(FMsDGV))
             {
                 int delta = Native.SignedHIWORD(m.WParam);
                 if (delta != 0)
@@ -430,7 +428,7 @@ public sealed partial class MainForm : DarkFormBase,
         // NC = Non-Client, ie. the mouse was in a non-client area of the control
         else if (m.Msg is Native.WM_MOUSEMOVE or Native.WM_NCMOUSEMOVE)
         {
-            if (!CanFocus) return PassMessageOn;
+            if (ModalDialogUp()) return PassMessageOn;
 
             if (CursorOutsideAddTagsDropDownArea() || ViewBlocked) return BlockMessage;
 
@@ -450,7 +448,7 @@ public sealed partial class MainForm : DarkFormBase,
                  Native.WM_MBUTTONUP or Native.WM_NCMBUTTONUP or
                  Native.WM_RBUTTONUP or Native.WM_NCRBUTTONUP)
         {
-            if (!CanFocus) return PassMessageOn;
+            if (ModalDialogUp()) return PassMessageOn;
 
             if (ViewBlocked &&
                 // Fix multi-select after view-blocking scan
@@ -511,10 +509,10 @@ public sealed partial class MainForm : DarkFormBase,
         // Any other keys have to use this.
         else if (m.Msg == Native.WM_KEYDOWN)
         {
-            if (ViewBlocked && CanFocus) return BlockMessage;
+            if (ViewBlocked && !ModalDialogUp()) return BlockMessage;
 
             int wParam = (int)m.WParam;
-            if (wParam == (int)Keys.F1 && CanFocus)
+            if (wParam == (int)Keys.F1 && !ModalDialogUp())
             {
                 bool mainMenuWasOpen = MainLLMenu.Visible;
 
@@ -541,7 +539,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (m.Msg == Native.WM_KEYUP)
         {
-            if (ViewBlocked && CanFocus) return BlockMessage;
+            if (ViewBlocked && !ModalDialogUp()) return BlockMessage;
         }
         #endregion
 
@@ -3123,13 +3121,14 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Refresh queueing
 
-    public bool RefreshAllowed() =>
+    public bool LightRefreshAllowed() =>
         !IsDisposed &&
         _firstShowDone &&
         !AboutToClose &&
-        !Config.GetGameExe(GameIndex.TDM).IsEmpty() &&
         UIEnabled &&
         !ViewBlocked;
+
+    public bool HeavyRefreshAllowed() => LightRefreshAllowed() && !ModalDialogUp();
 
     public bool ModalDialogUp() => !CanFocus;
 
@@ -5611,9 +5610,9 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void RefreshCurrentFMScreenshots()
+    public void RefreshFMScreenshots(FanMission fm)
     {
-        if (UIEnabled && !ViewBlocked && CanFocus)
+        if (LightRefreshAllowed() && fm.EqualsIfNotNull(GetMainSelectedFMOrNull()))
         {
             ScreenshotsTabPage.RefreshScreenshots();
         }

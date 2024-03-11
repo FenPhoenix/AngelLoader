@@ -32,7 +32,7 @@ internal static class TDMWatchers
     {
         if (TDM.TdmFMSetChanged())
         {
-            if (!Core.View.ModalDialogUp())
+            if (Core.View.HeavyRefreshAllowed())
             {
                 await Core.RefreshFMsListFromDisk();
             }
@@ -53,7 +53,8 @@ internal static class TDMWatchers
 
     private static Task RefreshIfAllowed(TDM_FileChanged refresh) => (Task)Core.View.Invoke(async () =>
     {
-        if (!Core.View.RefreshAllowed()) return;
+        if (Config.GetGameExe(GameIndex.TDM).IsEmpty()) return;
+        if (!Core.View.LightRefreshAllowed()) return;
 
         switch (refresh)
         {
