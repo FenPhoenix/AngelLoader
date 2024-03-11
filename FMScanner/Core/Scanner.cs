@@ -3180,25 +3180,25 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle)
         {
-            XmlNodeList xTitle = fmInfoXml.GetElementsByTagName("title");
+            using XmlNodeList xTitle = fmInfoXml.GetElementsByTagName("title");
             if (xTitle.Count > 0) title = xTitle[0].GetPlainInnerText();
         }
 
         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
         {
-            XmlNodeList xAuthor = fmInfoXml.GetElementsByTagName("author");
+            using XmlNodeList xAuthor = fmInfoXml.GetElementsByTagName("author");
             if (xAuthor.Count > 0) author = xAuthor[0].GetPlainInnerText();
         }
 
 #if FMScanner_FullCode
         if (_scanOptions.ScanVersion)
         {
-            XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
+            using XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
             if (xVersion.Count > 0) version = xVersion[0].GetPlainInnerText();
         }
 #endif
 
-        XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
+        using XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
         if (xReleaseDate.Count > 0)
         {
             string rdString = xReleaseDate[0].GetPlainInnerText();
@@ -5540,7 +5540,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
-            var stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
+            using FileStream stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
             Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
             stream.Seek(0, SeekOrigin.Begin);
 

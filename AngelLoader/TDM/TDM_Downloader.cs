@@ -73,7 +73,7 @@ internal static class TDM_Downloader
 
             xmlDoc.Load(dataStream);
 
-            XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
+            using XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
             if (tdmNodes?.Count != 1) return fail;
 
             XmlNode? tdmNode = tdmNodes[0];
