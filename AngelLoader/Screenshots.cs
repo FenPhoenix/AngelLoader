@@ -162,7 +162,7 @@ public sealed class ScreenshotWatcher(GameIndex _gameIndex)
             if (gameIndex != GameIndex.TDM || ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fullPath.GetFileNameFast()))
 #endif
             {
-                Core.View.RefreshCurrentFMScreenshots();
+                Core.View.RefreshFMScreenshots(fm);
             }
         }
     });

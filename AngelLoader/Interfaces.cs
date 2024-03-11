@@ -364,9 +364,9 @@ public interface IView : ISettingsChangeableView
 
     void RefreshMods();
 
-    bool RefreshAllowed();
+    bool LightRefreshAllowed();
 
-    bool ModalDialogUp();
+    bool HeavyRefreshAllowed();
 
     void UpdateConfig();
 
@@ -376,5 +376,6 @@ public interface IView : ISettingsChangeableView
 
     void ShowUpdateNotification(bool show);
 
-    void RefreshCurrentFMScreenshots();
+    void RefreshFMScreenshots(FanMission fm);
+
 }
