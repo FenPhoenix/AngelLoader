@@ -3129,7 +3129,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public bool HeavyRefreshAllowed() => LightRefreshAllowed() && !ModalDialogUp();
 
-    public bool ModalDialogUp() => !CanFocus;
+    private bool ModalDialogUp() => !CanFocus;
 
     #endregion
 
