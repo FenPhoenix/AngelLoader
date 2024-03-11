@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using JetBrains.Annotations;
 
@@ -32,12 +33,14 @@ public sealed class DarkArrowButton : DarkButton
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
-        if (DesignMode) return;
+
+        Pen? pen = DesignMode ? SystemPens.ControlText : null;
         Images.PaintArrow7x4(
             g: e.Graphics,
             direction: _arrowDirection,
             area: ClientRectangle,
-            controlEnabled: Enabled
+            controlEnabled: Enabled,
+            pen: pen
         );
     }
 }
