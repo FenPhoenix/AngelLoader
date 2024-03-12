@@ -944,10 +944,22 @@ internal static class GameConfigFiles
         DeDupe(uberModPathsHash, mpModPaths);
         DeDupe(modPathsHash, mpModPaths);
 
-        foreach (string modPath in modPaths) list.Add(new Mod(modPath, ModType.ModPath));
-        foreach (string modPath in uberModPaths) list.Add(new Mod(modPath, ModType.UberModPath));
-        foreach (string modPath in mpModPaths) list.Add(new Mod(modPath, ModType.MPModPath));
-        foreach (string modPath in mpUberModPaths) list.Add(new Mod(modPath, ModType.MPUberModPath));
+        foreach (string modPath in modPaths)
+        {
+            list.Add(new Mod(modPath, ModType.ModPath));
+        }
+        foreach (string modPath in uberModPaths)
+        {
+            list.Add(new Mod(modPath, ModType.UberModPath));
+        }
+        foreach (string modPath in mpModPaths)
+        {
+            list.Add(new Mod(modPath, ModType.MPModPath));
+        }
+        foreach (string modPath in mpUberModPaths)
+        {
+            list.Add(new Mod(modPath, ModType.MPUberModPath));
+        }
 
         return (true, list);
 

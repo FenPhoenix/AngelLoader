@@ -263,7 +263,10 @@ public static partial class Common
     public static T[] InitializedArray<T>(int length) where T : new()
     {
         T[] ret = new T[length];
-        for (int i = 0; i < length; i++) ret[i] = new T();
+        for (int i = 0; i < length; i++)
+        {
+            ret[i] = new T();
+        }
         return ret;
     }
 
@@ -276,7 +279,10 @@ public static partial class Common
     public static T[] InitializedArray<T>(int length, T value) where T : new()
     {
         T[] ret = new T[length];
-        for (int i = 0; i < length; i++) ret[i] = value;
+        for (int i = 0; i < length; i++)
+        {
+            ret[i] = value;
+        }
         return ret;
     }
 

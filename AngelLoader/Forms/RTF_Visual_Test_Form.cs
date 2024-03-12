@@ -101,7 +101,10 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
         }
 
         RTFFileComboBox.BeginUpdate();
-        foreach (string item in rtfFiles) RTFFileComboBox.Items.Add(item);
+        foreach (string item in rtfFiles)
+        {
+            RTFFileComboBox.Items.Add(item);
+        }
         RTFFileComboBox.EndUpdate();
 
         if (Config.VisualTheme == VisualTheme.Dark)

@@ -33,7 +33,10 @@ internal static class Utility
         int[] vec2 = sevenZipContext.IntArrayPool.Rent(vecLength);
         try
         {
-            for (int i = 0; i < vecLength; i++) vec1[i] = i;
+            for (int i = 0; i < vecLength; i++)
+            {
+                vec1[i] = i;
+            }
 
             for (int i = 0; i < string1Length; i++)
             {

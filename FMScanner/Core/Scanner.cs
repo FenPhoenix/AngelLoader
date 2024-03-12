@@ -1823,9 +1823,18 @@ public sealed partial class Scanner : IDisposable
 
         #region Read, cache, and set readme files
 
-        foreach (NameAndIndex f in _baseDirFiles) _readmeDirFiles.Add(f);
+        foreach (NameAndIndex f in _baseDirFiles)
+        {
+            _readmeDirFiles.Add(f);
+        }
 
-        if (fmIsT3) foreach (NameAndIndex f in T3FMExtrasDirFiles) _readmeDirFiles.Add(f);
+        if (fmIsT3)
+        {
+            foreach (NameAndIndex f in T3FMExtrasDirFiles)
+            {
+                _readmeDirFiles.Add(f);
+            }
+        }
 
         // TODO(Scanner): We can use the readme encoding to read the title out of titles.str
         // These titles are usually too short to detect encoding, but if we use the readme encoding it's likely
@@ -1885,7 +1894,10 @@ public sealed partial class Scanner : IDisposable
 #if FMScanner_FullCode
                 if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
                 {
-                    for (int i = 0; i < cNames.Count; i++) cNames[i] = CleanupTitle(cNames[i]);
+                    for (int i = 0; i < cNames.Count; i++)
+                    {
+                        cNames[i] = CleanupTitle(cNames[i]);
+                    }
                     fmData.IncludedMissions = cNames.ToArray();
                 }
 #endif
@@ -5166,7 +5178,10 @@ public sealed partial class Scanner : IDisposable
                 if (chunk.Contains(identString)) return true;
 
                 // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++) chunk[si] = chunk[ei];
+                for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++)
+                {
+                    chunk[si] = chunk[ei];
+                }
             }
 
             return false;
@@ -5398,7 +5413,10 @@ public sealed partial class Scanner : IDisposable
     private static int CountChars(string value, char character)
     {
         int count = 0;
-        for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i] == character) count++;
+        }
 
         return count;
     }

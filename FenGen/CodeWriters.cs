@@ -16,7 +16,10 @@ internal static class CodeWriters
         {
             const string tab = "    ";
             string ret = "";
-            for (int i = 0; i < num; i++) ret += tab;
+            for (int i = 0; i < num; i++)
+            {
+                ret += tab;
+            }
             return ret;
         }
 
@@ -97,7 +100,10 @@ internal static class CodeWriters
 
         internal void WLs(string[] lines)
         {
-            for (int i = 0; i < lines.Length; i++) WL(lines[i]);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                WL(lines[i]);
+            }
         }
 
         internal void CloseClassAndNamespace()

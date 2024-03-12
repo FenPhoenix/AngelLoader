@@ -89,7 +89,10 @@ public sealed class TagsTabPage : Lazy_TabsBase
         FanMission? fm = _owner.GetMainSelectedFMOrNull();
         if (fm != null)
         {
-            foreach (Control c in _page.Controls) c.Enabled = true;
+            foreach (Control c in _page.Controls)
+            {
+                c.Enabled = true;
+            }
             FillFMTags(fm.Tags, sort: false);
             _page.AddTagTextBox.Text = "";
         }
@@ -97,7 +100,10 @@ public sealed class TagsTabPage : Lazy_TabsBase
         {
             _page.AddTagTextBox.Text = "";
             _page.TagsTreeView.Nodes.Clear();
-            foreach (Control c in _page.Controls) c.Enabled = false;
+            foreach (Control c in _page.Controls)
+            {
+                c.Enabled = false;
+            }
         }
     }
 

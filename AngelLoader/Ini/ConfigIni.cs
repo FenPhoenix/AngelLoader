@@ -158,7 +158,10 @@ internal static partial class Ini
     private static void Config_Articles_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] articles = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-        for (int a = 0; a < articles.Length; a++) articles[a] = articles[a].Trim();
+        for (int a = 0; a < articles.Length; a++)
+        {
+            articles[a] = articles[a].Trim();
+        }
         config.Articles.ClearAndAdd_Small(articles.Distinct(StringComparer.OrdinalIgnoreCase).ToArray());
     }
 

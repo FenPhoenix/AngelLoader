@@ -1279,7 +1279,10 @@ public static class Images
                 // Some of these images are +-1px width from each other, but they all add up to the full 138px
                 // width of the canvas, which we really don't want to change as other things depend on it. So
                 // that's why we get the width of each individual image, rather than keeping a constant.
-                for (int i = 0; i < list.Count; i++) totalWidth += list[i].Width;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    totalWidth += list[i].Width;
+                }
 
                 int x = (138 / 2) - (totalWidth / 2);
 
@@ -1594,7 +1597,10 @@ public static class Images
 
             float x = 4;
             const float y = 3.5f;
-            for (int i = 0; i < 3; i++, x += px) g.DrawImage(starFull ??= CreateStarImage(StarFullGPath, px), x, y);
+            for (int i = 0; i < 3; i++, x += px)
+            {
+                g.DrawImage(starFull ??= CreateStarImage(StarFullGPath, px), x, y);
+            }
             g.DrawImage(starRightEmpty ??= CreateStarImage(StarRightEmptyGPath, px), x, y);
             g.DrawImage(starEmpty ??= CreateStarImage(StarEmptyGPath, px), x + px, y);
         }
@@ -1677,7 +1683,10 @@ public static class Images
             if (prefix > -1) ret[pos++] = (byte)prefix;
 
             int j;
-            for (j = pos; j < pos + fillCount; j++) ret[j] = fillValue;
+            for (j = pos; j < pos + fillCount; j++)
+            {
+                ret[j] = fillValue;
+            }
             pos = j;
 
             if (suffix > -1) ret[pos++] = (byte)suffix;
