@@ -680,9 +680,9 @@ public sealed partial class MainForm : DarkFormBase,
             ScreenshotsTabPage
         };
 
-        for (int i = 0; i < _fmTabPages.Length; i++)
+        foreach (Lazy_TabsBase fmTabPage in _fmTabPages)
         {
-            _fmTabPages[i].SetOwner(this);
+            fmTabPage.SetOwner(this);
         }
 
         // For right-clicking on tabs
@@ -1022,9 +1022,9 @@ public sealed partial class MainForm : DarkFormBase,
             if (visible) continue;
 
             Component[] filterItems = _hideableFilterControls[fiI];
-            for (int i = 0; i < filterItems.Length; i++)
+            foreach (Component filterItem in filterItems)
             {
-                switch (filterItems[i])
+                switch (filterItem)
                 {
                     case Control control:
                         control.Visible = visible;
@@ -2097,9 +2097,9 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (!startup || darkMode)
             {
-                for (int i = 0; i < _lazyLoadedControls.Length; i++)
+                foreach (IDarkable lazyLoadedControl in _lazyLoadedControls)
                 {
-                    _lazyLoadedControls[i].DarkModeEnabled = darkMode;
+                    lazyLoadedControl.DarkModeEnabled = darkMode;
                 }
                 if (ProgressBox != null) ProgressBox.DarkModeEnabled = darkMode;
             }
@@ -2529,9 +2529,9 @@ public sealed partial class MainForm : DarkFormBase,
                 bool oneList = Config.GameOrganization == GameOrganization.OneList;
                 if (oneList)
                 {
-                    for (int i = 0; i < SupportedGameCount; i++)
+                    foreach (ToolStripButtonCustom button in _filterByGameButtons)
                     {
-                        _filterByGameButtons[i].Checked = false;
+                        button.Checked = false;
                     }
                 }
 
@@ -3011,9 +3011,9 @@ public sealed partial class MainForm : DarkFormBase,
             FilterBarFLP.SuspendDrawing();
 
             Component[] filterItems = _hideableFilterControls[(int)s.Tag];
-            for (int i = 0; i < filterItems.Length; i++)
+            foreach (Component filterItem in filterItems)
             {
-                switch (filterItems[i])
+                switch (filterItem)
                 {
                     case Control control:
                         control.Visible = s.Checked;
@@ -4804,9 +4804,9 @@ public sealed partial class MainForm : DarkFormBase,
     {
         using (new DisableEvents(this))
         {
-            for (int i = 0; i < _fmTabPages.Length; i++)
+            foreach (Lazy_TabsBase fmTabPage in _fmTabPages)
             {
-                _fmTabPages[i].UpdatePage();
+                fmTabPage.UpdatePage();
             }
         }
     }
@@ -5091,9 +5091,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private bool AnyControlFocusedInTabPage(TabPage tabPage)
     {
-        for (int i = 0; i < FormsData.WhichTabCount; i++)
+        foreach (FMTabControlGroup group in _fmTabControlGroups)
         {
-            FMTabControlGroup group = _fmTabControlGroups[i];
             if (group.TabControl.Focused && group.TabControl.SelectedTab == tabPage)
             {
                 return true;

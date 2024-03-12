@@ -801,12 +801,12 @@ public sealed partial class Scanner : IDisposable
                 {
                     zipPath = "";
                     string[] pk4FilesInFMFolder = Directory.GetFiles(fm.Path, "*.pk4", SearchOption.TopDirectoryOnly);
-                    for (int i = 0; i < pk4FilesInFMFolder.Length; i++)
+                    foreach (string fileName in pk4FilesInFMFolder)
                     {
                         // @TDM_CASE(Scanner: pk4 within fm folder - _l10n check)
-                        if (!pk4FilesInFMFolder[i].EndsWith("_l10n.pk4", OrdinalIgnoreCase))
+                        if (!fileName.EndsWith("_l10n.pk4", OrdinalIgnoreCase))
                         {
-                            zipPath = pk4FilesInFMFolder[i];
+                            zipPath = fileName;
                             break;
                         }
                     }
@@ -2404,9 +2404,8 @@ public sealed partial class Scanner : IDisposable
         bool success = false;
         bool canBeAmbiguous = false;
         DateTime? result = null!;
-        for (int i = 0; i < _dateFormats.Length; i++)
+        foreach (var item in _dateFormats)
         {
-            var item = _dateFormats[i];
             success = DateTime.TryParseExact(
                 dateString,
                 item.Format,
@@ -2460,9 +2459,9 @@ public sealed partial class Scanner : IDisposable
                 bool unambiguousYearFound = false;
                 bool unambiguousDayFound = false;
 
-                for (int i = 0; i < nums.Length; i++)
+                foreach (string num in nums)
                 {
-                    if (Int_TryParseInv(nums[i], out int numInt))
+                    if (Int_TryParseInv(num, out int numInt))
                     {
                         switch (numInt)
                         {
@@ -2606,9 +2605,9 @@ public sealed partial class Scanner : IDisposable
 
         static bool FileExtensionFound(string fn, string[] array)
         {
-            for (int i = 0; i < array.Length; i++)
+            foreach (string extension in array)
             {
-                if (Utility.EndsWithI_Local(fn.AsSpan(), array[i]))
+                if (Utility.EndsWithI_Local(fn.AsSpan(), extension))
                 {
                     return true;
                 }
@@ -3806,10 +3805,8 @@ public sealed partial class Scanner : IDisposable
             bool lineStartsWithKey = false;
             bool lineStartsWithKeyAndSeparatorChar = false;
             int indexAfterKey = -1;
-            for (int i = 0; i < keys.Length; i++)
+            foreach (string key in keys)
             {
-                string key = keys[i];
-
                 // Either in given case or in all caps, but not in lowercase, because that's given me at least
                 // one false positive
                 if (lineStartTrimmed.StartsWithGU(key))
@@ -3878,9 +3875,8 @@ public sealed partial class Scanner : IDisposable
                 if (specialLogic == SpecialLogic.Version) continue;
 #endif
 
-                for (int i = 0; i < keys.Length; i++)
+                foreach (string key in keys)
                 {
-                    string key = keys[i];
                     if (!lineStartTrimmed.StartsWithI_Local(key)) continue;
 
                     // It's supposed to be finding a space after a key; this prevents it from finding the first
@@ -4540,9 +4536,9 @@ public sealed partial class Scanner : IDisposable
 
     private string GetAuthorFromText(string text)
     {
-        for (int i = 0; i < AuthorRegexes.Length; i++)
+        foreach (Regex regex in AuthorRegexes)
         {
-            Match match = AuthorRegexes[i].Match(text);
+            Match match = regex.Match(text);
             if (match.Success) return match.Groups["Author"].Value;
         }
 
@@ -4604,9 +4600,9 @@ public sealed partial class Scanner : IDisposable
     {
         static string AuthorCopyrightRegexesMatch(string line, Regex[] authorMissionCopyrightRegexes)
         {
-            for (int i = 0; i < authorMissionCopyrightRegexes.Length; i++)
+            foreach (Regex regex in authorMissionCopyrightRegexes)
             {
-                Match match = authorMissionCopyrightRegexes[i].Match(line);
+                Match match = regex.Match(line);
                 if (match.Success) return match.Groups["Author"].Value;
             }
             return "";

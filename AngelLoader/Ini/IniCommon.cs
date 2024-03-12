@@ -681,9 +681,9 @@ internal static partial class Ini
         // whereas we don't allow FMs to have categories with no tags in them.
 
         string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < tagsArray.Length; i++)
+        foreach (string item in tagsArray)
         {
-            if (!FMTags.TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+            if (!FMTags.TryGetCatAndTag(item, out string cat, out string tag) ||
                 cat.IsEmpty())
             {
                 continue;

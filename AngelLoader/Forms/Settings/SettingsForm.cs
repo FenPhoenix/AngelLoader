@@ -731,9 +731,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Other page
 
-            for (int i = 0; i < SupportedGameCount; i++)
+            foreach (DarkButton button in GameWebSearchUrlResetButtons)
             {
-                GameWebSearchUrlResetButtons[i].Click += WebSearchURLResetButtons_Click;
+                button.Click += WebSearchURLResetButtons_Click;
             }
 
             #endregion
@@ -824,9 +824,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             );
 
             if (!startup) SetRatingImage();
-            for (int i = 0; i < ErrorableControls.Length; i++)
+            foreach (Control c in ErrorableControls)
             {
-                ShowPathError(ErrorableControls[i], PathErrorIsSet(ErrorableControls[i]));
+                ShowPathError(c, PathErrorIsSet(c));
             }
             // Just use an error image instead of an ErrorProvider, because ErrorProvider's tooltip is even
             // stupider than usual and REALLY resists being themed properly (we can't even recreate its handle
@@ -1401,7 +1401,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 if (!initialCall && pagePosWasStored) MainSplitContainer.SuspendDrawing();
 
                 PageControls[index].Page.Show();
-                for (int i = 0; i < pagesLength; i++) if (i != index) PageControls[i].Page.Hide();
+                for (int i = 0; i < pagesLength; i++)
+                {
+                    if (i != index) PageControls[i].Page.Hide();
+                }
 
                 // Lazy-load for faster initial startup
                 if (pagePosWasStored)
@@ -1537,9 +1540,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void SetUseSteamGameCheckBoxesEnabled(bool enabled)
     {
-        for (int i = 0; i < SupportedGameCount; i++)
+        foreach (DarkCheckBox checkBox in GameUseSteamCheckBoxes)
         {
-            GameUseSteamCheckBoxes[i].Enabled = enabled;
+            checkBox.Enabled = enabled;
         }
     }
 

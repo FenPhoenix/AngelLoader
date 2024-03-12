@@ -141,9 +141,9 @@ internal sealed class FMTabsData
         #region Fallback if multiple tabs have the same display index
 
         var displayIndexesSet = new HashSet<int>();
-        for (int i = 0; i < FMTabCount; i++)
+        foreach (FMTabData tab in Tabs)
         {
-            if (!displayIndexesSet.Add(Tabs[i].DisplayIndex))
+            if (!displayIndexesSet.Add(tab.DisplayIndex))
             {
                 ResetAllDisplayIndexes();
                 break;
@@ -181,18 +181,27 @@ internal sealed class FMTabsData
 
     private bool NoneVisible()
     {
-        for (int i = 0; i < FMTabCount; i++) if (Tabs[i].Visible != FMTabVisibleIn.None) return false;
+        foreach (FMTabData tab in Tabs)
+        {
+            if (tab.Visible != FMTabVisibleIn.None) return false;
+        }
         return true;
     }
 
     private void SetAllVisible(FMTabVisibleIn visible)
     {
-        for (int i = 0; i < FMTabCount; i++) Tabs[i].Visible = visible;
+        foreach (FMTabData tab in Tabs)
+        {
+            tab.Visible = visible;
+        }
     }
 
     private void ResetAllDisplayIndexes()
     {
-        for (int i = 0; i < FMTabCount; i++) Tabs[i].DisplayIndex = i;
+        for (int i = 0; i < Tabs.Length; i++)
+        {
+            Tabs[i].DisplayIndex = i;
+        }
     }
 }
 
@@ -461,12 +470,18 @@ internal sealed class GameTabsState
 
     internal void ClearAllSelectedFMs()
     {
-        for (int i = 0; i < SupportedGameCount; i++) _selectedFMs[i].Clear();
+        foreach (SelectedFM selectedFM in _selectedFMs)
+        {
+            selectedFM.Clear();
+        }
     }
 
     internal void ClearAllFilters()
     {
-        for (int i = 0; i < SupportedGameCount; i++) _filters[i].ClearAll();
+        foreach (Filter filter in _filters)
+        {
+            filter.ClearAll();
+        }
     }
 }
 

@@ -1664,21 +1664,16 @@ public static class Images
     // very small byte arrays. I guess byte arrays must take up more space than you might think, or something.
     private static byte[] MakeTypeArray(params (byte FillValue, int FillCount, int Prefix, int Suffix)[] sets)
     {
-        int setsLen = sets.Length;
-
         int totalArrayLen = 0;
-        for (int i = 0; i < setsLen; i++)
+        foreach ((_, int fillCount, int prefix, int suffix) in sets)
         {
-            var (_, fillCount, prefix, suffix) = sets[i];
             totalArrayLen += fillCount + (prefix > -1 ? 1 : 0) + (suffix > -1 ? 1 : 0);
         }
         byte[] ret = new byte[totalArrayLen];
 
         int pos = 0;
-        for (int i = 0; i < setsLen; i++)
+        foreach ((byte fillValue, int fillCount, int prefix, int suffix) in sets)
         {
-            var (fillValue, fillCount, prefix, suffix) = sets[i];
-
             if (prefix > -1) ret[pos++] = (byte)prefix;
 
             int j;
@@ -1904,9 +1899,8 @@ public static class Images
         int y1 = sizeBounds.Top + pixelsFromVerticalEdges;
         int y2 = sizeBounds.Bottom - pixelsFromVerticalEdges;
 
-        for (int i = 0; i < items.Length; i++)
+        foreach (ToolStripItem item in items)
         {
-            ToolStripItem item = items[i];
             if (!item.Visible) continue;
             int l1s = (int)Math.Ceiling((double)item.Margin.Left / 2);
             DrawSeparator(e, Sep1Pen, l1s, y1, y2, item.Bounds.Location.X);
@@ -1921,9 +1915,8 @@ public static class Images
         int bottomOverride = -1)
     {
         Rectangle sizeBounds = Rectangle.Empty;
-        for (int i = 0; i < items.Length; i++)
+        foreach (Control? item in items)
         {
-            Control? item = items[i];
             if (item != null)
             {
                 sizeBounds = item.Bounds;
@@ -1934,9 +1927,8 @@ public static class Images
         int y1 = topOverride > -1 ? topOverride : sizeBounds.Top + pixelsFromVerticalEdges;
         int y2 = bottomOverride > -1 ? bottomOverride : (sizeBounds.Bottom - pixelsFromVerticalEdges) - 1;
 
-        for (int i = 0; i < items.Length; i++)
+        foreach (Control? item in items)
         {
-            Control? item = items[i];
             if (item is not { Visible: true }) continue;
             int l1s = (int)Math.Ceiling((double)item.Margin.Left / 2);
             DrawSeparator(e, Sep1Pen, l1s, y1, y2, item.Bounds.Location.X);

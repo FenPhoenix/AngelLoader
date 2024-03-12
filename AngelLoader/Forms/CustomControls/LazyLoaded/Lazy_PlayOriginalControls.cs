@@ -36,9 +36,9 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             }
             if (_constructedMulti)
             {
-                for (int i = 0; i < SupportedGameCount; i++)
+                foreach (DarkButton gameButton in GameButtons)
                 {
-                    GameButtons[i].DarkModeEnabled = value;
+                    gameButton.DarkModeEnabled = value;
                 }
                 T2MPMenuButton.DarkModeEnabled = value;
             }
@@ -115,9 +115,9 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
         };
         T2MPMenuButton.Click += _owner.PlayOriginalT2MPButton_Click;
 
-        for (int i = 0; i < SupportedGameCount; i++)
+        foreach (DarkButton gameButton in GameButtons)
         {
-            _owner.PlayOriginalFLP.Controls.Add(GameButtons[i]);
+            _owner.PlayOriginalFLP.Controls.Add(gameButton);
         }
         _owner.PlayOriginalFLP.Controls.Add(T2MPMenuButton);
         _owner.PlayOriginalFLP.Controls.SetChildIndex(T2MPMenuButton, _owner.PlayOriginalFLP.Controls.GetChildIndex(GameButtons[(int)GameIndex.Thief2]) + 1);
@@ -155,9 +155,9 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
 
             if (_constructedMulti)
             {
-                for (int i = 0; i < SupportedGameCount; i++)
+                foreach (DarkButton gameButton in GameButtons)
                 {
-                    GameButtons[i].Hide();
+                    gameButton.Hide();
                 }
                 T2MPMenuButton.Hide();
             }

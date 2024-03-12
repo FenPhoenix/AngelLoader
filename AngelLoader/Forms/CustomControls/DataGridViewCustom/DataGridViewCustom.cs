@@ -163,9 +163,9 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         DataGridViewRow[] selRows = GetOrderedRowsArray();
 
         var ret = new List<FanMission>(selRows.Length);
-        for (int i = 0; i < selRows.Length; i++)
+        foreach (DataGridViewRow selRow in selRows)
         {
-            ret.Add(GetFMFromIndex(selRows[i].Index));
+            ret.Add(GetFMFromIndex(selRow.Index));
         }
 
         return ret;

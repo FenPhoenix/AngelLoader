@@ -951,7 +951,10 @@ internal static class FindFMs
 
             // Now that we're using hashtables, we don't really need these I guess, but if they save a lookup
             // then I guess why not
-            for (int ti = 0; ti < boolsList.Length; ti++) boolsList[ti] = null;
+            for (int ti = 0; ti < boolsList.Length; ti++)
+            {
+                boolsList[ti] = null;
+            }
 
             if (fm.Installed &&
                 NotInPerGameList(fm, boolsList, perGameInstalledFMDirsItems, useBool: false))

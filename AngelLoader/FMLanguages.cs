@@ -33,9 +33,8 @@ internal static class FMLanguages
         // (matching FMSel behavior)
         if (langsHash.Count > 0)
         {
-            for (int i = 0; i < SupportedLanguageCount; i++)
+            foreach (string sl in SupportedLanguages)
             {
-                string sl = SupportedLanguages[i];
                 if (langsHash.Contains(sl)) ret.Add(sl);
             }
         }

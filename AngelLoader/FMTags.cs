@@ -242,9 +242,9 @@ internal static class FMTags
         and the Split array is just the easiest way to do it, but it's not actually necessary for the task at hand.
         */
         string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < tagsArray.Length; i++)
+        foreach (string item in tagsArray)
         {
-            if (!TryGetCatAndTag(tagsArray[i], out string cat, out string tag) ||
+            if (!TryGetCatAndTag(item, out string cat, out string tag) ||
                 cat.IsEmpty() || tag.IsEmpty())
             {
                 continue;

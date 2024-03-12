@@ -383,10 +383,9 @@ internal static partial class Ini
     private static void Config_FilterGames_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] iniGames = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
-        for (int i = 0; i < iniGames.Length; i++)
+        foreach (string iniGame in iniGames)
         {
-            string iniGame = iniGames[i].Trim();
-            FieldInfo? field = typeof(Game).GetField(iniGame, _bFlagsEnum);
+            FieldInfo? field = typeof(Game).GetField(iniGame.Trim(), _bFlagsEnum);
             if (field != null)
             {
                 config.Filter.Games |= (Game)field.GetValue(null);

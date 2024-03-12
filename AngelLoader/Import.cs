@@ -792,18 +792,18 @@ internal static class Import
                             additionalArchiveRootsFound = true;
                             string val = lc.Substring(lc.IndexOf('=') + 1).Trim();
                             string[] dirs = val.Split(CA_Semicolon, StringSplitOptions.RemoveEmptyEntries);
-                            for (int dirI = 0; dirI < dirs.Length; dirI++)
+                            foreach (string dir in dirs)
                             {
-                                string dir = dirs[dirI].Trim();
-                                if (!archiveRoot.IsEmpty() && dir.PathEqualsI(archiveRoot))
+                                string dirT = dir.Trim();
+                                if (!archiveRoot.IsEmpty() && dirT.PathEqualsI(archiveRoot))
                                 {
                                     continue;
                                 }
-                                if (dir.IsWhiteSpace() || !Directory.Exists(dir))
+                                if (dirT.IsWhiteSpace() || !Directory.Exists(dirT))
                                 {
                                     continue;
                                 }
-                                TryAddToArchivesHash(dir, archivesDict);
+                                TryAddToArchivesHash(dirT, archivesDict);
                             }
                         }
                         else if (lc.IsIniHeader())

@@ -76,9 +76,9 @@ public sealed partial class ScanAllFMsForm : DarkFormBase
         if (DialogResult == DialogResult.OK)
         {
             bool noneChecked = true;
-            for (int i = 0; i < _checkBoxes.Length; i++)
+            foreach (DarkCheckBox checkBox in _checkBoxes)
             {
-                if (_checkBoxes[i].Checked)
+                if (checkBox.Checked)
                 {
                     noneChecked = false;
                     break;

@@ -15,10 +15,8 @@ internal static class Ini
 
         FieldInfo[] sectionFields = typeof(LocalizationData).GetFields(_bfLText);
         var sections = new Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, StringComparer.Ordinal);
-        for (int i = 0; i < sectionFields.Length; i++)
+        foreach (FieldInfo f in sectionFields)
         {
-            FieldInfo f = sectionFields[i];
-
             FieldInfo[] fields = f.FieldType.GetFields(_bfLText);
             var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length);
             foreach (FieldInfo field in fields)

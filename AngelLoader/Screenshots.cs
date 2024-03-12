@@ -266,14 +266,13 @@ internal static class Screenshots
                 */
                 TryGetSortedScreenshotFileInfos(tdmGamePath, fm.TDMInstalledDir + "*.*", out FileInfo[]? files))
             {
-                for (int i = 0; i < files.Length; i++)
+                foreach (FileInfo fi in files)
                 {
-                    FileInfo item = files[i];
-                    string fn = item.Name;
+                    string fn = fi.Name;
 
                     if (ScreenshotFileMatchesTDMName(fm.TDMInstalledDir, fn))
                     {
-                        AddIfValidFormat(screenshotFileNames, item.FullName);
+                        AddIfValidFormat(screenshotFileNames, fi.FullName);
                     }
                 }
             }
@@ -283,9 +282,9 @@ internal static class Screenshots
             if (fm.Installed && FMIsReallyInstalled(fm, out string fmInstalledPath) &&
                 TryGetSortedScreenshotFileInfos(fmInstalledPath, "*", out FileInfo[]? files))
             {
-                for (int i = 0; i < files.Length; i++)
+                foreach (FileInfo fi in files)
                 {
-                    AddIfValidFormat(screenshotFileNames, files[i].FullName);
+                    AddIfValidFormat(screenshotFileNames, fi.FullName);
                 }
             }
         }

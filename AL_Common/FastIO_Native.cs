@@ -112,9 +112,9 @@ public static class FastIO_Native
         {
             bool pathContainsInvalidChars = false;
 
-            for (int i = 0; i < _invalidPathChars.Length; i++)
+            foreach (char c in _invalidPathChars)
             {
-                if (path.Contains(_invalidPathChars[i]))
+                if (path.Contains(c))
                 {
                     pathContainsInvalidChars = true;
                     break;

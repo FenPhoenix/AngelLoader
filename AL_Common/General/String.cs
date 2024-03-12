@@ -231,7 +231,10 @@ public static partial class Common
     /// <returns></returns>
     public static bool ContainsI(this string[] value, string substring)
     {
-        for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+        foreach (string str in value)
+        {
+            if (str.Equals(substring, OrdinalIgnoreCase)) return true;
+        }
         return false;
     }
 
