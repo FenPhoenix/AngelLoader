@@ -1854,9 +1854,8 @@ internal static class Core
 
         static bool EndsWithLangCode(string fn_orig, string[] langCodes)
         {
-            for (int i = 0; i < langCodes.Length; i++)
+            foreach (string langCode in langCodes)
             {
-                string langCode = langCodes[i];
                 if (fn_orig.EndsWithI("_" + langCode) ||
                     fn_orig.EndsWithI("-" + langCode))
                 {
@@ -2409,9 +2408,8 @@ internal static class Core
 
     private static bool AtLeastOneDroppedFileValid(string[] droppedItems)
     {
-        for (int i = 0; i < droppedItems.Length; i++)
+        foreach (string item in droppedItems)
         {
-            string item = droppedItems[i];
             if (!item.IsEmpty() && item.ExtIsArchive())
             {
                 return true;
@@ -2482,9 +2480,9 @@ internal static class Core
 
         bool singleFMSelected = selFMs.Length == 1;
 
-        for (int i = 0; i < selFMs.Length; i++)
+        foreach (FanMission fm in selFMs)
         {
-            selFMs[i].Pinned = pin;
+            fm.Pinned = pin;
         }
 
         if (singleFMSelected) View.SetPinnedMenuState(pin);

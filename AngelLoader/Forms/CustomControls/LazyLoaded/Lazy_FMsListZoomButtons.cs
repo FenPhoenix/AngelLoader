@@ -86,9 +86,9 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
 
         Construct();
 
-        for (int i = 0; i < 3; i++)
+        foreach (ToolStripButtonCustom button in Buttons)
         {
-            Buttons[i].Visible = enabled;
+            button.Visible = enabled;
         }
     }
 }

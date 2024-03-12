@@ -316,14 +316,13 @@ internal static class PresetTags
     {
         dest.Clear();
 
-        for (int i = 0; i < Count; i++)
+        foreach (KeyValuePair<string, string[]> presetTag in _fmSelPresetTags)
         {
-            var pt = _fmSelPresetTags[i];
-            string category = pt.Key;
-            var tags = new FMTagsCollection(pt.Value.Length);
-            for (int j = 0; j < pt.Value.Length; j++)
+            string category = presetTag.Key;
+            FMTagsCollection tags = new(presetTag.Value.Length);
+            foreach (string value in presetTag.Value)
             {
-                tags.Add(pt.Value[j]);
+                tags.Add(value);
             }
 
             dest.Add(category, tags);

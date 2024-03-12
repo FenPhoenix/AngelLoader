@@ -309,17 +309,16 @@ public static partial class Common
     public static T[] CombineArrays<T>(params T[][] arrays)
     {
         int totalLen = 0;
-        for (int i = 0; i < arrays.Length; i++)
+        foreach (T[] array in arrays)
         {
-            totalLen += arrays[i].Length;
+            totalLen += array.Length;
         }
 
         T[] ret = new T[totalLen];
 
         int pos = 0;
-        for (int i = 0; i < arrays.Length; i++)
+        foreach (T[] array in arrays)
         {
-            T[] array = arrays[i];
             int arrayLen = array.Length;
 
             Array.Copy(array, 0, ret, pos, arrayLen);
@@ -383,12 +382,18 @@ public static partial class Common
 
     public static void DisposeAll<T>(this T[] array) where T : IDisposable?
     {
-        for (int i = 0; i < array.Length; i++) array[i]?.Dispose();
+        foreach (T item in array)
+        {
+            item?.Dispose();
+        }
     }
 
     public static void DisposeRange<T>(this T[] array, int start, int end) where T : IDisposable?
     {
-        for (int i = start; i < end; i++) array[i]?.Dispose();
+        for (int i = start; i < end; i++)
+        {
+            array[i]?.Dispose();
+        }
     }
 
     #endregion

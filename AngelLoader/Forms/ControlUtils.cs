@@ -766,11 +766,10 @@ internal static class ControlUtils
             if (dtc.WhichTabControl == WhichTabControl.Top)
             {
                 Control[] backingPages = dtc.BackingTabPagesAsControls;
-                int count = backingPages.Length;
-                for (int i = 0; i < count; i++)
+                foreach (Control backingPage in backingPages)
                 {
                     FillControlColorList(
-                        control: backingPages[i],
+                        control: backingPage,
                         controlColors: controlColors,
                         createControlHandles: createControlHandles,
                         createHandlePredicate: createHandlePredicate

@@ -32,9 +32,8 @@ internal static class FMArchives
                 try
                 {
                     string[] dirs = Directory.GetDirectories(path, "*", SearchOption.AllDirectories);
-                    for (int di = 0; di < dirs.Length; di++)
+                    foreach (string dir in dirs)
                     {
-                        string dir = dirs[di];
                         if (!dir.GetDirNameFast().EqualsI(".fix") &&
                             // @DIRSEP: '/' conversion due to string.ContainsI()
                             !dir.ToForwardSlashes_Net().ContainsI("/.fix/"))
