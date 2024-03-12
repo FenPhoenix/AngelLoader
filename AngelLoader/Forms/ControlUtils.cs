@@ -707,9 +707,6 @@ internal static class ControlUtils
         }
     }
 
-    // Lazy-loaded tab pages are weird so we need this to make sure we don't add duplicates to the theme list
-    private static HashSet<Lazy_TabsBase>? _lazyTabs;
-
     private static void FillControlColorList(
         Control control,
         List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
@@ -724,24 +721,19 @@ internal static class ControlUtils
         const int maxStackCount = 100;
 #endif
 
-        if (controlColors == null ||
-            control is not Lazy_TabsBase lazyTab || (_lazyTabs ??= new HashSet<Lazy_TabsBase>(FMTabCount)).Add(lazyTab))
+        if (controlColors != null && control.Tag is not LoadType.Lazy)
         {
-            if (controlColors != null && control.Tag is not LoadType.Lazy)
-            {
-                ControlOriginalColors? origColors = control is IDarkable
-                    ? null
-                    : new ControlOriginalColors(control.ForeColor, control.BackColor);
+            ControlOriginalColors? origColors = control is IDarkable
+                ? null
+                : new ControlOriginalColors(control.ForeColor, control.BackColor);
+            controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
+        }
 
-                controlColors.Add(new KeyValuePair<Control, ControlOriginalColors?>(control, origColors));
-            }
-
-            if (createControlHandles &&
-                createHandlePredicate?.Invoke(control) != false &&
-                !control.IsHandleCreated)
-            {
-                _ = control.Handle;
-            }
+        if (createControlHandles &&
+            createHandlePredicate?.Invoke(control) != false &&
+            !control.IsHandleCreated)
+        {
+            _ = control.Handle;
         }
 
 #if !ReleasePublic && !NoAsserts
@@ -762,22 +754,18 @@ internal static class ControlUtils
         */
         if (control is DarkTabControl dtc)
         {
-            // Hack: Since the top and bottom FM tab controls now share a backing list, don't traverse it twice
-            if (dtc.WhichTabControl == WhichTabControl.Top)
+            Control[] backingPages = dtc.BackingTabPagesAsControls;
+            foreach (Control backingPage in backingPages)
             {
-                Control[] backingPages = dtc.BackingTabPagesAsControls;
-                foreach (Control backingPage in backingPages)
-                {
-                    FillControlColorList(
-                        control: backingPage,
-                        controlColors: controlColors,
-                        createControlHandles: createControlHandles,
-                        createHandlePredicate: createHandlePredicate
+                FillControlColorList(
+                    control: backingPage,
+                    controlColors: controlColors,
+                    createControlHandles: createControlHandles,
+                    createHandlePredicate: createHandlePredicate
 #if !ReleasePublic && !NoAsserts
-                        , stackCounter: stackCounter
+                    , stackCounter: stackCounter
 #endif
-                    );
-                }
+                );
             }
         }
         else
