@@ -233,7 +233,10 @@ public static partial class Common
     /// <returns></returns>
     public static bool ContainsI(this List<string> value, string substring)
     {
-        for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+        }
         return false;
     }
 
@@ -362,7 +365,10 @@ public static partial class Common
     public static int CountChars(this string value, char character)
     {
         int count = 0;
-        for (int i = 0; i < value.Length; i++) if (value[i] == character) count++;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i] == character) count++;
+        }
 
         return count;
     }

@@ -87,7 +87,10 @@ public static partial class Common
 
     public static bool PathContainsI(this List<string> value, string substring)
     {
-        for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI(substring)) return true;
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].PathEqualsI(substring)) return true;
+        }
         return false;
     }
 
@@ -96,7 +99,10 @@ public static partial class Common
 #if false
     public static bool PathContainsI(this string[] value, string substring)
     {
-        for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI(substring)) return true;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i].PathEqualsI(substring)) return true;
+        }
         return false;
     }
 #endif
@@ -127,7 +133,10 @@ public static partial class Common
     /// <returns></returns>
     public static bool Rel_ContainsDirSep(this string value)
     {
-        for (int i = 0; i < value.Length; i++) if (value[i].IsDirSep()) return true;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i].IsDirSep()) return true;
+        }
         return false;
     }
 
@@ -141,7 +150,10 @@ public static partial class Common
     public static int Rel_CountDirSeps(this string value, int start = 0)
     {
         int count = 0;
-        for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
+        for (int i = start; i < value.Length; i++)
+        {
+            if (value[i].IsDirSep()) count++;
+        }
         return count;
     }
 
@@ -284,13 +296,19 @@ public static partial class Common
 #if false
     public static bool PathContainsI_Dir(this List<string> value, string substring)
     {
-        for (int i = 0; i < value.Count; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].PathEqualsI_Dir(substring)) return true;
+        }
         return false;
     }
 
     public static bool PathContainsI_Dir(this string[] value, string substring)
     {
-        for (int i = 0; i < value.Length; i++) if (value[i].PathEqualsI_Dir(substring)) return true;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i].PathEqualsI_Dir(substring)) return true;
+        }
         return false;
     }
 
@@ -303,7 +321,10 @@ public static partial class Common
     public static int CountDirSeps(this string value, int start = 0)
     {
         int count = 0;
-        for (int i = start; i < value.Length; i++) if (value[i].IsDirSep()) count++;
+        for (int i = start; i < value.Length; i++)
+        {
+            if (value[i].IsDirSep()) count++;
+        }
         return count;
     }
 
@@ -336,7 +357,10 @@ public static partial class Common
         int firstCount;
         if ((firstCount = first.Count) != second.Count) return false;
 
-        for (int i = 0; i < firstCount; i++) if (!first[i].PathEqualsI_Dir(second[i])) return false;
+        for (int i = 0; i < firstCount; i++)
+        {
+            if (!first[i].PathEqualsI_Dir(second[i])) return false;
+        }
         return true;
     }
 

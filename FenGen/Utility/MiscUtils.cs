@@ -283,7 +283,10 @@ internal static partial class Misc
     internal static T[] InitializedArray<T>(int length) where T : new()
     {
         T[] ret = new T[length];
-        for (int i = 0; i < length; i++) ret[i] = new T();
+        for (int i = 0; i < length; i++)
+        {
+            ret[i] = new T();
+        }
         return ret;
     }
 

@@ -1072,7 +1072,10 @@ internal static class Core
         }
         else
         {
-            for (int i = 0; i < FMsViewList.Count; i++) FMsViewList[i].MarkedRecent = false;
+            for (int i = 0; i < FMsViewList.Count; i++)
+            {
+                FMsViewList[i].MarkedRecent = false;
+            }
         }
 
         if (View.GetShowUnavailableFMsFilter()) return;
@@ -1816,11 +1819,26 @@ internal static class Core
         static string FirstByPreferredFormat(List<string> files)
         {
             // Don't use IsValidReadme(), because we want a specific search order
-            foreach (string x in files) if (x.ExtIsGlml()) return x;
-            foreach (string x in files) if (x.ExtIsRtf()) return x;
-            foreach (string x in files) if (x.ExtIsTxt()) return x;
-            foreach (string x in files) if (x.ExtIsWri()) return x;
-            foreach (string x in files) if (x.ExtIsHtml()) return x;
+            foreach (string x in files)
+            {
+                if (x.ExtIsGlml()) return x;
+            }
+            foreach (string x in files)
+            {
+                if (x.ExtIsRtf()) return x;
+            }
+            foreach (string x in files)
+            {
+                if (x.ExtIsTxt()) return x;
+            }
+            foreach (string x in files)
+            {
+                if (x.ExtIsWri()) return x;
+            }
+            foreach (string x in files)
+            {
+                if (x.ExtIsHtml()) return x;
+            }
             return "";
         }
 

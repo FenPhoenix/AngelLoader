@@ -545,7 +545,10 @@ internal static class ControlUtils
 
     internal static void DisposeAndClear(this Control.ControlCollection controlCollection)
     {
-        foreach (Control? control in controlCollection) control?.Dispose();
+        foreach (Control? control in controlCollection)
+        {
+            control?.Dispose();
+        }
         controlCollection.Clear();
     }
 
@@ -576,7 +579,10 @@ internal static class ControlUtils
             foreach (CatAndTagsList item in categories)
             {
                 var categoryNode = new TreeNode(item.Category);
-                foreach (string tag in item.Tags) categoryNode.Nodes.Add(tag);
+                foreach (string tag in item.Tags)
+                {
+                    categoryNode.Nodes.Add(tag);
+                }
                 treeView.Nodes.Add(categoryNode);
             }
 

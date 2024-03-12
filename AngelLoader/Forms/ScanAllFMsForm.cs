@@ -68,7 +68,10 @@ public sealed partial class ScanAllFMsForm : DarkFormBase
 
     private void SetCheckBoxValues(bool enabled)
     {
-        foreach (DarkCheckBox cb in _checkBoxes) cb.Checked = enabled;
+        foreach (DarkCheckBox cb in _checkBoxes)
+        {
+            cb.Checked = enabled;
+        }
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)

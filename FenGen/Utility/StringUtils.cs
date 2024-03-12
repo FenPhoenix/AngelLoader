@@ -102,14 +102,20 @@ internal static partial class Misc
     [PublicAPI]
     internal static bool Contains(this List<string> value, string substring, StringComparison stringComparison = Ordinal)
     {
-        for (int i = 0; i < value.Count; i++) if (value[i].Equals(substring, stringComparison)) return true;
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].Equals(substring, stringComparison)) return true;
+        }
         return false;
     }
 
     [PublicAPI]
     internal static bool Contains(this string[] value, string substring, StringComparison stringComparison = Ordinal)
     {
-        for (int i = 0; i < value.Length; i++) if (value[i].Equals(substring, stringComparison)) return true;
+        for (int i = 0; i < value.Length; i++)
+        {
+            if (value[i].Equals(substring, stringComparison)) return true;
+        }
         return false;
     }
 

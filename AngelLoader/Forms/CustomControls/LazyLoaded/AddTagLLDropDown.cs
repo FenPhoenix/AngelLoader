@@ -77,7 +77,10 @@ internal sealed class AddTagLLDropDown : IDarkable
         using (new UpdateRegion(_listBox))
         {
             _listBox.Items.Clear();
-            foreach (string item in list) _listBox.Items.Add(item);
+            foreach (string item in list)
+            {
+                _listBox.Items.Add(item);
+            }
         }
 
         Point p = _form.PointToClient(_realPage.AddTagTextBox.PointToScreen(Point.Empty));

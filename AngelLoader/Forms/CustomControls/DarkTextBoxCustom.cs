@@ -46,7 +46,10 @@ public sealed class DarkTextBoxCustom : DarkTextBox
         if (!DisallowedCharacters.IsEmpty())
         {
             string newText = Text;
-            foreach (char c in DisallowedCharacters) newText = newText.Replace(c.ToString(), "");
+            foreach (char c in DisallowedCharacters)
+            {
+                newText = newText.Replace(c.ToString(), "");
+            }
 
             // Prevents control-key combinations (Ctrl+A for example) from breaking, since they also fire
             // this event even though the text doesn't actually end up changing in that case.

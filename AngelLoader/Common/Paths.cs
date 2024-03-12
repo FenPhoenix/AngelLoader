@@ -147,8 +147,14 @@ internal static class Paths
 
             try
             {
-                foreach (string f in FastIO.GetFilesTopOnly(path, "*")) File.Delete(f);
-                foreach (string d in FastIO.GetDirsTopOnly(path, "*")) Directory.Delete(d, recursive: true);
+                foreach (string f in FastIO.GetFilesTopOnly(path, "*"))
+                {
+                    File.Delete(f);
+                }
+                foreach (string d in FastIO.GetDirsTopOnly(path, "*"))
+                {
+                    Directory.Delete(d, recursive: true);
+                }
             }
             catch (Exception ex)
             {

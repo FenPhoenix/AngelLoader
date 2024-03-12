@@ -112,7 +112,10 @@ public static partial class Utils
         if (value.IsEmpty()) return "";
 
         string ret = "";
-        foreach (char c in value) ret += '\\' + c.ToString();
+        foreach (char c in value)
+        {
+            ret += '\\' + c.ToString();
+        }
 
         return ret;
     }
