@@ -26,7 +26,7 @@ internal static class Paths
 #if DEBUG || Release_Testing
     private static string GetStartupExePath()
     {
-        return Path.Combine(AppContext.BaseDirectory, "AngelLoader.exe");
+        return Environment.ProcessPath!;
     }
 
     private static string? _startupExe;
