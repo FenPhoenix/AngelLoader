@@ -312,6 +312,17 @@ public sealed class FanMission
     [FenGenMaxDigits(10)]
     internal int MisCount = -1;
 
+    // @PlayTimeTracking: We're signed so we can't use the parse-from-end code, so take substring allocs with this one
+    [FenGenIgnore]
+    private TimeSpan _playTime = TimeSpan.Zero;
+    [FenGenNumericEmpty(0)]
+    internal TimeSpan PlayTime
+    {
+        get => _playTime;
+        // Negative playtime makes no sense, so just clamp it to 0
+        set => _playTime = value.Ticks < 0 ? TimeSpan.Zero : value;
+    }
+
 #if DateAccTest
     [FenGenIgnore]
     internal DateAccuracy DateAccuracy = DateAccuracy.Null;

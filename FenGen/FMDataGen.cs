@@ -293,6 +293,7 @@ internal static class FMData
                         "int" => "TryParseIntFromEnd",
                         "uint" => "TryParseUIntFromEnd",
                         "ulong" => "TryParseULongFromEnd",
+                        "TimeSpan" => "TryParseLongFromEnd",
                         _ => ""
                     };
 
@@ -387,18 +388,19 @@ internal static class FMData
             {
                 w.WL(objDotField + " = " + val + ".EndEqualsTrue(" + eqIndex + " + 1) ? true : " + val + ".EndEqualsFalse(" + eqIndex + " + 1) ? false : (bool?)null;");
             }
-            else if (_numericTypes.Contains(field.Type))
+            else if (_numericTypes.Contains(field.Type) || field.Type == "TimeSpan")
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
+                string fieldInnerType = field.Type == "TimeSpan" ? "long" : field.Type;
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
                     if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                     {
-                        w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
+                        w.WL("bool success = " + parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + fieldInnerType + " result);");
                     }
                     else
                     {
-                        w.WL("bool success = " + field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);");
+                        w.WL("bool success = " + fieldInnerType + ".TryParse(" + val + ", " + tryParseArgs + "out " + fieldInnerType + " result);");
                     }
                     w.WL(objDotField + " = success ? result : " + ((long)field.NumericEmpty).ToStrInv() + ";");
                 }
@@ -406,13 +408,20 @@ internal static class FMData
                 {
                     if (!parseMethodName.IsEmpty() && field.MaxDigits != null)
                     {
-                        w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + field.Type + " result);");
+                        w.WL(parseMethodName + "(" + val + ", " + eqIndex + " + 1, " + ((int)field.MaxDigits).ToStrInv() + ", out " + fieldInnerType + " result);");
                     }
                     else
                     {
-                        w.WL(field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);");
+                        w.WL(fieldInnerType + ".TryParse(" + val + ", " + tryParseArgs + "out " + fieldInnerType + " result);");
                     }
-                    w.WL(objDotField + " = result;");
+                    if (field.Type == "TimeSpan")
+                    {
+                        w.WL(objDotField + " = TimeSpan.FromTicks(result);");
+                    }
+                    else
+                    {
+                        w.WL(objDotField + " = result;");
+                    }
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&
@@ -686,6 +695,20 @@ internal static class FMData
                 else
                 {
                     swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
+                }
+            }
+            else if (field.Type == "TimeSpan")
+            {
+                if (field.NumericEmpty != null)
+                {
+                    w.WL("if (" + objDotField + ".Ticks != " + ((long)field.NumericEmpty).ToStrInv() + ")");
+                    w.WL("{");
+                    swlSBAppend(fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
+                    w.WL("}");
+                }
+                else
+                {
+                    swlSBAppend(fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&

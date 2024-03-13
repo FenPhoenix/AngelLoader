@@ -380,7 +380,7 @@ internal static partial class FMInstallAndPlay
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
-        if (!StartExe(gameExe, workingPath, args)) return false;
+        if (!StartExeForFM(fm, gameIndex, gameExe, workingPath, args)) return false;
 
         return true;
     }
@@ -617,6 +617,33 @@ internal static partial class FMInstallAndPlay
                 WorkingDirectory = workingPath,
                 Arguments = !args.IsEmpty() ? args : ""
             });
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            string msg = ErrorText.Un + "start '" + exe + "'.";
+            Log(msg + "\r\n" +
+                nameof(workingPath) + ": " + workingPath + "\r\n" +
+                nameof(args) + ": " + args, ex);
+            Core.Dialogs.ShowError(msg);
+
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static bool StartExeForFM(FanMission fm, GameIndex gameIndex, string exe, string workingPath, string args)
+    {
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = exe,
+                WorkingDirectory = workingPath,
+                Arguments = !args.IsEmpty() ? args : ""
+            };
+            PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm);
 
             return true;
         }

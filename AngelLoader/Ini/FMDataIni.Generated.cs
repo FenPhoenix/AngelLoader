@@ -287,6 +287,14 @@ internal static partial class Ini
         fm.MisCount = success ? result : -1;
     }
 
+    private static void FMData_PlayTime_Set(FanMission fm, string val, int eqIndex)
+    {
+        val = val.Substring(eqIndex + 1);
+        val = val.Trim();
+        long.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out long result);
+        fm.PlayTime = TimeSpan.FromTicks(result);
+    }
+
     #region Old resource format - backward compatibility, we still have to be able to read it
 
     private static void FMData_HasMap_Set(FanMission fm, string val, int eqIndex)
@@ -398,6 +406,7 @@ internal static partial class Ini
         { "PostProc", new FMData_DelegatePointerWrapper(&FMData_PostProc_Set) },
         { "NDSubs", new FMData_DelegatePointerWrapper(&FMData_NDSubs_Set) },
         { "MisCount", new FMData_DelegatePointerWrapper(&FMData_MisCount_Set) },
+        { "PlayTime", new FMData_DelegatePointerWrapper(&FMData_PlayTime_Set) },
 
         #region Old resource format - backward compatibility, we still have to be able to read it
 
@@ -677,6 +686,11 @@ internal static partial class Ini
             {
                 sw.Write("MisCount=");
                 sw.WriteLine(fm.MisCount.ToString(NumberFormatInfo.InvariantInfo));
+            }
+            if (fm.PlayTime.Ticks != 0)
+            {
+                sw.Write("PlayTime=");
+                sw.WriteLine(fm.PlayTime.Ticks.ToString(NumberFormatInfo.InvariantInfo));
             }
         }
 
