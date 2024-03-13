@@ -18,7 +18,8 @@ internal static class Comparers
     #region FM column comparers
 
     // It takes like 0.2ms to construct these and mere bytes of memory per, so don't bother with the bloat of lazy loading
-    internal static readonly IDirectionalSortFMComparer[] ColumnComparers =
+    // ReSharper disable once RedundantExplicitArraySize
+    internal static readonly IDirectionalSortFMComparer[] ColumnComparers = new IDirectionalSortFMComparer[ColumnCount]
     {
 #if DateAccTest
         new FMReleaseDateComparer(),
@@ -35,6 +36,7 @@ internal static class Comparers
         new FMReleaseDateComparer(),
         new FMLastPlayedComparer(),
         new FMDateAddedComparer(),
+        new FMPlayTimeComparer(),
         new FMDisabledModsComparer(),
         new FMCommentComparer()
     };
@@ -390,6 +392,21 @@ internal static class Comparers
             }
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
+        }
+    }
+
+    private sealed class FMPlayTimeComparer : ColumnComparer, IDirectionalSortFMComparer
+    {
+        public int Compare(FanMission x, FanMission y)
+        {
+            int ret;
+            {
+                int cmp = x.PlayTime.CompareTo(y.PlayTime);
+                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
+            }
+
+            // Largest first for better UX
+            return SortDirection == SortDirection.Ascending ? -ret : ret;
         }
     }
 

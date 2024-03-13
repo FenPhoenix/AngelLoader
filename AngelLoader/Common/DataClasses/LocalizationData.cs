@@ -455,6 +455,7 @@ internal sealed class LText_Class
         [FenGenComment(
             "The date an FM was added to the list. Basically means the date you downloaded it and put it into your archives folder.")]
         internal readonly string DateAddedColumn = "Date Added";
+        internal readonly string PlayTimeColumn = "Play Time";
         internal readonly string DisabledModsColumn = "Disabled Mods";
         internal readonly string CommentColumn = "Comment";
         [FenGenBlankLine]

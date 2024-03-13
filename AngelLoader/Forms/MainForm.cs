@@ -4047,6 +4047,10 @@ public sealed partial class MainForm : DarkFormBase,
                 e.Value = fm.DateAdded != null ? FormatDate(fm.DateAdded.Value) : "";
                 break;
 
+            case Column.PlayTime:
+                e.Value = fm.PlayTime.ToString(@"%h\:mm\:ss");
+                break;
+
             case Column.DisabledMods:
                 e.Value = fm.DisableAllMods ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
                 break;

@@ -73,6 +73,7 @@ sealed partial class MainForm
         this.ReleaseDateColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.LastPlayedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.DateAddedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+        this.PlayTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
@@ -382,6 +383,7 @@ sealed partial class MainForm
             this.ReleaseDateColumn,
             this.LastPlayedColumn,
             this.DateAddedColumn,
+            this.PlayTimeColumn,
             this.DisabledModsColumn,
             this.CommentColumn});
         dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -517,6 +519,14 @@ sealed partial class MainForm
         this.DateAddedColumn.Name = "DateAddedColumn";
         this.DateAddedColumn.ReadOnly = true;
         this.DateAddedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+        // 
+        // PlayTimeColumn
+        // 
+        this.PlayTimeColumn.HeaderText = "Play Time";
+        this.PlayTimeColumn.MinimumWidth = 25;
+        this.PlayTimeColumn.Name = "PlayTimeColumn";
+        this.PlayTimeColumn.ReadOnly = true;
+        this.PlayTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
         // 
         // DisabledModsColumn
         // 
@@ -1028,7 +1038,7 @@ sealed partial class MainForm
         this.BottomSplitContainer.Size = new System.Drawing.Size(1671, 357);
         this.BottomSplitContainer.SplitterDistance = 1116;
         this.BottomSplitContainer.TabIndex = 0;
-        this.BottomSplitContainer.FullScreenChanged += new System.EventHandler(BottomSplitContainer_FullScreenChanged);
+        this.BottomSplitContainer.FullScreenChanged += new System.EventHandler(this.BottomSplitContainer_FullScreenChanged);
         // 
         // ReadmeEncodingButton
         // 
@@ -1320,6 +1330,7 @@ sealed partial class MainForm
     internal System.Windows.Forms.DataGridViewTextBoxColumn ReleaseDateColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn LastPlayedColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn DateAddedColumn;
+    internal System.Windows.Forms.DataGridViewTextBoxColumn PlayTimeColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn DisabledModsColumn;
     internal System.Windows.Forms.DataGridViewTextBoxColumn CommentColumn;
 

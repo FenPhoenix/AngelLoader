@@ -45,6 +45,7 @@ public enum Column
     ReleaseDate,
     LastPlayed,
     DateAdded,
+    PlayTime,
     DisabledMods,
     Comment
 }

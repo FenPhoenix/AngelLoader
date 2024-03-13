@@ -173,6 +173,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
         ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
         ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
 
+        // @PlayTimeTracking: Array-ize these with getter functions like that other one
         ColumnHeaderCheckBoxMenuItems[(int)Column.Game].Text = LText.FMsList.GameColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.Installed].Text = LText.FMsList.InstalledColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.MissionCount].Text = LText.FMsList.MissionCountColumn;
@@ -185,6 +186,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
         ColumnHeaderCheckBoxMenuItems[(int)Column.ReleaseDate].Text = LText.FMsList.ReleaseDateColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.LastPlayed].Text = LText.FMsList.LastPlayedColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.DateAdded].Text = LText.FMsList.DateAddedColumn;
+        ColumnHeaderCheckBoxMenuItems[(int)Column.PlayTime].Text = LText.FMsList.PlayTimeColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.DisabledMods].Text = LText.FMsList.DisabledModsColumn;
         ColumnHeaderCheckBoxMenuItems[(int)Column.Comment].Text = LText.FMsList.CommentColumn;
     }

@@ -147,7 +147,9 @@ public static partial class Misc
 
     static Misc()
     {
+        // @PlayTimeTracking: Make other date columns descending as well
         ColumnDefaultSortDirections[(int)Column.LastPlayed] = SortDirection.Descending;
+        ColumnDefaultSortDirections[(int)Column.PlayTime] = SortDirection.Descending;
     }
 
     internal static readonly ReadOnlyCollection<string> ValidDateFormats =
