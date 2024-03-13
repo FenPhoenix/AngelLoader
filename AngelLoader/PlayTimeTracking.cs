@@ -16,9 +16,9 @@ Steam tracks the playtime itself, and furthermore if we tracked the runtime of t
 Steam's runtime, which would very likely greatly exceed the game. Probably many people would just leave Steam
 running indefinitely. Maybe we wait for the game to start and then link our Process object to it?
 */
-public sealed class TimeTrackingProcess
+public sealed class TimeTrackingProcess(GameIndex gameIndex)
 {
-    private readonly GameIndex GameIndex;
+    private readonly GameIndex _gameIndex = gameIndex;
 
     private string FMInstalledDir = "";
 
@@ -27,8 +27,6 @@ public sealed class TimeTrackingProcess
     // @PlayTimeTracking: Could we fix this with converting to UTC / doing a special compare / whatever else?
     private readonly Stopwatch _stopwatch = new();
     private Process? _process;
-
-    public TimeTrackingProcess(GameIndex gameIndex) => GameIndex = gameIndex;
 
     public void Start(ProcessStartInfo startInfo, FanMission fm)
     {
@@ -71,7 +69,7 @@ public sealed class TimeTrackingProcess
 
     private void Update(TimeSpan elapsed) => Core.View.Invoke(() =>
     {
-        List<FanMission> fmsList = GameIndex == GameIndex.TDM ? FMDataIniListTDM : FMDataIniList;
+        List<FanMission> fmsList = _gameIndex == GameIndex.TDM ? FMDataIniListTDM : FMDataIniList;
 
         FanMission? fm = fmsList.Find(x => x.RealInstalledDir.EqualsI(FMInstalledDir));
         if (fm == null)

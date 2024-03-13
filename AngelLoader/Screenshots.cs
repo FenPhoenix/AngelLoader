@@ -11,8 +11,10 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
-public sealed class ScreenshotWatcher(GameIndex _gameIndex)
+public sealed class ScreenshotWatcher(GameIndex gameIndex)
 {
+    private readonly GameIndex _gameIndex = gameIndex;
+
     private sealed class ScreenshotWatcherTimer(double interval) : System.Timers.Timer(interval)
     {
         internal string FullPath { get; private set; } = "";
