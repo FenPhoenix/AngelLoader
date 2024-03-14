@@ -1868,6 +1868,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region Columns
 
+            // @PlayTimeTracking: Array-ize these as well
             GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
             InstalledColumn.HeaderText = LText.FMsList.InstalledColumn;
             MisCountColumn.HeaderText = LText.FMsList.MissionCountColumn;
@@ -1881,6 +1882,7 @@ public sealed partial class MainForm : DarkFormBase,
             ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
             LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
             DateAddedColumn.HeaderText = LText.FMsList.DateAddedColumn;
+            PlayTimeColumn.HeaderText = LText.FMsList.PlayTimeColumn;
             DisabledModsColumn.HeaderText = LText.FMsList.DisabledModsColumn;
             CommentColumn.HeaderText = LText.FMsList.CommentColumn;
 

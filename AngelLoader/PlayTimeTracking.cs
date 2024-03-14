@@ -48,28 +48,28 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         }
         catch
         {
-            Reset();
+            _stopwatch.Reset();
+            _process?.Dispose();
+            FMInstalledDir = "";
+            _process = null;
             throw;
         }
     }
 
-    private void Reset()
-    {
-        _stopwatch.Reset();
-        _process?.Dispose();
-        FMInstalledDir = "";
-        _process = null;
-    }
-
     private void Process_Exited(object sender, EventArgs e)
     {
-        Reset();
-        Update(_stopwatch.Elapsed);
+        TimeSpan elapsed = _stopwatch.Elapsed;
+        _stopwatch.Reset();
+        _process?.Dispose();
+        _process = null;
+        Update(elapsed);
     }
 
     private void Update(TimeSpan elapsed) => Core.View.Invoke(() =>
     {
         List<FanMission> fmsList = _gameIndex == GameIndex.TDM ? FMDataIniListTDM : FMDataIniList;
+
+        Trace.WriteLine(FMInstalledDir);
 
         FanMission? fm = fmsList.Find(x => x.RealInstalledDir.EqualsI(FMInstalledDir));
         if (fm == null)

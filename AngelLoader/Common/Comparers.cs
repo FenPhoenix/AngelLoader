@@ -405,8 +405,7 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            // Largest first for better UX
-            return SortDirection == SortDirection.Ascending ? -ret : ret;
+            return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
