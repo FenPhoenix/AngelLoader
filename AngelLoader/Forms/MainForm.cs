@@ -1873,7 +1873,7 @@ public sealed partial class MainForm : DarkFormBase,
                 FMsDGV.Columns[i].HeaderText = ColumnLocalizedStrings[i].Invoke();
             }
 
-            // We don't known which is in the collection so just set them both
+            // We don't know which is in the collection so just set them both
             RatingTextColumn.HeaderText = LText.FMsList.RatingColumn;
             RatingImageColumn.HeaderText = LText.FMsList.RatingColumn;
 
