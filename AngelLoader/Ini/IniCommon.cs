@@ -804,10 +804,29 @@ internal static partial class Ini
 
         config.FMTabsData.EnsureValidity();
 
-        // @PlayTimeTracking: Make it insert new columns at their default index (currently their position is semi-undefined)
-        // Because they end up being subject to that weird-ass behavior of DisplayIndex setting where one
-        // will affect the others etc...
-        // If we ever add new columns, which is rarely, but still...
+        /*
+        @PlayTimeTracking: Make it insert new columns at their default index (currently their position is semi-undefined)
+        Because they end up being subject to that weird-ass behavior of DisplayIndex setting where one will\
+        affect the others etc...
+        If we ever add new columns, which is rarely, but still...
+
+        @PlayTimeTracking(Columns):
+        DisplayIndexes are way too brittle. They get clamped for safety, which means if we have a loop we can't
+        just increment them blindly, as incrementing past the clamp will just result in the same value and an
+        infinite loop, thus dangerous.
+        We also need to check for gaps in the numbers.
+        So check for:
+        -Gaps in numbers
+        -Missing numbers on bottom or top end (special case of above)
+        -Any number out of range (including negatives)
+        -If one of these checks fails, reset the display indexes to default (known valid)
+
+        When a new column is added, it will have a duplicate number unless it goes on the end.
+        Also, if someone is upgrading to a version that has more than one extra column from their current one,
+        there will be MULTIPLE new columns. We have to handle that too.
+
+        The logic we want is "insertion" of the new column(s) at their default display indexes.
+        */
 
         #region Date format
 
