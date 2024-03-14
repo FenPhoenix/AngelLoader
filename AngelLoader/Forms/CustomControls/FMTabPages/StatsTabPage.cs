@@ -53,17 +53,10 @@ public sealed class StatsTabPage : Lazy_TabsBase
 
         UpdateCustomResourcesLabel(selFM);
 
-        // IMPORTANT! Fragile numeric-indexed stuff, DO NOT change the order!
-        _page._checkBoxes[0].Text = LText.StatisticsTab.Map;
-        _page._checkBoxes[1].Text = LText.StatisticsTab.Automap;
-        _page._checkBoxes[2].Text = LText.StatisticsTab.Scripts;
-        _page._checkBoxes[3].Text = LText.StatisticsTab.Textures;
-        _page._checkBoxes[4].Text = LText.StatisticsTab.Sounds;
-        _page._checkBoxes[5].Text = LText.StatisticsTab.Objects;
-        _page._checkBoxes[6].Text = LText.StatisticsTab.Creatures;
-        _page._checkBoxes[7].Text = LText.StatisticsTab.Motions;
-        _page._checkBoxes[8].Text = LText.StatisticsTab.Movies;
-        _page._checkBoxes[9].Text = LText.StatisticsTab.Subtitles;
+        for (int i = 0; i < CustomResourcesCount - 1; i++)
+        {
+            _page._checkBoxes[i].Text = CustomResourceLocalizedStrings[i].Invoke();
+        }
 
         _page.StatsScanCustomResourcesButton.Text = LText.StatisticsTab.RescanStatistics;
     }

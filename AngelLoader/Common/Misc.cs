@@ -227,7 +227,7 @@ public static partial class Misc
         ".tiff"
     };
 
-    [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+    // ReSharper disable once RedundantExplicitArraySize
     public static readonly Func<string>[] FMTabTextLocalizedStrings = new Func<string>[FMTabCount]
     {
         static () => LText.StatisticsTab.TabText,
@@ -237,5 +237,43 @@ public static partial class Misc
         static () => LText.PatchTab.TabText,
         static () => LText.ModsTab.TabText,
         static () => LText.ScreenshotsTab.TabText
+    };
+
+    // ReSharper disable once RedundantExplicitArraySize
+    public static readonly Func<string>[] ColumnLocalizedStrings = new Func<string>[ColumnCount]
+    {
+#if DateAccTest
+        static () => "Date accuracy",
+#endif
+        static () => LText.FMsList.GameColumn,
+        static () => LText.FMsList.InstalledColumn,
+        static () => LText.FMsList.MissionCountColumn,
+        static () => LText.FMsList.TitleColumn,
+        static () => LText.FMsList.ArchiveColumn,
+        static () => LText.FMsList.AuthorColumn,
+        static () => LText.FMsList.SizeColumn,
+        static () => LText.FMsList.RatingColumn,
+        static () => LText.FMsList.FinishedColumn,
+        static () => LText.FMsList.ReleaseDateColumn,
+        static () => LText.FMsList.LastPlayedColumn,
+        static () => LText.FMsList.DateAddedColumn,
+        static () => LText.FMsList.PlayTimeColumn,
+        static () => LText.FMsList.DisabledModsColumn,
+        static () => LText.FMsList.CommentColumn
+    };
+
+    // ReSharper disable once RedundantExplicitArraySize
+    public static readonly Func<string>[] CustomResourceLocalizedStrings = new Func<string>[CustomResourcesCount - 1]
+    {
+        static () => LText.StatisticsTab.Map,
+        static () => LText.StatisticsTab.Automap,
+        static () => LText.StatisticsTab.Scripts,
+        static () => LText.StatisticsTab.Textures,
+        static () => LText.StatisticsTab.Sounds,
+        static () => LText.StatisticsTab.Objects,
+        static () => LText.StatisticsTab.Creatures,
+        static () => LText.StatisticsTab.Motions,
+        static () => LText.StatisticsTab.Movies,
+        static () => LText.StatisticsTab.Subtitles
     };
 }
