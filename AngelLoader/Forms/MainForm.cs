@@ -1868,23 +1868,14 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region Columns
 
-            // @PlayTimeTracking: Array-ize these as well
-            GameTypeColumn.HeaderText = LText.FMsList.GameColumn;
-            InstalledColumn.HeaderText = LText.FMsList.InstalledColumn;
-            MisCountColumn.HeaderText = LText.FMsList.MissionCountColumn;
-            TitleColumn.HeaderText = LText.FMsList.TitleColumn;
-            ArchiveColumn.HeaderText = LText.FMsList.ArchiveColumn;
-            AuthorColumn.HeaderText = LText.FMsList.AuthorColumn;
-            SizeColumn.HeaderText = LText.FMsList.SizeColumn;
+            for (int i = 0; i < FMsDGV.ColumnCount; i++)
+            {
+                FMsDGV.Columns[i].HeaderText = ColumnLocalizedStrings[i].Invoke();
+            }
+
+            // We don't known which is in the collection so just set them both
             RatingTextColumn.HeaderText = LText.FMsList.RatingColumn;
             RatingImageColumn.HeaderText = LText.FMsList.RatingColumn;
-            FinishedColumn.HeaderText = LText.FMsList.FinishedColumn;
-            ReleaseDateColumn.HeaderText = LText.FMsList.ReleaseDateColumn;
-            LastPlayedColumn.HeaderText = LText.FMsList.LastPlayedColumn;
-            DateAddedColumn.HeaderText = LText.FMsList.DateAddedColumn;
-            PlayTimeColumn.HeaderText = LText.FMsList.PlayTimeColumn;
-            DisabledModsColumn.HeaderText = LText.FMsList.DisabledModsColumn;
-            CommentColumn.HeaderText = LText.FMsList.CommentColumn;
 
             #endregion
 
