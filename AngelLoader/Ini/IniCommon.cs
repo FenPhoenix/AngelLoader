@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TESTING_COLUMN_VALIDATOR
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -653,7 +655,7 @@ internal static partial class Ini
         if (value.Contains(',') &&
             (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
         {
-            var col = new ColumnData { Id = columnType };
+            ColumnData col = new() { Id = columnType, ExplicitlySet = true };
             for (int i = 0; i < cProps.Length; i++)
             {
                 switch (i)
@@ -868,6 +870,17 @@ internal static partial class Ini
 
         static void EnsureColumnsValid(ConfigData config)
         {
+#if TESTING_COLUMN_VALIDATOR
+            System.Diagnostics.Trace.WriteLine("---------- INITIAL:");
+
+            for (int i = 0; i < ColumnCount; i++)
+            {
+                ColumnData column = config.Columns[i];
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+            }
+            System.Diagnostics.Trace.WriteLine("---------- END INITIAL");
+#endif
+
             HashSet<int> displayIndexesHash = new(ColumnCount);
             foreach (ColumnData column in config.Columns)
             {
@@ -877,7 +890,7 @@ internal static partial class Ini
             int[] displayIndexesArray = displayIndexesHash.ToArray();
             Array.Sort(displayIndexesArray);
 
-            if (!ColumnDisplayIndexesValid(config.Columns, displayIndexesArray))
+            if (!ColumnDisplayIndexesValid(displayIndexesArray))
             {
                 ResetColumnDisplayIndexes(config.Columns);
                 return;
@@ -885,10 +898,13 @@ internal static partial class Ini
 
             displayIndexesHash.Clear();
 
+            ColumnData[] sortedColumns = config.Columns.ToArray();
+            Array.Sort(sortedColumns, new Comparers.ValidatorColumnComparer());
+
             restart:
             for (int index = 0; index < ColumnCount; index++)
             {
-                ColumnData column = config.Columns[index];
+                ColumnData column = sortedColumns[index];
 #if TESTING_COLUMN_VALIDATOR
                 System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
 #endif
@@ -899,7 +915,7 @@ internal static partial class Ini
 #endif
                     for (int subIndex = index; subIndex < ColumnCount; subIndex++)
                     {
-                        ColumnData subColumn = config.Columns[subIndex];
+                        ColumnData subColumn = sortedColumns[subIndex];
                         subColumn.DisplayIndex++;
                     }
                     displayIndexesHash.Clear();
@@ -928,9 +944,8 @@ internal static partial class Ini
 
             return;
 
-            static bool ColumnDisplayIndexesValid(ColumnData[] columns, int[] displayIndexes)
+            static bool ColumnDisplayIndexesValid(int[] displayIndexes)
             {
-                if (displayIndexes.Length != columns.Length) return false;
                 for (int i = 0; i < displayIndexes.Length; i++)
                 {
                     if (displayIndexes[i] != i) return false;

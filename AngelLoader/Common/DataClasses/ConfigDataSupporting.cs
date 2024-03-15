@@ -25,6 +25,9 @@ internal sealed class ColumnData
     internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
 
     internal bool Visible = true;
+
+    // Needed for the validator to sort new columns with the same column index as old ones in the intended way
+    internal bool ExplicitlySet;
 }
 
 [FenGenEnumCount]

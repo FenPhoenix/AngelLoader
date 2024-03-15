@@ -472,5 +472,15 @@ internal static class Comparers
         }
     }
 
+    internal sealed class ValidatorColumnComparer : IComparer<ColumnData>
+    {
+        public int Compare(ColumnData x, ColumnData y) =>
+            x.DisplayIndex == y.DisplayIndex
+                ? x.ExplicitlySet == y.ExplicitlySet ? 0 : x.ExplicitlySet ? 1 : -1
+                : x.DisplayIndex < y.DisplayIndex
+                    ? -1
+                    : 1;
+    }
+
     #endregion
 }
