@@ -8,6 +8,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.NativeCommon;
 using static AngelLoader.Utils;
 
@@ -63,7 +64,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                     // @PlayTimeTracking: Put some explanation that the wait is needed to track FM play time
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.WaitingForSteamToStartTheGame,
-                        progressType: Misc.ProgressType.Indeterminate,
+                        progressType: ProgressType.Indeterminate,
                         cancelMessage: LText.Global.Cancel,
                         cancelAction: CancelSteamWait
                     );
