@@ -174,9 +174,6 @@ internal static partial class FMInstallAndPlay
             {
                 Core.View.SetWaitCursor(true);
 
-                // @PlayTimeTracking: Deal with canceling the wait-for-Steam-game-exe process here
-                // We need to return false if we cancel it, otherwise we'll get this stuff running erroneously
-                // and/or too late.
                 if (await PlayFM(fm, gameIndex, playMP))
                 {
                     fm.LastPlayed.DateTime = DateTime.Now;

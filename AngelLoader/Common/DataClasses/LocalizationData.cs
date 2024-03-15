@@ -768,6 +768,7 @@ internal sealed class LText_Class
         internal readonly string DeletingFMArchives = "Deleting FM archives...";
         [FenGenBlankLine]
         internal readonly string WaitingForSteamToStartTheGame = "Waiting for Steam to start the game...";
+        internal readonly string WaitingForSteamToStartGame_Explanation = "If you choose to cancel, play time will not be tracked for this session.";
     }
 
     internal sealed class SettingsWindow_Class

@@ -16,10 +16,7 @@ namespace AngelLoader;
 
 /*
 @PlayTimeTracking: Remove Trace.WriteLines and other debug/test code
-@PlayTimeTracking: Decide how to handle running through Steam:
-Steam tracks the playtime itself, and furthermore if we tracked the runtime of the passed exe, we'd be tracking
-Steam's runtime, which would very likely greatly exceed the game. Probably many people would just leave Steam
-running indefinitely. Maybe we wait for the game to start and then link our Process object to it?
+@PlayTimeTracking: Should we put the play time on the Stats tab too?
 */
 public sealed class TimeTrackingProcess(GameIndex gameIndex)
 {
@@ -61,9 +58,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
                     Core.View.SetWaitCursor(false);
 
-                    // @PlayTimeTracking: Put some explanation that the wait is needed to track FM play time
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.WaitingForSteamToStartTheGame,
+                        message2: LText.ProgressBox.WaitingForSteamToStartGame_Explanation,
                         progressType: ProgressType.Indeterminate,
                         cancelMessage: LText.Global.Cancel,
                         cancelAction: CancelSteamWait
