@@ -807,7 +807,9 @@ internal static partial class Ini
 
         config.FMTabsData.EnsureValidity();
 
+#if SMART_NEW_COLUMN_INSERT
         EnsureColumnsValid(config);
+#endif
 
         #region Date format
 
@@ -866,6 +868,8 @@ internal static partial class Ini
         // Because we want it to self-dedupe, but also to keep its ordering
         config.FMArchivePaths.ClearAndAdd_Small(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
 
+#if SMART_NEW_COLUMN_INSERT
+
         return;
 
         static void EnsureColumnsValid(ConfigData config)
@@ -889,6 +893,13 @@ internal static partial class Ini
 
             int[] displayIndexesArray = displayIndexesHash.ToArray();
             Array.Sort(displayIndexesArray);
+
+#if TESTING_COLUMN_VALIDATOR
+            for (int i = 0; i < displayIndexesArray.Length; i++)
+            {
+                System.Diagnostics.Trace.WriteLine(displayIndexesArray[i]);
+            }
+#endif
 
             if (!ColumnDisplayIndexesValid(displayIndexesArray))
             {
@@ -916,6 +927,9 @@ internal static partial class Ini
                     for (int subIndex = index; subIndex < ColumnCount; subIndex++)
                     {
                         ColumnData subColumn = sortedColumns[subIndex];
+#if TESTING_COLUMN_VALIDATOR
+                        System.Diagnostics.Trace.WriteLine(subColumn.ExplicitlySet);
+#endif
                         subColumn.DisplayIndex++;
                     }
                     displayIndexesHash.Clear();
@@ -948,11 +962,16 @@ internal static partial class Ini
             {
                 for (int i = 0; i < displayIndexes.Length; i++)
                 {
-                    if (displayIndexes[i] != i) return false;
+                    if (displayIndexes[i] != i)
+                    {
+                        return false;
+                    }
                 }
                 return true;
             }
         }
+
+#endif
     }
 
     #endregion

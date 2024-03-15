@@ -472,6 +472,7 @@ internal static class Comparers
         }
     }
 
+#if SMART_NEW_COLUMN_INSERT
     internal sealed class ValidatorColumnComparer : IComparer<ColumnData>
     {
         public int Compare(ColumnData x, ColumnData y) =>
@@ -481,6 +482,7 @@ internal static class Comparers
                     ? -1
                     : 1;
     }
+#endif
 
     #endregion
 }

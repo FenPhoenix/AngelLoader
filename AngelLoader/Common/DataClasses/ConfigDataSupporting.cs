@@ -18,8 +18,13 @@ internal sealed class ColumnData
 {
     internal Column Id;
 
+#if SMART_NEW_COLUMN_INSERT
     // Don't clamp this anymore because it messes with our validator; let the validator handle it
     internal int DisplayIndex;
+#else
+    private int _displayIndex;
+    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
+#endif
 
     private int _width = Defaults.ColumnWidth;
     internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }

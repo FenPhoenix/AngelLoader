@@ -1,5 +1,6 @@
 <Project>
- <PropertyGroup>
-   <SolutionTargetFramework>net472</SolutionTargetFramework>
- </PropertyGroup>
+	<PropertyGroup>
+		<SolutionTargetFramework>net472</SolutionTargetFramework>
+		<SmartNewColumnInsert></SmartNewColumnInsert>
+	</PropertyGroup>
 </Project>
