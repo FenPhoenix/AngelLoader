@@ -87,7 +87,7 @@ internal static class TDMWatchers
         }
     });
 
-    private static void ChangePlayTimeTrackedTdmFM()
+    private static void ChangeTdmFmForPlayTimeTrackingIfRequired()
     {
         TimeTrackingProcess ttp = PlayTimeTracking.GetTimeTrackingProcess(GameIndex.TDM);
         if (!ttp.IsRunning) return;
@@ -150,7 +150,7 @@ internal static class TDMWatchers
     private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
         if (Core.View == null!) return;
-        ChangePlayTimeTrackedTdmFM();
+        ChangeTdmFmForPlayTimeTrackingIfRequired();
         await RefreshIfAllowed(TDM_FileChanged.CurrentFM);
     }
 
