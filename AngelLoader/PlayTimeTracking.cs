@@ -17,7 +17,6 @@ using static AngelLoader.Utils;
 namespace AngelLoader;
 
 /*
-@PlayTimeTracking: Remove Trace.WriteLines and other debug/test code
 @PlayTimeTracking: Should we put the play time on the Stats tab too?
 */
 public sealed class TimeTrackingProcess(GameIndex gameIndex)
