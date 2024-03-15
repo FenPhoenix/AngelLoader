@@ -14,7 +14,6 @@ using static AngelLoader.Utils;
 namespace AngelLoader;
 
 /*
-@PlayTimeTracking: We could get really fancy and switch the tracked FM when TDM changes FM in-game
 @PlayTimeTracking: Remove Trace.WriteLines and other debug/test code
 @PlayTimeTracking: Decide how to handle running through Steam:
 Steam tracks the playtime itself, and furthermore if we tracked the runtime of the passed exe, we'd be tracking
@@ -27,9 +26,12 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     internal string FMInstalledDir { get; private set; } = "";
 
-    // Processes have StartTime and EndTime properties, but those can cross timezones / DST and whatever else,
-    // so let's just time it with a stopwatch.
-    // @PlayTimeTracking: Could we fix this with converting to UTC / doing a special compare / whatever else?
+    /*
+    Processes have StartTime and EndTime properties, but those can cross timezones / DST and whatever else, so
+    let's just time it with a stopwatch.
+    Also since we track TDM per-selected-FM rather than per-app-run, we can't use the Process start/end times
+    anyway.
+    */
     private readonly Stopwatch _stopwatch = new();
     private Process? _process;
 
