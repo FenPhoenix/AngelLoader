@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -273,7 +273,7 @@ internal static class TDM
             using var cts = new CancellationTokenSource(5000);
 
             List<string>? lines;
-            while (!TryGetLines(file, out lines))
+            while (!TryReadAllLines(file, out lines, log: false))
             {
                 Thread.Sleep(50);
 
@@ -294,22 +294,6 @@ internal static class TDM
                 // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
                 // list.
                 fm.Installed = fmName != null && !fm.MarkedUnavailable && fm.TDMInstalledDir == fmName;
-            }
-        }
-
-        return;
-
-        static bool TryGetLines(string file, [NotNullWhen(true)] out List<string>? lines)
-        {
-            try
-            {
-                lines = File_ReadAllLines_List(file);
-                return true;
-            }
-            catch
-            {
-                lines = null;
-                return false;
             }
         }
     }
