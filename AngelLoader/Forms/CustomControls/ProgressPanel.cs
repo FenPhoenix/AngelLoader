@@ -8,6 +8,7 @@ using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -199,7 +200,8 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
     {
         int message1Width = TextRenderer.MeasureText(MainMessage1Label.Text, MainMessage1Label.Font).Width;
         int message2Width = TextRenderer.MeasureText(MainMessage2Label.Text, MainMessage2Label.Font).Width;
-        int requiredWidth = Math.Max(message1Width, message2Width) + 16;
+        int message3Width = TextRenderer.MeasureText(SubMessageLabel.Text, SubMessageLabel.Font).Width;
+        int requiredWidth = MathMax3(message1Width, message2Width, message3Width);
 
         bool widthChanged = false;
 
@@ -280,6 +282,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         if (subMessage != null)
         {
             SubMessageLabel.Text = subMessage;
+            AutoSizeWidth();
         }
         if (subPercent != null)
         {
