@@ -750,7 +750,10 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         else if (sender == OpenInDromEdMenuItem)
         {
             FanMission fm = _owner.FMsDGV.GetMainSelectedFM();
-            if (fm.Installed || await FMInstallAndPlay.Install(fm)) FMInstallAndPlay.OpenFMInEditor(fm);
+            if (fm.Installed || await FMInstallAndPlay.Install(fm))
+            {
+                FMInstallAndPlay.OpenFMInEditor(fm);
+            }
         }
         else if (sender == ScanFMMenuItem)
         {

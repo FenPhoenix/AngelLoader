@@ -45,12 +45,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
     {
         try
         {
-            startInfo.UseShellExecute = true;
-
-            // Real installed dir even for TDM, because TDM's unique id installed dir might change after an FM find
-            FMInstalledDir = fm.RealInstalledDir;
-
-            _process?.Dispose();
+            InitStart(startInfo, fm);
 
             if (steam)
             {
@@ -64,29 +59,62 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
             }
             else
             {
-                _process = new Process();
-                _process.StartInfo = startInfo;
-                _process.EnableRaisingEvents = true;
-
-                _process.Exited += Process_Exited;
-                _process.Start();
+                StartProcessNonSteam(startInfo);
                 _stopwatch.Restart();
-                IsRunning = true;
             }
         }
         catch
         {
-            IsRunning = false;
-            _stopwatch.Reset();
-            _process?.Dispose();
-            FMInstalledDir = "";
-            _process = null;
+            HandleStartFailure();
             throw;
         }
     }
 
-    // @PlayTimeTracking(Switch TDM FM): Make it work None->FM
-    // Works FM->FM, FM->None, and FM->None->FM
+    public void StartTdmWithNoFM(ProcessStartInfo startInfo)
+    {
+        InitStart(startInfo, null);
+
+        try
+        {
+            StartProcessNonSteam(startInfo);
+        }
+        catch
+        {
+            HandleStartFailure();
+            throw;
+        }
+    }
+
+    private void InitStart(ProcessStartInfo startInfo, FanMission? fm)
+    {
+        startInfo.UseShellExecute = true;
+
+        // Real installed dir even for TDM, because TDM's unique id installed dir might change after an FM find
+        FMInstalledDir = fm?.RealInstalledDir ?? "";
+
+        _process?.Dispose();
+    }
+
+    private void StartProcessNonSteam(ProcessStartInfo startInfo)
+    {
+        _process = new Process();
+        _process.StartInfo = startInfo;
+        _process.EnableRaisingEvents = true;
+
+        _process.Exited += Process_Exited;
+        _process.Start();
+        IsRunning = true;
+    }
+
+    private void HandleStartFailure()
+    {
+        IsRunning = false;
+        _stopwatch.Reset();
+        _process?.Dispose();
+        FMInstalledDir = "";
+        _process = null;
+    }
+
     public void SwitchTdmFM(string? fmInstalledDir)
     {
         _stopwatch.Stop();
@@ -99,7 +127,6 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         }
         else
         {
-            IsRunning = true;
             FMInstalledDir = fmInstalledDir;
             _stopwatch.Restart();
         }

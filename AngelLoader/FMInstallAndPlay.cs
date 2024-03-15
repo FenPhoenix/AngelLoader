@@ -249,7 +249,14 @@ internal static partial class FMInstallAndPlay
                 SelectTdmFM(null, deselect: true);
             }
 
-            if (!StartExe(gameExe, workingPath, args)) return false;
+            if (!StartExeForOriginalGame(
+                    gameIndex,
+                    gameExe,
+                    workingPath,
+                    args))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -384,7 +391,7 @@ internal static partial class FMInstallAndPlay
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
-        if (!await StartExeForFM(
+        if (!await StartExeForPlayFM(
                 fm: fm,
                 gameIndex: gameIndex,
                 exe: sv.Success ? steamExe : gameExe,
@@ -457,7 +464,12 @@ internal static partial class FMInstallAndPlay
             GenerateMissFlagFileIfRequired(fm);
 
             // We don't need the stub for the editor, cause we don't need to pass anything except the fm folder
-            if (!StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"")) return false;
+            if (!StartExeForOpenFMInEditor(
+                    editorExe,
+                    gamePath, "-fm=\"" + fm.InstalledDir + "\""))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -620,34 +632,70 @@ internal static partial class FMInstallAndPlay
         }
     }
 
+    #region Start Exe
+
     [MustUseReturnValue]
-    private static bool StartExe(string exe, string workingPath, string args)
+    private static bool StartExeForOpenFMInEditor(
+        string exe,
+        string workingPath,
+        string args)
     {
         try
         {
-            ProcessStart_UseShellExecute(new ProcessStartInfo
+            ProcessStartInfo startInfo = new()
             {
                 FileName = exe,
                 WorkingDirectory = workingPath,
                 Arguments = !args.IsEmpty() ? args : ""
-            });
+            };
+
+            ProcessStart_UseShellExecute(startInfo);
 
             return true;
         }
         catch (Exception ex)
         {
-            string msg = ErrorText.Un + "start '" + exe + "'.";
-            Log(msg + "\r\n" +
-                nameof(workingPath) + ": " + workingPath + "\r\n" +
-                nameof(args) + ": " + args, ex);
-            Core.Dialogs.ShowError(msg);
-
+            HandleStartExeFailure(exe, workingPath, args, ex);
             return false;
         }
     }
 
     [MustUseReturnValue]
-    private static async Task<bool> StartExeForFM(
+    private static bool StartExeForOriginalGame(
+        GameIndex gameIndex,
+        string exe,
+        string workingPath,
+        string args)
+    {
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = exe,
+                WorkingDirectory = workingPath,
+                Arguments = !args.IsEmpty() ? args : ""
+            };
+
+            if (gameIndex == GameIndex.TDM)
+            {
+                PlayTimeTracking.GetTimeTrackingProcess(gameIndex).StartTdmWithNoFM(startInfo);
+            }
+            else
+            {
+                ProcessStart_UseShellExecute(startInfo);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            HandleStartExeFailure(exe, workingPath, args, ex);
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static async Task<bool> StartExeForPlayFM(
         FanMission fm,
         GameIndex gameIndex,
         string exe,
@@ -664,20 +712,27 @@ internal static partial class FMInstallAndPlay
                 WorkingDirectory = workingPath,
                 Arguments = !args.IsEmpty() ? args : ""
             };
+
             await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);
 
             return true;
         }
         catch (Exception ex)
         {
-            string msg = ErrorText.Un + "start '" + exe + "'.";
-            Log(msg + "\r\n" +
-                nameof(workingPath) + ": " + workingPath + "\r\n" +
-                nameof(args) + ": " + args, ex);
-            Core.Dialogs.ShowError(msg);
-
+            HandleStartExeFailure(exe, workingPath, args, ex);
             return false;
         }
+    }
+
+    #endregion
+
+    private static void HandleStartExeFailure(string exe, string workingPath, string args, Exception ex)
+    {
+        string msg = ErrorText.Un + "start '" + exe + "'.";
+        Log(msg + "\r\n" +
+            nameof(workingPath) + ": " + workingPath + "\r\n" +
+            nameof(args) + ": " + args, ex);
+        Core.Dialogs.ShowError(msg);
     }
 
     private static (bool Success, string GameExe, string GamePath)
