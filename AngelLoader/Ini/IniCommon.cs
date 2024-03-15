@@ -18,7 +18,6 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -655,7 +654,10 @@ internal static partial class Ini
         if (value.Contains(',') &&
             (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
         {
-            ColumnData col = new() { Id = columnType, ExplicitlySet = true };
+            ColumnData col = config.Columns[(int)columnType];
+#if SMART_NEW_COLUMN_INSERT
+            col.ExplicitlySet = true;
+#endif
             for (int i = 0; i < cProps.Length; i++)
             {
                 switch (i)
@@ -671,7 +673,6 @@ internal static partial class Ini
                         break;
                 }
             }
-            config.Columns[(int)col.Id] = col;
         }
     }
 
@@ -911,14 +912,13 @@ internal static partial class Ini
 
             if (!ColumnDisplayIndexesValid(displayIndexesArray))
             {
-                ResetColumnDisplayIndexes(config.Columns);
+                Utils.ResetColumnDisplayIndexes(config.Columns);
                 return;
             }
 
             displayIndexesHash.Clear();
 
-            ColumnData[] sortedColumns = config.Columns.ToArray();
-            Array.Sort(sortedColumns, new Comparers.ValidatorColumnComparer());
+            ColumnDataArray sortedColumns = config.Columns.Sorted(new Comparers.ValidatorColumnComparer());
 
             restart:
             for (int index = 0; index < ColumnCount; index++)
@@ -953,7 +953,7 @@ internal static partial class Ini
             {
                 if (column.DisplayIndex is < 0 or > ColumnCount - 1)
                 {
-                    ResetColumnDisplayIndexes(config.Columns);
+                    Utils.ResetColumnDisplayIndexes(config.Columns);
                     return;
                 }
             }

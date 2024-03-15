@@ -2618,7 +2618,7 @@ internal static class Core
         float mainSplitterPercent,
         float topSplitterPercent,
         float bottomSplitterPercent,
-        ColumnData[] columns,
+        ColumnDataArray columns,
         Column sortedColumn,
         SortDirection sortDirection,
         float fmsListFontSizeInPoints,
@@ -2646,7 +2646,7 @@ internal static class Core
 
         #region FMs list
 
-        Array.Copy(columns, Config.Columns, ColumnCount);
+        columns.CopyTo(Config.Columns);
 
         Config.SortedColumn = sortedColumn;
         Config.SortDirection = sortDirection;

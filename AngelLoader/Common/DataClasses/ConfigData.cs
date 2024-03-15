@@ -55,13 +55,6 @@ public sealed class ConfigData
 
             GameFilterControlVisibilities[i] = true;
         }
-
-        // Must set the display indexes, otherwise we crash!
-        Columns = new ColumnData[ColumnCount];
-        for (int i = 0; i < ColumnCount; i++)
-        {
-            Columns[i] = new ColumnData { Id = (Column)i, DisplayIndex = i };
-        }
     }
 
     //internal int Version = 1;
@@ -270,7 +263,7 @@ public sealed class ConfigData
 
     #region Columns and sorting
 
-    internal readonly ColumnData[] Columns;
+    internal readonly ColumnDataArray Columns = new();
     internal Column SortedColumn = Column.Title;
     internal SortDirection SortDirection = SortDirection.Ascending;
 

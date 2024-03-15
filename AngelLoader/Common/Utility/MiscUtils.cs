@@ -11,6 +11,7 @@ using JetBrains.Annotations;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.NativeCommon;
 
 namespace AngelLoader;
@@ -314,9 +315,9 @@ public static partial class Utils
         return enc;
     }
 
-    internal static void ResetColumnDisplayIndexes(ColumnData[] columns)
+    internal static void ResetColumnDisplayIndexes(ColumnDataArray columns)
     {
-        for (int i = 0; i < columns.Length; i++)
+        for (int i = 0; i < ColumnCount; i++)
         {
             columns[i].DisplayIndex = i;
         }
