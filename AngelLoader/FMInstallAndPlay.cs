@@ -174,7 +174,10 @@ internal static partial class FMInstallAndPlay
             {
                 Core.View.SetWaitCursor(true);
 
-                if (PlayFM(fm, gameIndex, playMP))
+                // @PlayTimeTracking: Deal with canceling the wait-for-Steam-game-exe process here
+                // We need to return false if we cancel it, otherwise we'll get this stuff running erroneously
+                // and/or too late.
+                if (await PlayFM(fm, gameIndex, playMP))
                 {
                     fm.LastPlayed.DateTime = DateTime.Now;
                     Core.View.RefreshFM(fm);
@@ -256,7 +259,7 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static bool PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
+    private static async Task<bool> PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
     {
         using var dsw = new DisableScreenshotWatchers();
 
@@ -273,9 +276,10 @@ internal static partial class FMInstallAndPlay
         if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.FM)) return false;
 
         string steamArgs = "";
+        string steamExe = "";
         string workingPath = Config.GetGamePath(gameIndex);
         var sv = GetSteamValues(gameIndex, playMP);
-        if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
+        if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
 
         /*
         BUG: Possible stub comm file not being deleted in the following scenario:
@@ -380,7 +384,17 @@ internal static partial class FMInstallAndPlay
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
-        if (!StartExeForFM(fm, gameIndex, gameExe, workingPath, args)) return false;
+        if (!await StartExeForFM(
+                fm: fm,
+                gameIndex: gameIndex,
+                exe: sv.Success ? steamExe : gameExe,
+                gameExe: gameExe,
+                workingPath: workingPath,
+                args: args,
+                steam: sv.Success))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -633,7 +647,14 @@ internal static partial class FMInstallAndPlay
     }
 
     [MustUseReturnValue]
-    private static bool StartExeForFM(FanMission fm, GameIndex gameIndex, string exe, string workingPath, string args)
+    private static async Task<bool> StartExeForFM(
+        FanMission fm,
+        GameIndex gameIndex,
+        string exe,
+        string gameExe,
+        string workingPath,
+        string args,
+        bool steam)
     {
         try
         {
@@ -643,7 +664,7 @@ internal static partial class FMInstallAndPlay
                 WorkingDirectory = workingPath,
                 Arguments = !args.IsEmpty() ? args : ""
             };
-            PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm);
+            await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);
 
             return true;
         }

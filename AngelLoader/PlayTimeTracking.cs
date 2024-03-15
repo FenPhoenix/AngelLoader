@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.NativeCommon;
+using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -28,7 +33,11 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
     private readonly Stopwatch _stopwatch = new();
     private Process? _process;
 
-    public void Start(ProcessStartInfo startInfo, FanMission fm)
+    public async Task Start(
+        ProcessStartInfo startInfo,
+        FanMission fm,
+        bool steam,
+        string gameExe)
     {
         try
         {
@@ -38,13 +47,26 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
             FMInstalledDir = fm.RealInstalledDir;
 
             _process?.Dispose();
-            _process = new Process();
-            _process.StartInfo = startInfo;
-            _process.EnableRaisingEvents = true;
 
-            _process.Exited += Process_Exited;
-            _process.Start();
-            _stopwatch.Restart();
+            if (steam)
+            {
+                ProcessStart_UseShellExecute(startInfo);
+                _process = await WaitForProcessAndReturn(gameExe, CancellationToken.None);
+                _process.EnableRaisingEvents = true;
+
+                _process.Exited += Process_Exited;
+                _stopwatch.Restart();
+            }
+            else
+            {
+                _process = new Process();
+                _process.StartInfo = startInfo;
+                _process.EnableRaisingEvents = true;
+
+                _process.Exited += Process_Exited;
+                _process.Start();
+                _stopwatch.Restart();
+            }
         }
         catch
         {
@@ -53,6 +75,76 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
             FMInstalledDir = "";
             _process = null;
             throw;
+        }
+    }
+
+    private static async Task<Process> WaitForProcessAndReturn(string fullPath, CancellationToken cancellationToken)
+    {
+        var buffer = new StringBuilder(1024);
+
+        /*
+        @PlayTimeTracking: Dumb infinite loop - give it a timeout and robustify etc.
+        Notes on this:
+        -A timeout is difficult because Steam could start and then update for a reasonably substantial amount of
+         time. Also, in theory, Steam could start, not have the requested game in the user's library, and then
+         the game never starts but we're still just waiting forever.
+        -We could make the timeout be fairly long, like a minute or two, and then pop up a dialog asking the user
+         if they want to continue waiting (telling them that we need to wait for the game to track play time).
+         We'd also need to use the cancellation token if we're about to start the game while still waiting for
+         the last game start request, and make sure we wait for it to finish canceling before going further.
+        */
+        while (true)
+        {
+            Process[] processes = Process.GetProcesses();
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            Process? returnProcess = null;
+            try
+            {
+                foreach (Process proc in processes)
+                {
+                    try
+                    {
+                        string fn = GetProcessPath(proc.Id, buffer);
+                        if (!string.IsNullOrEmpty(fn) && fn.PathEqualsI(fullPath))
+                        {
+                            returnProcess = proc;
+                            return proc;
+                        }
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+            }
+            finally
+            {
+                foreach (Process process in processes)
+                {
+                    if (!process.EqualsIfNotNull(returnProcess))
+                    {
+                        process.Dispose();
+                    }
+                }
+            }
+            await Task.Delay(1000, cancellationToken);
+        }
+
+        static string GetProcessPath(int procId, StringBuilder buffer)
+        {
+            buffer.Clear();
+
+            using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
+            if (!hProc.IsInvalid)
+            {
+                int size = buffer.Capacity;
+                if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
+            }
+            return "";
         }
     }
 
@@ -86,6 +178,8 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         {
             // Out of range... nothing we can do
         }
+
+        Core.View.RefreshFMsListRowsOnlyKeepSelection();
 
         Trace.WriteLine(fm.PlayTime);
     });
