@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TESTING
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -223,7 +225,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     private void Process_Exited(object sender, EventArgs e)
     {
+#if TESTING
         Trace.WriteLine("Top of Process_Exited");
+#endif
 
         IsRunning = false;
         TimeSpan elapsed = _stopwatch.Elapsed;
@@ -236,18 +240,24 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     private void Update(TimeSpan elapsed) => Core.View.Invoke(() =>
     {
+#if TESTING
         Trace.WriteLine("Top of Update()");
+#endif
 
         if (FMInstalledDir.IsEmpty()) return;
 
         List<FanMission> fmsList = _gameIndex == GameIndex.TDM ? FMDataIniListTDM : FMDataIniList;
 
+#if TESTING
         Trace.WriteLine(FMInstalledDir);
+#endif
 
         FanMission? fm = fmsList.Find(x => x.RealInstalledDir.EqualsI(FMInstalledDir));
         if (fm == null)
         {
+#if TESTING
             Trace.WriteLine("null?!");
+#endif
             return;
         }
 
@@ -262,7 +272,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
         Core.View.RefreshFMsListRowsOnlyKeepSelection();
 
+#if TESTING
         Trace.WriteLine(fm.PlayTime);
+#endif
     });
 }
 
