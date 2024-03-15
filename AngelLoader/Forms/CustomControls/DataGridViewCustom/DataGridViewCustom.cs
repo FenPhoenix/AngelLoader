@@ -305,6 +305,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     {
         if (columnData.Length == 0) return;
 
+        retry:
         #region Important
 
         // IMPORTANT (SetColumnData):
@@ -323,15 +324,24 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
         #endregion
 
-        foreach (ColumnData colData in columnDataSorted)
+        try
         {
-            DataGridViewColumn col = Columns[(int)colData.Id];
+            foreach (ColumnData colData in columnDataSorted)
+            {
+                DataGridViewColumn col = Columns[(int)colData.Id];
 
-            col.DisplayIndex = colData.DisplayIndex;
-            if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-            MakeColumnVisible(col, colData.Visible);
+                col.DisplayIndex = colData.DisplayIndex;
+                if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
+                MakeColumnVisible(col, colData.Visible);
 
-            menu.SetColumnChecked((int)colData.Id, colData.Visible);
+                menu.SetColumnChecked((int)colData.Id, colData.Visible);
+            }
+        }
+        // Last line of defense fallback in case against all odds an invalid state has made it this far
+        catch
+        {
+            ResetColumnDisplayIndexes(columnData);
+            goto retry;
         }
     }
 

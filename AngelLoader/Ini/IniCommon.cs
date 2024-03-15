@@ -16,6 +16,7 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -804,29 +805,7 @@ internal static partial class Ini
 
         config.FMTabsData.EnsureValidity();
 
-        /*
-        @PlayTimeTracking: Make it insert new columns at their default index (currently their position is semi-undefined)
-        Because they end up being subject to that weird-ass behavior of DisplayIndex setting where one will\
-        affect the others etc...
-        If we ever add new columns, which is rarely, but still...
-
-        @PlayTimeTracking(Columns):
-        DisplayIndexes are way too brittle. They get clamped for safety, which means if we have a loop we can't
-        just increment them blindly, as incrementing past the clamp will just result in the same value and an
-        infinite loop, thus dangerous.
-        We also need to check for gaps in the numbers.
-        So check for:
-        -Gaps in numbers
-        -Missing numbers on bottom or top end (special case of above)
-        -Any number out of range (including negatives)
-        -If one of these checks fails, reset the display indexes to default (known valid)
-
-        When a new column is added, it will have a duplicate number unless it goes on the end.
-        Also, if someone is upgrading to a version that has more than one extra column from their current one,
-        there will be MULTIPLE new columns. We have to handle that too.
-
-        The logic we want is "insertion" of the new column(s) at their default display indexes.
-        */
+        EnsureColumnsValid(config);
 
         #region Date format
 
@@ -884,6 +863,81 @@ internal static partial class Ini
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
         config.FMArchivePaths.ClearAndAdd_Small(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
+
+        return;
+
+        static void EnsureColumnsValid(ConfigData config)
+        {
+            HashSet<int> displayIndexesHash = new(ColumnCount);
+            foreach (ColumnData column in config.Columns)
+            {
+                displayIndexesHash.Add(column.DisplayIndex);
+            }
+
+            int[] displayIndexesArray = displayIndexesHash.ToArray();
+            Array.Sort(displayIndexesArray);
+
+            if (!ColumnDisplayIndexesValid(config.Columns, displayIndexesArray))
+            {
+                ResetColumnDisplayIndexes(config.Columns);
+                return;
+            }
+
+            displayIndexesHash.Clear();
+
+            restart:
+            for (int index = 0; index < ColumnCount; index++)
+            {
+                ColumnData column = config.Columns[index];
+#if TESTING_COLUMN_VALIDATOR
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+#endif
+                if (!displayIndexesHash.Add(column.DisplayIndex))
+                {
+#if TESTING_COLUMN_VALIDATOR
+                    System.Diagnostics.Trace.WriteLine("----------");
+#endif
+                    for (int subIndex = index; subIndex < ColumnCount; subIndex++)
+                    {
+                        ColumnData subColumn = config.Columns[subIndex];
+                        subColumn.DisplayIndex++;
+                    }
+                    displayIndexesHash.Clear();
+                    goto restart;
+                }
+            }
+
+            foreach (ColumnData column in config.Columns)
+            {
+                if (column.DisplayIndex is < 0 or > ColumnCount - 1)
+                {
+                    ResetColumnDisplayIndexes(config.Columns);
+                    return;
+                }
+            }
+
+#if TESTING_COLUMN_VALIDATOR
+            System.Diagnostics.Trace.WriteLine("---------- FINAL:");
+
+            for (int i = 0; i < ColumnCount; i++)
+            {
+                ColumnData column = config.Columns[i];
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+            }
+#endif
+
+            return;
+
+            static bool ColumnDisplayIndexesValid(ColumnData[] columns, int[] displayIndexes)
+            {
+                if (displayIndexes.Length != columns.Length) return false;
+                for (int i = 0; i < displayIndexes.Length; i++)
+                {
+                    if (displayIndexes[i] != i) return false;
+                }
+                return true;
+            }
+        }
     }
 
     #endregion

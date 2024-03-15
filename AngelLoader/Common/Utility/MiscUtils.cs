@@ -314,6 +314,14 @@ public static partial class Utils
         return enc;
     }
 
+    internal static void ResetColumnDisplayIndexes(ColumnData[] columns)
+    {
+        for (int i = 0; i < columns.Length; i++)
+        {
+            columns[i].DisplayIndex = i;
+        }
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
