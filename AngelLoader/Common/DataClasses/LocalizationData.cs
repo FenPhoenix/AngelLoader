@@ -766,6 +766,8 @@ internal sealed class LText_Class
         internal readonly string CachingReadmeFiles = "Caching readme files...";
         internal readonly string DeletingFMArchive = "Deleting FM archive...";
         internal readonly string DeletingFMArchives = "Deleting FM archives...";
+        [FenGenBlankLine]
+        internal readonly string WaitingForSteamToStartTheGame = "Waiting for Steam to start the game...";
     }
 
     internal sealed class SettingsWindow_Class

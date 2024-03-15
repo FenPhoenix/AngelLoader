@@ -713,9 +713,8 @@ internal static partial class FMInstallAndPlay
                 Arguments = !args.IsEmpty() ? args : ""
             };
 
-            await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);
-
-            return true;
+            bool success = await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);
+            return success;
         }
         catch (Exception ex)
         {

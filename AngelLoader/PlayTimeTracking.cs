@@ -37,7 +37,10 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     public bool IsRunning { get; private set; }
 
-    public async Task Start(
+    private CancellationTokenSource _steamGameStartCTS = new();
+    private void CancelSteamWait() => _steamGameStartCTS.Cancel();
+
+    public async Task<bool> Start(
         ProcessStartInfo startInfo,
         FanMission fm,
         bool steam,
@@ -50,17 +53,46 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
             if (steam)
             {
                 ProcessStart_UseShellExecute(startInfo);
-                _process = await WaitForProcessAndReturn(gameExe, CancellationToken.None);
-                _process.EnableRaisingEvents = true;
 
-                _process.Exited += Process_Exited;
-                _stopwatch.Restart();
-                IsRunning = true;
+                try
+                {
+                    _steamGameStartCTS = _steamGameStartCTS.Recreate();
+
+                    Core.View.SetWaitCursor(false);
+
+                    // @PlayTimeTracking: Put some explanation that the wait is needed to track FM play time
+                    Core.View.ShowProgressBox_Single(
+                        message1: LText.ProgressBox.WaitingForSteamToStartTheGame,
+                        progressType: Misc.ProgressType.Indeterminate,
+                        cancelMessage: LText.Global.Cancel,
+                        cancelAction: CancelSteamWait
+                    );
+
+                    _process = await WaitForAndReturnProcess(gameExe, _steamGameStartCTS.Token);
+
+                    _process.EnableRaisingEvents = true;
+
+                    _process.Exited += Process_Exited;
+                    _stopwatch.Restart();
+                    IsRunning = true;
+                    return true;
+                }
+                catch (OperationCanceledException)
+                {
+                    HandleStartFailure();
+                    return false;
+                }
+                finally
+                {
+                    Core.View.HideProgressBox();
+                    _steamGameStartCTS.Dispose();
+                }
             }
             else
             {
                 StartProcessNonSteam(startInfo);
                 _stopwatch.Restart();
+                return true;
             }
         }
         catch
@@ -132,21 +164,10 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         }
     }
 
-    private static async Task<Process> WaitForProcessAndReturn(string fullPath, CancellationToken cancellationToken)
+    private static async Task<Process> WaitForAndReturnProcess(string fullPath, CancellationToken cancellationToken)
     {
         var buffer = new StringBuilder(1024);
 
-        /*
-        @PlayTimeTracking: Dumb infinite loop - give it a timeout and robustify etc.
-        Notes on this:
-        -A timeout is difficult because Steam could start and then update for a reasonably substantial amount of
-         time. Also, in theory, Steam could start, not have the requested game in the user's library, and then
-         the game never starts but we're still just waiting forever.
-        -We could make the timeout be fairly long, like a minute or two, and then pop up a dialog asking the user
-         if they want to continue waiting (telling them that we need to wait for the game to track play time).
-         We'd also need to use the cancellation token if we're about to start the game while still waiting for
-         the last game start request, and make sure we wait for it to finish canceling before going further.
-        */
         while (true)
         {
             Process[] processes = Process.GetProcesses();
