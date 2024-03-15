@@ -160,7 +160,7 @@ internal static partial class FMInstallAndPlay
 
         if (fm.Installed ||
             (fm.Game == Game.TDM && SelectTdmFM(fm)) ||
-            await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm))
+            (fm.Game != Game.TDM && await InstallInternal(fromPlay: true, suppressConfirmation: askingConfirmation, fm)))
         {
             if (playMP && gameIndex == GameIndex.Thief2 && Core.GetT2MultiplayerExe_FromDisk().IsEmpty())
             {
