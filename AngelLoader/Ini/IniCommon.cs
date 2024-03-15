@@ -924,7 +924,10 @@ internal static partial class Ini
 #if TESTING_COLUMN_VALIDATOR
                     System.Diagnostics.Trace.WriteLine("----------");
 #endif
-                    for (int subIndex = index; subIndex < ColumnCount; subIndex++)
+#if true
+                    column.DisplayIndex++;
+#else
+                    for (int subIndex = ColumnCount - 1; subIndex >= index; subIndex--)
                     {
                         ColumnData subColumn = sortedColumns[subIndex];
 #if TESTING_COLUMN_VALIDATOR
@@ -932,6 +935,7 @@ internal static partial class Ini
 #endif
                         subColumn.DisplayIndex++;
                     }
+#endif
                     displayIndexesHash.Clear();
                     goto restart;
                 }
@@ -960,6 +964,10 @@ internal static partial class Ini
 
             static bool ColumnDisplayIndexesValid(int[] displayIndexes)
             {
+#if true
+                return true;
+#endif
+
                 for (int i = 0; i < displayIndexes.Length; i++)
                 {
                     if (displayIndexes[i] != i)
