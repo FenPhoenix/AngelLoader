@@ -807,6 +807,14 @@ internal static partial class Ini
 
         config.FMTabsData.EnsureValidity();
 
+        /*
+        TODO(Column insert):
+        I think we need to just find all non-explicitly-added columns, find their position in the current column
+        set (enum numbers), then convert that to the equivalent relative position in the ini-specified set, then
+        just keep bumping the positions of each new one until we've got a full current set. How to do this exactly,
+        I dunno, but there's the theory...
+        */
+
 #if SMART_NEW_COLUMN_INSERT
         EnsureColumnsValid(config);
 #endif
