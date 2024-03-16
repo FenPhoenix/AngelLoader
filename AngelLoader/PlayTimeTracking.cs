@@ -61,7 +61,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.WaitingForSteamToStartTheGame,
-                        message2: LText.ProgressBox.WaitingForSteamToStartGame_Explanation,
+                        message2: LText.ProgressBox.WaitingForSteamToStartTheGame_Explanation,
                         progressType: ProgressType.Indeterminate,
                         cancelMessage: LText.Global.Cancel,
                         cancelAction: CancelSteamWait
