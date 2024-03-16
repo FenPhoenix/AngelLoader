@@ -26,9 +26,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
     internal string FMInstalledDir { get; private set; } = "";
 
     /*
-    Processes have StartTime and EndTime properties, but those can cross timezones / DST and whatever else, so
+    Processes have StartTime and ExitTime properties, but those can cross timezones / DST and whatever else, so
     let's just time it with a stopwatch.
-    Also since we track TDM per-selected-FM rather than per-app-run, we can't use the Process start/end times
+    Also since we track TDM per-selected-FM rather than per-app-run, we can't use the Process start/exit times
     anyway.
     */
     private readonly Stopwatch _stopwatch = new();
