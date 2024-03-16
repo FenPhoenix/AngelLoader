@@ -79,6 +79,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                 catch (OperationCanceledException)
                 {
                     HandleStartFailure();
+                    // @PlayTimeTracking: Should we really return false on cancel though?
+                    // If the user clicks Cancel and the game DOES end up starting, we won't even update the last
+                    // played time. It's the least likely situation though.
                     return false;
                 }
                 finally
