@@ -289,9 +289,8 @@ internal static partial class Ini
 
     private static void FMData_PlayTime_Set(FanMission fm, string val, int eqIndex)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        long.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out long result);
+        TryParseLongFromEnd(val, eqIndex + 1, 19, out long result);
         fm.PlayTime = TimeSpan.FromTicks(result);
     }
 

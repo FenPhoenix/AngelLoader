@@ -312,10 +312,10 @@ public sealed class FanMission
     [FenGenMaxDigits(10)]
     internal int MisCount = -1;
 
-    // @PlayTimeTracking: We're signed so we can't use the parse-from-end code, so we take substring allocs with this one
     [FenGenIgnore]
     private TimeSpan _playTime = TimeSpan.Zero;
     [FenGenNumericEmpty(0)]
+    [FenGenMaxDigits(19)]
     internal TimeSpan PlayTime
     {
         get => _playTime;
