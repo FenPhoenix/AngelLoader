@@ -5,10 +5,12 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static AL_Common.Common;
+using AL_Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader.DataClasses;
 
@@ -357,6 +359,25 @@ public sealed class FanMission
     internal bool IsFastToScan() => Game != Game.TDM && !Archive.ExtIs7z() && !Archive.ExtIsRar();
 
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
+
+    internal void LogFMInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        Log("Caller: " + callerMemberName + "\r\n\r\n" +
+            topMessage + "\r\n" +
+            "" + nameof(Game) + ": " + Game + "\r\n" +
+            "" + nameof(Archive) + ": " + Archive + "\r\n" +
+            "" + nameof(InstalledDir) + ": " + InstalledDir + "\r\n" +
+            "" + nameof(TDMInstalledDir) + " (if applicable): " + TDMInstalledDir + "\r\n" +
+            "" + nameof(Installed) + ": " + Installed + "\r\n" +
+            (Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
+                ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)
+                : "Game type is not known or not supported.") +
+            (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
+    }
 
     #endregion
 }

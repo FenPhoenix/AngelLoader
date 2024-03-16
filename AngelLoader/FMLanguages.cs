@@ -158,7 +158,7 @@ internal static class FMLanguages
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExDetLangIn + "archive.", ex);
+                fm.LogFMInfo(ErrorText.ExDetLangIn + "archive.", ex);
                 langs = null;
                 return false;
             }
@@ -173,7 +173,7 @@ internal static class FMLanguages
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + ErrorText.ExDetLangIn + "installed dir.", ex);
+                fm.LogFMInfo(ErrorText.ExTry + ErrorText.ExDetLangIn + "installed dir.", ex);
                 langs = null;
                 return false;
             }

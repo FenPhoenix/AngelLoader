@@ -288,7 +288,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    LogFMInfo(fm.InternalFM, ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.InternalFM.LogFMInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
             else
@@ -337,7 +337,7 @@ internal static class FMAudio
                             }
                             catch (Exception ex)
                             {
-                                LogFMInfo(fm.InternalFM, ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
+                                fm.InternalFM.LogFMInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
                             }
 
                             try
@@ -355,7 +355,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    LogFMInfo(fm.InternalFM, ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.InternalFM.LogFMInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
         });
@@ -367,9 +367,9 @@ internal static class FMAudio
 
     #region Helpers
 
-        // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
-        // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
-        // assume Thief 3 doesn't need it and leave it at that.
+    // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
+    // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
+    // assume Thief 3 doesn't need it and leave it at that.
     private static string[] GetFMSoundPathsByGame(ValidAudioConvertibleFM fm)
     {
         string instPath = Path.Combine(Config.GetFMInstallPath(fm.GameIndex), fm.InstalledDir);

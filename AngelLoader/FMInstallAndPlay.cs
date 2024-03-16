@@ -118,14 +118,14 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            fm.LogFMInfo(ErrorText.FMGameU, stackTrace: true);
             Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
             return;
         }
 
         if (playMP && gameIndex != GameIndex.Thief2)
         {
-            LogFMInfo(fm, "playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
+            fm.LogFMInfo("playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
             Core.Dialogs.ShowError(ErrorText.MPForNonT2);
             return;
         }
@@ -416,7 +416,7 @@ internal static partial class FMInstallAndPlay
             // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
             if (!fm.Game.ConvertsToDark(out GameIndex gameIndex))
             {
-                LogFMInfo(fm, ErrorText.FMGameNotDark, stackTrace: true);
+                fm.LogFMInfo(ErrorText.FMGameNotDark, stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                 return false;
             }
@@ -432,7 +432,7 @@ internal static partial class FMInstallAndPlay
             string editorExe = Core.GetEditorExe_FromDisk(gameIndex);
             if (editorExe.IsEmpty())
             {
-                LogFMInfo(fm,
+                fm.LogFMInfo(
                     "Editor executable not found.\r\n" +
                     "Editor executable: " + editorExe);
                 Core.Dialogs.ShowError(fm.Game == Game.SS2
@@ -608,7 +608,7 @@ internal static partial class FMInstallAndPlay
 
             if (fm != null)
             {
-                LogFMInfo(fm, topMsg, ex);
+                fm.LogFMInfo(topMsg, ex);
             }
             else
             {
@@ -1006,7 +1006,7 @@ internal static partial class FMInstallAndPlay
                         logMsg += "Exception getting .mis file names in FM directory.\r\nEXCEPTION: " + ex;
                     }
 
-                    LogFMInfo(fm, logMsg);
+                    fm.LogFMInfo(logMsg);
                     Core.Dialogs.ShowError(
                         message: msg,
                         title: LText.AlertMessages.Alert,
@@ -1051,7 +1051,7 @@ internal static partial class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
+                fm.LogFMInfo(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
                 Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
                                        fm.GetId() + "\r\n\r\n" +
                                        "The FM will probably not be able to play its mission(s).");
@@ -1059,7 +1059,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file", ex);
+            fm.LogFMInfo(ErrorText.ExTry + "generate missflag.str file", ex);
             // ReSharper disable once RedundantJumpStatement
             return MissFlagError.None; // Explicit for clarity of intent
         }
@@ -1084,7 +1084,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to get .mis files in FM installed directory.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogFMInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -1102,7 +1102,7 @@ internal static partial class FMInstallAndPlay
         if (misFileInfos.Count == 0)
         {
             string msg = "Error detecting OldDark: could not find any .mis files in FM installed directory.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF);
+            fm.LogFMInfo(msg + " " + ErrorText.RetF);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -1138,7 +1138,7 @@ internal static partial class FMInstallAndPlay
                 catch (Exception ex)
                 {
                     string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
-                    LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                    fm.LogFMInfo(msg + " " + ErrorText.RetF, ex);
                     Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                     return false;
                 }
@@ -1149,7 +1149,7 @@ internal static partial class FMInstallAndPlay
                 string msg = "Expected to find " + Paths.MissFlagStr +
                              " for this FM, but it could not be found or the search failed. " +
                              "If it didn't exist, it should have been generated.";
-                LogFMInfo(fm, msg + " " + ErrorText.RetF);
+                fm.LogFMInfo(msg + " " + ErrorText.RetF);
                 Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
             }
@@ -1306,7 +1306,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to detect if FM is OldDark.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogFMInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -1373,7 +1373,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to detect if this OldDark FM requires a palette fix.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogFMInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(
                 msg + "\r\n\r\n" +
                 "If the FM requires a palette fix (rare), the fix will not be applied on this run. " +
@@ -1408,7 +1408,7 @@ internal static partial class FMInstallAndPlay
 
             if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
-                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+                fm.LogFMInfo(ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
                 return fail;
             }
@@ -1436,7 +1436,7 @@ internal static partial class FMInstallAndPlay
             {
                 if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
                 {
-                    LogFMInfo(fm, "FM archive field was empty; this means an archive was not found for it on the last search.");
+                    fm.LogFMInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
                     Core.Dialogs.ShowError(fm.GetId() + "\r\n" +
                                            LText.AlertMessages.Install_ArchiveNotFound);
 
@@ -1463,7 +1463,7 @@ internal static partial class FMInstallAndPlay
 
                     if (!Directory.Exists(instBasePath))
                     {
-                        LogFMInfo(fm, "FM install path not found.");
+                        fm.LogFMInfo("FM install path not found.");
 
                         Core.Dialogs.ShowError(gameName + ":\r\n" +
                                                fm.GetId() + "\r\n" +
@@ -1798,7 +1798,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(validAudioConvertibleFM.InternalFM, ErrorText.Ex + "in audio conversion", ex);
+                        validAudioConvertibleFM.InternalFM.LogFMInfo(ErrorText.Ex + "in audio conversion", ex);
                     }
                 }
 
@@ -2309,7 +2309,7 @@ internal static partial class FMInstallAndPlay
                 // Make option to open the folder in Explorer and delete it manually?
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
-                    LogFMInfo(fm, ErrorText.Un + "delete FM installed directory.");
+                    fm.LogFMInfo(ErrorText.Un + "delete FM installed directory.");
                     Core.Dialogs.ShowError(
                         LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
                         "FM: " + fm.GetId());

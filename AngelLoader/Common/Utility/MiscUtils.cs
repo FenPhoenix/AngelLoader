@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -201,26 +200,6 @@ public static partial class Utils
         {
             return false;
         }
-    }
-
-    internal static void LogFMInfo(
-        FanMission fm,
-        string topMessage,
-        Exception? ex = null,
-        bool stackTrace = false,
-        [CallerMemberName] string callerMemberName = "")
-    {
-        Log("Caller: " + callerMemberName + "\r\n\r\n" +
-            topMessage + "\r\n" +
-            "fm." + nameof(fm.Game) + ": " + fm.Game + "\r\n" +
-            "fm." + nameof(fm.Archive) + ": " + fm.Archive + "\r\n" +
-            "fm." + nameof(fm.InstalledDir) + ": " + fm.InstalledDir + "\r\n" +
-            "fm." + nameof(fm.TDMInstalledDir) + " (if applicable): " + fm.TDMInstalledDir + "\r\n" +
-            "fm." + nameof(fm.Installed) + ": " + fm.Installed + "\r\n" +
-            (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
-                ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)
-                : "Game type is not known or not supported.") +
-            (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
     }
 
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
