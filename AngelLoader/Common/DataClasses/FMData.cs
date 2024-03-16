@@ -384,7 +384,7 @@ public sealed class FanMission
 
 public sealed class ValidGameFM
 {
-    public readonly FanMission InternalFM;
+    private readonly FanMission InternalFM;
 
     public readonly GameIndex GameIndex;
 
@@ -428,11 +428,20 @@ public sealed class ValidGameFM
         }
         return ret;
     }
+
+    internal void LogFMInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
+    }
 }
 
 public sealed class ValidDarkFM
 {
-    public readonly FanMission InternalFM;
+    private readonly FanMission InternalFM;
 
     public readonly GameIndex GameIndex;
 
@@ -476,11 +485,20 @@ public sealed class ValidDarkFM
         }
         return ret;
     }
+
+    internal void LogFMInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
+    }
 }
 
 public sealed class ValidAudioConvertibleFM
 {
-    public readonly FanMission InternalFM;
+    private readonly FanMission InternalFM;
 
     public readonly GameIndex GameIndex;
 
@@ -523,5 +541,14 @@ public sealed class ValidAudioConvertibleFM
             }
         }
         return ret;
+    }
+
+    internal void LogFMInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
     }
 }

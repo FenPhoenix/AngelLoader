@@ -1798,7 +1798,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        validAudioConvertibleFM.InternalFM.LogFMInfo(ErrorText.Ex + "in audio conversion", ex);
+                        validAudioConvertibleFM.LogFMInfo(ErrorText.Ex + "in audio conversion", ex);
                     }
                 }
 
