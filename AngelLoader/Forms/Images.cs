@@ -775,8 +775,43 @@ public static class Images
 
     #region Image arrays
 
+    internal sealed class RatingIconsArray
+    {
+        // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
+        internal const int Length = 11;
+
+        private readonly Bitmap?[] _array = new Bitmap?[Length];
+
+        public Bitmap? this[int index]
+        {
+            get => _array[index];
+            set => _array[index] = value;
+        }
+
+        public void Reset() => _array.DisposeAll();
+    }
+
+    internal sealed class FinishedOnIconsArray
+    {
+        internal const int Length = 16;
+
+        private readonly Bitmap?[] _array = new Bitmap?[Length];
+
+        public Bitmap? this[uint index]
+        {
+            get => _array[index];
+            set => _array[index] = value;
+        }
+
+        public void Reset()
+        {
+            _array.DisposeRange(1, Length);
+            _array[0] = Blank;
+        }
+    }
+
     // Load this only once, as it's transparent and so doesn't have to change with the theme
-    internal static readonly Bitmap Blank = new Bitmap(1, 1, PixelFormat.Format32bppPArgb);
+    internal static readonly Bitmap Blank = new(1, 1, PixelFormat.Format32bppPArgb);
 
     /*
     We need to grab these images every time a cell is shown on the DataGridView, and pulling them from
@@ -791,10 +826,8 @@ public static class Images
     */
     internal static readonly Image?[] FMsList_GameIcons = new Image?[SupportedGameCount];
 
-    // 0-10, and we don't count -1 (no rating) because that's handled elsewhere
-    private const int _numRatings = 11;
-    internal static readonly Bitmap?[] FMsList_StarIcons = new Bitmap?[_numRatings];
-    internal static readonly Bitmap?[] FMsList_FinishedOnIcons = new Bitmap?[16];
+    internal static readonly RatingIconsArray FMsList_StarIcons = new();
+    internal static readonly FinishedOnIconsArray FMsList_FinishedOnIcons = new();
 
     #endregion
 
@@ -1249,17 +1282,14 @@ public static class Images
 
     private static void LoadFinishedOnImages()
     {
-        AssertR(FMsList_FinishedOnIcons.Length == 16, "bitmaps.Length != 16");
-
-        FMsList_FinishedOnIcons.DisposeRange(1, FMsList_FinishedOnIcons.Length);
-        FMsList_FinishedOnIcons[0] = Blank;
+        FMsList_FinishedOnIcons.Reset();
 
         Bitmap?[] finishedOnBitmaps = new Bitmap?[DifficultyCount];
         try
         {
             var list = new List<Bitmap>(4);
 
-            for (int ai = 1; ai < FMsList_FinishedOnIcons.Length; ai++)
+            for (uint ai = 1; ai < FinishedOnIconsArray.Length; ai++)
             {
                 var canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
                 Difficulty difficulty = (Difficulty)ai;
@@ -1305,16 +1335,16 @@ public static class Images
 
     private static void LoadRatingImages()
     {
-        FMsList_StarIcons.DisposeAll();
+        FMsList_StarIcons.Reset();
 
-        bool[] bits = new bool[_numRatings];
+        bool[] bits = new bool[RatingIconsArray.Length];
 
         Bitmap? starEmpty = null;
         Bitmap? starRightEmpty = null;
         Bitmap? starFull = null;
         try
         {
-            for (int bi = 0; bi < _numRatings; bi++)
+            for (int bi = 0; bi < RatingIconsArray.Length; bi++)
             {
                 var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
 
