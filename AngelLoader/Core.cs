@@ -1596,7 +1596,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            fm.LogFMInfo(ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
             return false;
         }
@@ -1611,7 +1611,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(ErrorText.Un + "add .dml to installed folder.", ex);
+            fm.LogInfo(ErrorText.Un + "add .dml to installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_UnableToAdd);
             return false;
         }
@@ -1625,7 +1625,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            fm.LogFMInfo(ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
             return false;
         }
@@ -1638,7 +1638,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(ErrorText.Un + "remove .dml from installed folder.", ex);
+            fm.LogInfo(ErrorText.Un + "remove .dml from installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
             return false;
         }
@@ -1662,7 +1662,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(ErrorText.ExGet + "DML files.", ex);
+            fm.LogInfo(ErrorText.ExGet + "DML files.", ex);
             return (false, new List<string>());
         }
     }
@@ -2028,7 +2028,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(
+            fm.LogInfo(
                 "Readme load failed.\r\n" +
                 "FM selected readme: " + fm.SelectedReadme + "\r\n" +
                 "Path: " + path,
@@ -2080,14 +2080,14 @@ internal static class Core
     {
         if (!GameIsKnownAndSupported(fm.Game))
         {
-            fm.LogFMInfo(ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             Dialogs.ShowError(ErrorText.UnOpenFMDir);
             return;
         }
 
         if (!FMIsReallyInstalled(fm, out string fmDir))
         {
-            fm.LogFMInfo(ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
             return;
         }
@@ -2098,7 +2098,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(ErrorText.ExTry + "open FM folder " + fmDir, ex);
+            fm.LogInfo(ErrorText.ExTry + "open FM folder " + fmDir, ex);
             Dialogs.ShowError(ErrorText.UnOpenFMDir);
         }
     }
@@ -2128,14 +2128,14 @@ internal static class Core
                 }
                 catch (Exception ex)
                 {
-                    fm.LogFMInfo(ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
+                    fm.LogInfo(ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
                     Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
                 }
             }
         }
         catch (Exception ex)
         {
-            fm.LogFMInfo(ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
+            fm.LogInfo(ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
             Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
         }
 
@@ -2143,7 +2143,7 @@ internal static class Core
 
         static void LogNotFound(FanMission fm)
         {
-            fm.LogFMInfo(ErrorText.FMScreenshotsDirNF);
+            fm.LogInfo(ErrorText.FMScreenshotsDirNF);
             Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderNotFound);
         }
     }

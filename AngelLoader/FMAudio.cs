@@ -288,7 +288,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    fm.LogFMInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
             else
@@ -337,7 +337,7 @@ internal static class FMAudio
                             }
                             catch (Exception ex)
                             {
-                                fm.LogFMInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
+                                fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
                             }
 
                             try
@@ -355,7 +355,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    fm.LogFMInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
         });

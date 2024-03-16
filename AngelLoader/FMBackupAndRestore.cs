@@ -245,7 +245,7 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            fm.LogFMInfo(ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             return VoidTask;
         }
 
@@ -367,7 +367,7 @@ internal static partial class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                fm.LogFMInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
+                fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
             }
         });
     }
@@ -383,7 +383,7 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            fm.LogFMInfo(ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             return VoidTask;
         }
 
@@ -663,7 +663,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        fm.LogFMInfo(ErrorText.ExInLWT + "(zip)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(zip)", ex);
                     }
                 }
             }
@@ -742,7 +742,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        fm.LogFMInfo(ErrorText.ExInLWT + "(7z)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
                     }
                 }
             }
@@ -818,7 +818,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        fm.LogFMInfo(ErrorText.ExInLWT + "(7z)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
                     }
                 }
             }

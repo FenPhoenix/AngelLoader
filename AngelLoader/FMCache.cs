@@ -77,7 +77,7 @@ internal static class FMCache
             }
             catch (Exception ex)
             {
-                fm.LogFMInfo(ErrorText.Ex + "clearing files in FM cache.", ex);
+                fm.LogInfo(ErrorText.Ex + "clearing files in FM cache.", ex);
             }
         }
     }

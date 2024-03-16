@@ -360,7 +360,7 @@ public sealed class FanMission
 
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
 
-    internal void LogFMInfo(
+    internal void LogInfo(
         string topMessage,
         Exception? ex = null,
         bool stackTrace = false,
@@ -429,13 +429,13 @@ public sealed class ValidGameFM
         return ret;
     }
 
-    internal void LogFMInfo(
+    internal void LogInfo(
         string topMessage,
         Exception? ex = null,
         bool stackTrace = false,
         [CallerMemberName] string callerMemberName = "")
     {
-        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
+        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
     }
 }
 
@@ -486,13 +486,13 @@ public sealed class ValidDarkFM
         return ret;
     }
 
-    internal void LogFMInfo(
+    internal void LogInfo(
         string topMessage,
         Exception? ex = null,
         bool stackTrace = false,
         [CallerMemberName] string callerMemberName = "")
     {
-        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
+        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
     }
 }
 
@@ -543,12 +543,12 @@ public sealed class ValidAudioConvertibleFM
         return ret;
     }
 
-    internal void LogFMInfo(
+    internal void LogInfo(
         string topMessage,
         Exception? ex = null,
         bool stackTrace = false,
         [CallerMemberName] string callerMemberName = "")
     {
-        InternalFM.LogFMInfo(topMessage, ex, stackTrace, callerMemberName);
+        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
     }
 }
