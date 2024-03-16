@@ -1742,7 +1742,7 @@ internal static partial class FMInstallAndPlay
                 }
 
                 // Only Dark engine games need audio conversion
-                if (GameIsDark(fmData.FM.Game))
+                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM? validAudioConvertibleFM))
                 {
                     try
                     {
@@ -1766,7 +1766,7 @@ internal static partial class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.MP3ToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                        await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.MP3ToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1776,7 +1776,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.OGGToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.OGGToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1787,7 +1787,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.WAVToWAV16, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.WAVToWAV16, buffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1798,7 +1798,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fmData.FM, ErrorText.Ex + "in audio conversion", ex);
+                        LogFMInfo(validAudioConvertibleFM.InternalFM, ErrorText.Ex + "in audio conversion", ex);
                     }
                 }
 

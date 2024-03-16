@@ -1,6 +1,8 @@
 ﻿#define FenGen_FMDataSource
 
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static AL_Common.Common;
@@ -357,4 +359,148 @@ public sealed class FanMission
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
 
     #endregion
+}
+
+public sealed class ValidGameFM
+{
+    public readonly FanMission InternalFM;
+
+    public readonly GameIndex GameIndex;
+
+    public bool Installed => InternalFM.Installed;
+
+    public string InstalledDir => InternalFM.InstalledDir;
+
+    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
+
+    public string GetId() => InternalFM.GetId();
+
+    private ValidGameFM(FanMission fm, GameIndex gameIndex)
+    {
+        InternalFM = fm;
+        GameIndex = gameIndex;
+    }
+
+    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidGameFM? outFM)
+    {
+        if (inFM.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        {
+            outFM = new ValidGameFM(inFM, gameIndex);
+            return true;
+        }
+        else
+        {
+            outFM = null;
+            return false;
+        }
+    }
+
+    public static List<ValidGameFM> CreateListFrom(List<FanMission> fms)
+    {
+        List<ValidGameFM> ret = new(fms.Count);
+        for (int i = 0; i < fms.Count; i++)
+        {
+            if (TryCreateFrom(fms[i], out ValidGameFM? validGameFM))
+            {
+                ret.Add(validGameFM);
+            }
+        }
+        return ret;
+    }
+}
+
+public sealed class ValidDarkFM
+{
+    public readonly FanMission InternalFM;
+
+    public readonly GameIndex GameIndex;
+
+    public bool Installed => InternalFM.Installed;
+
+    public string InstalledDir => InternalFM.InstalledDir;
+
+    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
+
+    public string GetId() => InternalFM.GetId();
+
+    private ValidDarkFM(FanMission fm, GameIndex gameIndex)
+    {
+        InternalFM = fm;
+        GameIndex = gameIndex;
+    }
+
+    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidDarkFM? outFM)
+    {
+        if (inFM.Game.ConvertsToDark(out GameIndex gameIndex))
+        {
+            outFM = new ValidDarkFM(inFM, gameIndex);
+            return true;
+        }
+        else
+        {
+            outFM = null;
+            return false;
+        }
+    }
+
+    public static List<ValidDarkFM> CreateListFrom(List<FanMission> fms)
+    {
+        List<ValidDarkFM> ret = new(fms.Count);
+        for (int i = 0; i < fms.Count; i++)
+        {
+            if (TryCreateFrom(fms[i], out ValidDarkFM? validDarkFM))
+            {
+                ret.Add(validDarkFM);
+            }
+        }
+        return ret;
+    }
+}
+
+public sealed class ValidAudioConvertibleFM
+{
+    public readonly FanMission InternalFM;
+
+    public readonly GameIndex GameIndex;
+
+    public bool Installed => InternalFM.Installed;
+
+    public string InstalledDir => InternalFM.InstalledDir;
+
+    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
+
+    public string GetId() => InternalFM.GetId();
+
+    private ValidAudioConvertibleFM(FanMission fm, GameIndex gameIndex)
+    {
+        InternalFM = fm;
+        GameIndex = gameIndex;
+    }
+
+    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidAudioConvertibleFM? outFM)
+    {
+        if (inFM.Game.ConvertsToDark(out GameIndex gameIndex) && inFM is { Installed: true, MarkedUnavailable: false })
+        {
+            outFM = new ValidAudioConvertibleFM(inFM, gameIndex);
+            return true;
+        }
+        else
+        {
+            outFM = null;
+            return false;
+        }
+    }
+
+    public static List<ValidAudioConvertibleFM> CreateListFrom(List<FanMission> fms)
+    {
+        List<ValidAudioConvertibleFM> ret = new(fms.Count);
+        for (int i = 0; i < fms.Count; i++)
+        {
+            if (TryCreateFrom(fms[i], out ValidAudioConvertibleFM? validDarkFM))
+            {
+                ret.Add(validDarkFM);
+            }
+        }
+        return ret;
+    }
 }
