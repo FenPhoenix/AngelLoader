@@ -87,8 +87,6 @@ public static partial class Misc
     */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
-    public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }
-
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 
     internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }

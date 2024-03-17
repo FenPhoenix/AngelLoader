@@ -4854,41 +4854,24 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null)
+    public void SetReadmeToErrorState(ReadmeLocalizableMessage messageType)
     {
-        AssertR(state != ReadmeState.InitialReadmeChooser || readmeFilesForChooser != null,
-            "tried to set readme state to " + nameof(ReadmeState.InitialReadmeChooser) + " but provided a null readme list");
+        ChooseReadmeLLPanel.ShowPanel(false);
+        ChooseReadmeComboBox.Hide();
+        ViewHTMLReadmeLLButton.Hide();
+        SetReadmeVisible(true);
+        ReadmeEncodingButton.Enabled = false;
 
-        switch (state)
-        {
-            case ReadmeState.HTML:
-                ViewHTMLReadmeLLButton.Show();
-                SetReadmeVisible(false);
-                ReadmeEncodingButton.Enabled = false;
-                // In case the cursor is over the scroll bar area
-                if (CursorOverReadmeArea()) ShowReadmeControls(true);
-                break;
-            case ReadmeState.PlainText:
-            case ReadmeState.OtherSupported:
-                SetReadmeVisible(true);
-                ViewHTMLReadmeLLButton.Hide();
-                ReadmeEncodingButton.Enabled = state == ReadmeState.PlainText;
-                break;
-            case ReadmeState.LoadError:
-                ChooseReadmeLLPanel.ShowPanel(false);
-                ChooseReadmeComboBox.Hide();
-                ViewHTMLReadmeLLButton.Hide();
-                SetReadmeVisible(true);
-                ReadmeEncodingButton.Enabled = false;
-                break;
-            case ReadmeState.InitialReadmeChooser when readmeFilesForChooser != null:
-                SetReadmeVisible(false);
-                ViewHTMLReadmeLLButton.Hide();
-                FillReadmeListControl(ChooseReadmeLLPanel.ListBox, readmeFilesForChooser);
-                ShowReadmeControls(false);
-                ChooseReadmeLLPanel.ShowPanel(true);
-                break;
-        }
+        SetReadmeLocalizableMessage(messageType);
+    }
+
+    public void SetReadmeToInitialChooserState(List<string> readmeFiles)
+    {
+        SetReadmeVisible(false);
+        ViewHTMLReadmeLLButton.Hide();
+        FillReadmeListControl(ChooseReadmeLLPanel.ListBox, readmeFiles);
+        ShowReadmeControls(false);
+        ChooseReadmeLLPanel.ShowPanel(true);
     }
 
     private static void FillReadmeListControl(IListControlWithBackingItems readmeListControl, List<string> readmes)
@@ -4912,10 +4895,25 @@ public sealed partial class MainForm : DarkFormBase,
 
     public Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding)
     {
-        return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
+        if (fileType == ReadmeType.HTML)
+        {
+            ViewHTMLReadmeLLButton.Show();
+            SetReadmeVisible(false);
+            ReadmeEncodingButton.Enabled = false;
+            // In case the cursor is over the scroll bar area
+            if (CursorOverReadmeArea()) ShowReadmeControls(true);
+            return null;
+        }
+        else
+        {
+            SetReadmeVisible(true);
+            ViewHTMLReadmeLLButton.Hide();
+            ReadmeEncodingButton.Enabled = fileType == ReadmeType.PlainText;
+            return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
+        }
     }
 
-    public void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType)
+    private void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType)
     {
         switch (messageType)
         {

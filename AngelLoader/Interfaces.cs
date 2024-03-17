@@ -258,11 +258,11 @@ public interface IView : ISettingsChangeableView
 
     #region Readme
 
-    void SetReadmeState(ReadmeState state, List<string>? readmeFilesForChooser = null);
+    void SetReadmeToInitialChooserState(List<string> readmeFiles);
+
+    void SetReadmeToErrorState(ReadmeLocalizableMessage messageType);
 
     Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding);
-
-    void SetReadmeLocalizableMessage(ReadmeLocalizableMessage messageType);
 
     Encoding? ChangeReadmeEncoding(Encoding? encoding);
 
@@ -377,5 +377,4 @@ public interface IView : ISettingsChangeableView
     void ShowUpdateNotification(bool show);
 
     void RefreshFMScreenshots(FanMission fm);
-
 }

@@ -1990,40 +1990,34 @@ internal static class Core
 
             #endregion
 
-            if (fileType == ReadmeType.HTML)
+            Encoding? encoding = null;
+            if (fileType == ReadmeType.PlainText &&
+                fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
             {
-                View.SetReadmeState(ReadmeState.HTML);
-            }
-            else
-            {
-                View.SetReadmeState(fileType == ReadmeType.PlainText ? ReadmeState.PlainText : ReadmeState.OtherSupported);
-
-                Encoding? encoding = null;
-                if (fileType == ReadmeType.PlainText &&
-                    fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
+                try
                 {
-                    try
-                    {
-                        encoding = Encoding.GetEncoding(codePage);
-                    }
-                    catch
-                    {
-                        encoding = null;
-                    }
+                    encoding = Encoding.GetEncoding(codePage);
                 }
+                catch
+                {
+                    encoding = null;
+                }
+            }
 
-                Encoding? newEncoding = View.LoadReadmeContent(path, fileType, encoding);
+            Encoding? newEncoding = View.LoadReadmeContent(path, fileType, encoding);
 
-                Encoding? finalEncoding = newEncoding ?? encoding;
+            Encoding? finalEncoding = newEncoding ?? encoding;
 
-                // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
-                // every time until the user explicitly requests something different.
-                if (fileType == ReadmeType.PlainText && newEncoding?.CodePage > 0)
+            // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
+            // every time until the user explicitly requests something different.
+            if (fileType == ReadmeType.PlainText)
+            {
+                if (newEncoding?.CodePage > 0)
                 {
                     UpdateFMSelectedReadmeCodePage(fm, newEncoding.CodePage);
                 }
 
-                if (fileType == ReadmeType.PlainText && finalEncoding != null)
+                if (finalEncoding != null)
                 {
                     View.SetSelectedReadmeEncoding(finalEncoding);
                 }
@@ -2036,8 +2030,7 @@ internal static class Core
                 "FM selected readme: " + fm.SelectedReadme + "\r\n" +
                 "Path: " + path,
                 ex);
-            View.SetReadmeState(ReadmeState.LoadError);
-            View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.UnableToLoadReadme);
+            View.SetReadmeToErrorState(ReadmeLocalizableMessage.UnableToLoadReadme);
         }
     }
 
@@ -2520,9 +2513,12 @@ internal static class Core
         return null;
     }
 
-    // TODO(DisplayFM/sel change/int index):
-    // Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
-    // it always is >-1 and matches the currently selected FM/row. Can probably be removed.
+    /*
+    TODO(DisplayFM/sel change/int index):
+    Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
+    it always is >-1 and matches the currently selected FM/row. Can probably be removed.
+    @ViewBusinessLogic: This is doing a bit too much by itself. We should let the view handle some of these details.
+    */
     [MustUseReturnValue]
     internal static async Task<FanMission?>
     DisplayFM(int index = -1, bool refreshCache = false)
@@ -2579,8 +2575,7 @@ internal static class Core
             switch (readmeFiles.Count)
             {
                 case 0:
-                    View.SetReadmeState(ReadmeState.LoadError);
-                    View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.NoReadmeFound);
+                    View.SetReadmeToErrorState(ReadmeLocalizableMessage.NoReadmeFound);
                     return fm;
                 case > 1:
                     string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
@@ -2592,7 +2587,7 @@ internal static class Core
                     }
                     else
                     {
-                        View.SetReadmeState(ReadmeState.InitialReadmeChooser, readmeFiles);
+                        View.SetReadmeToInitialChooserState(readmeFiles);
                         return fm;
                     }
                     break;
