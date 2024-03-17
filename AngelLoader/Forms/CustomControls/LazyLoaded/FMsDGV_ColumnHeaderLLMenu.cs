@@ -173,20 +173,10 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
         ResetAllColumnWidthsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnWidths;
         ResetColumnPositionsMenuItem.Text = LText.FMsList.ColumnMenu_ResetAllColumnPositions;
 
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Game].Text = LText.FMsList.GameColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Installed].Text = LText.FMsList.InstalledColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.MissionCount].Text = LText.FMsList.MissionCountColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Title].Text = LText.FMsList.TitleColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Archive].Text = LText.FMsList.ArchiveColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Author].Text = LText.FMsList.AuthorColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Size].Text = LText.FMsList.SizeColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Rating].Text = LText.FMsList.RatingColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Finished].Text = LText.FMsList.FinishedColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.ReleaseDate].Text = LText.FMsList.ReleaseDateColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.LastPlayed].Text = LText.FMsList.LastPlayedColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.DateAdded].Text = LText.FMsList.DateAddedColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.DisabledMods].Text = LText.FMsList.DisabledModsColumn;
-        ColumnHeaderCheckBoxMenuItems[(int)Column.Comment].Text = LText.FMsList.CommentColumn;
+        for (int i = 0; i < ColumnCount; i++)
+        {
+            ColumnHeaderCheckBoxMenuItems[i].Text = ColumnLocalizedStrings[i].Invoke();
+        }
     }
 
     internal void SetColumnChecked(int index, bool enabled)

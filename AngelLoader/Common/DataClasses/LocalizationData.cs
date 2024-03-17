@@ -455,6 +455,7 @@ internal sealed class LText_Class
         [FenGenComment(
             "The date an FM was added to the list. Basically means the date you downloaded it and put it into your archives folder.")]
         internal readonly string DateAddedColumn = "Date Added";
+        internal readonly string PlayTimeColumn = "Play Time";
         internal readonly string DisabledModsColumn = "Disabled Mods";
         internal readonly string CommentColumn = "Comment";
         [FenGenBlankLine]
@@ -765,6 +766,9 @@ internal sealed class LText_Class
         internal readonly string CachingReadmeFiles = "Caching readme files...";
         internal readonly string DeletingFMArchive = "Deleting FM archive...";
         internal readonly string DeletingFMArchives = "Deleting FM archives...";
+        [FenGenBlankLine]
+        internal readonly string WaitingForSteamToStartTheGame = "Waiting for Steam to start the game...";
+        internal readonly string WaitingForSteamToStartTheGame_Explanation = "If you choose to cancel, play time will not be tracked for this session.";
     }
 
     internal sealed class SettingsWindow_Class

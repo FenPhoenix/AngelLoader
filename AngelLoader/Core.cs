@@ -225,9 +225,9 @@ internal static class Core
                     }
                     Thread.Sleep(100);
                 }
-                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                Paths.CreateOrClearTempPath(Paths.UpdateBakTemp);
-                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+                Paths.CreateOrClearTempPath(TempPaths.Update);
+                Paths.CreateOrClearTempPath(TempPaths.UpdateBak);
+                Paths.CreateOrClearTempPath(TempPaths.UpdateAppDownload);
             });
         }
 
@@ -496,7 +496,7 @@ internal static class Core
 
         bool gamePathsChanged = false;
         // We need these in order to decide which, if any, startup config infos to re-read
-        bool[] individualGamePathsChanged = new bool[SupportedGameCount];
+        PerGameGoFlags individualGamePathsChanged = new();
         if (!startup)
         {
             for (int i = 0; i < SupportedGameCount; i++)
@@ -770,9 +770,9 @@ internal static class Core
 
         #endregion
 
-        if (fmsViewListUnscanned?.Count > 0)
+        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
-            await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            await FMScan.ScanNewFMs(fmsToScan);
         }
 
         if (fuzzySearchChanged)
@@ -1134,10 +1134,10 @@ internal static class Core
                 }
             }
 
-            if (fmsViewListUnscanned.Count > 0)
+            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
             {
                 View.SetWaitCursor(false);
-                await FMScan.ScanNewFMs(fmsViewListUnscanned);
+                await FMScan.ScanNewFMs(fmsToScan);
             }
             // @DISPLAYED_FM_SYNC(RefreshFMsListFromDisk() SortAndSetFilter() call):
             // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field
@@ -1596,7 +1596,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            LogFMInfo(fm, ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_InstallDirNotFound);
             return false;
         }
@@ -1611,7 +1611,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.Un + "add .dml to installed folder.", ex);
+            fm.LogInfo(ErrorText.Un + "add .dml to installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_AddDML_UnableToAdd);
             return false;
         }
@@ -1625,7 +1625,7 @@ internal static class Core
 
         if (!FMIsReallyInstalled(fm, out string installedFMPath))
         {
-            LogFMInfo(fm, ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_InstallDirNotFound);
             return false;
         }
@@ -1638,7 +1638,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.Un + "remove .dml from installed folder.", ex);
+            fm.LogInfo(ErrorText.Un + "remove .dml from installed folder.", ex);
             Dialogs.ShowError(LText.AlertMessages.Patch_RemoveDML_UnableToRemove);
             return false;
         }
@@ -1662,7 +1662,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.ExGet + "DML files.", ex);
+            fm.LogInfo(ErrorText.ExGet + "DML files.", ex);
             return (false, new List<string>());
         }
     }
@@ -1971,6 +1971,9 @@ internal static class Core
         return safeReadme;
     }
 
+    // @ViewBusinessLogic(LoadReadme):
+    // This logic - or part of it - should actually be in the view, because it deals with the difference between
+    // HTML and the rest. We shouldn't be assuming HTML is different on this side of the boundary.
     internal static void LoadReadme(FanMission fm)
     {
         string path = "";
@@ -1987,40 +1990,34 @@ internal static class Core
 
             #endregion
 
-            if (fileType == ReadmeType.HTML)
+            Encoding? encoding = null;
+            if (fileType == ReadmeType.PlainText &&
+                fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
             {
-                View.SetReadmeState(ReadmeState.HTML);
-            }
-            else
-            {
-                View.SetReadmeState(fileType == ReadmeType.PlainText ? ReadmeState.PlainText : ReadmeState.OtherSupported);
-
-                Encoding? encoding = null;
-                if (fileType == ReadmeType.PlainText &&
-                    fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
+                try
                 {
-                    try
-                    {
-                        encoding = Encoding.GetEncoding(codePage);
-                    }
-                    catch
-                    {
-                        encoding = null;
-                    }
+                    encoding = Encoding.GetEncoding(codePage);
                 }
+                catch
+                {
+                    encoding = null;
+                }
+            }
 
-                Encoding? newEncoding = View.LoadReadmeContent(path, fileType, encoding);
+            Encoding? newEncoding = View.LoadReadmeContent(path, fileType, encoding);
 
-                Encoding? finalEncoding = newEncoding ?? encoding;
+            Encoding? finalEncoding = newEncoding ?? encoding;
 
-                // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
-                // every time until the user explicitly requests something different.
-                if (fileType == ReadmeType.PlainText && newEncoding?.CodePage > 0)
+            // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
+            // every time until the user explicitly requests something different.
+            if (fileType == ReadmeType.PlainText)
+            {
+                if (newEncoding?.CodePage > 0)
                 {
                     UpdateFMSelectedReadmeCodePage(fm, newEncoding.CodePage);
                 }
 
-                if (fileType == ReadmeType.PlainText && finalEncoding != null)
+                if (finalEncoding != null)
                 {
                     View.SetSelectedReadmeEncoding(finalEncoding);
                 }
@@ -2028,13 +2025,12 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm,
+            fm.LogInfo(
                 "Readme load failed.\r\n" +
                 "FM selected readme: " + fm.SelectedReadme + "\r\n" +
                 "Path: " + path,
                 ex);
-            View.SetReadmeState(ReadmeState.LoadError);
-            View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.UnableToLoadReadme);
+            View.SetReadmeToErrorState(ReadmeLocalizableMessage.UnableToLoadReadme);
         }
     }
 
@@ -2080,14 +2076,14 @@ internal static class Core
     {
         if (!GameIsKnownAndSupported(fm.Game))
         {
-            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             Dialogs.ShowError(ErrorText.UnOpenFMDir);
             return;
         }
 
         if (!FMIsReallyInstalled(fm, out string fmDir))
         {
-            LogFMInfo(fm, ErrorText.FMInstDirNF);
+            fm.LogInfo(ErrorText.FMInstDirNF);
             Dialogs.ShowError(LText.AlertMessages.Patch_FMFolderNotFound);
             return;
         }
@@ -2098,7 +2094,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.ExTry + "open FM folder " + fmDir, ex);
+            fm.LogInfo(ErrorText.ExTry + "open FM folder " + fmDir, ex);
             Dialogs.ShowError(ErrorText.UnOpenFMDir);
         }
     }
@@ -2128,14 +2124,14 @@ internal static class Core
                 }
                 catch (Exception ex)
                 {
-                    LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
+                    fm.LogInfo(ErrorText.ExTry + "open FM screenshots folder " + ssDir, ex);
                     Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
                 }
             }
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
+            fm.LogInfo(ErrorText.ExTry + "open FM screenshots folder where " + screenshotFile + " is located.", ex);
             Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderOpenError);
         }
 
@@ -2143,7 +2139,7 @@ internal static class Core
 
         static void LogNotFound(FanMission fm)
         {
-            LogFMInfo(fm, ErrorText.FMScreenshotsDirNF);
+            fm.LogInfo(ErrorText.FMScreenshotsDirNF);
             Dialogs.ShowError(LText.ScreenshotsTab.ScreenshotsFolderNotFound);
         }
     }
@@ -2247,7 +2243,7 @@ internal static class Core
          you go.
         */
 
-        Paths.CreateOrClearTempPath(Paths.HelpTemp);
+        Paths.CreateOrClearTempPath(TempPaths.Help);
 
         if (!File.Exists(Paths.DocFile))
         {
@@ -2517,9 +2513,12 @@ internal static class Core
         return null;
     }
 
-    // TODO(DisplayFM/sel change/int index):
-    // Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
-    // it always is >-1 and matches the currently selected FM/row. Can probably be removed.
+    /*
+    TODO(DisplayFM/sel change/int index):
+    Looking at the logic, and testing, I'm 99% sure this index var is not actually ever needed and that
+    it always is >-1 and matches the currently selected FM/row. Can probably be removed.
+    @ViewBusinessLogic: This is doing a bit too much by itself. We should let the view handle some of these details.
+    */
     [MustUseReturnValue]
     internal static async Task<FanMission?>
     DisplayFM(int index = -1, bool refreshCache = false)
@@ -2530,7 +2529,7 @@ internal static class Core
 
         if (fm.NeedsScan())
         {
-            if (await FMScan.ScanFMs(new List<FanMission> { fm }, suppressSingleFMProgressBoxIfFast: true))
+            if (await FMScan.ScanFMs(NonEmptyList<FanMission>.CreateFrom(fm), suppressSingleFMProgressBoxIfFast: true))
             {
                 View.RefreshFM(fm, rowOnly: true);
             }
@@ -2576,8 +2575,7 @@ internal static class Core
             switch (readmeFiles.Count)
             {
                 case 0:
-                    View.SetReadmeState(ReadmeState.LoadError);
-                    View.SetReadmeLocalizableMessage(ReadmeLocalizableMessage.NoReadmeFound);
+                    View.SetReadmeToErrorState(ReadmeLocalizableMessage.NoReadmeFound);
                     return fm;
                 case > 1:
                     string safeReadme = DetectSafeReadme(readmeFiles, fm.Title);
@@ -2589,7 +2587,7 @@ internal static class Core
                     }
                     else
                     {
-                        View.SetReadmeState(ReadmeState.InitialReadmeChooser, readmeFiles);
+                        View.SetReadmeToInitialChooserState(readmeFiles);
                         return fm;
                     }
                     break;
@@ -2618,7 +2616,7 @@ internal static class Core
         float mainSplitterPercent,
         float topSplitterPercent,
         float bottomSplitterPercent,
-        ColumnData[] columns,
+        ColumnDataArray columns,
         Column sortedColumn,
         SortDirection sortDirection,
         float fmsListFontSizeInPoints,
@@ -2646,7 +2644,7 @@ internal static class Core
 
         #region FMs list
 
-        Array.Copy(columns, Config.Columns, ColumnCount);
+        columns.CopyTo(Config.Columns);
 
         Config.SortedColumn = sortedColumn;
         Config.SortDirection = sortDirection;
@@ -2712,7 +2710,7 @@ internal static class Core
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static void DoShutdownTasks()
     {
-        GameConfigFiles.ResetGameConfigTempChanges();
+        GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.AllTrue());
     }
 
     internal static void Shutdown()

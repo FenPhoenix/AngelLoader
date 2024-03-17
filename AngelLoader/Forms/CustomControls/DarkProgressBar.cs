@@ -24,10 +24,21 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
         }
     }
 
-    private void RefreshDarkModeState()
+    public void RefreshDarkModeState(bool recreateHandleFirstIfDarkMode = false)
     {
         if (_darkModeEnabled)
         {
+            if (recreateHandleFirstIfDarkMode)
+            {
+                /*
+                For marquee style, this causes the marquee to visually restart. For determinate, it keeps its
+                value. Meh. If we don't do this, we get an ugly classic-mode border around us when we change
+                size for some reason.
+                This should be fixed in a better way, but I don't know how, so whatever.
+                */
+                RecreateHandle();
+            }
+
             Native.SetWindowTheme(Handle, "", "");
             BackColor = DarkColors.Fen_ControlBackground;
             ForeColor = DarkColors.BlueHighlight;

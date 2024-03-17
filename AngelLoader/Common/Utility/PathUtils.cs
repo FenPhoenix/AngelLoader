@@ -258,7 +258,10 @@ public static partial class Utils
 
     #region Try read and write lines
 
-    internal static bool TryReadAllLines(string file, [NotNullWhen(true)] out List<string>? lines)
+    internal static bool TryReadAllLines(
+        string file,
+        [NotNullWhen(true)] out List<string>? lines,
+        bool log = true)
     {
         try
         {
@@ -267,7 +270,10 @@ public static partial class Utils
         }
         catch (Exception ex)
         {
-            Log(ErrorText.ExRead + file, ex);
+            if (log)
+            {
+                Log(ErrorText.ExRead + file, ex);
+            }
             lines = null;
             return false;
         }

@@ -10,6 +10,7 @@ using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -312,11 +313,8 @@ internal static class GameConfigFiles
     /// do the reset work for that game. If false, we skip it.
     /// </param>
     // @CAN_RUN_BEFORE_VIEW_INIT
-    internal static void ResetGameConfigTempChanges(bool[]? perGameGoFlags = null)
+    internal static void ResetGameConfigTempChanges(PerGameGoFlags perGameGoFlags)
     {
-        AssertR(perGameGoFlags == null || perGameGoFlags.Length == SupportedGameCount,
-            nameof(perGameGoFlags) + " length does not match " + nameof(SupportedGameCount));
-
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
@@ -326,7 +324,7 @@ internal static class GameConfigFiles
                 // @GENGAMES(Reset configs): Make sure the logic is correct here!
                 // Twice now we've had the Thief 3 path running multiple times due to logic bugs or forgetting
                 // about this spot.
-                if ((perGameGoFlags == null || perGameGoFlags[i]) &&
+                if (perGameGoFlags[i] &&
                     // Only try to un-stomp the configs for the game if the game was actually specified
                     !gameExe.IsWhiteSpace())
                 {

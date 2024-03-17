@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AL_Common;
@@ -14,17 +15,84 @@ namespace AngelLoader.DataClasses;
 
 #region Columns
 
-internal sealed class ColumnData
+public sealed class ColumnData
 {
-    internal Column Id;
+    public Column Id;
 
+#if SMART_NEW_COLUMN_INSERT
+    // Don't clamp this anymore because it messes with our validator; let the validator handle it
+    internal int DisplayIndex;
+#else
     private int _displayIndex;
-    internal int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
+    public int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
+#endif
 
     private int _width = Defaults.ColumnWidth;
-    internal int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
+    public int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
 
-    internal bool Visible = true;
+    public bool Visible = true;
+
+#if SMART_NEW_COLUMN_INSERT
+    // Needed for the validator to sort new columns with the same column index as old ones in the intended way
+    public bool ExplicitlySet;
+#endif
+}
+
+public sealed class ColumnDataArray
+{
+    private readonly ColumnData[] _columns;
+
+    public ColumnDataArray()
+    {
+        _columns = new ColumnData[ColumnCount];
+        // Must set the display indexes, otherwise we crash!
+        for (int i = 0; i < ColumnCount; i++)
+        {
+            _columns[i] = new ColumnData { Id = (Column)i, DisplayIndex = i };
+        }
+    }
+
+    public ColumnData this[int index] => _columns[index];
+
+    public IEnumerator<ColumnData> GetEnumerator()
+    {
+        foreach (ColumnData column in _columns)
+        {
+            yield return column;
+        }
+    }
+
+    public ColumnDataArray OrderById()
+    {
+        ColumnData[] columnsArray = _columns.OrderBy(static x => x.Id).ToArray();
+        ColumnDataArray ret = new();
+        for (int i = 0; i < ColumnCount; i++)
+        {
+            ret._columns[i] = columnsArray[i];
+        }
+        return ret;
+    }
+
+    public ColumnDataArray OrderByDisplayIndex()
+    {
+        ColumnData[] columnsArray = _columns.OrderBy(static x => x.DisplayIndex).ToArray();
+        ColumnDataArray ret = new();
+        for (int i = 0; i < ColumnCount; i++)
+        {
+            ret._columns[i] = columnsArray[i];
+        }
+        return ret;
+    }
+
+    public ColumnDataArray Sorted(IComparer<ColumnData> comparer)
+    {
+        ColumnDataArray ret = new();
+        CopyTo(ret);
+        Array.Sort(ret._columns, comparer);
+        return ret;
+    }
+
+    public void CopyTo(ColumnDataArray dest) => Array.Copy(_columns, dest._columns, ColumnCount);
 }
 
 [FenGenEnumCount]
@@ -45,6 +113,7 @@ public enum Column
     ReleaseDate,
     LastPlayed,
     DateAdded,
+    PlayTime,
     DisabledMods,
     Comment
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TESTING_COLUMN_VALIDATOR
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -356,6 +358,52 @@ internal static partial class Ini
     }
 
     [PublicAPI]
+    private static bool TryParseLongFromEnd(string str, int indexPastSeparator, int maxDigits, out long result)
+    {
+        const int longMaxDigits = 19;
+
+        result = 0;
+
+        int strLen = str.Length;
+
+        if (indexPastSeparator >= strLen ||
+            strLen - indexPastSeparator > longMaxDigits ||
+            strLen > indexPastSeparator + maxDigits)
+        {
+            return false;
+        }
+
+        try
+        {
+            int end = Math.Min(strLen, indexPastSeparator + maxDigits);
+            for (int i = indexPastSeparator; i < end; i++)
+            {
+                char c = str[i];
+                if (c.IsAsciiNumeric())
+                {
+                    checked
+                    {
+                        result *= 10;
+                        result += c - '0';
+                    }
+                }
+                else
+                {
+                    result = 0;
+                    return false;
+                }
+            }
+        }
+        catch
+        {
+            result = 0;
+            return false;
+        }
+
+        return true;
+    }
+
+    [PublicAPI]
     private static bool TryParseULongFromEnd(string str, int indexPastSeparator, int maxDigits, out ulong result)
     {
         const int ulongMaxDigits = 20;
@@ -652,7 +700,10 @@ internal static partial class Ini
         if (value.Contains(',') &&
             (cProps = value.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries)).Length > 0)
         {
-            var col = new ColumnData { Id = columnType };
+            ColumnData col = config.Columns[(int)columnType];
+#if SMART_NEW_COLUMN_INSERT
+            col.ExplicitlySet = true;
+#endif
             for (int i = 0; i < cProps.Length; i++)
             {
                 switch (i)
@@ -668,7 +719,6 @@ internal static partial class Ini
                         break;
                 }
             }
-            config.Columns[(int)col.Id] = col;
         }
     }
 
@@ -804,10 +854,17 @@ internal static partial class Ini
 
         config.FMTabsData.EnsureValidity();
 
-        // TODO: Make it insert new columns at their default index (currently their position is semi-undefined)
-        // Because they end up being subject to that weird-ass behavior of DisplayIndex setting where one
-        // will affect the others etc...
-        // If we ever add new columns, which is rarely, but still...
+        /*
+        TODO(Column insert):
+        I think we need to just find all non-explicitly-added columns, find their position in the current column
+        set (enum numbers), then convert that to the equivalent relative position in the ini-specified set, then
+        just keep bumping the positions of each new one until we've got a full current set. How to do this exactly,
+        I dunno, but there's the theory...
+        */
+
+#if SMART_NEW_COLUMN_INSERT
+        EnsureColumnsValid(config);
+#endif
 
         #region Date format
 
@@ -865,6 +922,118 @@ internal static partial class Ini
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
         config.FMArchivePaths.ClearAndAdd_Small(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
+
+#if SMART_NEW_COLUMN_INSERT
+
+        return;
+
+        static void EnsureColumnsValid(ConfigData config)
+        {
+#if TESTING_COLUMN_VALIDATOR
+            System.Diagnostics.Trace.WriteLine("---------- INITIAL:");
+
+            for (int i = 0; i < ColumnCount; i++)
+            {
+                ColumnData column = config.Columns[i];
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+            }
+            System.Diagnostics.Trace.WriteLine("---------- END INITIAL");
+#endif
+
+            HashSet<int> displayIndexesHash = new(ColumnCount);
+            foreach (ColumnData column in config.Columns)
+            {
+                displayIndexesHash.Add(column.DisplayIndex);
+            }
+
+            int[] displayIndexesArray = displayIndexesHash.ToArray();
+            Array.Sort(displayIndexesArray);
+
+#if TESTING_COLUMN_VALIDATOR
+            for (int i = 0; i < displayIndexesArray.Length; i++)
+            {
+                System.Diagnostics.Trace.WriteLine(displayIndexesArray[i]);
+            }
+#endif
+
+            if (!ColumnDisplayIndexesValid(displayIndexesArray))
+            {
+                Utils.ResetColumnDisplayIndexes(config.Columns);
+                return;
+            }
+
+            displayIndexesHash.Clear();
+
+            ColumnDataArray sortedColumns = config.Columns.Sorted(new Comparers.ValidatorColumnComparer());
+
+            restart:
+            for (int index = 0; index < ColumnCount; index++)
+            {
+                ColumnData column = sortedColumns[index];
+#if TESTING_COLUMN_VALIDATOR
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+#endif
+                if (!displayIndexesHash.Add(column.DisplayIndex))
+                {
+#if TESTING_COLUMN_VALIDATOR
+                    System.Diagnostics.Trace.WriteLine("----------");
+#endif
+#if true
+                    column.DisplayIndex++;
+#else
+                    for (int subIndex = ColumnCount - 1; subIndex >= index; subIndex--)
+                    {
+                        ColumnData subColumn = sortedColumns[subIndex];
+#if TESTING_COLUMN_VALIDATOR
+                        System.Diagnostics.Trace.WriteLine(subColumn.ExplicitlySet);
+#endif
+                        subColumn.DisplayIndex++;
+                    }
+#endif
+                    displayIndexesHash.Clear();
+                    goto restart;
+                }
+            }
+
+            foreach (ColumnData column in config.Columns)
+            {
+                if (column.DisplayIndex is < 0 or > ColumnCount - 1)
+                {
+                    Utils.ResetColumnDisplayIndexes(config.Columns);
+                    return;
+                }
+            }
+
+#if TESTING_COLUMN_VALIDATOR
+            System.Diagnostics.Trace.WriteLine("---------- FINAL:");
+
+            for (int i = 0; i < ColumnCount; i++)
+            {
+                ColumnData column = config.Columns[i];
+                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
+            }
+#endif
+
+            return;
+
+            static bool ColumnDisplayIndexesValid(int[] displayIndexes)
+            {
+#if true
+                return true;
+#endif
+
+                for (int i = 0; i < displayIndexes.Length; i++)
+                {
+                    if (displayIndexes[i] != i)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+
+#endif
     }
 
     #endregion

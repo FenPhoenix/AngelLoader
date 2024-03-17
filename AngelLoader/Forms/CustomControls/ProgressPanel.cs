@@ -8,6 +8,7 @@ using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -24,6 +25,8 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
     private const int _regularHeight = 128;
     private const int _extendedHeight = 192;
+
+    private readonly int _defaultWidth;
 
     #endregion
 
@@ -91,6 +94,8 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 #else
         InitSlim();
 #endif
+
+        _defaultWidth = Width;
     }
 
     internal void SetSizeToDefault() => SetSizeMode(_defaultSizeMode, forceChange: true);
@@ -191,6 +196,40 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         _owner.UIEnabled = true;
     }
 
+    private void AutoSizeWidth()
+    {
+        int message1Width = TextRenderer.MeasureText(MainMessage1Label.Text, MainMessage1Label.Font).Width;
+        int message2Width = TextRenderer.MeasureText(MainMessage2Label.Text, MainMessage2Label.Font).Width;
+        int message3Width = TextRenderer.MeasureText(SubMessageLabel.Text, SubMessageLabel.Font).Width;
+        int requiredWidth = MathMax3(message1Width, message2Width, message3Width);
+
+        bool widthChanged = false;
+
+        // Perf so as not to change width if we don't have to
+        if (Width > _defaultWidth)
+        {
+            Width = Math.Max(requiredWidth, _defaultWidth);
+            widthChanged = true;
+        }
+        else if (requiredWidth > _defaultWidth)
+        {
+            Width = requiredWidth;
+            widthChanged = true;
+        }
+
+        if (widthChanged)
+        {
+            // Hacks to fix various visual glitches, and the progress bar partially losing its dark mode state
+            this.CenterH(_owner, clientSize: true);
+            Invalidate();
+            if (_darkModeEnabled)
+            {
+                MainProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
+                SubProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
+            }
+        }
+    }
+
     /// <summary>
     /// Sets the state of the progress box. A null parameter means no change.
     /// </summary>
@@ -225,10 +264,12 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         if (mainMessage1 != null)
         {
             MainMessage1Label.Text = mainMessage1;
+            AutoSizeWidth();
         }
         if (mainMessage2 != null)
         {
             MainMessage2Label.Text = mainMessage2;
+            AutoSizeWidth();
         }
         if (mainPercent != null)
         {
@@ -241,6 +282,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         if (subMessage != null)
         {
             SubMessageLabel.Text = subMessage;
+            AutoSizeWidth();
         }
         if (subPercent != null)
         {

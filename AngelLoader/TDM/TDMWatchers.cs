@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -84,6 +87,56 @@ internal static class TDMWatchers
         }
     });
 
+    private static void ChangeTdmFmForPlayTimeTrackingIfRequired()
+    {
+        TimeTrackingProcess ttp = PlayTimeTracking.GetTimeTrackingProcess(GameIndex.TDM);
+        if (!ttp.IsRunning) return;
+
+        string? fmName = null;
+        string file;
+        string fmInstallPath = Config.GetGamePath(GameIndex.TDM);
+        if (!fmInstallPath.IsEmpty())
+        {
+            try
+            {
+                file = Path.Combine(fmInstallPath, Paths.TDMCurrentFMFile);
+            }
+            catch
+            {
+                return;
+            }
+        }
+        else
+        {
+            return;
+        }
+
+        if (!File.Exists(file)) return;
+
+        using var cts = new CancellationTokenSource(5000);
+
+        List<string>? lines;
+        while (!TryReadAllLines(file, out lines, log: false))
+        {
+            Thread.Sleep(50);
+
+            if (cts.IsCancellationRequested)
+            {
+                return;
+            }
+        }
+
+        if (lines.Count > 0)
+        {
+            fmName = lines[0];
+        }
+
+        if (fmName.IsEmpty() || !fmName.EqualsI(ttp.FMInstalledDir))
+        {
+            ttp.SwitchTdmFM(fmName);
+        }
+    }
+
     #region Event handlers
 
     private static async void FileWatcherTimers_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -97,6 +150,7 @@ internal static class TDMWatchers
     private static async void TDMSelectedFMWatcher_Changed(object sender, FileSystemEventArgs e)
     {
         if (Core.View == null!) return;
+        ChangeTdmFmForPlayTimeTrackingIfRequired();
         await RefreshIfAllowed(TDM_FileChanged.CurrentFM);
     }
 

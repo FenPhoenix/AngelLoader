@@ -30,15 +30,24 @@ sealed partial class ProgressPanel
     /// </summary>
     private void InitializeComponent()
     {
+        this.SubProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.SubPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.MainPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.MainMessage1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.MainMessage2Label = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.MainProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
-        this.SubProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
         this.SubMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.SubPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.MainMessage2Label = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.SuspendLayout();
+        // 
+        // SubProgressBar
+        // 
+        this.SubProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.SubProgressBar.Location = new System.Drawing.Point(8, 120);
+        this.SubProgressBar.Name = "SubProgressBar";
+        this.SubProgressBar.Size = new System.Drawing.Size(406, 16);
+        this.SubProgressBar.TabIndex = 6;
         // 
         // Cancel_Button
         // 
@@ -54,8 +63,21 @@ sealed partial class ProgressPanel
         this.Cancel_Button.Text = "Cancel";
         this.Cancel_Button.Click += new System.EventHandler(this.ProgressCancelButton_Click);
         // 
+        // SubPercentLabel
+        // 
+        this.SubPercentLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.SubPercentLabel.Location = new System.Drawing.Point(4, 104);
+        this.SubPercentLabel.Name = "SubPercentLabel";
+        this.SubPercentLabel.Size = new System.Drawing.Size(416, 13);
+        this.SubPercentLabel.TabIndex = 5;
+        this.SubPercentLabel.Text = "%";
+        this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+        // 
         // MainPercentLabel
         // 
+        this.MainPercentLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.MainPercentLabel.Location = new System.Drawing.Point(4, 40);
         this.MainPercentLabel.Name = "MainPercentLabel";
         this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
@@ -65,6 +87,8 @@ sealed partial class ProgressPanel
         // 
         // MainMessage1Label
         // 
+        this.MainMessage1Label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.MainMessage1Label.Location = new System.Drawing.Point(4, 8);
         this.MainMessage1Label.Name = "MainMessage1Label";
         this.MainMessage1Label.Size = new System.Drawing.Size(416, 13);
@@ -72,31 +96,19 @@ sealed partial class ProgressPanel
         this.MainMessage1Label.Text = "Message";
         this.MainMessage1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
-        // MainMessage2Label
-        // 
-        this.MainMessage2Label.Location = new System.Drawing.Point(4, 24);
-        this.MainMessage2Label.Name = "MainMessage2Label";
-        this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
-        this.MainMessage2Label.TabIndex = 1;
-        this.MainMessage2Label.Text = "Current thing";
-        this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        // 
         // MainProgressBar
         // 
+        this.MainProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.MainProgressBar.Location = new System.Drawing.Point(8, 56);
         this.MainProgressBar.Name = "MainProgressBar";
         this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
         this.MainProgressBar.TabIndex = 3;
         // 
-        // SubProgressBar
-        // 
-        this.SubProgressBar.Location = new System.Drawing.Point(8, 120);
-        this.SubProgressBar.Name = "SubProgressBar";
-        this.SubProgressBar.Size = new System.Drawing.Size(406, 16);
-        this.SubProgressBar.TabIndex = 6;
-        // 
         // SubMessageLabel
         // 
+        this.SubMessageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
         this.SubMessageLabel.Location = new System.Drawing.Point(4, 88);
         this.SubMessageLabel.Name = "SubMessageLabel";
         this.SubMessageLabel.Size = new System.Drawing.Size(416, 13);
@@ -104,14 +116,16 @@ sealed partial class ProgressPanel
         this.SubMessageLabel.Text = "Current thing";
         this.SubMessageLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
-        // SubPercentLabel
+        // MainMessage2Label
         // 
-        this.SubPercentLabel.Location = new System.Drawing.Point(4, 104);
-        this.SubPercentLabel.Name = "SubPercentLabel";
-        this.SubPercentLabel.Size = new System.Drawing.Size(416, 13);
-        this.SubPercentLabel.TabIndex = 5;
-        this.SubPercentLabel.Text = "%";
-        this.SubPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+        this.MainMessage2Label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.MainMessage2Label.Location = new System.Drawing.Point(4, 24);
+        this.MainMessage2Label.Name = "MainMessage2Label";
+        this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
+        this.MainMessage2Label.TabIndex = 1;
+        this.MainMessage2Label.Text = "Current thing";
+        this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // ProgressPanel
         // 

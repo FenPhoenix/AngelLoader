@@ -12,7 +12,6 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -39,7 +38,7 @@ internal static class FMScan
     /// <param name="scanMessage"></param>
     /// <returns></returns>
     internal static async Task<bool> ScanFMs(
-        List<FanMission> fmsToScan,
+        NonEmptyList<FanMission> fmsToScan,
         FMScanner.ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
         bool suppressSingleFMProgressBoxIfFast = false,
@@ -48,9 +47,7 @@ internal static class FMScan
     {
         scanOptions ??= GetDefaultScanOptions();
 
-        if (fmsToScan.Count == 0) return false;
-
-        bool scanningOne = fmsToScan.Count == 1;
+        bool scanningOne = fmsToScan.Single;
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -182,8 +179,8 @@ internal static class FMScan
                     {
                         var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
-                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
-                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
                         if (_scanCts.IsCancellationRequested) return false;
 
@@ -213,8 +210,8 @@ internal static class FMScan
                     }
                     catch (OperationCanceledException)
                     {
-                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
-                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
                         return false;
                     }
                     finally
@@ -480,17 +477,9 @@ internal static class FMScan
         #endregion
     }
 
-    internal static Task ScanNewFMs(List<FanMission> fmsViewListUnscanned)
+    internal static Task ScanNewFMs(NonEmptyList<FanMission> newFMs)
     {
-        AssertR(fmsViewListUnscanned.Count > 0, nameof(fmsViewListUnscanned) + ".Count was 0");
-
-        var fmsToScan = new List<FanMission>(fmsViewListUnscanned.Count);
-
-        fmsToScan.AddRange(fmsViewListUnscanned);
-        // Just in case
-        fmsViewListUnscanned.Clear();
-
-        return ScanFMs(fmsToScan,
+        return ScanFMs(newFMs,
             FMScanner.ScanOptions.FalseDefault(scanGameType: true),
             scanFullIfNew: true);
     }
@@ -513,12 +502,15 @@ internal static class FMScan
 
     internal static async Task ScanAllFMs()
     {
-        if (FMsViewList.Count == 0) return;
+        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(FMsViewList, out var fmsToScan))
+        {
+            return;
+        }
 
         FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
         if (scanOptions == null) return;
 
-        if (await ScanFMs(FMsViewList, scanOptions))
+        if (await ScanFMs(fmsToScan, scanOptions))
         {
             await Core.View.SortAndSetFilter(forceDisplayFM: true);
         }
@@ -526,20 +518,24 @@ internal static class FMScan
 
     internal static async Task ScanSelectedFMs()
     {
-        List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
-        if (fms.Count == 1)
+        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(Core.View.GetSelectedFMs_InOrder_List(), out var fmsToScan))
         {
-            if (await ScanFMs(fms, suppressSingleFMProgressBoxIfFast: true, setForceReCacheReadmes: true))
+            return;
+        }
+
+        if (fmsToScan.Single)
+        {
+            if (await ScanFMs(fmsToScan, suppressSingleFMProgressBoxIfFast: true, setForceReCacheReadmes: true))
             {
-                Core.View.RefreshFM(fms[0]);
+                Core.View.RefreshFM(fmsToScan[0]);
             }
         }
-        else if (fms.Count > 1)
+        else
         {
             FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
             if (scanOptions == null) return;
 
-            if (await ScanFMs(fms, scanOptions, setForceReCacheReadmes: true))
+            if (await ScanFMs(fmsToScan, scanOptions, setForceReCacheReadmes: true))
             {
                 // @MULTISEL(Scan selected FMs): Do we want to sort and set filter here too?
                 // Because we might scan FMs and they end up being something that's filtered out?
