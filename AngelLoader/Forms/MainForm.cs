@@ -1136,11 +1136,11 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            if (fmsNeedingMisCountScan.Count > 0)
+            if (NonEmptyList<FanMission>.TryCreateFrom(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
             {
                 if (!Visible) Show();
                 await FMScan.ScanFMs(
-                    fmsNeedingMisCountScan,
+                    fmsToScanForMisCount,
                     FMScanner.ScanOptions.FalseDefault(scanMissionCount: true),
                     scanMessage: LText.ProgressBox.ScanningForMissionCounts
                 );
@@ -2802,7 +2802,10 @@ public sealed partial class MainForm : DarkFormBase,
                         _ => FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true)
                     };
 
-                    if (await FMScan.ScanFMs(new List<FanMission> { fm }, scanOptions, suppressSingleFMProgressBoxIfFast: true))
+                    if (await FMScan.ScanFMs(
+                            NonEmptyList<FanMission>.CreateFrom(fm),
+                            scanOptions,
+                            suppressSingleFMProgressBoxIfFast: true))
                     {
                         RefreshFM(fm);
                     }

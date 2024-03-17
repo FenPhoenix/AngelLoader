@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
@@ -310,6 +311,7 @@ public static partial class Misc
 
         private NonEmptyList(List<T> list) => _list = list;
 
+        [MustUseReturnValue]
         public static bool TryCreateFrom(List<T>? list, out NonEmptyList<T> result)
         {
             if (list?.Count > 0)
@@ -324,6 +326,7 @@ public static partial class Misc
             }
         }
 
+        [MustUseReturnValue]
         public static bool TryCreateFrom(T[]? array, out NonEmptyList<T> result)
         {
             if (array?.Length > 0)
@@ -337,6 +340,9 @@ public static partial class Misc
                 return false;
             }
         }
+
+        [MustUseReturnValue]
+        public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
 
         public T this[int index]
         {

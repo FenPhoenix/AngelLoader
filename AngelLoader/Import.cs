@@ -184,14 +184,14 @@ internal static class Import
                 }
                 else // No error
                 {
-                    if (fmsToScan.Count > 0)
+                    if (NonEmptyList<FanMission>.TryCreateFrom(fmsToScan, out var fmsToScanNonEmpty))
                     {
                         var scanOptions = importType == ImportType.FMSel
                             ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
                             // NewDarkLoader and DarkLoader both take this one
                             : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
 
-                        await FMScan.ScanFMs(fmsToScan, scanOptions);
+                        await FMScan.ScanFMs(fmsToScanNonEmpty, scanOptions);
                         /*
                         Doing a find after a scan. I forgot exactly why. Reasons I thought of:
                         -I might be doing it to get rid of any duplicates or bad data that may have been imported?
