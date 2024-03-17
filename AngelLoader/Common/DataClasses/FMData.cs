@@ -382,92 +382,13 @@ public sealed class FanMission
     #endregion
 }
 
-public readonly struct ValidGameFM
-{
-    private readonly FanMission InternalFM;
-
-    public readonly GameIndex GameIndex;
-
-    public bool Installed => InternalFM.Installed;
-
-    public string InstalledDir => InternalFM.InstalledDir;
-
-    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
-
-    public string GetId() => InternalFM.GetId();
-
-    private ValidGameFM(FanMission fm, GameIndex gameIndex)
-    {
-        InternalFM = fm;
-        GameIndex = gameIndex;
-    }
-
-    public static bool TryCreateFrom(FanMission inFM, out ValidGameFM outFM)
-    {
-        if (inFM.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
-        {
-            outFM = new ValidGameFM(inFM, gameIndex);
-            return true;
-        }
-        else
-        {
-            outFM = default;
-            return false;
-        }
-    }
-
-    public static List<ValidGameFM> CreateListFrom(List<FanMission> fms)
-    {
-        List<ValidGameFM> ret = new(fms.Count);
-        for (int i = 0; i < fms.Count; i++)
-        {
-            if (TryCreateFrom(fms[i], out ValidGameFM validGameFM))
-            {
-                ret.Add(validGameFM);
-            }
-        }
-        return ret;
-    }
-
-    internal void LogInfo(
-        string topMessage,
-        Exception? ex = null,
-        bool stackTrace = false,
-        [CallerMemberName] string callerMemberName = "")
-    {
-        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
-    }
-
-    [PublicAPI]
-    public override bool Equals(object? obj) => obj is ValidGameFM fm && Equals(fm);
-
-    [PublicAPI]
-    public bool Equals(ValidGameFM fm) => InternalFM.Equals(fm.InternalFM);
-
-    [PublicAPI]
-    public static bool operator ==(ValidGameFM lhs, ValidGameFM rhs) => lhs.Equals(rhs);
-
-    [PublicAPI]
-    public static bool operator !=(ValidGameFM lhs, ValidGameFM rhs) => !(lhs == rhs);
-
-    [PublicAPI]
-    public override int GetHashCode() => InternalFM.GetHashCode();
-
-    [PublicAPI]
-    public override string ToString() => InternalFM.ToString();
-}
-
 public readonly struct ValidAudioConvertibleFM
 {
     private readonly FanMission InternalFM;
 
     public readonly GameIndex GameIndex;
 
-    public bool Installed => InternalFM.Installed;
-
     public string InstalledDir => InternalFM.InstalledDir;
-
-    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
 
     public string GetId() => InternalFM.GetId();
 
