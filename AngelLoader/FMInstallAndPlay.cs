@@ -1429,7 +1429,8 @@ internal static partial class FMInstallAndPlay
             (
                 fm,
                 fmArchivePath,
-                instBasePath
+                instBasePath,
+                gameIndex
             );
 
             if (install)
@@ -1515,18 +1516,12 @@ internal static partial class FMInstallAndPlay
 
     #region Install
 
-    private sealed class FMData
+    private sealed class FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
     {
-        internal readonly FanMission FM;
-        internal readonly string ArchivePath;
-        internal readonly string InstBasePath;
-
-        public FMData(FanMission fm, string archivePath, string instBasePath)
-        {
-            FM = fm;
-            ArchivePath = archivePath;
-            InstBasePath = instBasePath;
-        }
+        internal readonly FanMission FM = fm;
+        internal readonly string ArchivePath = archivePath;
+        internal readonly string InstBasePath = instBasePath;
+        internal readonly GameIndex GameIndex = gameIndex;
     }
 
     private sealed class Buffers
@@ -2243,9 +2238,7 @@ internal static partial class FMInstallAndPlay
 
                 FanMission fm = fmData.FM;
 
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(fmData.GameIndex), fm.InstalledDir);
 
                 #region Check for already uninstalled
 
