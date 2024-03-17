@@ -1116,7 +1116,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
-            if (!Visible) Show();
+            Show();
             await FMScan.ScanNewFMs(fmsToScan);
             // Do the second sort because the scanner will have changed all the metadata (titles etc.)
             // Duplicate sort but meh, we've just had to do a scan so a fast startup is right out the window anyway
@@ -1138,7 +1138,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
             {
-                if (!Visible) Show();
+                Show();
                 await FMScan.ScanFMs(
                     fmsToScanForMisCount,
                     FMScanner.ScanOptions.FalseDefault(scanMissionCount: true),
@@ -1155,10 +1155,7 @@ public sealed partial class MainForm : DarkFormBase,
             _displayedFM = await Core.DisplayFM();
         }
 
-        if (!Visible) Show();
-
-        // Must come after Show() I guess or it doesn't work?!
-        FMsDGV.Focus();
+        Show();
 
         if (askForImport)
         {
@@ -1183,6 +1180,9 @@ public sealed partial class MainForm : DarkFormBase,
         {
             AppUpdate.StartCheckIfUpdateAvailableThread();
         }
+
+        // Must come after Show() I guess or it doesn't work?!
+        FMsDGV.Focus();
     }
 
     /*
@@ -1228,6 +1228,8 @@ public sealed partial class MainForm : DarkFormBase,
     private bool _firstShowDone;
     public new void Show()
     {
+        if (Visible) return;
+
         if (!_firstShowDone)
         {
             // Bottom (lazy-loaded) control handles this itself
