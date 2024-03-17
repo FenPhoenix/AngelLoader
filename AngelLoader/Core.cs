@@ -770,9 +770,9 @@ internal static class Core
 
         #endregion
 
-        if (fmsViewListUnscanned?.Count > 0)
+        if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
         {
-            await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            await FMScan.ScanNewFMs(fmsToScan);
         }
 
         if (fuzzySearchChanged)
@@ -1134,10 +1134,10 @@ internal static class Core
                 }
             }
 
-            if (fmsViewListUnscanned.Count > 0)
+            if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
             {
                 View.SetWaitCursor(false);
-                await FMScan.ScanNewFMs(fmsViewListUnscanned);
+                await FMScan.ScanNewFMs(fmsToScan);
             }
             // @DISPLAYED_FM_SYNC(RefreshFMsListFromDisk() SortAndSetFilter() call):
             // It is REQUIRED to force-display the FM, to ensure the main view's internal displayed FM field

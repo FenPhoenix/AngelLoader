@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
@@ -299,5 +302,52 @@ public static partial class Misc
             }
             return ret;
         }
+    }
+
+    public readonly struct NonEmptyList<T> : IEnumerable<T>
+    {
+        private readonly List<T> _list;
+
+        private NonEmptyList(List<T> list) => _list = list;
+
+        public static bool TryCreateFrom(List<T>? list, out NonEmptyList<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                result = new NonEmptyList<T>(list);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        public static bool TryCreateFrom(T[]? array, out NonEmptyList<T> result)
+        {
+            if (array?.Length > 0)
+            {
+                result = new NonEmptyList<T>(array.ToList());
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        public T this[int index]
+        {
+            get => _list[index];
+            set => _list[index] = value;
+        }
+
+        public int Count => _list.Count;
+
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

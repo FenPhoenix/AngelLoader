@@ -1114,10 +1114,10 @@ public sealed partial class MainForm : DarkFormBase,
         // Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-        if (fmsViewListUnscanned?.Count > 0)
+        if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
         {
             if (!Visible) Show();
-            await FMScan.ScanNewFMs(fmsViewListUnscanned);
+            await FMScan.ScanNewFMs(fmsToScan);
             // Do the second sort because the scanner will have changed all the metadata (titles etc.)
             // Duplicate sort but meh, we've just had to do a scan so a fast startup is right out the window anyway
             SortFMsDGV(Config.SortedColumn, Config.SortDirection);

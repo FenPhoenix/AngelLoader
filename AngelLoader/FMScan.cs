@@ -12,7 +12,6 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -480,15 +479,11 @@ internal static class FMScan
         #endregion
     }
 
-    internal static Task ScanNewFMs(List<FanMission> fmsViewListUnscanned)
+    internal static Task ScanNewFMs(NonEmptyList<FanMission> fmsViewListUnscanned)
     {
-        AssertR(fmsViewListUnscanned.Count > 0, nameof(fmsViewListUnscanned) + ".Count was 0");
-
         var fmsToScan = new List<FanMission>(fmsViewListUnscanned.Count);
 
         fmsToScan.AddRange(fmsViewListUnscanned);
-        // Just in case
-        fmsViewListUnscanned.Clear();
 
         return ScanFMs(fmsToScan,
             FMScanner.ScanOptions.FalseDefault(scanGameType: true),
