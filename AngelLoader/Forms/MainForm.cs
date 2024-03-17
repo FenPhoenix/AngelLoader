@@ -1114,7 +1114,7 @@ public sealed partial class MainForm : DarkFormBase,
         // Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-        if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             if (!Visible) Show();
             await FMScan.ScanNewFMs(fmsToScan);
@@ -1136,7 +1136,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
+            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
             {
                 if (!Visible) Show();
                 await FMScan.ScanFMs(

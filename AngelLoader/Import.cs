@@ -184,7 +184,7 @@ internal static class Import
                 }
                 else // No error
                 {
-                    if (NonEmptyList<FanMission>.TryCreateFrom(fmsToScan, out var fmsToScanNonEmpty))
+                    if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsToScan, out var fmsToScanNonEmpty))
                     {
                         var scanOptions = importType == ImportType.FMSel
                             ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)

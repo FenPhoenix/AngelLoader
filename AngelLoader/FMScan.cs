@@ -502,7 +502,7 @@ internal static class FMScan
 
     internal static async Task ScanAllFMs()
     {
-        if (!NonEmptyList<FanMission>.TryCreateFrom(FMsViewList, out var fmsToScan))
+        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(FMsViewList, out var fmsToScan))
         {
             return;
         }
@@ -518,7 +518,7 @@ internal static class FMScan
 
     internal static async Task ScanSelectedFMs()
     {
-        if (!NonEmptyList<FanMission>.TryCreateFrom(Core.View.GetSelectedFMs_InOrder_List(), out var fmsToScan))
+        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(Core.View.GetSelectedFMs_InOrder_List(), out var fmsToScan))
         {
             return;
         }

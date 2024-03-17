@@ -770,7 +770,7 @@ internal static class Core
 
         #endregion
 
-        if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             await FMScan.ScanNewFMs(fmsToScan);
         }
@@ -1134,7 +1134,7 @@ internal static class Core
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom(fmsViewListUnscanned, out var fmsToScan))
+            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
             {
                 View.SetWaitCursor(false);
                 await FMScan.ScanNewFMs(fmsToScan);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -304,15 +305,14 @@ public static partial class Misc
         }
     }
 
-    // Inefficient functional-style "copy everything" super-safe guarantee ultra thing.
-    public readonly struct NonEmptyList<T> : IEnumerable
+    public readonly struct NonEmptyList<T> : IEnumerable<T>
     {
-        private readonly T[] _array;
+        private readonly List<T> _list;
 
-        private NonEmptyList(T[] array)
+        private NonEmptyList(List<T> list)
         {
-            _array = array;
-            Count = _array.Length;
+            _list = list;
+            Count = _list.Count;
             Single = Count == 1;
         }
 
@@ -320,12 +320,19 @@ public static partial class Misc
 
         public readonly bool Single;
 
+        /// <summary>
+        /// The internal list will be a reference copy of what you pass in. Use this method if you know the source
+        /// list won't change, and you want to avoid the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         [MustUseReturnValue]
-        public static bool TryCreateFrom(List<T>? list, out NonEmptyList<T> result)
+        public static bool TryCreateFrom_Ref(List<T>? list, out NonEmptyList<T> result)
         {
             if (list?.Count > 0)
             {
-                result = new NonEmptyList<T>(list.ToArray());
+                result = new NonEmptyList<T>(list);
                 return true;
             }
             else
@@ -335,14 +342,43 @@ public static partial class Misc
             }
         }
 
+        /// <summary>
+        /// The internal list will be an element-wise copy of what you pass in. Use this method if the source
+        /// might change and you want to guarantee the internal list won't, at the expense of the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
         [MustUseReturnValue]
-        public static bool TryCreateFrom(T[]? array, out NonEmptyList<T> result)
+        public static bool TryCreateFrom_Copy(List<T>? list, out NonEmptyList<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                List<T> copy = new(list.Count);
+                copy.AddRange(list);
+                result = new NonEmptyList<T>(copy);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The internal list will be an element-wise copy of what you pass in. Use this method if the source
+        /// might change and you want to guarantee the internal list won't, at the expense of the extra allocation.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Copy(T[]? array, out NonEmptyList<T> result)
         {
             if (array?.Length > 0)
             {
-                T[] dest = new T[array.Length];
-                Array.Copy(array, dest, array.Length);
-                result = new NonEmptyList<T>(dest);
+                result = new NonEmptyList<T>(array.ToList());
                 return true;
             }
             else
@@ -353,10 +389,12 @@ public static partial class Misc
         }
 
         [MustUseReturnValue]
-        public static NonEmptyList<T> CreateFrom(T item) => new(new[] { item });
+        public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
 
-        public T this[int index] => _array[index];
+        public T this[int index] => _list[index];
 
-        public IEnumerator GetEnumerator() => _array.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
