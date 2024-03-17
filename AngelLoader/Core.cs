@@ -496,7 +496,7 @@ internal static class Core
 
         bool gamePathsChanged = false;
         // We need these in order to decide which, if any, startup config infos to re-read
-        bool[] individualGamePathsChanged = new bool[SupportedGameCount];
+        PerGameGoFlags individualGamePathsChanged = new();
         if (!startup)
         {
             for (int i = 0; i < SupportedGameCount; i++)
@@ -2712,7 +2712,7 @@ internal static class Core
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static void DoShutdownTasks()
     {
-        GameConfigFiles.ResetGameConfigTempChanges();
+        GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.AllTrue());
     }
 
     internal static void Shutdown()

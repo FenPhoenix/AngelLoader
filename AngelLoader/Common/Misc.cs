@@ -276,4 +276,30 @@ public static partial class Misc
         static () => LText.StatisticsTab.Movies,
         static () => LText.StatisticsTab.Subtitles
     };
+
+    public readonly struct PerGameGoFlags
+    {
+        private readonly bool[] _array;
+
+        /// <summary>
+        /// The internal array starts out all <see langword="false"/>.
+        /// </summary>
+        public PerGameGoFlags() => _array = new bool[SupportedGameCount];
+
+        public bool this[int index]
+        {
+            get => _array[index];
+            set => _array[index] = value;
+        }
+
+        public static PerGameGoFlags AllTrue()
+        {
+            PerGameGoFlags ret = new();
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                ret[i] = true;
+            }
+            return ret;
+        }
+    }
 }
