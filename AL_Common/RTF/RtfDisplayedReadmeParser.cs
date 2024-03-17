@@ -291,7 +291,7 @@ public sealed partial class RtfDisplayedReadmeParser
         _colorTable = new List<Color>(colorTableSpan.Count((byte)';'));
 
         bool first = true;
-        foreach (ReadOnlySpan<byte> entry in ReadOnlySpanExtensions.Split(colorTableSpan, (byte)';'))
+        foreach (ReadOnlySpan<byte> entry in colorTableSpan.Split((byte)';'))
         {
             if (entry.IsWhiteSpace())
             {
