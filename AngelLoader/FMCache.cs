@@ -700,7 +700,7 @@ internal static class FMCache
 
                     if (fileNamesList.Count == 0) return;
 
-                    Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
                     static void ReportProgress(Fen7z.ProgressReport pr)
                     {

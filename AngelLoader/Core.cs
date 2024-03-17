@@ -225,9 +225,9 @@ internal static class Core
                     }
                     Thread.Sleep(100);
                 }
-                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
-                Paths.CreateOrClearTempPath(Paths.UpdateBakTemp);
-                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+                Paths.CreateOrClearTempPath(TempPaths.Update);
+                Paths.CreateOrClearTempPath(TempPaths.UpdateBak);
+                Paths.CreateOrClearTempPath(TempPaths.UpdateAppDownload);
             });
         }
 
@@ -2243,7 +2243,7 @@ internal static class Core
          you go.
         */
 
-        Paths.CreateOrClearTempPath(Paths.HelpTemp);
+        Paths.CreateOrClearTempPath(TempPaths.Help);
 
         if (!File.Exists(Paths.DocFile))
         {

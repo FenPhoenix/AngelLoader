@@ -202,7 +202,7 @@ internal static partial class FMInstallAndPlay
                 CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: true, playMP);
             if (!success) return false;
 
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
@@ -271,7 +271,7 @@ internal static partial class FMInstallAndPlay
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
         if (!success) return false;
 
-        Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+        Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
         GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
@@ -444,7 +444,7 @@ internal static partial class FMInstallAndPlay
             #endregion
 
             // Just in case, and for consistency
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 
@@ -602,7 +602,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex)
         {
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
 
@@ -1954,7 +1954,7 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             using var fs = File_OpenReadFast(fmArchivePath);
             int entriesCount;
@@ -2050,7 +2050,7 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             int entriesCount;
 

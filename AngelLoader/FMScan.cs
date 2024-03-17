@@ -182,8 +182,8 @@ internal static class FMScan
                     {
                         var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
-                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
-                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
                         if (_scanCts.IsCancellationRequested) return false;
 
@@ -213,8 +213,8 @@ internal static class FMScan
                     }
                     catch (OperationCanceledException)
                     {
-                        Paths.CreateOrClearTempPath(Paths.FMScannerTemp);
-                        Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
                         return false;
                     }
                     finally
