@@ -47,7 +47,7 @@ internal static class FMScan
     {
         scanOptions ??= GetDefaultScanOptions();
 
-        bool scanningOne = fmsToScan.Count == 1;
+        bool scanningOne = fmsToScan.Single;
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -523,14 +523,14 @@ internal static class FMScan
             return;
         }
 
-        if (fmsToScan.Count == 1)
+        if (fmsToScan.Single)
         {
             if (await ScanFMs(fmsToScan, suppressSingleFMProgressBoxIfFast: true, setForceReCacheReadmes: true))
             {
                 Core.View.RefreshFM(fmsToScan[0]);
             }
         }
-        else if (fmsToScan.Count > 1)
+        else
         {
             FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
             if (scanOptions == null) return;

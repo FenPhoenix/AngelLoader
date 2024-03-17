@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -305,18 +304,28 @@ public static partial class Misc
         }
     }
 
-    public readonly struct NonEmptyList<T> : IEnumerable<T>
+    // Inefficient functional-style "copy everything" super-safe guarantee ultra thing.
+    public readonly struct NonEmptyList<T> : IEnumerable
     {
-        private readonly List<T> _list;
+        private readonly T[] _array;
 
-        private NonEmptyList(List<T> list) => _list = list;
+        private NonEmptyList(T[] array)
+        {
+            _array = array;
+            Count = _array.Length;
+            Single = Count == 1;
+        }
+
+        public readonly int Count;
+
+        public readonly bool Single;
 
         [MustUseReturnValue]
         public static bool TryCreateFrom(List<T>? list, out NonEmptyList<T> result)
         {
             if (list?.Count > 0)
             {
-                result = new NonEmptyList<T>(list);
+                result = new NonEmptyList<T>(list.ToArray());
                 return true;
             }
             else
@@ -331,7 +340,9 @@ public static partial class Misc
         {
             if (array?.Length > 0)
             {
-                result = new NonEmptyList<T>(array.ToList());
+                T[] dest = new T[array.Length];
+                Array.Copy(array, dest, array.Length);
+                result = new NonEmptyList<T>(dest);
                 return true;
             }
             else
@@ -342,18 +353,10 @@ public static partial class Misc
         }
 
         [MustUseReturnValue]
-        public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
+        public static NonEmptyList<T> CreateFrom(T item) => new(new[] { item });
 
-        public T this[int index]
-        {
-            get => _list[index];
-            set => _list[index] = value;
-        }
+        public T this[int index] => _array[index];
 
-        public int Count => _list.Count;
-
-        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public IEnumerator GetEnumerator() => _array.GetEnumerator();
     }
 }
