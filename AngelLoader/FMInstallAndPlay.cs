@@ -1742,7 +1742,7 @@ internal static partial class FMInstallAndPlay
                 }
 
                 // Only Dark engine games need audio conversion
-                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM? validAudioConvertibleFM))
+                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
                 {
                     try
                     {

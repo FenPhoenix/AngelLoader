@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AL_Common;
+using JetBrains.Annotations;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
@@ -382,7 +382,7 @@ public sealed class FanMission
     #endregion
 }
 
-public sealed class ValidGameFM
+public readonly struct ValidGameFM
 {
     private readonly FanMission InternalFM;
 
@@ -402,7 +402,7 @@ public sealed class ValidGameFM
         GameIndex = gameIndex;
     }
 
-    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidGameFM? outFM)
+    public static bool TryCreateFrom(FanMission inFM, out ValidGameFM outFM)
     {
         if (inFM.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
@@ -411,7 +411,7 @@ public sealed class ValidGameFM
         }
         else
         {
-            outFM = null;
+            outFM = default;
             return false;
         }
     }
@@ -421,7 +421,7 @@ public sealed class ValidGameFM
         List<ValidGameFM> ret = new(fms.Count);
         for (int i = 0; i < fms.Count; i++)
         {
-            if (TryCreateFrom(fms[i], out ValidGameFM? validGameFM))
+            if (TryCreateFrom(fms[i], out ValidGameFM validGameFM))
             {
                 ret.Add(validGameFM);
             }
@@ -437,66 +437,27 @@ public sealed class ValidGameFM
     {
         InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
     }
+
+    [PublicAPI]
+    public override bool Equals(object? obj) => obj is ValidGameFM fm && Equals(fm);
+
+    [PublicAPI]
+    public bool Equals(ValidGameFM fm) => InternalFM.Equals(fm.InternalFM);
+
+    [PublicAPI]
+    public static bool operator ==(ValidGameFM lhs, ValidGameFM rhs) => lhs.Equals(rhs);
+
+    [PublicAPI]
+    public static bool operator !=(ValidGameFM lhs, ValidGameFM rhs) => !(lhs == rhs);
+
+    [PublicAPI]
+    public override int GetHashCode() => InternalFM.GetHashCode();
+
+    [PublicAPI]
+    public override string ToString() => InternalFM.ToString();
 }
 
-public sealed class ValidDarkFM
-{
-    private readonly FanMission InternalFM;
-
-    public readonly GameIndex GameIndex;
-
-    public bool Installed => InternalFM.Installed;
-
-    public string InstalledDir => InternalFM.InstalledDir;
-
-    public bool MarkedUnavailable => InternalFM.MarkedUnavailable;
-
-    public string GetId() => InternalFM.GetId();
-
-    private ValidDarkFM(FanMission fm, GameIndex gameIndex)
-    {
-        InternalFM = fm;
-        GameIndex = gameIndex;
-    }
-
-    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidDarkFM? outFM)
-    {
-        if (inFM.Game.ConvertsToDark(out GameIndex gameIndex))
-        {
-            outFM = new ValidDarkFM(inFM, gameIndex);
-            return true;
-        }
-        else
-        {
-            outFM = null;
-            return false;
-        }
-    }
-
-    public static List<ValidDarkFM> CreateListFrom(List<FanMission> fms)
-    {
-        List<ValidDarkFM> ret = new(fms.Count);
-        for (int i = 0; i < fms.Count; i++)
-        {
-            if (TryCreateFrom(fms[i], out ValidDarkFM? validDarkFM))
-            {
-                ret.Add(validDarkFM);
-            }
-        }
-        return ret;
-    }
-
-    internal void LogInfo(
-        string topMessage,
-        Exception? ex = null,
-        bool stackTrace = false,
-        [CallerMemberName] string callerMemberName = "")
-    {
-        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
-    }
-}
-
-public sealed class ValidAudioConvertibleFM
+public readonly struct ValidAudioConvertibleFM
 {
     private readonly FanMission InternalFM;
 
@@ -516,7 +477,7 @@ public sealed class ValidAudioConvertibleFM
         GameIndex = gameIndex;
     }
 
-    public static bool TryCreateFrom(FanMission inFM, [NotNullWhen(true)] out ValidAudioConvertibleFM? outFM)
+    public static bool TryCreateFrom(FanMission inFM, out ValidAudioConvertibleFM outFM)
     {
         if (inFM.Game.ConvertsToDark(out GameIndex gameIndex) && inFM is { Installed: true, MarkedUnavailable: false })
         {
@@ -525,7 +486,7 @@ public sealed class ValidAudioConvertibleFM
         }
         else
         {
-            outFM = null;
+            outFM = default;
             return false;
         }
     }
@@ -535,7 +496,7 @@ public sealed class ValidAudioConvertibleFM
         List<ValidAudioConvertibleFM> ret = new(fms.Count);
         for (int i = 0; i < fms.Count; i++)
         {
-            if (TryCreateFrom(fms[i], out ValidAudioConvertibleFM? validDarkFM))
+            if (TryCreateFrom(fms[i], out ValidAudioConvertibleFM validDarkFM))
             {
                 ret.Add(validDarkFM);
             }
@@ -551,4 +512,22 @@ public sealed class ValidAudioConvertibleFM
     {
         InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
     }
+
+    [PublicAPI]
+    public override bool Equals(object? obj) => obj is ValidAudioConvertibleFM fm && Equals(fm);
+
+    [PublicAPI]
+    public bool Equals(ValidAudioConvertibleFM fm) => InternalFM.Equals(fm.InternalFM);
+
+    [PublicAPI]
+    public static bool operator ==(ValidAudioConvertibleFM lhs, ValidAudioConvertibleFM rhs) => lhs.Equals(rhs);
+
+    [PublicAPI]
+    public static bool operator !=(ValidAudioConvertibleFM lhs, ValidAudioConvertibleFM rhs) => !(lhs == rhs);
+
+    [PublicAPI]
+    public override int GetHashCode() => InternalFM.GetHashCode();
+
+    [PublicAPI]
+    public override string ToString() => InternalFM.ToString();
 }
