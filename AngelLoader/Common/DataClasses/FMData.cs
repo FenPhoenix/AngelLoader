@@ -388,8 +388,13 @@ public readonly struct ValidAudioConvertibleFM
 
     public readonly GameIndex GameIndex;
 
-    public string InstalledDir => InternalFM.InstalledDir;
+    public string InstalledDir
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => InternalFM.InstalledDir;
+    }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public string GetId() => InternalFM.GetId();
 
     private ValidAudioConvertibleFM(FanMission fm, GameIndex gameIndex)
