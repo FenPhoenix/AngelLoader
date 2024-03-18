@@ -232,10 +232,9 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            if (!WriteStubCommFile(
-                    fm: null,
+            if (!WriteStubCommFileForOriginalGame(
                     gamePath: gamePath,
-                    originalT3: gameIndex == GameIndex.Thief3,
+                    gameIndex: gameIndex,
                     origDisabledMods: Config.GetDisabledMods(gameIndex)))
             {
                 return false;
@@ -539,18 +538,53 @@ internal static partial class FMInstallAndPlay
     }
 
     [MustUseReturnValue]
-    private static bool WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
+    private static bool WriteStubCommFileForOriginalGame(string gamePath, GameIndex gameIndex, string origDisabledMods)
     {
-        if (fm?.Game == Game.TDM) return true;
+        if (gameIndex == GameIndex.TDM) return true;
+
+        if (GameIsDark(gameIndex)) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
+
+        try
+        {
+            // IMPORTANT (Stub comm file encoding):
+            // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
+            using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
+            sw.WriteLine("PlayOriginalGame=True");
+            if (GameIsDark(gameIndex) && !origDisabledMods.IsEmpty())
+            {
+                sw.WriteLine("DisabledMods=" + origDisabledMods);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
+
+            string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
+
+            Log(topMsg + "\r\n" +
+                "Game path: " + gamePath,
+                ex);
+
+            Core.Dialogs.ShowError(
+                "Failed to start the game.\r\n\r\n" +
+                "Reason: Unable to write the stub comm file.\r\n\r\n" +
+                "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly.");
+
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static bool WriteStubCommFile(FanMission fm, string gamePath)
+    {
+        if (fm.Game == Game.TDM) return true;
 
         string sLanguage = "";
         bool? bForceLanguage = null;
 
-        if (fm == null)
-        {
-            if (!originalT3) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
-        }
-        else if (fm.Game.ConvertsToDark(out GameIndex gameIndex))
+        if (fm.Game.ConvertsToDark(out GameIndex gameIndex))
         {
             string camCfgLang;
             if (!fm.SelectedLang.ConvertsToKnown(out LanguageIndex langIndex))
@@ -579,23 +613,13 @@ internal static partial class FMInstallAndPlay
             // IMPORTANT (Stub comm file encoding):
             // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
             using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
-            sw.WriteLine("PlayOriginalGame=" + (fm == null).ToStrInv());
-            if (fm == null)
+            sw.WriteLine("PlayOriginalGame=False");
+            sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+            if (GameIsDark(fm.Game))
             {
-                if (!originalT3 && !origDisabledMods.IsEmpty())
-                {
-                    sw.WriteLine("DisabledMods=" + origDisabledMods);
-                }
-            }
-            else
-            {
-                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                if (GameIsDark(fm.Game))
-                {
-                    if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
-                    if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
-                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
-                }
+                if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
+                if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
+                if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
             }
 
             return true;
@@ -606,24 +630,13 @@ internal static partial class FMInstallAndPlay
 
             string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
 
-            if (fm != null)
-            {
-                fm.LogInfo(topMsg, ex);
-            }
-            else
-            {
-                Log(topMsg + "\r\n" +
-                    "Game path: " + gamePath,
-                    ex);
-            }
+            fm.LogInfo(topMsg, ex);
 
             Core.Dialogs.ShowError(
                 "Failed to start the game.\r\n\r\n" +
                 "Reason: Unable to write the stub comm file.\r\n\r\n" +
-                (fm == null
-                    ? "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly."
-                    : "Without a valid stub comm file, the FM '" + fm.GetId() +
-                      "' cannot be passed to the game and therefore cannot be played."));
+                "Without a valid stub comm file, the FM '" + fm.GetId() +
+                "' cannot be passed to the game and therefore cannot be played.");
 
             return false;
         }
