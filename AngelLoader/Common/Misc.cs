@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -386,7 +387,11 @@ public static partial class Misc
         [MustUseReturnValue]
         public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
 
-        public T this[int index] => _list[index];
+        public T this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _list[index];
+        }
 
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
