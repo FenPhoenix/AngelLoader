@@ -282,29 +282,26 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     #region Get and set columns
 
-    internal ColumnData[] GetColumnData()
+    internal ColumnDataArray GetColumnData()
     {
-        var columns = new ColumnData[Columns.Count];
+        ColumnDataArray columns = new();
 
         for (int i = 0; i < Columns.Count; i++)
         {
-            DataGridViewColumn col = Columns[i];
-            columns[i] = new ColumnData
-            {
-                Id = (Column)col.Index,
-                DisplayIndex = col.DisplayIndex,
-                Visible = col.Visible,
-                Width = col.Width
-            };
+            DataGridViewColumn dgvColumn = Columns[i];
+            ColumnData column = columns[i];
+            column.Id = (Column)dgvColumn.Index;
+            column.DisplayIndex = dgvColumn.DisplayIndex;
+            column.Visible = dgvColumn.Visible;
+            column.Width = dgvColumn.Width;
         }
 
-        return columns.OrderBy(static x => x.Id).ToArray();
+        return columns.OrderById();
     }
 
-    internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnData[] columnData)
+    internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnDataArray columnData)
     {
-        if (columnData.Length == 0) return;
-
+        retry:
         #region Important
 
         // IMPORTANT (SetColumnData):
@@ -319,19 +316,28 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         // Right:
         // Column[10].DisplayIndex = 0; Column[3].DisplayIndex = 1; etc.
 
-        ColumnData[] columnDataSorted = columnData.OrderBy(static x => x.DisplayIndex).ToArray();
+        ColumnDataArray columnDataSorted = columnData.OrderByDisplayIndex();
 
         #endregion
 
-        foreach (ColumnData colData in columnDataSorted)
+        try
         {
-            DataGridViewColumn col = Columns[(int)colData.Id];
+            foreach (ColumnData colData in columnDataSorted)
+            {
+                DataGridViewColumn col = Columns[(int)colData.Id];
 
-            col.DisplayIndex = colData.DisplayIndex;
-            if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
-            MakeColumnVisible(col, colData.Visible);
+                col.DisplayIndex = colData.DisplayIndex;
+                if (col.Resizable == DataGridViewTriState.True) col.Width = colData.Width;
+                MakeColumnVisible(col, colData.Visible);
 
-            menu.SetColumnChecked((int)colData.Id, colData.Visible);
+                menu.SetColumnChecked((int)colData.Id, colData.Visible);
+            }
+        }
+        // Last line of defense fallback in case against all odds an invalid state has made it this far
+        catch
+        {
+            ResetColumnDisplayIndexes(columnData);
+            goto retry;
         }
     }
 

@@ -22,7 +22,8 @@ internal static class Comparers
     #region FM column comparers
 
     // It takes like 0.2ms to construct these and mere bytes of memory per, so don't bother with the bloat of lazy loading
-    internal static readonly IDirectionalSortFMComparer[] ColumnComparers =
+    // ReSharper disable once RedundantExplicitArraySize
+    internal static readonly IDirectionalSortFMComparer[] ColumnComparers = new IDirectionalSortFMComparer[ColumnCount]
     {
 #if DateAccTest
         new FMReleaseDateComparer(),
@@ -39,6 +40,7 @@ internal static class Comparers
         new FMReleaseDateComparer(),
         new FMLastPlayedComparer(),
         new FMDateAddedComparer(),
+        new FMPlayTimeComparer(),
         new FMDisabledModsComparer(),
         new FMCommentComparer()
     };
@@ -397,6 +399,20 @@ internal static class Comparers
         }
     }
 
+    private sealed class FMPlayTimeComparer : ColumnComparer, IDirectionalSortFMComparer
+    {
+        public int Compare(FanMission x, FanMission y)
+        {
+            int ret;
+            {
+                int cmp = x.PlayTime.CompareTo(y.PlayTime);
+                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
+            }
+
+            return SortDirection == SortDirection.Ascending ? ret : -ret;
+        }
+    }
+
     private sealed class FMDisabledModsComparer : ColumnComparer, IDirectionalSortFMComparer
     {
         public int Compare(FanMission x, FanMission y)
@@ -458,6 +474,18 @@ internal static class Comparers
             return SortDirection == SortDirection.Descending ? -ret : ret;
         }
     }
+
+#if SMART_NEW_COLUMN_INSERT
+    internal sealed class ValidatorColumnComparer : IComparer<ColumnData>
+    {
+        public int Compare(ColumnData x, ColumnData y) =>
+            x.DisplayIndex == y.DisplayIndex
+                ? x.ExplicitlySet == y.ExplicitlySet ? 0 : x.ExplicitlySet ? 1 : -1
+                : x.DisplayIndex < y.DisplayIndex
+                    ? -1
+                    : 1;
+    }
+#endif
 
     #endregion
 }

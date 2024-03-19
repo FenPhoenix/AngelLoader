@@ -35,49 +35,49 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<DefineConstants>DEBUG;TRACE;Debug;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Debug\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release</DefineConstants>
+		<DefineConstants>TRACE;Release;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing</DefineConstants>
+		<DefineConstants>TRACE;Release,Release_Testing;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_HeavyTests|x64'">
 	  <Optimize>true</Optimize>
-	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests</DefineConstants>
+	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests;$(SmartNewColumnInsert)</DefineConstants>
 	  <OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,NoAsserts</DefineConstants>
+		<DefineConstants>TRACE;Release,Release_Testing,NoAsserts;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Beta|x64'">
 		<Optimize>true</Optimize>
 		<OutputPath>bin\x64\Release_Beta\</OutputPath>
-		<DefineConstants>TRACE;Release, ReleaseBeta</DefineConstants>
+		<DefineConstants>TRACE;Release, ReleaseBeta;$(SmartNewColumnInsert)</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Public|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release, ReleasePublic</DefineConstants>
+		<DefineConstants>TRACE;Release, ReleasePublic;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Release_Public\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_StartupOnly|x64'">
 		<Optimize>true</Optimize>
-		<DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly</DefineConstants>
+		<DefineConstants>TRACE;Release,Release_Testing,RT_StartupOnly;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 

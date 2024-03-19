@@ -318,10 +318,11 @@ internal static class FMData
             {
                 w.WL(objDotField + " = " + val + ".EqualsTrue() ? true : " + val + ".EqualsFalse() ? false : (bool?)null;");
             }
-            else if (_numericTypes.Contains(field.Type))
+            else if (_numericTypes.Contains(field.Type) || field.Type == "TimeSpan")
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
-                string tryParseLine = field.Type + ".TryParse(" + val + ", " + tryParseArgs + "out " + field.Type + " result);";
+                string fieldInnerType = field.Type == "TimeSpan" ? "long" : field.Type;
+                string tryParseLine = fieldInnerType + ".TryParse(" + val + ", " + tryParseArgs + "out " + fieldInnerType + " result);";
                 if (field.NumericEmpty != null && field.NumericEmpty != 0)
                 {
                     w.WL("bool success = " + tryParseLine);
@@ -330,7 +331,14 @@ internal static class FMData
                 else
                 {
                     w.WL(tryParseLine);
-                    w.WL(objDotField + " = result;");
+                    if (field.Type == "TimeSpan")
+                    {
+                        w.WL(objDotField + " = TimeSpan.FromTicks(result);");
+                    }
+                    else
+                    {
+                        w.WL(objDotField + " = result;");
+                    }
                 }
             }
             else if (field.Type[field.Type.Length - 1] == '?' &&

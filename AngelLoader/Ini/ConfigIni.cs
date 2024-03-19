@@ -608,6 +608,10 @@ internal static partial class Ini
     {
         AddColumn(config, valTrimmed, Column.DateAdded);
     }
+    private static void Config_ColumnPlayTime_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        AddColumn(config, valTrimmed, Column.PlayTime);
+    }
     private static void Config_ColumnDisabledMods_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         AddColumn(config, valTrimmed, Column.DisabledMods);
@@ -1004,6 +1008,7 @@ internal static partial class Ini
         { "ColumnReleaseDate".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnReleaseDate_Set) },
         { "ColumnLastPlayed".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnLastPlayed_Set) },
         { "ColumnDateAdded".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnDateAdded_Set) },
+        { "ColumnPlayTime".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnPlayTime_Set) },
         { "ColumnDisabledMods".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnDisabledMods_Set) },
         { "ColumnComment".AsMemory(), new Config_DelegatePointerWrapper(&Config_ColumnComment_Set) },
 

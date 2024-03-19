@@ -13,6 +13,7 @@ using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -76,7 +77,7 @@ internal static class FMCache
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.Ex + "clearing files in FM cache.", ex);
+                fm.LogInfo(ErrorText.Ex + "clearing files in FM cache.", ex);
             }
         }
     }
@@ -694,7 +695,7 @@ internal static class FMCache
 
                     if (fileNamesList.Count == 0) return;
 
-                    Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
                     static void ReportProgress(Fen7z.ProgressReport pr)
                     {

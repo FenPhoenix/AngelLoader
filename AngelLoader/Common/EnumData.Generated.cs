@@ -7,7 +7,7 @@ namespace AngelLoader;
 [FenGenEnumDataDestClass]
 public static partial class Misc
 {
-    public const int ColumnCount = 14;
+    public const int ColumnCount = 15;
     public const int HideableFilterControlsCount = 10;
     public const int FMTabCount = 7;
     public const int SettingsTabCount = 5;

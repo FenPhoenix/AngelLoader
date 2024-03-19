@@ -108,14 +108,14 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
             return;
         }
 
         if (playMP && gameIndex != GameIndex.Thief2)
         {
-            LogFMInfo(fm, "playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
+            fm.LogInfo("playMP was true, but fm.Game was not Thief 2.", stackTrace: true);
             Core.Dialogs.ShowError(ErrorText.MPForNonT2);
             return;
         }
@@ -164,7 +164,7 @@ internal static partial class FMInstallAndPlay
             {
                 Core.View.SetWaitCursor(true);
 
-                if (PlayFM(fm, gameIndex, playMP))
+                if (await PlayFM(fm, gameIndex, playMP))
                 {
                     fm.LastPlayed.DateTime = DateTime.Now;
                     Core.View.RefreshFM(fm);
@@ -192,7 +192,7 @@ internal static partial class FMInstallAndPlay
                 CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: true, playMP);
             if (!success) return false;
 
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
@@ -222,10 +222,9 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            if (!WriteStubCommFile(
-                    fm: null,
+            if (!WriteStubCommFileForOriginalGame(
                     gamePath: gamePath,
-                    originalT3: gameIndex == GameIndex.Thief3,
+                    gameIndex: gameIndex,
                     origDisabledMods: Config.GetDisabledMods(gameIndex)))
             {
                 return false;
@@ -236,7 +235,14 @@ internal static partial class FMInstallAndPlay
                 SelectTdmFM(null, deselect: true);
             }
 
-            if (!StartExe(gameExe, workingPath, args)) return false;
+            if (!StartExeForOriginalGame(
+                    gameIndex,
+                    gameExe,
+                    workingPath,
+                    args))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -246,7 +252,7 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static bool PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
+    private static async Task<bool> PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
     {
         using var dsw = new DisableScreenshotWatchers();
 
@@ -254,7 +260,7 @@ internal static partial class FMInstallAndPlay
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
         if (!success) return false;
 
-        Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+        Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
         GameConfigFiles.FixCharacterDetailLine(gameIndex);
 #if !ReleaseBeta && !ReleasePublic
@@ -263,9 +269,10 @@ internal static partial class FMInstallAndPlay
         if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.FM)) return false;
 
         string steamArgs = "";
+        string steamExe = "";
         string workingPath = Config.GetGamePath(gameIndex);
         var sv = GetSteamValues(gameIndex, playMP);
-        if (sv.Success) (_, gameExe, workingPath, steamArgs) = sv;
+        if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
 
         /*
         BUG: Possible stub comm file not being deleted in the following scenario:
@@ -370,7 +377,17 @@ internal static partial class FMInstallAndPlay
 
         if (!WriteStubCommFile(fm, gamePath)) return false;
 
-        if (!StartExe(gameExe, workingPath, args)) return false;
+        if (!await StartExeForPlayFM(
+                fm: fm,
+                gameIndex: gameIndex,
+                exe: sv.Success ? steamExe : gameExe,
+                gameExe: gameExe,
+                workingPath: workingPath,
+                args: args,
+                steam: sv.Success))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -388,7 +405,7 @@ internal static partial class FMInstallAndPlay
             // This should never happen because our menu item is supposed to be hidden for Thief 3 FMs.
             if (!fm.Game.ConvertsToDark(out GameIndex gameIndex))
             {
-                LogFMInfo(fm, ErrorText.FMGameNotDark, stackTrace: true);
+                fm.LogInfo(ErrorText.FMGameNotDark, stackTrace: true);
                 Core.Dialogs.ShowError(ErrorText.FMGameNotDark);
                 return false;
             }
@@ -404,7 +421,7 @@ internal static partial class FMInstallAndPlay
             string editorExe = Core.GetEditorExe_FromDisk(gameIndex);
             if (editorExe.IsEmpty())
             {
-                LogFMInfo(fm,
+                fm.LogInfo(
                     "Editor executable not found.\r\n" +
                     "Editor executable: " + editorExe);
                 Core.Dialogs.ShowError(fm.Game == Game.SS2
@@ -416,7 +433,7 @@ internal static partial class FMInstallAndPlay
             #endregion
 
             // Just in case, and for consistency
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 
@@ -433,7 +450,12 @@ internal static partial class FMInstallAndPlay
             GenerateMissFlagFileIfRequired(fm);
 
             // We don't need the stub for the editor, cause we don't need to pass anything except the fm folder
-            if (!StartExe(editorExe, gamePath, "-fm=\"" + fm.InstalledDir + "\"")) return false;
+            if (!StartExeForOpenFMInEditor(
+                    editorExe,
+                    gamePath, "-fm=\"" + fm.InstalledDir + "\""))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -506,18 +528,53 @@ internal static partial class FMInstallAndPlay
     }
 
     [MustUseReturnValue]
-    private static bool WriteStubCommFile(FanMission? fm, string gamePath, bool originalT3 = false, string? origDisabledMods = null)
+    private static bool WriteStubCommFileForOriginalGame(string gamePath, GameIndex gameIndex, string origDisabledMods)
     {
-        if (fm?.Game == Game.TDM) return true;
+        if (gameIndex == GameIndex.TDM) return true;
+
+        if (GameIsDark(gameIndex)) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
+
+        try
+        {
+            // IMPORTANT (Stub comm file encoding):
+            // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
+            using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
+            sw.WriteLine("PlayOriginalGame=True");
+            if (GameIsDark(gameIndex) && !origDisabledMods.IsEmpty())
+            {
+                sw.WriteLine("DisabledMods=" + origDisabledMods);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
+
+            string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
+
+            Log(topMsg + "\r\n" +
+                "Game path: " + gamePath,
+                ex);
+
+            Core.Dialogs.ShowError(
+                "Failed to start the game.\r\n\r\n" +
+                "Reason: Unable to write the stub comm file.\r\n\r\n" +
+                "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly.");
+
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static bool WriteStubCommFile(FanMission fm, string gamePath)
+    {
+        if (fm.Game == Game.TDM) return true;
 
         string sLanguage = "";
         bool? bForceLanguage = null;
 
-        if (fm == null)
-        {
-            if (!originalT3) GameConfigFiles.SetCamCfgLanguage(gamePath, "");
-        }
-        else if (fm.Game.ConvertsToDark(out GameIndex gameIndex))
+        if (fm.Game.ConvertsToDark(out GameIndex gameIndex))
         {
             string camCfgLang;
             if (!fm.SelectedLang.ConvertsToKnown(out LanguageIndex langIndex))
@@ -546,80 +603,135 @@ internal static partial class FMInstallAndPlay
             // IMPORTANT (Stub comm file encoding):
             // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
             using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
-            sw.WriteLine("PlayOriginalGame=" + (fm == null).ToStrInv());
-            if (fm == null)
+            sw.WriteLine("PlayOriginalGame=False");
+            sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
+            if (GameIsDark(fm.Game))
             {
-                if (!originalT3 && !origDisabledMods.IsEmpty())
-                {
-                    sw.WriteLine("DisabledMods=" + origDisabledMods);
-                }
-            }
-            else
-            {
-                sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
-                if (GameIsDark(fm.Game))
-                {
-                    if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
-                    if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
-                    if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
-                }
+                if (!fm.DisabledMods.IsEmpty()) sw.WriteLine("DisabledMods=" + fm.DisabledMods);
+                if (!sLanguage.IsEmpty()) sw.WriteLine("Language=" + sLanguage);
+                if (bForceLanguage != null) sw.WriteLine("ForceLanguage=" + (bool)bForceLanguage);
             }
 
             return true;
         }
         catch (Exception ex)
         {
-            Paths.CreateOrClearTempPath(Paths.StubCommTemp);
+            Paths.CreateOrClearTempPath(TempPaths.StubComm);
 
             string topMsg = ErrorText.ExWrite + "stub file '" + Paths.StubCommFilePath + "'";
 
-            if (fm != null)
-            {
-                LogFMInfo(fm, topMsg, ex);
-            }
-            else
-            {
-                Log(topMsg + "\r\n" +
-                    "Game path: " + gamePath,
-                    ex);
-            }
+            fm.LogInfo(topMsg, ex);
 
             Core.Dialogs.ShowError(
                 "Failed to start the game.\r\n\r\n" +
                 "Reason: Unable to write the stub comm file.\r\n\r\n" +
-                (fm == null
-                    ? "Without a valid stub comm file, AngelLoader cannot start the game in no-FM mode correctly."
-                    : "Without a valid stub comm file, the FM '" + fm.GetId() +
-                      "' cannot be passed to the game and therefore cannot be played."));
+                "Without a valid stub comm file, the FM '" + fm.GetId() +
+                "' cannot be passed to the game and therefore cannot be played.");
 
             return false;
         }
     }
 
+    #region Start Exe
+
     [MustUseReturnValue]
-    private static bool StartExe(string exe, string workingPath, string args)
+    private static bool StartExeForOpenFMInEditor(
+        string exe,
+        string workingPath,
+        string args)
     {
         try
         {
-            ProcessStart_UseShellExecute(new ProcessStartInfo
+            ProcessStartInfo startInfo = new()
             {
                 FileName = exe,
                 WorkingDirectory = workingPath,
                 Arguments = !args.IsEmpty() ? args : ""
-            });
+            };
+
+            ProcessStart_UseShellExecute(startInfo);
 
             return true;
         }
         catch (Exception ex)
         {
-            string msg = ErrorText.Un + "start '" + exe + "'.";
-            Log(msg + "\r\n" +
-                nameof(workingPath) + ": " + workingPath + "\r\n" +
-                nameof(args) + ": " + args, ex);
-            Core.Dialogs.ShowError(msg);
-
+            HandleStartExeFailure(exe, workingPath, args, ex);
             return false;
         }
+    }
+
+    [MustUseReturnValue]
+    private static bool StartExeForOriginalGame(
+        GameIndex gameIndex,
+        string exe,
+        string workingPath,
+        string args)
+    {
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = exe,
+                WorkingDirectory = workingPath,
+                Arguments = !args.IsEmpty() ? args : ""
+            };
+
+            if (gameIndex == GameIndex.TDM)
+            {
+                PlayTimeTracking.GetTimeTrackingProcess(gameIndex).StartTdmWithNoFM(startInfo);
+            }
+            else
+            {
+                ProcessStart_UseShellExecute(startInfo);
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            HandleStartExeFailure(exe, workingPath, args, ex);
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static async Task<bool> StartExeForPlayFM(
+        FanMission fm,
+        GameIndex gameIndex,
+        string exe,
+        string gameExe,
+        string workingPath,
+        string args,
+        bool steam)
+    {
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = exe,
+                WorkingDirectory = workingPath,
+                Arguments = !args.IsEmpty() ? args : ""
+            };
+
+            bool success = await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);
+            return success;
+        }
+        catch (Exception ex)
+        {
+            HandleStartExeFailure(exe, workingPath, args, ex);
+            return false;
+        }
+    }
+
+    #endregion
+
+    private static void HandleStartExeFailure(string exe, string workingPath, string args, Exception ex)
+    {
+        string msg = ErrorText.Un + "start '" + exe + "'.";
+        Log(msg + "\r\n" +
+            nameof(workingPath) + ": " + workingPath + "\r\n" +
+            nameof(args) + ": " + args, ex);
+        Core.Dialogs.ShowError(msg);
     }
 
     private static (bool Success, string GameExe, string GamePath)
@@ -897,7 +1009,7 @@ internal static partial class FMInstallAndPlay
                         logMsg += "Exception getting .mis file names in FM directory.\r\nEXCEPTION: " + ex;
                     }
 
-                    LogFMInfo(fm, logMsg);
+                    fm.LogInfo(logMsg);
                     Core.Dialogs.ShowError(
                         message: msg,
                         title: LText.AlertMessages.Alert,
@@ -942,7 +1054,7 @@ internal static partial class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
+                fm.LogInfo(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
                 Core.Dialogs.ShowError("Failed trying to generate a missflag.str file for the following FM:\r\n\r\n" +
                                        fm.GetId() + "\r\n\r\n" +
                                        "The FM will probably not be able to play its mission(s).");
@@ -950,7 +1062,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex)
         {
-            LogFMInfo(fm, ErrorText.ExTry + "generate missflag.str file", ex);
+            fm.LogInfo(ErrorText.ExTry + "generate missflag.str file", ex);
             // ReSharper disable once RedundantJumpStatement
             return MissFlagError.None; // Explicit for clarity of intent
         }
@@ -975,7 +1087,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to get .mis files in FM installed directory.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -993,7 +1105,7 @@ internal static partial class FMInstallAndPlay
         if (misFileInfos.Count == 0)
         {
             string msg = "Error detecting OldDark: could not find any .mis files in FM installed directory.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF);
+            fm.LogInfo(msg + " " + ErrorText.RetF);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -1029,7 +1141,7 @@ internal static partial class FMInstallAndPlay
                 catch (Exception ex)
                 {
                     string msg = "Error trying to get " + Paths.MissFlagStr + " files in " + stringsPath + " or any subdirectory.";
-                    LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+                    fm.LogInfo(msg + " " + ErrorText.RetF, ex);
                     Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                     return false;
                 }
@@ -1040,7 +1152,7 @@ internal static partial class FMInstallAndPlay
                 string msg = "Expected to find " + Paths.MissFlagStr +
                              " for this FM, but it could not be found or the search failed. " +
                              "If it didn't exist, it should have been generated.";
-                LogFMInfo(fm, msg + " " + ErrorText.RetF);
+                fm.LogInfo(msg + " " + ErrorText.RetF);
                 Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
             }
@@ -1197,7 +1309,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to detect if FM is OldDark.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(msg + "\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
             return false;
         }
@@ -1264,7 +1376,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             string msg = "Error trying to detect if this OldDark FM requires a palette fix.";
-            LogFMInfo(fm, msg + " " + ErrorText.RetF, ex);
+            fm.LogInfo(msg + " " + ErrorText.RetF, ex);
             Core.Dialogs.ShowError(
                 msg + "\r\n\r\n" +
                 "If the FM requires a palette fix (rare), the fix will not be applied on this run. " +
@@ -1299,7 +1411,7 @@ internal static partial class FMInstallAndPlay
 
             if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
             {
-                LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+                fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(fm.GetId() + "\r\n" + ErrorText.FMGameU);
                 return fail;
             }
@@ -1320,14 +1432,15 @@ internal static partial class FMInstallAndPlay
             (
                 fm,
                 fmArchivePath,
-                instBasePath
+                instBasePath,
+                gameIndex
             );
 
             if (install)
             {
                 if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
                 {
-                    LogFMInfo(fm, "FM archive field was empty; this means an archive was not found for it on the last search.");
+                    fm.LogInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
                     Core.Dialogs.ShowError(fm.GetId() + "\r\n" +
                                            LText.AlertMessages.Install_ArchiveNotFound);
 
@@ -1354,7 +1467,7 @@ internal static partial class FMInstallAndPlay
 
                     if (!Directory.Exists(instBasePath))
                     {
-                        LogFMInfo(fm, "FM install path not found.");
+                        fm.LogInfo("FM install path not found.");
 
                         Core.Dialogs.ShowError(gameName + ":\r\n" +
                                                fm.GetId() + "\r\n" +
@@ -1406,18 +1519,12 @@ internal static partial class FMInstallAndPlay
 
     #region Install
 
-    private sealed class FMData
+    private sealed class FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
     {
-        internal readonly FanMission FM;
-        internal readonly string ArchivePath;
-        internal readonly string InstBasePath;
-
-        public FMData(FanMission fm, string archivePath, string instBasePath)
-        {
-            FM = fm;
-            ArchivePath = archivePath;
-            InstBasePath = instBasePath;
-        }
+        internal readonly FanMission FM = fm;
+        internal readonly string ArchivePath = archivePath;
+        internal readonly string InstBasePath = instBasePath;
+        internal readonly GameIndex GameIndex = gameIndex;
     }
 
     private sealed class Buffers
@@ -1629,7 +1736,7 @@ internal static partial class FMInstallAndPlay
                 }
 
                 // Only Dark engine games need audio conversion
-                if (GameIsDark(fmData.FM.Game))
+                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
                 {
                     try
                     {
@@ -1653,7 +1760,7 @@ internal static partial class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                        await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1663,7 +1770,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1674,7 +1781,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(fmData.FM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1685,7 +1792,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fmData.FM, ErrorText.Ex + "in audio conversion", ex);
+                        validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
                     }
                 }
 
@@ -1839,7 +1946,7 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             using var fs = File.OpenRead(fmArchivePath);
             int entriesCount;
@@ -1935,7 +2042,7 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(Paths.SevenZipListTemp);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             int entriesCount;
 
@@ -2128,9 +2235,7 @@ internal static partial class FMInstallAndPlay
 
                 FanMission fm = fmData.FM;
 
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(fmData.GameIndex), fm.InstalledDir);
 
                 #region Check for already uninstalled
 
@@ -2194,7 +2299,7 @@ internal static partial class FMInstallAndPlay
                 // Make option to open the folder in Explorer and delete it manually?
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
-                    LogFMInfo(fm, ErrorText.Un + "delete FM installed directory.");
+                    fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
                     Core.Dialogs.ShowError(
                         LText.AlertMessages.Uninstall_FailedFullyOrPartially + "\r\n\r\n" +
                         "FM: " + fm.GetId());

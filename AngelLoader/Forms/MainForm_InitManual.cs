@@ -50,6 +50,7 @@ public sealed partial class MainForm
         ReleaseDateColumn = new DataGridViewTextBoxColumn();
         LastPlayedColumn = new DataGridViewTextBoxColumn();
         DateAddedColumn = new DataGridViewTextBoxColumn();
+        PlayTimeColumn = new DataGridViewTextBoxColumn();
         DisabledModsColumn = new DataGridViewTextBoxColumn();
         CommentColumn = new DataGridViewTextBoxColumn();
         FilterBarFLP = new FlowLayoutPanel();
@@ -307,6 +308,7 @@ public sealed partial class MainForm
             ReleaseDateColumn,
             LastPlayedColumn,
             DateAddedColumn,
+            PlayTimeColumn,
             DisabledModsColumn,
             CommentColumn);
         FMsDGV.BackgroundColor = SystemColors.ControlDark;

@@ -1,12 +1,16 @@
 ﻿#define FenGen_FMDataSource
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static AL_Common.Common;
+using AL_Common;
+using JetBrains.Annotations;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
+using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
+using static AngelLoader.Global;
 
 namespace AngelLoader.DataClasses;
 
@@ -303,6 +307,16 @@ public sealed class FanMission
     [FenGenNumericEmpty(-1)]
     internal int MisCount = -1;
 
+    [FenGenIgnore]
+    private TimeSpan _playTime = TimeSpan.Zero;
+    [FenGenNumericEmpty(0)]
+    internal TimeSpan PlayTime
+    {
+        get => _playTime;
+        // Negative playtime makes no sense, so just clamp it to 0
+        set => _playTime = value.Ticks < 0 ? TimeSpan.Zero : value;
+    }
+
 #if DateAccTest
     [FenGenIgnore]
     internal DateAccuracy DateAccuracy = DateAccuracy.Null;
@@ -336,5 +350,100 @@ public sealed class FanMission
 
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
 
+    internal void LogInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        Log("Caller: " + callerMemberName + "\r\n\r\n" +
+            topMessage + "\r\n" +
+            "" + nameof(Game) + ": " + Game + "\r\n" +
+            "" + nameof(Archive) + ": " + Archive + "\r\n" +
+            "" + nameof(InstalledDir) + ": " + InstalledDir + "\r\n" +
+            "" + nameof(TDMInstalledDir) + " (if applicable): " + TDMInstalledDir + "\r\n" +
+            "" + nameof(Installed) + ": " + Installed + "\r\n" +
+            (Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
+                ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)
+                : "Game type is not known or not supported.") +
+            (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
+    }
+
     #endregion
+}
+
+public readonly struct ValidAudioConvertibleFM
+{
+    private readonly FanMission InternalFM;
+
+    public readonly GameIndex GameIndex;
+
+    public string InstalledDir
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => InternalFM.InstalledDir;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public string GetId() => InternalFM.GetId();
+
+    private ValidAudioConvertibleFM(FanMission fm, GameIndex gameIndex)
+    {
+        InternalFM = fm;
+        GameIndex = gameIndex;
+    }
+
+    public static bool TryCreateFrom(FanMission inFM, out ValidAudioConvertibleFM outFM)
+    {
+        if (inFM.Game.ConvertsToDark(out GameIndex gameIndex) && inFM is { Installed: true, MarkedUnavailable: false })
+        {
+            outFM = new ValidAudioConvertibleFM(inFM, gameIndex);
+            return true;
+        }
+        else
+        {
+            outFM = default;
+            return false;
+        }
+    }
+
+    public static List<ValidAudioConvertibleFM> CreateListFrom(List<FanMission> fms)
+    {
+        List<ValidAudioConvertibleFM> ret = new(fms.Count);
+        for (int i = 0; i < fms.Count; i++)
+        {
+            if (TryCreateFrom(fms[i], out ValidAudioConvertibleFM validDarkFM))
+            {
+                ret.Add(validDarkFM);
+            }
+        }
+        return ret;
+    }
+
+    internal void LogInfo(
+        string topMessage,
+        Exception? ex = null,
+        bool stackTrace = false,
+        [CallerMemberName] string callerMemberName = "")
+    {
+        InternalFM.LogInfo(topMessage, ex, stackTrace, callerMemberName);
+    }
+
+    [PublicAPI]
+    public override bool Equals(object? obj) => obj is ValidAudioConvertibleFM fm && Equals(fm);
+
+    [PublicAPI]
+    public bool Equals(ValidAudioConvertibleFM fm) => InternalFM.Equals(fm.InternalFM);
+
+    [PublicAPI]
+    public static bool operator ==(ValidAudioConvertibleFM lhs, ValidAudioConvertibleFM rhs) => lhs.Equals(rhs);
+
+    [PublicAPI]
+    public static bool operator !=(ValidAudioConvertibleFM lhs, ValidAudioConvertibleFM rhs) => !(lhs == rhs);
+
+    [PublicAPI]
+    public override int GetHashCode() => InternalFM.GetHashCode();
+
+    [PublicAPI]
+    public override string? ToString() => InternalFM.ToString();
 }

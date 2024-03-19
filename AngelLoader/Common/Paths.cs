@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security;
+using System.Text;
 using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;
@@ -11,6 +13,22 @@ using static AngelLoader.Global;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
+
+internal sealed class TempPath(Func<string> pathGetter)
+{
+    internal readonly Func<string> PathGetter = pathGetter;
+}
+
+internal static class TempPaths
+{
+    internal static readonly TempPath Update = new(static () => Paths.UpdateTemp);
+    internal static readonly TempPath UpdateBak = new(static () => Paths.UpdateBakTemp);
+    internal static readonly TempPath UpdateAppDownload = new(static () => Paths.UpdateAppDownloadTemp);
+    internal static readonly TempPath Help = new(static () => Paths.HelpTemp);
+    internal static readonly TempPath SevenZipList = new(static () => Paths.SevenZipListTemp);
+    internal static readonly TempPath StubComm = new(static () => Paths.StubCommTemp);
+    internal static readonly TempPath FMScanner = new(static () => Paths.FMScannerTemp);
+}
 
 internal static class Paths
 {
@@ -107,21 +125,9 @@ internal static class Paths
     private static string? _updateAppDownloadTemp;
     internal static string UpdateAppDownloadTemp => _updateAppDownloadTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateDL");
 
-    internal static void CreateOrClearTempPath(string path)
+    internal static void CreateOrClearTempPath(TempPath pathType)
     {
-        #region Safety check
-
-        string baseTemp = _baseTemp.TrimEnd(CA_BS_FS_Space);
-
-        // @DIRSEP: getting rid of this concat is more trouble than it's worth
-        // This method is called rarely and only once in a row
-        bool pathIsInTempDir = path.PathStartsWithI(baseTemp + "\\");
-
-        AssertR(pathIsInTempDir, "Path '" + path + "' is not in temp dir '" + baseTemp + "'");
-
-        if (!pathIsInTempDir) return;
-
-        #endregion
+        string path = pathType.PathGetter.Invoke();
 
         if (Directory.Exists(path))
         {

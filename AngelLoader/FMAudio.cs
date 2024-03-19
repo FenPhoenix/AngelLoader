@@ -45,39 +45,31 @@ internal static class FMAudio
     {
         using var dsw = new DisableScreenshotWatchers();
 
-        List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
-        if (fms.Count == 0) return;
-
-        bool anyInapplicable = false;
-        for (int i = 0; i < fms.Count; i++)
+        List<ValidAudioConvertibleFM> validFMs;
         {
-            FanMission fm = fms[i];
-            if (!GameIsDark(fm.Game) || !fm.Installed || fm.MarkedUnavailable)
+            List<FanMission> rawFMs = Core.View.GetSelectedFMs_InOrder_List();
+            validFMs = ValidAudioConvertibleFM.CreateListFrom(rawFMs);
+            if (validFMs.Count == 0) return;
+
+            if (validFMs.Count != rawFMs.Count)
             {
-                anyInapplicable = true;
-                fms.RemoveAt(i);
-                i--;
+                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                    message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
+                    title: LText.AlertMessages.Alert,
+                    icon: MBoxIcon.None,
+                    yes: LText.Global.Continue,
+                    no: LText.Global.Cancel,
+                    defaultButton: MBoxButton.Yes
+                );
+                if (result == MBoxButton.No) return;
             }
         }
 
-        if (anyInapplicable)
-        {
-            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                message: LText.AlertMessages.AudioConversion_SomeSelectedFilesDoNotSupportConversion,
-                title: LText.AlertMessages.Alert,
-                icon: MBoxIcon.None,
-                yes: LText.Global.Continue,
-                no: LText.Global.Cancel,
-                defaultButton: MBoxButton.Yes
-            );
-            if (result == MBoxButton.No) return;
-        }
-
-        if (!ChecksPassed(fms)) return;
+        if (!ChecksPassed(validFMs)) return;
 
         try
         {
-            bool single = fms.Count == 1;
+            bool single = validFMs.Count == 1;
 
             _conversionCts = _conversionCts.Recreate();
 
@@ -91,13 +83,13 @@ internal static class FMAudio
             BinaryBuffer buffer = new();
             byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-            for (int i = 0; i < fms.Count; i++)
+            for (int i = 0; i < validFMs.Count; i++)
             {
-                FanMission fm = fms[i];
+                ValidAudioConvertibleFM fm = validFMs[i];
 
                 Core.View.SetProgressBoxState_Single(
                     message2: fm.GetId(),
-                    percent: single ? null : GetPercentFromValue_Int(i + 1, fms.Count)
+                    percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
                 );
 
                 await ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer);
@@ -115,23 +107,20 @@ internal static class FMAudio
 
         #region Local functions
 
-        static bool ChecksPassed(List<FanMission> fms)
+        static bool ChecksPassed(List<ValidAudioConvertibleFM> fms)
         {
             bool[] gamesChecked = new bool[SupportedGameCount];
 
             for (int i = 0; i < fms.Count; i++)
             {
-                FanMission fm = fms[i];
+                ValidAudioConvertibleFM fm = fms[i];
 
-                AssertR(GameIsKnownAndSupported(fm.Game), nameof(fm) + "." + nameof(fm.Game) + " is not known or supported (not convertible to GameIndex).");
-
-                GameIndex gameIndex = GameToGameIndex(fm.Game);
-                int intGameIndex = (int)gameIndex;
+                int intGameIndex = (int)fm.GameIndex;
 
                 if (!gamesChecked[intGameIndex])
                 {
-                    string gameExe = Config.GetGameExe(gameIndex);
-                    string gameName = GetLocalizedGameName(gameIndex);
+                    string gameExe = Config.GetGameExe(fm.GameIndex);
+                    string gameName = GetLocalizedGameName(fm.GameIndex);
 
                     if (GameIsRunning(gameExe))
                     {
@@ -153,15 +142,13 @@ internal static class FMAudio
         #endregion
     }
 
-    internal static Task ConvertAsPartOfInstall(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    internal static Task ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
     {
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
 
-    private static Task ConvertToWAVs(FanMission fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    private static Task ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
     {
-        if (!GameIsDark(fm.Game)) return Task.CompletedTask;
-
         return Task.Run(async () =>
         {
             if (type == AudioConvert.WAVToWAV16)
@@ -301,7 +288,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    LogFMInfo(fm, ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
             else
@@ -350,7 +337,7 @@ internal static class FMAudio
                             }
                             catch (Exception ex)
                             {
-                                LogFMInfo(fm, ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
+                                fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
                             }
 
                             try
@@ -368,7 +355,7 @@ internal static class FMAudio
                 }
                 catch (Exception ex)
                 {
-                    LogFMInfo(fm, ErrorText.Ex + "in file conversion (" + type + ")", ex);
+                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
         });
@@ -380,17 +367,14 @@ internal static class FMAudio
 
     #region Helpers
 
-    private static string[] GetFMSoundPathsByGame(FanMission fm)
+    // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
+    // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
+    // assume Thief 3 doesn't need it and leave it at that.
+    private static string[] GetFMSoundPathsByGame(ValidAudioConvertibleFM fm)
     {
-        // Guard for the below unsafe Game conversion, and:
-        // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
-        // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
-        // assume Thief 3 doesn't need it and leave it at that.
-        if (!fm.Game.ConvertsToDark(out GameIndex gameIndex)) return Array.Empty<string>();
-
-        string instPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fm.InstalledDir);
+        string instPath = Path.Combine(Config.GetFMInstallPath(fm.GameIndex), fm.InstalledDir);
         string sndPath = Path.Combine(instPath, "snd");
-        return fm.Game == Game.SS2
+        return fm.GameIndex == GameIndex.SS2
             ? new[] { sndPath, Path.Combine(instPath, "snd2") }
             : new[] { sndPath };
     }

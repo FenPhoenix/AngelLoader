@@ -273,6 +273,13 @@ internal static partial class Ini
         fm.MisCount = success ? result : -1;
     }
 
+    private static void FMData_PlayTime_Set(FanMission fm, ReadOnlySpan<char> val)
+    {
+        val = val.Trim();
+        long.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out long result);
+        fm.PlayTime = TimeSpan.FromTicks(result);
+    }
+
     #region Old resource format - backward compatibility, we still have to be able to read it
 
     private static void FMData_HasMap_Set(FanMission fm, ReadOnlySpan<char> val)
@@ -384,6 +391,7 @@ internal static partial class Ini
         { "PostProc".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_PostProc_Set) },
         { "NDSubs".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NDSubs_Set) },
         { "MisCount".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_MisCount_Set) },
+        { "PlayTime".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_PlayTime_Set) },
 
         #region Old resource format - backward compatibility, we still have to be able to read it
 

@@ -100,7 +100,7 @@ public static class AppUpdate
                     if (!request.IsSuccessStatusCode)
                     {
                         Log("Error downloading the update. Status code: " + request.StatusCode);
-                        Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.Update);
                         Core.Dialogs.ShowError(LText.Update.ErrorDownloadingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
                         return;
                     }
@@ -109,7 +109,7 @@ public static class AppUpdate
 
                     // Just download the file once, so we know we won't read duplicate data or whatever
 
-                    Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.UpdateAppDownload);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -131,7 +131,7 @@ public static class AppUpdate
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Error downloading the update.", ex);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.Update);
                     Core.Dialogs.ShowError(LText.Update.ErrorDownloadingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
                     return;
                 }
@@ -150,7 +150,7 @@ public static class AppUpdate
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.Update);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -161,7 +161,7 @@ public static class AppUpdate
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Error unpacking the update.", ex);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.Update);
                     Core.Dialogs.ShowError(LText.Update.ErrorUnpackingUpdate, LText.AlertMessages.Alert, MBoxIcon.Warning);
                     return;
                 }
@@ -183,7 +183,7 @@ public static class AppUpdate
                     {
                         Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
                         Core.Dialogs.ShowError(LText.Update.UpdaterExeNotFound + "\r\n\r\n" + Paths.UpdateExe);
-                        Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                        Paths.CreateOrClearTempPath(TempPaths.Update);
                         return;
                     }
                 }
@@ -198,19 +198,19 @@ public static class AppUpdate
                 {
                     Log("Unable to start '" + Paths.UpdateExe + "'. Couldn't finish the update.", ex);
                     Core.Dialogs.ShowError(LText.Update.UpdaterExeStartFailed + "\r\n\r\n" + Paths.UpdateExe);
-                    Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                    Paths.CreateOrClearTempPath(TempPaths.Update);
                     return;
                 }
             }
             catch (OperationCanceledException)
             {
-                Paths.CreateOrClearTempPath(Paths.UpdateTemp);
+                Paths.CreateOrClearTempPath(TempPaths.Update);
                 return;
             }
             finally
             {
                 _updatingCTS.Dispose();
-                Paths.CreateOrClearTempPath(Paths.UpdateAppDownloadTemp);
+                Paths.CreateOrClearTempPath(TempPaths.UpdateAppDownload);
                 Core.View.HideProgressBox();
             }
 

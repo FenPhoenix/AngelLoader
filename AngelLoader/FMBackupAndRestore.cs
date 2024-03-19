@@ -14,6 +14,7 @@ using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
+using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -245,7 +246,7 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             return Task.CompletedTask;
         }
 
@@ -367,7 +368,7 @@ internal static partial class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                LogFMInfo(fm, ErrorText.Ex + "in zip archive create and/or write", ex);
+                fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
             }
         });
     }
@@ -382,7 +383,7 @@ internal static partial class FMInstallAndPlay
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
-            LogFMInfo(fm, ErrorText.FMGameU, stackTrace: true);
+            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             return Task.CompletedTask;
         }
 
@@ -661,7 +662,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.ExInLWT + "(zip)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(zip)", ex);
                     }
                 }
             }
@@ -740,7 +741,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.ExInLWT + "(7z)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
                     }
                 }
             }
@@ -816,7 +817,7 @@ internal static partial class FMInstallAndPlay
                     }
                     catch (Exception ex)
                     {
-                        LogFMInfo(fm, ErrorText.ExInLWT + "(7z)", ex);
+                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
                     }
                 }
             }

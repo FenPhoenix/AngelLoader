@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
@@ -86,8 +91,6 @@ public static partial class Misc
     */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
-    public enum ReadmeState { HTML, PlainText, OtherSupported, LoadError, InitialReadmeChooser }
-
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 
     internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
@@ -146,7 +149,10 @@ public static partial class Misc
 
     static Misc()
     {
+        ColumnDefaultSortDirections[(int)Column.ReleaseDate] = SortDirection.Descending;
         ColumnDefaultSortDirections[(int)Column.LastPlayed] = SortDirection.Descending;
+        ColumnDefaultSortDirections[(int)Column.DateAdded] = SortDirection.Descending;
+        ColumnDefaultSortDirections[(int)Column.PlayTime] = SortDirection.Descending;
     }
 
     internal static readonly ReadOnlyCollection<string> ValidDateFormats =
@@ -218,7 +224,7 @@ public static partial class Misc
         ".tiff"
     };
 
-    [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
+    // ReSharper disable once RedundantExplicitArraySize
     public static readonly Func<string>[] FMTabTextLocalizedStrings = new Func<string>[FMTabCount]
     {
         static () => LText.StatisticsTab.TabText,
@@ -229,4 +235,161 @@ public static partial class Misc
         static () => LText.ModsTab.TabText,
         static () => LText.ScreenshotsTab.TabText
     };
+
+    // ReSharper disable once RedundantExplicitArraySize
+    public static readonly Func<string>[] ColumnLocalizedStrings = new Func<string>[ColumnCount]
+    {
+#if DateAccTest
+        static () => "Date accuracy",
+#endif
+        static () => LText.FMsList.GameColumn,
+        static () => LText.FMsList.InstalledColumn,
+        static () => LText.FMsList.MissionCountColumn,
+        static () => LText.FMsList.TitleColumn,
+        static () => LText.FMsList.ArchiveColumn,
+        static () => LText.FMsList.AuthorColumn,
+        static () => LText.FMsList.SizeColumn,
+        static () => LText.FMsList.RatingColumn,
+        static () => LText.FMsList.FinishedColumn,
+        static () => LText.FMsList.ReleaseDateColumn,
+        static () => LText.FMsList.LastPlayedColumn,
+        static () => LText.FMsList.DateAddedColumn,
+        static () => LText.FMsList.PlayTimeColumn,
+        static () => LText.FMsList.DisabledModsColumn,
+        static () => LText.FMsList.CommentColumn
+    };
+
+    // ReSharper disable once RedundantExplicitArraySize
+    public static readonly Func<string>[] CustomResourceLocalizedStrings = new Func<string>[CustomResourcesCount - 1]
+    {
+        static () => LText.StatisticsTab.Map,
+        static () => LText.StatisticsTab.Automap,
+        static () => LText.StatisticsTab.Scripts,
+        static () => LText.StatisticsTab.Textures,
+        static () => LText.StatisticsTab.Sounds,
+        static () => LText.StatisticsTab.Objects,
+        static () => LText.StatisticsTab.Creatures,
+        static () => LText.StatisticsTab.Motions,
+        static () => LText.StatisticsTab.Movies,
+        static () => LText.StatisticsTab.Subtitles
+    };
+
+    public readonly struct PerGameGoFlags
+    {
+        private readonly bool[] _array;
+
+        /// <summary>
+        /// The internal array starts out all <see langword="false"/>.
+        /// </summary>
+        public PerGameGoFlags() => _array = new bool[SupportedGameCount];
+
+        public bool this[int index]
+        {
+            get => _array[index];
+            set => _array[index] = value;
+        }
+
+        public static PerGameGoFlags AllTrue()
+        {
+            PerGameGoFlags ret = new();
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                ret[i] = true;
+            }
+            return ret;
+        }
+    }
+
+    public readonly struct NonEmptyList<T> : IEnumerable<T>
+    {
+        private readonly List<T> _list;
+
+        private NonEmptyList(List<T> list)
+        {
+            _list = list;
+            Count = _list.Count;
+            Single = Count == 1;
+        }
+
+        public readonly int Count;
+
+        public readonly bool Single;
+
+        /// <summary>
+        /// The internal list will be a reference copy of what you pass in. Use this method if you know the source
+        /// list won't change, and you want to avoid the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Ref(List<T>? list, out NonEmptyList<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                result = new NonEmptyList<T>(list);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The internal list will be an element-wise copy of what you pass in. Use this method if the source
+        /// might change and you want to guarantee the internal list won't, at the expense of the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Copy(List<T>? list, out NonEmptyList<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                List<T> copy = new(list.Count);
+                copy.AddRange(list);
+                result = new NonEmptyList<T>(copy);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// The internal list will be an element-wise copy of what you pass in. Use this method if the source
+        /// might change and you want to guarantee the internal list won't, at the expense of the extra allocation.
+        /// </summary>
+        /// <param name="array"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Copy(T[]? array, out NonEmptyList<T> result)
+        {
+            if (array?.Length > 0)
+            {
+                result = new NonEmptyList<T>(array.ToList());
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        [MustUseReturnValue]
+        public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
+
+        public T this[int index] => _list[index];
+
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 }
