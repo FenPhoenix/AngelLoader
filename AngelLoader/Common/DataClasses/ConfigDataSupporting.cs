@@ -84,6 +84,7 @@ public sealed class ColumnDataArray
         return ret;
     }
 
+#if SMART_NEW_COLUMN_INSERT
     public ColumnDataArray Sorted(IComparer<ColumnData> comparer)
     {
         ColumnDataArray ret = new();
@@ -91,6 +92,7 @@ public sealed class ColumnDataArray
         Array.Sort(ret._columns, comparer);
         return ret;
     }
+#endif
 
     public void CopyTo(ColumnDataArray dest) => Array.Copy(_columns, dest._columns, ColumnCount);
 }

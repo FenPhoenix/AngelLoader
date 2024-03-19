@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
@@ -343,6 +342,7 @@ public static partial class Misc
             }
         }
 
+#if false
         /// <summary>
         /// The internal list will be an element-wise copy of what you pass in. Use this method if the source
         /// might change and you want to guarantee the internal list won't, at the expense of the extra allocation.
@@ -388,6 +388,7 @@ public static partial class Misc
                 return false;
             }
         }
+#endif
 
         [MustUseReturnValue]
         public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
