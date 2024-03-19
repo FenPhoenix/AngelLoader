@@ -234,6 +234,7 @@ internal static class FMTags
     {
         if (tagsToAdd.IsWhiteSpace()) return;
 
+        // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
         foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.SplitAny(tagsToAdd, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
         {
             if (!TryGetCatAndTag(item, out string cat, out string tag) ||

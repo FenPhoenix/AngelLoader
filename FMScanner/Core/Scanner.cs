@@ -2493,6 +2493,7 @@ public sealed partial class Scanner : IDisposable
             // We don't actually have any instances of counts other than 3, and it may be impossible due to prior
             // checks, but let's just make sure for now...
             int dateNumsCount = 0;
+            // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
             foreach (ReadOnlySpan<char> numStr in ReadOnlySpanExtensions.SplitAny(dateString, CA_DateSeparators,
                          StringSplitOptions.RemoveEmptyEntries))
             {
@@ -3348,6 +3349,7 @@ public sealed partial class Scanner : IDisposable
         {
             string authorString = "";
             int authorsFound = 0;
+            // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
             foreach (ReadOnlySpan<char> tag in ReadOnlySpanExtensions.SplitAny(fmIni.Tags, CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (tag.StartsWithI("author:"))
