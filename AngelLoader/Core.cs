@@ -1971,9 +1971,6 @@ internal static class Core
         return safeReadme;
     }
 
-    // @ViewBusinessLogic(LoadReadme):
-    // This logic - or part of it - should actually be in the view, because it deals with the difference between
-    // HTML and the rest. We shouldn't be assuming HTML is different on this side of the boundary.
     internal static void LoadReadme(FanMission fm)
     {
         string path = "";
