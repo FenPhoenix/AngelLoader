@@ -3448,6 +3448,208 @@ public sealed partial class MainForm : DarkFormBase,
         Ini.WriteFullFMDataIni();
     }
 
+    private void TopFMTabsBar_MouseClick(object? sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
+
+    internal void BottomFMTabsBar_MouseClick(object? sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
+
+    private void HandleTabsMenu(MouseEventArgs e, WhichTabControl which)
+    {
+        if (e.Button != MouseButtons.Right) return;
+
+        FMTabControlGroup group = GetFMTabControlGroup(which);
+
+        Rectangle rect = group.TabControl.GetTabBarRect();
+        rect = rect == Rectangle.Empty
+            ? group.TabControl.ClientRectangle
+            : rect with { Height = rect.Height + 3 };
+
+        if (rect.Contains(group.TabControl.ClientCursorPos()))
+        {
+            Lazy_FMTabsMenu.Menu.Data = which;
+            Lazy_FMTabsMenu.Menu.Show(Cursor.Position);
+        }
+    }
+
+    private void FMTabsEmptyMessageLabels_Paint(object? sender, PaintEventArgs e)
+    {
+        DarkLabel label = BottomFMTabsEmptyMessageLabel;
+        e.Graphics.DrawRectangle(
+            Config.DarkMode ? DarkColors.LighterBackgroundPen : SystemPens.ControlLight,
+            new Rectangle(0, 0, label.ClientRectangle.Width - 1, label.ClientRectangle.Height - 1));
+    }
+
+    private void TopSplitContainer_FullScreenChanged(object? sender, EventArgs e)
+    {
+        TopFMTabControl.Visible = !TopSplitContainer.FullScreen;
+    }
+
+    private void BottomSplitContainer_FullScreenChanged(object? sender, EventArgs e)
+    {
+        Lazy_BottomTabControl.Visible = !BottomSplitContainer.FullScreen;
+    }
+
+    #region Tab dragging
+
+    private bool _inTabDragArea;
+    private TabControlImageCursor? _tabControlImageCursor;
+
+    private void TopFMTabControl_MouseDragCustom(object? sender, MouseEventArgs e)
+    {
+        HandleTabDrag(source: WhichTabControl.Top, dest: WhichTabControl.Bottom);
+    }
+
+    internal void Lazy_BottomTabControl_MouseDragCustom(object? sender, MouseEventArgs e)
+    {
+        HandleTabDrag(source: WhichTabControl.Bottom, dest: WhichTabControl.Top);
+    }
+
+    private void TopFMTabControl_MouseUp(object? sender, MouseEventArgs e)
+    {
+        HandleTabDragFinish(WhichTabControl.Top, WhichTabControl.Bottom);
+    }
+
+    internal void Lazy_BottomTabControl_MouseUp(object? sender, MouseEventArgs e)
+    {
+        HandleTabDragFinish(WhichTabControl.Bottom, WhichTabControl.Top);
+    }
+
+    private void HandleTabDrag(WhichTabControl source, WhichTabControl dest)
+    {
+        if (source == dest) return;
+
+        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
+
+        _tabControlImageCursor ??= new TabControlImageCursor(sourceGroup.TabControl);
+        Cursor = _tabControlImageCursor.Cursor;
+
+        Point cp = Cursor.Position;
+
+        if (destGroup.Splitter.FullScreen &&
+            destGroup.Splitter.ClientRectangle.Contains(destGroup.Splitter.PointToClient(cp)))
+        {
+            if (!_inTabDragArea)
+            {
+                _inTabDragArea = true;
+                using var gc = new Native.GraphicsContext(destGroup.Splitter.Handle);
+                using var b = new SolidBrush(GetOverlayColor());
+                int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
+                gc.G.FillRectangle(
+                    b,
+                    new Rectangle(
+                        splitterDistance,
+                        0,
+                        destGroup.Splitter.ClientRectangle.Width - splitterDistance,
+                        destGroup.Splitter.ClientRectangle.Height));
+            }
+        }
+        else if (destGroup.Splitter.Panel2.ClientRectangle.Contains(destGroup.Splitter.Panel2.PointToClient(cp)))
+        {
+            if (!_inTabDragArea)
+            {
+                _inTabDragArea = true;
+                using var gc = new Native.GraphicsContext(destGroup.Splitter.Panel2.Handle);
+                using var b = new SolidBrush(GetOverlayColor());
+                gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
+            }
+        }
+        else if (_inTabDragArea)
+        {
+            _inTabDragArea = false;
+            destGroup.Splitter.Refresh();
+        }
+    }
+
+    private void HandleTabDragFinish(WhichTabControl source, WhichTabControl dest)
+    {
+        TabPage? dragTab = null;
+        bool refresh = true;
+        try
+        {
+            if (!_inTabDragArea || source == dest)
+            {
+                refresh = false;
+                return;
+            }
+
+            EverythingPanel.SuspendDrawing();
+
+            dragTab = GetFMTabControlGroup(source).TabControl.DragTab;
+            if (dragTab == null) return;
+
+            MoveFMTab(source, dest, dragTab);
+        }
+        finally
+        {
+            DestroyImageCursor();
+
+            FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+            sourceGroup.TabControl.ResetTempDragData();
+            _inTabDragArea = false;
+            if (refresh)
+            {
+                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { dragTab });
+            }
+        }
+    }
+
+    private void MoveFMTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
+    {
+        if (source == dest) return;
+
+        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
+        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
+
+        sourceGroup.TabControl.RestoreBackedUpBackingTabs();
+        HideFMTab(source, tabPage);
+        ShowFMTab(dest, tabPage);
+
+        if (expandCollapsed)
+        {
+            if (destGroup.Splitter.FullScreen)
+            {
+                destGroup.Splitter.ToggleFullScreen();
+                SetFMTabsCollapsedState(dest, false);
+            }
+        }
+
+        destGroup.TabControl.SelectedTab = tabPage;
+        tabPage.Focus();
+    }
+
+    private void ShowFMTab(WhichTabControl which, TabPage tabPage)
+    {
+        FMTabControlGroup group = GetFMTabControlGroup(which);
+        group.EmptyMessageLabel.Hide();
+        group.TabControl.ShowTab(tabPage, true);
+    }
+
+    private void HideFMTab(WhichTabControl which, TabPage tabPage)
+    {
+        FMTabControlGroup group = GetFMTabControlGroup(which);
+
+        group.TabControl.ShowTab(tabPage, false);
+        if (group.TabControl.TabCount == 0)
+        {
+            group.EmptyMessageLabel.BringToFront();
+            group.EmptyMessageLabel.Show();
+        }
+    }
+
+    private void DestroyImageCursor()
+    {
+        Cursor = Cursors.Default;
+        _tabControlImageCursor?.Dispose();
+        _tabControlImageCursor = null;
+    }
+
+    private static Color GetOverlayColor() =>
+        Config.DarkMode
+            ? DarkColors.TabDragOverlay_Dark
+            : DarkColors.TabDragOverlay_Light;
+
+    #endregion
+
     #endregion
 
     #region FMs list
@@ -5539,15 +5741,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
 
-    private void TopSplitContainer_FullScreenChanged(object? sender, EventArgs e)
-    {
-        TopFMTabControl.Visible = !TopSplitContainer.FullScreen;
-    }
-
-    private void BottomSplitContainer_FullScreenChanged(object? sender, EventArgs e)
-    {
-        Lazy_BottomTabControl.Visible = !BottomSplitContainer.FullScreen;
-    }
+    #region FMsDGV scroll position save/restore
 
     internal int _storedFMsDGVFirstDisplayedScrollingRowIndex;
     internal int _storedFMsDGVDisplayedRowCountFalse;
@@ -5579,27 +5773,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    private void TopFMTabsBar_MouseClick(object? sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Top);
-
-    internal void BottomFMTabsBar_MouseClick(object? sender, MouseEventArgs e) => HandleTabsMenu(e, WhichTabControl.Bottom);
-
-    private void HandleTabsMenu(MouseEventArgs e, WhichTabControl which)
-    {
-        if (e.Button != MouseButtons.Right) return;
-
-        FMTabControlGroup group = GetFMTabControlGroup(which);
-
-        Rectangle rect = group.TabControl.GetTabBarRect();
-        rect = rect == Rectangle.Empty
-            ? group.TabControl.ClientRectangle
-            : rect with { Height = rect.Height + 3 };
-
-        if (rect.Contains(group.TabControl.ClientCursorPos()))
-        {
-            Lazy_FMTabsMenu.Menu.Data = which;
-            Lazy_FMTabsMenu.Menu.Show(Cursor.Position);
-        }
-    }
+    #endregion
 
     public void ShowUpdateNotification(bool show)
     {
@@ -5615,175 +5789,5 @@ public sealed partial class MainForm : DarkFormBase,
         {
             ScreenshotsTabPage.RefreshScreenshots();
         }
-    }
-
-    #region Tab dragging
-
-    private bool _inTabDragArea;
-    private TabControlImageCursor? _tabControlImageCursor;
-
-    private void TopFMTabControl_MouseDragCustom(object? sender, MouseEventArgs e)
-    {
-        HandleTabDrag(source: WhichTabControl.Top, dest: WhichTabControl.Bottom);
-    }
-
-    internal void Lazy_BottomTabControl_MouseDragCustom(object? sender, MouseEventArgs e)
-    {
-        HandleTabDrag(source: WhichTabControl.Bottom, dest: WhichTabControl.Top);
-    }
-
-    private void TopFMTabControl_MouseUp(object? sender, MouseEventArgs e)
-    {
-        HandleTabDragFinish(WhichTabControl.Top, WhichTabControl.Bottom);
-    }
-
-    internal void Lazy_BottomTabControl_MouseUp(object? sender, MouseEventArgs e)
-    {
-        HandleTabDragFinish(WhichTabControl.Bottom, WhichTabControl.Top);
-    }
-
-    private void HandleTabDrag(WhichTabControl source, WhichTabControl dest)
-    {
-        if (source == dest) return;
-
-        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
-        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
-
-        _tabControlImageCursor ??= new TabControlImageCursor(sourceGroup.TabControl);
-        Cursor = _tabControlImageCursor.Cursor;
-
-        Point cp = Cursor.Position;
-
-        if (destGroup.Splitter.FullScreen &&
-            destGroup.Splitter.ClientRectangle.Contains(destGroup.Splitter.PointToClient(cp)))
-        {
-            if (!_inTabDragArea)
-            {
-                _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(destGroup.Splitter.Handle);
-                using var b = new SolidBrush(GetOverlayColor());
-                int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
-                gc.G.FillRectangle(
-                    b,
-                    new Rectangle(
-                        splitterDistance,
-                        0,
-                        destGroup.Splitter.ClientRectangle.Width - splitterDistance,
-                        destGroup.Splitter.ClientRectangle.Height));
-            }
-        }
-        else if (destGroup.Splitter.Panel2.ClientRectangle.Contains(destGroup.Splitter.Panel2.PointToClient(cp)))
-        {
-            if (!_inTabDragArea)
-            {
-                _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(destGroup.Splitter.Panel2.Handle);
-                using var b = new SolidBrush(GetOverlayColor());
-                gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
-            }
-        }
-        else if (_inTabDragArea)
-        {
-            _inTabDragArea = false;
-            destGroup.Splitter.Refresh();
-        }
-    }
-
-    private void HandleTabDragFinish(WhichTabControl source, WhichTabControl dest)
-    {
-        TabPage? dragTab = null;
-        bool refresh = true;
-        try
-        {
-            if (!_inTabDragArea || source == dest)
-            {
-                refresh = false;
-                return;
-            }
-
-            EverythingPanel.SuspendDrawing();
-
-            dragTab = GetFMTabControlGroup(source).TabControl.DragTab;
-            if (dragTab == null) return;
-
-            MoveFMTab(source, dest, dragTab);
-        }
-        finally
-        {
-            DestroyImageCursor();
-
-            FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
-            sourceGroup.TabControl.ResetTempDragData();
-            _inTabDragArea = false;
-            if (refresh)
-            {
-                EverythingPanel.ResumeDrawingAndFocusControl(new Control?[] { dragTab });
-            }
-        }
-    }
-
-    private void MoveFMTab(WhichTabControl source, WhichTabControl dest, TabPage tabPage, bool expandCollapsed = true)
-    {
-        if (source == dest) return;
-
-        FMTabControlGroup sourceGroup = GetFMTabControlGroup(source);
-        FMTabControlGroup destGroup = GetFMTabControlGroup(dest);
-
-        sourceGroup.TabControl.RestoreBackedUpBackingTabs();
-        HideFMTab(source, tabPage);
-        ShowFMTab(dest, tabPage);
-
-        if (expandCollapsed)
-        {
-            if (destGroup.Splitter.FullScreen)
-            {
-                destGroup.Splitter.ToggleFullScreen();
-                SetFMTabsCollapsedState(dest, false);
-            }
-        }
-
-        destGroup.TabControl.SelectedTab = tabPage;
-        tabPage.Focus();
-    }
-
-    private void ShowFMTab(WhichTabControl which, TabPage tabPage)
-    {
-        FMTabControlGroup group = GetFMTabControlGroup(which);
-        group.EmptyMessageLabel.Hide();
-        group.TabControl.ShowTab(tabPage, true);
-    }
-
-    private void HideFMTab(WhichTabControl which, TabPage tabPage)
-    {
-        FMTabControlGroup group = GetFMTabControlGroup(which);
-
-        group.TabControl.ShowTab(tabPage, false);
-        if (group.TabControl.TabCount == 0)
-        {
-            group.EmptyMessageLabel.BringToFront();
-            group.EmptyMessageLabel.Show();
-        }
-    }
-
-    private void DestroyImageCursor()
-    {
-        Cursor = Cursors.Default;
-        _tabControlImageCursor?.Dispose();
-        _tabControlImageCursor = null;
-    }
-
-    private static Color GetOverlayColor() =>
-        Config.DarkMode
-            ? DarkColors.TabDragOverlay_Dark
-            : DarkColors.TabDragOverlay_Light;
-
-    #endregion
-
-    private void FMTabsEmptyMessageLabels_Paint(object? sender, PaintEventArgs e)
-    {
-        DarkLabel label = BottomFMTabsEmptyMessageLabel;
-        e.Graphics.DrawRectangle(
-            Config.DarkMode ? DarkColors.LighterBackgroundPen : SystemPens.ControlLight,
-            new Rectangle(0, 0, label.ClientRectangle.Width - 1, label.ClientRectangle.Height - 1));
     }
 }
