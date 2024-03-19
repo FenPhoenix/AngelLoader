@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;

@@ -6,7 +6,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;

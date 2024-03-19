@@ -12,7 +12,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AL_Common;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
 using SpanExtensions;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;

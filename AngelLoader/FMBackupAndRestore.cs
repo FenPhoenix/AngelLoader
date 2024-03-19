@@ -14,7 +14,6 @@ using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
