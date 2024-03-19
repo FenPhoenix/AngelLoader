@@ -595,7 +595,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines(camModIni, out var lines))
+        if (!TryReadAllLines_DefaultEncoding(camModIni, out var lines))
         {
             return failNoEx;
         }
