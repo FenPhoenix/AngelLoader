@@ -30,7 +30,7 @@ public static partial class Common
     public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[line.Length - 1] == ']';
+    public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
     #region ASCII-specific
 

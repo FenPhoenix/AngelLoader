@@ -446,7 +446,7 @@ internal static partial class FMInstallAndPlay
 
                             string fn = entry.FullName;
 
-                            if (fn.Length > 0 && !fn[fn.Length - 1].IsDirSep() &&
+                            if (fn.Length > 0 && !fn[^1].IsDirSep() &&
                                 (fn.PathStartsWithI(savesDirS) ||
                                  fn.PathStartsWithI(_darkNetSavesDirS) ||
                                  fn.PathStartsWithI(_screensDirS) ||

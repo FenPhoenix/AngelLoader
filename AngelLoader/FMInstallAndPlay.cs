@@ -1040,7 +1040,7 @@ internal static partial class FMInstallAndPlay
 
                 Directory.CreateDirectory(stringsPath);
 
-                int lastMisNum = misNums[misNums.Count - 1];
+                int lastMisNum = misNums[^1];
 
                 var missFlagLines = new List<string>();
                 for (int i = 1; i <= lastMisNum; i++)
@@ -1888,7 +1888,7 @@ internal static partial class FMInstallAndPlay
 
                 string fileName = entry.FullName;
 
-                if (fileName[fileName.Length - 1].IsDirSep()) continue;
+                if (fileName[^1].IsDirSep()) continue;
 
                 // Disabled for this release as I need to test it more thoroughly
 #if false
@@ -1981,7 +1981,7 @@ internal static partial class FMInstallAndPlay
                 var entry = reader.Entry;
                 string fileName = entry.Key;
 
-                if (!entry.IsDirectory && !fileName[fileName.Length - 1].IsDirSep())
+                if (!entry.IsDirectory && !fileName[^1].IsDirSep())
                 {
                     // Disabled for this release as I need to test it more thoroughly
 #if false

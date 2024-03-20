@@ -234,7 +234,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
             string lineTE = line.TrimEnd();
 
-            if (lineTE.Length > 0 && lineTE[lineTE.Length - 1] == ':')
+            if (lineTE.Length > 0 && lineTE[^1] == ':')
             {
                 line = @"\b1 " + line + @"\b0 ";
             }

@@ -78,7 +78,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         Screenshots.PopulateScreenshotFileNames(fm, screenshotFileNames);
         if (screenshotFileNames.Count == 0) return;
 
-        string currentScreenshotFileName = screenshotFileNames[screenshotFileNames.Count - 1];
+        string currentScreenshotFileName = screenshotFileNames[^1];
 
         ScreenshotsPreprocessing.Run(
             fm.InstalledDir,

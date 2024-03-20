@@ -134,14 +134,14 @@ public static class FastIO_Native
 
     public static bool SearchPatternHas3CharExt(string searchPattern)
     {
-        if (searchPattern.Length > 4 && searchPattern[searchPattern.Length - 4] == '.')
+        if (searchPattern.Length > 4 && searchPattern[^4] == '.')
         {
             for (int i = 1; i <= 3; i++)
             {
                 // This logic isn't quite correct; the problem still occurs if our pattern is like "*.t*t"
                 // for example, but checking for that starts to get complicated and we don't ever use patterns
                 // like that ourselves, so meh.
-                char c = searchPattern[searchPattern.Length - i];
+                char c = searchPattern[^i];
                 if (c is '*' or '?') return false;
             }
             return true;

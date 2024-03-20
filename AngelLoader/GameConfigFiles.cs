@@ -581,8 +581,8 @@ internal static class GameConfigFiles
             }
 
             return
-                selectorsList.Count > 0 ? selectorsList[selectorsList.Count - 1] :
-                commentedSelectorsList.Count > 0 ? commentedSelectorsList[commentedSelectorsList.Count - 1] :
+                selectorsList.Count > 0 ? selectorsList[^1] :
+                commentedSelectorsList.Count > 0 ? commentedSelectorsList[^1] :
                 Paths.FMSelDll;
         }
 
@@ -628,7 +628,7 @@ internal static class GameConfigFiles
             }
 
             if (tempSelectorsList.Count > 0 &&
-                !tempSelectorsList[tempSelectorsList.Count - 1].PathEqualsI(Paths.StubPath))
+                !tempSelectorsList[^1].PathEqualsI(Paths.StubPath))
             {
                 changeLoaderIfResetting = false;
             }

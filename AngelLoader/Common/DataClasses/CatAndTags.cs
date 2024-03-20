@@ -172,7 +172,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
             item.Value.SortCaseInsensitive();
         }
 
-        if (_list[_list.Count - 1] == PresetTags.MiscCategory) return;
+        if (_list[^1] == PresetTags.MiscCategory) return;
 
         for (int i = 0; i < _list.Count; i++)
         {

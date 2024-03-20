@@ -407,7 +407,7 @@ public static class AppUpdate
 
                     if (lineT.IsEmpty()) continue;
 
-                    if (lineT[0] == '[' && lineT[lineT.Length - 1] == ']' &&
+                    if (lineT[0] == '[' && lineT[^1] == ']' &&
                         Version.TryParse(lineT.Substring(1, lineT.Length - 2), out Version version))
                     {
                         if (version <= appVersion) break;
