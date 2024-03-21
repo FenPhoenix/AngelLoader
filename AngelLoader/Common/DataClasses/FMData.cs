@@ -47,6 +47,7 @@ public sealed class FanMission
         DisableAllMods = 1 << 9,
         ResourcesScanned = 1 << 10,
         LangsScanned = 1 << 11,
+        ShownInFilter = 1 << 12,
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -62,6 +63,15 @@ public sealed class FanMission
     private FMFlag _fmFlags = FMFlag.None;
 
     #endregion
+
+    [FenGenIgnore]
+    internal bool ShownInFilter
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.ShownInFilter);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.ShownInFilter, value);
+    }
 
     // Cached value to avoid doing the expensive check every startup. If a matching archive is found in the
     // normal archive list combine, this will be set to false again. Results in a nice perf gain if there are
