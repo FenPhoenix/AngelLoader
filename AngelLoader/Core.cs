@@ -1361,7 +1361,9 @@ internal static class Core
 
         filterShownIndexList.Clear();
 
-        // These are checked in a loop, so cache them. Others are only checked once, so leave them be.
+        // Only ever add to the filter shown index list, don't subtract, as that requires constantly copying list
+        // items and is therefore like eight trillion times slower.
+
         bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
         string titleTrimmed = viewFilter.Title.Trim();
         bool authorIsWhitespace = viewFilter.Author.IsWhiteSpace();
@@ -1380,6 +1382,8 @@ internal static class Core
         bool lastPlayedFilterSet = filterLastPlayedFrom != null || filterLastPlayedTo != null;
         bool showAvailable = View.GetShowUnavailableFMsFilter();
 
+        // We could maybe combine this additive loop with the below subtractive one, but this is already 10x
+        // faster than before so whatever.
         for (int i = 0; i < FMsViewList.Count; i++)
         {
             FanMission fm = FMsViewList[i];
