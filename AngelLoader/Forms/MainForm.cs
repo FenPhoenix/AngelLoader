@@ -1149,7 +1149,7 @@ public sealed partial class MainForm : DarkFormBase,
             Config.AskedToScanForMisCounts = true;
         }
 
-        Core.SetFilter();
+        Filtering.SetFilter();
         if (RefreshFMsList(FMsDGV.CurrentSelFM, startup: true, keepSelection: KeepSel.TrueNearest))
         {
             _displayedFM = await Core.DisplayFM();
@@ -3928,7 +3928,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         SortFMsDGV(FMsDGV.CurrentSortedColumn, FMsDGV.CurrentSortDirection);
 
-        var filterMatches = Core.SetFilter();
+        var filterMatches = Filtering.SetFilter();
 
         // @ViewBusinessLogic(SortAndSetFilter) - egregious
         if (landImmediate && FMsDGV.FilterShownIndexList.Count > 0)
@@ -3957,7 +3957,7 @@ public sealed partial class MainForm : DarkFormBase,
                         for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                         {
                             FanMission fm = FMsDGV.GetFMFromIndex(i);
-                            if (!Core.FMIsTopped(fm))
+                            if (!fm.IsTopped())
                             {
                                 if (firstUnToppedIndex == -1) firstUnToppedIndex = i;
 
@@ -3986,7 +3986,7 @@ public sealed partial class MainForm : DarkFormBase,
                 for (int i = 0; i < FMsDGV.FilterShownIndexList.Count; i++)
                 {
                     FanMission fm = FMsDGV.GetFMFromIndex(i);
-                    if (!Core.FMIsTopped(fm))
+                    if (!fm.IsTopped())
                     {
                         selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
                         keepSel = KeepSel.True;
@@ -4015,13 +4015,13 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     FanMission fm = FMsDGV.GetFMFromIndex(i);
 
-                    if (!Core.FMIsTopped(fm)) break;
+                    if (!fm.IsTopped()) break;
 
                     if (Config.EnableFuzzySearch)
                     {
                         if (!titleIsWhiteSpace)
                         {
-                            (bool matched, bool exactMatch) = Core.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed);
+                            (bool matched, bool exactMatch) = Filtering.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed);
                             if (matched)
                             {
                                 titleMatchIndex = i;
@@ -4052,7 +4052,7 @@ public sealed partial class MainForm : DarkFormBase,
                     }
                     else
                     {
-                        if ((!titleIsWhiteSpace && Core.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed).Matched) ||
+                        if ((!titleIsWhiteSpace && Filtering.FMTitleContains_AllTests(fm, titleText, titleTextTrimmed).Matched) ||
                             (!authorIsWhiteSpace && fm.Author.ContainsI_TextFilter(authorText).Matched))
                         {
                             selectedFM = FMsDGV.GetFMPosInfoFromIndex(i);
@@ -4276,7 +4276,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         SortFMsDGV((Column)e.ColumnIndex, newSortDirection);
 
-        Core.SetFilter();
+        Filtering.SetFilter();
         if (RefreshFMsList(selFM, keepSelection: KeepSel.TrueNearest, fromColumnClick: true))
         {
             if (selFM != null && FMsDGV.RowSelected() &&
