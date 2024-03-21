@@ -366,6 +366,9 @@ public sealed class FanMission
 
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal bool IsTopped() => MarkedRecent || Pinned;
+
     internal void LogInfo(
         string topMessage,
         Exception? ex = null,
