@@ -147,8 +147,7 @@ internal static partial class Utils
         {
             OperatingSystem osVersion = Environment.OSVersion;
             return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version.Major >= 10 &&
-                   osVersion.Version.Build >= 17763;
+                   osVersion.Version >= new Version(10, 0, 17763);
         }
         catch
         {
