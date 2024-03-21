@@ -226,6 +226,20 @@ internal static class FMTags
     We did it so we can keep this one loop instead of two, but that's a stupid micro-optimization that almost
     certainly gains us nothing perceptible but makes the logic in here very difficult to follow.
     We should pull these apart and put them back together in a better way.
+
+    @PerfScale: This method takes ~2.6s out of ~7.25s FM-find time for the huge set.
+    string.Split(): 853ms
+    List.Add(): 691ms (it's all EnsureCapacity() - at least one call per FM!)
+    HashSet.Add(): 390ms
+    TryGetCatAndTag(): 210ms
+    FMTagsCollection.ctor: 144ms (almost all GC - where's the garbage coming from?)
+
+    Everything else takes negligible time in the grand scheme of things. 78ms on down, which is fine given the
+    size of the huge set.
+
+    We should switch to a much more lightweight way of storing the tags. Maybe just ensure proper format on the
+    string and then wrap it in a struct with a list of indices for cats/tags? Would the string processing take
+    too much time? Could we work with even a crappily-formatted string?
     */
     internal static void AddTagsToFMAndGlobalList(
         string tagsToAdd,

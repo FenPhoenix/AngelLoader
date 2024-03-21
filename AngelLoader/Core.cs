@@ -1189,6 +1189,9 @@ internal static class Core
         }
     }
 
+    // @PerfScale(SetFilter): RemoveAt() is a huge perf penalty.
+    // We want to rejigger this to avoid it, possibly by reversing the logic to conditionally add instead of
+    // conditionally remove?
     internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch)
     SetFilter()
     {
@@ -2772,6 +2775,9 @@ internal static class Core
             if (!fm.LangsScanned)
             {
                 FMLanguages.FillFMSupportedLangs(fm);
+                // @PerfScale: This can take seconds for huge sets. It probably shouldn't even be here.
+                // Did I add this for my own convenience while testing? We probably shouldn't ever be writing the
+                // FM data ini file merely on FM select.
                 Ini.WriteFullFMDataIni();
             }
         }

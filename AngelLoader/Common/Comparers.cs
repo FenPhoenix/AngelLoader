@@ -80,15 +80,18 @@ internal static class Comparers
             int ret;
             if (compareTitles)
             {
-                ret = string.Compare(title1, xStart, title2, yStart, Math.Max(title1.Length, title2.Length),
-                    StringComparison.InvariantCultureIgnoreCase);
+                ret = xStart == 0 && yStart == 0
+                    ? string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase)
+                    : string.Compare(title1, xStart, title2, yStart, Math.Max(title1.Length, title2.Length),
+                        StringComparison.InvariantCultureIgnoreCase);
                 if (ret != 0) return ret;
             }
 
             ret = string.Compare(fm1.Archive, fm2.Archive, StringComparison.InvariantCultureIgnoreCase);
-            if (ret != 0) return ret;
 
-            return string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
+            return ret != 0
+                ? ret
+                : string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
         }
 
         if (x.Title == y.Title) return TitleOrFallback(x.Title, y.Title, x, y, compareTitles: false);

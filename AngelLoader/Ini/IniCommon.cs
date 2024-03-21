@@ -245,11 +245,11 @@ internal static partial class Ini
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AddFMIfNotNull(FanMission? fm)
+    private static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         if (fm != null)
         {
-            List<FanMission> list = fm.Game == Game.TDM ? FMDataIniListTDM : FMDataIniList;
+            List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
             list.Add(fm);
         }
     }
@@ -267,7 +267,7 @@ internal static partial class Ini
             string lineT = line.Trim();
             if (lineT == "[FM]")
             {
-                AddFMIfNotNull(fm);
+                AddFMIfNotNull(fm, fmsList, fmsListTDM);
                 fm = new FanMission();
             }
             else if (fm != null)
@@ -287,7 +287,7 @@ internal static partial class Ini
                 }
             }
         }
-        AddFMIfNotNull(fm);
+        AddFMIfNotNull(fm, fmsList, fmsListTDM);
     }
 
     internal static void WriteConfigIni()

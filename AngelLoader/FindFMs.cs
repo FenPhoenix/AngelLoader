@@ -1032,7 +1032,6 @@ internal static class FindFMs
                 !fm.Title.IsEmpty() ? fm.Title :
                 !fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() :
                 fm.InstalledDir;
-            fm.CommentSingleLine = fm.Comment.FromRNEscapes().ToSingleLineComment(100);
 
             FMTags.AddTagsToFMAndGlobalList(fm.TagsString, fm.Tags);
 
