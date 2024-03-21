@@ -36,6 +36,9 @@ public sealed class CommentTabPage : Lazy_TabsBase
         if (fm != null)
         {
             _page.CommentTextBox.Enabled = true;
+            // Clear to set scroll position back to top - only applies if comments are exactly the same between
+            // FMs (extremely unlikely but hey)
+            _page.CommentTextBox.Clear();
             _page.CommentTextBox.Text = fm.Comment.FromRNEscapes();
         }
         else
