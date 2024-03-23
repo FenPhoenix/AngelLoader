@@ -255,6 +255,7 @@ public sealed class FanMission
         set => _commentSingleLine = value;
     }
 
+    [FenGenDoNotTrimValue]
     internal string Comment = "";
 
     [FenGenIgnore]
