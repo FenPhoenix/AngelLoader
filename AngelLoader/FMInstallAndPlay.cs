@@ -235,7 +235,7 @@ internal static partial class FMInstallAndPlay
                 SelectTdmFM(null, deselect: true);
             }
 
-            if (!StartExeForOriginalGame(
+            if (!StartExeForPlayOriginalGame(
                     gameIndex,
                     gameExe,
                     workingPath,
@@ -375,7 +375,7 @@ internal static partial class FMInstallAndPlay
 
         if (!RunThiefBuddyIfRequired(fm)) return false;
 
-        if (!WriteStubCommFile(fm, gamePath)) return false;
+        if (!WriteStubCommFileForFM(fm, gamePath)) return false;
 
         if (!await StartExeForPlayFM(
                 fm: fm,
@@ -567,7 +567,7 @@ internal static partial class FMInstallAndPlay
     }
 
     [MustUseReturnValue]
-    private static bool WriteStubCommFile(FanMission fm, string gamePath)
+    private static bool WriteStubCommFileForFM(FanMission fm, string gamePath)
     {
         if (fm.Game == Game.TDM) return true;
 
@@ -661,7 +661,7 @@ internal static partial class FMInstallAndPlay
     }
 
     [MustUseReturnValue]
-    private static bool StartExeForOriginalGame(
+    private static bool StartExeForPlayOriginalGame(
         GameIndex gameIndex,
         string exe,
         string workingPath,
