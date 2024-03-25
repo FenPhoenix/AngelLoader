@@ -528,16 +528,11 @@ internal static class Filtering
             }
 
             #endregion
-        }
 
-        for (int i = 0; i < FMsViewList.Count; i++)
-        {
-            FanMission fm = FMsViewList[i];
-            if (fm.ShownInFilter)
-            {
-                filterShownIndexList.Add(i);
-                fm.ShownInFilter = false;
-            }
+            if (!fm.ShownInFilter) continue;
+
+            filterShownIndexList.Add(i);
+            fm.ShownInFilter = false;
         }
 
         return ret;
