@@ -117,7 +117,6 @@ internal static class Filtering
         return (needleUsed == needleLength, false);
     }
 
-
     internal static (bool Matched, bool ExactMatch)
     ContainsI_TextFilter(this string hay, string needle)
     {
