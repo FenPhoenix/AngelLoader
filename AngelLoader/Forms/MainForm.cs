@@ -3471,7 +3471,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FMTabsEmptyMessageLabels_Paint(object sender, PaintEventArgs e)
     {
-        DarkLabel label = BottomFMTabsEmptyMessageLabel;
+        DarkLabel label = (DarkLabel)sender;
         e.Graphics.DrawRectangle(
             Config.DarkMode ? DarkColors.LighterBackgroundPen : SystemPens.ControlLight,
             new Rectangle(0, 0, label.ClientRectangle.Width - 1, label.ClientRectangle.Height - 1));
