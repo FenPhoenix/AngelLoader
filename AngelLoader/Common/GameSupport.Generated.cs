@@ -2,7 +2,6 @@
 
 using System;
 using static AL_Common.FenGenAttributes;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
@@ -43,19 +42,14 @@ public static partial class GameSupport
     /// Converts a Game to a GameIndex. *Narrowing conversion, so make sure the game has been checked for convertibility first!
     /// </summary>
     /// <param name="game"></param>
-    public static GameIndex GameToGameIndex(Game game)
+    private static GameIndex GameToGameIndex(Game game) => game switch
     {
-        AssertR(GameIsKnownAndSupported(game), nameof(game) + " was out of range: " + game);
-
-        return game switch
-        {
-            Game.Thief1 => GameIndex.Thief1,
-            Game.Thief2 => GameIndex.Thief2,
-            Game.Thief3 => GameIndex.Thief3,
-            Game.SS2 => GameIndex.SS2,
-            _ => GameIndex.TDM
-        };
-    }
+        Game.Thief1 => GameIndex.Thief1,
+        Game.Thief2 => GameIndex.Thief2,
+        Game.Thief3 => GameIndex.Thief3,
+        Game.SS2 => GameIndex.SS2,
+        _ => GameIndex.TDM
+    };
 
     /// <summary>
     /// Converts a GameIndex to a Game. Widening conversion, so it will always succeed.

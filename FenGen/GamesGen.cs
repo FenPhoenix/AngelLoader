@@ -149,11 +149,7 @@ internal static class Games
         w.WL("/// Converts a " + gameName + " to a " + gameIndexName + ". *Narrowing conversion, so make sure the game has been checked for convertibility first!");
         w.WL("/// </summary>");
         w.WL("/// <param name=\"" + gameNameVarCase + "\"></param>");
-        w.WL("public static " + gameIndexName + " " + gameToGameIndexFuncName + "(" + gameName + " " + gameNameVarCase + ")");
-        w.WL("{");
-        w.WL("AssertR(" + gameIsKnownAndSupportedFuncName + "(" + gameNameVarCase + "), nameof(" + gameNameVarCase + ") + \" was out of range: \" + " + gameNameVarCase + ");");
-        w.WL();
-        w.WL("return game switch");
+        w.WL("private static " + gameIndexName + " " + gameToGameIndexFuncName + "(" + gameName + " " + gameNameVarCase + ") => " + gameNameVarCase + " switch");
         w.WL("{");
         for (int i = 0; i < gameNames.Count; i++)
         {
@@ -162,7 +158,6 @@ internal static class Games
             w.WL(prefix + " => " + gameIndexName + "." + gameNames[i] + suffix);
         }
         w.WL("};");
-        w.WL("}");
         w.WL();
 
         #endregion
