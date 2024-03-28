@@ -261,8 +261,12 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
         MainToolTip.SetToolTip(DisableNonImportantButton, LText.ModsTab.DisableAllToolTip);
         DisabledModsLabel.Text = LText.ModsTab.DisabledMods;
 
-        int width = ControlUtils.GetFlowLayoutPanelControlsWidthAll(ResetFLP) + (ResetFLP.Left * 2);
-        AutoScrollMinSize = AutoScrollMinSize with { Width = width };
+        int minWidth =
+            Utils.MathMax3(
+            ControlUtils.GetFlowLayoutPanelControlsWidthAll(ResetFLP) + (ResetFLP.Left * 2),
+            HeaderLabel.Width + (HeaderLabel.Left * 2),
+            DisabledModsLabel.Width + (DisabledModsLabel.Left * 2));
+        AutoScrollMinSize = AutoScrollMinSize with { Width = minWidth };
     }
 
     private void Commit()
