@@ -102,4 +102,13 @@ public sealed class DarkTrackBar : TrackBar, IDarkable
         if (m.Msg == Native.WM_ERASEBKGND) return;
         base.WndProc(ref m);
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _doubleClickTimer.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
