@@ -148,7 +148,32 @@ internal static class Utility
     /// <returns></returns>
     internal static bool StartsWithGU(this string str, string value)
     {
-        return StartsWith_Scanner(str, value, CaseComparison.GivenOrUpper);
+        if (str.IsEmpty() || str.Length < value.Length) return false;
+
+        int valueLength = value.Length;
+
+        for (int si = 0, vi = 0; si < valueLength; si++, vi++)
+        {
+            char sc = str[si];
+            char vc = value[vi];
+
+            if (vc > 127)
+            {
+                return str.StartsWith(value, Ordinal) ||
+                       str.StartsWith(value.ToUpperInvariant(), Ordinal);
+            }
+
+            if (char.IsAsciiLetterUpper(sc) && char.IsAsciiLetterLower(vc))
+            {
+                if (sc != vc - 32) return false;
+            }
+            else if (sc != vc)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -158,11 +183,6 @@ internal static class Utility
     /// <param name="value"></param>
     /// <returns></returns>
     internal static bool StartsWithGL(this string str, string value)
-    {
-        return StartsWith_Scanner(str, value, CaseComparison.GivenOrLower);
-    }
-
-    private static bool StartsWith_Scanner(this string str, string value, CaseComparison caseComparison)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -175,24 +195,13 @@ internal static class Utility
 
             if (vc > 127)
             {
-                switch (caseComparison)
-                {
-                    case CaseComparison.GivenOrUpper:
-                        return str.StartsWith(value, Ordinal) ||
-                               str.StartsWith(value.ToUpperInvariant(), Ordinal);
-                    case CaseComparison.GivenOrLower:
-                        return str.StartsWith(value, Ordinal) ||
-                               str.StartsWith(value.ToLowerInvariant(), Ordinal);
-                }
+                return str.StartsWith(value, Ordinal) ||
+                       str.StartsWith(value.ToLowerInvariant(), Ordinal);
             }
 
-            if (char.IsAsciiLetterUpper(sc) && char.IsAsciiLetterLower(vc))
+            if (char.IsAsciiLetterUpper(vc) && char.IsAsciiLetterLower(sc))
             {
-                if (caseComparison == CaseComparison.GivenOrLower || sc != vc - 32) return false;
-            }
-            else if (char.IsAsciiLetterUpper(vc) && char.IsAsciiLetterLower(sc))
-            {
-                if (caseComparison == CaseComparison.GivenOrUpper || sc != vc + 32) return false;
+                if (sc != vc + 32) return false;
             }
             else if (sc != vc)
             {
