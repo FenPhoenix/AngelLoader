@@ -398,12 +398,6 @@ internal static class Utility
         }
     }
 
-    private enum CaseComparison
-    {
-        GivenOrUpper,
-        GivenOrLower
-    }
-
     /// <summary>
     /// StartsWith (given case or uppercase). Uses a fast ASCII compare where possible.
     /// </summary>
@@ -411,22 +405,6 @@ internal static class Utility
     /// <param name="value"></param>
     /// <returns></returns>
     internal static bool StartsWithGU(this string str, string value)
-    {
-        return StartsWithFast(str, value, CaseComparison.GivenOrUpper);
-    }
-
-    /// <summary>
-    /// StartsWith (given case or lowercase). Uses a fast ASCII compare where possible.
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    internal static bool StartsWithGL(this string str, string value)
-    {
-        return StartsWithFast(str, value, CaseComparison.GivenOrLower);
-    }
-
-    private static bool StartsWithFast(this string str, string value, CaseComparison caseComparison)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -439,24 +417,49 @@ internal static class Utility
 
             if (vc > 127)
             {
-                switch (caseComparison)
-                {
-                    case CaseComparison.GivenOrUpper:
-                        return str.StartsWith(value, Ordinal) ||
-                               str.StartsWith(value.ToUpperInvariant(), Ordinal);
-                    case CaseComparison.GivenOrLower:
-                        return str.StartsWith(value, Ordinal) ||
-                               str.StartsWith(value.ToLowerInvariant(), Ordinal);
-                }
+                return str.StartsWith(value, Ordinal) ||
+                       str.StartsWith(value.ToUpperInvariant(), Ordinal);
             }
 
             if (sc.IsAsciiUpper() && vc.IsAsciiLower())
             {
-                if (caseComparison == CaseComparison.GivenOrLower || sc != vc - 32) return false;
+                if (sc != vc - 32) return false;
             }
-            else if (vc.IsAsciiUpper() && sc.IsAsciiLower())
+            else if (sc != vc)
             {
-                if (caseComparison == CaseComparison.GivenOrUpper || sc != vc + 32) return false;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// StartsWith (given case or lowercase). Uses a fast ASCII compare where possible.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    internal static bool StartsWithGL(this string str, string value)
+    {
+        if (str.IsEmpty() || str.Length < value.Length) return false;
+
+        int valueLength = value.Length;
+
+        for (int si = 0, vi = 0; si < valueLength; si++, vi++)
+        {
+            char sc = str[si];
+            char vc = value[vi];
+
+            if (vc > 127)
+            {
+                return str.StartsWith(value, Ordinal) ||
+                       str.StartsWith(value.ToLowerInvariant(), Ordinal);
+            }
+
+            if (vc.IsAsciiUpper() && sc.IsAsciiLower())
+            {
+                if (sc != vc + 32) return false;
             }
             else if (sc != vc)
             {
