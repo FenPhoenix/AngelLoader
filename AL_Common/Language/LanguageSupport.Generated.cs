@@ -3,7 +3,6 @@
 
 #define FenGen_LanguageSupportDest
 
-using System;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 
@@ -115,26 +114,21 @@ public static partial class LanguageSupport
     /// Converts a Language to a LanguageIndex. *Narrowing conversion, so make sure the language has been checked for convertibility first!
     /// </summary>
     /// <param name="language"></param>
-    public static LanguageIndex LanguageToLanguageIndex(Language language)
+    private static LanguageIndex LanguageToLanguageIndex(Language language) => language switch
     {
-        // NOTE: Assert should go here, but we'd need to do a bunch of work to get it working with AL_Common so disable it for now
-        //AssertR(language != Language.Default, nameof(language) + " was out of range: " + language);
+        Language.English => LanguageIndex.English,
+        Language.Czech => LanguageIndex.Czech,
+        Language.Dutch => LanguageIndex.Dutch,
+        Language.French => LanguageIndex.French,
+        Language.German => LanguageIndex.German,
+        Language.Hungarian => LanguageIndex.Hungarian,
+        Language.Italian => LanguageIndex.Italian,
+        Language.Japanese => LanguageIndex.Japanese,
+        Language.Polish => LanguageIndex.Polish,
+        Language.Russian => LanguageIndex.Russian,
+        _ => LanguageIndex.Spanish
+    };
 
-        return language switch
-        {
-            Language.English => LanguageIndex.English,
-            Language.Czech => LanguageIndex.Czech,
-            Language.Dutch => LanguageIndex.Dutch,
-            Language.French => LanguageIndex.French,
-            Language.German => LanguageIndex.German,
-            Language.Hungarian => LanguageIndex.Hungarian,
-            Language.Italian => LanguageIndex.Italian,
-            Language.Japanese => LanguageIndex.Japanese,
-            Language.Polish => LanguageIndex.Polish,
-            Language.Russian => LanguageIndex.Russian,
-            _ => LanguageIndex.Spanish
-        };
-    }
     /// <summary>
     /// Converts a LanguageIndex to a Language. Widening conversion, so it will always succeed.
     /// </summary>
