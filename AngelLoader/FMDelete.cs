@@ -103,7 +103,7 @@ internal static class FMDelete
             FanMission fm = FMDataIniList[i];
             if (!fm.Archive.IsEmpty())
             {
-                if (iniDict.TryGetValue(fm.Archive, out var list))
+                if (iniDict.TryGetValue(fm.Archive, out List<FanMission>? list))
                 {
                     list.Add(fm);
                 }
@@ -117,7 +117,7 @@ internal static class FMDelete
         foreach (FanMission fmToDelete in fmsToDelete)
         {
             if (!fmToDelete.Archive.IsEmpty() &&
-                iniDict.TryGetValue(fmToDelete.Archive, out var fmToDeleteIniCopies))
+                iniDict.TryGetValue(fmToDelete.Archive, out List<FanMission>? fmToDeleteIniCopies))
             {
                 foreach (FanMission fm in fmToDeleteIniCopies)
                 {

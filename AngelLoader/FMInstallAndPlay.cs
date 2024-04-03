@@ -1157,7 +1157,7 @@ internal static partial class FMInstallAndPlay
                 return false;
             }
 
-            if (!TryReadAllLines(missFlag, out var mfLines))
+            if (!TryReadAllLines(missFlag, out List<string>? mfLines))
             {
                 Core.Dialogs.ShowError("Error trying to read '" + missFlag + "'.\r\n\r\n" + ErrorText.OldDarkDependentFeaturesWillFail);
                 return false;
