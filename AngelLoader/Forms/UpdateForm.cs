@@ -281,4 +281,18 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     public bool ViewBlocked => false;
 
     public IContainer GetComponents() => components ??= new Container();
+
+    /// <summary>
+    /// Clean up any resources being used.
+    /// </summary>
+    /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && (components != null))
+        {
+            components.Dispose();
+            _downloadARE.Dispose();
+        }
+        base.Dispose(disposing);
+    }
 }
