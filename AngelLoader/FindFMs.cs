@@ -867,7 +867,7 @@ internal static class FindFMs
 
         if (!File.Exists(fmselInf!)) return FixUp();
 
-        if (!TryReadAllLines(fmselInf!, out var lines))
+        if (!TryReadAllLines(fmselInf!, out List<string>? lines))
         {
             return null;
         }

@@ -212,7 +212,7 @@ internal static class GameConfigFiles
         bool alwaysShowLoaderFound = false;
         bool alwaysShowLoader = false;
 
-        if (!TryReadAllLines(soIni, out var lines))
+        if (!TryReadAllLines(soIni, out List<string>? lines))
         {
             return (Error.GeneralSneakyOptionsIniError, false, "", "", false, isPortable);
         }
@@ -474,7 +474,7 @@ internal static class GameConfigFiles
             return;
         }
 
-        if (!TryReadAllLines(camCfg, out var lines))
+        if (!TryReadAllLines(camCfg, out List<string>? lines))
         {
             return;
         }
@@ -601,7 +601,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines_DefaultEncoding(camModIni, out var lines))
+        if (!TryReadAllLines_DefaultEncoding(camModIni, out List<string>? lines))
         {
             return failNoEx;
         }
@@ -765,7 +765,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines(soIni, out var lines))
+        if (!TryReadAllLines(soIni, out List<string>? lines))
         {
             return failNoEx;
         }
@@ -1209,7 +1209,10 @@ internal static class GameConfigFiles
     private static readonly char[] _ca_Space_Tab_Semicolon = { ' ', '\t', ';' };
     internal static bool? GetScreenShotMode(GameIndex gameIndex)
     {
-        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out _, out var lines)) return null;
+        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out _, out List<string>? lines))
+        {
+            return null;
+        }
 
         bool ret = false;
 
@@ -1230,7 +1233,10 @@ internal static class GameConfigFiles
 
     internal static void SetScreenShotMode(GameIndex gameIndex, bool enabled)
     {
-        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out string userCfgFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.UserCfg, out string userCfgFile, out List<string>? lines))
+        {
+            return;
+        }
 
         RemoveKeyLine(key_inv_status_height, lines);
 
@@ -1244,7 +1250,10 @@ internal static class GameConfigFiles
 
     internal static bool? GetTitaniumMode(GameIndex gameIndex)
     {
-        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out _, out var lines)) return null;
+        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out _, out List<string>? lines))
+        {
+            return null;
+        }
 
         bool quickLoadEnabled = false;
         bool quickSaveEnabled = false;
@@ -1275,7 +1284,10 @@ internal static class GameConfigFiles
 
     internal static void SetTitaniumMode(GameIndex gameIndex, bool enabled)
     {
-        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out string userBndFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.UserBnd, out string userBndFile, out List<string>? lines))
+        {
+            return;
+        }
 
         for (int i = 0; i < lines.Count; i++)
         {
@@ -1300,7 +1312,10 @@ internal static class GameConfigFiles
     private static void SetResolution(GameIndex gameIndex)
     {
         if (!Config.ForceGameResToMainMonitorRes) return;
-        if (!GetFileAndLines(gameIndex, Paths.CamCfg, out string camCfgFile, out var lines)) return;
+        if (!GetFileAndLines(gameIndex, Paths.CamCfg, out string camCfgFile, out List<string>? lines))
+        {
+            return;
+        }
 
         RemoveKeyLine(key_game_screen_size, lines);
 
