@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using static AL_Common.Common;
 
@@ -106,6 +107,16 @@ public static partial class Common
         }
 
         return sb.ToString();
+    }
+
+    public static bool TryParseTDMDate(string dateString, out DateTime dateTime)
+    {
+        return DateTime.TryParseExact(
+            dateString,
+            "yyyy-M-d",
+            DateTimeFormatInfo.InvariantInfo,
+            DateTimeStyles.None,
+            out dateTime);
     }
 }
 

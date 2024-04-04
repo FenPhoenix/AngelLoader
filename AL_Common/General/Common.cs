@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -124,16 +123,6 @@ public static partial class Common
     public static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     public static string ToStrInv(this bool value) => value.ToString(NumberFormatInfo.InvariantInfo);
-
-    public static bool TryParseTDMDate(string dateString, out DateTime dateTime)
-    {
-        return DateTime.TryParseExact(
-            dateString,
-            "yyyy-M-d",
-            DateTimeFormatInfo.InvariantInfo,
-            DateTimeStyles.None,
-            out dateTime);
-    }
 
     public static string GetPlainInnerText(this XmlNode? node) =>
         node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
