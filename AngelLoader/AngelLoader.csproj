@@ -52,9 +52,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RT_HeavyTests|x64'">
-	  <Optimize>true</Optimize>
-	  <DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests;$(SmartNewColumnInsert)</DefineConstants>
-	  <OutputPath>bin\x64\Release\</OutputPath>
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE;Release,Release_Testing;RT_HeavyTests;$(SmartNewColumnInsert)</DefineConstants>
+		<OutputPath>bin\x64\Release\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Testing_NoAsserts|x64'">
@@ -96,12 +96,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="System.Drawing.Primitives">
-			<HintPath>..\bin_dependencies\System.Drawing.Primitives.dll</HintPath>
-		</Reference>
-	</ItemGroup>
-
-	<ItemGroup>
 		<Compile Update="Forms\CustomControls\DarkButton.cs" />
 		<Compile Update="Forms\CustomControls\DarkCheckBox.cs" />
 		<Compile Update="Forms\CustomControls\DarkComboBox.cs" />
@@ -123,6 +117,16 @@
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<!--
+	Override the stock System.Drawing.Primitives.dll with our custom version that removes the [SuppressGCTransition]
+    attribute from GetSysColor() in order to make the hook work again.
+	-->
+	<ItemGroup>
+		<Reference Include="System.Drawing.Primitives">
+			<HintPath>..\bin_dependencies\System.Drawing.Primitives.dll</HintPath>
+		</Reference>
 	</ItemGroup>
 
 	<Target Name="RemoveSystemDrawingPrimitives" AfterTargets="ResolveTargetingPackAssets" BeforeTargets="ResolvePackageFileConflicts">
