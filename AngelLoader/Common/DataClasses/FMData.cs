@@ -368,7 +368,7 @@ public sealed class FanMission
     internal bool NeedsReadmesCachedDuringScan() => Archive.ExtIs7z() || Archive.ExtIsRar();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal bool IsTopped() => MarkedRecent || Pinned;
+    internal bool IsTopped() => (_fmFlags & (FMFlag.MarkedRecent | FMFlag.Pinned)) != 0;
 
     internal void LogInfo(
         string topMessage,
