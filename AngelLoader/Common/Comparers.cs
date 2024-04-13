@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
@@ -64,66 +65,137 @@ internal static class Comparers
 
     #region Static methods
 
+    // From .NET Framework 4.8 source
+    private static unsafe bool EqualsHelper(string strA_Str, string strB_Str, int length)
+    {
+        ReadOnlySpan<char> strA = strA_Str.AsSpan();
+        ReadOnlySpan<char> strB = strB_Str.AsSpan();
+
+        fixed (char* ap = &MemoryMarshal.GetReference(strA))
+        fixed (char* bp = &MemoryMarshal.GetReference(strB))
+        {
+            char* a = ap;
+            char* b = bp;
+
+            // unroll the loop
+#if X64
+            // for AMD64 bit platform we unroll by 12 and
+            // check 3 qword at a time. This is less code
+            // than the 32 bit case and is shorter
+            // pathlength
+
+            while (length >= 12)
+            {
+                if (*(long*)a != *(long*)b) return false;
+                if (*(long*)(a + 4) != *(long*)(b + 4)) return false;
+                if (*(long*)(a + 8) != *(long*)(b + 8)) return false;
+                a += 12; b += 12; length -= 12;
+            }
+#else
+            while (length >= 10)
+            {
+                if (*(int*)a != *(int*)b) return false;
+                if (*(int*)(a + 2) != *(int*)(b + 2)) return false;
+                if (*(int*)(a + 4) != *(int*)(b + 4)) return false;
+                if (*(int*)(a + 6) != *(int*)(b + 6)) return false;
+                if (*(int*)(a + 8) != *(int*)(b + 8)) return false;
+                a += 10; b += 10; length -= 10;
+            }
+#endif
+
+            // This depends on the fact that the String objects are
+            // always zero terminated and that the terminating zero is not included
+            // in the length. For odd string sizes, the last compare will include
+            // the zero terminator.
+            while (length > 0)
+            {
+                if (*(int*)a != *(int*)b) break;
+                a += 2; b += 2; length -= 2;
+            }
+
+            return length <= 0;
+        }
+    }
+
+    private static bool EqualsFast(string str1, string str2)
+    {
+        int str1Length = str1.Length;
+        return str1Length == str2.Length && EqualsHelper(str1, str2, str1Length);
+    }
+
     // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
     // new title-sort classes in a loop!
     private static int TitleCompare(FanMission x, FanMission y)
     {
-        static int TitleOrFallback(
-            string title1,
-            string title2,
-            FanMission fm1,
-            FanMission fm2,
-            bool compareTitles = true,
-            int xStart = 0,
-            int yStart = 0)
+        string title1 = x.Title;
+        string title2 = y.Title;
+
+        int title1Length = title1.Length;
+        int title2Length = title2.Length;
+
+        /*
+        Domain knowledge:
+        -The two strings are never the same reference
+        -Neither string is null
+        -The two strings are unlikely to be equal - a char-wise equality check is likely to quit early
+        Elide the reference equality and null checks and use the copied-out equals helper, and we save a few dozen
+        ms on the huge set.
+        */
+        if (title1Length == title2Length && EqualsHelper(title1, title2, title1Length))
         {
-            int ret;
-            if (compareTitles)
-            {
-                ret = xStart == 0 && yStart == 0
-                    ? string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase)
-                    : string.Compare(title1, xStart, title2, yStart, Math.Max(title1.Length, title2.Length),
-                        StringComparison.InvariantCultureIgnoreCase);
-                if (ret != 0) return ret;
-            }
-
-            ret = string.Compare(fm1.Archive, fm2.Archive, StringComparison.InvariantCultureIgnoreCase);
-
-            return ret != 0
-                ? ret
-                : string.Compare(fm1.InstalledDir, fm2.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
+            int earlyRet = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+            return earlyRet != 0
+                ? earlyRet
+                : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        if (x.Title == y.Title) return TitleOrFallback(x.Title, y.Title, x, y, compareTitles: false);
-        if (x.Title.IsEmpty()) return -1;
-        if (y.Title.IsEmpty()) return 1;
+        if (title1Length == 0) return -1;
+        if (title2Length == 0) return 1;
 
-        int xStart = 0;
-        int yStart = 0;
+        int ret;
 
         if (Config.EnableArticles)
         {
+            int xStart = 0;
+            int yStart = 0;
+
             bool xArticleSet = false;
             bool yArticleSet = false;
 
-            foreach (string article in Config.Articles)
+            for (int i = 0; i < Config.Articles.Count; i++)
             {
+                string article = Config.Articles[i];
                 int aLen = article.Length;
 
-                if (!xArticleSet && x.Title.StartsWithIPlusWhiteSpace(article, aLen))
+                if (!xArticleSet && title1.StartsWithIPlusWhiteSpace(article, aLen))
                 {
                     xStart = aLen + 1;
                     xArticleSet = true;
                 }
-                if (!yArticleSet && y.Title.StartsWithIPlusWhiteSpace(article, aLen))
+                if (!yArticleSet && title2.StartsWithIPlusWhiteSpace(article, aLen))
                 {
                     yStart = aLen + 1;
                     yArticleSet = true;
                 }
             }
+
+            ret = (xStart | yStart) == 0
+                ? string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase)
+                : string.Compare(title1, xStart, title2, yStart, Math.Max(title1Length, title2Length),
+                    StringComparison.InvariantCultureIgnoreCase);
+        }
+        else
+        {
+            ret = string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        return TitleOrFallback(x.Title, y.Title, x, y, xStart: xStart, yStart: yStart);
+        if (ret != 0) return ret;
+
+        ret = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+
+        return ret != 0
+            ? ret
+            : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #endregion
@@ -184,7 +256,7 @@ internal static class Comparers
             int ret =
                 x.Installed == y.Installed ? TitleCompare(x, y) :
                 // Installed goes on top, non-installed (blank icon) goes on bottom
-                x.Installed && !y.Installed ? -1 : 1;
+                x.Installed ? -1 : 1;
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -212,7 +284,7 @@ internal static class Comparers
             string yArchive = y.DisplayArchive;
 
             int ret =
-                xArchive == yArchive ? TitleCompare(x, y) :
+                EqualsFast(xArchive, yArchive) ? TitleCompare(x, y) :
                     string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
@@ -223,11 +295,14 @@ internal static class Comparers
     {
         public int Compare(FanMission x, FanMission y)
         {
+            string xAuthor = x.Author;
+            string yAuthor = y.Author;
+
             int ret =
-                x.Author == y.Author ? TitleCompare(x, y) :
-                x.Author.IsEmpty() ? -1 :
-                y.Author.IsEmpty() ? 1 :
-                string.Compare(x.Author, y.Author, StringComparison.InvariantCultureIgnoreCase);
+                EqualsFast(xAuthor, yAuthor) ? TitleCompare(x, y) :
+                xAuthor.Length == 0 ? -1 :
+                yAuthor.Length == 0 ? 1 :
+                string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -416,14 +491,33 @@ internal static class Comparers
     {
         public int Compare(FanMission x, FanMission y)
         {
-            int ret =
-                x.DisableAllMods && !y.DisableAllMods ? -1 :
-                !x.DisableAllMods && y.DisableAllMods ? 1 :
-                (x.DisableAllMods && y.DisableAllMods) || x.DisabledMods == y.DisabledMods ? TitleCompare(x, y) :
-                // Sort this column content-first for better UX
-                x.DisabledMods.IsEmpty() ? 1 :
-                y.DisabledMods.IsEmpty() ? -1 :
-                string.Compare(x.DisabledMods, y.DisabledMods, StringComparison.InvariantCultureIgnoreCase);
+            int ret;
+            if (x.DisableAllMods && !y.DisableAllMods)
+            {
+                ret = -1;
+            }
+            else
+            {
+                if (!x.DisableAllMods && y.DisableAllMods)
+                {
+                    ret = 1;
+                }
+                else
+                {
+                    string xDisabledMods = x.DisabledMods;
+                    string yDisabledMods = y.DisabledMods;
+
+                    ret = (x.DisableAllMods && y.DisableAllMods) || EqualsFast(xDisabledMods, yDisabledMods)
+                        ? TitleCompare(x, y)
+                        // Sort this column content-first for better UX
+                        : xDisabledMods.Length == 0
+                            ? 1
+                            : yDisabledMods.Length == 0
+                                ? -1
+                                : string.Compare(xDisabledMods, yDisabledMods,
+                                    StringComparison.InvariantCultureIgnoreCase);
+                }
+            }
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -433,12 +527,15 @@ internal static class Comparers
     {
         public int Compare(FanMission x, FanMission y)
         {
+            string xCommentSingleLine = x.CommentSingleLine;
+            string yCommentSingleLine = y.CommentSingleLine;
+
             int ret =
-                x.CommentSingleLine == y.CommentSingleLine ? TitleCompare(x, y) :
+                EqualsFast(xCommentSingleLine, yCommentSingleLine) ? TitleCompare(x, y) :
                 // Sort this column content-first for better UX
-                x.CommentSingleLine.IsEmpty() ? 1 :
-                y.CommentSingleLine.IsEmpty() ? -1 :
-                string.Compare(x.CommentSingleLine, y.CommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
+                xCommentSingleLine.Length == 0 ? 1 :
+                yCommentSingleLine.Length == 0 ? -1 :
+                string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
             return SortDirection == SortDirection.Ascending ? ret : -ret;
         }
