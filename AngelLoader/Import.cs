@@ -196,7 +196,7 @@ internal static class Import
                         Doing a find after a scan. I forgot exactly why. Reasons I thought of:
                         -I might be doing it to get rid of any duplicates or bad data that may have been imported?
                         -2020-02-14: I'm also doing this to properly update the tags. Without this the imported
-                        tags wouldn't work because they're only in TagsString and blah blah blah.
+                         tags wouldn't work because they're only in TagsString and blah blah blah.
                         -But couldn't I just call the tag list updater?
                         -Refreshes the TDM ini list, deduping any new name collisions there may now be.
                         -This also updates the FM stats on the UI, and anything else that FindFMs() might update.
