@@ -407,7 +407,7 @@ sealed partial class MainForm
         this.FMsDGV.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
         this.FMsDGV.RowHeadersVisible = false;
         this.FMsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        this.FMsDGV.Size = new System.Drawing.Size(1114, 282);
+        this.FMsDGV.Size = new System.Drawing.Size(1109, 282);
         this.FMsDGV.StandardTab = true;
         this.FMsDGV.TabIndex = 0;
         this.FMsDGV.VirtualMode = true;
