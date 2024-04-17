@@ -318,7 +318,7 @@ public sealed partial class MainForm
         FMsDGV.ReadOnly = true;
         FMsDGV.RowHeadersVisible = false;
         FMsDGV.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-        FMsDGV.Size = new Size(1114, 282);
+        FMsDGV.Size = new Size(1109, 282);
         FMsDGV.StandardTab = true;
         FMsDGV.TabIndex = 0;
         FMsDGV.VirtualMode = true;
