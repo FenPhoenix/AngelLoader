@@ -1643,23 +1643,36 @@ public sealed partial class RtfToTextConverter
         _fldinstSymbolFontName.ClearFast();
 
         int param;
-
-        char ch = (char)_rtfBytes[CurrentPos++];
+        int i;
 
         #region Check for SYMBOL instruction
 
-        // Straight-up just check for S, because SYMBOL is the only word we care about.
-        if (ch != 'S') return RewindAndSkipGroup();
+        if (CurrentPos > _rtfBytes.Length - 8) return RewindAndSkipGroup();
 
-        int i;
-        for (i = 0; i < 6; i++, ch = (char)_rtfBytes[CurrentPos++])
+        // Compare the ulong-format "SYMBOLXX" where X is any byte. Mask off the last two bytes, but it's
+        // little-endian so the mask looks backwards.
+
+        // Use the ulong path even on 32-bit, because that still has to be faster than a 6-iteration for loop
+        // with bounds checking and all, right? Anyway, there's no measurable perf difference between this and
+        // a 2-uint version on 32-bit.
+
+        const ulong SYMBOLKeywordAsULong = 0x00004C4F424D5953;
+
+        ulong SYMBOLKeyword = Unsafe.ReadUnaligned<ulong>(ref _rtfBytes.Array[CurrentPos]);
+
+        SYMBOLKeyword &= 0x0000FFFFFFFFFFFF;
+        if (SYMBOLKeyword != SYMBOLKeywordAsULong)
         {
-            if (ch != _SYMBOLChars[i]) return RewindAndSkipGroup();
+            // Manual return to match previous behavior more-or-less (don't rewind too far)
+            _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+            return RtfError.OK;
         }
+
+        CurrentPos += 7;
 
         #endregion
 
-        ch = (char)_rtfBytes[CurrentPos++];
+        char ch = (char)_rtfBytes[CurrentPos++];
 
         bool numIsHex = false;
         int negateNum = 0;

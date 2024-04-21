@@ -246,7 +246,7 @@ public sealed partial class MainForm : Form
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-09-13_WC_SneakingthroughV__Sneaking through Venice.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2006-07-25_DarkMessiah_bassilu__DarkMessiah.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__10Rooms_Hammered_EnglishV1_0__FmInfo-en.rtf";
-        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-01-25_c4burricksheadinnv2__entry.rtf";
+        string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-01-25_c4burricksheadinnv2__entry.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-04-08_King'sStory_KS__KSreadme.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__7SoM_v11__Seven Shades Readme.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2000-12-30_Uneaffaireenor__Readme.rtf";
@@ -262,7 +262,7 @@ public sealed partial class MainForm : Form
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_An_Enigmatic_Treasure___TDP20AC_An_Enigmatic_Treasure_With_A_Recondite_Discovery.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__UpsideDown__Readme.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\___test___!!!TLLK_v1_1__The Last Lighthouse Keeper.rtf";
-        string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_3.rtf";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!!!!!!_custom_3.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\!!!!!!!!!!!!!!!!!__MSG_final__FMInfo-De - Copy.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2007-03-13_DanceWithTheDead_v1__DwtD_Readme.rtf";
         using var fs = File.OpenRead(file);

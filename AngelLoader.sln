@@ -288,10 +288,10 @@ Global
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing_NoAsserts|x86.Build.0 = Release|Any CPU
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|Any CPU.ActiveCfg = Release|Any CPU
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|Any CPU.Build.0 = Release|Any CPU
-		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x64.ActiveCfg = Release|Any CPU
-		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x64.Build.0 = Release|Any CPU
-		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x86.ActiveCfg = Release|Any CPU
-		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x86.Build.0 = Release|Any CPU
+		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x64.ActiveCfg = Release|x64
+		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x64.Build.0 = Release|x64
+		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x86.ActiveCfg = Release|x86
+		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release_Testing|x86.Build.0 = Release|x86
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C3EF0A7F-7950-423A-A6EF-03051579153B}.Release|x64.ActiveCfg = Release|Any CPU
