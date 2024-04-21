@@ -5324,6 +5324,8 @@ public sealed partial class MainForm : DarkFormBase,
     {
         FMsDGV.CancelColumnResize();
 
+        MainSplitContainer.CancelResize();
+
         for (int i = 0; i < FormsData.WhichTabCount; i++)
         {
             FMTabControlGroup group = GetFMTabControlGroup((WhichTabControl)i);
