@@ -337,8 +337,7 @@ internal static class FMScan
 
                             if (gameSup)
                             {
-                                sel.AltTitles.ClearAndAdd_Single(sel.Title);
-                                sel.AltTitles.AddRange(scannedFM.AlternateTitles);
+                                sel.AltTitles.ClearAndAddTitleAndAltTitles(sel.Title, scannedFM.AlternateTitles);
                             }
                             else
                             {

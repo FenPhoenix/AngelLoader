@@ -99,44 +99,22 @@ public sealed class AltTitlesList
         ++Count;
     }
 
-    public void ClearAndAdd_Single(string str)
+    public void ClearAndAddTitleAndAltTitles(string title, string[] altTitles)
     {
-        if (_values is null or string)
-        {
-            _values = str;
-        }
-        else
-        {
-            InitValuesToList();
-            Unsafe.As<List<string>>(_values).ClearAndAdd_Single(str);
-        }
-    }
+        _values = title;
+        Count = 1;
 
-    public void AddRange(string[] collection)
-    {
-        if (collection.Length == 1)
+        if (altTitles.Length == 0) return;
+
+        string? prevSingle = _values as string;
+        InitValuesToList();
+        List<string> list = Unsafe.As<List<string>>(_values);
+        if (prevSingle != null)
         {
-            if (_values is null or string)
-            {
-                _values = collection[0];
-            }
-            else
-            {
-                List<string> list = Unsafe.As<List<string>>(_values);
-                list.Add(collection[0]);
-            }
+            list.Add(prevSingle);
         }
-        else if (collection.Length > 1)
-        {
-            string? prevSingle = _values as string;
-            InitValuesToList();
-            List<string> list = Unsafe.As<List<string>>(_values);
-            if (prevSingle != null)
-            {
-                list.Add(prevSingle);
-            }
-            list.AddRange(collection);
-        }
+        list.AddRange(altTitles);
+        Count += altTitles.Length;
     }
 
     public void Clear()
@@ -149,6 +127,7 @@ public sealed class AltTitlesList
         {
             Unsafe.As<List<string>>(_values).Clear();
         }
+        Count = 0;
     }
 
     public string this[int index]
