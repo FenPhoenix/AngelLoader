@@ -1026,9 +1026,10 @@ internal static class ControlUtils
 
     public static Bitmap? CloneWithOpacity(this Bitmap bitmap, float opacity)
     {
+        Bitmap? retBmp = null;
         try
         {
-            Bitmap retBmp = new(bitmap.Width, bitmap.Height);
+            retBmp = new Bitmap(bitmap.Width, bitmap.Height);
 
             using Graphics g = Graphics.FromImage(retBmp);
 
@@ -1051,6 +1052,7 @@ internal static class ControlUtils
         }
         catch
         {
+            retBmp?.Dispose();
             return null;
         }
     }
