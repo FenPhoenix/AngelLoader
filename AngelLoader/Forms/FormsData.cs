@@ -85,6 +85,13 @@ public sealed class BackingTab(TabPage tabPage)
 
 public sealed class TabControlImageCursor : IDisposable
 {
+    /*
+    On fail, we're going to set Cursor to Cursors.Default. But we need to make sure we don't dispose it in that
+    case, or it will dispose the static default cursor object and make it invisible.
+    We could say "Cursor = new Cursor(Cursors.Default.CopyHandle())", but that's another point of failure, so
+    let's just set a bool and only dispose the cursor if it's custom and not one of the static built-in ones.
+    */
+    private readonly bool _cursorIsCustom;
     private readonly Bitmap? _bitmap;
     public readonly Cursor Cursor;
 
@@ -173,15 +180,19 @@ public sealed class TabControlImageCursor : IDisposable
             {
                 _bitmap = bmpFinal;
                 Cursor = cursor;
+                _cursorIsCustom = true;
             }
             else
             {
+                _cursorIsCustom = false;
+                bmpFinal?.Dispose();
                 _bitmap = null;
                 Cursor = Cursors.Default;
             }
         }
         catch
         {
+            _cursorIsCustom = false;
             Cursor = Cursors.Default;
             _bitmap = null;
         }
@@ -193,7 +204,7 @@ public sealed class TabControlImageCursor : IDisposable
 
     public void Dispose()
     {
-        Cursor.Dispose();
+        if (_cursorIsCustom) Cursor.Dispose();
         _bitmap?.Dispose();
     }
 }
