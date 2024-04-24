@@ -918,6 +918,8 @@ internal static class ControlUtils
                     : LText.Global.UninstallFM;
     }
 
+    internal static string ToStringOrEmpty(this object? obj) => obj?.ToString() ?? "";
+
     internal static bool SystemThemeHasChanged(ref Message m, out VisualTheme newTheme)
     {
         if (m.Msg == Native.WM_SETTINGCHANGE &&

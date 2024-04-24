@@ -1255,13 +1255,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 OutConfig.DateCustomFormatString = GetFormattedCustomDateString();
             }
 
-            OutConfig.DateCustomFormat1 = AppearancePage.Date1ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat1 = AppearancePage.Date1ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator1 = AppearancePage.DateSeparator1TextBox.Text;
-            OutConfig.DateCustomFormat2 = AppearancePage.Date2ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat2 = AppearancePage.Date2ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator2 = AppearancePage.DateSeparator2TextBox.Text;
-            OutConfig.DateCustomFormat3 = AppearancePage.Date3ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat3 = AppearancePage.Date3ComboBox.SelectedItem.ToStringOrEmpty();
             OutConfig.DateCustomSeparator3 = AppearancePage.DateSeparator3TextBox.Text;
-            OutConfig.DateCustomFormat4 = AppearancePage.Date4ComboBox.SelectedItem.ToString();
+            OutConfig.DateCustomFormat4 = AppearancePage.Date4ComboBox.SelectedItem.ToStringOrEmpty();
 
             #endregion
 
@@ -1778,13 +1778,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     private string GetFormattedCustomDateString() =>
-        AppearancePage.Date1ComboBox.SelectedItem +
+        AppearancePage.Date1ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator1TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date2ComboBox.SelectedItem +
+        AppearancePage.Date2ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator2TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date3ComboBox.SelectedItem +
+        AppearancePage.Date3ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator3TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date4ComboBox.SelectedItem;
+        AppearancePage.Date4ComboBox.SelectedItem.ToStringOrEmpty();
 
     private bool FormatAndTestDate(out string formatString, out string exampleDateString)
     {

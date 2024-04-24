@@ -365,7 +365,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
         if (e.Index >= 0 && e.Index < Items.Count)
         {
-            string text = Items[e.Index].ToString();
+            string text = Items[e.Index].ToStringOrEmpty();
 
             const int padding = -1;
 
