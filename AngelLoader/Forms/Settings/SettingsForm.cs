@@ -1768,13 +1768,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     private string GetFormattedCustomDateString() =>
-        AppearancePage.Date1ComboBox.SelectedItem +
+        AppearancePage.Date1ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator1TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date2ComboBox.SelectedItem +
+        AppearancePage.Date2ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator2TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date3ComboBox.SelectedItem +
+        AppearancePage.Date3ComboBox.SelectedItem.ToStringOrEmpty() +
         AppearancePage.DateSeparator3TextBox.Text.EscapeAllChars() +
-        AppearancePage.Date4ComboBox.SelectedItem;
+        AppearancePage.Date4ComboBox.SelectedItem.ToStringOrEmpty();
 
     private bool FormatAndTestDate(out string formatString, out string exampleDateString)
     {
