@@ -5533,7 +5533,7 @@ public sealed partial class MainForm : DarkFormBase,
     ShowUpdateAvailableDialog()
     {
         using var f = new UpdateForm();
-        return (f.ShowDialogDark() == DialogResult.OK, f.NoUpdatesFound, f.UpdateInfo);
+        return (f.ShowDialogDark(this) == DialogResult.OK, f.NoUpdatesFound, f.UpdateInfo);
     }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
