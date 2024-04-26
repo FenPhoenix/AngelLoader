@@ -1116,7 +1116,7 @@ public sealed partial class RtfToTextConverter
                     ChangeProperty((Property)symbol.Index, param);
                     return RtfError.OK;
                 case KeywordType.Character:
-                    ParseChar((char)symbol.Index);
+                    ParseChar_Explicit((char)symbol.Index);
                     return RtfError.OK;
                 case KeywordType.Destination:
                     return symbol.Index == (int)DestinationType.SkippableHex
@@ -1312,10 +1312,11 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ParseChar(char ch)
+    private void ParseChar_Explicit(char ch)
     {
-        if (ch != '\0' &&
-            _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
+        // No need to check for null, because only explicit chars will be passed (not unknown ones) and we know
+        // none of them are null.
+        if (_ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
             // Support bare characters that are supposed to be displayed in a symbol font.
             GroupStack groupStack = _ctx.GroupStack;
