@@ -2,6 +2,7 @@
 Perf log:
 
              FMInfoGen | RTF_ToPlainTextTest
+2024-04-26   ?           1915MB/s (x86) / 2085MB/s (x64) / 3362MB/s (.NET 8 x64)
 2023-11-07   ?           1631MB/s (x86) / 2009MB/s (x64)
 2023-11-06   ?           1539MB/s (x86) / 1872MB/s (x64)
 2023-11-06   ?           1471MB/s (x86) / 1716MB/s (x64)
