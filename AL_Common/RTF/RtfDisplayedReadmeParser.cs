@@ -131,6 +131,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
+                    if (_groupCount == 0) return RtfError.OK;
                     break;
                 case '\r':
                 case '\n':
