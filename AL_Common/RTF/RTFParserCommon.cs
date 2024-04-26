@@ -634,6 +634,19 @@ public static partial class RTFParserCommon
         {
             Symbol?[] ret = new Symbol?[256];
             ret['\''] = new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar);
+            /*
+            @RTF(KeywordType.Character and symbol fonts):
+            \, {, and } are the only KeywordType.Character chars that can be in a symbol font. Everything else is
+            either below 0x20 or more than one byte, which in either case means they can't be symbol font chars.
+            ~ is nominally a non-breaking space, and in RichEdit is displayed as such (or at least whitespace of
+            some kind), but in LibreOffice is displayed as a square dot when set to Wingdings (as expected).
+            Since RichEdit doesn't treat it as a symbol font character we should in theory match its behavior,
+            but we convert it to an ASCII space anyway so the whole thing is moot currently. But just in case we
+            decide to change it, there's the info.
+
+            We could maybe figure out a way to not have to do the symbol font check/conversion in the common case
+            where we don't need to, is the point of this whole soliloquy.
+            */
             ret['\\'] = new Symbol("\\", 0, false, KeywordType.Character, '\\');
             ret['{'] = new Symbol("{", 0, false, KeywordType.Character, '{');
             ret['}'] = new Symbol("}", 0, false, KeywordType.Character, '}');
