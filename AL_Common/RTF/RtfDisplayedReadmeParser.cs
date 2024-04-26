@@ -181,9 +181,6 @@ public sealed partial class RtfDisplayedReadmeParser
                 if (param < 0) return RtfError.AbortedForSafety;
                 CurrentPos += param;
                 break;
-            case SpecialType.SkipDest:
-                _skipDestinationIfUnknown = true;
-                break;
             case SpecialType.ColorTable:
                 // Spec is to ignore any further color tables after the first one
                 if (_getColorTable && !_foundColorTable)
