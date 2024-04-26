@@ -830,7 +830,7 @@ public static partial class RTFParserCommon
 
     #region Enums
 
-    public enum SpecialType
+    public enum SpecialType : byte
     {
         HeaderCodePage,
         DefaultFont,
@@ -843,7 +843,7 @@ public static partial class RTFParserCommon
         ColorTable
     }
 
-    public enum KeywordType
+    public enum KeywordType : byte
     {
         Character,
         Property,
@@ -851,7 +851,7 @@ public static partial class RTFParserCommon
         Special
     }
 
-    public enum DestinationType
+    public enum DestinationType : byte
     {
         FieldInstruction,
         /// <summary>
@@ -886,7 +886,7 @@ public static partial class RTFParserCommon
     }
 
     private const int _propertiesLen = 4;
-    public enum Property
+    public enum Property : byte
     {
         Hidden,
         UnicodeCharSkipCount,
@@ -904,13 +904,13 @@ public static partial class RTFParserCommon
         Webdings
     }
 
-    public enum RtfDestinationState
+    public enum RtfDestinationState : byte
     {
         Normal,
         Skip
     }
 
-    public enum RtfError
+    public enum RtfError : byte
     {
         /// <summary>
         /// No error.
