@@ -1066,13 +1066,14 @@ public sealed partial class RtfToTextConverter
         SymbolFont symbolFont = _ctx.GroupStack.CurrentSymbolFont;
         if (symbolFont > SymbolFont.Unset)
         {
+            uint[] table = _symbolFontTables[(int)symbolFont];
             while (CurrentPos < _rtfBytes.Length)
             {
                 char ch = (char)_rtfBytes.Array[CurrentPos++];
                 if (!IsNonPlainText[ch])
                 {
                     // Support bare characters that are supposed to be displayed in a symbol font.
-                    GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
+                    GetCharFromConversionList_Byte((byte)ch, table, out ListFast<char> result);
                     _plainText.AddRange(result, result.Count);
                 }
                 else
