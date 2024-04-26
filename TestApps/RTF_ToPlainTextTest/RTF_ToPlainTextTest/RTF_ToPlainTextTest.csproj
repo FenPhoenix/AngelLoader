@@ -10,8 +10,8 @@
     <Platforms>x64</Platforms>
 
 	<!-- Get reasonable perf right off the bat -->
-	<TieredCompilation>false</TieredCompilation>
-	<TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+	<!--<TieredCompilation>false</TieredCompilation>
+	<TieredCompilationQuickJit>false</TieredCompilationQuickJit>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
