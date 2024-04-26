@@ -854,6 +854,20 @@ public sealed partial class RtfToTextConverter
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
     };
 
+    private static bool[] InitIsNonPlainTextBytes()
+    {
+        bool[] ret = new bool[256];
+        ret['\\'] = true;
+        ret['{'] = true;
+        ret['}'] = true;
+        ret['\r'] = true;
+        ret['\n'] = true;
+        ret['\0'] = true;
+        return ret;
+    }
+
+    private readonly bool[] IsNonPlainText = InitIsNonPlainTextBytes();
+
     #endregion
 
     #region Preallocated char arrays
@@ -1007,20 +1021,83 @@ public sealed partial class RtfToTextConverter
                     if (_ctx.GroupStack.Count == 0) return RtfError.StackUnderflow;
                     --_ctx.GroupStack.Count;
                     _groupCount--;
+                    if (_groupCount == 0) return RtfError.OK;
                     break;
                 case '\r':
                 case '\n':
                     break;
-                default:
-                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                case not '\0':
+                {
+                    GroupStack groupStack = _ctx.GroupStack;
+                    if (groupStack.CurrentRtfDestinationState == RtfDestinationState.Normal &&
+                        groupStack.CurrentProperties[(int)Property.Hidden] == 0)
                     {
-                        ParseChar_Byte(ch);
+                        if (IsNonPlainText[_rtfBytes.Array[CurrentPos]])
+                        {
+                            // Support bare characters that are supposed to be displayed in a symbol font.
+                            SymbolFont symbolFont = groupStack.CurrentSymbolFont;
+                            if (symbolFont > SymbolFont.Unset)
+                            {
+                                GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
+                                _plainText.AddRange(result, result.Count);
+                            }
+                            else
+                            {
+                                _plainText.Add(ch);
+                            }
+                        }
+                        else
+                        {
+                            HandlePlainTextRun();
+                        }
                     }
                     break;
+                }
             }
         }
 
         return _groupCount > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
+    }
+
+    private void HandlePlainTextRun()
+    {
+        CurrentPos--;
+
+        SymbolFont symbolFont = _ctx.GroupStack.CurrentSymbolFont;
+        if (symbolFont > SymbolFont.Unset)
+        {
+            while (CurrentPos < _rtfBytes.Length)
+            {
+                char ch = (char)_rtfBytes.Array[CurrentPos++];
+                if (!IsNonPlainText[ch])
+                {
+                    // Support bare characters that are supposed to be displayed in a symbol font.
+                    GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
+                    _plainText.AddRange(result, result.Count);
+                }
+                else
+                {
+                    CurrentPos--;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            while (CurrentPos < _rtfBytes.Length)
+            {
+                char ch = (char)_rtfBytes.Array[CurrentPos++];
+                if (!IsNonPlainText[ch])
+                {
+                    _plainText.Add(ch);
+                }
+                else
+                {
+                    CurrentPos--;
+                    break;
+                }
+            }
+        }
     }
 
     #region Act on keywords
@@ -1248,27 +1325,6 @@ public sealed partial class RtfToTextConverter
                 {
                     _plainText.AddRange(result, result.Count);
                 }
-            }
-            else
-            {
-                _plainText.Add(ch);
-            }
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ParseChar_Byte(char ch)
-    {
-        if (ch != '\0' &&
-            _ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
-        {
-            // Support bare characters that are supposed to be displayed in a symbol font.
-            GroupStack groupStack = _ctx.GroupStack;
-            SymbolFont symbolFont = groupStack.CurrentSymbolFont;
-            if (symbolFont > SymbolFont.Unset)
-            {
-                GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
-                _plainText.AddRange(result, result.Count);
             }
             else
             {
