@@ -68,6 +68,14 @@ public sealed partial class RtfToTextConverter
 
              So just go straight to dispatching without looking for a param and without eating the space.
             */
+
+            // Fast path for destination marker - claws us back a small amount of perf
+            if (ch == '*')
+            {
+                _skipDestinationIfUnknown = true;
+                return RtfError.OK;
+            }
+
             symbol = Symbols.LookUpControlSymbol(ch);
         }
         else

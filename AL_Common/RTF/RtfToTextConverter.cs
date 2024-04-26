@@ -1081,9 +1081,6 @@ public sealed partial class RtfToTextConverter
             case SpecialType.HexEncodedChar:
                 HandleHexRun();
                 break;
-            case SpecialType.SkipDest:
-                _skipDestinationIfUnknown = true;
-                break;
             case SpecialType.UnicodeChar:
                 SkipUnicodeFallbackChars();
                 UnicodeBufferAdd(param);

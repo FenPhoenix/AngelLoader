@@ -44,7 +44,6 @@ public static partial class RTFParserCommon
         #region Encoded characters
 
         new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
-        new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar),
         new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar),
 
         #endregion
@@ -71,7 +70,6 @@ public static partial class RTFParserCommon
         new Symbol("emspace", 0, false, KeywordType.Character, ' '),
         new Symbol("enspace", 0, false, KeywordType.Character, ' '),
         new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("~", 0, false, KeywordType.Character, ' '),
         // NOTE: Maybe just convert these all to ASCII equivalents as well?
         new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
         new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
@@ -83,7 +81,6 @@ public static partial class RTFParserCommon
         #endregion
 
         new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
-        new Symbol("*", 0, false, KeywordType.Special, (int)SpecialType.SkipDest),
 
         // We need to do stuff with this (SYMBOL instruction)
         new Symbol("fldinst", 0, false, KeywordType.Destination, (int)DestinationType.FieldInstruction),
@@ -155,14 +152,6 @@ public static partial class RTFParserCommon
         new Symbol("cell", 0, false, KeywordType.Character, ' '),
 
         #endregion
-
-        #endregion
-
-        #region RTF reserved character escapes
-
-        new Symbol("{", 0, false, KeywordType.Character, '{'),
-        new Symbol("}", 0, false, KeywordType.Character, '}'),
-        new Symbol("\\", 0, false, KeywordType.Character, '\\'),
 
         #endregion
     };
