@@ -1215,7 +1215,7 @@ public sealed partial class RtfToTextConverter
                         int defaultFontNum = _ctx.Header.DefaultFontNum;
                         if (_ctx.FontEntries.TryGetValue(defaultFontNum, out FontEntry? fontEntry))
                         {
-                            SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                            SymbolFont symbolFont = fontEntry.SymbolFont;
                             // Start at 1 because the "base" group is still inside an opening { so it's
                             // really group 1.
                             for (int i = 1; i < _groupCount + 1; i++)
@@ -1246,11 +1246,80 @@ public sealed partial class RtfToTextConverter
                 case '\n':
                     break;
                 default:
-                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                {
+                    const ulong WingdingBytes = 0x676E6964676E6957;
+                    const ushort sAndSemicolonBytes = 0x3B73;
+                    const ulong WebdingsBytes = 0x73676E6964626557;
+                    const ulong symbolAndSemicolonBytes = 0x003B6C6F626D7953;
+
+                    FontEntry? fontEntry = _ctx.FontEntries.Top;
+                    if (CurrentPos >= _rtfBytes.Length - 16)
                     {
-                        _ctx.FontEntries.Top?.AppendNameChar(ch);
+                        if (fontEntry != null)
+                        {
+                            fontEntry.SymbolFont = SymbolFont.None;
+                        }
+                        break;
+                    }
+                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal &&
+                        fontEntry is { SymbolFont: SymbolFont.Unset })
+                    {
+                        CurrentPos--;
+
+                        ulong fontName1 = Unsafe.ReadUnaligned<ulong>(ref _rtfBytes.Array[CurrentPos]);
+                        switch (fontName1)
+                        {
+                            case WingdingBytes:
+                            {
+                                ushort WingdingsEnd = Unsafe.ReadUnaligned<ushort>(ref _rtfBytes.Array[CurrentPos + 8]);
+                                if (WingdingsEnd == sAndSemicolonBytes)
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.Wingdings;
+                                    CurrentPos += 10;
+                                }
+                                else
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.None;
+                                    int index = Array.IndexOf(_rtfBytes.Array, ';', CurrentPos, _rtfBytes.Length - CurrentPos);
+                                    if (index > -1) CurrentPos = index;
+                                }
+                                break;
+                            }
+                            case WebdingsBytes:
+                            {
+                                byte semicolon = Unsafe.ReadUnaligned<byte>(ref _rtfBytes.Array[CurrentPos + 8]);
+                                if (semicolon == ';')
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.Webdings;
+                                    CurrentPos += 9;
+                                }
+                                else
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.None;
+                                    int index = Array.IndexOf(_rtfBytes.Array, ';', CurrentPos, _rtfBytes.Length - CurrentPos);
+                                    if (index > -1) CurrentPos = index;
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                if ((fontName1 & 0x00FFFFFFFFFFFFFF) == symbolAndSemicolonBytes)
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.Symbol;
+                                    CurrentPos += 7;
+                                }
+                                else
+                                {
+                                    fontEntry.SymbolFont = SymbolFont.None;
+                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
+                                    if (index > -1) CurrentPos = index;
+                                }
+                                break;
+                            }
+                        }
                     }
                     break;
+                }
             }
         }
 
@@ -1279,7 +1348,7 @@ public sealed partial class RtfToTextConverter
                 // Support bare characters that are supposed to be displayed in a symbol font. We use a simple
                 // enum so that we don't have to do a dictionary lookup on every single character, but only
                 // once per font change.
-                _ctx.GroupStack.CurrentSymbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                _ctx.GroupStack.CurrentSymbolFont = fontEntry.SymbolFont;
             }
             // \fN supersedes \langN
             _ctx.GroupStack.CurrentProperties[(int)Property.Lang] = -1;
@@ -1375,7 +1444,7 @@ public sealed partial class RtfToTextConverter
                 }
                 else
                 {
-                    SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+                    SymbolFont symbolFont = fontEntry.SymbolFont;
                     if (symbolFont > SymbolFont.Unset)
                     {
                         for (int i = 0; i < _hexBuffer.Count; i++)
@@ -2120,21 +2189,6 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private SymbolFont GetSymbolFontTypeFromFontEntry(FontEntry fontEntry)
-    {
-        if (fontEntry.SymbolFont == SymbolFont.Unset)
-        {
-            fontEntry.SymbolFont =
-                fontEntry.NameEquals(_symbolChars) ? SymbolFont.Symbol :
-                fontEntry.NameEquals(_wingdingsChars) ? SymbolFont.Wingdings :
-                fontEntry.NameEquals(_webdingsChars) ? SymbolFont.Webdings :
-                SymbolFont.None;
-        }
-
-        return fontEntry.SymbolFont;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool GetCharFromConversionList_UInt(uint codePoint, uint[] fontTable, out ListFast<char> finalChars)
     {
         finalChars = _charGeneralBuffer;
@@ -2255,7 +2309,7 @@ public sealed partial class RtfToTextConverter
 
             // We already know our code point is within bounds of the array, because the arrays also go from
             // 0x20 - 0xFF, so no need to check.
-            SymbolFont symbolFont = GetSymbolFontTypeFromFontEntry(fontEntry);
+            SymbolFont symbolFont = fontEntry.SymbolFont;
             if (symbolFont > SymbolFont.Unset)
             {
                 returnCodePoint = _symbolFontTables[(int)symbolFont][returnCodePoint - 0x20];

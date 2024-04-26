@@ -270,7 +270,10 @@ public sealed partial class MainForm : Form
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2007-03-13_DanceWithTheDead_v1__DwtD_Readme.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\Document.rtf";
 
-        string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-10-24_ForgottenForest1__Las.txt";
+        //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2003-10-24_ForgottenForest1__Las.txt";
+
+        //___test___!!!Christmas_present_I__Christmas Present.rtf
+        string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\___test___!!!Christmas_present_I__Christmas Present.rtf";
 
         using var fs = File.OpenRead(file);
         byte[] array = new byte[fs.Length];

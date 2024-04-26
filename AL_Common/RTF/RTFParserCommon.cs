@@ -719,60 +719,17 @@ public static partial class RTFParserCommon
 
     public sealed class FontEntry
     {
-        // Use only as many chars as we need - "Wingdings" is 9 chars and is the longest we need
-        private const int _nameMaxLength = 9;
+        public int CodePage = -1;
 
         // We need to store names in case we get codepage 42 nonsense, we need to know which font to translate
         // to Unicode (Wingdings, Webdings, or Symbol)
-        private readonly char[] _name = new char[_nameMaxLength];
-        private int _nameCharPos;
-
-        private bool _nameDone;
-
-        public int CodePage = -1;
-
         public SymbolFont SymbolFont = SymbolFont.Unset;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Reset()
         {
-            _nameCharPos = 0;
-            _nameDone = false;
             CodePage = -1;
             SymbolFont = SymbolFont.Unset;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool NameEquals(char[] array2)
-        {
-            if (_nameCharPos != array2.Length) return false;
-
-            for (int i = 0; i < _nameCharPos; i++)
-            {
-                if (_name[i] != array2[i]) return false;
-            }
-
-            return true;
-        }
-
-        /*
-        @MEM(Rtf FontEntry name char[9]):
-        We could use just one char buffer and fill it with the name, then when we're done we convert it to a
-        SymbolFont enum and set it on the top font entry. Maybe we could even detect as we fill it out if it
-        can't be a supported symbol font name and early-out with setting SymbolFont.None right there.
-        */
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AppendNameChar(char c)
-        {
-            if (!_nameDone && _nameCharPos < _nameMaxLength)
-            {
-                if (c == ';')
-                {
-                    _nameDone = true;
-                    return;
-                }
-                _name[_nameCharPos++] = c;
-            }
         }
     }
 
@@ -937,7 +894,7 @@ public static partial class RTFParserCommon
         Lang
     }
 
-    public enum SymbolFont
+    public enum SymbolFont : byte
     {
         // Non-font values at the start, to avoid having to check the top bounds
         None,
