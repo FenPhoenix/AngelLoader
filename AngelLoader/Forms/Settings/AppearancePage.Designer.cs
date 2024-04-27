@@ -134,7 +134,7 @@ sealed partial class AppearancePage
             this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
             this.PlayWithoutFM_MultipleButtonsRadioButton.Name = "PlayWithoutFM_MultipleButtonsRadioButton";
             this.PlayWithoutFM_MultipleButtonsRadioButton.Size = new System.Drawing.Size(99, 17);
-            this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
+            this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 1;
             this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
             this.PlayWithoutFM_MultipleButtonsRadioButton.Text = "Multiple buttons";
             // 
@@ -616,7 +616,7 @@ sealed partial class AppearancePage
             this.FollowSystemThemeRadioButton.Location = new System.Drawing.Point(16, 72);
             this.FollowSystemThemeRadioButton.Name = "FollowSystemThemeRadioButton";
             this.FollowSystemThemeRadioButton.Size = new System.Drawing.Size(122, 17);
-            this.FollowSystemThemeRadioButton.TabIndex = 1;
+            this.FollowSystemThemeRadioButton.TabIndex = 2;
             this.FollowSystemThemeRadioButton.Text = "Follow system theme";
             // 
             // DarkThemeRadioButton
