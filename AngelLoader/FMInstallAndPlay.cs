@@ -1454,8 +1454,7 @@ internal static partial class FMInstallAndPlay
                 {
                     if (!File.Exists(gameExe))
                     {
-                        Log("Game executable not found.\r\n" +
-                            "Game executable: " + gameExe);
+                        fm.LogInfo("Game executable not found.\r\nGame executable: " + gameExe);
                         Core.Dialogs.ShowError(gameName + ":\r\n" +
                                                fm.GetId() + "\r\n" +
                                                LText.AlertMessages.Install_ExecutableNotFound);
