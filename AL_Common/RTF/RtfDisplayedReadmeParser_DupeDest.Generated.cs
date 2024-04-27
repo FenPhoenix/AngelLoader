@@ -2,6 +2,7 @@
 #define FenGen_RtfDuplicateDest
 
 using System;
+using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
@@ -37,6 +38,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ResetBase(in ArrayWithLength<byte> rtfBytes)
     {
         _ctx.Reset();
