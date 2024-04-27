@@ -104,7 +104,7 @@ sealed partial class AppearancePage
         // 
         this.PlayWithoutFM_MultipleButtonsRadioButton.AutoSize = true;
         this.PlayWithoutFM_MultipleButtonsRadioButton.Location = new System.Drawing.Point(16, 48);
-        this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 0;
+        this.PlayWithoutFM_MultipleButtonsRadioButton.TabIndex = 1;
         this.PlayWithoutFM_MultipleButtonsRadioButton.TabStop = true;
         // 
         // PlayWithoutFM_SingleButtonRadioButton
@@ -478,7 +478,7 @@ sealed partial class AppearancePage
         // 
         this.FollowSystemThemeRadioButton.AutoSize = true;
         this.FollowSystemThemeRadioButton.Location = new System.Drawing.Point(16, 72);
-        this.FollowSystemThemeRadioButton.TabIndex = 1;
+        this.FollowSystemThemeRadioButton.TabIndex = 2;
         // 
         // DarkThemeRadioButton
         // 
