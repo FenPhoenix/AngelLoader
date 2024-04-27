@@ -6,7 +6,7 @@
 		<UseWindowsForms>true</UseWindowsForms>
 		<Platforms>x64</Platforms>
 		<LangVersion>latest</LangVersion>
-		<Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts;RT_HeavyTests</Configurations>
+		<Configurations>Debug;Release;Release_Beta;Release_Public;Release_Testing;RT_StartupOnly;Release_Testing_NoAsserts;RT_HeavyTests;Debug_UIWork</Configurations>
 		<StartupObject>AngelLoader.Program</StartupObject>
 		<ApplicationIcon>Resources\AngelLoader.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
@@ -35,6 +35,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<DefineConstants>DEBUG;TRACE;Debug;$(SmartNewColumnInsert)</DefineConstants>
+		<OutputPath>bin\x64\Debug\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_UIWork|x64'">
 		<DefineConstants>DEBUG;TRACE;Debug;$(SmartNewColumnInsert)</DefineConstants>
 		<OutputPath>bin\x64\Debug\</OutputPath>
 	</PropertyGroup>
@@ -122,14 +127,17 @@
 	<!--
 	Override the stock System.Drawing.Primitives.dll with our custom version that removes the [SuppressGCTransition]
     attribute from GetSysColor() in order to make the hook work again.
+	
+	But this doesn't work with UI designers, it can't find any methods in System.Drawing if this thing is being
+	replaced (I guess it gets replaced too late?). So use a separate profile just for UI work.
 	-->
 	<ItemGroup>
-		<Reference Include="System.Drawing.Primitives">
+		<Reference Condition="'$(Configuration)'!='Debug_UIWork'" Include="System.Drawing.Primitives">
 			<HintPath>..\bin_dependencies\System.Drawing.Primitives.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 
-	<Target Name="RemoveSystemDrawingPrimitives" AfterTargets="ResolveTargetingPackAssets" BeforeTargets="ResolvePackageFileConflicts">
+	<Target Condition="'$(Configuration)'!='Debug_UIWork'" Name="RemoveSystemDrawingPrimitives" AfterTargets="ResolveTargetingPackAssets" BeforeTargets="ResolvePackageFileConflicts">
 		<ItemGroup>
 			<ReferencesToExclude Include="@(Reference)" Condition="'%(Filename)' == 'System.Drawing.Primitives'" />
 			<Reference Remove="@(ReferencesToExclude)" />
