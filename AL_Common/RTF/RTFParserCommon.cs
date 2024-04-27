@@ -215,9 +215,9 @@ public static partial class RTFParserCommon
     {
         // SOA and removal of bounds checking through fixed-sized buffers improves perf
 
-        public unsafe struct IntArrayWrapper
+        public unsafe struct ByteArrayWrapper
         {
-            internal fixed int Array[MaxGroups];
+            internal fixed byte Array[MaxGroups];
         }
 
         public unsafe struct BoolArrayWrapper
@@ -228,9 +228,9 @@ public static partial class RTFParserCommon
         // Highest measured was 10
         public const int MaxGroups = 100;
 
-        private IntArrayWrapper RtfDestinationStates;
+        private ByteArrayWrapper RtfDestinationStates;
         private BoolArrayWrapper InFontTables;
-        public IntArrayWrapper SymbolFonts;
+        public ByteArrayWrapper SymbolFonts;
         public readonly int[][] Properties = new int[MaxGroups][];
 
         /// <summary>Do not modify!</summary>
@@ -264,7 +264,7 @@ public static partial class RTFParserCommon
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (RtfDestinationState)RtfDestinationStates.Array[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => RtfDestinationStates.Array[Count] = (int)value;
+            set => RtfDestinationStates.Array[Count] = (byte)value;
         }
 
         public unsafe bool CurrentInFontTable
@@ -280,7 +280,7 @@ public static partial class RTFParserCommon
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => (SymbolFont)SymbolFonts.Array[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => SymbolFonts.Array[Count] = (int)value;
+            set => SymbolFonts.Array[Count] = (byte)value;
         }
 
         public int[] CurrentProperties
