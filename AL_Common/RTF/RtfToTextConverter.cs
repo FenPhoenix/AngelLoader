@@ -1227,7 +1227,7 @@ public sealed partial class RtfToTextConverter
                                 if (fontNum == NoFontNumber)
                                 {
                                     properties[(int)Property.FontNum] = defaultFontNum;
-                                    _ctx.GroupStack.SymbolFonts.Array[i] = (int)symbolFont;
+                                    _ctx.GroupStack.SymbolFonts.Array[i] = (byte)symbolFont;
                                 }
                                 else
                                 {
