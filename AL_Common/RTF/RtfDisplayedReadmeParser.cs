@@ -150,7 +150,7 @@ public sealed partial class RtfDisplayedReadmeParser
         switch (symbol.KeywordType)
         {
             case KeywordType.Property:
-                if (_getLangs && _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+                if (_getLangs && !_ctx.GroupStack.CurrentSkipDest)
                 {
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     ChangeProperty((Property)symbol.Index, param);
@@ -159,12 +159,12 @@ public sealed partial class RtfDisplayedReadmeParser
             case KeywordType.Destination:
                 return symbol.Index == (int)DestinationType.SkippableHex
                     ? HandleSkippableHexData()
-                    : _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal
+                    : !_ctx.GroupStack.CurrentSkipDest
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
             case KeywordType.Special:
                 var specialType = (SpecialType)symbol.Index;
-                return _ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal ||
+                return !_ctx.GroupStack.CurrentSkipDest ||
                        specialType == SpecialType.SkipNumberOfBytes
                     ? DispatchSpecialKeyword(specialType, symbol, param)
                     : RtfError.OK;
@@ -268,7 +268,7 @@ public sealed partial class RtfDisplayedReadmeParser
             // TODO: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
             case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentSkipDest = true;
                 return RtfError.OK;
             default:
                 return RtfError.OK;

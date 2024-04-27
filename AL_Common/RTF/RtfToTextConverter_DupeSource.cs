@@ -125,7 +125,7 @@ public sealed partial class RtfToTextConverter
             // If this is a new destination
             if (_skipDestinationIfUnknown)
             {
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentSkipDest = true;
             }
             _skipDestinationIfUnknown = false;
             return RtfError.OK;

@@ -228,7 +228,7 @@ public static partial class RTFParserCommon
         // Highest measured was 10
         public const int MaxGroups = 100;
 
-        private ByteArrayWrapper RtfDestinationStates;
+        private BoolArrayWrapper SkipDestinations;
         private BoolArrayWrapper InFontTables;
         public ByteArrayWrapper SymbolFonts;
         public readonly int[][] Properties = new int[MaxGroups][];
@@ -247,7 +247,7 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void DeepCopyToNext()
         {
-            RtfDestinationStates.Array[Count + 1] = RtfDestinationStates.Array[Count];
+            SkipDestinations.Array[Count + 1] = SkipDestinations.Array[Count];
             InFontTables.Array[Count + 1] = InFontTables.Array[Count];
             SymbolFonts.Array[Count + 1] = SymbolFonts.Array[Count];
             for (int i = 0; i < _propertiesLen; i++)
@@ -259,12 +259,12 @@ public static partial class RTFParserCommon
 
         #region Current group
 
-        public unsafe RtfDestinationState CurrentRtfDestinationState
+        public unsafe bool CurrentSkipDest
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (RtfDestinationState)RtfDestinationStates.Array[Count];
+            get => SkipDestinations.Array[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => RtfDestinationStates.Array[Count] = (byte)value;
+            set => SkipDestinations.Array[Count] = value;
         }
 
         public unsafe bool CurrentInFontTable
@@ -293,7 +293,7 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe void ResetFirst()
         {
-            RtfDestinationStates.Array[0] = 0;
+            SkipDestinations.Array[0] = false;
             InFontTables.Array[0] = false;
             SymbolFonts.Array[0] = (int)SymbolFont.None;
 

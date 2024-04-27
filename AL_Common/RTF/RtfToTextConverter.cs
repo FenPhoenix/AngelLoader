@@ -1030,7 +1030,7 @@ public sealed partial class RtfToTextConverter
                 case not '\0':
                 {
                     GroupStack groupStack = _ctx.GroupStack;
-                    if (groupStack.CurrentRtfDestinationState == RtfDestinationState.Normal &&
+                    if (!groupStack.CurrentSkipDest &&
                         groupStack.CurrentProperties[(int)Property.Hidden] == 0)
                     {
                         if (IsNonPlainText[_rtfBytes.Array[CurrentPos]])
@@ -1107,7 +1107,7 @@ public sealed partial class RtfToTextConverter
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError DispatchKeyword(Symbol symbol, int param, bool hasParam)
     {
-        if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal)
+        if (!_ctx.GroupStack.CurrentSkipDest)
         {
             switch (symbol.KeywordType)
             {
@@ -1262,7 +1262,7 @@ public sealed partial class RtfToTextConverter
                         }
                         break;
                     }
-                    if (_ctx.GroupStack.CurrentRtfDestinationState == RtfDestinationState.Normal &&
+                    if (!_ctx.GroupStack.CurrentSkipDest &&
                         fontEntry is { SymbolFont: SymbolFont.Unset })
                     {
                         CurrentPos--;
@@ -1373,7 +1373,7 @@ public sealed partial class RtfToTextConverter
             case DestinationType.FieldInstruction:
                 return HandleFieldInstruction();
             case DestinationType.Skip:
-                _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+                _ctx.GroupStack.CurrentSkipDest = true;
                 return RtfError.OK;
             default:
                 return RtfError.InvalidSymbolTableEntry;
@@ -1784,7 +1784,7 @@ public sealed partial class RtfToTextConverter
         if (SYMBOLKeyword != SYMBOLKeywordAsULong)
         {
             // Manual return to match previous behavior more-or-less (don't rewind too far)
-            _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+            _ctx.GroupStack.CurrentSkipDest = true;
             return RtfError.OK;
         }
 
@@ -2078,7 +2078,7 @@ public sealed partial class RtfToTextConverter
     private RtfError RewindAndSkipGroup()
     {
         CurrentPos--;
-        _ctx.GroupStack.CurrentRtfDestinationState = RtfDestinationState.Skip;
+        _ctx.GroupStack.CurrentSkipDest = true;
         return RtfError.OK;
     }
 
