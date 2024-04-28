@@ -46,6 +46,7 @@ public static partial class Common
         /// <returns></returns>
         public T this[int index]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 // Very unfortunately, we have to manually bounds-check here, because our array could be longer

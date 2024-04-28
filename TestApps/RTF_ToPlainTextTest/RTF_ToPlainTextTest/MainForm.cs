@@ -182,8 +182,17 @@ public sealed partial class MainForm : Form
         }
     }
 
-    private void HandleAllWithCustom(bool write)
+    private enum HandleAllType
     {
+        Write,
+        RunSetOnce,
+        RunSetXTimes
+    }
+
+    private void HandleAllWithCustom(HandleAllType handleAllType)
+    {
+        bool write = handleAllType == HandleAllType.Write;
+
         string[] rtfFiles = Directory.GetFiles(GetOriginalSetFromCacheDir(write));
         if (write) ClearPlainTextDir(rtf: false);
 
@@ -220,7 +229,7 @@ public sealed partial class MainForm : Form
             sw.Stop();
             ShowPerfResults(sw, totalSize);
         }
-        else
+        else if (handleAllType == HandleAllType.RunSetOnce)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -232,6 +241,18 @@ public sealed partial class MainForm : Form
 
             sw.Stop();
             ShowPerfResults(sw, totalSize);
+        }
+        else if (handleAllType == HandleAllType.RunSetXTimes)
+        {
+            for (int c = 0; c < 20; c++)
+            {
+                for (int i = 0; i < byteArrays.Length; i++)
+                {
+                    _ = rtfReader.Convert(byteArrays[i]);
+                }
+            }
+
+            MessageBox.Show("Done");
         }
     }
 
@@ -292,7 +313,7 @@ public sealed partial class MainForm : Form
 
     private void ConvertAndWriteWithCustomButton_Click(object sender, EventArgs e)
     {
-        HandleAllWithCustom(write: true);
+        HandleAllWithCustom(HandleAllType.Write);
     }
 
     private void ConvertOnlyWithRichTextBoxButton_Click(object sender, EventArgs e)
@@ -302,7 +323,12 @@ public sealed partial class MainForm : Form
 
     private void ConvertOnlyWithCustomButton_Click(object sender, EventArgs e)
     {
-        HandleAllWithCustom(write: false);
+        HandleAllWithCustom(HandleAllType.RunSetOnce);
+    }
+
+    private void ConvertOnlyWithCustomXButton_Click(object sender, EventArgs e)
+    {
+        HandleAllWithCustom(HandleAllType.RunSetXTimes);
     }
 
     private void WriteOneButton_Click(object sender, EventArgs e)
