@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -753,6 +754,8 @@ public static partial class RTFParserCommon
 
         public FontEntry? Top;
 
+        private int _highestKey;
+
         public FontDictionary(int capacity)
         {
             _capacity = capacity;
@@ -785,6 +788,7 @@ public static partial class RTFParserCommon
             {
                 _array[key] = fontEntry;
             }
+            if (key > _highestKey) _highestKey = key;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -792,7 +796,28 @@ public static partial class RTFParserCommon
         {
             Top = null;
             _dict?.Reset();
-            _array.Clear();
+            /*
+            Clear only the required portion of the array to shave some time off.
+
+            We can elide the clear and that works correctly as long as we don't have \f keywords that reference
+            undefined font numbers, but if we did then it would index into the array and possibly get a font
+            entry when it should have gotten null. That's unlikely, but we should probably not just ignore it.
+
+            Aside from eliding the clear and reducing edge-case safety, this up-to-highest-key clear is probably
+            about the best we can do.
+            */
+
+            // If the dictionary is not null, that means we had an out-of-array-range key, so all bets are off.
+            // Just clear the entire thing in that case.
+            if (_dict == null && (_highestKey is > 0 and < _switchPoint))
+            {
+                Array.Clear(_array, 0, _highestKey + 1);
+            }
+            else
+            {
+                _array.Clear();
+            }
+            _highestKey = 0;
             _fontEntryPoolVirtualCount = _fontEntryPool.Count;
         }
 
