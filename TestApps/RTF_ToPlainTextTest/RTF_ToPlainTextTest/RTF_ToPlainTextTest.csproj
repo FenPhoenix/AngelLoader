@@ -8,6 +8,7 @@
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release;DebugTestMode;ReleaseTestMode</Configurations>
     <Platforms>x64</Platforms>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 
 	<!-- Get reasonable perf right off the bat -->
 	<!--<TieredCompilation>false</TieredCompilation>
