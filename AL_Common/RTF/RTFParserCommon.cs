@@ -750,7 +750,7 @@ public static partial class RTFParserCommon
         there they are). So we're going to use the array for the expected "normal" range, and fall back to the
         dictionary for weird crap that probably won't happen.
         */
-        private const int _switchPoint = 32767;
+        private const int _switchPoint = 32768;
 
         public FontEntry? Top;
 

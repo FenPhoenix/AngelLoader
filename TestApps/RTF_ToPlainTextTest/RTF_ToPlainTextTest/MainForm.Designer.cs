@@ -39,6 +39,7 @@
             this.ConvertOnlyWithCustomButton = new System.Windows.Forms.Button();
             this.WriteOneButton = new System.Windows.Forms.Button();
             this.ConvertOneButton = new System.Windows.Forms.Button();
+            this.ConvertOnlyWithCustomXButton = new System.Windows.Forms.Button();
             this.ConvertAndWriteToDiskGroupBox.SuspendLayout();
             this.ConvertOnlyGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -99,10 +100,11 @@
             // 
             this.ConvertOnlyGroupBox.Controls.Add(this.NoImagesSet_ConvertOnlyCheckBox);
             this.ConvertOnlyGroupBox.Controls.Add(this.ConvertOnlyWithRichTextBoxButton);
+            this.ConvertOnlyGroupBox.Controls.Add(this.ConvertOnlyWithCustomXButton);
             this.ConvertOnlyGroupBox.Controls.Add(this.ConvertOnlyWithCustomButton);
             this.ConvertOnlyGroupBox.Location = new System.Drawing.Point(8, 112);
             this.ConvertOnlyGroupBox.Name = "ConvertOnlyGroupBox";
-            this.ConvertOnlyGroupBox.Size = new System.Drawing.Size(200, 80);
+            this.ConvertOnlyGroupBox.Size = new System.Drawing.Size(200, 104);
             this.ConvertOnlyGroupBox.TabIndex = 0;
             this.ConvertOnlyGroupBox.TabStop = false;
             this.ConvertOnlyGroupBox.Text = "Convert only:";
@@ -110,7 +112,7 @@
             // NoImagesSet_ConvertOnlyCheckBox
             // 
             this.NoImagesSet_ConvertOnlyCheckBox.AutoSize = true;
-            this.NoImagesSet_ConvertOnlyCheckBox.Location = new System.Drawing.Point(16, 56);
+            this.NoImagesSet_ConvertOnlyCheckBox.Location = new System.Drawing.Point(16, 80);
             this.NoImagesSet_ConvertOnlyCheckBox.Name = "NoImagesSet_ConvertOnlyCheckBox";
             this.NoImagesSet_ConvertOnlyCheckBox.Size = new System.Drawing.Size(125, 17);
             this.NoImagesSet_ConvertOnlyCheckBox.TabIndex = 4;
@@ -157,6 +159,16 @@
             this.ConvertOneButton.UseVisualStyleBackColor = true;
             this.ConvertOneButton.Click += new System.EventHandler(this.ConvertOneButton_Click);
             // 
+            // ConvertOnlyWithCustomXButton
+            // 
+            this.ConvertOnlyWithCustomXButton.Location = new System.Drawing.Point(104, 48);
+            this.ConvertOnlyWithCustomXButton.Name = "ConvertOnlyWithCustomXButton";
+            this.ConvertOnlyWithCustomXButton.Size = new System.Drawing.Size(80, 23);
+            this.ConvertOnlyWithCustomXButton.TabIndex = 1;
+            this.ConvertOnlyWithCustomXButton.Text = "Custom X";
+            this.ConvertOnlyWithCustomXButton.UseVisualStyleBackColor = true;
+            this.ConvertOnlyWithCustomXButton.Click += new System.EventHandler(this.ConvertOnlyWithCustomXButton_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -193,6 +205,7 @@
         private System.Windows.Forms.Button ConvertOneButton;
         private System.Windows.Forms.CheckBox NoImagesSet_WriteCheckBox;
         private System.Windows.Forms.CheckBox NoImagesSet_ConvertOnlyCheckBox;
+        private System.Windows.Forms.Button ConvertOnlyWithCustomXButton;
     }
 }
 
