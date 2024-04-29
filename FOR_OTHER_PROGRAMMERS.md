@@ -92,26 +92,32 @@ These controls have their images, text, or other contents or attributes set prog
 
 (for notes about .NET 5+ in the code, search it for "@NET5")
 
-We're prevented from moving to modern .NET for one seemingly tiny yet showstopping reason: the GetSysColor hook.
+We've fixed the hook problem described below now, so that's no longer preventing us from switching to .NET 5+.
 
-For dark mode, certain parts of the UI can only be themed by using "hooks", which is to say overriding certain Windows theme- or color-related functions and redirecting them to our own, where we hand it back custom colors. We use four:
+The reason we don't use it now is because .NET 5+ WinForms apps have a cold startup time of like 5 seconds, whereas on Framework cold starts are near-instant. This is an unacceptable user experience that will make you want to put your fist through your screen every time you start the app and then have to wait an eternity even just for the splash screen to be able to show up (which also makes the splash screen into a joke, because the whole point of a splash screen is to come up FAST when the app itself can't).
 
-- GetSysColor
-- GetSysColorBrush
-- DrawThemeBackground
-- GetThemeColor
+It's true that once running, the .NET version is faster, but it's not something you'll probably notice much if at all, but what you definitely will notice is an eight billion year startup time, so that's why I haven't switched yet. Native AOT may fix this (don't know for sure), but WinForms doesn't support Native AOT yet at the time of this writing, so that's moot.
 
-On Framework, all four work fine. On modern .NET, the last three work fine, but GetSysColor crashes with an ExecutionEngineException when it returns. I've tried everything under the sun, but it stubbornly refuses to work.
+~~We're prevented from moving to modern .NET for one seemingly tiny yet showstopping reason: the GetSysColor hook.~~
 
-Update 2022-11-09: GetSysColor fails because the new runtimes have the SuppressGCTransition attribute on it. So... that's the end of the line for that.
+~~For dark mode, certain parts of the UI can only be themed by using "hooks", which is to say overriding certain Windows theme- or color-related functions and redirecting them to our own, where we hand it back custom colors. We use four:~~
 
-GetSysColor is reponsible for the following:
+~~- GetSysColor~~
+~~- GetSysColorBrush~~
+~~- DrawThemeBackground~~
+~~- GetThemeColor~~
 
-- TextBox (and RichTextBox) selection color
-- DateTimePicker
-- RichTextBox default text color
+~~On Framework, all four work fine. On modern .NET, the last three work fine, but GetSysColor crashes with an ExecutionEngineException when it returns. I've tried everything under the sun, but it stubbornly refuses to work.~~
 
-If you simply turned off the GetSysColor hook, then DateTimePickers would appear light themed; selected text would be the default medium blue rather than our custom light blue; and RTF readmes would often have large swaths of their text black instead of light grey (this all in dark mode; light mode would look fine).
+~~Update 2022-11-09: GetSysColor fails because the new runtimes have the SuppressGCTransition attribute on it. So... that's the end of the line for that.~~
+
+~~GetSysColor is reponsible for the following:~~
+
+~~- TextBox (and RichTextBox) selection color~~
+~~- DateTimePicker~~
+~~- RichTextBox default text color~~
+
+~~If you simply turned off the GetSysColor hook, then DateTimePickers would appear light themed; selected text would be the default medium blue rather than our custom light blue; and RTF readmes would often have large swaths of their text black instead of light grey (this all in dark mode; light mode would look fine).~~
 
 If we were feeling spicy, we could try to port AngelLoader to WinUI 3 or MAUI or whatever. I've tried but constantly run into obstacles that eventually disappear in version updates but then some other one comes up. Currently, the obstacle is that MAUI apps run fine within Visual Studio, but fail to run whatsoever OUTSIDE of Visual Studio. The WinUI 3 RichTextBox seems good and fast but we'd have to parse and convert embedded .wmf images to .png and then insert them back into the stream, cause it won't display .wmf images at all.
 
@@ -123,15 +129,17 @@ It's unlikely anyone would not have 4.8 at this point, so we could target it if 
 
 ## Could AngelLoader be switched to 64-bit?
 
-As far as I know, yeah, I haven't done any serious testing but I've made efforts to support 64-bit in places in the code that would have differences relating to such. Search for "@X64" to find notes on it.
+It's available in 64-bit and 32-bit versions now.
 
-Update 2022-09-17: With 64-bit we lose the GetSysColorBrush hook too (crashes "hooking near conditional jump not supported"), but this one - I _think_ - is literally only used as a fallback for drawing dark vertical/horizontal scroll bar corners on Windows 7 when Aero is disabled. Niche and everything else seems to look fine, so I just put a runtime 64-bit check around that hook so it just won't be enabled on x64.
+~~As far as I know, yeah, I haven't done any serious testing but I've made efforts to support 64-bit in places in the code that would have differences relating to such. Search for "@X64" to find notes on it.~~
 
-Other than that, x64 appears to work fine from some light testing...
+~~Update 2022-09-17: With 64-bit we lose the GetSysColorBrush hook too (crashes "hooking near conditional jump not supported"), but this one - I _think_ - is literally only used as a fallback for drawing dark vertical/horizontal scroll bar corners on Windows 7 when Aero is disabled. Niche and everything else seems to look fine, so I just put a runtime 64-bit check around that hook so it just won't be enabled on x64.~~
 
-The reason it's 32-bit is that originally, I had it as a dll that the game calls into, FMSel-style. In that case, loaders are _required_ to be 32-bit because the game is 32-bit. However, then I made AngelLoader standalone, but never switched to x64 because I was like "meh, there's no need to and maybe one person in the world is still using 32-bit Windows or something, meh".
+~~Other than that, x64 appears to work fine from some light testing...~~
 
-Due to the above point, note that AngelLoader_Stub (the C++ project) can _**not**_ be made 64-bit, because that's the part that the game calls into. Not that it needs to be anyway, it barely does anything but very slightly format some data and then pass it to the game.
+~~The reason it's 32-bit is that originally, I had it as a dll that the game calls into, FMSel-style. In that case, loaders are _required_ to be 32-bit because the game is 32-bit. However, then I made AngelLoader standalone, but never switched to x64 because I was like "meh, there's no need to and maybe one person in the world is still using 32-bit Windows or something, meh".~~
+
+~~Due to the above point, note that AngelLoader_Stub (the C++ project) can _**not**_ be made 64-bit, because that's the part that the game calls into. Not that it needs to be anyway, it barely does anything but very slightly format some data and then pass it to the game.~~
 
 ## Could AngelLoader be made to run (or run better) on Linux?
 
@@ -176,7 +184,9 @@ When you see GetFiles() (or its ilk) being used, it's probably because we want t
 
 ## Import code is horrific
 
-Yeah... it is. It's some of the oldest code still in there, and I was a lot noobier back then and didn't even know what a hash table was. I honestly just haven't wanted to even look at it, but you can see comments with me admitting it doesn't do a very good job technically (though in practice it works well in most cases). Uh... so yeah, sorry about that.
+Import code is fixed now.
+
+~~Yeah... it is. It's some of the oldest code still in there, and I was a lot noobier back then and didn't even know what a hash table was. I honestly just haven't wanted to even look at it, but you can see comments with me admitting it doesn't do a very good job technically (though in practice it works well in most cases). Uh... so yeah, sorry about that.~~
 
 ## "#define WPF"?
 
@@ -221,11 +231,3 @@ Because I love removing bloat way too much, I've elided await where reasonable, 
 ## ReSharper
 
 I use ReSharper which includes a "To-do Explorer" which lets you set certain phrases that will be highlighted and added to a list where you can browse them. It's awesome, but if you don't have ReSharper then you'll have a harder time finding notes on certain things. Most of the "todo" phrases start with an @ (except "TODO:" itself and a couple others), so if you regex search for like "@\w+" or something you can prolly find them.
-
-## Dependencies
-
-We use older versions of 7z.Libs and SevenZipSharp because they're known to work satisfactorily and performantly, and testing 7z functionality is a pain.
-
-## SevenZipSharp and 7z.exe? There's two copies of 32-bit 7z.dll?
-
-AngelLoader originally used SevenZipSharp exclusively, but it turns out that using it with v19 of 7z.dll caused a memory leak, whereas using an earlier version didn't cause the leak but was _way_ slower. So I switched to calling 7z.exe directly, and I had to put a copy of 7z.dll in its folder too. But I had to keep the main copy in the main directory so SevenZipSharp could still find it, because we still use SZS to enumerate files in .7z archives (just not to extract them), and while you _can_ tell SZS to look in a different folder for 7z.dll, if you do that it's super slow whereas just letting it find it in its own directory is fast.
