@@ -977,9 +977,6 @@ public static partial class RTFParserCommon
             case SpecialType.HeaderCodePage:
                 ctx.Header.CodePage = param >= 0 ? param : 1252;
                 break;
-            case SpecialType.FontTable:
-                ctx.GroupStack.CurrentInFontTable = true;
-                break;
             case SpecialType.DefaultFont:
                 if (!ctx.Header.DefaultFontSet)
                 {
