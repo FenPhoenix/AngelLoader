@@ -244,6 +244,9 @@ public sealed partial class MainForm : Form
         }
         else if (handleAllType == HandleAllType.RunSetXTimes)
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             for (int c = 0; c < 20; c++)
             {
                 for (int i = 0; i < byteArrays.Length; i++)
@@ -252,7 +255,8 @@ public sealed partial class MainForm : Form
                 }
             }
 
-            MessageBox.Show("Done");
+            sw.Stop();
+            ShowPerfResults(sw, totalSize * 20);
         }
     }
 
