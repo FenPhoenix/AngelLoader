@@ -1283,7 +1283,7 @@ public sealed partial class RtfToTextConverter
                                 else
                                 {
                                     fontEntry.SymbolFont = SymbolFont.None;
-                                    int index = Array.IndexOf(_rtfBytes.Array, ';', CurrentPos, _rtfBytes.Length - CurrentPos);
+                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
                                     if (index > -1) CurrentPos = index;
                                 }
                                 break;
@@ -1299,7 +1299,7 @@ public sealed partial class RtfToTextConverter
                                 else
                                 {
                                     fontEntry.SymbolFont = SymbolFont.None;
-                                    int index = Array.IndexOf(_rtfBytes.Array, ';', CurrentPos, _rtfBytes.Length - CurrentPos);
+                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
                                     if (index > -1) CurrentPos = index;
                                 }
                                 break;
