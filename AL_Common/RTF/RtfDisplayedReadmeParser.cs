@@ -194,6 +194,9 @@ public sealed partial class RtfDisplayedReadmeParser
                 {
                     return RtfError.OK;
                 }
+            case SpecialType.FontTable:
+                _ctx.GroupStack.CurrentInFontTable = true;
+                break;
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
                 return RtfError.OK;
