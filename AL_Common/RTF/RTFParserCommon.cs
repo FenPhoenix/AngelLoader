@@ -628,7 +628,7 @@ public static partial class RTFParserCommon
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
 // Entry 36
-            new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip)
         };
 
         private static Symbol?[] InitControlSymbolArray()

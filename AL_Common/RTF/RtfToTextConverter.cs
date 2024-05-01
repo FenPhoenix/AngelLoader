@@ -875,10 +875,6 @@ public sealed partial class RtfToTextConverter
 
     #region Preallocated char arrays
 
-    // This "SYMBOL" and the below "Symbol" are unrelated. "SYMBOL" is a fldinst keyword, while "Symbol" is
-    // the name of a font.
-    private readonly char[] _SYMBOLChars = { 'S', 'Y', 'M', 'B', 'O', 'L' };
-
     private readonly char[] _wingdingsChars = { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
 
     private readonly char[] _webdingsChars = { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
@@ -1776,18 +1772,18 @@ public sealed partial class RtfToTextConverter
 
         if (CurrentPos > _rtfBytes.Length - 8) return RewindAndSkipGroup();
 
-        // Compare the ulong-format "SYMBOLXX" where X is any byte. Mask off the last two bytes, but it's
+        // Compare the ulong-format "SYMBOL X" where X is any byte. Mask off the last byte, but it's
         // little-endian so the mask looks backwards.
 
         // Use the ulong path even on 32-bit, because that still has to be faster than a 6-iteration for loop
         // with bounds checking and all, right? Anyway, there's no measurable perf difference between this and
         // a 2-uint version on 32-bit.
 
-        const ulong SYMBOLKeywordAsULong = 0x00004C4F424D5953;
+        const ulong SYMBOLKeywordAsULong = 0x00204C4F424D5953;
 
         ulong SYMBOLKeyword = Unsafe.ReadUnaligned<ulong>(ref _rtfBytes.Array[CurrentPos]);
 
-        SYMBOLKeyword &= 0x0000FFFFFFFFFFFF;
+        SYMBOLKeyword &= 0x00FFFFFFFFFFFFFF;
         if (SYMBOLKeyword != SYMBOLKeywordAsULong)
         {
             // Manual return to match previous behavior more-or-less (don't rewind too far)
