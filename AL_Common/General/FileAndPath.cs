@@ -364,9 +364,6 @@ public static partial class Common
         return true;
     }
 
-    #region Disabled until needed
-
-#if false
     public static bool PathSequenceEqualI(this IList<string> first, IList<string> second)
     {
         int firstCount;
@@ -375,9 +372,6 @@ public static partial class Common
         for (int i = 0; i < firstCount; i++) if (!first[i].PathEqualsI(second[i])) return false;
         return true;
     }
-#endif
-
-    #endregion
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AsciiPathCharsConsideredEqual_Win(char char1, char char2) =>
