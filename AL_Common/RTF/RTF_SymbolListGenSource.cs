@@ -169,7 +169,7 @@ public static partial class RTFParserCommon
     1. Call ConvertSymbolListToGPerfFormat().
     3. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
        Call it symbolsCodeFile.
-    4. Copy the contents of the gperf-generated table (again, just the body) to another file.
+    4. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
        Call it inputFile.
     5. Call ConvertGPerfOutputToCSharp().
     6. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
