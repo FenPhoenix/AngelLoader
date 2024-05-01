@@ -19,37 +19,37 @@ public static partial class RTFParserCommon
 
         // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
         // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
-        new Symbol("ansi", 1252, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+        new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
-        new Symbol("pc", 437, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+        new Symbol("pc", 437, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
         // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
         // assume 10000 ("Mac Roman")
-        new Symbol("mac", 10000, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+        new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
-        new Symbol("pca", 850, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
-        new Symbol("ansicpg", 1252, false, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+        new Symbol("pca", 850, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+        new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
-        new Symbol("deff", 0, false, KeywordType.Special, (int)SpecialType.DefaultFont),
+        new Symbol("deff", 0, false, KeywordType.Special, (ushort)SpecialType.DefaultFont),
 
-        new Symbol("fonttbl", 0, false, KeywordType.Special, (int)SpecialType.FontTable),
-        new Symbol("f", 0, false, KeywordType.Property, (int)Property.FontNum),
-        new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
-        new Symbol("cpg", -1, false, KeywordType.Special, (int)SpecialType.CodePage),
+        new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
+        new Symbol("f", 0, false, KeywordType.Property, (ushort)Property.FontNum),
+        new Symbol("fcharset", -1, false, KeywordType.Special, (ushort)SpecialType.Charset),
+        new Symbol("cpg", -1, false, KeywordType.Special, (ushort)SpecialType.CodePage),
 
         #endregion
 
-        new Symbol("lang", 0, false, KeywordType.Property, (int)Property.Lang),
+        new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
 
         #region Encoded characters
 
-        new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
-        new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar),
+        new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
+        new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
 
         #endregion
 
         // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
-        new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
+        new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
 
         #region Newlines
 
@@ -80,69 +80,69 @@ public static partial class RTFParserCommon
 
         #endregion
 
-        new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
         // We need to do stuff with this (SYMBOL instruction)
-        new Symbol("fldinst", 0, false, KeywordType.Destination, (int)DestinationType.FieldInstruction),
+        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
 
         // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
-        new Symbol("cs", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
 
         #region Custom skip-destinations
 
         // Ignore list item bullets and numeric prefixes etc. We don't need them.
-        new Symbol("listtext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("pntext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+        new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 
         #endregion
 
         #region Required skip-destinations
 
-        new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("colortbl", 0, false, KeywordType.Special, (int)SpecialType.ColorTable),
-        new Symbol("comment", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("creatim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("doccomm", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("footer", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("footerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("footerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("footerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("footnote", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("ftncn", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("ftnsep", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("ftnsepc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("header", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("headerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("headerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("headerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("info", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("keywords", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("operator", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("printim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("private1", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("revtim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("rxe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("stylesheet", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("subject", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("tc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("title", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
-        new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+        new Symbol("author", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("buptim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("colortbl", 0, false, KeywordType.Special, (ushort)SpecialType.ColorTable),
+        new Symbol("comment", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("creatim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("doccomm", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("footer", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("footerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("footerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("footerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("footnote", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("ftncn", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("ftnsep", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("ftnsepc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("header", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("headerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("headerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("headerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("info", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("printim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("private1", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("revtim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("subject", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("tc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("title", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("txe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("xe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 
         #region Groups containing skippable hex data ("#SDATA")
 
-        new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("themedata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("colorschememapping", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("passwordhash", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
-        new Symbol("blipuid", 32, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
-        new Symbol("panose", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+        new Symbol("pict", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("themedata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("colorschememapping", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("datastore", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("objdata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
+        new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
         #endregion
 

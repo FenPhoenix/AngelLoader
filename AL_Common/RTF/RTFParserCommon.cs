@@ -319,9 +319,9 @@ public static partial class RTFParserCommon
         /// <summary>
         /// Index into the property table, or a regular enum member, or a character literal, depending on <see cref="KeywordType"/>.
         /// </summary>
-        public readonly int Index;
+        public readonly ushort Index;
 
-        public Symbol(string keyword, int defaultParam, bool useDefaultParam, KeywordType keywordType, int index)
+        public Symbol(string keyword, int defaultParam, bool useDefaultParam, KeywordType keywordType, ushort index)
         {
             Keyword = keyword;
             DefaultParam = defaultParam;
@@ -430,177 +430,177 @@ public static partial class RTFParserCommon
         {
             null,
 // Entry 13
-            new Symbol("v", 1, false, KeywordType.Property, (int)Property.Hidden),
+            new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
             null, null, null, null, null, null, null, null, null,
             null,
 // Entry 62
-            new Symbol("tc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("tc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 75
             new Symbol("row", 0, false, KeywordType.Character, '\n'),
             null,
 // Entry 46
-            new Symbol("ftncn", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("ftncn", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 65
-            new Symbol("xe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("xe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 64
-            new Symbol("txe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("txe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null,
 // Entry 7
-            new Symbol("f", 0, false, KeywordType.Property, (int)Property.FontNum),
+            new Symbol("f", 0, false, KeywordType.Property, (ushort)Property.FontNum),
 // Entry 48
-            new Symbol("ftnsepc", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("ftnsepc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 59
-            new Symbol("rxe", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 63
-            new Symbol("title", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("title", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null,
 // Entry 70
-            new Symbol("datastore", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("datastore", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null,
 // Entry 41
-            new Symbol("footer", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("footer", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 44
-            new Symbol("footerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("footerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 45
-            new Symbol("footnote", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("footnote", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 53
-            new Symbol("info", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("info", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 34
-            new Symbol("pntext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 42
-            new Symbol("footerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("footerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 3
-            new Symbol("pca", 850, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+            new Symbol("pca", 850, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 // Entry 71
-            new Symbol("datafield", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null,
 // Entry 74
-            new Symbol("panose", 20, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+            new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 // Entry 1
-            new Symbol("pc", 437, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+            new Symbol("pc", 437, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 // Entry 14
             new Symbol("par", 0, false, KeywordType.Character, '\n'),
 // Entry 5
-            new Symbol("deff", 0, false, KeywordType.Special, (int)SpecialType.DefaultFont),
+            new Symbol("deff", 0, false, KeywordType.Special, (ushort)SpecialType.DefaultFont),
             null,
 // Entry 47
-            new Symbol("ftnsep", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("ftnsep", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null,
 // Entry 67
-            new Symbol("themedata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("themedata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null,
 // Entry 49
-            new Symbol("header", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("header", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 52
-            new Symbol("headerr", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("headerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 55
-            new Symbol("operator", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 66
-            new Symbol("pict", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("pict", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 60
-            new Symbol("stylesheet", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 50
-            new Symbol("headerf", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("headerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 8
-            new Symbol("fcharset", -1, false, KeywordType.Special, (int)SpecialType.Charset),
+            new Symbol("fcharset", -1, false, KeywordType.Special, (ushort)SpecialType.Charset),
             null, null,
 // Entry 23
             new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
 // Entry 20
             new Symbol("enspace", 0, false, KeywordType.Character, ' '),
 // Entry 54
-            new Symbol("keywords", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 0
-            new Symbol("ansi", 1252, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+            new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null, null,
 // Entry 72
-            new Symbol("objdata", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("objdata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 28
-            new Symbol("bin", 0, false, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+            new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
             null, null,
 // Entry 35
-            new Symbol("author", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("author", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 11
-            new Symbol("uc", 1, false, KeywordType.Property, (int)Property.UnicodeCharSkipCount),
+            new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
 // Entry 16
             new Symbol("softline", 0, false, KeywordType.Character, '\n'),
             null, null, null,
 // Entry 6
-            new Symbol("fonttbl", 0, false, KeywordType.Special, (int)SpecialType.FontTable),
+            new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
 // Entry 57
-            new Symbol("private1", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("private1", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 15
             new Symbol("line", 0, false, KeywordType.Character, '\n'),
             null, null,
 // Entry 43
-            new Symbol("footerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("footerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 27
             new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
             null, null,
 // Entry 29
-            new Symbol("fldinst", 0, false, KeywordType.Destination, (int)DestinationType.FieldInstruction),
+            new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
             null, null, null,
 // Entry 25
             new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
 // Entry 32
-            new Symbol("ts", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+            new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
             null, null, null, null,
 // Entry 30
-            new Symbol("cs", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+            new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
             null, null, null, null,
 // Entry 51
-            new Symbol("headerl", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("headerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 17
             new Symbol("tab", 0, false, KeywordType.Character, '\t'),
             null, null, null,
 // Entry 31
-            new Symbol("ds", 0, false, KeywordType.Destination, (int)DestinationType.CanBeDestOrNotDest),
+            new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
 // Entry 2
-            new Symbol("mac", 10000, true, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+            new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null, null,
 // Entry 58
-            new Symbol("revtim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("revtim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 38
-            new Symbol("comment", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("comment", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null, null,
 // Entry 39
-            new Symbol("creatim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("creatim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null,
 // Entry 12
-            new Symbol("u", 0, false, KeywordType.Special, (int)SpecialType.UnicodeChar),
+            new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
 // Entry 69
-            new Symbol("passwordhash", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 33
-            new Symbol("listtext", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 76
             new Symbol("cell", 0, false, KeywordType.Character, ' '),
             null, null,
 // Entry 40
-            new Symbol("doccomm", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("doccomm", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 37
-            new Symbol("colortbl", 0, false, KeywordType.Special, (int)SpecialType.ColorTable),
+            new Symbol("colortbl", 0, false, KeywordType.Special, (ushort)SpecialType.ColorTable),
             null, null, null,
 // Entry 4
-            new Symbol("ansicpg", 1252, false, KeywordType.Special, (int)SpecialType.HeaderCodePage),
+            new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null,
 // Entry 26
             new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
             null, null, null, null,
 // Entry 10
-            new Symbol("lang", 0, false, KeywordType.Property, (int)Property.Lang),
+            new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
             null,
 // Entry 24
             new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
 // Entry 73
-            new Symbol("blipuid", 32, true, KeywordType.Special, (int)SpecialType.SkipNumberOfBytes),
+            new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
             null, null, null, null, null, null, null, null, null,
 // Entry 56
-            new Symbol("printim", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("printim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null,
 // Entry 22
             new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
@@ -608,9 +608,9 @@ public static partial class RTFParserCommon
             new Symbol("emspace", 0, false, KeywordType.Character, ' '),
             null, null, null, null,
 // Entry 61
-            new Symbol("subject", 0, false, KeywordType.Destination, (int)DestinationType.Skip),
+            new Symbol("subject", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 68
-            new Symbol("colorschememapping", 0, false, KeywordType.Destination, (int)DestinationType.SkippableHex),
+            new Symbol("colorschememapping", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null, null, null,
 // Entry 21
             new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
@@ -621,14 +621,14 @@ public static partial class RTFParserCommon
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null,
 // Entry 9
-            new Symbol("cpg", -1, false, KeywordType.Special, (int)SpecialType.CodePage),
+            new Symbol("cpg", -1, false, KeywordType.Special, (ushort)SpecialType.CodePage),
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null,
 // Entry 36
-            new Symbol("buptim", 0, false, KeywordType.Destination, (int)DestinationType.Skip)
+            new Symbol("buptim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip)
         };
 
         private static Symbol?[] InitControlSymbolArray()
