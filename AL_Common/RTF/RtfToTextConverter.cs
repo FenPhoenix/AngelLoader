@@ -1977,7 +1977,7 @@ public sealed partial class RtfToTextConverter
                     for (int symbolFontI = _symbolArraysStartingIndex; symbolFontI < _symbolArraysLength; symbolFontI++)
                     {
                         char[] symbolChars = _symbolFontCharsArrays[symbolFontI];
-                        var symbolFontTable = _symbolFontTables[symbolFontI];
+                        uint[] symbolFontTable = _symbolFontTables[symbolFontI];
 
                         if (SeqEqual(_fldinstSymbolFontName, symbolChars) &&
                             !GetCharFromConversionList_UInt(codePoint, symbolFontTable, out finalChars))
