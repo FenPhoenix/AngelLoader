@@ -2372,5 +2372,15 @@ public sealed partial class RtfToTextConverter
         list.Count = 1;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void HandleEndOfSkippableData()
+    {
+        if (_plainText.Count > 0 &&
+            !char.IsWhiteSpace(_plainText[_plainText.Count - 1]))
+        {
+            _plainText.Add(' ');
+        }
+    }
+
     #endregion
 }

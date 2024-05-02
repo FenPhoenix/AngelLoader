@@ -171,6 +171,12 @@ public sealed partial class Scanner
         // Rewrite this code in here so we can have more detailed detection options than just
         // these silly strings and the default case check
         "Fan Mission/Map Name"
+        // @Scanner: Add these in later
+#if false
+        , "Titre Mission",
+        , "Titre de la mission"
+        , "Titre"
+#endif
     };
 
     private readonly string[] SA_AuthorDetect =
@@ -178,6 +184,10 @@ public sealed partial class Scanner
         "Author",
         "Authors",
         "Autor",
+        // @Scanner: Add this in later
+#if false
+        "Auteur",
+#endif
         "Created by",
         "Devised by",
         "Designed by",

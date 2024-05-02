@@ -168,11 +168,9 @@ public sealed partial class RtfToTextConverter
                     _groupCount--;
                     if (_groupCount < startGroupLevel)
                     {
-                        if (insertSpaceIfNecessary &&
-                            _plainText.Count > 0 &&
-                            !char.IsWhiteSpace(_plainText[_plainText.Count - 1]))
+                        if (insertSpaceIfNecessary)
                         {
-                            _plainText.Add(' ');
+                            HandleEndOfSkippableData();
                         }
                         _inHandleSkippableHexData = false;
                         return RtfError.OK;
@@ -198,11 +196,9 @@ public sealed partial class RtfToTextConverter
             }
         }
 
-        if (insertSpaceIfNecessary &&
-            _plainText.Count > 0 &&
-            !char.IsWhiteSpace(_plainText[_plainText.Count - 1]))
+        if (insertSpaceIfNecessary)
         {
-            _plainText.Add(' ');
+            HandleEndOfSkippableData();
         }
         _inHandleSkippableHexData = false;
         return RtfError.OK;

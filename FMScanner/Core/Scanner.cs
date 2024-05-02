@@ -3505,6 +3505,15 @@ public sealed partial class Scanner : IDisposable
                 lastModifiedDate = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
             }
 
+            /*
+            @Scanner: put this below and make it like this, to prevent scanning of non-readme readmes
+
+            bool scanThisReadme =
+                useThisReadmeForDateDetect &&
+                !readmeFile.Name.ExtIsHtml() &&
+                readmeFile.Name.IsEnglishReadme();   
+            */
+
             bool scanThisReadme =
                 !readmeFile.Name.ExtIsHtml() &&
                 readmeFile.Name.IsEnglishReadme();

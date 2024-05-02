@@ -139,8 +139,10 @@ public sealed partial class RtfDisplayedReadmeParser
         return DispatchKeyword(symbol, param, hasParam);
     }
 
-    private RtfError HandleSkippableHexData()
+    private RtfError HandleSkippableHexData(int param)
     {
+        bool insertSpaceIfNecessary = param == 1;
+
         // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
         // a spec-conforming file.
         if (_inHandleSkippableHexData) return RtfError.AbortedForSafety;
@@ -167,6 +169,10 @@ public sealed partial class RtfDisplayedReadmeParser
                     _groupCount--;
                     if (_groupCount < startGroupLevel)
                     {
+                        if (insertSpaceIfNecessary)
+                        {
+                            HandleEndOfSkippableData();
+                        }
                         _inHandleSkippableHexData = false;
                         return RtfError.OK;
                     }
@@ -191,6 +197,10 @@ public sealed partial class RtfDisplayedReadmeParser
             }
         }
 
+        if (insertSpaceIfNecessary)
+        {
+            HandleEndOfSkippableData();
+        }
         _inHandleSkippableHexData = false;
         return RtfError.OK;
     }
