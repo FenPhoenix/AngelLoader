@@ -1124,7 +1124,7 @@ public sealed partial class RtfToTextConverter
                     var specialType = (SpecialType)symbol.Index;
                     return DispatchSpecialKeyword(specialType, symbol, param);
                 default:
-                    return RtfError.InvalidSymbolTableEntry;
+                    return RtfError.OK;
             }
         }
         else
@@ -1365,16 +1365,15 @@ public sealed partial class RtfToTextConverter
     {
         switch (destinationType)
         {
-            case DestinationType.CanBeDestOrNotDest:
-                // Stupid crazy type of control word, see description for enum field
-                return RtfError.OK;
-            case DestinationType.FieldInstruction:
-                return HandleFieldInstruction();
             case DestinationType.Skip:
                 _ctx.GroupStack.CurrentSkipDest = true;
                 return RtfError.OK;
+            case DestinationType.FieldInstruction:
+                return HandleFieldInstruction();
+            // Stupid crazy type of control word, see description for enum field
+            case DestinationType.CanBeDestOrNotDest:
             default:
-                return RtfError.InvalidSymbolTableEntry;
+                return RtfError.OK;
         }
     }
 

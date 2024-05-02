@@ -169,7 +169,6 @@ public sealed partial class RtfDisplayedReadmeParser
                     ? DispatchSpecialKeyword(specialType, symbol, param)
                     : RtfError.OK;
             default:
-                //return RtfError.InvalidSymbolTableEntry;
                 return RtfError.OK;
         }
     }
