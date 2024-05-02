@@ -835,6 +835,7 @@ public static partial class RTFParserCommon
         public void ClearFull(int capacity)
         {
             _fontEntryPool.Capacity = capacity;
+            _dict = null;
             Clear();
         }
 
