@@ -138,8 +138,10 @@ public sealed partial class RtfToTextConverter
         return DispatchKeyword(symbol, param, hasParam);
     }
 
-    private RtfError HandleSkippableHexData()
+    private RtfError HandleSkippableHexData(int param)
     {
+        bool insertSpaceIfNecessary = param == 1;
+
         // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
         // a spec-conforming file.
         if (_inHandleSkippableHexData) return RtfError.AbortedForSafety;
@@ -166,6 +168,12 @@ public sealed partial class RtfToTextConverter
                     _groupCount--;
                     if (_groupCount < startGroupLevel)
                     {
+                        if (insertSpaceIfNecessary &&
+                            _plainText.Count > 0 &&
+                            !char.IsWhiteSpace(_plainText[_plainText.Count - 1]))
+                        {
+                            _plainText.Add(' ');
+                        }
                         _inHandleSkippableHexData = false;
                         return RtfError.OK;
                     }
@@ -190,6 +198,12 @@ public sealed partial class RtfToTextConverter
             }
         }
 
+        if (insertSpaceIfNecessary &&
+            _plainText.Count > 0 &&
+            !char.IsWhiteSpace(_plainText[_plainText.Count - 1]))
+        {
+            _plainText.Add(' ');
+        }
         _inHandleSkippableHexData = false;
         return RtfError.OK;
     }
