@@ -171,9 +171,9 @@ public sealed partial class Scanner
         // Rewrite this code in here so we can have more detailed detection options than just
         // these silly strings and the default case check
         "Fan Mission/Map Name"
-        // @Scanner: Add these in later
+        // @Scanner: We need more robust language heuristics / readme filename lang detection to use these
 #if false
-        , "Titre Mission",
+        , "Titre Mission"
         , "Titre de la mission"
         , "Titre"
 #endif
@@ -184,9 +184,10 @@ public sealed partial class Scanner
         "Author",
         "Authors",
         "Autor",
-        // @Scanner: Add this in later
+        // @Scanner: We need more robust language heuristics / readme filename lang detection to use these
 #if false
         "Auteur",
+        "Auteur de la mission",
 #endif
         "Created by",
         "Devised by",

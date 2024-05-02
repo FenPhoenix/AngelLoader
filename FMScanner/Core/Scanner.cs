@@ -3505,19 +3505,6 @@ public sealed partial class Scanner : IDisposable
                 lastModifiedDate = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
             }
 
-            /*
-            @Scanner: put this below and make it like this, to prevent scanning of non-readme readmes
-
-            bool scanThisReadme =
-                useThisReadmeForDateDetect &&
-                !readmeFile.Name.ExtIsHtml() &&
-                readmeFile.Name.IsEnglishReadme();   
-            */
-
-            bool scanThisReadme =
-                !readmeFile.Name.ExtIsHtml() &&
-                readmeFile.Name.IsEnglishReadme();
-
             // Files containing these phrases are almost certain to be script info files, whose dates will be the
             // release date of their respective script package, and so should be ignored when detecting the FM's
             // release date
@@ -3526,6 +3513,11 @@ public sealed partial class Scanner : IDisposable
                 !readmeFile.Name.ContainsI("tnhScript") &&
                 !readmeFile.Name.ContainsI("nvscript") &&
                 !readmeFile.Name.ContainsI("shtup");
+
+            bool scanThisReadme =
+                useThisReadmeForDateDetect &&
+                !readmeFile.Name.ExtIsHtml() &&
+                readmeFile.Name.IsEnglishReadme();
 
             // We still add the readme even if we're not going to store nor scan its contents, because we still
             // may need to look at its last modified date.
@@ -3804,6 +3796,12 @@ public sealed partial class Scanner : IDisposable
                 case SpecialLogic.Title when
                     lineStartTrimmed.StartsWithI_Local("Title & Description") ||
                     lineStartTrimmed.StartsWithGL("Title screen"):
+#if false
+                    // @Scanner: Enable these once we have more robust readme language logic
+                    // Ugh
+                    lineStartTrimmed.StartsWithGL("Titre  de la mission") ||
+                    lineStartTrimmed.StartsWithGL("Titre original"):
+#endif
                 case SpecialLogic.ReleaseDate when
                     lineStartTrimmed.StartsWithI_Local("Release information") ||
                     lineStartTrimmed.StartsWithI_Local("Release version") ||
