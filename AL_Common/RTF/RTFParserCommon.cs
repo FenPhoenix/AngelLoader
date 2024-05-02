@@ -953,10 +953,6 @@ public static partial class RTFParserCommon
         /// </summary>
         UnmatchedBrace,
         /// <summary>
-        /// A symbol table entry was malformed. Possibly one of its enum values was out of range.
-        /// </summary>
-        InvalidSymbolTableEntry,
-        /// <summary>
         /// The rtf is malformed in such a way that it might be unsafe to continue parsing it (infinite loops, stack overflows, etc.)
         /// </summary>
         AbortedForSafety
