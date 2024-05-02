@@ -130,7 +130,7 @@ public static partial class RTFParserCommon
         new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("printim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-        new Symbol("private1", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("private", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("revtim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
