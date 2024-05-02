@@ -134,13 +134,13 @@ public static partial class RTFParserCommon
 
         #region Groups containing skippable hex data ("#SDATA")
 
-        new Symbol("pict", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("pict", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("themedata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("colorschememapping", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("datastore", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-        new Symbol("objdata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+        new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
         new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 

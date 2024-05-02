@@ -499,7 +499,7 @@ public static partial class RTFParserCommon
 // Entry 55
             new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 66
-            new Symbol("pict", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+            new Symbol("pict", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 60
             new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
@@ -518,7 +518,7 @@ public static partial class RTFParserCommon
             new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null, null,
 // Entry 72
-            new Symbol("objdata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+            new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 28
             new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
             null, null,
