@@ -158,7 +158,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 return RtfError.OK;
             case KeywordType.Destination:
                 return symbol.Index == (int)DestinationType.SkippableHex
-                    ? HandleSkippableHexData()
+                    ? HandleSkippableHexData(param)
                     : !_ctx.GroupStack.CurrentSkipDest
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
@@ -363,4 +363,7 @@ public sealed partial class RtfDisplayedReadmeParser
             return false;
         }
     }
+
+    // Dummy
+    private static void HandleEndOfSkippableData() { }
 }

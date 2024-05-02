@@ -93,6 +93,14 @@ public static partial class RTFParserCommon
         #region Custom skip-destinations
 
         // Ignore list item bullets and numeric prefixes etc. We don't need them.
+        /*
+        @Scanner: We can turn off skipping on these to get mostly-correct list numbers/bullets.
+        This has implications for the scanner though, mostly neutral to negative but at least one positive
+        (prevention of false match author "Yandros using Windows Movie Maker, Audacity, and Prism").
+        But if we wanted to make this properly correct we'd have to support the actual list syntax for real,
+        otherwise it often doesn't indent more than one level even when it should. Plus it rolls the dice on what
+        bullet char it'll use, a dash, bullet, or some other smaller kind of bullet or who knows what else.
+        */
         new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 
