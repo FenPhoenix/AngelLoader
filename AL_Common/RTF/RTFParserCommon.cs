@@ -651,7 +651,13 @@ public static partial class RTFParserCommon
             ret['\\'] = new Symbol("\\", 0, false, KeywordType.Character, '\\');
             ret['{'] = new Symbol("{", 0, false, KeywordType.Character, '{');
             ret['}'] = new Symbol("}", 0, false, KeywordType.Character, '}');
+            // Nominally Non-Breaking Space (0xA0)
             ret['~'] = new Symbol("~", 0, false, KeywordType.Character, ' ');
+            // Nominally Non-Breaking Hyphen (0x2011)
+            ret['_'] = new Symbol("_", 0, false, KeywordType.Character, '-');
+            // There's also \- which is Optional Hyphen (the scanner is only producing single-line values, so no
+            // need for this), and \: which "specifies a subentry in an index entry" (it's not clear even from
+            // the spec what exactly an "index entry" is).
             return ret;
         }
 
