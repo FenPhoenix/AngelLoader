@@ -940,12 +940,6 @@ public static partial class RTFParserCommon
         Webdings
     }
 
-    public enum RtfDestinationState : byte
-    {
-        Normal,
-        Skip
-    }
-
     public enum RtfError : byte
     {
         /// <summary>
