@@ -96,7 +96,9 @@ public static partial class Common
         /// <returns></returns>
         public T this[int index]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ItemsArray[index];
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => ItemsArray[index] = value;
         }
 
