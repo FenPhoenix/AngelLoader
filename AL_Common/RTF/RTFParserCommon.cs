@@ -357,38 +357,38 @@ public static partial class RTFParserCommon
         //private const int TOTAL_KEYWORDS = 77;
         //private const int MIN_WORD_LENGTH = 1;
         private const int MAX_WORD_LENGTH = 18;
-        //private const int MIN_HASH_VALUE = 1;
-        private const int MAX_HASH_VALUE = 278;
-        /* maximum key range = 278, duplicates = 0 */
+        //private const int MIN_HASH_VALUE = 11;
+        private const int MAX_HASH_VALUE = 228;
+        /* maximum key range = 218, duplicates = 0 */
 
-        private readonly ushort[] asso_values =
+        private readonly byte[] asso_values =
         {
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 0, 60, 0,
-            70, 0, 10, 115, 60, 0, 5, 0, 0, 100,
-            25, 0, 45, 5, 35, 5, 20, 0, 15, 0,
-            5, 0, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-            279, 279, 279, 279, 279, 279
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 10, 45, 10,
+            75, 10, 5, 95, 40, 5, 90, 0, 0, 35,
+            15, 0, 25, 15, 50, 15, 0, 70, 10, 0,
+            125, 0, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
+            229, 229, 229, 229, 229, 229
         };
 
         // For "emspace", "enspace", "qmspace", "~"
@@ -428,73 +428,76 @@ public static partial class RTFParserCommon
         // Symbol list which must be used as the source to generate this one).
         private readonly Symbol?[] _symbolTable =
         {
-            null,
-// Entry 12
-            new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
-// Entry 11
-            new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
-            null,
-// Entry 76
-            new Symbol("cell", 0, false, KeywordType.Character, ' '),
-            null, null,
-// Entry 65
-            new Symbol("xe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 37
-            new Symbol("colortbl", 0, false, KeywordType.Special, (ushort)SpecialType.ColorTable),
-            null, null,
-// Entry 24
-            new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
-// Entry 30
-            new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-// Entry 54
-            new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null,
-// Entry 43
-            new Symbol("footerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 45
-            new Symbol("footnote", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null, null, null, null, null, null, null,
             null, null,
 // Entry 7
             new Symbol("f", 0, false, KeywordType.Property, (ushort)Property.FontNum),
-// Entry 62
-            new Symbol("tc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 16
-            new Symbol("softline", 0, false, KeywordType.Character, '\n'),
-            null, null, null,
+// Entry 43
+            new Symbol("footerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null, null,
 // Entry 42
             new Symbol("footerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 64
-            new Symbol("txe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 15
-            new Symbol("line", 0, false, KeywordType.Character, '\n'),
-            null,
-// Entry 13
-            new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
-// Entry 32
-            new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-// Entry 33
-            new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 0
-            new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
-            null, null,
-// Entry 20
-            new Symbol("enspace", 0, false, KeywordType.Character, ' '),
-// Entry 75
-            new Symbol("row", 0, false, KeywordType.Character, '\n'),
-// Entry 53
-            new Symbol("info", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null,
-// Entry 6
-            new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
-// Entry 59
-            new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 37
+            new Symbol("colortbl", 0, false, KeywordType.Special, (ushort)SpecialType.ColorTable),
             null,
 // Entry 63
             new Symbol("title", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 25
-            new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
+// Entry 13
+            new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
+// Entry 62
+            new Symbol("tc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 45
+            new Symbol("footnote", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 76
+            new Symbol("cell", 0, false, KeywordType.Character, ' '),
+// Entry 60
+            new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null,
+// Entry 6
+            new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
+// Entry 33
+            new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 53
+            new Symbol("info", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null,
+// Entry 32
+            new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+// Entry 54
+            new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 15
+            new Symbol("line", 0, false, KeywordType.Character, '\n'),
+            null, null,
+// Entry 48
+            new Symbol("ftnsepc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null,
+// Entry 16
+            new Symbol("sect", 0, false, KeywordType.Character, '\n'),
+// Entry 46
+            new Symbol("ftncn", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null,
+// Entry 30
+            new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+            null,
+// Entry 66
+            new Symbol("pict", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+            null,
+// Entry 34
+            new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 1
             new Symbol("pc", 437, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+            null,
+// Entry 0
+            new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+            null,
+// Entry 47
+            new Symbol("ftnsep", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 38
+            new Symbol("comment", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 75
+            new Symbol("row", 0, false, KeywordType.Character, '\n'),
+            null, null, null,
+// Entry 20
+            new Symbol("enspace", 0, false, KeywordType.Character, ' '),
 // Entry 3
             new Symbol("pca", 850, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null, null,
@@ -502,135 +505,126 @@ public static partial class RTFParserCommon
             new Symbol("footer", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 44
             new Symbol("footerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 8
+            new Symbol("fcharset", -1, false, KeywordType.Special, (ushort)SpecialType.Charset),
             null, null,
-// Entry 60
-            new Symbol("stylesheet", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null, null,
-// Entry 35
-            new Symbol("author", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 48
-            new Symbol("ftnsepc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null,
-// Entry 51
-            new Symbol("headerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null,
-// Entry 66
-            new Symbol("pict", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null,
-// Entry 72
-            new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null, null,
 // Entry 74
             new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
-// Entry 50
-            new Symbol("headerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null,
-// Entry 31
-            new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-            null, null,
-// Entry 46
-            new Symbol("ftncn", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 18
-            new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
-// Entry 57
-            new Symbol("private", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 55
-            new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 51
+            new Symbol("headerl", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 2
+            new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 // Entry 67
             new Symbol("themedata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null, null,
-// Entry 61
-            new Symbol("subject", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 50
+            new Symbol("headerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null, null,
+// Entry 19
+            new Symbol("emspace", 0, false, KeywordType.Character, ' '),
+            null, null, null, null,
+// Entry 21
+            new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
+// Entry 28
+            new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
+            null, null, null,
+// Entry 29
+            new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
+            null, null, null, null,
+// Entry 11
+            new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
+// Entry 55
+            new Symbol("operator", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null,
+// Entry 57
+            new Symbol("private", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null,
 // Entry 5
             new Symbol("deff", 0, false, KeywordType.Special, (ushort)SpecialType.DefaultFont),
-            null, null, null,
-// Entry 8
-            new Symbol("fcharset", -1, false, KeywordType.Special, (ushort)SpecialType.Charset),
+            null,
+// Entry 24
+            new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
+// Entry 69
+            new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+// Entry 17
+            new Symbol("tab", 0, false, KeywordType.Character, '\t'),
 // Entry 70
             new Symbol("datastore", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null,
+            null, null,
+// Entry 31
+            new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+            null, null, null,
+// Entry 58
+            new Symbol("revtim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 39
+            new Symbol("creatim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null,
 // Entry 49
             new Symbol("header", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 52
             new Symbol("headerr", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 2
-            new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
-            null, null,
-// Entry 47
-            new Symbol("ftnsep", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 29
-            new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
-            null, null, null, null,
-// Entry 19
-            new Symbol("emspace", 0, false, KeywordType.Character, ' '),
-// Entry 28
-            new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
-            null, null,
-// Entry 34
-            new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 21
-            new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
-// Entry 14
-            new Symbol("par", 0, false, KeywordType.Character, '\n'),
             null, null, null,
-// Entry 69
-            new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null, null, null,
-// Entry 38
-            new Symbol("comment", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null, null,
+// Entry 18
+            new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
+// Entry 56
+            new Symbol("printim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 68
             new Symbol("colorschememapping", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null, null,
-// Entry 73
-            new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
-            null,
-// Entry 26
-            new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
-            null, null,
-// Entry 39
-            new Symbol("creatim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 17
-            new Symbol("tab", 0, false, KeywordType.Character, '\t'),
 // Entry 10
             new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
-            null, null, null, null, null, null, null,
-// Entry 4
-            new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
-            null, null, null,
-// Entry 58
-            new Symbol("revtim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null,
-// Entry 23
-            new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
-            null, null, null, null, null, null, null,
-// Entry 71
-            new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null, null, null,
-// Entry 27
-            new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
             null, null,
 // Entry 40
             new Symbol("doccomm", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null, null,
+// Entry 73
+            new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
+            null, null, null,
+// Entry 35
+            new Symbol("author", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 61
+            new Symbol("subject", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 14
+            new Symbol("par", 0, false, KeywordType.Character, '\n'),
+// Entry 26
+            new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
+            null,
+// Entry 12
+            new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
+// Entry 4
+            new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+            null, null, null,
+// Entry 23
+            new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
+// Entry 65
+            new Symbol("xe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+// Entry 64
+            new Symbol("txe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null,
+// Entry 25
+            new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
+// Entry 72
+            new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null, null, null, null, null, null, null, null, null,
-// Entry 56
-            new Symbol("printim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null,
-// Entry 36
-            new Symbol("buptim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null,
+            null, null, null, null,
 // Entry 22
             new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
+            null, null,
+// Entry 71
+            new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
+            null, null, null, null, null, null, null, null, null,
+            null, null,
+// Entry 36
+            new Symbol("buptim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+            null, null, null, null, null, null, null,
+// Entry 27
+            new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+            null, null, null, null, null, null, null, null,
+// Entry 59
+            new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null,
+            null, null,
 // Entry 9
             new Symbol("cpg", -1, false, KeywordType.Special, (ushort)SpecialType.CodePage),
         };

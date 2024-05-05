@@ -55,7 +55,7 @@ public static partial class RTFParserCommon
 
         new Symbol("par", 0, false, KeywordType.Character, '\n'),
         new Symbol("line", 0, false, KeywordType.Character, '\n'),
-        new Symbol("softline", 0, false, KeywordType.Character, '\n'),
+        new Symbol("sect", 0, false, KeywordType.Character, '\n'),
 
         #endregion
 
