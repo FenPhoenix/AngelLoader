@@ -36,10 +36,10 @@
             ConvertOnlyGroupBox = new System.Windows.Forms.GroupBox();
             NoImagesSet_ConvertOnlyCheckBox = new System.Windows.Forms.CheckBox();
             ConvertOnlyWithRichTextBoxButton = new System.Windows.Forms.Button();
+            ConvertOnlyWithCustomXButton = new System.Windows.Forms.Button();
             ConvertOnlyWithCustomButton = new System.Windows.Forms.Button();
             WriteOneButton = new System.Windows.Forms.Button();
             ConvertOneButton = new System.Windows.Forms.Button();
-            ConvertOnlyWithCustomXButton = new System.Windows.Forms.Button();
             ConvertAndWriteToDiskGroupBox.SuspendLayout();
             ConvertOnlyGroupBox.SuspendLayout();
             SuspendLayout();
@@ -139,9 +139,20 @@
             ConvertOnlyWithRichTextBoxButton.UseVisualStyleBackColor = true;
             ConvertOnlyWithRichTextBoxButton.Click += ConvertOnlyWithRichTextBoxButton_Click;
             // 
+            // ConvertOnlyWithCustomXButton
+            // 
+            ConvertOnlyWithCustomXButton.Location = new System.Drawing.Point(120, 56);
+            ConvertOnlyWithCustomXButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ConvertOnlyWithCustomXButton.Name = "ConvertOnlyWithCustomXButton";
+            ConvertOnlyWithCustomXButton.Size = new System.Drawing.Size(93, 27);
+            ConvertOnlyWithCustomXButton.TabIndex = 1;
+            ConvertOnlyWithCustomXButton.Text = "Custom X";
+            ConvertOnlyWithCustomXButton.UseVisualStyleBackColor = true;
+            ConvertOnlyWithCustomXButton.Click += ConvertOnlyWithCustomXButton_Click;
+            // 
             // ConvertOnlyWithCustomButton
             // 
-            ConvertOnlyWithCustomButton.Location = new System.Drawing.Point(121, 28);
+            ConvertOnlyWithCustomButton.Location = new System.Drawing.Point(120, 28);
             ConvertOnlyWithCustomButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             ConvertOnlyWithCustomButton.Name = "ConvertOnlyWithCustomButton";
             ConvertOnlyWithCustomButton.Size = new System.Drawing.Size(93, 27);
@@ -171,17 +182,6 @@
             ConvertOneButton.Text = "Convert one";
             ConvertOneButton.UseVisualStyleBackColor = true;
             ConvertOneButton.Click += ConvertOneButton_Click;
-            // 
-            // ConvertOnlyWithCustomXButton
-            // 
-            ConvertOnlyWithCustomXButton.Location = new System.Drawing.Point(120, 56);
-            ConvertOnlyWithCustomXButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            ConvertOnlyWithCustomXButton.Name = "ConvertOnlyWithCustomXButton";
-            ConvertOnlyWithCustomXButton.Size = new System.Drawing.Size(93, 27);
-            ConvertOnlyWithCustomXButton.TabIndex = 1;
-            ConvertOnlyWithCustomXButton.Text = "Custom X";
-            ConvertOnlyWithCustomXButton.UseVisualStyleBackColor = true;
-            ConvertOnlyWithCustomXButton.Click += ConvertOnlyWithCustomXButton_Click;
             // 
             // MainForm
             // 
