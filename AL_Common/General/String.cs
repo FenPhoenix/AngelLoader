@@ -49,10 +49,10 @@ public static partial class Common
         (char1.IsAsciiAlpha() && char2.IsAsciiAlpha() && (char1 & '_') == (char2 & '_'));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlpha(this char c) => (((uint)c - 'A') & ~0x20) < 26;
+    public static bool IsAsciiAlpha(this char c) => (uint)((c | 0x20) - 'a') <= 'z' - 'a';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlpha(this byte b) => (((uint)b - 'A') & ~0x20) < 26;
+    public static bool IsAsciiAlpha(this byte b) => (uint)((b | 0x20) - 'a') <= 'z' - 'a';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
