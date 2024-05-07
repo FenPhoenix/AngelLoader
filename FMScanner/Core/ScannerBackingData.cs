@@ -24,6 +24,26 @@ public sealed partial class Scanner
     private const char LeftDoubleQuote = '\u201C';
     private const char RightDoubleQuote = '\u201D';
 
+    private readonly struct AsciiCharWithNonAsciiEquivalent(char original, char ascii)
+    {
+        internal readonly char Original = original;
+        internal readonly char Ascii = ascii;
+    }
+
+    private readonly AsciiCharWithNonAsciiEquivalent[] _nonAsciiCharsWithAsciiEquivalents =
+    {
+        new('\x2003', ' '),
+        new('\x2002', ' '),
+        new('\x2005', ' '),
+        new('\xA0', ' '),
+        new('\x2014', '-'),
+        new('\x2013', '-'),
+        new('\x2018', '\''),
+        new('\x2019', '\''),
+        new('\x201C', '"'),
+        new('\x201D', '"')
+    };
+
     [SuppressMessage("ReSharper", "IdentifierTypo")]
     private static class FMDirs
     {
