@@ -391,41 +391,47 @@ public static partial class RTFParserCommon
             229, 229, 229, 229, 229, 229
         };
 
-        // For "emspace", "enspace", "qmspace", "~"
-        // Just convert these to regular spaces because we're just trying to scan for strings in readmes
-        // without weird crap tripping us up
-        // emspace  '\x2003'
-        // enspace  '\x2002'
-        // qmspace  '\x2005'
-        // ~        '\xa0'
+        /*
+        For "emspace", "enspace", "qmspace", "~", "emdash", "endash", "lquote", "rquote", "ldblquote", "rdblquote"
+        Convert these to ascii equivalents because for our use case we don't really want weird versions of
+        spaces and dashes etc.
+        Original (proper) values:
+        emspace   '\x2003'
+        enspace   '\x2002'
+        qmspace   '\x2005'
+        ~         '\xa0'
+        emdash    '\x2014'
+        endash    '\x2013'
+        lquote    '\x2018'
+        rquote    '\x2019'
+        ldblquote '\x201C'
+        rdblquote '\x201D'
 
-        // For "emdash", "endash", "lquote", "rquote", "ldblquote", "rdblquote"
-        // NOTE: Maybe just convert these all to ASCII equivalents as well?
+        For "cs", "ds", "ts"
+        Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
 
-        // For "cs", "ds", "ts"
-        // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
+        For "listtext", "pntext"
+        Ignore list item bullets and numeric prefixes etc. We don't need them.
 
-        // For "listtext", "pntext"
-        // Ignore list item bullets and numeric prefixes etc. We don't need them.
+        For "v"
+        v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
 
-        // For "v"
-        // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
+        For "ansi"
+        The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
+        "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
 
-        // For "ansi"
-        // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
-        // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
+        For "mac"
+        The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
+        assume 10000 ("Mac Roman")
 
-        // For "mac"
-        // The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
-        // assume 10000 ("Mac Roman")
+        For "fldinst"
+        We need to do stuff with this (SYMBOL instruction)
 
-        // For "fldinst"
-        // We need to do stuff with this (SYMBOL instruction)
-
-        // NOTE: This is generated. Values can be modified, but not keys (keys are the first string params).
-        // Also no reordering. Adding, removing, reordering, or modifying keys requires generating a new version.
-        // See RTF_SymbolListGenSource.cs for how to generate a new version (it also contains the original
-        // Symbol list which must be used as the source to generate this one).
+        NOTE: This is generated. Values can be modified, but not keys (keys are the first string params).
+        Also no reordering. Adding, removing, reordering, or modifying keys requires generating a new version.
+        See RTF_SymbolListGenSource.cs for how to generate a new version (it also contains the original
+        Symbol list which must be used as the source to generate this one).
+        */
         private readonly Symbol?[] _symbolTable =
         {
             null, null, null, null, null, null, null, null, null,
@@ -543,7 +549,7 @@ public static partial class RTFParserCommon
             new Symbol("deff", 0, false, KeywordType.Special, (ushort)SpecialType.DefaultFont),
             null,
 // Entry 24
-            new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
+            new Symbol("lquote", 0, false, KeywordType.Character, '\''),
 // Entry 69
             new Symbol("passwordhash", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
 // Entry 17
@@ -586,7 +592,7 @@ public static partial class RTFParserCommon
 // Entry 14
             new Symbol("par", 0, false, KeywordType.Character, '\n'),
 // Entry 26
-            new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
+            new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
             null,
 // Entry 12
             new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
@@ -594,20 +600,20 @@ public static partial class RTFParserCommon
             new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null, null, null,
 // Entry 23
-            new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
+            new Symbol("endash", 0, false, KeywordType.Character, '-'),
 // Entry 65
             new Symbol("xe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 64
             new Symbol("txe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null,
 // Entry 25
-            new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
+            new Symbol("rquote", 0, false, KeywordType.Character, '\''),
 // Entry 72
             new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
             null, null, null, null, null, null, null, null, null,
             null, null, null, null,
 // Entry 22
-            new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
+            new Symbol("emdash", 0, false, KeywordType.Character, '-'),
             null, null,
 // Entry 71
             new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
@@ -617,7 +623,7 @@ public static partial class RTFParserCommon
             new Symbol("buptim", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
             null, null, null, null, null, null, null,
 // Entry 27
-            new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+            new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
             null, null, null, null, null, null, null, null,
 // Entry 59
             new Symbol("rxe", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),

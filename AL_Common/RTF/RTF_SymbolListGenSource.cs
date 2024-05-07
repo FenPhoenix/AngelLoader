@@ -65,18 +65,30 @@ public static partial class RTFParserCommon
 
         new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
 
-        // Just convert these to regular spaces because we're just trying to scan for strings in readmes
-        // without weird crap tripping us up
+        /*
+        Convert these to ascii equivalents because for our use case we don't really want weird versions of
+        spaces and dashes etc.
+        Original (proper) values:
+        emspace   '\x2003'
+        enspace   '\x2002'
+        qmspace   '\x2005'
+        ~         '\xa0'
+        emdash    '\x2014'
+        endash    '\x2013'
+        lquote    '\x2018'
+        rquote    '\x2019'
+        ldblquote '\x201C'
+        rdblquote '\x201D'
+        */
         new Symbol("emspace", 0, false, KeywordType.Character, ' '),
         new Symbol("enspace", 0, false, KeywordType.Character, ' '),
         new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
-        // NOTE: Maybe just convert these all to ASCII equivalents as well?
-        new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
-        new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
-        new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
-        new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
-        new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
-        new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+        new Symbol("emdash", 0, false, KeywordType.Character, '-'),
+        new Symbol("endash", 0, false, KeywordType.Character, '-'),
+        new Symbol("lquote", 0, false, KeywordType.Character, '\''),
+        new Symbol("rquote", 0, false, KeywordType.Character, '\''),
+        new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
+        new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
 
         #endregion
 
