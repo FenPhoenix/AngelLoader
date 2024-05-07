@@ -4007,6 +4007,11 @@ public sealed partial class Scanner : IDisposable
 
         value = value.Trim('*');
 
+        foreach (AsciiCharWithNonAsciiEquivalent item in _nonAsciiCharsWithAsciiEquivalents)
+        {
+            value = value.Replace(item.Original, item.Ascii);
+        }
+
         return value;
     }
 
