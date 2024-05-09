@@ -419,7 +419,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             if (encoding == null)
             {
                 var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
-                encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
+                encoding = fe.DetectFileEncoding(ms) ?? GetLegacyDefaultEncoding();
                 retEncoding = encoding;
                 ms.Position = 0;
             }

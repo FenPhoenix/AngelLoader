@@ -2,6 +2,7 @@
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
@@ -115,4 +116,30 @@ public static partial class Common
         node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
     #endregion
+
+    // .NET Core changed the Encoding.Default return value from legacy ANSI to UTF8. This is disastrous for us
+    // because we need to read and write certain files that are written in Framework Encoding.Default (ANSI).
+    // So implement a manual version here...
+
+    [LibraryImport("kernel32.dll")]
+    internal static partial int GetACP();
+
+    public static Encoding GetLegacyDefaultEncoding()
+    {
+        try
+        {
+            return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
+        }
+        catch
+        {
+            try
+            {
+                return Encoding.GetEncoding(GetACP());
+            }
+            catch
+            {
+                return Encoding.GetEncoding(1252);
+            }
+        }
+    }
 }

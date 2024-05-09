@@ -728,7 +728,7 @@ internal static class Import
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
         // NewDarkLoader uses Encoding.Default for NewDarkLoader.ini, confirmed from source and testing 1.7.0
-        List<string> lines = File_ReadAllLines_List(iniFile, Encoding.Default, true);
+        List<string> lines = File_ReadAllLines_List(iniFile, GetLegacyDefaultEncoding(), true);
         var fms = new List<FanMission>();
 
         static void TryAddToArchivesHash(string dir, DictionaryI<FileInfo> archivesDict)
