@@ -903,18 +903,15 @@ public static partial class RTFParserCommon
         /// understand character styles will skip the character style information correctly. When used in body<br/>
         /// text to indicate that a character style was applied, do not include the \* prefix."
         /// <para/>
-        /// We don't really have a way to handle this table-side, so just call it a destination and give it a<br/>
-        /// special-cased type where it just skips the control word always, even if it was a destination and<br/>
-        /// would normally have caused its entire group to be skipped.
+        /// Despite the fact that the \* prefixed versions are only supposed to appear at the start of a group,<br/>
+        /// there's one readme (Thief Trinity) where \*\csN is written in the middle of a group. If we treated<br/>
+        /// the \* prefixed version as being a skip-group trigger, then we would skip the rest of the group if it<br/>
+        /// was in the middle of one, missing whatever text was after it.
         /// <para/>
-        /// You might think we could just elide these from the table entirely and accomplish the same thing,<br/>
-        /// but there's one readme (Thief Trinity) where \*\csN is written in the middle of a group, rather<br/>
-        /// than the start of a group as destinations are supposed to be written, causing us to skip its group<br/>
-        /// and miss some text.
-        /// <para/>
-        /// The correct way to handle this would be to track whether we're at the start of a group when we hit<br/>
-        /// one of these, but that's a bunch of crufty garbage so whatever, let's just stick with this, as it<br/>
-        /// seems to work fine...
+        /// However, we actually don't have to treat any version of the word as a skip-group trigger, because the<br/>
+        /// only time we want that is when they're in the \stylesheet group, which is already being skipped. So<br/>
+        /// ignoring the word is a no-op in \stylesheet, and also a no-op in a regular group, which is what we want<br/>
+        /// in both cases.
         /// </summary>
         CanBeDestOrNotDest,
         Skip,
