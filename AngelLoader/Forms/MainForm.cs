@@ -299,21 +299,24 @@ public sealed partial class MainForm : DarkFormBase,
 
     protected override void WndProc(ref Message m)
     {
-        if (m.Msg == Native.WM_THEMECHANGED)
+        if (!StartupState)
         {
-            Win32ThemeHooks.ReloadTheme();
-        }
-        else if (ControlUtils.SystemThemeHasChanged(ref m, out VisualTheme newTheme))
-        {
-            Config.VisualTheme = newTheme;
-            SetTheme(Config.VisualTheme);
-            m.Result = IntPtr.Zero;
-
-            List<IntPtr> handles = Native.GetProcessWindowHandles();
-            foreach (IntPtr handle in handles)
+            if (m.Msg == Native.WM_THEMECHANGED)
             {
-                Control? control = Control.FromHandle(handle);
-                if (control is DarkFormBase form) form.RespondToSystemThemeChange();
+                Win32ThemeHooks.ReloadTheme();
+            }
+            else if (ControlUtils.SystemThemeHasChanged(ref m, out VisualTheme newTheme))
+            {
+                Config.VisualTheme = newTheme;
+                SetTheme(Config.VisualTheme);
+                m.Result = IntPtr.Zero;
+
+                List<IntPtr> handles = Native.GetProcessWindowHandles();
+                foreach (IntPtr handle in handles)
+                {
+                    Control? control = Control.FromHandle(handle);
+                    if (control is DarkFormBase form) form.RespondToSystemThemeChange();
+                }
             }
         }
         base.WndProc(ref m);
