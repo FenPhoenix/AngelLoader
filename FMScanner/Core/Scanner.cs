@@ -3563,8 +3563,7 @@ public sealed partial class Scanner : IDisposable
                     _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer)
                 };
 
-                // Stupid micro-optimization
-                const int rtfHeaderBytesLength = 6;
+                int rtfHeaderBytesLength = RTFHeaderBytes.Length;
 
                 _rtfHeaderBuffer.Clear();
 
