@@ -60,7 +60,9 @@ public static partial class Common
         }
     }
 
-    public static readonly byte[] RTFHeaderBytes = @"{\rtf1"u8.ToArray();
+    // It's supposed to always be "{\rtf1", but some files have no number or some other number...
+    // RichTextBox also only checks for "{\rtf", so we're fine here.
+    public static readonly byte[] RTFHeaderBytes = @"{\rtf"u8.ToArray();
 
     public static readonly byte[] MAPPARAM = "MAPPARAM"u8.ToArray();
 

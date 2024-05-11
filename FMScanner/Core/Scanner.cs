@@ -3468,8 +3468,7 @@ public sealed partial class Scanner : IDisposable
         // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
         // Treat 'em like plaintext and see how it goes.
 
-        // Stupid micro-optimization
-        const int rtfHeaderBytesLength = 6;
+        int rtfHeaderBytesLength = RTFHeaderBytes.Length;
 
         Span<byte> rtfHeader = stackalloc byte[rtfHeaderBytesLength];
 
