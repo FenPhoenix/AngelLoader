@@ -227,7 +227,9 @@ public static partial class RTFParserCommon
         }
 
         // Highest measured was 10
-        public const int MaxGroups = 100;
+        private const int MaxGroups = 100;
+        // External code needs to check index, not count, so give them one less to prevent index out-of-range.
+        public const int MaxGroupIndex = MaxGroups - 1;
 
         private BoolArrayWrapper SkipDestinations;
         private BoolArrayWrapper InFontTables;
@@ -953,7 +955,7 @@ public static partial class RTFParserCommon
         /// </summary>
         StackUnderflow,
         /// <summary>
-        /// Too many subgroups (we cap it at 100).
+        /// There were over <inheritdoc cref="GroupStack.MaxGroups" path="//summary"/> nested groups.
         /// </summary>
         StackOverflow,
         /// <summary>
