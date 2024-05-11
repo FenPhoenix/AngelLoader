@@ -170,6 +170,8 @@ public static partial class RTFParserCommon
 
         new Symbol("row", 0, false, KeywordType.Character, '\n'),
         new Symbol("cell", 0, false, KeywordType.Character, ' '),
+        new Symbol("nestrow", 0, false, KeywordType.Character, '\n'),
+        new Symbol("nestcell", 0, false, KeywordType.Character, ' '),
 
         #endregion
 

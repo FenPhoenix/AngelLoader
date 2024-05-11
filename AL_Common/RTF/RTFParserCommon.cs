@@ -399,41 +399,41 @@ public static partial class RTFParserCommon
         /* Command-line: 'C:\\gperf\\tools\\gperf.exe' --output-file='C:\\_al_rtf_table_gen\\gperfOutputFile.txt' -t 'C:\\_al_rtf_table_gen\\gperfFormatFile.txt'  */
         /* Computed positions: -k'1-3,$' */
 
-        //private const int TOTAL_KEYWORDS = 77;
+        //private const int TOTAL_KEYWORDS = 79;
         //private const int MIN_WORD_LENGTH = 1;
         private const int MAX_WORD_LENGTH = 18;
         //private const int MIN_HASH_VALUE = 11;
-        private const int MAX_HASH_VALUE = 228;
-        /* maximum key range = 218, duplicates = 0 */
+        private const int MAX_HASH_VALUE = 263;
+        /* maximum key range = 253, duplicates = 0 */
 
-        private readonly byte[] asso_values =
+        private readonly ushort[] asso_values =
         {
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 10, 45, 10,
-            75, 10, 5, 95, 40, 5, 90, 0, 0, 35,
-            15, 0, 25, 15, 50, 15, 0, 70, 10, 0,
-            125, 0, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229, 229, 229, 229, 229,
-            229, 229, 229, 229, 229, 229
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 10, 45, 10,
+            75, 10, 5, 95, 40, 5, 95, 0, 0, 35,
+            15, 0, 25, 15, 50, 15, 0, 70, 10, 105,
+            125, 0, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
+            264, 264, 264, 264, 264, 264
         };
 
         /*
@@ -536,7 +536,8 @@ public static partial class RTFParserCommon
             new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 1
             new Symbol("pc", 437, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
-            null,
+// Entry 78
+            new Symbol("nestcell", 0, false, KeywordType.Character, ' '),
 // Entry 0
             new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
             null,
@@ -544,9 +545,7 @@ public static partial class RTFParserCommon
             new Symbol("ftnsep", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 38
             new Symbol("comment", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
-// Entry 75
-            new Symbol("row", 0, false, KeywordType.Character, '\n'),
-            null, null, null,
+            null, null, null, null,
 // Entry 20
             new Symbol("enspace", 0, false, KeywordType.Character, ' '),
 // Entry 3
@@ -653,10 +652,12 @@ public static partial class RTFParserCommon
             null, null,
 // Entry 25
             new Symbol("rquote", 0, false, KeywordType.Character, '\''),
+// Entry 77
+            new Symbol("nestrow", 0, false, KeywordType.Character, '\n'),
+            null, null, null, null,
 // Entry 72
             new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
-            null, null, null, null, null, null, null, null, null,
-            null, null, null, null,
+            null, null, null, null, null, null, null, null,
 // Entry 22
             new Symbol("emdash", 0, false, KeywordType.Character, '-'),
             null, null,
@@ -678,6 +679,12 @@ public static partial class RTFParserCommon
             null, null,
 // Entry 9
             new Symbol("cpg", -1, false, KeywordType.Special, (ushort)SpecialType.CodePage),
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null,
+// Entry 75
+            new Symbol("row", 0, false, KeywordType.Character, '\n'),
         };
 
         private static Symbol?[] InitControlSymbolArray()
