@@ -2511,24 +2511,6 @@ public sealed partial class RtfToTextConverter
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void NormalizeUnicodePoint(int codePoint, out uint returnCodePoint)
-    {
-        // Per spec, values >32767 are expressed as negative numbers, and we must add 65536 to get the
-        // correct value.
-        if (codePoint < 0)
-        {
-            codePoint += 65536;
-            if (codePoint < 0)
-            {
-                returnCodePoint = _unicodeUnknown_Char;
-                return;
-            }
-        }
-
-        returnCodePoint = (uint)codePoint;
-    }
-
     /// <summary>
     /// Only call this if <paramref name="chars"/>'s length is > 0 and consists solely of the characters '0' through '9'.
     /// It does no checks at all and will throw if either of these things is false.
