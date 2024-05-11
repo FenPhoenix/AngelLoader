@@ -158,7 +158,7 @@ public sealed partial class RtfToTextConverter
                 // Push/pop groups inline to avoid having one branch to check the actual error condition and then
                 // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroups) return RtfError.StackOverflow;
+                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroupIndex) return RtfError.StackOverflow;
                     _ctx.GroupStack.DeepCopyToNext();
                     _groupCount++;
                     break;
