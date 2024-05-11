@@ -103,6 +103,8 @@ public sealed partial class RtfDisplayedReadmeParser
 
         _colorTable = null;
         _langItems = null;
+
+        _ctx.GroupStack.ResetCapacityIfTooHigh();
     }
 
     private RtfError ParseRtf()
@@ -120,10 +122,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     RtfError ec = ParseKeyword();
                     if (ec != RtfError.OK) return ec;
                     break;
-                // Push/pop groups inline to avoid having one branch to check the actual error condition and then
-                // a second branch to check the return error code from the push/pop method.
                 case '{':
-                    if (_ctx.GroupStack.Count >= GroupStack.MaxGroupIndex) return RtfError.StackOverflow;
                     _ctx.GroupStack.DeepCopyToNext();
                     _groupCount++;
                     break;

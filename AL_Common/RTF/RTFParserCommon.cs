@@ -214,45 +214,79 @@ public static partial class RTFParserCommon
 
     public sealed class GroupStack
     {
-        // SOA and removal of bounds checking through fixed-sized buffers improves perf
+        private const int DefaultCapacity = 100;
+        private int Capacity;
 
-        public unsafe struct ByteArrayWrapper
-        {
-            internal fixed byte Array[MaxGroups];
-        }
-
-        public unsafe struct BoolArrayWrapper
-        {
-            internal fixed bool Array[MaxGroups];
-        }
-
-        // Highest measured was 10
-        private const int MaxGroups = 100;
-        // External code needs to check index, not count, so give them one less to prevent index out-of-range.
-        public const int MaxGroupIndex = MaxGroups - 1;
-
-        private BoolArrayWrapper SkipDestinations;
-        private BoolArrayWrapper InFontTables;
-        public ByteArrayWrapper SymbolFonts;
-        public readonly int[][] Properties = new int[MaxGroups][];
+        private bool[] _skipDestinations;
+        private bool[] _inFontTables;
+        public byte[] SymbolFonts;
+        public int[][] Properties;
 
         /// <summary>Do not modify!</summary>
         public int Count;
 
-        public GroupStack()
+        internal GroupStack() => Init();
+
+        [MemberNotNull(
+            nameof(_skipDestinations),
+            nameof(_inFontTables),
+            nameof(SymbolFonts),
+            nameof(Properties))]
+        private void Init()
         {
-            for (int i = 0; i < MaxGroups; i++)
+            Count = 0;
+            Capacity = DefaultCapacity;
+
+            _skipDestinations = new bool[Capacity];
+            _inFontTables = new bool[Capacity];
+            SymbolFonts = new byte[Capacity];
+            Properties = new int[Capacity][];
+
+            for (int i = 0; i < Capacity; i++)
             {
                 Properties[i] = new int[_propertiesLen];
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void DeepCopyToNext()
+        public void DeepCopyToNext()
         {
-            SkipDestinations.Array[Count + 1] = SkipDestinations.Array[Count];
-            InFontTables.Array[Count + 1] = InFontTables.Array[Count];
-            SymbolFonts.Array[Count + 1] = SymbolFonts.Array[Count];
+            // We don't really take a speed hit from this at all, but we support files with a stupid amount of
+            // nested groups now.
+            if (Count >= Capacity - 1)
+            {
+                int oldMaxGroups = Capacity;
+
+                int newCapacity;
+                checked
+                {
+                    try
+                    {
+                        // Don't let it go all the way up to array max. 262,144 is absurdly high but not so high
+                        // as to take too much memory.
+                        newCapacity = (Capacity * 2).Clamp(0, ByteSize.KB * 256);
+                    }
+                    catch (OverflowException)
+                    {
+                        newCapacity = ByteSize.KB * 256;
+                    }
+                }
+
+                Capacity = newCapacity;
+                Array.Resize(ref _skipDestinations, Capacity);
+                Array.Resize(ref _inFontTables, Capacity);
+                Array.Resize(ref SymbolFonts, Capacity);
+                Array.Resize(ref Properties, Capacity);
+
+                for (int i = oldMaxGroups; i < Capacity; i++)
+                {
+                    Properties[i] = new int[_propertiesLen];
+                }
+            }
+
+            _skipDestinations[Count + 1] = _skipDestinations[Count];
+            _inFontTables[Count + 1] = _inFontTables[Count];
+            SymbolFonts[Count + 1] = SymbolFonts[Count];
             for (int i = 0; i < _propertiesLen; i++)
             {
                 Properties[Count + 1][i] = Properties[Count][i];
@@ -262,28 +296,28 @@ public static partial class RTFParserCommon
 
         #region Current group
 
-        public unsafe bool CurrentSkipDest
+        public bool CurrentSkipDest
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => SkipDestinations.Array[Count];
+            get => _skipDestinations[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => SkipDestinations.Array[Count] = value;
+            set => _skipDestinations[Count] = value;
         }
 
-        public unsafe bool CurrentInFontTable
+        public bool CurrentInFontTable
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => InFontTables.Array[Count];
+            get => _inFontTables[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => InFontTables.Array[Count] = value;
+            set => _inFontTables[Count] = value;
         }
 
-        public unsafe SymbolFont CurrentSymbolFont
+        public SymbolFont CurrentSymbolFont
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => (SymbolFont)SymbolFonts.Array[Count];
+            get => (SymbolFont)SymbolFonts[Count];
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set => SymbolFonts.Array[Count] = (byte)value;
+            set => SymbolFonts[Count] = (byte)value;
         }
 
         public int[] CurrentProperties
@@ -294,11 +328,11 @@ public static partial class RTFParserCommon
 
         // Current group always begins at group 0, so reset just that one
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void ResetFirst()
+        public void ResetFirst()
         {
-            SkipDestinations.Array[0] = false;
-            InFontTables.Array[0] = false;
-            SymbolFonts.Array[0] = (int)SymbolFont.None;
+            _skipDestinations[0] = false;
+            _inFontTables[0] = false;
+            SymbolFonts[0] = (int)SymbolFont.None;
 
             Properties[0][(int)Property.Hidden] = 0;
             Properties[0][(int)Property.UnicodeCharSkipCount] = 1;
@@ -309,7 +343,16 @@ public static partial class RTFParserCommon
         #endregion
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ClearFast() => Count = 0;
+        internal void ClearFast() => Count = 0;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void ResetCapacityIfTooHigh()
+        {
+            if (Capacity > DefaultCapacity)
+            {
+                Init();
+            }
+        }
     }
 
     public sealed class Symbol
@@ -748,7 +791,7 @@ public static partial class RTFParserCommon
 
     public sealed class FontDictionary
     {
-        private readonly int _capacity;
+        private int _capacity;
         private Dictionary<int, FontEntry>? _dict;
 
         private readonly ListFast<FontEntry> _fontEntryPool;
@@ -836,6 +879,8 @@ public static partial class RTFParserCommon
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ClearFull(int capacity)
         {
+            _capacity = capacity;
+            _highestKey = 0;
             _fontEntryPool.Capacity = capacity;
             _dict = null;
             Clear();
