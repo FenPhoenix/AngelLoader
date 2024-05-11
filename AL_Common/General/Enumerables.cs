@@ -208,6 +208,12 @@ public static partial class Common
             }
         }
 
+        public void HardReset(int capacity)
+        {
+            ClearFast();
+            Capacity = capacity;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRecycleState(int count, int maxEntriesBeforeCapacityReset = 25_000)
         {
