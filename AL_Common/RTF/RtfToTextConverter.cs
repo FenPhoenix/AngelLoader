@@ -990,7 +990,7 @@ public sealed partial class RtfToTextConverter
         // Extremely unlikely we'll hit any of these, but just for safety
         if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
         if (_unicodeBuffer.Capacity > ByteSize.MB) _unicodeBuffer.Capacity = 0;
-        if (_encodings.Count > ByteSize.KB) _encodings.Reset();
+        if (_encodings.Count > ByteSize.KB) _encodings.Reset(0);
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
         if (_fldinstSymbolFontName.Capacity > ByteSize.MB) _fldinstSymbolFontName.Capacity = 0;
 

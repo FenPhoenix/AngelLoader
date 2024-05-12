@@ -82,10 +82,11 @@ public static partial class Common
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     /// <param name="dictionary"></param>
-    public static void Reset<TKey, TValue>(this Dictionary<TKey, TValue> dictionary) where TKey : notnull
+    /// <param name="capacity"></param>
+    public static void Reset<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, int capacity) where TKey : notnull
     {
         dictionary.Clear();
-        dictionary.TrimExcess();
+        dictionary.TrimExcess(capacity);
     }
 
     #endregion
