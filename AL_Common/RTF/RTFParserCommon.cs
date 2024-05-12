@@ -799,29 +799,24 @@ public static partial class RTFParserCommon
     public sealed class FontDictionary
     {
         private int _capacity;
-        private Dictionary<int, FontEntry>? _dict;
+        private Dictionary<int, FontEntry> _dict;
 
         private readonly ListFast<FontEntry> _fontEntryPool;
         private int _fontEntryPoolVirtualCount;
 
-        private readonly FontEntry?[] _array = new FontEntry?[_switchPoint];
-
         /*
         \fN params are normally in the signed int16 range, but the Windows RichEdit control supports them in the
         -30064771071 - 30064771070 (-0x6ffffffff - 0x6fffffffe) range (yes, bizarre numbers, but I tested and
-        there they are). So we're going to use the array for the expected "normal" range, and fall back to the
-        dictionary for weird crap that probably won't happen.
+        there they are).
         */
-        private const int _switchPoint = 32768;
 
         public FontEntry? Top;
-
-        private int _highestKey;
 
         public FontDictionary(int capacity)
         {
             _capacity = capacity;
             _fontEntryPool = new ListFast<FontEntry>(capacity);
+            _dict = new Dictionary<int, FontEntry>(_capacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -841,50 +836,14 @@ public static partial class RTFParserCommon
             }
 
             Top = fontEntry;
-            if (key is < 0 or >= _switchPoint)
-            {
-                _dict ??= new Dictionary<int, FontEntry>(_capacity);
-                _dict[key] = fontEntry;
-            }
-            else
-            {
-                _array[key] = fontEntry;
-            }
-            if (key > _highestKey) _highestKey = key;
+            _dict[key] = fontEntry;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             Top = null;
-            _dict?.Clear();
-            /*
-            An Array.Clear() takes ~177ms of ~184ms taken by the parser Reset() function over 20 runs of the
-            standard convert-only full-set test.
-            
-            An AsSpan().Clear() takes only ~66ms (of Reset() ~72).
-
-            An AsSpan(0, _highestKey).Clear() is ~24ms.
-            
-            We can elide the clear and that works correctly as long as we don't have \f keywords that reference
-            undefined font numbers, but if we did then it would index into the array and possibly get a font
-            entry when it should have gotten null. That's unlikely, but we should probably not just ignore it.
-
-            Aside from eliding the clear and reducing edge-case safety, this up-to-highest-key clear is probably
-            about the best we can do.
-            */
-
-            // If the dictionary is not null, that means we had an out-of-array-range key, so all bets are off.
-            // Just clear the entire thing in that case.
-            if (_dict == null && (_highestKey is > 0 and < _switchPoint))
-            {
-                _array.AsSpan(0, _highestKey + 1).Clear();
-            }
-            else
-            {
-                _array.AsSpan().Clear();
-            }
-            _highestKey = 0;
+            _dict.Clear();
             _fontEntryPoolVirtualCount = _fontEntryPool.Count;
         }
 
@@ -892,32 +851,16 @@ public static partial class RTFParserCommon
         public void ClearFull(int capacity)
         {
             _capacity = capacity;
-            _highestKey = 0;
             _fontEntryPool.HardReset(capacity);
-            _dict = null;
+            // Can't trim excess in Framework, so just reinstantiate
+            _dict = new Dictionary<int, FontEntry>(_capacity);
             Clear();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(int key, [NotNullWhen(true)] out FontEntry? value)
         {
-            if (key is < 0 or >= _switchPoint)
-            {
-                if (_dict == null)
-                {
-                    value = null;
-                    return false;
-                }
-                else
-                {
-                    return _dict.TryGetValue(key, out value);
-                }
-            }
-            else
-            {
-                value = _array[key];
-                return value != null;
-            }
+            return _dict.TryGetValue(key, out value);
         }
     }
 
