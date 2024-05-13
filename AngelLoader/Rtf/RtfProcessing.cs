@@ -375,6 +375,16 @@ internal static class RtfProcessing
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
             int firstIndexPastHeader = FindIndexOfByteSequence(currentReadmeBytes, RTFHeaderBytes) + RTFHeaderBytes.Length;
+            // Because we're only matching "{\rtf" and there may or may not be a param, we need to make sure we
+            // skip past the entire header.
+            for (int i = firstIndexPastHeader; i < currentReadmeBytes.Length; i++)
+            {
+                if(!char.IsAsciiLetterOrDigit((char)currentReadmeBytes[i]))
+                {
+                    firstIndexPastHeader = i;
+                    break;
+                }
+            }
 
             ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
             Span<byte> retBytesSpan = retBytes.AsSpan();
