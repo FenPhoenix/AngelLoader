@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿//#define BYTE_IDENTICALITY_TEST
+
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -12,6 +14,36 @@ namespace AngelLoader.Forms.CustomControls;
 
 internal sealed partial class RichTextBoxCustom
 {
+#if BYTE_IDENTICALITY_TEST
+
+    internal static async System.Threading.Tasks.Task DoByteIdenticalityTest()
+    {
+        foreach (FanMission fm in Global.FMsViewList)
+        {
+            FMCache.CacheData cacheData = await FMCache.GetCacheableData(fm, false);
+            foreach (string readme in cacheData.Readmes)
+            {
+                string oldSel = fm.SelectedReadme;
+
+                try
+                {
+                    fm.SelectedReadme = readme;
+                    (string readmePath, ReadmeType readmeType) = Core.GetReadmeFileAndType(fm);
+                    if (readmeType == ReadmeType.RichText)
+                    {
+                        Core.View.LoadReadmeContent(readmePath, readmeType, null);
+                    }
+                }
+                finally
+                {
+                    fm.SelectedReadme = oldSel;
+                }
+            }
+        }
+    }
+
+#endif
+
     private bool _changedThemeWhileDisabled;
 
     private bool _darkModeEnabled;
@@ -49,7 +81,12 @@ internal sealed partial class RichTextBoxCustom
             : (SystemColors.Window, SystemColors.WindowText);
     }
 
-    private void RefreshDarkModeState(PreProcessedRTF? preProcessedRtf = null, bool skipSuspend = false)
+    private void RefreshDarkModeState(
+#if BYTE_IDENTICALITY_TEST
+        string path = "",
+#endif
+        PreProcessedRTF? preProcessedRtf = null,
+        bool skipSuspend = false)
     {
         // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
         // our scroll position bump itself slightly. Weird.
@@ -70,12 +107,30 @@ internal sealed partial class RichTextBoxCustom
 
             if (_currentReadmeType == ReadmeType.RichText)
             {
-                byte[] bytes = preProcessedRtf != null
-                    ? preProcessedRtf.ProcessedBytes
-                    : RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
-                using var ms = new MemoryStream(bytes);
-                // @NET5: On modern .NET, RichTextBox now throws if the rtf is broken.
-                LoadFile(ms, RichTextBoxStreamType.RichText);
+                if (preProcessedRtf != null)
+                {
+                    using var ms = new MemoryStream(preProcessedRtf.ProcessedBytes);
+                    // @NET5: On modern .NET, RichTextBox now throws if the rtf is broken.
+                    LoadFile(ms, RichTextBoxStreamType.RichText);
+                }
+                else
+                {
+                    byte[] bytes = RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
+                    using var ms = new MemoryStream(bytes);
+                    LoadFile(ms, RichTextBoxStreamType.RichText);
+
+#if BYTE_IDENTICALITY_TEST
+                    if (!string.IsNullOrEmpty(path))
+                    {
+                        string theme = _darkModeEnabled ? "dark" : "light";
+                        // Say "new" if this is the current version; "old" if it's the previous version
+                        string dir = @"C:\rtf_byte_identicality_new_" + theme;
+                        Directory.CreateDirectory(dir);
+
+                        File.WriteAllBytes(Path.Combine(dir, path.Replace(":", "_").Replace("\\", "_").Replace("/", "_")), bytes);
+                    }
+#endif
+                }
             }
             else if (_currentReadmeType == ReadmeType.GLML)
             {

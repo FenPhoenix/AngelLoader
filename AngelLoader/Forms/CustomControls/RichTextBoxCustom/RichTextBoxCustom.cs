@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define BYTE_IDENTICALITY_TEST
+
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
@@ -353,7 +355,12 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                     // This resets the font if false, so don't do it after the load or it messes up the RTF.
                     ContentIsPlainText = false;
 
-                    RefreshDarkModeState(preProcessedRtf: preProcessedRTF, skipSuspend: true);
+                    RefreshDarkModeState(
+#if BYTE_IDENTICALITY_TEST
+                        path: path,
+#endif
+                        preProcessedRtf: preProcessedRTF,
+                        skipSuspend: true);
 
                     break;
                 case ReadmeType.PlainText:

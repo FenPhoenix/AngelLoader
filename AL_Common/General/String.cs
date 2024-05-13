@@ -64,6 +64,9 @@ public static partial class Common
     public static bool IsAsciiAlphanumeric(this char c) => IsAsciiAlpha(c) || IsAsciiNumeric(c);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiAlphanumeric(this byte b) => IsAsciiAlpha(b) || IsAsciiNumeric(b);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiHex(this byte b)
     {
         char c = (char)b;
