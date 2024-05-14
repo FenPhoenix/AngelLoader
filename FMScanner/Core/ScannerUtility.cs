@@ -332,7 +332,7 @@ internal static class Utility
 
         if (str1Len < str2Len) return false;
 
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan().Slice(0, str2Len), str2.AsSpan());
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.AsSpan()[..str2Len], str2.AsSpan());
         return result.RequiresStringComparison ? str1.StartsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
     }
 
@@ -344,7 +344,7 @@ internal static class Utility
 
         if (str1Len < str2Len) return false;
 
-        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1.Slice(str1Len - str2Len), str2.AsSpan());
+        StringCompareReturn result = CompareToOrdinalIgnoreCase(str1[(str1Len - str2Len)..], str2.AsSpan());
         return result.RequiresStringComparison ? str1.ToString().EndsWith(str2, OrdinalIgnoreCase) : result.Compare == 0;
     }
 

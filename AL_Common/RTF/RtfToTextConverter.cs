@@ -1179,7 +1179,7 @@ public sealed partial class RtfToTextConverter
         return RtfError.OK;
     }
 
-    private unsafe RtfError HandleFontTable()
+    private RtfError HandleFontTable()
     {
         // Prevent stack overflow from maliciously-crafted rtf files - we should never recurse back into here in
         // a spec-conforming file.

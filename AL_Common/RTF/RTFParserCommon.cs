@@ -950,10 +950,6 @@ public static partial class RTFParserCommon
         /// </summary>
         StackUnderflow,
         /// <summary>
-        /// There were over <inheritdoc cref="GroupStack.MaxGroups" path="//summary"/> nested groups.
-        /// </summary>
-        StackOverflow,
-        /// <summary>
         /// RTF ended during an open group.
         /// </summary>
         UnmatchedBrace,
