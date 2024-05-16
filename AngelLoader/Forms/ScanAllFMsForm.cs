@@ -31,7 +31,7 @@ public sealed partial class ScanAllFMsForm : DarkFormBase
             SizeCheckBox,
             ReleaseDateCheckBox,
             TagsCheckBox,
-            MissionCountCheckBox
+            MissionCountCheckBox,
         };
 
         if (Config.DarkMode) SetThemeBase(Config.VisualTheme);

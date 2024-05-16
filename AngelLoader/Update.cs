@@ -38,14 +38,14 @@ public static class AppUpdate
     {
         UpdateAvailable,
         NoUpdateAvailable,
-        Error
+        Error,
     }
 
     internal enum UpdateDetailsDownloadResult
     {
         Success,
         Error,
-        NoUpdatesFound
+        NoUpdatesFound,
     }
 
 #if TESTING

@@ -21,7 +21,7 @@ internal enum Error
     GameExeNotSpecified,
     GameExeNotFound,
     SneakyDllNotFound,
-    GameVersionNotFound
+    GameVersionNotFound,
 }
 
 [Flags]
@@ -29,20 +29,20 @@ internal enum SetGameDataError
 {
     None = 0,
     SneakyOptionsNotFound = 1,
-    GameDirNotWriteable = 2
+    GameDirNotWriteable = 2,
 }
 
 internal enum MissFlagError
 {
     None,
-    NoValidlyNamedMisFiles
+    NoValidlyNamedMisFiles,
 }
 
 internal enum ImportError
 {
     None,
     NoArchiveDirsFound,
-    Unknown
+    Unknown,
 }
 
 #if false
@@ -51,6 +51,6 @@ internal enum StubResponseError
     RootTooLong,
     NameTooLong,
     ModExcludeTooLong,
-    LanguageTooLong
+    LanguageTooLong,
 }
 #endif

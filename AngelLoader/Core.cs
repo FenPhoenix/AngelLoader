@@ -2318,7 +2318,7 @@ internal static class Core
         1 => LText.StatisticsTab.MissionCount_Single,
         > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
                misCount.ToString(CultureInfo.CurrentCulture) +
-               LText.StatisticsTab.MissionCount_AfterNumber
+               LText.StatisticsTab.MissionCount_AfterNumber,
     };
 
     internal static void JustInTimeProcessFM(FanMission fm)

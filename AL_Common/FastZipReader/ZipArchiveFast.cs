@@ -24,7 +24,7 @@ public sealed class ZipArchiveFast : IDisposable
         Deflate = 8,
         Deflate64 = 9,
         BZip2 = 12,
-        LZMA = 14
+        LZMA = 14,
     }
 
     #endregion

@@ -218,7 +218,7 @@ internal sealed partial class RichTextBoxCustom
                 prc = rectPtr,
                 lParam = IntPtr.Zero,
                 fFlags2 = TranslateDispatchCallback,
-                pfnScroll = ReaderScrollCallback
+                pfnScroll = ReaderScrollCallback,
             };
 
             readerInfo.cbSize = Marshal.SizeOf(readerInfo);
@@ -410,7 +410,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'p',
         (byte)'i',
         (byte)'c',
-        (byte)'t'
+        (byte)'t',
     };
 
     internal static readonly byte[] _shppictBlanked =
@@ -427,7 +427,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'x',
         (byte)'x',
         (byte)'x',
-        (byte)'x'
+        (byte)'x',
     };
 
     internal static readonly byte[] _nonshppict =
@@ -445,7 +445,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'p',
         (byte)'i',
         (byte)'c',
-        (byte)'t'
+        (byte)'t',
     };
 
     internal static readonly byte[] _nonshppictBlanked =
@@ -463,7 +463,7 @@ internal sealed partial class RichTextBoxCustom
         (byte)'x',
         (byte)'x',
         (byte)'x',
-        (byte)'x'
+        (byte)'x',
     };
 
     /*

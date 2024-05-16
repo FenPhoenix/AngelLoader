@@ -33,7 +33,7 @@ public static partial class LanguageSupport
         [FenGenLanguage("ru", "Русский")]
         Russian = 512,
         [FenGenLanguage("es", "Español")]
-        Spanish = 1024
+        Spanish = 1024,
     }
 
     public static bool ConvertsToKnown(this Language language, out LanguageIndex languageIndex)

@@ -36,7 +36,7 @@ namespace AngelLoader.FFmpeg.NET;
 internal enum ConvertType
 {
     AudioBitRateTo16Bit,
-    FormatConvert
+    FormatConvert,
 }
 
 internal static class Engine
@@ -60,7 +60,7 @@ internal static class Engine
             Arguments = arguments,
             FileName = Paths.FFmpegExe,
             CreateNoWindow = true,
-            UseShellExecute = false
+            UseShellExecute = false,
         };
 
         using var ffmpegProcess = new Process();

@@ -41,7 +41,7 @@ internal sealed class DynamicItemsLLMenu : IDarkable
 
         _menu = new DarkContextMenu(_owner)
         {
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         _constructed = true;

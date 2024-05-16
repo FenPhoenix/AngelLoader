@@ -28,7 +28,7 @@ public sealed partial class Lazy_StatsPage : UserControl
                 AutoCheck = false,
                 AutoSize = true,
                 TabIndex = tabIndex,
-                Location = new Point(0, y)
+                Location = new Point(0, y),
             };
             _checkBoxes[i] = cb;
             StatsCheckBoxesPanel.Controls.Add(cb);

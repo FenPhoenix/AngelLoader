@@ -33,7 +33,7 @@ internal static partial class FMInstallAndPlay
     {
         OriginalGame,
         Editor,
-        FM
+        FM,
     }
 
     private static readonly byte[] _DARKMISS_Bytes =
@@ -45,7 +45,7 @@ internal static partial class FMInstallAndPlay
         (byte)'M',
         (byte)'I',
         (byte)'S',
-        (byte)'S'
+        (byte)'S',
     };
 
     private static Encoding? _utf8NoBOM;
@@ -656,7 +656,7 @@ internal static partial class FMInstallAndPlay
             {
                 FileName = exe,
                 WorkingDirectory = workingPath,
-                Arguments = !args.IsEmpty() ? args : ""
+                Arguments = !args.IsEmpty() ? args : "",
             };
 
             ProcessStart_UseShellExecute(startInfo);
@@ -683,7 +683,7 @@ internal static partial class FMInstallAndPlay
             {
                 FileName = exe,
                 WorkingDirectory = workingPath,
-                Arguments = !args.IsEmpty() ? args : ""
+                Arguments = !args.IsEmpty() ? args : "",
             };
 
             if (gameIndex == GameIndex.TDM)
@@ -720,7 +720,7 @@ internal static partial class FMInstallAndPlay
             {
                 FileName = exe,
                 WorkingDirectory = workingPath,
-                Arguments = !args.IsEmpty() ? args : ""
+                Arguments = !args.IsEmpty() ? args : "",
             };
 
             bool success = await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, fm, steam, gameExe);

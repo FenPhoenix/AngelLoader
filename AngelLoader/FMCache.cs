@@ -33,7 +33,7 @@ internal static class FMCache
 
     private static readonly string[] _imageFileExtensions =
     {
-        ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff"
+        ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff",
     };
 
     // Try to reject formats that don't make sense. Exclude instead of include for future-proofing.
@@ -41,7 +41,7 @@ internal static class FMCache
     {
         ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
         ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
-        ".flv", ".log", ".str", ".nut", ".db", ".obj"
+        ".flv", ".log", ".str", ".nut", ".db", ".obj",
     };
 
     #endregion
@@ -95,7 +95,7 @@ internal static class FMCache
             {
                 basePath,
                 Path.Combine(basePath, _t3ReadmeDir1),
-                Path.Combine(basePath, _t3ReadmeDir2)
+                Path.Combine(basePath, _t3ReadmeDir2),
             };
 
             var readmes = new List<string>();

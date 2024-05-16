@@ -58,7 +58,7 @@ internal sealed class AddTagLLDropDown : IDarkable
             TabIndex = 3,
             Visible = false,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         _listBox.SelectedIndexChanged += _page.AddTagListBox_SelectedIndexChanged;

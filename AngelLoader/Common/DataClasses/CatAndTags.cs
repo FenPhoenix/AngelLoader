@@ -221,7 +221,7 @@ internal static class PresetTags
             "crime",
             "horror",
             "mystery",
-            "puzzle"
+            "puzzle",
         }),
         new("language", new[]
         {
@@ -235,7 +235,7 @@ internal static class PresetTags
             "Japanese",
             "Polish",
             "Russian",
-            "Spanish"
+            "Spanish",
         }),
         new("series", Array.Empty<string>()),
         new(MiscCategory, new[]
@@ -245,8 +245,8 @@ internal static class PresetTags
             "long",
             "other protagonist",
             "short",
-            "unknown author"
-        })
+            "unknown author",
+        }),
     };
 
     #endregion

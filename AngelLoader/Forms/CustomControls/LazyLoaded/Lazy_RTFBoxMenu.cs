@@ -49,7 +49,7 @@ internal sealed class Lazy_RTFBoxMenu : IDarkable
         {
             CopyMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
-            SelectAllMenuItem = new ToolStripMenuItemCustom()
+            SelectAllMenuItem = new ToolStripMenuItemCustom(),
         });
 
         _menu.Opening += MenuOpening;

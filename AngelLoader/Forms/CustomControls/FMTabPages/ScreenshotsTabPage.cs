@@ -192,7 +192,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         if (!_constructed) return;
         _page.NumberLabel.Location = _page.NumberLabel.Location with
         {
-            X = (_page.ClientSize.Width - 8) - _page.NumberLabel.Width
+            X = (_page.ClientSize.Width - 8) - _page.NumberLabel.Width,
         };
     }
 

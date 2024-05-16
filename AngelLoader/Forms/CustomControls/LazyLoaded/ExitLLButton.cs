@@ -50,7 +50,7 @@ internal sealed class ExitLLButton : IDarkable
             MinimumSize = new Size(36, 36),
             TabIndex = 3,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         Button.Click += _owner.Exit_Click;

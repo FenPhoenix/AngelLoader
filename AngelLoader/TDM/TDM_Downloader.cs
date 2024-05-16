@@ -38,7 +38,7 @@ internal static class TDM_Downloader
     private static readonly string[] _availableMissionsUrls =
     {
         "http://missions.thedarkmod.com/get_available_missions.php",
-        "http://missions.thedarkmod.com/available_missions.xml"
+        "http://missions.thedarkmod.com/available_missions.xml",
     };
 
     internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>

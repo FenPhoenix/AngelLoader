@@ -84,7 +84,7 @@ internal static class Import
                 LastPlayed = importLastPlayed,
                 Size = importSize,
                 Comment = importComment,
-                FinishedOn = importFinishedOn
+                FinishedOn = importFinishedOn,
             };
         }
         else
@@ -125,7 +125,7 @@ internal static class Import
                 Tags = importTags,
                 SelectedReadme = importSelectedReadme,
                 FinishedOn = importFinishedOn,
-                Size = importSize
+                Size = importSize,
             };
         }
 
@@ -157,7 +157,7 @@ internal static class Import
                     {
                         ImportType.DarkLoader => LText.ProgressBox.ImportingFromDarkLoader,
                         ImportType.FMSel => LText.ProgressBox.ImportingFromFMSel,
-                        _ => LText.ProgressBox.ImportingFromNewDarkLoader
+                        _ => LText.ProgressBox.ImportingFromNewDarkLoader,
                     },
                     progressType: ProgressType.Indeterminate
                 );
@@ -166,7 +166,7 @@ internal static class Import
                 {
                     ImportType.DarkLoader => ImportDarkLoaderInternal(iniFile, importFMData, importSaves, fields, instDirNameContext),
                     ImportType.FMSel => ImportFMSelInternal(iniFile, fields),
-                    _ => ImportNDLInternal(iniFile, fields, instDirNameContext)
+                    _ => ImportNDLInternal(iniFile, fields, instDirNameContext),
                 });
 
                 if (error != ImportError.None)
@@ -272,7 +272,7 @@ internal static class Import
             "[Thief 1]",
             "[Thief 2]",
             "[Thief2x]",
-            "[SShock 2]"
+            "[SShock 2]",
         ];
 
         // Not used - we scan for game types ourselves currently
@@ -397,7 +397,7 @@ internal static class Import
                             {
                                 Archive = realArchive,
                                 InstalledDir = realArchive.ToInstDirNameFMSel(instDirNameContext, true),
-                                SizeBytes = sizeBytes
+                                SizeBytes = sizeBytes,
                             };
 
                             // We don't import game type, because DarkLoader by default gets it wrong for
@@ -1011,7 +1011,7 @@ internal static class Import
                 var newFM = new FanMission
                 {
                     Archive = importedFM.Archive,
-                    InstalledDir = importedFM.InstalledDir
+                    InstalledDir = importedFM.InstalledDir,
                 };
 
                 if (fields.Title)
@@ -1126,7 +1126,7 @@ internal static class Import
                 var newFM = new FanMission
                 {
                     Archive = importedFM.Archive,
-                    InstalledDir = importedFM.InstalledDir
+                    InstalledDir = importedFM.InstalledDir,
                 };
 
                 if (fields.Title)
@@ -1260,7 +1260,7 @@ internal static class Import
                 var newFM = new FanMission
                 {
                     Archive = importedFM.Archive,
-                    InstalledDir = importedFM.InstalledDir
+                    InstalledDir = importedFM.InstalledDir,
                 };
 
                 if (fields.Title)

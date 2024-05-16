@@ -158,7 +158,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
             {
                 DarkCheckBox cb = new()
                 {
-                    AutoSize = true
+                    AutoSize = true,
                 };
                 _checkBoxes[i] = cb;
                 CheckList.Controls.Add(cb);
@@ -212,7 +212,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
                     Tag = ItemType.Caution,
                     AutoSize = true,
                     ForeColor = Color.Maroon,
-                    DarkModeForeColor = DarkColors.Fen_CautionText
+                    DarkModeForeColor = DarkColors.Fen_CautionText,
                 };
                 CheckList.Controls.Add(_cautionLabel);
                 _cautionLabel.DarkModeEnabled = CheckList._darkModeEnabled;

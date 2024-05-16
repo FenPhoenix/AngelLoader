@@ -86,7 +86,7 @@ internal static partial class NonLocalizableText
 #else
         ("EasyHook", "https://github.com/EasyHook/EasyHook"),
 #endif
-        ("Open Sans", "https://fonts.google.com/specimen/Open+Sans")
+        ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 

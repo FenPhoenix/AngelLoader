@@ -37,7 +37,7 @@ public sealed partial class AboutForm : DarkFormBase
                 AutoSize = true,
                 Location = new Point(x, y),
                 TabIndex = tabIndex,
-                TabStop = true
+                TabStop = true,
             };
             label.LinkClicked += LinkLabels_LinkClicked;
             _linkLabels[i] = label;

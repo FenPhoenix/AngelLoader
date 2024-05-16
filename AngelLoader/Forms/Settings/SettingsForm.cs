@@ -175,7 +175,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
-            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false })
+            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -192,7 +192,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief2ExePathLabel,
             PathsPage.Thief3ExePathLabel,
             PathsPage.SS2ExePathLabel,
-            PathsPage.TDMExePathLabel
+            PathsPage.TDMExePathLabel,
         };
         GameExeTextBoxes = new[]
         {
@@ -200,7 +200,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief2ExePathTextBox,
             PathsPage.Thief3ExePathTextBox,
             PathsPage.SS2ExePathTextBox,
-            PathsPage.TDMExePathTextBox
+            PathsPage.TDMExePathTextBox,
         };
         GameExeBrowseButtons = new[]
         {
@@ -208,7 +208,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief2ExePathBrowseButton,
             PathsPage.Thief3ExePathBrowseButton,
             PathsPage.SS2ExePathBrowseButton,
-            PathsPage.TDMExePathBrowseButton
+            PathsPage.TDMExePathBrowseButton,
         };
         GameUseSteamCheckBoxes = new[]
         {
@@ -216,7 +216,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             PathsPage.Thief2UseSteamCheckBox,
             PathsPage.Thief3UseSteamCheckBox,
             PathsPage.SS2UseSteamCheckBox,
-            GetDummy<DarkCheckBox>()
+            GetDummy<DarkCheckBox>(),
         };
 
         GameWebSearchUrlLabels = new[]
@@ -225,7 +225,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.T2WebSearchUrlLabel,
             OtherPage.T3WebSearchUrlLabel,
             OtherPage.SS2WebSearchUrlLabel,
-            OtherPage.TDMWebSearchUrlLabel
+            OtherPage.TDMWebSearchUrlLabel,
         };
         GameWebSearchUrlTextBoxes = new[]
         {
@@ -233,7 +233,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.T2WebSearchUrlTextBox,
             OtherPage.T3WebSearchUrlTextBox,
             OtherPage.SS2WebSearchUrlTextBox,
-            OtherPage.TDMWebSearchUrlTextBox
+            OtherPage.TDMWebSearchUrlTextBox,
         };
         GameWebSearchUrlResetButtons = new[]
         {
@@ -241,7 +241,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.T2WebSearchUrlResetButton,
             OtherPage.T3WebSearchUrlResetButton,
             OtherPage.SS2WebSearchUrlResetButton,
-            OtherPage.TDMWebSearchUrlResetButton
+            OtherPage.TDMWebSearchUrlResetButton,
         };
 
         // @GENGAMES (Settings): We've traded one form of jank for another

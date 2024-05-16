@@ -261,7 +261,7 @@ internal static class Win32ThemeHooks
                     COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
                     COLOR_3DFACE => ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground),
                     COLOR_GRAYTEXT => ColorTranslator.ToWin32(DarkColors.DisabledText),
-                    _ => GetSysColor_Original!(nIndex)
+                    _ => GetSysColor_Original!(nIndex),
                 },
                 Override.RichText => nIndex switch
                 {
@@ -270,7 +270,7 @@ internal static class Win32ThemeHooks
                     COLOR_WINDOWTEXT => ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground),
                     COLOR_HIGHLIGHT => ColorTranslator.ToWin32(DarkColors.BlueSelection),
                     COLOR_HIGHLIGHT_TEXT => ColorTranslator.ToWin32(DarkColors.Fen_HighlightText),
-                    _ => GetSysColor_Original!(nIndex)
+                    _ => GetSysColor_Original!(nIndex),
                 },
                 // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                 // This is the ONLY way that works on those versions.
@@ -278,7 +278,7 @@ internal static class Win32ThemeHooks
                 // this here in GetSysColor(), but let's do it for robustness because who knows what could change.)
                 _ => nIndex == COLOR_3DFACE
                     ? ColorTranslator.ToWin32(DarkColors.DarkBackground)
-                    : GetSysColor_Original!(nIndex)
+                    : GetSysColor_Original!(nIndex),
             }
             : GetSysColor_Original!(nIndex);
     }
@@ -298,7 +298,7 @@ internal static class Win32ThemeHooks
                     COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
                     COLOR_3DFACE => SysColorBrush_Fen_ControlBackground,
                     COLOR_GRAYTEXT => SysColorBrush_DisabledText,
-                    _ => GetSysColorBrush_Original!(nIndex)
+                    _ => GetSysColorBrush_Original!(nIndex),
                 },
                 Override.RichText => nIndex switch
                 {
@@ -307,13 +307,13 @@ internal static class Win32ThemeHooks
                     COLOR_WINDOWTEXT => SysColorBrush_Fen_DarkForeground,
                     COLOR_HIGHLIGHT => SysColorBrush_BlueSelection,
                     COLOR_HIGHLIGHT_TEXT => SysColorBrush_Fen_HighlightText,
-                    _ => GetSysColorBrush_Original!(nIndex)
+                    _ => GetSysColorBrush_Original!(nIndex),
                 },
                 // This is for scrollbar vert/horz corners on Win7 (and maybe Win8? Haven't tested it).
                 // This is the ONLY way that works on those versions.
                 _ => nIndex == COLOR_3DFACE
                     ? SysColorBrush_DarkBackground
-                    : GetSysColorBrush_Original!(nIndex)
+                    : GetSysColorBrush_Original!(nIndex),
             }
             : GetSysColorBrush_Original!(nIndex);
     }
@@ -400,7 +400,7 @@ internal static class Win32ThemeHooks
     {
         None,
         Full,
-        RichText
+        RichText,
     }
 
     // We set/unset this while painting specific controls, so other controls aren't affected by the global
@@ -428,7 +428,7 @@ internal static class Win32ThemeHooks
         ToolTip,
         TreeView,
         TabScrollButtons,
-        Trackbar
+        Trackbar,
     }
 
     private static readonly IntPtr[] _hThemes = new IntPtr[_renderedControlCount];
@@ -439,7 +439,7 @@ internal static class Win32ThemeHooks
         "ToolTip",
         "TreeView",
         "Spin",
-        "Trackbar"
+        "Trackbar",
     };
 
     #endregion
@@ -518,7 +518,7 @@ internal static class Win32ThemeHooks
                     Native.TUBS_DISABLED => DarkColors.LightBackgroundBrush,
                     //Native.TUBS_NORMAL => DarkColors.BlueSelectionBrush,
                     //Native.TUBS_FOCUSED => DarkColors.BlueSelectionBrush,
-                    _ => DarkColors.BlueSelectionBrush
+                    _ => DarkColors.BlueSelectionBrush,
                 };
 
                 Rectangle squarePartRect = rect with { Height = rect.Height - 5 };
@@ -660,7 +660,7 @@ internal static class Win32ThemeHooks
                     Native.SCRBS_HOVER => DarkColors.Fen_ThumbScrollBarHoverBrush,
                     Native.SCRBS_HOT => DarkColors.GreyHighlightBrush,
                     Native.SCRBS_PRESSED => DarkColors.ActiveControlBrush,
-                    _ => DarkColors.GreySelectionBrush
+                    _ => DarkColors.GreySelectionBrush,
                 };
                 break;
             default:
@@ -799,7 +799,7 @@ internal static class Win32ThemeHooks
                 rect with
                 {
                     Width = rect.Width - 1,
-                    Height = rect.Height - 1
+                    Height = rect.Height - 1,
                 });
             return true;
         }

@@ -66,7 +66,7 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
                 container.Height),
             DarkModeDrawnBackColor = DarkColors.Fen_ControlBackground,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         Label = new DarkLabel
@@ -76,7 +76,7 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         container.Controls.Add(Panel);

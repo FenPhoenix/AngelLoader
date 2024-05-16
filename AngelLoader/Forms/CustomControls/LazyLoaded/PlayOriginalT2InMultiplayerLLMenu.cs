@@ -47,7 +47,7 @@ internal sealed class PlayOriginalT2InMultiplayerLLMenu : IDarkable
         MenuItem = new ToolStripMenuItemCustom
         {
             GameIndex = GameIndex.Thief2,
-            Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small()
+            Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
         };
         MenuItem.Click += _owner.PlayT2MPMenuItem_Click;
         _menu.Items.Add(MenuItem);

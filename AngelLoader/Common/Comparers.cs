@@ -39,7 +39,7 @@ internal static class Comparers
         new FMDateAddedComparer(),
         new FMPlayTimeComparer(),
         new FMDisabledModsComparer(),
-        new FMCommentComparer()
+        new FMCommentComparer(),
     };
 
     #endregion

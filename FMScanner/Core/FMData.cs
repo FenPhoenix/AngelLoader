@@ -18,15 +18,14 @@ internal enum ScanOptionsEnum
     Size,
     ReleaseDate,
     Tags,
-    MissionCount
+    MissionCount,
 #if FMScanner_FullCode
-    ,
     CampaignMissionNames,
     Version,
     Languages,
     NewDarkRequired,
     NewDarkMinimumVersion,
-    Description
+    Description,
 #endif
 }
 
@@ -99,7 +98,7 @@ public sealed class ScanOptions
             ScanLanguages = scanLanguages,
             ScanNewDarkRequired = scanNewDarkRequired,
             ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
-            ScanDescription = scanDescription
+            ScanDescription = scanDescription,
 #endif
         };
 
@@ -119,7 +118,7 @@ public sealed class ScanOptions
         ScanLanguages = ScanLanguages,
         ScanNewDarkRequired = ScanNewDarkRequired,
         ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
-        ScanDescription = ScanDescription
+        ScanDescription = ScanDescription,
 #endif
     };
 
@@ -218,7 +217,7 @@ public enum Game
     /// <summary>The Dark Mod.</summary>
     TDM,
     /// <summary>Invalid or corrupt mission, not a mission, or mission for an unsupported game.</summary>
-    Unsupported
+    Unsupported,
 }
 
 #if FMScanner_FullCode
@@ -229,7 +228,7 @@ public enum Game
 public enum FMType
 {
     FanMission,
-    Campaign
+    Campaign,
 }
 #endif
 

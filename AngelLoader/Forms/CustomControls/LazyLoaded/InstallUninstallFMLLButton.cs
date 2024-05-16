@@ -55,7 +55,7 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
                 (LText.Global.InstallFMs, TextRenderer.MeasureText(LText.Global.InstallFMs, Button.Font).Width),
                 (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.InstallFM, Button.Font).Width),
                 (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.DeselectFM_DarkMod, Button.Font).Width),
-                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.SelectFM_DarkMod, Button.Font).Width)
+                (LText.Global.InstallFM, TextRenderer.MeasureText(LText.Global.SelectFM_DarkMod, Button.Font).Width),
             };
 
             stringsAndLengths = stringsAndLengths.OrderByDescending(static x => x.Length).ToArray();
@@ -119,7 +119,7 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
                     TabIndex = 58,
                     Enabled = _enabled,
 
-                    DarkModeEnabled = _darkModeEnabled
+                    DarkModeEnabled = _darkModeEnabled,
                 };
 
                 Button.Click += _owner.Async_EventHandler_Main;

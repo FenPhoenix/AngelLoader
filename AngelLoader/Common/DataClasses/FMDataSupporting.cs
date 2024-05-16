@@ -277,7 +277,7 @@ internal enum CustomResources : ushort
     Creatures = 64,
     Motions = 128,
     Movies = 256,
-    Subtitles = 512
+    Subtitles = 512,
 }
 
 [Flags]
@@ -289,7 +289,7 @@ public enum Difficulty : uint
     Normal = 1,
     Hard = 2,
     Expert = 4,
-    Extreme = 8
+    Extreme = 8,
 }
 
 #if DateAccTest

@@ -39,7 +39,7 @@ internal sealed class Lazy_UpdateNotification : IDarkable
             AutoSize = false,
             DisplayStyle = ToolStripItemDisplayStyle.ImageAndText,
             Image = Images.UpdateIcon,
-            Margin = new Padding(0)
+            Margin = new Padding(0),
         };
         Button.Click += Button_Click;
 

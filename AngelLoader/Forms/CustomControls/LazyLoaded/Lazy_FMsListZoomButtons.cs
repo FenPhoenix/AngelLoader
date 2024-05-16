@@ -57,7 +57,7 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
                 AutoSize = false,
                 DisplayStyle = ToolStripItemDisplayStyle.Image,
                 Margin = new Padding(0),
-                Size = new Size(25, 25)
+                Size = new Size(25, 25),
             };
             Buttons[i] = button;
             _owner.RefreshAreaToolStrip.Items.Insert(insertIndex, button);

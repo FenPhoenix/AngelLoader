@@ -152,7 +152,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             UnitedStatesMenu = new ToolStripMenuItemCustom(),
             VietnameseMenu = new ToolStripMenuItemCustom(),
             WesternEuropeanMenu = new ToolStripMenuItemCustom(),
-            OtherMenu = new ToolStripMenuItemCustom()
+            OtherMenu = new ToolStripMenuItemCustom(),
         });
 
         ArabicMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -162,14 +162,14 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(720),
             new ToolStripMenuItemWithBackingField<int>(10004),
             new ToolStripMenuItemWithBackingField<int>(708),
-            new ToolStripMenuItemWithBackingField<int>(864)
+            new ToolStripMenuItemWithBackingField<int>(864),
         });
 
         BalticMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
             new ToolStripMenuItemWithBackingField<int>(1257),
             new ToolStripMenuItemWithBackingField<int>(28594),
-            new ToolStripMenuItemWithBackingField<int>(775)
+            new ToolStripMenuItemWithBackingField<int>(775),
         });
 
         CentralEuropeanMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -180,7 +180,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(10029),
             new ToolStripMenuItemWithBackingField<int>(10082),
             new ToolStripMenuItemWithBackingField<int>(20106),
-            new ToolStripMenuItemWithBackingField<int>(10010)
+            new ToolStripMenuItemWithBackingField<int>(10010),
         });
 
         ChineseMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -195,7 +195,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(950),
             new ToolStripMenuItemWithBackingField<int>(20000),
             new ToolStripMenuItemWithBackingField<int>(20002),
-            new ToolStripMenuItemWithBackingField<int>(10002)
+            new ToolStripMenuItemWithBackingField<int>(10002),
         });
 
         CyrillicMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -206,12 +206,12 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(10007),
             new ToolStripMenuItemWithBackingField<int>(855),
             new ToolStripMenuItemWithBackingField<int>(20866),
-            new ToolStripMenuItemWithBackingField<int>(21866)
+            new ToolStripMenuItemWithBackingField<int>(21866),
         });
 
         EasternEuropeanMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
-            new ToolStripMenuItemWithBackingField<int>(10017)
+            new ToolStripMenuItemWithBackingField<int>(10017),
         });
 
         GreekMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -220,7 +220,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(28597),
             new ToolStripMenuItemWithBackingField<int>(737),
             new ToolStripMenuItemWithBackingField<int>(869),
-            new ToolStripMenuItemWithBackingField<int>(10006)
+            new ToolStripMenuItemWithBackingField<int>(10006),
         });
 
         HebrewMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -229,7 +229,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(862),
             new ToolStripMenuItemWithBackingField<int>(28598),
             new ToolStripMenuItemWithBackingField<int>(38598),
-            new ToolStripMenuItemWithBackingField<int>(10005)
+            new ToolStripMenuItemWithBackingField<int>(10005),
         });
 
         JapaneseMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -240,7 +240,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(50221),
             new ToolStripMenuItemWithBackingField<int>(50222),
             new ToolStripMenuItemWithBackingField<int>(10001),
-            new ToolStripMenuItemWithBackingField<int>(20932)
+            new ToolStripMenuItemWithBackingField<int>(20932),
         });
 
         KoreanMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -250,14 +250,14 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(50225),
             new ToolStripMenuItemWithBackingField<int>(1361),
             new ToolStripMenuItemWithBackingField<int>(10003),
-            new ToolStripMenuItemWithBackingField<int>(20949)
+            new ToolStripMenuItemWithBackingField<int>(20949),
         });
 
         LatinMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
             new ToolStripMenuItemWithBackingField<int>(858),
             new ToolStripMenuItemWithBackingField<int>(28593),
-            new ToolStripMenuItemWithBackingField<int>(28605)
+            new ToolStripMenuItemWithBackingField<int>(28605),
         });
 
         NorthernEuropeanMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -267,20 +267,20 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(10079),
             new ToolStripMenuItemWithBackingField<int>(865),
             new ToolStripMenuItemWithBackingField<int>(20108),
-            new ToolStripMenuItemWithBackingField<int>(20107)
+            new ToolStripMenuItemWithBackingField<int>(20107),
         });
 
         TaiwanMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
             new ToolStripMenuItemWithBackingField<int>(20001),
             new ToolStripMenuItemWithBackingField<int>(20004),
-            new ToolStripMenuItemWithBackingField<int>(20005)
+            new ToolStripMenuItemWithBackingField<int>(20005),
         });
 
         ThaiMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
             new ToolStripMenuItemWithBackingField<int>(874),
-            new ToolStripMenuItemWithBackingField<int>(10021)
+            new ToolStripMenuItemWithBackingField<int>(10021),
         });
 
         TurkishMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -288,18 +288,18 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(1254),
             new ToolStripMenuItemWithBackingField<int>(28599),
             new ToolStripMenuItemWithBackingField<int>(857),
-            new ToolStripMenuItemWithBackingField<int>(10081)
+            new ToolStripMenuItemWithBackingField<int>(10081),
         });
 
         UnitedStatesMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
             new ToolStripMenuItemWithBackingField<int>(20127),
-            new ToolStripMenuItemWithBackingField<int>(437)
+            new ToolStripMenuItemWithBackingField<int>(437),
         });
 
         VietnameseMenu.DropDown.Items.AddRange(new ToolStripItem[]
         {
-            new ToolStripMenuItemWithBackingField<int>(1258)
+            new ToolStripMenuItemWithBackingField<int>(1258),
         });
 
         WesternEuropeanMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -310,7 +310,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(10000),
             new ToolStripMenuItemWithBackingField<int>(20105),
             new ToolStripMenuItemWithBackingField<int>(863),
-            new ToolStripMenuItemWithBackingField<int>(860)
+            new ToolStripMenuItemWithBackingField<int>(860),
         });
 
         OtherMenu.DropDown.Items.AddRange(new ToolStripItem[]
@@ -362,7 +362,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
             new ToolStripMenuItemWithBackingField<int>(57010),
             new ToolStripMenuItemWithBackingField<int>(57011),
             new ToolStripMenuItemWithBackingField<int>(20269),
-            new ToolStripMenuItemWithBackingField<int>(20261)
+            new ToolStripMenuItemWithBackingField<int>(20261),
         });
 
         #endregion

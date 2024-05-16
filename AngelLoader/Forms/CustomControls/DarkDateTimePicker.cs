@@ -95,7 +95,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
             buttonRect = buttonRect with
             {
                 X = buttonRect.X + offset.Value.X,
-                Y = buttonRect.Y + offset.Value.Y
+                Y = buttonRect.Y + offset.Value.Y,
             };
         }
 

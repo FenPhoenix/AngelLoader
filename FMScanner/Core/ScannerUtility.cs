@@ -749,7 +749,7 @@ internal static class Utility
     {
         None,
         Opening,
-        Closing
+        Closing,
     }
 
     internal static string GLMLToPlainText(string glml, ListFast<char> charBuffer)

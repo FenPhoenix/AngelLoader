@@ -16,7 +16,7 @@ internal static class FastIO
     {
         Files,
         Directories,
-        FilesAndDirectories
+        FilesAndDirectories,
     }
 
     // This is meant to be industrial-strength, so just call the params nullable and check them.

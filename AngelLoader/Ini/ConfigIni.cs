@@ -1085,7 +1085,7 @@ internal static partial class Ini
         { "GameFilterVisibleT1", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
         { "GameFilterVisibleT2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
         { "GameFilterVisibleT3", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT3_Set) },
-        { "GameFilterVisibleSS2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) }
+        { "GameFilterVisibleSS2", new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) },
 
         #endregion
     };
@@ -1252,7 +1252,7 @@ internal static partial class Ini
                 {
                     true => bool.TrueString,
                     false => bool.FalseString,
-                    _ => ""
+                    _ => "",
                 };
                 sw.Append(GetGamePrefix(gameIndex)).Append("NewMantling").Append('=').AppendLine(val);
             }

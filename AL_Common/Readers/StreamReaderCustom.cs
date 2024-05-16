@@ -150,7 +150,7 @@ public sealed class StreamReaderCustom
                 { 1025, new char[1025] },
                 { 513, new char[513] },
                 { 514, new char[514] },
-                { 1027, new char[1027] }
+                { 1027, new char[1027] },
             };
             if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
             {

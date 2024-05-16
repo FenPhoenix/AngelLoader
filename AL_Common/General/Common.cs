@@ -69,7 +69,7 @@ public static partial class Common
         (byte)'A',
         (byte)'R',
         (byte)'A',
-        (byte)'M'
+        (byte)'M',
     };
 
     #region Preset char arrays

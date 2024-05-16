@@ -186,13 +186,13 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             RatingMenuItem = new ToolStripMenuItemCustom(),
             FinishedOnMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
-            WebSearchMenuItem = new ToolStripMenuItemCustom()
+            WebSearchMenuItem = new ToolStripMenuItemCustom(),
         });
 
         ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
         {
             ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
-            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
+            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom(),
         });
 
         for (int i = -1; i < 11; i++)

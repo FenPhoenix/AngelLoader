@@ -89,7 +89,7 @@ public static partial class GameSupport
         TDM = 16,
 
         [FenGenIgnore]
-        Unsupported = 32
+        Unsupported = 32,
     }
 
     #endregion
@@ -106,7 +106,7 @@ public static partial class GameSupport
         FMScanner.Game.Thief3 => Game.Thief3,
         FMScanner.Game.SS2 => Game.SS2,
         FMScanner.Game.TDM => Game.TDM,
-        _ => Game.Null
+        _ => Game.Null,
     };
 
     internal static bool ConvertsToDarkThief(this Game game, out GameIndex gameIndex)
@@ -139,22 +139,22 @@ public static partial class GameSupport
                 Difficulty.Normal => LText.Difficulties.Easy,
                 Difficulty.Hard => LText.Difficulties.Normal,
                 Difficulty.Expert => LText.Difficulties.Hard,
-                _ => LText.Difficulties.Expert
+                _ => LText.Difficulties.Expert,
             },
             Game.SS2 => difficulty switch
             {
                 Difficulty.Normal => LText.Difficulties.Easy,
                 Difficulty.Hard => LText.Difficulties.Normal,
                 Difficulty.Expert => LText.Difficulties.Hard,
-                _ => LText.Difficulties.Impossible
+                _ => LText.Difficulties.Impossible,
             },
             _ => difficulty switch
             {
                 Difficulty.Normal => LText.Difficulties.Normal,
                 Difficulty.Hard => LText.Difficulties.Hard,
                 Difficulty.Expert => LText.Difficulties.Expert,
-                _ => LText.Difficulties.Extreme
-            }
+                _ => LText.Difficulties.Extreme,
+            },
         };
     }
 
@@ -170,7 +170,7 @@ public static partial class GameSupport
         GameIndex.Thief1 => LText.FMsList.FMMenu_OpenInDromEd,
         GameIndex.Thief2 => LText.FMsList.FMMenu_OpenInDromEd,
         GameIndex.SS2 => LText.FMsList.FMMenu_OpenInShockEd,
-        _ => ""
+        _ => "",
     };
 }
 // @GENGAMES (GameSupport): End

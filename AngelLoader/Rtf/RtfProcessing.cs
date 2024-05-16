@@ -71,7 +71,7 @@ internal static class RtfProcessing
         (byte)'r',
         (byte)'t',
         (byte)'b',
-        (byte)'l'
+        (byte)'l',
     };
 
     private static readonly byte[] _redFieldBytes =
@@ -79,7 +79,7 @@ internal static class RtfProcessing
         (byte)'\\',
         (byte)'r',
         (byte)'e',
-        (byte)'d'
+        (byte)'d',
     };
 
     private static readonly byte[] _greenFieldBytes =
@@ -89,7 +89,7 @@ internal static class RtfProcessing
         (byte)'r',
         (byte)'e',
         (byte)'e',
-        (byte)'n'
+        (byte)'n',
     };
 
     private static readonly byte[] _blueFieldBytes =
@@ -98,7 +98,7 @@ internal static class RtfProcessing
         (byte)'b',
         (byte)'l',
         (byte)'u',
-        (byte)'e'
+        (byte)'e',
     };
 
     private static readonly byte[] _background =
@@ -115,7 +115,7 @@ internal static class RtfProcessing
         (byte)'o',
         (byte)'u',
         (byte)'n',
-        (byte)'d'
+        (byte)'d',
     };
 
     private static readonly byte[] _backgroundBlanked =
@@ -132,7 +132,7 @@ internal static class RtfProcessing
         (byte)'x',
         (byte)'x',
         (byte)'x',
-        (byte)'x'
+        (byte)'x',
     };
 
     private static readonly ListFast<byte> _colorNumberBytes = new(3);
@@ -150,7 +150,7 @@ internal static class RtfProcessing
         (byte)'l',
         (byte)'a',
         (byte)'n',
-        (byte)'g'
+        (byte)'g',
     };
 
     private static readonly byte[] _ansicpg =
@@ -162,7 +162,7 @@ internal static class RtfProcessing
         (byte)'i',
         (byte)'c',
         (byte)'p',
-        (byte)'g'
+        (byte)'g',
     };
 
     #endregion

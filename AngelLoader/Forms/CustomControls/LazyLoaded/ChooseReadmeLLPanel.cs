@@ -59,7 +59,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
             Margin = new Padding(0),
             TabIndex = 48,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
         OKButton.Click += _owner.ChooseReadmeButton_Click;
 
@@ -72,7 +72,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
             Size = new Size(320, 24),
             TabIndex = 3,
 
-            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
+            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control,
         };
         OK_FLP.Controls.Add(OKButton);
 
@@ -84,7 +84,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
             Size = new Size(320, 134),
             TabIndex = 47,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         Panel = new Panel
@@ -96,7 +96,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
             Visible = false,
             Size = new Size(324, 161),
 
-            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control
+            BackColor = _darkModeEnabled ? DarkColors.Fen_DarkBackground : SystemColors.Control,
         };
         Panel.Controls.Add(_listBox);
         Panel.Controls.Add(OK_FLP);
