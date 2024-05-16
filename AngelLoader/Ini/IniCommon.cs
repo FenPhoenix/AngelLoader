@@ -131,7 +131,7 @@ internal static partial class Ini
 
             if (dict.TryGetValue(instDir, out FanMission? fm))
             {
-                fm.DateAccuracy = DateAccuracy_Deserialize(value);
+                fm.DateAccuracy = Utils.DateAccuracy_Deserialize(value);
             }
         }
     }
@@ -141,7 +141,7 @@ internal static partial class Ini
         using var sw = new StreamWriter(_dateAccuracyFile);
         foreach (FanMission fm in FMDataIniList)
         {
-            sw.WriteLine(fm.InstalledDir + "=" + DateAccuracy_Serialize(fm.DateAccuracy));
+            sw.WriteLine(fm.InstalledDir + "=" + Utils.DateAccuracy_Serialize(fm.DateAccuracy));
         }
     }
 #endif

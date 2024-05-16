@@ -218,7 +218,7 @@ internal static class Comparers
     }
 
 #if DateAccTest
-    internal sealed class FMDateAccuracyComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDateAccuracyComparer : ColumnComparer, IDirectionalSortFMComparer
     {
         public int Compare(FanMission x, FanMission y)
         {

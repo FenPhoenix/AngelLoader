@@ -298,6 +298,6 @@ public enum DateAccuracy
     Null,
     Red,
     Yellow,
-    Green
+    Green,
 }
 #endif

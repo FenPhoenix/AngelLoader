@@ -2170,7 +2170,7 @@ public static class Images
         {
             DateAccuracy.Red => Brushes.Red,
             DateAccuracy.Yellow => Brushes.Yellow,
-            _ => Brushes.Green
+            _ => Brushes.Green,
         };
 
         g.FillRectangle(brush, 6, 6, 8, 8);
