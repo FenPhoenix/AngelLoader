@@ -79,7 +79,7 @@ public partial class DarkTaskDialog : DarkFormBase
             DialogResult.Yes when (_yesButtonVisible) => YesButton,
             DialogResult.No when (_noButtonVisible) => NoButton,
             DialogResult.Cancel when (_cancelButtonVisible) => Cancel_Button,
-            _ => Cancel_Button
+            _ => Cancel_Button,
         };
 
         #endregion
@@ -109,7 +109,7 @@ public partial class DarkTaskDialog : DarkFormBase
         {
             MessageLabel.Location = MessageLabel.Location with
             {
-                Y = (BottomFLP.Top / 2) - (MessageLabel.Height / 2)
+                Y = (BottomFLP.Top / 2) - (MessageLabel.Height / 2),
             };
         }
 

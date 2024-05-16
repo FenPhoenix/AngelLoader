@@ -79,7 +79,7 @@ internal static class Native
         SIID_HELP = 23,
         SIID_WARNING = 78,
         SIID_INFO = 79,
-        SIID_ERROR = 80
+        SIID_ERROR = 80,
     }
 
     internal const uint SHGSI_ICON = 0x000000100;
