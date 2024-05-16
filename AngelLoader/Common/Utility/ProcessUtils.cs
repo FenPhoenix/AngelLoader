@@ -64,7 +64,7 @@ public static partial class Utils
     /// The sum of the length of the arguments and the length of the full path to the associated file exceeds 2080. The error message associated with this exception can be one of the following: "The data area passed to a system call is too small." or "Access is denied."</exception>
     /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
     /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
-    internal static void ProcessStart_UseShellExecute(string fileName, string arguments, string userName, SecureString password, string domain)
+    internal static void ProcessStart_UseShellExecute(string fileName, string arguments, string userName, System.Security.SecureString password, string domain)
     {
         using (
             Process.Start(new ProcessStartInfo
@@ -74,7 +74,7 @@ public static partial class Utils
                 UserName = userName,
                 Password = password,
                 Domain = domain,
-                UseShellExecute = true
+                UseShellExecute = true,
             }))
         {
         }
@@ -94,7 +94,7 @@ public static partial class Utils
     /// <exception cref="T:System.ComponentModel.Win32Exception">There was an error in opening the associated file.</exception>
     /// <exception cref="T:System.ObjectDisposedException">The process object has already been disposed.</exception>
     /// <exception cref="T:System.PlatformNotSupportedException">Method not supported on Linux or macOS (.NET Core only).</exception>
-    internal static void ProcessStart_UseShellExecute(string fileName, string userName, SecureString password, string domain)
+    internal static void ProcessStart_UseShellExecute(string fileName, string userName, System.Security.SecureString password, string domain)
     {
         using (
             Process.Start(new ProcessStartInfo
@@ -103,7 +103,7 @@ public static partial class Utils
                 UserName = userName,
                 Password = password,
                 Domain = domain,
-                UseShellExecute = true
+                UseShellExecute = true,
             }))
         {
         }

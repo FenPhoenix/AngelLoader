@@ -94,7 +94,7 @@ internal enum HResult
     /// <summary>
     /// The requested resources is read-only.
     /// </summary>
-    AccessDenied = unchecked((int)0x80030005)
+    AccessDenied = unchecked((int)0x80030005),
 #endif
 }
 
@@ -129,7 +129,7 @@ internal static class NativeMethods
     internal enum FDAP
     {
         FDAP_BOTTOM = 0x00000000,
-        FDAP_TOP = 0x00000001
+        FDAP_TOP = 0x00000001,
     }
 
     [PublicAPI]
@@ -137,7 +137,7 @@ internal static class NativeMethods
     {
         FDESVR_DEFAULT = 0x00000000,
         FDESVR_ACCEPT = 0x00000001,
-        FDESVR_REFUSE = 0x00000002
+        FDESVR_REFUSE = 0x00000002,
     }
 
     [PublicAPI]
@@ -145,7 +145,7 @@ internal static class NativeMethods
     {
         FDEOR_DEFAULT = 0x00000000,
         FDEOR_ACCEPT = 0x00000001,
-        FDEOR_REFUSE = 0x00000002
+        FDEOR_REFUSE = 0x00000002,
     }
 
     [PublicAPI]
@@ -153,7 +153,7 @@ internal static class NativeMethods
     {
         SIATTRIBFLAGS_AND = 0x00000001,
         SIATTRIBFLAGS_OR = 0x00000002,
-        SIATTRIBFLAGS_APPCOMPAT = 0x00000003
+        SIATTRIBFLAGS_APPCOMPAT = 0x00000003,
     }
 #endif
 
@@ -172,7 +172,7 @@ internal static class NativeMethods
         SIGDN_FILESYSPATH = 0x80058000,
         SIGDN_URL = 0x80068000,
         SIGDN_PARENTRELATIVEFORADDRESSBAR = 0x8007c001,
-        SIGDN_PARENTRELATIVE = 0x80080001
+        SIGDN_PARENTRELATIVE = 0x80080001,
 #endif
     }
 
@@ -203,7 +203,7 @@ internal static class NativeMethods
         FOS_NODEREFERENCELINKS = 0x00100000,
         FOS_DONTADDTORECENT = 0x02000000,
         FOS_FORCESHOWHIDDEN = 0x10000000,
-        FOS_DEFAULTNOMINIMODE = 0x20000000
+        FOS_DEFAULTNOMINIMODE = 0x20000000,
 #endif
     }
 
