@@ -278,7 +278,7 @@ public sealed partial class MainForm : DarkFormBase,
         using var sw = new System.IO.StreamWriter(@"C:\al_dates_new.txt");
         foreach (FanMission fm in FMDataIniList)
         {
-            sw.WriteLine(GetFMId(fm));
+            sw.WriteLine(fm.GetId());
             sw.WriteLine(fm.ReleaseDate.DateTime?.ToString("MMMM dd yyyy", DateTimeFormatInfo.InvariantInfo) ?? "<null>");
         }
     }
@@ -4151,7 +4151,7 @@ public sealed partial class MainForm : DarkFormBase,
                     DateAccuracy.Red => Images.DateAccuracy_Red,
                     DateAccuracy.Yellow => Images.DateAccuracy_Yellow,
                     DateAccuracy.Green => Images.DateAccuracy_Green,
-                    _ => Images.Blank
+                    _ => Images.Blank,
                 };
                 break;
 #endif

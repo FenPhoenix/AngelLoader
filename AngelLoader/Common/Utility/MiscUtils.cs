@@ -292,7 +292,7 @@ public static partial class Utils
         DateAccuracy.Green => "Green",
         DateAccuracy.Yellow => "Yellow",
         DateAccuracy.Red => "Red",
-        _ => "Null"
+        _ => "Null",
     };
 
     internal static DateAccuracy DateAccuracy_Deserialize(string str) => str switch
@@ -300,7 +300,7 @@ public static partial class Utils
         "Green" => DateAccuracy.Green,
         "Yellow" => DateAccuracy.Yellow,
         "Red" => DateAccuracy.Red,
-        _ => DateAccuracy.Null
+        _ => DateAccuracy.Null,
     };
 #endif
 }
