@@ -12,7 +12,7 @@ internal enum Lazy_FilterLabel
 {
     ReleaseDate,
     LastPlayed,
-    Rating
+    Rating,
 }
 
 internal sealed class Lazy_ToolStripLabels : IDarkable
@@ -57,7 +57,7 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
             var _label = new ToolStripLabel
             {
                 ForeColor = LabelForeColor,
-                Margin = new Padding(4, 5, 0, 2)
+                Margin = new Padding(4, 5, 0, 2),
             };
 
             _labels[li] = _label;
@@ -67,7 +67,7 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
             {
                 Lazy_FilterLabel.ReleaseDate => _owner.FilterByReleaseDateButton,
                 Lazy_FilterLabel.LastPlayed => _owner.FilterByLastPlayedButton,
-                Lazy_FilterLabel.Rating => _owner.FilterByRatingButton
+                Lazy_FilterLabel.Rating => _owner.FilterByRatingButton,
             };
 
             for (int i = 0; i < container.Items.Count; i++)
@@ -98,7 +98,7 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
             {
                 Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
                 Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
-                Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip
+                Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip,
             };
         }
     }

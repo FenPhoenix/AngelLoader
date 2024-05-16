@@ -7,7 +7,7 @@ public static class SettingsWindowData
         Normal,
         Startup,
         StartupClean,
-        BackupPathSet
+        BackupPathSet,
     }
 
     public static bool IsStartup(this SettingsWindowState settingsWindowState) => settingsWindowState is SettingsWindowState.Startup or SettingsWindowState.StartupClean;

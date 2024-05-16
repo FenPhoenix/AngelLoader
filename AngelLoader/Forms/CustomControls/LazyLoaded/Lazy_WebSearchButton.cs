@@ -55,7 +55,7 @@ internal sealed class Lazy_WebSearchButton : IDarkable
             TabIndex = 60,
             Enabled = _enabled,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
 
         Button.PaintCustom += WebSearchButton_Paint;

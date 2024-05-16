@@ -256,7 +256,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
             {
                 0 => TagsFilter.AndTags,
                 1 => TagsFilter.OrTags,
-                _ => TagsFilter.NotTags
+                _ => TagsFilter.NotTags,
             };
 
             if (filteredTags.TryGetValue(cat, out FMTagsCollection? tagsList) &&

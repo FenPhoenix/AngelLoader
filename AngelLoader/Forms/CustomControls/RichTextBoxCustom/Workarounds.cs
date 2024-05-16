@@ -218,7 +218,7 @@ internal sealed partial class RichTextBoxCustom
                 prc = rectPtr,
                 lParam = IntPtr.Zero,
                 fFlags2 = Marshal.GetFunctionPointerForDelegate<Native.TranslateDispatchCallbackDelegate>(TranslateDispatchCallback),
-                pfnScroll = Marshal.GetFunctionPointerForDelegate<Native.ReaderScrollCallbackDelegate>(ReaderScrollCallback)
+                pfnScroll = Marshal.GetFunctionPointerForDelegate<Native.ReaderScrollCallbackDelegate>(ReaderScrollCallback),
             };
 
             readerInfo.cbSize = Marshal.SizeOf(readerInfo);

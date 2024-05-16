@@ -350,7 +350,7 @@ internal static class FindFMs
                             {
                                 InstalledDir = d,
                                 Game = GameIndexToGame(gameIndex),
-                                Installed = true
+                                Installed = true,
                             };
                             perGameInstFMDirsItems[gi][d] = new InstDirValueData(fm, dateTimes[di]);
                         }
@@ -542,7 +542,7 @@ internal static class FindFMs
                                 InstalledDir = fmDir,
                                 TDMInstalledDir = fmDir,
                                 Installed = false,
-                                DateAdded = finalDateTimesList[fileIndex].DateTime
+                                DateAdded = finalDateTimesList[fileIndex].DateTime,
                             });
                         }
                     }
@@ -783,7 +783,7 @@ internal static class FindFMs
                     Archive = archive,
                     InstalledDir = archive.ToInstDirNameFMSel(instDirNameContext, true),
                     NoArchive = false,
-                    DateAdded = item.Value.DateTime
+                    DateAdded = item.Value.DateTime,
                 });
             }
         }
@@ -810,7 +810,7 @@ internal static class FindFMs
                     InstalledDir = gFM.InstalledDir,
                     Game = gFM.Game,
                     Installed = true,
-                    DateAdded = item.Value.DateTime.DateTime
+                    DateAdded = item.Value.DateTime.DateTime,
                 });
             }
         }

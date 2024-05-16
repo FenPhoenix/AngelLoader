@@ -31,7 +31,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
                     var item = new ToolStripMenuItemCustom
                     {
                         CheckOnClick = true,
-                        Checked = _checkedStates[i]
+                        Checked = _checkedStates[i],
                     };
                     item.Click += _owner.FMTabsMenu_MenuItems_Click;
                     menuItems[i] = item;

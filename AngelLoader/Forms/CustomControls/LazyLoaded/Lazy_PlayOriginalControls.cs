@@ -62,7 +62,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             Padding = new Padding(33, 0, 6, 0),
             TabIndex = 0,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
         ButtonSingle.PaintCustom += _owner.PlayOriginalGameButton_Paint;
         ButtonSingle.Click += _owner.PlayOriginalGameButton_Click;
@@ -90,7 +90,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
                 Size = new Size(36, 36),
                 TabIndex = tabIndex,
 
-                DarkModeEnabled = _darkModeEnabled
+                DarkModeEnabled = _darkModeEnabled,
             };
 
             GameButtons[i] = gameButton;
@@ -111,7 +111,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
             Size = new Size(16, 36),
             TabIndex = 3,
 
-            DarkModeEnabled = _darkModeEnabled
+            DarkModeEnabled = _darkModeEnabled,
         };
         T2MPMenuButton.Click += _owner.PlayOriginalT2MPButton_Click;
 

@@ -4,5 +4,5 @@ internal enum DarkControlState
 {
     Normal,
     Hover,
-    Pressed
+    Pressed,
 }

@@ -71,14 +71,14 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
             GameMenuItems[i] = new ToolStripMenuItemCustom
             {
                 GameIndex = gameIndex,
-                Image = Images.GetPerGameImage(gameIndex).Primary.Small()
+                Image = Images.GetPerGameImage(gameIndex).Primary.Small(),
             };
             if (GameSupportsMods(gameIndex))
             {
                 ModMenuItems[modI] = new ToolStripMenuItemCustom
                 {
                     GameIndex = gameIndex,
-                    Image = Images.GetPerGameImage(gameIndex).Primary.Small()
+                    Image = Images.GetPerGameImage(gameIndex).Primary.Small(),
                 };
                 modI++;
             }
@@ -89,7 +89,7 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
         Thief2MPMenuItem = new ToolStripMenuItemCustom
         {
             GameIndex = GameIndex.Thief2,
-            Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small()
+            Image = Images.GetPerGameImage(GameIndex.Thief2).Primary.Small(),
         };
         _menu.Items.Insert(2, Thief2MPMenuItem);
 
@@ -100,7 +100,7 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
 
         ModsSubMenu = new ToolStripMenuItemCustom
         {
-            Image = Images.Mods_16
+            Image = Images.Mods_16,
         };
 
         _menu.Items.Add(new ToolStripSeparator());

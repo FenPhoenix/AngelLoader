@@ -37,7 +37,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         ChooseIniFilesLabel = new DarkLabel
         {
             AutoSize = true,
-            Location = new Point(16, 8)
+            Location = new Point(16, 8),
         };
 
         AutoScaleDimensions = new SizeF(6F, 13F);

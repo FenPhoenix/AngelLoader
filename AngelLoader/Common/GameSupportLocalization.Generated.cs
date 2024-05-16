@@ -16,7 +16,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.Global.Thief2,
         GameIndex.Thief3 => LText.Global.Thief3,
         GameIndex.SS2 => LText.Global.SystemShock2,
-        _ => LText.Global.TheDarkMod
+        _ => LText.Global.TheDarkMod,
     };
 
     internal static string GetShortLocalizedGameName(GameIndex gameIndex) => gameIndex switch
@@ -25,7 +25,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.Global.Thief2_Short,
         GameIndex.Thief3 => LText.Global.Thief3_Short,
         GameIndex.SS2 => LText.Global.SystemShock2_Short,
-        _ => LText.Global.TheDarkMod_Short
+        _ => LText.Global.TheDarkMod_Short,
     };
 
     internal static string GetLocalizedGameNameColon(GameIndex gameIndex) => gameIndex switch
@@ -34,7 +34,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.Global.Thief2_Colon,
         GameIndex.Thief3 => LText.Global.Thief3_Colon,
         GameIndex.SS2 => LText.Global.SystemShock2_Colon,
-        _ => LText.Global.TheDarkMod_Colon
+        _ => LText.Global.TheDarkMod_Colon,
     };
 
     internal static string GetLocalizedCustomResourcesNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
@@ -43,7 +43,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.StatisticsTab.CustomResourcesNotSupportedForThief2,
         GameIndex.Thief3 => LText.StatisticsTab.CustomResourcesNotSupportedForThief3,
         GameIndex.SS2 => LText.StatisticsTab.CustomResourcesNotSupportedForSS2,
-        _ => LText.StatisticsTab.CustomResourcesNotSupportedForTDM
+        _ => LText.StatisticsTab.CustomResourcesNotSupportedForTDM,
     };
 
     internal static string GetLocalizedModsNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
@@ -52,7 +52,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.ModsTab.Thief2_ModsNotSupported,
         GameIndex.Thief3 => LText.ModsTab.Thief3_ModsNotSupported,
         GameIndex.SS2 => LText.ModsTab.SS2_ModsNotSupported,
-        _ => LText.ModsTab.TDM_ModsNotSupported
+        _ => LText.ModsTab.TDM_ModsNotSupported,
     };
 
     internal static string GetLocalizedGamePlayOriginalText(GameIndex gameIndex) => gameIndex switch
@@ -61,7 +61,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.PlayOriginalGameMenu.Thief2_PlayOriginal,
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Thief3_PlayOriginal,
         GameIndex.SS2 => LText.PlayOriginalGameMenu.SystemShock2_PlayOriginal,
-        _ => LText.PlayOriginalGameMenu.TheDarkMod_PlayOriginal
+        _ => LText.PlayOriginalGameMenu.TheDarkMod_PlayOriginal,
     };
 
     internal static string GetLocalizedGameSettingsNotSupportedMessage(GameIndex gameIndex) => gameIndex switch
@@ -70,7 +70,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_Thief2NotSupported,
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_Thief3NotSupported,
         GameIndex.SS2 => LText.PlayOriginalGameMenu.Mods_SS2NotSupported,
-        _ => LText.PlayOriginalGameMenu.Mods_TDMNotSupported
+        _ => LText.PlayOriginalGameMenu.Mods_TDMNotSupported,
     };
 
     internal static string GetLocalizedOriginalModHeaderText(GameIndex gameIndex) => gameIndex switch
@@ -79,7 +79,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief2,
         GameIndex.Thief3 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForThief3,
         GameIndex.SS2 => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForSS2,
-        _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForTDM
+        _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForTDM,
     };
 
     #endregion

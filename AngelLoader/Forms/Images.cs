@@ -45,7 +45,7 @@ file static class DarkModeImageConversion
     {
         Dark,
         DarkDim,
-        DarkDisabled
+        DarkDisabled,
     }
 
     private static readonly ColorMatrix DarkColorMatrix = new(new[]
@@ -54,7 +54,7 @@ file static class DarkModeImageConversion
         new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
         new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
         new[] { 0, 0, 0, /* The value: */ 0.8425f, 0 },
-        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 },
     });
 
     private static readonly ColorMatrix DarkDimColorMatrix = new(new[]
@@ -63,7 +63,7 @@ file static class DarkModeImageConversion
         new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
         new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
         new[] { 0, 0, 0, /* The value: */ 0.7425f, 0 },
-        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 },
     });
 
     private static readonly ColorMatrix DarkDisabledColorMatrix = new(new[]
@@ -72,7 +72,7 @@ file static class DarkModeImageConversion
         new[] { 0.2577f, 0.2577f, 0.2577f, 0, 0 },
         new[] { 0.0361f, 0.0361f, 0.0361f, 0, 0 },
         new[] { 0, 0, 0, /* The value: */ 0.273f, 0 },
-        new[] { 0.99f, 0.99f, 0.99f, 0, 0 }
+        new[] { 0.99f, 0.99f, 0.99f, 0, 0 },
     });
 
     public static Bitmap CreateDarkModeVersion(Bitmap normalImage, Matrix matrix = Matrix.Dark)
@@ -86,7 +86,7 @@ file static class DarkModeImageConversion
             {
                 Matrix.DarkDisabled => DarkDisabledColorMatrix,
                 Matrix.DarkDim => DarkDimColorMatrix,
-                _ => DarkColorMatrix
+                _ => DarkColorMatrix,
             });
 
         Size size = normalImage.Size;
@@ -134,7 +134,7 @@ public static class Images
         59.19173f, 0f, 59.19173f, 16.70131f, 82.75785f, 16.70131f, 101.6816f, 35.62561f, 101.6816f,
         59.19174f, 101.6816f, 82.75784f, 82.75786f, 101.6837f, 59.19173f, 101.6837f, 35.62562f, 101.6837f,
         16.69924f, 82.75786f, 16.69924f, 59.19174f, 16.69924f, 35.62562f, 35.62562f, 16.70131f, 59.19173f,
-        16.70131f, 59.19173f, 16.70131f
+        16.70131f, 59.19173f, 16.70131f,
     };
 
     private static readonly byte[] _magnifierEmptyTypes = MakeTypeArray(
@@ -158,13 +158,13 @@ public static class Images
         {
             51.71002f, 34.41495f, 51.71002f, 51.30281f, 34.82216f, 51.30281f, 34.82216f, 65.74844f,
             51.71002f, 65.74844f, 51.71002f, 82.63629f, 66.15565f, 82.63629f, 66.15565f, 65.74844f, 83.0435f,
-            65.74844f, 83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f
+            65.74844f, 83.0435f, 51.30281f, 66.15565f, 51.30281f, 66.15565f, 34.41495f, 51.71002f, 34.41495f,
         },
         // Zoom out (minus)
         new[]
         {
             83.04366f, 65.74826f, 83.04366f, 51.30262f, 34.8222f, 51.30262f, 34.8222f, 65.74826f, 83.04366f,
-            65.74826f
+            65.74826f,
         },
         // Zoom reset
         new[]
@@ -173,8 +173,8 @@ public static class Images
             48.05133f, 47.97226f, 63.26177f, 47.97226f, 63.26177f, 35.31619f, 48.05133f, 35.31619f,
             35.39526f, 35.31619f, 69.87067f, 55.11757f, 69.87067f, 70.32749f, 54.66074f, 70.32749f,
             54.66074f, 82.98357f, 69.87067f, 82.98357f, 82.52675f, 82.98357f, 82.52675f, 70.32749f,
-            82.52675f, 55.11757f, 69.87067f, 55.11757f
-        }
+            82.52675f, 55.11757f, 69.87067f, 55.11757f,
+        },
     };
 
     private static readonly byte[][] _zoomTypeTypes =
@@ -184,7 +184,7 @@ public static class Images
         // Zoom out (minus)
         MakeTypeArray((1, 3, 0, 129)),
         // Zoom reset
-        MakeTypeArray((1, 7, 0, 129), (1, 7, 0, 129))
+        MakeTypeArray((1, 7, 0, 129), (1, 7, 0, 129)),
     };
 
     private static readonly GraphicsPath?[] _zoomImageGPaths = new GraphicsPath[FormsData.ZoomTypesCount];
@@ -198,7 +198,7 @@ public static class Images
     {
         65.75464f, 3.180167f, 29.22405f, 47.79398f, 10.8f, 30.83739f, -0.1080037f, 42.47338f, 30.86943f,
         71.04063f, 78.09653f, 13.29531f, 65.75464f, 3.180167f, 66.03886f, 7.544f, 73.736f, 13.58057f,
-        30.66118f, 66.582f, 4.278f, 42.36847f, 10.90528f, 35.199f, 29.43231f, 52.25f, 66.03886f, 7.544f
+        30.66118f, 66.582f, 4.278f, 42.36847f, 10.90528f, 35.199f, 29.43231f, 52.25f, 66.03886f, 7.544f,
     };
 
     // Inner path starts at index 7
@@ -216,7 +216,7 @@ public static class Images
 
     private static readonly float[] _circleCheckPoints =
     {
-        40, 80, 86, 128, 215, 0, 253, 38, 86, 204, 0, 118, 40, 80
+        40, 80, 86, 128, 215, 0, 253, 38, 86, 204, 0, 118, 40, 80,
     };
 
     private static readonly byte[] _circleCheckTypes = MakeTypeArray((1, 5, 0, 129));
@@ -230,7 +230,7 @@ public static class Images
 
     private static readonly float[] _updateArrowPoints =
     {
-        0,5, 5,0, 10,5, 6.5f,5, 6.5f,9, 3.5f,9, 3.5f,5
+        0,5, 5,0, 10,5, 6.5f,5, 6.5f,9, 3.5f,9, 3.5f,5,
     };
 
     private static readonly byte[] _updateArrowTypes = MakeTypeArray((1, 5, 0, 129));
@@ -256,7 +256,7 @@ public static class Images
         32, 152,
         8, 128,
         58, 80,
-        8, 32
+        8, 32,
     };
 
     private static readonly byte[] _xTypes = MakeTypeArray((1, 11, 0, 129));
@@ -271,24 +271,24 @@ public static class Images
     private static readonly float[] _starOuterPoints =
     {
         50f, 0f, 36f, 33f, 0f, 36f, 27f, 60f, 19f, 95f, 50f, 76f, 81f, 95f, 73f, 60f, 100f, 36f, 64f, 33f,
-        50f, 0f
+        50f, 0f,
     };
 
     private static readonly float[] _starMiddlePoints =
     {
         50f, 9f, 61.5f, 36.5f, 91f, 39f, 69f, 58.5f, 75.5f, 87.5f, 50f, 72f, 24.5f, 87.5f, 31f, 58.5f, 9f,
-        39f, 38.5f, 36.5f, 50f, 9f
+        39f, 38.5f, 36.5f, 50f, 9f,
     };
 
     private static readonly float[] _starInnerFullPoints =
     {
         50f, 22f, 42f, 41f, 21f, 43f, 36.5f, 56.5f, 32f, 77f, 50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f,
-        58f, 41f, 50f, 22f
+        58f, 41f, 50f, 22f,
     };
 
     private static readonly float[] _starInnerRightHalfPoints =
     {
-        50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f, 58f, 41f, 50f, 22f, 50f, 66f
+        50f, 66f, 68f, 77f, 63.5f, 56.5f, 79f, 43f, 58f, 41f, 50f, 22f, 50f, 66f,
     };
 
     private static readonly byte[] _starMainTypes = MakeTypeArray((1, 9, 0, 129));
@@ -350,14 +350,14 @@ public static class Images
     {
         new Point(15, 5),
         new Point(29, 17),
-        new Point(15, 29)
+        new Point(15, 29),
     };
 
     private static readonly PointF[] _playOriginalArrowPoints =
     {
         new PointF(17.5f, 7.5f),
         new PointF(28.5f, 17),
-        new PointF(17.5f, 26.5f)
+        new PointF(17.5f, 26.5f),
     };
 
     #endregion
@@ -374,14 +374,14 @@ public static class Images
     {
         new Rectangle(2, 3, 14, 2),
         new Rectangle(2, 9, 14, 2),
-        new Rectangle(2, 15, 14, 2)
+        new Rectangle(2, 15, 14, 2),
     };
 
     private static readonly Rectangle[] _hamRects24 =
     {
         new Rectangle(5, 5, 14, 2),
         new Rectangle(5, 11, 14, 2),
-        new Rectangle(5, 17, 14, 2)
+        new Rectangle(5, 17, 14, 2),
     };
 
     #endregion
@@ -392,7 +392,7 @@ public static class Images
     {
         new Rectangle(12, 11, 19, 2),
         new RectangleF(10, 16.5f, 23, 2),
-        new Rectangle(12, 22, 19, 2)
+        new Rectangle(12, 22, 19, 2),
     };
 
     #endregion
@@ -406,7 +406,7 @@ public static class Images
         new Point(7, 3),
         new Point(3, 3),
         new Point(3, 7),
-        new Point(0, 7)
+        new Point(0, 7),
     };
     private static readonly Point[] _readmeFullScreenTopRight =
     {
@@ -415,7 +415,7 @@ public static class Images
         new Point(21, 7),
         new Point(18, 7),
         new Point(18, 3),
-        new Point(14, 3)
+        new Point(14, 3),
     };
     private static readonly Point[] _readmeFullScreenBottomLeft =
     {
@@ -424,7 +424,7 @@ public static class Images
         new Point(3, 18),
         new Point(7, 18),
         new Point(7, 21),
-        new Point(0, 21)
+        new Point(0, 21),
     };
     private static readonly Point[] _readmeFullScreenBottomRight =
     {
@@ -433,7 +433,7 @@ public static class Images
         new Point(21, 21),
         new Point(14, 21),
         new Point(14, 18),
-        new Point(18, 18)
+        new Point(18, 18),
     };
 
     #endregion
@@ -613,7 +613,7 @@ public static class Images
             outlineDark: Color.FromArgb(28, 76, 153),
             fill: Color.FromArgb(0, 53, 226),
             fillDark: Color.FromArgb(34, 148, 228),
-            width: 34)
+            width: 34),
     };
 
     private static readonly FillAndOutlineBrushes _unknownCheckBrush = new(
@@ -1379,7 +1379,7 @@ public static class Images
         None,
         Finished,
         Unfinished,
-        Unknown
+        Unknown,
     }
 
     private static Bitmap CreateFinishedOnBitmap(int difficulty, FinishedOnType type = FinishedOnType.None)

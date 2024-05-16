@@ -778,7 +778,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             Rectangle textRect = e.CellBounds with
             {
                 X = e.CellBounds.X + (displayIndex == 0 ? 6 : 4),
-                Width = e.CellBounds.Width - (displayIndex == 0 ? 10 : 6)
+                Width = e.CellBounds.Width - (displayIndex == 0 ? 10 : 6),
             };
 
             if (e is { Value: string headerText, CellStyle: { } cellStyle })

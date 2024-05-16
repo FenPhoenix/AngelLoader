@@ -36,7 +36,7 @@ public static class Fen7z
         /// User stopped the process.
         /// </summary>
         UserStopped = 255,
-        Unknown = int.MaxValue
+        Unknown = int.MaxValue,
     }
 
     [PublicAPI]
@@ -145,7 +145,7 @@ public static class Fen7z
                 return new Result
                 {
                     Exception = ex,
-                    ErrorText = "Exception trying to write the 7z.exe list file: " + listFile
+                    ErrorText = "Exception trying to write the 7z.exe list file: " + listFile,
                 };
             }
         }
@@ -264,7 +264,7 @@ public static class Fen7z
                 Exception = ex,
                 Canceled = canceled,
                 ErrorText = errorText,
-                ExitCode = SevenZipExitCode.Unknown
+                ExitCode = SevenZipExitCode.Unknown,
             };
         }
         finally
@@ -324,7 +324,7 @@ public static class Fen7z
                 (int)SevenZipExitCode.CommandLineError => SevenZipExitCode.CommandLineError,
                 (int)SevenZipExitCode.NotEnoughMemory => SevenZipExitCode.NotEnoughMemory,
                 (int)SevenZipExitCode.UserStopped => SevenZipExitCode.UserStopped,
-                _ => SevenZipExitCode.Unknown
+                _ => SevenZipExitCode.Unknown,
             };
             return (sevenZipExitCode, exitCode, null);
         }

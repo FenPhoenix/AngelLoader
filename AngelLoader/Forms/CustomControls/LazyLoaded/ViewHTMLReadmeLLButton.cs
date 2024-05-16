@@ -60,7 +60,7 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
                 TabIndex = 49,
                 Visible = false,
 
-                DarkModeEnabled = _darkModeEnabled
+                DarkModeEnabled = _darkModeEnabled,
             };
 
             Control container = _owner.ReadmeContainer;

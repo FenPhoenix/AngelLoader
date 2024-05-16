@@ -39,7 +39,7 @@ public class DarkButton : Button, IDarkable
     private enum DarkButtonStyle
     {
         Normal,
-        Flat
+        Flat,
     }
 
     #region Designer Property Region

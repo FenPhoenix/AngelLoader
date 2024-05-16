@@ -404,7 +404,7 @@ internal static partial class Ini
         { "HasCreatures".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasCreatures_Set) },
         { "HasMotions".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasMotions_Set) },
         { "HasMovies".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasMovies_Set) },
-        { "HasSubtitles".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) }
+        { "HasSubtitles".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) },
 
         #endregion
     };

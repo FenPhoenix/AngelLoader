@@ -7,6 +7,6 @@ namespace AL_Common.FastZipReader.DeflateManaged
     {
         HasSymbol = 1,
         HasMatch = 2,
-        HasSymbolAndMatch = 3
+        HasSymbolAndMatch = 3,
     }
 }

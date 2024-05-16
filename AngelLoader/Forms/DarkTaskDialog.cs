@@ -156,7 +156,7 @@ public partial class DarkTaskDialog : DarkFormBase
         {
             MessageLabel.Location = MessageLabel.Location with
             {
-                Y = (BottomFLP.Top / 2) - (MessageLabel.Height / 2)
+                Y = (BottomFLP.Top / 2) - (MessageLabel.Height / 2),
             };
         }
 

@@ -52,7 +52,7 @@ public static partial class LanguageSupport
         23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
         23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
         23, 23, 23, 23, 23, 23, 23, 23, 23, 23,
-        23, 23, 23, 23, 23, 23
+        23, 23, 23, 23, 23, 23,
     };
 
     private sealed class LangNameAndEnumField
@@ -81,7 +81,7 @@ public static partial class LanguageSupport
         new ("french", Language.French),
         new ("italian", Language.Italian),
         null, null, null, null,
-        new ("english", Language.English)
+        new ("english", Language.English),
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

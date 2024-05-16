@@ -433,7 +433,7 @@ public static partial class RTFParserCommon
             264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
             264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
             264, 264, 264, 264, 264, 264, 264, 264, 264, 264,
-            264, 264, 264, 264, 264, 264
+            264, 264, 264, 264, 264, 264,
         };
 
         /*
@@ -877,7 +877,7 @@ public static partial class RTFParserCommon
         UnicodeChar,
         HexEncodedChar,
         SkipNumberOfBytes,
-        ColorTable
+        ColorTable,
     }
 
     public enum KeywordType : byte
@@ -885,7 +885,7 @@ public static partial class RTFParserCommon
         Character,
         Property,
         Destination,
-        Special
+        Special,
     }
 
     public enum DestinationType : byte
@@ -916,7 +916,7 @@ public static partial class RTFParserCommon
         /// </summary>
         CanBeDestOrNotDest,
         Skip,
-        SkippableHex
+        SkippableHex,
     }
 
     private const int _propertiesLen = 4;
@@ -925,7 +925,7 @@ public static partial class RTFParserCommon
         Hidden,
         UnicodeCharSkipCount,
         FontNum,
-        Lang
+        Lang,
     }
 
     public enum SymbolFont : byte
@@ -935,7 +935,7 @@ public static partial class RTFParserCommon
         Unset,
         Symbol,
         Wingdings,
-        Webdings
+        Webdings,
     }
 
     public enum RtfError : byte
@@ -955,7 +955,7 @@ public static partial class RTFParserCommon
         /// <summary>
         /// The rtf is malformed in such a way that it might be unsafe to continue parsing it (infinite loops, stack overflows, etc.)
         /// </summary>
-        AbortedForSafety
+        AbortedForSafety,
     }
 
     #endregion

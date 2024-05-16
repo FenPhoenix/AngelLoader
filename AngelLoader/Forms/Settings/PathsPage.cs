@@ -49,14 +49,14 @@ public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 
             BackupPathHelpLabel.MaximumSize = BackupPathHelpLabel.MaximumSize with
             {
-                Width = BackupGroupBox.Width - (BackupPathHelpLabel.Left * 2)
+                Width = BackupGroupBox.Width - (BackupPathHelpLabel.Left * 2),
             };
 
             BackupPathTDMHelpLabel.Location = BackupPathTDMHelpLabel.Location with { Y = BackupPathHelpLabel.Bottom + 16 };
             BackupHelpTDMPictureBox.Location = BackupHelpTDMPictureBox.Location with { Y = BackupPathTDMHelpLabel.Location.Y };
             BackupPathTDMHelpLabel.MaximumSize = BackupPathTDMHelpLabel.MaximumSize with
             {
-                Width = BackupGroupBox.Width - (BackupPathTDMHelpLabel.Left * 2)
+                Width = BackupGroupBox.Width - (BackupPathTDMHelpLabel.Left * 2),
             };
 
             BackupGroupBox.Height = BackupGroupBox.Padding.Vertical +

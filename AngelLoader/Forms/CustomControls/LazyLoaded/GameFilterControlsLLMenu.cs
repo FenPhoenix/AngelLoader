@@ -51,7 +51,7 @@ internal sealed class GameFilterControlsLLMenu : IDarkable
             {
                 CheckOnClick = true,
                 Tag = i,
-                Checked = _checkedStates[i]
+                Checked = _checkedStates[i],
             };
             item.Click += _owner.GameFilterControlsMenuItems_Click;
 

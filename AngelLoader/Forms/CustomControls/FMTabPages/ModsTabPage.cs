@@ -35,7 +35,7 @@ public sealed class ModsTabPage : Lazy_TabsBase
                 DarkModeBackColor = DarkColors.Fen_ControlBackground,
                 Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Visible = false
+                Visible = false,
             };
 
             _page.Controls.Add(ModsTabNotSupportedMessageLabel);

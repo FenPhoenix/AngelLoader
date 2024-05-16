@@ -186,7 +186,7 @@ public sealed partial class MainForm : Form
     {
         Write,
         RunSetOnce,
-        RunSetXTimes
+        RunSetXTimes,
     }
 
     private void HandleAllWithCustom(HandleAllType handleAllType)

@@ -23,20 +23,20 @@ public static partial class Misc
     public enum TDM_FileChanged
     {
         MissionInfo,
-        CurrentFM
+        CurrentFM,
     }
 
     public enum SortDirection
     {
         Ascending,
-        Descending
+        Descending,
     }
 
     public enum WindowState
     {
         Normal,
         Minimized,
-        Maximized
+        Maximized,
     }
 
     public enum MBoxIcon
@@ -44,7 +44,7 @@ public static partial class Misc
         None,
         Error,
         Warning,
-        Information
+        Information,
     }
 
     public enum MBoxButtons
@@ -52,33 +52,33 @@ public static partial class Misc
         OK,
         OKCancel,
         YesNoCancel,
-        YesNo
+        YesNo,
     }
 
     public enum MBoxButton
     {
         Yes,
         No,
-        Cancel
+        Cancel,
     }
 
     public enum ProgressSizeMode
     {
         Single,
-        Double
+        Double,
     }
 
     public enum ProgressType
     {
         Determinate,
-        Indeterminate
+        Indeterminate,
     }
 
     public enum ImportType
     {
         DarkLoader,
         FMSel,
-        NewDarkLoader
+        NewDarkLoader,
     }
 
     /*
@@ -108,7 +108,7 @@ public static partial class Misc
             "#settings_appearance_section",
             "#settings_other_section",
             "#settings_thief_buddy_section",
-            "#settings_update_section"
+            "#settings_update_section",
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -127,7 +127,7 @@ public static partial class Misc
             "#tags_tab",
             "#patch_tab",
             "#mods_tab",
-            "#screenshots_tab"
+            "#screenshots_tab",
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -201,7 +201,7 @@ public static partial class Misc
             "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com",
             "https://www.google.com/search?q=\"$TITLE$\" site:ttlg.com",
             "https://www.google.com/search?q=\"$TITLE$\" site:systemshock.org",
-            "https://www.google.com/search?q=\"$TITLE$\" site:thedarkmod.com"
+            "https://www.google.com/search?q=\"$TITLE$\" site:thedarkmod.com",
         });
 
         internal const uint DaysRecent = 15;
@@ -220,7 +220,7 @@ public static partial class Misc
         ".jpeg",
         ".gif",
         ".tif",
-        ".tiff"
+        ".tiff",
     };
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -232,7 +232,7 @@ public static partial class Misc
         static () => LText.TagsTab.TabText,
         static () => LText.PatchTab.TabText,
         static () => LText.ModsTab.TabText,
-        static () => LText.ScreenshotsTab.TabText
+        static () => LText.ScreenshotsTab.TabText,
     };
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -255,7 +255,7 @@ public static partial class Misc
         static () => LText.FMsList.DateAddedColumn,
         static () => LText.FMsList.PlayTimeColumn,
         static () => LText.FMsList.DisabledModsColumn,
-        static () => LText.FMsList.CommentColumn
+        static () => LText.FMsList.CommentColumn,
     };
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -270,7 +270,7 @@ public static partial class Misc
         static () => LText.StatisticsTab.Creatures,
         static () => LText.StatisticsTab.Motions,
         static () => LText.StatisticsTab.Movies,
-        static () => LText.StatisticsTab.Subtitles
+        static () => LText.StatisticsTab.Subtitles,
     };
 
     public readonly struct PerGameGoFlags

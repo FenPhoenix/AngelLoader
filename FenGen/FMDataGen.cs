@@ -458,8 +458,7 @@ internal static class FMData
         {
             Field field = dictFields[i];
             string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
-            string comma = i == dictFields.Count - 1 ? "" : ",";
-            w.WL("{ \"" + fieldIniName + "\".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_" + fieldIniName + "_Set) }" + comma);
+            w.WL("{ \"" + fieldIniName + "\".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_" + fieldIniName + "_Set) },");
 
             if (i < dictFields.Count - 1 && dictFields[i + 1].Name == "HasMap")
             {

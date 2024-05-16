@@ -123,7 +123,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     public enum Panel
     {
         Panel1,
-        Panel2
+        Panel2,
     }
 
     [Browsable(true)]

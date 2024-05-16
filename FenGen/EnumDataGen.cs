@@ -96,7 +96,7 @@ internal static class EnumDataGen
                 for (int itemNameI = 0; itemNameI < enumData.ItemNames.Count; itemNameI++)
                 {
                     string itemName = enumData.ItemNames[itemNameI];
-                    w.WL("\"" + itemName + "\"" + (itemNameI < enumData.ItemNames.Count - 1 ? "," : ""));
+                    w.WL("\"" + itemName + "\",");
                 }
                 w.WL("};");
             }

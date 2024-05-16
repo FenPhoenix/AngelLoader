@@ -131,7 +131,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
             ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
             ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
             ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
-            new ToolStripSeparator()
+            new ToolStripSeparator(),
         });
 
         #region Fill ColumnHeaderCheckBoxMenuItems array

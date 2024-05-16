@@ -154,8 +154,7 @@ internal static class Games
         for (int i = 0; i < gameNames.Count; i++)
         {
             string prefix = i < gameNames.Count - 1 ? gameName + "." + gameNames[i] : "_";
-            string suffix = i < gameNames.Count - 1 ? "," : "";
-            w.WL(prefix + " => " + gameIndexName + "." + gameNames[i] + suffix);
+            w.WL(prefix + " => " + gameIndexName + "." + gameNames[i] + ",");
         }
         w.WL("};");
         w.WL();
@@ -173,8 +172,7 @@ internal static class Games
         for (int i = 0; i < gameNames.Count; i++)
         {
             string prefix = i < gameNames.Count - 1 ? gameIndexName + "." + gameNames[i] : "_";
-            string suffix = i < gameNames.Count - 1 ? "," : "";
-            w.WL(prefix + " => " + gameName + "." + gameNames[i] + suffix);
+            w.WL(prefix + " => " + gameName + "." + gameNames[i] + ",");
         }
         w.WL("};");
         w.WL();

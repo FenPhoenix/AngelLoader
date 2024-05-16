@@ -1081,7 +1081,7 @@ internal static partial class Ini
         { "GameFilterVisibleT1".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT1_Set) },
         { "GameFilterVisibleT2".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT2_Set) },
         { "GameFilterVisibleT3".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleT3_Set) },
-        { "GameFilterVisibleSS2".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) }
+        { "GameFilterVisibleSS2".AsMemory(), new Config_DelegatePointerWrapper(&Config_GameFilterVisibleSS2_Set) },
 
         #endregion
     };
@@ -1260,7 +1260,7 @@ internal static partial class Ini
                 {
                     true => bool.TrueString,
                     false => bool.FalseString,
-                    _ => ""
+                    _ => "",
                 };
                 sw.Append(GetGamePrefix(gameIndex)).Append("NewMantling=").AppendLine(val);
             }

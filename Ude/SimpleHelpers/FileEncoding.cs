@@ -93,7 +93,7 @@ public sealed class FileEncoding
                             Charset.UTF16BE => Encoding.BigEndianUnicode,
                             Charset.UTF32LE => Encoding.UTF32,
                             Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
-                            _ => Encoding.UTF8
+                            _ => Encoding.UTF8,
                         };
                     }
                 }
@@ -134,7 +134,7 @@ public sealed class FileEncoding
                     Charset.Windows1252 => Windows1252Encoding,
                     Charset.Windows1251 => Windows1251Encoding,
                     Charset.ShiftJIS => ShiftJISEncoding,
-                    _ => Encoding.GetEncoding(GetCharsetCodePage(charset))
+                    _ => Encoding.GetEncoding(GetCharsetCodePage(charset)),
                 };
 
                 return encoding;
@@ -206,7 +206,7 @@ public sealed class FileEncoding
             {
                 DomainSpecificGuess.UTF8 => Charset.UTF8,
                 DomainSpecificGuess.CannotBeAscii => Charset.Windows1252,
-                _ => Charset.UTF8
+                _ => Charset.UTF8,
             };
         }
 

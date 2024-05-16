@@ -39,7 +39,7 @@ public sealed partial class Scanner
         new('\x2018', '\''),
         new('\x2019', '\''),
         new('\x201C', '"'),
-        new('\x201D', '"')
+        new('\x201D', '"'),
     };
 
     [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -146,7 +146,7 @@ public sealed partial class Scanner
         "rick2.mis",
         "rick3.mis",
         "shodan.mis",
-        "station.mis"
+        "station.mis",
     };
 
     #endregion
@@ -183,12 +183,12 @@ public sealed partial class Scanner
         // TODO: @TEMP_HACK: This works for the one mission that has it in this casing
         // Rewrite this code in here so we can have more detailed detection options than just
         // these silly strings and the default case check
-        "Fan Mission/Map Name"
+        "Fan Mission/Map Name",
         // @Scanner: We need more robust language heuristics / readme filename lang detection to use these
 #if false
-        , "Titre Mission"
-        , "Titre de la mission"
-        , "Titre"
+        "Titre Mission",
+        "Titre de la mission",
+        "Titre",
 #endif
     };
 
@@ -213,7 +213,7 @@ public sealed partial class Scanner
         "The author:",
         "author:",
         // TODO: @TEMP_HACK: See above
-        "Fan Mission/Map Author"
+        "Fan Mission/Map Author",
     };
 
     private readonly string[] SA_LatestUpdateDateDetect =
@@ -237,7 +237,7 @@ public sealed partial class Scanner
         "Date re-released",
         "Revision date",
         "Release of latest revision",
-        "Release date of latest revision"
+        "Release date of latest revision",
     };
 
     private readonly string[] SA_ReleaseDateDetect =
@@ -286,7 +286,7 @@ public sealed partial class Scanner
         // "Issue date"
         "Ausgabedatum",
         // "Released on"
-        "Erschienen am"
+        "Erschienen am",
 
         #endregion
     };
@@ -338,7 +338,7 @@ public sealed partial class Scanner
         "dd.M.yyyy",
 
         "d.MM.yyyy",
-        "dd.MM.yyyy"
+        "dd.MM.yyyy",
     };
 
     /*
@@ -401,7 +401,7 @@ public sealed partial class Scanner
         ("M d yyyy", true),
         ("d M yyyy", true),
         ("M d yy", true),
-        ("d M yy", true)
+        ("d M yy", true),
     };
 
     private readonly string[]
@@ -465,7 +465,7 @@ public sealed partial class Scanner
         "Juli",
         "Oktober",
         "Okt",
-        "Dezember"
+        "Dezember",
     };
 
     #endregion
@@ -517,7 +517,7 @@ public sealed partial class Scanner
         new byte[_t2OldDarkOffset],
         new byte[_ss2OldDarkOffset],
         new byte[_newDarkOffset1],
-        new byte[_newDarkOffset2]
+        new byte[_newDarkOffset2],
     };
 
     // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
@@ -598,7 +598,7 @@ public sealed partial class Scanner
         NewDarkVersion6(),
         NewDarkVersion7(),
         NewDarkVersion8(),
-        NewDarkVersion9()
+        NewDarkVersion9(),
     };
 #endif
 
@@ -629,7 +629,7 @@ public sealed partial class Scanner
         AuthorRegex1(),
         AuthorRegex2(),
         AuthorRegex3(),
-        AuthorRegex4()
+        AuthorRegex4(),
     };
 
     #endregion
@@ -668,7 +668,7 @@ public sealed partial class Scanner
     {
         AuthorMissionCopyrightRegex1(),
         AuthorMissionCopyrightRegex2(),
-        AuthorMissionCopyrightRegex3()
+        AuthorMissionCopyrightRegex3(),
     };
 
     // This one is only to be used if we know the above line says "Copyright" or something, because it has

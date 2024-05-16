@@ -194,7 +194,7 @@ public static partial class Utils
         string[] dlLocations =
         {
             "DarkLoader",
-            @"Games\DarkLoader"
+            @"Games\DarkLoader",
         };
 
         DriveInfo[] drives;

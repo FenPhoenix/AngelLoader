@@ -42,7 +42,7 @@ public enum ProbingState
 {
     Detecting = 0, // no sure answer yet, but caller can ask for confidence
     FoundIt = 1,   // positive answer
-    NotMe = 2      // negative answer
+    NotMe = 2,     // negative answer
 }
 
 internal abstract class CharsetProber

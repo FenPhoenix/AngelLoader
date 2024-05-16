@@ -56,7 +56,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
             AllowReordering = true,
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
             EnableScrollButtonsRefreshHack = true,
-            Size = new Size(container.Width - 16, container.Height + 1)
+            Size = new Size(container.Width - 16, container.Height + 1),
         };
 
         _tabControl.SetWhich(WhichTabControl.Bottom);

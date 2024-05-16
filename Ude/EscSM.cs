@@ -75,7 +75,7 @@ internal sealed class HZSMModel : SMModel
         286331153,
         286331153,
         286331153,
-        286331153
+        286331153,
     };
 
     private static readonly int[] HZ_st =
@@ -85,7 +85,7 @@ internal sealed class HZSMModel : SMModel
         335548706,
         341120533,
         336872468,
-        36
+        36,
     };
 
     private static readonly int[] HZCharLenTable = { 0, 0, 0, 0, 0, 0 };
@@ -134,7 +134,7 @@ internal sealed class ISO2022JPSMModel : SMModel
         572662306,
         572662306,
         572662306,
-        572662306
+        572662306,
     };
 
     private static readonly int[] ISO2022JP_st =
@@ -147,7 +147,7 @@ internal sealed class ISO2022JPSMModel : SMModel
         303194385,
         571543825,
         286335249,
-        1184017
+        1184017,
     };
 
     private static readonly int[] ISO2022JPCharLenTable = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -196,7 +196,7 @@ internal sealed class ISO2022KRSMModel : SMModel
         572662306,
         572662306,
         572662306,
-        572662306
+        572662306,
     };
 
     private static readonly int[] ISO2022KR_st =
@@ -205,7 +205,7 @@ internal sealed class ISO2022KRSMModel : SMModel
         572657937,
         289476898,
         286593297,
-        8465
+        8465,
     };
 
     private static readonly int[] ISO2022KRCharLenTable = { 0, 0, 0, 0, 0, 0 };

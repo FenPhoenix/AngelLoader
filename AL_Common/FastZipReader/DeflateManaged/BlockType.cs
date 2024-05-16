@@ -7,6 +7,6 @@ namespace AL_Common.FastZipReader.DeflateManaged
     {
         Uncompressed = 0,
         Static = 1,
-        Dynamic = 2
+        Dynamic = 2,
     }
 }

@@ -117,7 +117,7 @@ public enum Column
     DateAdded,
     PlayTime,
     DisabledMods,
-    Comment
+    Comment,
 }
 
 #endregion
@@ -134,7 +134,7 @@ public enum HideableFilterControls
     Rating,
     ShowUnsupported,
     ShowUnavailable,
-    ShowRecentAtTop
+    ShowRecentAtTop,
 }
 
 internal enum GameOrganization { ByTab, OneList }
@@ -154,7 +154,7 @@ internal enum RunThiefBuddyOnFMPlay
 {
     Always,
     Ask,
-    Never
+    Never,
 }
 
 public enum VisualTheme { Classic, Dark }
@@ -163,7 +163,7 @@ public enum CheckForUpdates
 {
     FirstTimeAsk,
     True,
-    False
+    False,
 }
 
 #region FM tabs
@@ -178,14 +178,14 @@ internal enum FMTab
     Tags,
     Patch,
     Mods,
-    Screenshots
+    Screenshots,
 }
 
 public enum FMTabVisibleIn
 {
     None,
     Top,
-    Bottom
+    Bottom,
 }
 
 internal sealed class FMTabData
@@ -471,7 +471,7 @@ internal enum SettingsTab
     Appearance,
     Other,
     ThiefBuddy,
-    Update
+    Update,
 }
 
 /*
@@ -561,7 +561,7 @@ internal enum ModType
     ModPath,
     UberModPath,
     MPModPath,
-    MPUberModPath
+    MPUberModPath,
 }
 
 [StructLayout(LayoutKind.Auto)]

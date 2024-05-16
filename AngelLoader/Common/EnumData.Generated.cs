@@ -23,7 +23,7 @@ public static partial class Misc
         "Creatures",
         "Motions",
         "Movies",
-        "Subtitles"
+        "Subtitles",
     };
     public const int CustomResourcesCount = 11;
     public const int DifficultyCount = 4;

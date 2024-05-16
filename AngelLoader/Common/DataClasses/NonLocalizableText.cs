@@ -66,7 +66,7 @@ internal static partial class NonLocalizableText
         ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
         ("CoreHook", "https://github.com/unknownv2/CoreHook/"),
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
-        ("SpanExtensions.Net", "https://github.com/draconware-dev/SpanExtensions.Net")
+        ("SpanExtensions.Net", "https://github.com/draconware-dev/SpanExtensions.Net"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 

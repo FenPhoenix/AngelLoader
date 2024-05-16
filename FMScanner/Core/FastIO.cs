@@ -12,7 +12,7 @@ internal static class FastIO
     private enum FastIOSearchOption
     {
         TopDirectoryOnly,
-        AllDirectories
+        AllDirectories,
     }
 
     internal static bool FilesExistSearchTop(string path, string[] searchPatterns)

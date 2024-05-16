@@ -31,7 +31,7 @@ public enum Zoom { In, Out, Reset }
 public enum WhichTabControl
 {
     Top,
-    Bottom
+    Bottom,
 }
 
 internal sealed class FMTabControlGroup(

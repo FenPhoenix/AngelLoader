@@ -158,8 +158,7 @@ internal static class LanguageSupport
         for (int i = 0; i < Cache.LangsEnum.LangIndexEnumNames.Count; i++)
         {
             string prefix = i < Cache.LangsEnum.LangIndexEnumNames.Count - 1 ? Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangIndexEnumNames[i] : "_";
-            string suffix = i < Cache.LangsEnum.LangIndexEnumNames.Count - 1 ? "," : "";
-            w.WL(prefix + " => " + Cache.LangsEnum.LanguageIndexName + "." + Cache.LangsEnum.LangIndexEnumNames[i] + suffix);
+            w.WL(prefix + " => " + Cache.LangsEnum.LanguageIndexName + "." + Cache.LangsEnum.LangIndexEnumNames[i] + ",");
         }
         w.WL("};");
         w.WL();
@@ -177,8 +176,7 @@ internal static class LanguageSupport
         for (int i = 0; i < Cache.LangsEnum.LangIndexEnumNames.Count; i++)
         {
             string prefix = i < Cache.LangsEnum.LangIndexEnumNames.Count - 1 ? Cache.LangsEnum.LanguageIndexName + "." + Cache.LangsEnum.LangIndexEnumNames[i] : "_";
-            string suffix = i < Cache.LangsEnum.LangIndexEnumNames.Count - 1 ? "," : "";
-            w.WL(prefix + " => " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangIndexEnumNames[i] + suffix);
+            w.WL(prefix + " => " + Cache.LangsEnum.Name + "." + Cache.LangsEnum.LangIndexEnumNames[i] + ",");
         }
         w.WL("};");
         w.WL();

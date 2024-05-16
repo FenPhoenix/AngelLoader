@@ -89,7 +89,7 @@ internal sealed class Latin1Prober : CharsetProber
         ASV, ASV, ASV, ASV, ASV, ASV, ASO, ASO,   // E0 - E7
         ASV, ASV, ASV, ASV, ASV, ASV, ASV, ASV,   // E8 - EF
         ASO, ASO, ASV, ASV, ASV, ASV, ASV, OTH,   // F0 - F7
-        ASV, ASV, ASV, ASV, ASV, ASO, ASO, ASO    // F8 - FF
+        ASV, ASV, ASV, ASV, ASV, ASO, ASO, ASO,   // F8 - FF
     };
 
     /* 0 : illegal 
@@ -106,7 +106,7 @@ internal sealed class Latin1Prober : CharsetProber
         /*ACV*/  0,  3,  3,  3,  1,  2,  1,  2,
         /*ACO*/  0,  3,  3,  3,  3,  3,  3,  3,
         /*ASV*/  0,  3,  1,  3,  1,  1,  1,  3,
-        /*ASO*/  0,  3,  1,  3,  1,  1,  3,  3
+        /*ASO*/  0,  3,  1,  3,  1,  1,  3,  3,
     };
 
     private byte _lastCharClass;

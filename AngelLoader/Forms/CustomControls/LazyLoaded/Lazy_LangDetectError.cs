@@ -44,7 +44,7 @@ internal sealed class Lazy_LangDetectError : IDarkable
             Image = Images.RedExclCircle,
             Location = new Point(b.Left + b.Width + 2, b.Top + 4),
             Size = new Size(14, 14),
-            Visible = false
+            Visible = false,
         };
 
         _pictureBox.Click += static (_, _) => Core.OpenLogFile();

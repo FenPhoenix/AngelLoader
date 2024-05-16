@@ -143,7 +143,7 @@ public sealed partial class MainForm : DarkFormBase,
         ZoomOut,
         ResetZoom,
         ZoomTo,
-        ZoomToHeightOnly
+        ZoomToHeightOnly,
     }
 
     #endregion
@@ -592,7 +592,7 @@ public sealed partial class MainForm : DarkFormBase,
             Lazy_TopFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_BottomFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_UpdateNotification = new Lazy_UpdateNotification(this),
-            Lazy_BottomTabControl = new Lazy_BottomTabControl(this)
+            Lazy_BottomTabControl = new Lazy_BottomTabControl(this),
         };
         Lazy_TopFMTabsBlocker.SetWhich(WhichTabControl.Top);
         Lazy_BottomFMTabsBlocker.SetWhich(WhichTabControl.Bottom);
@@ -616,7 +616,7 @@ public sealed partial class MainForm : DarkFormBase,
             ReadOnly = true,
             Width = _ratingImageColumnWidth,
             Resizable = DataGridViewTriState.False,
-            SortMode = DataGridViewColumnSortMode.Programmatic
+            SortMode = DataGridViewColumnSortMode.Programmatic,
         };
 
 #if DateAccTest
@@ -628,7 +628,7 @@ public sealed partial class MainForm : DarkFormBase,
             MinimumWidth = 25,
             ReadOnly = true,
             Resizable = DataGridViewTriState.True,
-            SortMode = DataGridViewColumnSortMode.Programmatic
+            SortMode = DataGridViewColumnSortMode.Programmatic,
         };
 #endif
 
@@ -680,7 +680,7 @@ public sealed partial class MainForm : DarkFormBase,
             TagsTabPage,
             PatchTabPage,
             ModsTabPage,
-            ScreenshotsTabPage
+            ScreenshotsTabPage,
         };
 
         foreach (Lazy_TabsBase fmTabPage in _fmTabPages)
@@ -796,7 +796,7 @@ public sealed partial class MainForm : DarkFormBase,
             var tab = new DarkTabPageCustom
             {
                 GameIndex = (GameIndex)i,
-                ImageIndex = i
+                ImageIndex = i,
             };
             _gameTabs[i] = tab;
 
@@ -813,7 +813,7 @@ public sealed partial class MainForm : DarkFormBase,
                     i == 0 ? new Padding(1, 0, 0, 0) :
                     i == SupportedGameCount - 1 ? new Padding(0, 0, 2, 0) :
                     new Padding(0),
-                Size = new Size(25, 25)
+                Size = new Size(25, 25),
             };
             _filterByGameButtons[i] = button;
             button.Click += Async_EventHandler_Main;
@@ -834,7 +834,7 @@ public sealed partial class MainForm : DarkFormBase,
         _filterLabels = new Control[]
         {
             FilterTitleLabel,
-            FilterAuthorLabel
+            FilterAuthorLabel,
         };
 
         _filtersToolStripSeparatedItems = new ToolStripItem[]
@@ -845,18 +845,18 @@ public sealed partial class MainForm : DarkFormBase,
             FilterByFinishedButton,
             FilterByRatingButton,
             FilterShowUnsupportedButton,
-            FilterShowRecentAtTopButton
+            FilterShowRecentAtTopButton,
         };
 
         _bottomLeftAreaSeparatedItems = new Control?[]
         {
             // Lazy-loaded web search button will go into this on construct (terrible hack)
-            null
+            null,
         };
 
         _bottomRightAreaSeparatedItems = new Control[]
         {
-            SettingsButton
+            SettingsButton,
         };
 
         #endregion
@@ -872,7 +872,7 @@ public sealed partial class MainForm : DarkFormBase,
             new Component[] { FilterByRatingButton },
             new Component[] { FilterShowUnsupportedButton },
             new Component[] { FilterShowUnavailableButton },
-            new Component[] { FilterShowRecentAtTopButton }
+            new Component[] { FilterShowRecentAtTopButton },
         };
 
         _readmeControlButtons = new[]
@@ -881,7 +881,7 @@ public sealed partial class MainForm : DarkFormBase,
             ReadmeZoomInButton,
             ReadmeZoomOutButton,
             ReadmeResetZoomButton,
-            ReadmeFullScreenButton
+            ReadmeFullScreenButton,
         };
 
         #endregion
@@ -2805,7 +2805,7 @@ public sealed partial class MainForm : DarkFormBase,
                         Lazy_TabsBase.ScanSender.Author => FMScanner.ScanOptions.FalseDefault(scanAuthor: true),
                         Lazy_TabsBase.ScanSender.ReleaseDate => FMScanner.ScanOptions.FalseDefault(scanReleaseDate: true),
                         //Lazy_TabsBase.ScanSender.CustomResources
-                        _ => FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true)
+                        _ => FMScanner.ScanOptions.FalseDefault(scanCustomResources: true, scanMissionCount: true),
                     };
 
                     if (await FMScan.ScanFMs(
@@ -4126,7 +4126,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             DateFormat.CurrentCultureShort => dt.ToShortDateString(),
             DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-            _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture)
+            _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture),
         };
 
         static string FormatSize(ulong size) =>
@@ -5325,14 +5325,14 @@ public sealed partial class MainForm : DarkFormBase,
     {
         Misc.WindowState.Normal => FormWindowState.Normal,
         Misc.WindowState.Minimized => FormWindowState.Minimized,
-        _ => FormWindowState.Maximized
+        _ => FormWindowState.Maximized,
     };
 
     private static WindowState FormWindowStateToWindowState(FormWindowState formWindowState) => formWindowState switch
     {
         FormWindowState.Normal => Misc.WindowState.Normal,
         FormWindowState.Minimized => Misc.WindowState.Minimized,
-        _ => Misc.WindowState.Maximized
+        _ => Misc.WindowState.Maximized,
     };
 
     private void CancelResizables()

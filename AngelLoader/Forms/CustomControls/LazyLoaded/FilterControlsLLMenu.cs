@@ -69,7 +69,7 @@ internal sealed class FilterControlsLLMenu : IDarkable
             RatingMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Rating },
             ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnsupported },
             ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnavailable },
-            ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowRecentAtTop }
+            ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowRecentAtTop },
         });
 
         for (int i = 0; i < _menu.Items.Count; i++)

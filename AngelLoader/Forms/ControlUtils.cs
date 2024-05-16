@@ -167,7 +167,7 @@ internal static class ControlUtils
         ContentAlignment.BottomLeft => TextFormatFlags.Bottom | TextFormatFlags.Left,
         ContentAlignment.BottomCenter => TextFormatFlags.Bottom | TextFormatFlags.HorizontalCenter,
         ContentAlignment.BottomRight => TextFormatFlags.Bottom | TextFormatFlags.Right,
-        _ => TextFormatFlags.Top | TextFormatFlags.Left
+        _ => TextFormatFlags.Top | TextFormatFlags.Left,
     };
 
     internal static TextFormatFlags GetTextAlignmentFlags(DataGridViewContentAlignment align) => align switch
@@ -181,7 +181,7 @@ internal static class ControlUtils
         DataGridViewContentAlignment.BottomLeft => TextFormatFlags.Bottom | TextFormatFlags.Left,
         DataGridViewContentAlignment.BottomCenter => TextFormatFlags.Bottom | TextFormatFlags.HorizontalCenter,
         DataGridViewContentAlignment.BottomRight => TextFormatFlags.Bottom | TextFormatFlags.Right,
-        _ => TextFormatFlags.Top | TextFormatFlags.Left
+        _ => TextFormatFlags.Top | TextFormatFlags.Left,
     };
 
     #endregion
@@ -218,7 +218,7 @@ internal static class ControlUtils
         MBoxIcon.Information => MessageBoxIcon.Information,
         MBoxIcon.Warning => MessageBoxIcon.Warning,
         MBoxIcon.Error => MessageBoxIcon.Error,
-        _ => MessageBoxIcon.None
+        _ => MessageBoxIcon.None,
     };
 
     internal static MessageBoxButtons GetButtons(MBoxButtons buttons) => buttons switch
@@ -226,14 +226,14 @@ internal static class ControlUtils
         MBoxButtons.OKCancel => MessageBoxButtons.OKCancel,
         MBoxButtons.YesNo => MessageBoxButtons.YesNo,
         MBoxButtons.YesNoCancel => MessageBoxButtons.YesNoCancel,
-        _ => MessageBoxButtons.OK
+        _ => MessageBoxButtons.OK,
     };
 
     internal static MBoxButton DialogResultToMBoxButton(DialogResult dialogResult) => dialogResult switch
     {
         DialogResult.Yes => MBoxButton.Yes,
         DialogResult.No => MBoxButton.No,
-        _ => MBoxButton.Cancel
+        _ => MBoxButton.Cancel,
     };
 
     internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
@@ -256,7 +256,7 @@ internal static class ControlUtils
                 MessageBoxIcon.Information
                     => Native.SHSTOCKICONID.SIID_INFO,
                 _
-                    => throw new ArgumentOutOfRangeException()
+                    => throw new ArgumentOutOfRangeException(),
             };
 
             sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
@@ -285,7 +285,7 @@ internal static class ControlUtils
                 MessageBoxIcon.Information
                     => SystemIcons.Information.ToBitmap(),
                 _
-                    => null
+                    => null,
             };
         }
         finally
@@ -613,7 +613,7 @@ internal static class ControlUtils
                           metrics.iMenuWidth +
                           (metrics.iBorderWidth * 2) +
                           (metrics.iPaddedBorderWidth * 2)),
-                800)
+                800),
         };
     }
 
@@ -683,7 +683,7 @@ internal static class ControlUtils
             MenuPos.LeftUp or MenuPos.TopLeft => ToolStripDropDownDirection.AboveLeft,
             MenuPos.RightUp or MenuPos.TopRight => ToolStripDropDownDirection.AboveRight,
             MenuPos.LeftDown or MenuPos.BottomLeft => ToolStripDropDownDirection.BelowLeft,
-            _ => ToolStripDropDownDirection.BelowRight
+            _ => ToolStripDropDownDirection.BelowRight,
         };
 
         if (unstickMenu)

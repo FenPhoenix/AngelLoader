@@ -18,7 +18,7 @@ public class Lazy_TabsBase : DarkTabPageCustom
         Readmes,
         Title,
         Author,
-        ReleaseDate
+        ReleaseDate,
     }
 
     private protected MainForm _owner = null!;
@@ -84,6 +84,6 @@ public class Lazy_TabsBase : DarkTabPageCustom
     {
         Dock = DockStyle.Fill,
         Tag = LoadType.Lazy,
-        Visible = false
+        Visible = false,
     };
 }

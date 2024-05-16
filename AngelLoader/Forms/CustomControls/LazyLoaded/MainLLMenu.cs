@@ -79,14 +79,14 @@ internal sealed class MainLLMenu : IDarkable
             ViewHelpFileMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.F1 },
             AboutMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
-            ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4 }
+            ExitMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Alt | Keys.F4 },
         });
 
         ImportMenuItem.DropDown.Items.AddRange(new ToolStripItem[]
         {
             ImportFromDarkLoaderMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.DarkLoaderEllipses),
             ImportFromFMSelMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.FMSelEllipses),
-            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.NewDarkLoaderEllipses)
+            ImportFromNewDarkLoaderMenuItem = new ToolStripMenuItemCustom(NonLocalizableText.NewDarkLoaderEllipses),
         });
 
         ScanAllFMsMenuItem.Enabled = _scanAllFMsMenuItemEnabled;

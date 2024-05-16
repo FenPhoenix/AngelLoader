@@ -170,7 +170,7 @@ internal static partial class Utils
                     {
                         "FollowSystemTheme" => GetSystemTheme(),
                         "Dark" => VisualTheme.Dark,
-                        _ => VisualTheme.Classic
+                        _ => VisualTheme.Classic,
                     };
                 }
             }

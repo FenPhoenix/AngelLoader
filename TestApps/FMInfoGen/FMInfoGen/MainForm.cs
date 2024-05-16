@@ -54,7 +54,7 @@ internal sealed partial class MainForm : Form
         ScanSize = ScanSizeCheckBox.Checked,
         ScanReleaseDate = ScanReleaseDateCheckBox.Checked,
         ScanTags = ScanTagsCheckBox.Checked,
-        ScanDescription = ScanDescriptionCheckBox.Checked
+        ScanDescription = ScanDescriptionCheckBox.Checked,
     };
 
     internal bool GetOverwriteFoldersChecked() => OverwriteFoldersCheckBox.Checked;
@@ -233,7 +233,7 @@ internal sealed partial class MainForm : Form
                             fmDataTemp.HasMap.ToString(),
                             fmDataTemp.HasMovies.ToString(),
                             fmDataTemp.HasCustomSubtitles.ToString(),
-                            ConvertSize(fmDataTemp.Size)
+                            ConvertSize(fmDataTemp.Size),
                         })
                     { UseItemStyleForSubItems = false });
         }
@@ -405,7 +405,7 @@ internal sealed partial class MainForm : Form
                 HasAutomap = (bool?)AutomapCheckBox.Tag,
                 HasMap = (bool?)MapCheckBox.Tag,
                 HasMovies = (bool?)MoviesCheckBox.Tag,
-                HasCustomSubtitles = (bool?)SubtitlesCheckBox.Tag
+                HasCustomSubtitles = (bool?)SubtitlesCheckBox.Tag,
             };
 
             Ini.WriteAccuracyData(acc, MakeAccuracyFilePath(item));
@@ -420,7 +420,7 @@ internal sealed partial class MainForm : Form
         {
             CheckState.Indeterminate => CheckState.Checked,
             CheckState.Checked => CheckState.Unchecked,
-            _ => CheckState.Indeterminate
+            _ => CheckState.Indeterminate,
         };
 
         FMInfoFilesListView.Focus();
@@ -575,7 +575,7 @@ internal sealed partial class MainForm : Form
                 (AutomapCheckBox, acc.HasAutomap),
                 (MapCheckBox, acc.HasMap),
                 (MoviesCheckBox, acc.HasMovies),
-                (SubtitlesCheckBox, acc.HasCustomSubtitles)
+                (SubtitlesCheckBox, acc.HasCustomSubtitles),
             };
 
             for (int i = 0; i < fields.Length; i++)
@@ -586,7 +586,7 @@ internal sealed partial class MainForm : Form
                 {
                     null => CheckState.Indeterminate,
                     true => CheckState.Checked,
-                    _ => CheckState.Unchecked
+                    _ => CheckState.Unchecked,
                 };
             }
 

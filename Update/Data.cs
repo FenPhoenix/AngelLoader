@@ -5,7 +5,7 @@ namespace Update;
 public enum VisualTheme
 {
     Classic,
-    Dark
+    Dark,
 }
 
 public interface IDarkable

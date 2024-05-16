@@ -122,7 +122,7 @@ public sealed partial class Scanner : IDisposable
         Zip,
         SevenZip,
         Rar,
-        RarSolid
+        RarSolid,
     }
 
     private FMFormat _fmFormat = FMFormat.NotInArchive;
@@ -331,7 +331,7 @@ public sealed partial class Scanner : IDisposable
         Author,
         ReleaseDate,
 #if FMScanner_FullCode
-        Version
+        Version,
 #endif
     }
 
@@ -800,7 +800,7 @@ public sealed partial class Scanner : IDisposable
         ScannedFMData fmData = new()
         {
             ArchiveName = FMWorkingPathDirName,
-            Game = Game.TDM
+            Game = Game.TDM,
         };
 
         if (!Directory.Exists(_fmWorkingPath) &&
@@ -1618,7 +1618,7 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = _fmFormat > FMFormat.NotInArchive
                 ? Path.GetFileName(fm.Path)
-                : FMWorkingPathDirName
+                : FMWorkingPathDirName,
         };
 
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
@@ -1681,7 +1681,7 @@ public sealed partial class Scanner : IDisposable
                 FMFormat.SevenZip => "7z",
                 FMFormat.Rar => "rar",
                 FMFormat.RarSolid => "rar (solid)",
-                _ => "dir"
+                _ => "dir",
             };
             Log(fm.Path + ": fm is " + ext + ", " +
                 nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
@@ -2031,11 +2031,11 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = Path.GetFileName(archivePath),
             Game = Game.Unsupported,
-            MissionCount = 0
+            MissionCount = 0,
         },
         Fen7zResult = fen7zResult,
         Exception = ex,
-        ErrorInfo = errorInfo
+        ErrorInfo = errorInfo,
     };
 
     private static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
@@ -2044,11 +2044,11 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = Path.GetFileName(archivePath),
             Game = Game.Unsupported,
-            MissionCount = 0
+            MissionCount = 0,
         },
         Fen7zResult = fen7zResult,
         Exception = ex,
-        ErrorInfo = errorInfo
+        ErrorInfo = errorInfo,
     };
 
     private static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
@@ -2057,11 +2057,11 @@ public sealed partial class Scanner : IDisposable
         {
             ArchiveName = Path.GetFileName(archivePath),
             Game = Game.Null,
-            MissionCount = 0
+            MissionCount = 0,
         },
         Fen7zResult = fen7zResult,
         Exception = ex,
-        ErrorInfo = errorInfo
+        ErrorInfo = errorInfo,
     };
 
     private static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
@@ -2069,7 +2069,7 @@ public sealed partial class Scanner : IDisposable
         ScannedFMData = null,
         Fen7zResult = fen7zResult,
         Exception = ex,
-        ErrorInfo = errorInfo
+        ErrorInfo = errorInfo,
     };
 
     #endregion
@@ -2677,7 +2677,7 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => _archive.Entries.Count,
                 FMFormat.Rar => _rarArchive.Entries.Count,
-                _ => _fmDirFileInfos.Count
+                _ => _fmDirFileInfos.Count,
             };
             for (int i = 0; i < filesCount; i++)
             {
@@ -2686,7 +2686,7 @@ public sealed partial class Scanner : IDisposable
                     FMFormat.Zip => _archive.Entries[i].FullName,
                     FMFormat.SevenZip or FMFormat.RarSolid => _fmDirFileInfos[i].FullName,
                     FMFormat.Rar => _rarArchive.Entries[i].Key,
-                    _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length)
+                    _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length),
                 };
 
                 if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
@@ -3595,7 +3595,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
                     FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
-                    _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer)
+                    _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer),
                 };
 
                 int rtfBytesRead = 0;
@@ -3651,7 +3651,7 @@ public sealed partial class Scanner : IDisposable
                     {
                         FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
                         FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
-                        _ => readmeStream
+                        _ => readmeStream,
                     };
 
                     last.Text = last.IsGlml
@@ -4814,7 +4814,7 @@ public sealed partial class Scanner : IDisposable
             {
                 0 => _booksDirFiles,
                 1 => _intrfaceDirFiles,
-                _ => _stringsDirFiles
+                _ => _stringsDirFiles,
             };
 
             for (int langIndex = 0; langIndex < SupportedLanguageCount; langIndex++)
@@ -5082,7 +5082,7 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
                 FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer)
+                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
             };
 
             for (int i = 0; i < _locations.Length; i++)
@@ -5348,7 +5348,7 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
                 FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer)
+                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
             };
             if (StreamContainsIdentString(
                     stream,
@@ -5584,7 +5584,7 @@ public sealed partial class Scanner : IDisposable
         {
             FMFormat.Zip => _archive.OpenEntry(_archive.Entries[item.Index]),
             FMFormat.Rar => _rarArchive.Entries[item.Index].OpenEntryStream(),
-            _ => GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer)
+            _ => GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer),
         };
 
         // Stupid micro-optimization: Don't call Dispose() method on stream twice
