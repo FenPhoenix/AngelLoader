@@ -24,7 +24,7 @@ public static partial class GameSupport
         "Thief2",
         "Thief3",
         "SS2",
-        "TDM"
+        "TDM",
     };
 
     public enum GameIndex : byte
@@ -33,7 +33,7 @@ public static partial class GameSupport
         Thief2,
         Thief3,
         SS2,
-        TDM
+        TDM,
     }
 
     #region General
@@ -48,7 +48,7 @@ public static partial class GameSupport
         Game.Thief2 => GameIndex.Thief2,
         Game.Thief3 => GameIndex.Thief3,
         Game.SS2 => GameIndex.SS2,
-        _ => GameIndex.TDM
+        _ => GameIndex.TDM,
     };
 
     /// <summary>
@@ -61,7 +61,7 @@ public static partial class GameSupport
         GameIndex.Thief2 => Game.Thief2,
         GameIndex.Thief3 => Game.Thief3,
         GameIndex.SS2 => Game.SS2,
-        _ => Game.TDM
+        _ => Game.TDM,
     };
 
     public static bool GameIsKnownAndSupported(Game game) =>
@@ -93,7 +93,7 @@ public static partial class GameSupport
         "T2",
         "T3",
         "SS2",
-        "TDM"
+        "TDM",
     };
 
     public static String GetGamePrefix(GameIndex index) => _gamePrefixes[(byte)index];
@@ -108,7 +108,7 @@ public static partial class GameSupport
         "211740",
         "6980",
         "238210",
-        ""
+        "",
     };
 
     public static String GetGameSteamId(GameIndex index) => _steamAppIds[(byte)index];
@@ -123,7 +123,7 @@ public static partial class GameSupport
         "DromEd",
         "",
         "ShockEd",
-        ""
+        "",
     };
 
     public static String GetGameEditorName(GameIndex index) => _gameEditorNames[(byte)index];
@@ -138,7 +138,7 @@ public static partial class GameSupport
         true,
         false,
         true,
-        false
+        false,
     };
 
     public static Boolean GameIsDark(GameIndex index) => _isDark[(byte)index];
@@ -185,7 +185,7 @@ public static partial class GameSupport
         true,
         false,
         true,
-        false
+        false,
     };
 
     public static Boolean GameSupportsMods(GameIndex index) => _supportsMods[(byte)index];
@@ -232,7 +232,7 @@ public static partial class GameSupport
         true,
         true,
         true,
-        false
+        false,
     };
 
     public static Boolean GameSupportsImport(GameIndex index) => _supportsImport[(byte)index];
@@ -279,7 +279,7 @@ public static partial class GameSupport
         true,
         false,
         true,
-        false
+        false,
     };
 
     public static Boolean GameSupportsLanguages(GameIndex index) => _supportsLanguages[(byte)index];
@@ -326,7 +326,7 @@ public static partial class GameSupport
         true,
         false,
         true,
-        false
+        false,
     };
 
     public static Boolean GameSupportsResourceDetection(GameIndex index) => _supportsResourceDetection[(byte)index];
@@ -373,7 +373,7 @@ public static partial class GameSupport
         true,
         true,
         true,
-        false
+        false,
     };
 
     public static Boolean GameRequiresBackupPath(GameIndex index) => _requiresBackupPath[(byte)index];

@@ -281,8 +281,7 @@ internal static class Language
                     string prefix = i < count - 1
                         ? gameIndexName + "." + Cache.GamesEnum.GameIndexEnumNames[i] + " => "
                         : "_ => ";
-                    string suffix = i < count - 1 ? "," : "";
-                    string line = prefix + "LText." + game.Section + "." + game.Field + suffix;
+                    string line = prefix + "LText." + game.Section + "." + game.Field + ",";
                     w.WL(line);
                 }
                 w.WL("};");

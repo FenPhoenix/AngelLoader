@@ -48,8 +48,7 @@ internal static partial class Misc
         for (int i = 0; i < list.Count; i++)
         {
             T item = list[i];
-            string suffix = i < list.Count - 1 ? "," : "";
-            w.WL(quote + item.ToStringGenFriendly() + quote + suffix);
+            w.WL(quote + item.ToStringGenFriendly() + quote + ",");
         }
         w.WL("}" + (isEnum ? "" : ";"));
         w.WL();
@@ -70,8 +69,7 @@ internal static partial class Misc
         {
             string key = keys[i];
             string value = values[i];
-            string suffix = i < keys.Count - 1 ? "," : "";
-            w.WL("{ " + keyQuote + key + keyQuote + ", " + valueQuote + value + valueQuote + " }" + suffix);
+            w.WL("{ " + keyQuote + key + keyQuote + ", " + valueQuote + value + valueQuote + " },");
         }
         w.WL("};");
         w.WL();

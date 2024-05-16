@@ -27,7 +27,7 @@ public static partial class LanguageSupport
         Japanese,
         Polish,
         Russian,
-        Spanish
+        Spanish,
     }
 
     public static readonly string[] SupportedLanguages =
@@ -42,7 +42,7 @@ public static partial class LanguageSupport
         "japanese",
         "polish",
         "russian",
-        "spanish"
+        "spanish",
     };
 
     private static string[]? _fspl;
@@ -77,7 +77,7 @@ public static partial class LanguageSupport
         { "japanese", Language.Japanese },
         { "polish", Language.Polish },
         { "russian", Language.Russian },
-        { "spanish", Language.Spanish }
+        { "spanish", Language.Spanish },
     };
 
     public static readonly string[][] LangCodes =
@@ -92,7 +92,7 @@ public static partial class LanguageSupport
         new[] { "ja", "jp" },
         new[] { "pl" },
         new[] { "ru" },
-        new[] { "es" }
+        new[] { "es" },
     };
 
     public static readonly string[] LangTranslatedNames =
@@ -107,7 +107,7 @@ public static partial class LanguageSupport
         "日本語",
         "Polski",
         "Русский",
-        "Español"
+        "Español",
     };
 
     /// <summary>
@@ -126,7 +126,7 @@ public static partial class LanguageSupport
         Language.Japanese => LanguageIndex.Japanese,
         Language.Polish => LanguageIndex.Polish,
         Language.Russian => LanguageIndex.Russian,
-        _ => LanguageIndex.Spanish
+        _ => LanguageIndex.Spanish,
     };
 
     /// <summary>
@@ -145,7 +145,7 @@ public static partial class LanguageSupport
         LanguageIndex.Japanese => Language.Japanese,
         LanguageIndex.Polish => Language.Polish,
         LanguageIndex.Russian => Language.Russian,
-        _ => Language.Spanish
+        _ => Language.Spanish,
     };
 
     public static string GetLanguageString(LanguageIndex index) => SupportedLanguages[(ushort)index];

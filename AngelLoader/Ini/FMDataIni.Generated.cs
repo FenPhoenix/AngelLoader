@@ -418,7 +418,7 @@ internal static partial class Ini
         { "HasCreatures", new FMData_DelegatePointerWrapper(&FMData_HasCreatures_Set) },
         { "HasMotions", new FMData_DelegatePointerWrapper(&FMData_HasMotions_Set) },
         { "HasMovies", new FMData_DelegatePointerWrapper(&FMData_HasMovies_Set) },
-        { "HasSubtitles", new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) }
+        { "HasSubtitles", new FMData_DelegatePointerWrapper(&FMData_HasSubtitles_Set) },
 
         #endregion
     };
