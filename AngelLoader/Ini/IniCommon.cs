@@ -171,7 +171,7 @@ internal static partial class Ini
                 }
                 WriteFMDataIni(FMDataIniList, FMDataIniListTDM, Paths.FMDataIni);
 #if DateAccTest
-            WriteDateAccuracyFile();
+                WriteDateAccuracyFile();
 #endif
             }
             catch (Exception ex)
