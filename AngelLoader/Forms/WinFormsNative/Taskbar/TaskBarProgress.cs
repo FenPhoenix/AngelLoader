@@ -12,7 +12,7 @@ internal enum TaskbarStates
 #if false
     Normal = 2,
     Error = 4,
-    Paused = 8
+    Paused = 8,
 #endif
 }
 
