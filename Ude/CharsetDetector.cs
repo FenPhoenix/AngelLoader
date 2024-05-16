@@ -79,14 +79,14 @@ public enum Charset
     Windows1252,
     Windows1253,
     Windows1255, // Logical Hebrew
-    X_MAC_CYRILLIC
+    X_MAC_CYRILLIC,
 }
 
 public enum DomainSpecificGuess
 {
     None,
     CannotBeAscii,
-    UTF8
+    UTF8,
 }
 
 /// <summary>
@@ -148,7 +148,7 @@ public sealed class CharsetDetector
         1252,  // "windows-1252"
         1253,  // "windows-1253"
         1255,  // "windows-1255" // Logical Hebrew
-        10007  // "x-mac-cyrillic"
+        10007, // "x-mac-cyrillic"
     };
 
     public static readonly int CharsetCount = CharsetToCodePage.Length;
@@ -221,7 +221,7 @@ public sealed class CharsetDetector
                     : Charset.UTF32LE,
                 0xEF when len >= 3 && buf[1] == 0xBB && buf[2] == 0xBF => Charset.UTF8,
                 0x00 when len >= 4 && buf[1] == 0x00 && buf[2] == 0xFE && buf[3] == 0xFF => Charset.UTF32BE,
-                _ => Charset.Null
+                _ => Charset.Null,
             }
             : Charset.Null;
     }

@@ -73,7 +73,7 @@ internal sealed class UTF8SMModel : SMModel
         -2004318073,
         -2003269496,
         -1145324614,
-        16702940
+        16702940,
     };
 
     private static readonly int[] UTF8_st =
@@ -103,7 +103,7 @@ internal sealed class UTF8SMModel : SMModel
         287099921,
         286331153,
         285212689,
-        286331153
+        286331153,
     };
 
     private static readonly int[] UTF8CharLenTable =
@@ -153,7 +153,7 @@ internal sealed class GB18030SMModel : SMModel
         1717986918,
         1717986918,
         1717986918,
-        107374182
+        107374182,
     };
 
     private static readonly int[] GB18030_st =
@@ -163,7 +163,7 @@ internal sealed class GB18030SMModel : SMModel
         17965602,
         286326804,
         303109393,
-        17
+        17,
     };
 
     // To be accurate, the length of class 6 can be either 2 or 4.
@@ -217,14 +217,14 @@ internal sealed class BIG5SMModel : SMModel
         858993459,
         858993459,
         858993459,
-        53687091
+        53687091,
     };
 
     private static readonly int[] BIG5_st =
     {
         286339073,
         304226833,
-        1
+        1,
     };
 
     private static readonly int[] BIG5CharLenTable = { 0, 1, 1, 2, 0 };
@@ -273,7 +273,7 @@ internal sealed class EUCJPSMModel : SMModel
         0,
         0,
         0,
-        1342177280
+        1342177280,
     };
 
     private static readonly int[] EUCJP_st =
@@ -282,7 +282,7 @@ internal sealed class EUCJPSMModel : SMModel
         572657937,
         286265378,
         319885329,
-        4371
+        4371,
     };
 
     private static readonly int[] EUCJPCharLenTable = { 2, 2, 2, 3, 1, 0 };
@@ -331,13 +331,13 @@ internal sealed class EUCKRSMModel : SMModel
         572662306,
         572662306,
         572662306,
-        35791394
+        35791394,
     };
 
     private static readonly int[] EUCKR_st =
     {
         286331649,
-        1122850
+        1122850,
     };
 
     private static readonly int[] EUCKRCharLenTable = { 0, 1, 2, 0 };
@@ -386,14 +386,14 @@ internal sealed class SJISSMModel : SMModel
         858993459,
         1145254707,
         1145324612,
-        279620
+        279620,
     };
 
     private static readonly int[] SJIS_st =
     {
         286339073,
         572657937,
-        4386
+        4386,
     };
 
     private static readonly int[] SJISCharLenTable = { 0, 1, 1, 2, 0, 0 };
