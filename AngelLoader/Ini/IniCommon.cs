@@ -259,7 +259,18 @@ internal static partial class Ini
         fmsList.Clear();
         fmsListTDM.Clear();
 
-        using var sr = File_OpenTextFast(fileName);
+        long fileLength = new FileInfo(fileName).Length;
+
+        int bufferSize = fileLength switch
+        {
+            <= ByteSize.MB * 4 => ByteSize.KB * 4,
+            <= ByteSize.MB * 256 => ByteSize.KB * 256,
+            <= ByteSize.MB * 512 => ByteSize.KB * 512,
+            <= ByteSize.MB * 768 => ByteSize.KB * 768,
+            _ => ByteSize.MB * 1,
+        };
+
+        using var sr = File_OpenTextFast(fileName, bufferSize);
 
         FanMission? fm = null;
         while (sr.Reader.ReadLine() is { } line)
