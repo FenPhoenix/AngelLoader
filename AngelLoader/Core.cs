@@ -2352,10 +2352,12 @@ internal static class Core
             if (!fm.LangsScanned)
             {
                 FMLanguages.FillFMSupportedLangs(fm);
-                // @PerfScale: This can take seconds for huge sets. It probably shouldn't even be here.
-                // Did I add this for my own convenience while testing? We probably shouldn't ever be writing the
-                // FM data ini file merely on FM select.
-                Ini.WriteFullFMDataIni();
+                /*
+                @PerfScale(First FM language fill):
+                Don't write the FM data ini file here. This happens on first select of every FM, and if the FMs
+                list is extremely large, the file write might take an objectionable amount of time. It will be
+                written on app exit or whenever else it would normally be.
+                */
             }
         }
         else
