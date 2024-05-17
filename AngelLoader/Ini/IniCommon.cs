@@ -1,5 +1,4 @@
-﻿#define FMDATA_MINIMALMEM
-//#define TESTING_COLUMN_VALIDATOR
+﻿//#define TESTING_COLUMN_VALIDATOR
 
 using System;
 using System.Collections.Generic;
@@ -220,8 +219,18 @@ internal static partial class Ini
         fmsList.Clear();
         fmsListTDM.Clear();
 
-#if FMDATA_MINIMALMEM
-        using var sr = File_OpenTextFast(fileName);
+        long fileLength = new FileInfo(fileName).Length;
+
+        int bufferSize = fileLength switch
+        {
+            <= ByteSize.MB * 4 => ByteSize.KB * 4,
+            <= ByteSize.MB * 256 => ByteSize.KB * 256,
+            <= ByteSize.MB * 512 => ByteSize.KB * 512,
+            <= ByteSize.MB * 768 => ByteSize.KB * 768,
+            _ => ByteSize.MB * 1,
+        };
+
+        using var sr = File_OpenTextFast(fileName, bufferSize);
 
         FanMission? fm = null;
         while (sr.Reader.ReadLine() is { } line)
@@ -238,41 +247,6 @@ internal static partial class Ini
             }
         }
         AddFMIfNotNull(fm, fmsList, fmsListTDM);
-#else
-        var lines = File_ReadAllLines_List(fileName);
-
-        int linesLength = lines.Count;
-        for (int i = 0; i < linesLength; i++)
-        {
-            string lineT = lines[i].Trim();
-            if (lineT == "[FM]")
-            {
-                FanMission fm = new();
-                while (i < linesLength - 1)
-                {
-                    string lineTS = lines[i + 1].TrimStart();
-                    int eqIndex = lineTS.IndexOf('=');
-                    if (eqIndex > -1 && lineTS[0] != ';')
-                    {
-                        if (_actionDict_FMData.TryGetValue(lineTS, out var result))
-                        {
-                            // If the value is an arbitrary string or other unknowable type, then we need to split
-                            // the string so the value part can go in the FM field. But if the value is a knowable
-                            // type, then we don't need to split the string, we can just parse the value section.
-                            // This slashes our allocation count WAY down.
-                            result.Action(fm, lineTS, eqIndex);
-                        }
-                    }
-                    else if (lineTS.Length > 0 && lineTS[0] == '[')
-                    {
-                        break;
-                    }
-                    i++;
-                }
-                AddFMIfNotNull(fm, fmsList, fmsListTDM);
-            }
-        }
-#endif
     }
 
     internal static void WriteConfigIni()

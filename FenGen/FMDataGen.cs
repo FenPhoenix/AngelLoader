@@ -509,7 +509,9 @@ internal static class FMData
         {
             "private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)",
             "{",
-            "using var sw = new StreamWriter(fileName, false, Encoding.UTF8);",
+            "// Larger buffer size helps with perf for larger file sizes.",
+            "using var fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, ByteSize.KB * 256);",
+            "using var sw = new StreamWriter(fs, Encoding.UTF8, ByteSize.KB * 256);",
             "",
             "Span<char> numberSpan = stackalloc char[20];",
             "",

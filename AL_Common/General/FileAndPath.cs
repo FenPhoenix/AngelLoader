@@ -76,6 +76,21 @@ public static partial class Common
         }
     }
 
+    public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path, int bufferSize)
+    {
+        return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path, bufferSize), new StreamReaderCustom());
+    }
+
+    public static FileStream File_OpenReadFast(string path)
+    {
+        return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+    }
+
+    public static FileStream File_OpenReadFast(string path, int bufferSize)
+    {
+        return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
+    }
+
     public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)
     {
         return new StreamReaderCustom.SRC_Wrapper(File.OpenRead(path), new StreamReaderCustom());
