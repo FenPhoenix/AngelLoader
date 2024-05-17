@@ -400,7 +400,7 @@ internal static class TDM
             finalFilesList.Sort();
 
             // @TDM_CASE: Case-sensitive comparison
-            if (!internalTdmFMIds.SequenceEqual(finalFilesList))
+            if (!internalTdmFMIds.SequenceEqual(finalFilesList, StringComparer.Ordinal))
             {
                 return true;
             }
