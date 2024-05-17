@@ -479,18 +479,8 @@ internal static class TDM
     */
     internal static string GetTDMVersion(FileVersionInfo vi, Version? version)
     {
-        int majorPart = vi.FileMajorPart;
-        int minorPart = vi.FileMinorPart;
-        int buildPart = vi.FileBuildPart;
-        int privatePart = vi.FilePrivatePart;
-
-        string fileVersion =
-            majorPart > 0 && minorPart == 0 && privatePart == 0
-                ? majorPart.ToStrInv() + "." + (buildPart > 9 ? buildPart.ToStrInv() : ".0" + buildPart.ToStrInv())
-                : version?.ToString() ?? "";
-
         string gamePath = Config.GetGamePath(GameIndex.TDM);
-        if (gamePath.IsEmpty()) return fileVersion;
+        if (gamePath.IsEmpty()) return GetFileVersion(vi, version);
 
         try
         {
@@ -517,7 +507,7 @@ internal static class TDM
                     }
                     else
                     {
-                        return fileVersion;
+                        return GetFileVersion(vi, version);
                     }
                 }
                 else if (lineT == "[Version]")
@@ -532,9 +522,21 @@ internal static class TDM
         }
         catch
         {
-            return fileVersion;
+            return GetFileVersion(vi, version);
         }
 
-        return fileVersion;
+        return GetFileVersion(vi, version);
+
+        static string GetFileVersion(FileVersionInfo vi, Version? version)
+        {
+            int majorPart = vi.FileMajorPart;
+            int minorPart = vi.FileMinorPart;
+            int buildPart = vi.FileBuildPart;
+            int privatePart = vi.FilePrivatePart;
+
+            return majorPart > 0 && minorPart == 0 && privatePart == 0
+                ? majorPart.ToStrInv() + "." + (buildPart > 9 ? buildPart.ToStrInv() : ".0" + buildPart.ToStrInv())
+                : version?.ToString() ?? "";
+        }
     }
 }
