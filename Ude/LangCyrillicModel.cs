@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-
 namespace Ude.NetStandard;
 
 internal abstract class CyrillicModel : SequenceModel
@@ -48,7 +46,7 @@ internal abstract class CyrillicModel : SequenceModel
     // first 1024 sequences: 2.3389%
     // rest  sequences:      0.1237%
     // negative sequences:   0.0009%
-    /* Original uncompressed:
+#if !CompressUdeDataArrays
     private static readonly byte[] RUSSIAN_LANG_MODEL = {
         0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,1,3,3,3,2,3,2,3,3,
         3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,2,2,2,2,2,0,0,2,
@@ -177,9 +175,9 @@ internal abstract class CyrillicModel : SequenceModel
         1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
         1,1,0,1,1,0,1,0,1,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,0,1,1,0,1,0,0,0,
         0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+        0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,
     };
-    */
+#else
     private static readonly byte[] RUSSIAN_LANG_MODEL_COMPRESSED =
     {
         141, 87, 139, 130, 195, 32, 8, 35, 248, 255, 255, 124, 18, 30, 162, 103, 215, 186, 219, 102, 59, 145, 16,
@@ -227,8 +225,9 @@ internal abstract class CyrillicModel : SequenceModel
     static CyrillicModel()
     {
         RUSSIAN_LANG_MODEL = Utils.Decompress(RUSSIAN_LANG_MODEL_COMPRESSED, 4096);
-        RUSSIAN_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+        RUSSIAN_LANG_MODEL_COMPRESSED = System.Array.Empty<byte>();
     }
+#endif
 
     protected CyrillicModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, RUSSIAN_LANG_MODEL, 0.976601f, name)

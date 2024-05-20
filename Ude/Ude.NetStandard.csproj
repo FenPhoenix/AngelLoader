@@ -20,6 +20,24 @@
 
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|x64'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|x86'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|x64'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|x86'">
+    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
 	  <PackageReference Include="PolySharp" Version="1.14.1">
 	    <PrivateAssets>all</PrivateAssets>
