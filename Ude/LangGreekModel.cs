@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-
 namespace Ude.NetStandard;
 
 internal abstract class GreekModel : SequenceModel
@@ -48,7 +46,7 @@ internal abstract class GreekModel : SequenceModel
     // first 1024 sequences:1.7001%
     // rest  sequences:     0.0359%
     // negative sequences:  0.0148%
-    /* Original uncompressed:
+#if !CompressUdeDataArrays
     private static readonly byte[] GREEK_LANG_MODEL = {
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -177,9 +175,9 @@ internal abstract class GreekModel : SequenceModel
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     };
-    */
+#else
     private static readonly byte[] GREEK_LANG_MODEL_COMPRESSED =
     {
         197, 86, 91, 178, 235, 48, 8, 67, 242, 254, 247, 124, 194, 211, 216, 105, 82, 119, 238, 199, 117, 167,
@@ -220,8 +218,9 @@ internal abstract class GreekModel : SequenceModel
     static GreekModel()
     {
         GREEK_LANG_MODEL = Utils.Decompress(GREEK_LANG_MODEL_COMPRESSED, 4096);
-        GREEK_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+        GREEK_LANG_MODEL_COMPRESSED = System.Array.Empty<byte>();
     }
+#endif
 
     protected GreekModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, GREEK_LANG_MODEL, 0.982851f, name)

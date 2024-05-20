@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using System;
-
 namespace Ude.NetStandard;
 
 internal abstract class BulgarianModel : SequenceModel
@@ -48,7 +46,7 @@ internal abstract class BulgarianModel : SequenceModel
     //first 1024 sequences:3.0618%
     //rest  sequences:     0.2992%
     //negative sequences:  0.0020%
-    /* Original uncompressed:
+#if !CompressUdeDataArrays
     private static readonly byte[] BULGARIAN_LANG_MODEL = {
         0,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,2,3,3,3,3,3,3,3,3,2,3,3,3,3,3,
         3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,0,3,3,3,2,2,3,2,2,1,2,2,
@@ -177,10 +175,9 @@ internal abstract class BulgarianModel : SequenceModel
         2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
         1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1,1,0,1,0,0,
-        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
-    }; 
-    */
-
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+    };
+#else
     private static readonly byte[] BULGARIAN_LANG_MODEL_COMPRESSED =
     {
         165, 86, 139, 182, 228, 32, 8, 35, 241, 255, 255, 121, 229, 41, 86, 59, 183, 231, 172, 187, 119, 166,
@@ -228,8 +225,9 @@ internal abstract class BulgarianModel : SequenceModel
     static BulgarianModel()
     {
         BULGARIAN_LANG_MODEL = Utils.Decompress(BULGARIAN_LANG_MODEL_COMPRESSED, 4096);
-        BULGARIAN_LANG_MODEL_COMPRESSED = Array.Empty<byte>();
+        BULGARIAN_LANG_MODEL_COMPRESSED = System.Array.Empty<byte>();
     }
+#endif
 
     protected BulgarianModel(byte[] charToOrderMap, Charset name)
         : base(charToOrderMap, BULGARIAN_LANG_MODEL, 0.969392f, name)
