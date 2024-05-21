@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -130,17 +131,28 @@ public static partial class Common
     {
         try
         {
-            return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage);
+            // .NET Framework simply calls GetACP() for Encoding.Default, so let's try that first.
+            return Encoding.GetEncoding(GetACP());
         }
         catch
         {
             try
             {
-                return Encoding.GetEncoding(GetACP());
+                // @NET5(Encoding.Default): I think InstalledUICulture is the actual one we want?
+                // CurrentCulture will normally match it I think, but to be safe we should be explicit...
+                // Unless I'm wrong, but hopefully someone will report the bug again if I am?
+                return Encoding.GetEncoding(CultureInfo.InstalledUICulture.TextInfo.ANSICodePage);
             }
-            catch
+            catch (Exception ex)
             {
-                return Encoding.GetEncoding(1252);
+                // @NET5(Encoding.Default): If we get here, we should maybe put up a dialog, because this is a bad situation.
+                // It will lead to a recurrence of the bug where cam_mod.ini is written with the wrong encoding
+                // and non-ASCII game paths won't be read and FMs can't be played.
+                Logger.Log(
+                    "Unable to get the system default ANSI encoding, which is required for reading and writing certain files correctly.\r\n" +
+                    "Returning .NET default encoding, which will probably be UTF8 and may cause issues for locales outside North America.",
+                    ex);
+                return Encoding.Default;
             }
         }
     }
