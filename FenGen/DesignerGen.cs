@@ -370,7 +370,7 @@ internal static class DesignerGen
                         {
                             "true" => true,
                             "false" => false,
-                            _ => null
+                            _ => null,
                         };
 
                         switch (curNode.PropName)
@@ -492,7 +492,7 @@ internal static class DesignerGen
                             "System.Windows.Forms.CheckState.Checked" => CheckState.Checked,
                             "System.Windows.Forms.CheckState.Unchecked" => CheckState.Unchecked,
                             "System.Windows.Forms.CheckState.Indeterminate" => CheckState.Indeterminate,
-                            _ => null
+                            _ => null,
                         };
                     }
                     break;

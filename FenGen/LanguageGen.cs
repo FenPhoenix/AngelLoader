@@ -246,7 +246,7 @@ internal static class Language
                     Key = fName,
                     Value = ((LiteralExpressionSyntax)initializer.Value).Token.ValueText,
                     DoNotWrite = doNotWriteThis,
-                    PlaceAfterKey = placeAfterKey
+                    PlaceAfterKey = placeAfterKey,
                 });
             }
 
