@@ -953,6 +953,10 @@ public static partial class RTFParserCommon
         /// </summary>
         UnmatchedBrace,
         /// <summary>
+        /// A keyword parameter was outside the range of -2147483648 to 2147483647, or was longer than 10 characters.
+        /// </summary>
+        ParameterOutOfRange,
+        /// <summary>
         /// The rtf is malformed in such a way that it might be unsafe to continue parsing it (infinite loops, stack overflows, etc.)
         /// </summary>
         AbortedForSafety,

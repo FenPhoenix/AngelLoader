@@ -101,13 +101,28 @@ public sealed partial class RtfDisplayedReadmeParser
             {
                 hasParam = true;
 
-                // Parse param in real-time to avoid doing a second loop over
-                for (int i = 0;
-                     i < ParamMaxLen && char.IsAsciiDigit(ch);
-                     i++, ch = (char)_rtfBytes[CurrentPos++])
+                checked
                 {
-                    param = (param * 10) + (ch - '0');
+                    try
+                    {
+                        int i;
+                        for (i = 0;
+                             i < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
+                             i++, ch = (char)_rtfBytes[CurrentPos++])
+                        {
+                            param = (param * 10) + (ch - '0');
+                        }
+                        if (i > ParamMaxLen)
+                        {
+                            return RtfError.ParameterOutOfRange;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        return RtfError.ParameterOutOfRange;
+                    }
                 }
+
                 param = BranchlessConditionalNegate(param, negateParam);
             }
 
