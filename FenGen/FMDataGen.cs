@@ -32,7 +32,7 @@ internal static class FMData
     private enum ListType
     {
         MultipleLines,
-        CommaSeparated
+        CommaSeparated,
     }
 
     private static readonly HashSet<string> _numericTypes = new(System.StringComparer.Ordinal)
@@ -47,7 +47,7 @@ internal static class FMData
         "ulong",
         "float",
         "double",
-        "decimal"
+        "decimal",
     };
 
     private const string _oldResourceFormatMessage = "Old resource format - backward compatibility, we still have to be able to read it";
@@ -418,7 +418,7 @@ internal static class FMData
             "HasCreatures",
             "HasMotions",
             "HasMovies",
-            "HasSubtitles"
+            "HasSubtitles",
         };
 
         w.WL("#region " + _oldResourceFormatMessage);
@@ -518,7 +518,7 @@ internal static class FMData
             "static void AddFMToSW(FanMission fm, StreamWriter sw, Span<char> numberSpan)",
             "{",
             "sw.WriteLine(\"[FM]\");",
-            ""
+            "",
         });
 
         const string toString = "ToString()";

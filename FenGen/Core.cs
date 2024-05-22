@@ -226,7 +226,7 @@ internal static class Core
         GenSlimDesignerFiles,
         GenCopyright,
         GenEnumData,
-        RtfCodeDupe
+        RtfCodeDupe,
     }
 
     private static readonly Dictionary<string, GenType>

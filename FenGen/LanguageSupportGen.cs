@@ -19,7 +19,7 @@ internal static class LanguageSupport
     {
         var ret = new LanguageSourceEnum
         {
-            StringToEnumDictName = "LangStringsToEnums"
+            StringToEnumDictName = "LangStringsToEnums",
         };
 
         string code = File.ReadAllText(file);
