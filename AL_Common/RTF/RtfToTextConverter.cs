@@ -1158,8 +1158,7 @@ public sealed partial class RtfToTextConverter
                 HandleHexRun();
                 break;
             case SpecialType.UnicodeChar:
-                SkipUnicodeFallbackChars();
-                UnicodeBufferAdd(param);
+                HandleUnicodeParamAndSkipFallbackChars(param);
                 HandleUnicodeRun();
                 break;
             case SpecialType.ColorTable:
@@ -1561,8 +1560,7 @@ public sealed partial class RtfToTextConverter
 
     private void HandleUnicodeRun()
     {
-        int rtfLength = _rtfBytes.Length;
-        while (CurrentPos < rtfLength)
+        while (CurrentPos < _rtfBytes.Length)
         {
             char ch = (char)_rtfBytes.Array[CurrentPos++];
             if (ch == '\\')
@@ -1592,9 +1590,8 @@ public sealed partial class RtfToTextConverter
                         }
                         param = BranchlessConditionalNegate(param, negateParam);
 
-                        UnicodeBufferAdd(param);
                         CurrentPos += MinusOneIfNotSpace_8Bits(ch);
-                        SkipUnicodeFallbackChars();
+                        HandleUnicodeParamAndSkipFallbackChars(param);
                     }
                     else
                     {
@@ -1621,11 +1618,8 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void UnicodeBufferAdd(int param)
+    private void AddCodePointToUnicodeBuffer(uint codePoint)
     {
-        // Make sure the code point is normalized before adding it to the buffer!
-        NormalizeUnicodePoint_HandleSymbolCharRange(param, out uint codePoint);
-
         // If our code point has been through a font translation table, it may be longer than 2 bytes.
         if (codePoint > char.MaxValue)
         {
@@ -1645,9 +1639,12 @@ public sealed partial class RtfToTextConverter
         }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SkipUnicodeFallbackChars()
+    private void HandleUnicodeParamAndSkipFallbackChars(int param)
     {
+        // Make sure the code point is normalized before adding it to the buffer!
+        NormalizeUnicodePoint_HandleSymbolCharRange(param, out uint codePoint);
+        AddCodePointToUnicodeBuffer(codePoint);
+
         /*
         The spec states that, for the purposes of Unicode fallback character skipping, a "character" could mean
         any of the following:
@@ -1735,6 +1732,34 @@ public sealed partial class RtfToTextConverter
 
     #region Field instructions
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private int FieldInst_GetFontNum()
+    {
+        int currentFontNumber = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
+        return currentFontNumber > NoFontNumber
+            ? currentFontNumber
+            : _ctx.Header.DefaultFontNum;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void FieldInst_AddChar(FontEntry fontEntry, ushort param)
+    {
+        // We already know our code point is within bounds of the array, because the arrays also go from
+        // 0x20 - 0xFF, so no need to check.
+        SymbolFont symbolFont = fontEntry.SymbolFont;
+        if (symbolFont > SymbolFont.Unset)
+        {
+            uint codePoint = _symbolFontTables[(int)symbolFont][param - 0x20];
+            AddCodePointToUnicodeBuffer(codePoint);
+            ParseUnicode();
+        }
+        else
+        {
+            ListFast<char> finalChars = GetCharFromCodePage(-1, param);
+            PutChars_FieldInst(finalChars, finalChars.Count);
+        }
+    }
+
     private void HandleFieldInst_A(ushort param)
     {
         if (param is < 0x20 or > byte.MaxValue) return;
@@ -1752,10 +1777,7 @@ public sealed partial class RtfToTextConverter
         {
             if (param >= 0x20)
             {
-                int currentFontNumber = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
-                int fontNum = currentFontNumber > NoFontNumber
-                    ? currentFontNumber
-                    : _ctx.Header.DefaultFontNum;
+                int fontNum = FieldInst_GetFontNum();
 
                 if (!_ctx.FontEntries.TryGetValue(fontNum, out FontEntry? fontEntry) || fontEntry.CodePage != 42)
                 {
@@ -1763,34 +1785,7 @@ public sealed partial class RtfToTextConverter
                     return;
                 }
 
-                // We already know our code point is within bounds of the array, because the arrays also go from
-                // 0x20 - 0xFF, so no need to check.
-                SymbolFont symbolFont = fontEntry.SymbolFont;
-                if (symbolFont > SymbolFont.Unset)
-                {
-                    uint codePoint = _symbolFontTables[(int)symbolFont][param - 0x20];
-                    if (codePoint > char.MaxValue)
-                    {
-                        ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
-                        if (chars == null)
-                        {
-                            _unicodeBuffer.Add(_unicodeUnknown_Char);
-                        }
-                        else
-                        {
-                            _unicodeBuffer.AddRange(chars, 2);
-                        }
-                    }
-                    else
-                    {
-                        _unicodeBuffer.Add((char)codePoint);
-                    }
-                    ParseUnicode();
-                }
-                else
-                {
-                    _plainText.Add((char)param);
-                }
+                FieldInst_AddChar(fontEntry, param);
             }
         }
         else
@@ -1806,10 +1801,7 @@ public sealed partial class RtfToTextConverter
 
     private void HandleFieldInst_PutCharWithEncoding(ushort param)
     {
-        int currentFontNumber = _ctx.GroupStack.CurrentProperties[(int)Property.FontNum];
-        int fontNum = currentFontNumber > NoFontNumber
-            ? currentFontNumber
-            : _ctx.Header.DefaultFontNum;
+        int fontNum = FieldInst_GetFontNum();
 
         if (!_ctx.FontEntries.TryGetValue(fontNum, out FontEntry? fontEntry))
         {
@@ -1824,35 +1816,7 @@ public sealed partial class RtfToTextConverter
             return;
         }
 
-        // We already know our code point is within bounds of the array, because the arrays also go from
-        // 0x20 - 0xFF, so no need to check.
-        SymbolFont symbolFont = fontEntry.SymbolFont;
-        if (symbolFont > SymbolFont.Unset)
-        {
-            uint codePoint = _symbolFontTables[(int)symbolFont][param - 0x20];
-            if (codePoint > char.MaxValue)
-            {
-                ListFast<char>? chars = ConvertFromUtf32(codePoint, _charGeneralBuffer);
-                if (chars == null)
-                {
-                    _unicodeBuffer.Add(_unicodeUnknown_Char);
-                }
-                else
-                {
-                    _unicodeBuffer.AddRange(chars, 2);
-                }
-            }
-            else
-            {
-                _unicodeBuffer.Add((char)codePoint);
-            }
-            ParseUnicode();
-        }
-        else
-        {
-            ListFast<char> finalChars = GetCharFromCodePage(-1, param);
-            PutChars_FieldInst(finalChars, finalChars.Count);
-        }
+        FieldInst_AddChar(fontEntry, param);
     }
 
     private void HandleFieldInst_F_Bare(ushort param)
