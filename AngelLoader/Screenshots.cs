@@ -354,7 +354,7 @@ internal static class Screenshots
             if (underscoreIndex == -1) return false;
 
             int secondToLastUnderscoreIndex = fn.LastIndexOf('_', (underscoreIndex - 1).ClampToZero());
-            if (secondToLastUnderscoreIndex <= -1) return false;
+            if (secondToLastUnderscoreIndex == -1) return false;
 
             // @TDM_CASE: Screenshot FM name comparison
             if (fn.Substring(0, secondToLastUnderscoreIndex).Trim().EqualsI(tdmInstalledDir))
