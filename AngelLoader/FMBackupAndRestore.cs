@@ -305,7 +305,7 @@ internal static partial class FMInstallAndPlay
                 foreach (string f in savesAndScreensFiles)
                 {
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-                    AddEntry(archive, f, fn);
+                    AddEntry(archive, f, fn, fileStreamBuffer);
                 }
 
                 MoveDarkLoaderBackup(fm, archivePaths);
@@ -340,7 +340,7 @@ internal static partial class FMInstallAndPlay
                             (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
                              (changedList.Contains(fn) || addedList.Contains(fn))))
                         {
-                            AddEntry(archive, f, fn);
+                            AddEntry(archive, f, fn, fileStreamBuffer);
                         }
                     }
 
@@ -576,15 +576,14 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
+    private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName, byte[] buffer)
     {
         // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
         ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
         entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
         using var fs = File_OpenReadFast(fileNameOnDisk);
         using var eo = entry.Open();
-        // @MEM(Backup/AddEntry): stream.CopyTo(), we could recycle the buffer here
-        fs.CopyTo(eo);
+        StreamCopyNoAlloc(fs, eo, buffer);
     }
 
     private static bool IsSaveOrScreenshot(string path, Game game) =>
