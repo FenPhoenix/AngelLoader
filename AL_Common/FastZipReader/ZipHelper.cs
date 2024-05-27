@@ -9,22 +9,7 @@ using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
 
-public sealed class ZipCompressionMethodException : Exception
-{
-#if false
-    public ZipCompressionMethodException()
-    {
-    }
-
-    public ZipCompressionMethodException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
-#endif
-
-    public ZipCompressionMethodException(string message) : base(message)
-    {
-    }
-}
+public sealed class ZipCompressionMethodException(string message) : Exception(message);
 
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
