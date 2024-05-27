@@ -2193,11 +2193,10 @@ public sealed partial class RtfToTextConverter
     private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe ListFast<char> GetCharFromCodePage(int codePage, uint codePoint)
+    private ListFast<char> GetCharFromCodePage(int codePage, uint codePoint)
     {
         // BitConverter.GetBytes() does this, but it allocates a temp array every time.
-        // I think I understand the general idea here but like yeah
-        fixed (byte* b = _byteBuffer4) *(uint*)b = codePoint;
+        Unsafe.As<byte, uint>(ref _byteBuffer4[0]) = codePoint;
 
         try
         {
