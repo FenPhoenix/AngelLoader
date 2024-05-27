@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
@@ -186,60 +187,32 @@ public static class ZipHelpers
         }
     }
 
-    // These come from BitConverter.ToInt32/64 methods
-    internal static unsafe uint ReadUInt32(byte[] value, int valueLength, int startIndex)
+    // These come from BitConverter.ToInt32/64 methods (.NET 8 version)
+    internal static uint ReadUInt32(byte[] value, int valueLength, int startIndex)
     {
-        if (startIndex >= valueLength)
+        if (unchecked((uint)startIndex) >= unchecked((uint)valueLength))
         {
             ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
         }
-        if (startIndex > valueLength - 4)
+        if (startIndex > valueLength - sizeof(int))
         {
             ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
         }
 
-        fixed (byte* b = &value[startIndex])
-        {
-            return (uint)(startIndex % 4 == 0
-                ? *(int*)b
-                : BitConverter.IsLittleEndian
-                    ? *b | (*(b + 1) << 8) | (*(b + 2) << 16) | (*(b + 3) << 24)
-                    : (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3));
-        }
+        return unchecked((uint)Unsafe.ReadUnaligned<int>(ref value[startIndex]));
     }
 
-    internal static unsafe long ReadInt64(byte[] value, int valueLength, int startIndex)
+    internal static long ReadInt64(byte[] value, int valueLength, int startIndex)
     {
-        if (startIndex >= valueLength)
+        if (unchecked((uint)startIndex) >= unchecked((uint)valueLength))
         {
             ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
         }
-        if (startIndex > valueLength - 8)
+        if (startIndex > valueLength - sizeof(long))
         {
             ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
         }
 
-        fixed (byte* b = &value[startIndex])
-        {
-            if (startIndex % 8 == 0)
-            {
-                return *(long*)b;
-            }
-            else
-            {
-                if (BitConverter.IsLittleEndian)
-                {
-                    int i1 = *b | (*(b + 1) << 8) | (*(b + 2) << 16) | (*(b + 3) << 24);
-                    int i2 = *(b + 4) | (*(b + 5) << 8) | (*(b + 6) << 16) | (*(b + 7) << 24);
-                    return (uint)i1 | ((long)i2 << 32);
-                }
-                else
-                {
-                    int i1 = (*b << 24) | (*(b + 1) << 16) | (*(b + 2) << 8) | *(b + 3);
-                    int i2 = (*(b + 4) << 24) | (*(b + 5) << 16) | (*(b + 6) << 8) | *(b + 7);
-                    return (uint)i2 | ((long)i1 << 32);
-                }
-            }
-        }
+        return Unsafe.ReadUnaligned<long>(ref value[startIndex]);
     }
 }
