@@ -163,13 +163,6 @@ internal static class ColorUtils
 
         Color retColor = OklabToColor(lab);
 
-        // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be 254 or
-        // less... don't ask me
-        if (retColor is { R: 255, G: 255, B: 255 })
-        {
-            retColor = Color.FromArgb(254, 254, 254);
-        }
-
         return retColor;
     }
 }

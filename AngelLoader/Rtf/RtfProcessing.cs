@@ -224,15 +224,26 @@ internal static class RtfProcessing
                     colorEntriesBytesList.Add((byte)';');
                     continue;
                 }
+                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                // white and that's a bit too bright.
+                else if (currentColor is { R: 0, G: 0, B: 0 })
+                {
+                    invertedColor = DarkColors.Fen_DarkForeground;
+                }
+                else if (ColorIsTheSameAsBackground(currentColor))
+                {
+                    invertedColor = DarkColors.Fen_DarkBackground;
+                }
                 else
                 {
-                    // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
-                    // white and that's a bit too bright.
-                    invertedColor = currentColor is { R: 0, G: 0, B: 0 }
-                        ? DarkColors.Fen_DarkForeground
-                        : ColorIsTheSameAsBackground(currentColor)
-                            ? DarkColors.Fen_DarkBackground
-                            : ColorUtils.InvertLightness(currentColor);
+                    invertedColor = ColorUtils.InvertLightness(currentColor);
+
+                    // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be
+                    // 254 or less... don't ask me
+                    if (invertedColor is { R: 255, G: 255, B: 255 })
+                    {
+                        invertedColor = Color.FromArgb(254, 254, 254);
+                    }
                 }
 
                 colorEntriesBytesList.AddRange_Large(_redFieldBytes);
