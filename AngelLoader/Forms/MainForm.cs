@@ -4251,8 +4251,19 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.PlayTime:
-                e.Value = fm.PlayTime.ToString(@"%h\:mm\:ss");
+            {
+                // Manual hours display to avoid hours being reset back to 0 when days increments to 1
+                TimeSpan playTime = fm.PlayTime;
+                string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
+                string final = playTime.ToString(@"mm\" + sep + "ss");
+                double totalHours = playTime.TotalHours;
+                if (totalHours >= 1.0d)
+                {
+                    final = ((int)Math.Floor(totalHours)).ToStrInv() + sep + final;
+                }
+                e.Value = final;
                 break;
+            }
 
             case Column.DisabledMods:
                 e.Value = fm.DisableAllMods ? LText.FMsList.AllModsDisabledMessage : fm.DisabledMods;
