@@ -4257,10 +4257,7 @@ public sealed partial class MainForm : DarkFormBase,
                 string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
                 string final = playTime.ToString(@"mm\" + sep + "ss");
                 double totalHours = playTime.TotalHours;
-                if (totalHours >= 1.0d)
-                {
-                    final = ((int)Math.Floor(totalHours)).ToStrInv() + sep + final;
-                }
+                final = ((int)Math.Floor(totalHours)).ToStrInv() + sep + final;
                 e.Value = final;
                 break;
             }
