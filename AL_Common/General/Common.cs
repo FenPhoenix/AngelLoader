@@ -111,12 +111,31 @@ public static partial class Common
         return charBuffer;
     }
 
+    /// <summary>
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.InvariantInfo"/>)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
-    public static string ToStrInv(this bool value) => value.ToString(NumberFormatInfo.InvariantInfo);
+    /// <summary>
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToStrCur(this int value) => value.ToString(CultureInfo.CurrentCulture);
 
-    public static string GetPlainInnerText(this XmlNode? node) =>
-        node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
+    /// <summary>
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToStrCur(this double value) => value.ToString(CultureInfo.CurrentCulture);
+
+    public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
     #endregion
 

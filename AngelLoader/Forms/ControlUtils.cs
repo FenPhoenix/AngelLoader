@@ -885,9 +885,10 @@ internal static class ControlUtils
         g.SmoothingMode = oldSmoothingMode;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string GetRatingString(int rating, RatingDisplayStyle style)
     {
-        return (style == RatingDisplayStyle.FMSel ? rating / 2.0 : rating).ToString(CultureInfo.CurrentCulture);
+        return (style == RatingDisplayStyle.FMSel ? rating / 2.0 : rating).ToStrCur();
     }
 
     /// <summary>

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -237,7 +236,7 @@ internal static class FMDelete
         (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
             message: single
                 ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].GetId()
-                : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount.ToString(CultureInfo.CurrentCulture) +
+                : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount.ToStrCur() +
                   LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
             title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
             icon: MBoxIcon.Warning,

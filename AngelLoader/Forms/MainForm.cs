@@ -4133,10 +4133,10 @@ public sealed partial class MainForm : DarkFormBase,
             size == 0
             ? ""
             : size < ByteSize.MB
-            ? Math.Round(size / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.KilobyteShort
+            ? Math.Round(size / 1024f).ToStrCur() + " " + LText.Global.KilobyteShort
             : size is >= ByteSize.MB and < ByteSize.GB
-            ? Math.Round(size / 1024f / 1024f).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.MegabyteShort
-            : Math.Round(size / 1024f / 1024f / 1024f, 2).ToString(CultureInfo.CurrentCulture) + " " + LText.Global.GigabyteShort;
+            ? Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort
+            : Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort;
 
         const string pinChar = "\U0001F4CC ";
 
@@ -4168,7 +4168,7 @@ public sealed partial class MainForm : DarkFormBase,
                 break;
 
             case Column.MissionCount:
-                e.Value = fm.MisCount > 0 ? fm.MisCount.ToString(CultureInfo.CurrentCulture) : "";
+                e.Value = fm.MisCount > 0 ? fm.MisCount.ToStrCur() : "";
                 break;
 
             case Column.Title:
@@ -4223,7 +4223,7 @@ public sealed partial class MainForm : DarkFormBase,
             case Column.Rating:
                 if (Config.RatingDisplayStyle == RatingDisplayStyle.NewDarkLoader)
                 {
-                    e.Value = fm.Rating == -1 ? "" : fm.Rating.ToString(CultureInfo.CurrentCulture);
+                    e.Value = fm.Rating == -1 ? "" : fm.Rating.ToStrCur();
                 }
                 else if (Config.RatingUseStars)
                 {
@@ -4231,7 +4231,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
                 else
                 {
-                    e.Value = fm.Rating == -1 ? "" : (fm.Rating / 2.0).ToString(CultureInfo.CurrentCulture);
+                    e.Value = fm.Rating == -1 ? "" : (fm.Rating / 2.0).ToStrCur();
                 }
                 break;
 
@@ -5669,7 +5669,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         string text =
             (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_BeforeNumber : LText.FMSelectedStats.FMsSelected_Plural_BeforeNumber) +
-            count.ToString(CultureInfo.CurrentCulture) +
+            count.ToStrCur() +
             (count == 1 ? LText.FMSelectedStats.FMsSelected_Single_AfterNumber : LText.FMSelectedStats.FMsSelected_Plural_AfterNumber);
 
         _fmsSelectedCountText = text;
@@ -5707,12 +5707,12 @@ public sealed partial class MainForm : DarkFormBase,
 
         _fmsAvailableCountText =
             (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_BeforeNumber : LText.FMSelectedStats.FMsAvailable_Plural_BeforeNumber) +
-            availableCount.ToString(CultureInfo.CurrentCulture) +
+            availableCount.ToStrCur() +
             (availableCount == 1 ? LText.FMSelectedStats.FMsAvailable_Single_AfterNumber : LText.FMSelectedStats.FMsAvailable_Plural_AfterNumber);
 
         _fmsFinishedCountText =
             (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_BeforeNumber : LText.FMSelectedStats.FMsFinished_Plural_BeforeNumber) +
-            finishedCount.ToString(CultureInfo.CurrentCulture) +
+            finishedCount.ToStrCur() +
             (finishedCount == 1 ? LText.FMSelectedStats.FMsFinished_Single_AfterNumber : LText.FMSelectedStats.FMsFinished_Plural_AfterNumber);
 
         RefreshFMStatsLabel();
