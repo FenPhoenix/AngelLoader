@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -2317,7 +2316,7 @@ internal static class Core
         < 1 => "",
         1 => LText.StatisticsTab.MissionCount_Single,
         > 1 => LText.StatisticsTab.MissionCount_BeforeNumber +
-               misCount.ToString(CultureInfo.CurrentCulture) +
+               misCount.ToStrCur() +
                LText.StatisticsTab.MissionCount_AfterNumber,
     };
 

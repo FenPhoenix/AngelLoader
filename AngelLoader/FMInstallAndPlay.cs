@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -1652,7 +1651,7 @@ internal static partial class FMInstallAndPlay
                         ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
                         : LText.AlertMessages.Install_ConfirmSingular
                     : LText.AlertMessages.Install_ConfirmPlural_BeforeNumber +
-                      fmDataList.Length.ToString(CultureInfo.CurrentCulture) +
+                      fmDataList.Length.ToStrCur() +
                       LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                 title: LText.AlertMessages.Alert,
                 icon: MBoxIcon.None,
