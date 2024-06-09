@@ -384,7 +384,10 @@ public static partial class Common
         int firstCount;
         if ((firstCount = first.Count) != second.Count) return false;
 
-        for (int i = 0; i < firstCount; i++) if (!first[i].PathEqualsI(second[i])) return false;
+        for (int i = 0; i < firstCount; i++)
+        {
+            if (!first[i].PathEqualsI(second[i])) return false;
+        }
         return true;
     }
 
