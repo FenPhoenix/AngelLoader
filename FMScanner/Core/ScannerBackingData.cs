@@ -412,7 +412,7 @@ public sealed partial class Scanner
     };
 
     private readonly string[]
-    _monthNamesEnglish =
+    _monthNames =
     {
         // January and February are matched by German "Januar" / "Februar"
         "March",
@@ -431,7 +431,7 @@ public sealed partial class Scanner
         "Febr",
         "Mar",
         "Apr",
-        // "May" left out because it's already three letters and thus already exists in the full name set
+        // "May" left out because its 3-letter name is also its full name and thus it already occurs above
         "Jun",
         "Jul",
         "Aug",

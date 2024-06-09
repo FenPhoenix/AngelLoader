@@ -2334,9 +2334,9 @@ public sealed partial class Scanner : IDisposable
 
                 if (lineT.IsWhiteSpace()) continue;
 
-                foreach (string item in _monthNamesEnglish)
+                if (LineContainsMonthName(lineT, _monthNames))
                 {
-                    if (lineT.ContainsI(item) && StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
+                    if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
                     {
                         return result;
                     }
@@ -2348,6 +2348,18 @@ public sealed partial class Scanner : IDisposable
         }
 
         return null;
+
+        static bool LineContainsMonthName(string line, string[] monthNames)
+        {
+            foreach (string item in monthNames)
+            {
+                if (line.ContainsI(item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
