@@ -118,7 +118,8 @@ public sealed partial class FilterTagsForm : DarkFormBase
             int index = text.IndexOf(':');
             if (index > 0)
             {
-                string cat = text.Substring(0, index), tag = text.Substring(index + 1);
+                string cat = text.Substring(0, index);
+                string tag = text.Substring(index + 1);
                 TreeNode? node = FindFirstCatAndTagStartingWithText(OriginTreeView, cat, tag);
                 if (node != null) OriginTreeView.SelectedNode = node;
             }

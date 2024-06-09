@@ -641,6 +641,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         base.OnCellPainting(e);
 
         if (!_darkModeEnabled) return;
+        if (e.Graphics == null) return;
 
         // This is for having different colored grid lines in recent-highlighted rows.
         // That way, we can get a good, visible separator color for all cases by just having two.
@@ -669,9 +670,12 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
             #region Draw content
 
-            e.CellStyle.ForeColor = isSelected
-                ? DarkColors.Fen_HighlightText
-                : DarkColors.Fen_DarkForeground;
+            if (e.CellStyle != null)
+            {
+                e.CellStyle.ForeColor = isSelected
+                    ? DarkColors.Fen_HighlightText
+                    : DarkColors.Fen_DarkForeground;
+            }
 
             e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
 
@@ -777,10 +781,10 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                 Width = e.CellBounds.Width - (displayIndex == 0 ? 10 : 6),
             };
 
-            if (e.Value is string headerText)
+            if (e is { Value: string headerText, CellStyle: { } cellStyle })
             {
                 TextFormatFlags textFormatFlags =
-                    ControlUtils.GetTextAlignmentFlags(e.CellStyle.Alignment) |
+                    ControlUtils.GetTextAlignmentFlags(cellStyle.Alignment) |
                     TextFormatFlags.NoPrefix |
                     TextFormatFlags.NoClipping |
                     TextFormatFlags.EndEllipsis;
@@ -788,7 +792,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                 TextRenderer.DrawText(
                     e.Graphics,
                     headerText,
-                    e.CellStyle.Font,
+                    cellStyle.Font,
                     textRect,
                     DarkColors.Fen_DarkForeground,
                     textFormatFlags);
@@ -796,7 +800,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                 int textLength = TextRenderer.MeasureText(
                     e.Graphics,
                     headerText,
-                    e.CellStyle.Font,
+                    cellStyle.Font,
                     new Size(int.MaxValue, int.MaxValue),
                     textFormatFlags
                 ).Width;

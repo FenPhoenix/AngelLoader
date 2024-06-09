@@ -76,12 +76,14 @@ internal static class TDM_Downloader
             using XmlNodeList? tdmNodes = xmlDoc.SelectNodes("tdm");
             if (tdmNodes?.Count != 1) return fail;
 
-            XmlNode tdmNode = tdmNodes[0];
+            XmlNode? tdmNode = tdmNodes[0];
+            if (tdmNode == null) return fail;
 
             XmlNodeList availableMissionsNodes = tdmNode.ChildNodes;
             if (availableMissionsNodes.Count != 1) return fail;
 
-            XmlNode availableMissionsNode = availableMissionsNodes[0];
+            XmlNode? availableMissionsNode = availableMissionsNodes[0];
+            if (availableMissionsNode == null) return fail;
             if (availableMissionsNode.Name != "availableMissions") return fail;
 
             XmlNodeList missionNodes = availableMissionsNode.ChildNodes;

@@ -47,6 +47,7 @@ internal static class GameConfigFiles
 
     // cam.cfg
     private const string key_character_detail = "character_detail";
+    private const int key_character_detail_len = 16;
 
     // SneakyOptions.ini
     private const string key_ExternSelector = "ExternSelector=";
@@ -426,17 +427,19 @@ internal static class GameConfigFiles
 
             for (int i = 0; i < lines.Count; i++)
             {
-                string lineTS = lines[i].TrimStart();
-                if (lineTS.StartsWithI(key_character_detail))
+                ReadOnlySpan<char> lineTS = lines[i].AsSpan().TrimStart();
+                if (lineTS.StartsWith(key_character_detail.AsSpan(), StringComparison.OrdinalIgnoreCase))
                 {
-                    string val = lineTS.Substring(key_character_detail.Length).Trim();
-                    if (removeAll || val == "0")
+                    ReadOnlySpan<char> val = lineTS[key_character_detail_len..].Trim();
+                    // IMPORTANT: is instead of == because of span comparison shenanigans ('is "0"' is the same as 'SequenceEqual("0")')
+                    // https://steven-giesel.com/blogPost/969cc5e7-da27-4742-ae9a-ab7a66715ff6
+                    if (removeAll || val is "0")
                     {
                         lines.RemoveAt(i);
                         i--;
                         linesModified = true;
                     }
-                    else if (val == "1")
+                    else if (val is "1")
                     {
                         atLeastOneCharacterDetailOneLineFound = true;
                     }
@@ -1319,12 +1322,16 @@ internal static class GameConfigFiles
 
         RemoveKeyLine(key_game_screen_size, lines);
 
-        System.Drawing.Rectangle res = System.Windows.Forms.Screen.PrimaryScreen.Bounds;
-        lines.Add(key_game_screen_size + " " + res.Width.ToStrInv() + " " + res.Height.ToStrInv());
+        System.Windows.Forms.Screen? screen = System.Windows.Forms.Screen.PrimaryScreen;
+        if (screen != null)
+        {
+            System.Drawing.Rectangle res = screen.Bounds;
+            lines.Add(key_game_screen_size + " " + res.Width.ToStrInv() + " " + res.Height.ToStrInv());
 
-        RemoveConsecutiveWhiteSpace(lines);
+            RemoveConsecutiveWhiteSpace(lines);
 
-        TryWriteAllLines(camCfgFile, lines, out _);
+            TryWriteAllLines(camCfgFile, lines, out _);
+        }
     }
 
 #endif

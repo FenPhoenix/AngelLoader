@@ -116,8 +116,8 @@ internal static class Program
 #endif
             LogStartup(viewEnv.ProductVersion + " (" + appType + ") Started session");
 
-            // Do this after the startup log so we don't try to log something at the same time as the non-
-            // lock-protected startup log
+            // Do this after the startup log so we don't try to log something at the same time as the non-lock-
+            // protected startup log
             AppDomain.CurrentDomain.UnhandledException += static (_, e) =>
             {
                 Exception ex = (Exception)e.ExceptionObject;
@@ -128,7 +128,7 @@ internal static class Program
             };
 
 #if !WPF
-            System.Windows.Forms.Application.Run(new AppContext(viewEnv, doUpdateCleanup: eventArgs.CommandLine.Contains("-after_update_cleanup")));
+            System.Windows.Forms.Application.Run(new AL_AppContext(viewEnv, doUpdateCleanup: eventArgs.CommandLine.Contains("-after_update_cleanup")));
 #else
 #endif
 
@@ -148,9 +148,9 @@ internal static class Program
     }
 
 #if !WPF
-    private sealed class AppContext : System.Windows.Forms.ApplicationContext
+    private sealed class AL_AppContext : System.Windows.Forms.ApplicationContext
     {
-        internal AppContext(IViewEnvironment viewEnv, bool doUpdateCleanup) => Core.Init(viewEnv, doUpdateCleanup);
+        internal AL_AppContext(IViewEnvironment viewEnv, bool doUpdateCleanup) => Core.Init(viewEnv, doUpdateCleanup);
     }
 #else
 #endif

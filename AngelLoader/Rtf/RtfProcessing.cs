@@ -477,17 +477,14 @@ internal static class RtfProcessing
                 }
             }
 
-            int lastIndexSource = 0;
-            int lastIndexDest = 0;
-
             ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
             Span<byte> retBytesSpan = retBytes.AsSpan();
 
             ReadOnlySpan<byte> headerSpan = currentReadmeBytesSpan[..firstIndexPastHeader];
-            headerSpan.CopyTo(retBytesSpan[..]);
+            headerSpan.CopyTo(retBytesSpan);
 
-            lastIndexSource += firstIndexPastHeader;
-            lastIndexDest = firstIndexPastHeader;
+            int lastIndexSource = firstIndexPastHeader;
+            int lastIndexDest = firstIndexPastHeader;
 
             // Copy color table
             // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
@@ -499,7 +496,7 @@ internal static class RtfProcessing
             if (colorEntriesBytesList != null)
             {
                 ReadOnlySpan<byte> colorTableSpan = colorEntriesBytesList.ItemsArray.AsSpan(0, colorTableEntryLength);
-                colorTableSpan.CopyTo(retBytesSpan.Slice(lastIndexDest, retBytesLength - lastIndexDest));
+                colorTableSpan.CopyTo(retBytesSpan[lastIndexDest..retBytesLength]);
                 lastIndexDest += colorTableEntryLength;
             }
 
@@ -508,7 +505,7 @@ internal static class RtfProcessing
                 CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
-            ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan.Slice(lastIndexSource, (lastClosingBraceIndex - lastIndexSource));
+            ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
             bodyToLastClosingBrace.CopyTo(retBytesSpan[lastIndexDest..]);
 
             lastIndexSource += bodyToLastClosingBrace.Length;

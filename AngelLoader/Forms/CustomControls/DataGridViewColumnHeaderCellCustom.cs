@@ -29,22 +29,7 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
         DataGridViewAdvancedBorderStyle advancedBorderStyle,
         DataGridViewPaintParts paintParts)
     {
-        void CallBase(bool disableReflection = false)
-        {
-            if (disableReflection) _reflectionSupported = false;
-            base.Paint(
-                graphics,
-                clipBounds,
-                cellBounds,
-                rowIndex,
-                dataGridViewElementState,
-                value,
-                formattedValue,
-                errorText,
-                cellStyle,
-                advancedBorderStyle,
-                paintParts);
-        }
+        if (DataGridView == null) return;
 
         /*
         Hack to force selected column headers NOT to be highlighted. We're in full-row select mode, so
@@ -137,6 +122,25 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
         else
         {
             CallBase();
+        }
+
+        return;
+
+        void CallBase(bool disableReflection = false)
+        {
+            if (disableReflection) _reflectionSupported = false;
+            base.Paint(
+                graphics,
+                clipBounds,
+                cellBounds,
+                rowIndex,
+                dataGridViewElementState,
+                value,
+                formattedValue,
+                errorText,
+                cellStyle,
+                advancedBorderStyle,
+                paintParts);
         }
     }
 }

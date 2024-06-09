@@ -959,7 +959,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
 
@@ -1064,7 +1064,7 @@ public sealed partial class Scanner : IDisposable
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                     _readmeFiles.Add(readme);
                 }
                 catch
@@ -2627,9 +2627,9 @@ public sealed partial class Scanner : IDisposable
                    (path[len - 1] == 'n' || path[len - 1] == 'N');
         }
 
-        static bool FileExtensionFound(string fn, string[] array)
+        static bool FileExtensionFound(string fn, string[] extensions)
         {
-            foreach (string extension in array)
+            foreach (string extension in extensions)
             {
                 if (Utility.EndsWithI_Local(fn.AsSpan(), extension))
                 {
@@ -3607,6 +3607,8 @@ public sealed partial class Scanner : IDisposable
                         readmeStream = rarReadmeEntry!.OpenEntryStream();
                     }
 
+                    // @MEM(RTF pooled byte arrays): This pool barely helps us
+                    // Most of the arrays are used only once, a handful are used twice.
                     byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
                     try
                     {
@@ -3615,7 +3617,7 @@ public sealed partial class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                            last.Lines.ClearFullAndAdd(text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                         }
                     }
                     finally
@@ -3635,7 +3637,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split_String(CRLF_CR_LF, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    last.Lines.ClearFullAndAdd(last.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
             finally
@@ -3645,7 +3647,7 @@ public sealed partial class Scanner : IDisposable
         }
     }
 
-    private Stream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
@@ -3655,7 +3657,7 @@ public sealed partial class Scanner : IDisposable
         return _generalMemoryStream;
     }
 
-    private Stream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;

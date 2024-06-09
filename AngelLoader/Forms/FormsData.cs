@@ -106,9 +106,9 @@ public sealed class TabControlImageCursor : IDisposable
         stackCounter++;
         if (stackCounter > 100) return;
 
-        if (control is DarkDateTimePicker dtp)
+        if (control is DarkDateTimePicker { Parent: { } parentControl } dtp)
         {
-            Point offset = tabControl.PointToClient_Fast(dtp.Parent.PointToScreen_Fast(dtp.Location));
+            Point offset = tabControl.PointToClient_Fast(parentControl.PointToScreen_Fast(dtp.Location));
             dtp.PaintCustom(g, offset);
         }
 

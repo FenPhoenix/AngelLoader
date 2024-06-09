@@ -5522,7 +5522,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void EverythingPanel_DragEnter(object sender, DragEventArgs e)
     {
-        if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out _))
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out _))
         {
             e.Effect = DragDropEffects.Copy;
         }
@@ -5530,7 +5533,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void EverythingPanel_DragDrop(object sender, DragEventArgs e)
     {
-        if (Core.FilesDropped(e.Data.GetData(DataFormats.FileDrop), out string[]? droppedItems))
+        object? data = e.Data?.GetData(DataFormats.FileDrop);
+        if (data == null) return;
+
+        if (Core.FilesDropped(data, out string[]? droppedItems))
         {
             await FMArchives.Add(droppedItems.ToList());
         }

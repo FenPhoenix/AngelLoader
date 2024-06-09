@@ -227,9 +227,7 @@ internal sealed class ArchiveReader
             }
         }
     }
-#endif
 
-#if false
     private void ReadAttributeVector(
         List<byte[]> dataVector,
         int numFiles,

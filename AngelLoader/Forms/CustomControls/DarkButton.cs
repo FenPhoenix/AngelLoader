@@ -490,7 +490,7 @@ public class DarkButton : Button, IDarkable
 
         if (ButtonStyle == DarkButtonStyle.Normal)
         {
-            Control parent = Parent;
+            Control? parent = Parent;
 
             if (parent != null)
             {

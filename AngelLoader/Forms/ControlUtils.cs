@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
@@ -891,6 +892,7 @@ internal static class ControlUtils
         g.SmoothingMode = oldSmoothingMode;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string GetRatingString(int rating, RatingDisplayStyle style)
     {
         return (style == RatingDisplayStyle.FMSel ? rating / 2.0 : rating).ToStrCur();

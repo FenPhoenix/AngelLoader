@@ -329,7 +329,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
 
         ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 
-        ListViewItem item = hitTest.Item;
+        ListViewItem? item = hitTest.Item;
 
         if (item != null)
         {

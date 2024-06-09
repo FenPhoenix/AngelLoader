@@ -35,7 +35,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public new Image BackgroundImage => base.BackgroundImage;
+    public new Image? BackgroundImage => base.BackgroundImage;
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -51,7 +51,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public new Image Image => base.Image;
+    public new Image? Image => base.Image;
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -67,7 +67,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public new ImageList ImageList => base.ImageList;
+    public new ImageList? ImageList => base.ImageList;
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

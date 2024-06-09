@@ -184,7 +184,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                     try
                     {
                         string fn = GetProcessPath(proc.Id, buffer);
-                        if (!string.IsNullOrEmpty(fn) && fn.PathEqualsI(fullPath))
+                        if (!fn.IsEmpty() && fn.PathEqualsI(fullPath))
                         {
                             returnProcess = proc;
                             return proc;

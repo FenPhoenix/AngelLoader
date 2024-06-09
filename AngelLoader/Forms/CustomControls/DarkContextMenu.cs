@@ -52,7 +52,7 @@ public sealed class DarkContextMenu : ContextMenuStrip
 
     protected override void OnItemClicked(ToolStripItemClickedEventArgs e)
     {
-        if (_preventCloseItems?.Length > 0)
+        if (e.ClickedItem != null && _preventCloseItems?.Length > 0)
         {
             _preventClose = _preventCloseItems.Contains(e.ClickedItem) && ((ToolStripMenuItemCustom)e.ClickedItem).CheckOnClick;
         }

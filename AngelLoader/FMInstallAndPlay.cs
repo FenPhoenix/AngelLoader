@@ -1691,7 +1691,7 @@ internal static partial class FMInstallAndPlay
                 cancelMessage: LText.Global.Cancel
             );
 
-            BinaryBuffer buffer = new();
+            BinaryBuffer binaryBuffer = new();
             Buffers buffers = new();
 
             for (int i = 0; i < fmDataList.Length; i++)
@@ -1772,7 +1772,7 @@ internal static partial class FMInstallAndPlay
                         // This one won't be called anywhere except during install, because it always runs during
                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                         // check bool or anything.
-                        await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.MP3ToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                        await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
 
                         if (_installCts.IsCancellationRequested)
                         {
@@ -1782,7 +1782,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertOGGsToWAVsOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.OGGToWAV, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
@@ -1793,7 +1793,7 @@ internal static partial class FMInstallAndPlay
 
                         if (Config.ConvertWAVsTo16BitOnInstall)
                         {
-                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.WAVToWAV16, buffer, buffers.FileStreamBuffer, _installCts.Token);
+                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
                         }
 
                         if (_installCts.IsCancellationRequested)
