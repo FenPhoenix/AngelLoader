@@ -1215,9 +1215,15 @@ internal static partial class Ini
         sw.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
 #endif
 
+        /*
+        Doing like 'sw.Append("Value").Append('=').AppendLine(config.Value)' makes us smaller because the "Value"
+        string can be deduplicated with the one in the reader dictionary, whereas adding a '=' directly inline
+        makes it a separate string, bloating up the file a bit. But, appending a '=' is inefficient, so whatever.
+        */
+
         // Put this one first so it can be read quickly so we can get the theme quickly so we can show the
         // themed splash screen quickly
-        sw.Append("VisualTheme").Append('=');
+        sw.Append("VisualTheme=");
         if (config.FollowSystemTheme)
         {
             sw.Append("FollowSystemTheme").AppendLine();
@@ -1231,15 +1237,15 @@ internal static partial class Ini
 
         #region Settings window state
 
-        sw.Append("SettingsTab").Append('=').Append(config.SettingsTab).AppendLine();
-        sw.Append("SettingsWindowSize").Append('=').Append(config.SettingsWindowSize.Width).Append(',').Append(config.SettingsWindowSize.Height).AppendLine();
-        sw.Append("SettingsWindowSplitterDistance").Append('=').Append(config.SettingsWindowSplitterDistance).AppendLine();
+        sw.Append("SettingsTab=").AppendLine(config.SettingsTab);
+        sw.Append("SettingsWindowSize=").Append(config.SettingsWindowSize.Width).Append(',').AppendLine(config.SettingsWindowSize.Height);
+        sw.Append("SettingsWindowSplitterDistance=").AppendLine(config.SettingsWindowSplitterDistance);
 
-        sw.Append("SettingsPathsVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Paths)).AppendLine();
-        sw.Append("SettingsAppearanceVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Appearance)).AppendLine();
-        sw.Append("SettingsOtherVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Other)).AppendLine();
-        sw.Append("SettingsThiefBuddyVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy)).AppendLine();
-        sw.Append("SettingsUpdateVScrollPos").Append('=').Append(config.GetSettingsTabVScrollPos(SettingsTab.Update)).AppendLine();
+        sw.Append("SettingsPathsVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Paths));
+        sw.Append("SettingsAppearanceVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Appearance));
+        sw.Append("SettingsOtherVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Other));
+        sw.Append("SettingsThiefBuddyVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy));
+        sw.Append("SettingsUpdateVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Update));
 
         #endregion
 
@@ -1254,7 +1260,7 @@ internal static partial class Ini
                     false => bool.FalseString,
                     _ => "",
                 };
-                sw.Append(GetGamePrefix(gameIndex)).Append("NewMantling").Append('=').AppendLine(val);
+                sw.Append(GetGamePrefix(gameIndex)).Append("NewMantling=").AppendLine(val);
             }
         }
 
@@ -1263,7 +1269,7 @@ internal static partial class Ini
             GameIndex gameIndex = (GameIndex)i;
             if (GameSupportsMods(gameIndex))
             {
-                sw.Append(GetGamePrefix(gameIndex)).Append("DisabledMods").Append('=').AppendLine(config.GetDisabledMods(gameIndex).Trim());
+                sw.Append(GetGamePrefix(gameIndex)).Append("DisabledMods=").AppendLine(config.GetDisabledMods(gameIndex).Trim());
             }
         }
 
@@ -1274,76 +1280,76 @@ internal static partial class Ini
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
-            sw.Append(GetGamePrefix(gameIndex)).Append("Exe").Append('=').AppendLine(config.GetGameExe(gameIndex).Trim());
+            sw.Append(GetGamePrefix(gameIndex)).Append("Exe=").AppendLine(config.GetGameExe(gameIndex).Trim());
         }
 
         #endregion
 
         #region Steam
 
-        sw.Append("LaunchGamesWithSteam").Append('=').Append(config.LaunchGamesWithSteam).AppendLine();
+        sw.Append("LaunchGamesWithSteam=").AppendLine(config.LaunchGamesWithSteam);
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
             if (GetGameSteamId(gameIndex).IsEmpty()) continue;
-            sw.Append(GetGamePrefix(gameIndex)).Append("UseSteam").Append('=').Append(config.GetUseSteamSwitch(gameIndex)).AppendLine();
+            sw.Append(GetGamePrefix(gameIndex)).Append("UseSteam=").AppendLine(config.GetUseSteamSwitch(gameIndex));
         }
 
-        sw.Append("SteamExe").Append('=').AppendLine(config.SteamExe);
+        sw.Append("SteamExe=").AppendLine(config.SteamExe);
 
         #endregion
 
-        sw.Append("FMsBackupPath").Append('=').AppendLine(config.FMsBackupPath.Trim());
+        sw.Append("FMsBackupPath=").AppendLine(config.FMsBackupPath.Trim());
         foreach (string path in config.FMArchivePaths)
         {
-            sw.Append("FMArchivePath").Append('=').AppendLine(path.Trim());
+            sw.Append("FMArchivePath=").AppendLine(path.Trim());
         }
-        sw.Append("FMArchivePathsIncludeSubfolders").Append('=').Append(config.FMArchivePathsIncludeSubfolders).AppendLine();
+        sw.Append("FMArchivePathsIncludeSubfolders=").AppendLine(config.FMArchivePathsIncludeSubfolders);
 
         #endregion
 
-        sw.Append("GameOrganization").Append('=').Append(config.GameOrganization).AppendLine();
-        sw.Append("UseShortGameTabNames").Append('=').Append(config.UseShortGameTabNames).AppendLine();
+        sw.Append("GameOrganization=").AppendLine(config.GameOrganization);
+        sw.Append("UseShortGameTabNames=").AppendLine(config.UseShortGameTabNames);
 
-        sw.Append("EnableArticles").Append('=').Append(config.EnableArticles).AppendLine();
-        sw.Append("Articles").Append('=').AppendLine(string.Join(",", config.Articles));
-        sw.Append("MoveArticlesToEnd").Append('=').Append(config.MoveArticlesToEnd).AppendLine();
+        sw.Append("EnableArticles=").AppendLine(config.EnableArticles);
+        sw.Append("Articles=").AppendLine(string.Join(",", config.Articles));
+        sw.Append("MoveArticlesToEnd=").AppendLine(config.MoveArticlesToEnd);
 
-        sw.Append("RatingDisplayStyle").Append('=').Append(config.RatingDisplayStyle).AppendLine();
-        sw.Append("RatingUseStars").Append('=').Append(config.RatingUseStars).AppendLine();
+        sw.Append("RatingDisplayStyle=").AppendLine(config.RatingDisplayStyle);
+        sw.Append("RatingUseStars=").AppendLine(config.RatingUseStars);
 
-        sw.Append("DateFormat").Append('=').Append(config.DateFormat).AppendLine();
-        sw.Append("DateCustomFormat1").Append('=').AppendLine(config.DateCustomFormat1);
-        sw.Append("DateCustomSeparator1").Append('=').AppendLine(config.DateCustomSeparator1);
-        sw.Append("DateCustomFormat2").Append('=').AppendLine(config.DateCustomFormat2);
-        sw.Append("DateCustomSeparator2").Append('=').AppendLine(config.DateCustomSeparator2);
-        sw.Append("DateCustomFormat3").Append('=').AppendLine(config.DateCustomFormat3);
-        sw.Append("DateCustomSeparator3").Append('=').AppendLine(config.DateCustomSeparator3);
-        sw.Append("DateCustomFormat4").Append('=').AppendLine(config.DateCustomFormat4);
+        sw.Append("DateFormat=").AppendLine(config.DateFormat);
+        sw.Append("DateCustomFormat1=").AppendLine(config.DateCustomFormat1);
+        sw.Append("DateCustomSeparator1=").AppendLine(config.DateCustomSeparator1);
+        sw.Append("DateCustomFormat2=").AppendLine(config.DateCustomFormat2);
+        sw.Append("DateCustomSeparator2=").AppendLine(config.DateCustomSeparator2);
+        sw.Append("DateCustomFormat3=").AppendLine(config.DateCustomFormat3);
+        sw.Append("DateCustomSeparator3=").AppendLine(config.DateCustomSeparator3);
+        sw.Append("DateCustomFormat4=").AppendLine(config.DateCustomFormat4);
 
-        sw.Append("DaysRecent").Append('=').Append(config.DaysRecent).AppendLine();
+        sw.Append("DaysRecent=").AppendLine(config.DaysRecent);
 
-        sw.Append("ConvertWAVsTo16BitOnInstall").Append('=').Append(config.ConvertWAVsTo16BitOnInstall).AppendLine();
-        sw.Append("ConvertOGGsToWAVsOnInstall").Append('=').Append(config.ConvertOGGsToWAVsOnInstall).AppendLine();
-        sw.Append("UseOldMantlingForOldDarkFMs").Append('=').Append(config.UseOldMantlingForOldDarkFMs).AppendLine();
-        sw.Append("HideUninstallButton").Append('=').Append(config.HideUninstallButton).AppendLine();
-        sw.Append("HideFMListZoomButtons").Append('=').Append(config.HideFMListZoomButtons).AppendLine();
-        sw.Append("HideExitButton").Append('=').Append(config.HideExitButton).AppendLine();
-        sw.Append("HideWebSearchButton").Append('=').Append(config.HideWebSearchButton).AppendLine();
-        sw.Append("ConfirmBeforeInstall").Append('=').Append(config.ConfirmBeforeInstall).AppendLine();
-        sw.Append("ConfirmUninstall").Append('=').Append(config.ConfirmUninstall).AppendLine();
-        sw.Append("BackupFMData").Append('=').Append(config.BackupFMData).AppendLine();
-        sw.Append("BackupAlwaysAsk").Append('=').Append(config.BackupAlwaysAsk).AppendLine();
-        sw.Append("Language").Append('=').AppendLine(config.Language);
+        sw.Append("ConvertWAVsTo16BitOnInstall=").AppendLine(config.ConvertWAVsTo16BitOnInstall);
+        sw.Append("ConvertOGGsToWAVsOnInstall=").AppendLine(config.ConvertOGGsToWAVsOnInstall);
+        sw.Append("UseOldMantlingForOldDarkFMs=").AppendLine(config.UseOldMantlingForOldDarkFMs);
+        sw.Append("HideUninstallButton=").AppendLine(config.HideUninstallButton);
+        sw.Append("HideFMListZoomButtons=").AppendLine(config.HideFMListZoomButtons);
+        sw.Append("HideExitButton=").AppendLine(config.HideExitButton);
+        sw.Append("HideWebSearchButton=").AppendLine(config.HideWebSearchButton);
+        sw.Append("ConfirmBeforeInstall=").AppendLine(config.ConfirmBeforeInstall);
+        sw.Append("ConfirmUninstall=").AppendLine(config.ConfirmUninstall);
+        sw.Append("BackupFMData=").AppendLine(config.BackupFMData);
+        sw.Append("BackupAlwaysAsk=").AppendLine(config.BackupAlwaysAsk);
+        sw.Append("Language=").AppendLine(config.Language);
         for (int i = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
-            sw.Append(GetGamePrefix(gameIndex)).Append("WebSearchUrl").Append('=').Append(config.GetWebSearchUrl(gameIndex)).AppendLine();
+            sw.Append(GetGamePrefix(gameIndex)).Append("WebSearchUrl=").AppendLine(config.GetWebSearchUrl(gameIndex));
         }
-        sw.Append("ConfirmPlayOnDCOrEnter").Append('=').Append(config.ConfirmPlayOnDCOrEnter).AppendLine();
+        sw.Append("ConfirmPlayOnDCOrEnter=").AppendLine(config.ConfirmPlayOnDCOrEnter);
 
-        sw.Append("RunThiefBuddyOnFMPlay").Append('=').Append(config.RunThiefBuddyOnFMPlay).AppendLine();
+        sw.Append("RunThiefBuddyOnFMPlay=").AppendLine(config.RunThiefBuddyOnFMPlay);
 
         #endregion
 
@@ -1351,7 +1357,7 @@ internal static partial class Ini
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
-            sw.Append(GetGamePrefix((GameIndex)i)).Append("GameFilterVisible").Append('=').AppendLine(config.GameFilterControlVisibilities[i].ToString());
+            sw.Append(GetGamePrefix((GameIndex)i)).Append("GameFilterVisible=").AppendLine(config.GameFilterControlVisibilities[i].ToString());
         }
 
         for (int i = 0; i < HideableFilterControlsCount; i++)
@@ -1368,44 +1374,44 @@ internal static partial class Ini
 
             if (i == 0)
             {
-                sw.Append("FilterGames").Append('=');
+                sw.Append("FilterGames=");
                 CommaCombineGameFlags(sw, config.Filter.Games);
             }
 
-            sw.Append(p).Append("FilterTitle").Append('=').AppendLine(filter.Title);
-            sw.Append(p).Append("FilterAuthor").Append('=').AppendLine(filter.Author);
+            sw.Append(p).Append("FilterTitle=").AppendLine(filter.Title);
+            sw.Append(p).Append("FilterAuthor=").AppendLine(filter.Author);
 
-            sw.Append(p).Append("FilterReleaseDateFrom").Append('=').AppendLine(FilterDate(filter.ReleaseDateFrom));
-            sw.Append(p).Append("FilterReleaseDateTo").Append('=').AppendLine(FilterDate(filter.ReleaseDateTo));
+            sw.Append(p).Append("FilterReleaseDateFrom=").AppendLine(FilterDate(filter.ReleaseDateFrom));
+            sw.Append(p).Append("FilterReleaseDateTo=").AppendLine(FilterDate(filter.ReleaseDateTo));
 
-            sw.Append(p).Append("FilterLastPlayedFrom").Append('=').AppendLine(FilterDate(filter.LastPlayedFrom));
-            sw.Append(p).Append("FilterLastPlayedTo").Append('=').AppendLine(FilterDate(filter.LastPlayedTo));
+            sw.Append(p).Append("FilterLastPlayedFrom=").AppendLine(FilterDate(filter.LastPlayedFrom));
+            sw.Append(p).Append("FilterLastPlayedTo=").AppendLine(FilterDate(filter.LastPlayedTo));
 
-            sw.Append(p).Append("FilterFinishedStates").Append('=');
+            sw.Append(p).Append("FilterFinishedStates=");
             CommaCombineFinishedStates(sw, filter.Finished);
 
-            sw.Append(p).Append("FilterRatingFrom").Append('=').Append(filter.RatingFrom).AppendLine();
-            sw.Append(p).Append("FilterRatingTo").Append('=').Append(filter.RatingTo).AppendLine();
+            sw.Append(p).Append("FilterRatingFrom=").AppendLine(filter.RatingFrom);
+            sw.Append(p).Append("FilterRatingTo=").AppendLine(filter.RatingTo);
 
-            sw.Append(p).Append("FilterTagsAnd").Append('=').AppendLine(TagsToString(filter.Tags.AndTags, tagsToStringSB));
-            sw.Append(p).Append("FilterTagsOr").Append('=').AppendLine(TagsToString(filter.Tags.OrTags, tagsToStringSB));
-            sw.Append(p).Append("FilterTagsNot").Append('=').AppendLine(TagsToString(filter.Tags.NotTags, tagsToStringSB));
+            sw.Append(p).Append("FilterTagsAnd=").AppendLine(TagsToString(filter.Tags.AndTags, tagsToStringSB));
+            sw.Append(p).Append("FilterTagsOr=").AppendLine(TagsToString(filter.Tags.OrTags, tagsToStringSB));
+            sw.Append(p).Append("FilterTagsNot=").AppendLine(TagsToString(filter.Tags.NotTags, tagsToStringSB));
         }
 
         #endregion
 
         #region Columns
 
-        sw.Append("SortedColumn").Append('=').Append(config.SortedColumn).AppendLine();
-        sw.Append("SortDirection").Append('=').Append(config.SortDirection).AppendLine();
-        sw.Append("ShowRecentAtTop").Append('=').Append(config.ShowRecentAtTop).AppendLine();
-        sw.Append("ShowUnsupported").Append('=').Append(config.ShowUnsupported).AppendLine();
-        sw.Append("ShowUnavailableFMs").Append('=').Append(config.ShowUnavailableFMs).AppendLine();
-        sw.Append("FMsListFontSizeInPoints").Append('=').AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("SortedColumn=").AppendLine(config.SortedColumn);
+        sw.Append("SortDirection=").AppendLine(config.SortDirection);
+        sw.Append("ShowRecentAtTop=").AppendLine(config.ShowRecentAtTop);
+        sw.Append("ShowUnsupported=").AppendLine(config.ShowUnsupported);
+        sw.Append("ShowUnavailableFMs=").AppendLine(config.ShowUnavailableFMs);
+        sw.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
 
         foreach (ColumnData col in config.Columns)
         {
-            sw.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').Append(col.Visible).AppendLine();
+            sw.Append("Column").Append(col.Id).Append('=').Append(col.DisplayIndex).Append(',').Append(col.Width).Append(',').AppendLine(col.Visible);
         }
 
         #endregion
@@ -1417,55 +1423,55 @@ internal static partial class Ini
             SelectedFM selFM = i == 0 ? config.SelFM : config.GameTabsState.GetSelectedFM((GameIndex)(i - 1));
             string p = i == 0 ? "" : GetGamePrefix((GameIndex)(i - 1));
 
-            sw.Append(p).Append("SelFMInstDir").Append('=').AppendLine(selFM.InstalledName);
-            sw.Append(p).Append("SelFMIndexFromTop").Append('=').Append(selFM.IndexFromTop).AppendLine();
+            sw.Append(p).Append("SelFMInstDir=").AppendLine(selFM.InstalledName);
+            sw.Append(p).Append("SelFMIndexFromTop=").AppendLine(selFM.IndexFromTop);
         }
 
         #endregion
 
         #region Main window state
 
-        sw.Append("MainWindowState").Append('=').Append(config.MainWindowState).AppendLine();
+        sw.Append("MainWindowState=").AppendLine(config.MainWindowState);
 
-        sw.Append("MainWindowSize").Append('=').Append(config.MainWindowSize.Width).Append(',').Append(config.MainWindowSize.Height).AppendLine();
-        sw.Append("MainWindowLocation").Append('=').Append(config.MainWindowLocation.X).Append(',').Append(config.MainWindowLocation.Y).AppendLine();
+        sw.Append("MainWindowSize=").Append(config.MainWindowSize.Width).Append(',').AppendLine(config.MainWindowSize.Height);
+        sw.Append("MainWindowLocation=").Append(config.MainWindowLocation.X).Append(',').AppendLine(config.MainWindowLocation.Y);
 
-        sw.Append("MainSplitterPercent").Append('=').AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("TopSplitterPercent").Append('=').AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("BottomSplitterPercent").Append('=').AppendLine(config.BottomSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("TopRightPanelCollapsed").Append('=').Append(config.TopFMTabsPanelCollapsed).AppendLine();
-        sw.Append("BottomRightPanelCollapsed").Append('=').Append(config.BottomFMTabsPanelCollapsed).AppendLine();
+        sw.Append("MainSplitterPercent=").AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("TopSplitterPercent=").AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("BottomSplitterPercent=").AppendLine(config.BottomSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("TopRightPanelCollapsed=").AppendLine(config.TopFMTabsPanelCollapsed);
+        sw.Append("BottomRightPanelCollapsed=").AppendLine(config.BottomFMTabsPanelCollapsed);
 
-        sw.Append("GameTab").Append('=').Append(config.GameTab).AppendLine();
-        sw.Append("SelectedTab1").Append('=').Append(config.FMTabsData.SelectedTab).AppendLine();
-        sw.Append("SelectedTab2").Append('=').Append(config.FMTabsData.SelectedTab2).AppendLine();
+        sw.Append("GameTab=").AppendLine(config.GameTab);
+        sw.Append("SelectedTab1=").AppendLine(config.FMTabsData.SelectedTab);
+        sw.Append("SelectedTab2=").AppendLine(config.FMTabsData.SelectedTab2);
 
-        sw.Append("StatsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex).AppendLine();
-        sw.Append("EditFMTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex).AppendLine();
-        sw.Append("CommentTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Comment).DisplayIndex).AppendLine();
-        sw.Append("TagsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Tags).DisplayIndex).AppendLine();
-        sw.Append("PatchTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Patch).DisplayIndex).AppendLine();
-        sw.Append("ModsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Mods).DisplayIndex).AppendLine();
-        sw.Append("ScreenshotsTabPosition").Append('=').Append(config.FMTabsData.GetTab(FMTab.Screenshots).DisplayIndex).AppendLine();
+        sw.Append("StatsTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex);
+        sw.Append("EditFMTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex);
+        sw.Append("CommentTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Comment).DisplayIndex);
+        sw.Append("TagsTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Tags).DisplayIndex);
+        sw.Append("PatchTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Patch).DisplayIndex);
+        sw.Append("ModsTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Mods).DisplayIndex);
+        sw.Append("ScreenshotsTabPosition=").AppendLine(config.FMTabsData.GetTab(FMTab.Screenshots).DisplayIndex);
 
-        sw.Append("StatsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Statistics).Visible).AppendLine();
-        sw.Append("EditFMTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.EditFM).Visible).AppendLine();
-        sw.Append("CommentTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Comment).Visible).AppendLine();
-        sw.Append("TagsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Tags).Visible).AppendLine();
-        sw.Append("PatchTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Patch).Visible).AppendLine();
-        sw.Append("ModsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Mods).Visible).AppendLine();
-        sw.Append("ScreenshotsTabVisible").Append('=').Append(config.FMTabsData.GetTab(FMTab.Screenshots).Visible).AppendLine();
+        sw.Append("StatsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Statistics).Visible);
+        sw.Append("EditFMTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.EditFM).Visible);
+        sw.Append("CommentTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Comment).Visible);
+        sw.Append("TagsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Tags).Visible);
+        sw.Append("PatchTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Patch).Visible);
+        sw.Append("ModsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Mods).Visible);
+        sw.Append("ScreenshotsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Screenshots).Visible);
 
-        sw.Append("ReadmeZoomFactor").Append('=').AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("ReadmeUseFixedWidthFont").Append('=').Append(config.ReadmeUseFixedWidthFont).AppendLine();
+        sw.Append("ReadmeZoomFactor=").AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("ReadmeUseFixedWidthFont=").AppendLine(config.ReadmeUseFixedWidthFont);
 
         #endregion
 
-        sw.Append("EnableCharacterDetailFix").Append('=').Append(config.EnableCharacterDetailFix).AppendLine();
-        sw.Append("PlayOriginalSeparateButtons").Append('=').Append(config.PlayOriginalSeparateButtons).AppendLine();
-        sw.Append("AskedToScanForMisCounts").Append('=').Append(config.AskedToScanForMisCounts).AppendLine();
-        sw.Append("EnableFuzzySearch").Append('=').Append(config.EnableFuzzySearch).AppendLine();
-        sw.Append("CheckForUpdates").Append('=').Append(config.CheckForUpdates).AppendLine();
-        sw.Append("ScreenshotGammaPercent").Append('=').Append(config.ScreenshotGammaPercent).AppendLine();
+        sw.Append("EnableCharacterDetailFix=").AppendLine(config.EnableCharacterDetailFix);
+        sw.Append("PlayOriginalSeparateButtons=").AppendLine(config.PlayOriginalSeparateButtons);
+        sw.Append("AskedToScanForMisCounts=").AppendLine(config.AskedToScanForMisCounts);
+        sw.Append("EnableFuzzySearch=").AppendLine(config.EnableFuzzySearch);
+        sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
+        sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
     }
 }
