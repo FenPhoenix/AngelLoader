@@ -520,7 +520,7 @@ internal static partial class Ini
                 sw.Write("ReadmeEncoding=");
                 sw.Write(single.Key);
                 sw.Write(",");
-                if (single.Value.TryFormat(numberSpan, out int written))
+                if (single.Value.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo))
                 {
                     sw.WriteLine(numberSpan[..written]);
                 }
@@ -532,7 +532,7 @@ internal static partial class Ini
                     sw.Write("ReadmeEncoding=");
                     sw.Write(item.Key);
                     sw.Write(",");
-                    if (item.Value.TryFormat(numberSpan, out int written))
+                    if (item.Value.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo))
                     {
                         sw.WriteLine(numberSpan[..written]);
                     }
@@ -563,7 +563,7 @@ internal static partial class Ini
             if (fm.DateAdded != null)
             {
                 long seconds = new DateTimeOffset((DateTime)fm.DateAdded).ToUnixTimeSeconds();
-                seconds.TryFormat(numberSpan, out int written, "X");
+                seconds.TryFormat(numberSpan, out int written, "X", provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("DateAdded=");
                 sw.WriteLine(numberSpan[..written]);
             }
@@ -687,6 +687,12 @@ internal static partial class Ini
             {
                 fm.MisCount.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
                 sw.Write("MisCount=");
+                sw.WriteLine(numberSpan[..written]);
+            }
+            if (fm.PlayTime.Ticks != 0)
+            {
+                fm.PlayTime.Ticks.TryFormat(numberSpan, out int written, provider: NumberFormatInfo.InvariantInfo);
+                sw.Write("PlayTime=");
                 sw.WriteLine(numberSpan[..written]);
             }
         }

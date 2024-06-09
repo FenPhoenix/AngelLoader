@@ -547,7 +547,7 @@ internal static class FMData
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(single.Key);");
                 w.WL("sw.Write(\",\");");
-                w.WL("if (single.Value.TryFormat(numberSpan, out int written))");
+                w.WL("if (single.Value.TryFormat(numberSpan, out int written, provider: " + numericInvariantArgs + "))");
                 w.WL("{");
                 w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
@@ -559,7 +559,7 @@ internal static class FMData
                 w.WL("sw.Write(\"" + fieldIniName + "=\");");
                 w.WL("sw.Write(item.Key);");
                 w.WL("sw.Write(\",\");");
-                w.WL("if (item.Value.TryFormat(numberSpan, out int written))");
+                w.WL("if (item.Value.TryFormat(numberSpan, out int written, provider: " + numericInvariantArgs + "))");
                 w.WL("{");
                 w.WL("sw.WriteLine(numberSpan[..written]);");
                 w.WL("}");
@@ -624,6 +624,22 @@ internal static class FMData
                     swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 }
             }
+            else if (field.Type == "TimeSpan")
+            {
+                if (field.NumericEmpty != null)
+                {
+                    w.WL("if (" + objDotField + ".Ticks != " + ((long)field.NumericEmpty).ToStrInv() + ")");
+                    w.WL("{");
+                    w.WL(objDotField + ".Ticks.TryFormat(numberSpan, out int written, provider: " + numericInvariantArgs + ");");
+                    swlSBAppend(fieldIniName, "numberSpan[..written]");
+                    w.WL("}");
+                }
+                else
+                {
+                    w.WL(objDotField + ".Ticks.TryFormat(numberSpan, out int written, provider: " + numericInvariantArgs + ");");
+                    swlSBAppend(fieldIniName, "numberSpan[..written]");
+                }
+            }
             else if (field.Type[field.Type.Length - 1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
@@ -681,7 +697,7 @@ internal static class FMData
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
                 w.WL("long seconds = " + seconds);
-                w.WL("seconds.TryFormat(numberSpan, out int written, \"X\");");
+                w.WL("seconds.TryFormat(numberSpan, out int written, \"X\", provider: " + numericInvariantArgs + ");");
                 swlSBAppend(fieldIniName, "numberSpan[..written]");
                 w.WL("}");
             }
