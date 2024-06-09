@@ -420,6 +420,52 @@ public static partial class Common
                lastDotIndex > value.LastIndexOf('\\');
     }
 
+    /// <summary>
+    /// EndsWith (case-insensitive), only for use when <paramref name="value"/> is ASCII.
+    /// If <paramref name="value"/> is non-ASCII, this method may return incorrect results!
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool EndsWithI_Ascii(this string str, string value)
+    {
+        if (str.IsEmpty()) return false;
+        if (str.Length < value.Length) return false;
+
+        int start = str.Length - value.Length;
+
+        for (int si = start, vi = 0; si < str.Length; si++, vi++)
+        {
+            if (!str[si].EqualsIAscii(value[vi])) return false;
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsTxt(this string value) => value.EndsWithI_Ascii(".txt");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsRtf(this string value) => value.EndsWithI_Ascii(".rtf");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsWri(this string value) => value.EndsWithI_Ascii(".wri");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsHtml(this string value) => value.EndsWithI_Ascii(".html") || value.EndsWithI_Ascii(".htm");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsGlml(this string value) => value.EndsWithI_Ascii(".glml");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsZip(this string value) => value.EndsWithI_Ascii(".zip");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIs7z(this string value) => value.EndsWithI_Ascii(".7z");
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsRar(this string value) => value.EndsWithI_Ascii(".rar");
+
     #endregion
 
     #region Set file attributes
