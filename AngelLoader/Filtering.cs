@@ -157,10 +157,10 @@ internal static class Filtering
     }
 
     private static void FilterTags(
-    FanMission fm,
-    FMCategoriesCollection andTags,
-    FMCategoriesCollection orTags,
-    FMCategoriesCollection notTags)
+        FanMission fm,
+        FMCategoriesCollection andTags,
+        FMCategoriesCollection orTags,
+        FMCategoriesCollection notTags)
     {
         if (andTags.Count > 0 ||
             orTags.Count > 0 ||

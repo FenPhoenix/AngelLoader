@@ -22,8 +22,6 @@ to either be unchanged, or new and valid.
 But we should decide what's a hard enough fail to warrant that. Failing to write fmsel.inf definitely isn't
 a hard enough fail, since it's really just redundancy and the user probably won't understand what the file
 is and why it matters.
-
-@NET5(FindFMs): TryAdd() for dictionaries and so forth, let's add it and test it to be sure.
 */
 internal static class FindFMs
 {

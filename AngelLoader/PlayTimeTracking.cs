@@ -180,8 +180,8 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                 {
                     try
                     {
-                        string? fn = GetProcessName(proc.Id);
-                        if (!string.IsNullOrEmpty(fn) && fn.PathEqualsI(fullPath))
+                        string? fn = GetProcessPath(proc.Id);
+                        if (!fn.IsEmpty() && fn.PathEqualsI(fullPath))
                         {
                             returnProcess = proc;
                             return proc;

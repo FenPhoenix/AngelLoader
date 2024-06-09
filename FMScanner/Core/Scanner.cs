@@ -980,7 +980,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(CA_Linebreaks, StringSplitOptions.None));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(SA_Linebreaks, StringSplitOptions.None));
                 }
             }
 
@@ -1085,7 +1085,7 @@ public sealed partial class Scanner : IDisposable
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split(CA_Linebreaks, StringSplitOptions.None));
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split(SA_Linebreaks, StringSplitOptions.None));
                     _readmeFiles.Add(readme);
                 }
                 catch
@@ -1857,7 +1857,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        // @TODO(Scanner): We can use the readme encoding to read the title out of titles.str
+        // TODO(Scanner): We can use the readme encoding to read the title out of titles.str
         // These titles are usually too short to detect encoding, but if we use the readme encoding it's likely
         // to match.
         // Update: That doesn't work. Most of the 1252-readme'd FMs' titles.str AND newgame.str files are in
@@ -2659,11 +2659,11 @@ public sealed partial class Scanner : IDisposable
                    (path[len - 1] == 'n' || path[len - 1] == 'N');
         }
 
-        static bool FileExtensionFound(string fn, string[] array)
+        static bool FileExtensionFound(string fn, string[] extensions)
         {
-            foreach (string extensions in array)
+            foreach (string extension in extensions)
             {
-                if (fn.EndsWithI(extensions))
+                if (fn.EndsWithI(extension))
                 {
                     return true;
                 }
@@ -3649,7 +3649,7 @@ public sealed partial class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split(CA_Linebreaks, StringSplitOptions.None));
+                            last.Lines.ClearFullAndAdd(text.Split(SA_Linebreaks, StringSplitOptions.None));
                         }
                     }
                     finally
@@ -3669,7 +3669,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split(CA_Linebreaks, StringSplitOptions.None));
+                    last.Lines.ClearFullAndAdd(last.Text.Split(SA_Linebreaks, StringSplitOptions.None));
                 }
             }
             finally

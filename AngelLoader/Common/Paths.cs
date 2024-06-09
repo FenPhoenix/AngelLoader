@@ -36,7 +36,6 @@ internal static class Paths
     #region Startup path
 
 #if DEBUG || Release_Testing
-
     private static string? _startupPath;
     internal static string Startup
     {
@@ -66,7 +65,6 @@ internal static class Paths
             return _startupPath;
         }
     }
-
 #else
     internal static readonly string Startup = AppContext.BaseDirectory;
 #endif

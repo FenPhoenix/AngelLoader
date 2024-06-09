@@ -131,7 +131,7 @@ public static partial class Utils
             {
                 try
                 {
-                    string? fn = GetProcessName(proc.Id);
+                    string? fn = GetProcessPath(proc.Id);
                     if (!fn.IsEmpty() &&
                         ((checkAllGames &&
                           (AnyGameRunning(fn) ||

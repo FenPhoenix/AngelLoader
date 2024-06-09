@@ -34,6 +34,7 @@ public
 #else
         ;
 #endif
+
     private bool _loading = true;
 
     [Browsable(false)]

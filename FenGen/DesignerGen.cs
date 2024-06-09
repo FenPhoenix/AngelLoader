@@ -746,7 +746,7 @@ internal static class DesignerGen
 
         #endregion
 
-        while (sourceLines[sourceLines.Count - 1].IsWhiteSpace())
+        while (sourceLines[^1].IsWhiteSpace())
         {
             sourceLines.RemoveAt(sourceLines.Count - 1);
         }
