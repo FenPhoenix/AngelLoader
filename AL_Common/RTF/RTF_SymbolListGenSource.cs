@@ -78,7 +78,7 @@ public static partial class RTFParserCommon
         lquote    '\x2018'
         rquote    '\x2019'
         ldblquote '\x201C'
-        rdblquote '\x201D'        
+        rdblquote '\x201D'
         */
         new Symbol("emspace", 0, false, KeywordType.Character, ' '),
         new Symbol("enspace", 0, false, KeywordType.Character, ' '),
