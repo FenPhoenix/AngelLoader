@@ -935,7 +935,11 @@ public static partial class RTFParserCommon
         Unset,
         Symbol,
         Wingdings,
+        Wingdings2,
+        Wingdings3,
         Webdings,
+        ITCZapfDingbats,
+        ZapfDingbats,
     }
 
     public enum RtfError : byte
