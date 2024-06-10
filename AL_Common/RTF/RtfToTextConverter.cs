@@ -114,10 +114,10 @@ public sealed partial class RtfToTextConverter
     */
 
     private const int _symbolArraysStartingIndex = 2;
-    private const int _symbolArraysLength = 5;
+    private const int _symbolArraysLength = 9;
 
     private readonly uint[][] _symbolFontTables = new uint[_symbolArraysLength][];
-    private readonly char[][] _symbolFontCharsArrays = new char[_symbolArraysLength][];
+    private readonly byte[][] _symbolFontCharsArrays = new byte[_symbolArraysLength][];
 
     private void InitSymbolFontData()
     {
@@ -198,14 +198,14 @@ public sealed partial class RtfToTextConverter
             0x03B4,
             0x03B5,
 
-            // Lowercase phi, but capital phi in Windows Symbol
+            // Nominally lowercase phi (0x3C6), but is uppercase phi in Windows Symbol
             0x03C6,
 
             0x03B3,
             0x03B7,
             0x03B9,
 
-            // Capital phi, but lowercase phi in Windows Symbol
+            // Nominally uppercase phi (0x3D5), but is lowercase phi in Windows Symbol
             0x03D5,
 
             0x03BA,
@@ -228,8 +228,6 @@ public sealed partial class RtfToTextConverter
             0x007C,
             0x007D,
             0x223C,
-
-            // 7F - 9F are undefined
             _unicodeUnknown_Char,
             _unicodeUnknown_Char,
             _unicodeUnknown_Char,
@@ -370,8 +368,6 @@ public sealed partial class RtfToTextConverter
             0x23AB,
             0x23AC,
             0x23AD,
-
-            // Undefined
             _unicodeUnknown_Char,
         };
 
@@ -472,10 +468,7 @@ public sealed partial class RtfToTextConverter
             0x1F3F6,
             0x1F676,
             0x1F677,
-
-            // 7F is undefined
             _unicodeUnknown_Char,
-
             0x1F10B,
             0x2780,
             0x2781,
@@ -608,6 +601,462 @@ public sealed partial class RtfToTextConverter
             0x1FA9F,
         };
 
+        _symbolFontTables[(int)SymbolFont.Wingdings2] = new uint[224]
+        {
+            ' ',
+            0x1F58A,
+            0x1F58B,
+            0x1F58C,
+            0x1F58D,
+            0x2704,
+            0x2700,
+            0x1F57E,
+            0x1F57D,
+            0x1F5C5,
+            0x1F5C6,
+            0x1F5C7,
+            0x1F5C8,
+            0x1F5C9,
+            0x1F5CA,
+            0x1F5CB,
+            0x1F5CC,
+            0x1F5CD,
+            0x1F4CB,
+            0x1F5D1,
+            0x1F5D4,
+            0x1F5B5,
+            0x1F5B6,
+            0x1F5B7,
+            0x1F5B8,
+            0x1F5AD,
+            0x1F5AF,
+            0x1F5B1,
+            0x1F592,
+            0x1F593,
+            0x1F598,
+            0x1F599,
+            0x1F59A,
+            0x1F59B,
+            0x1F448,
+            0x1F449,
+            0x1F59C,
+            0x1F59D,
+            0x1F59E,
+            0x1F59F,
+            0x1F5A0,
+            0x1F5A1,
+            0x1F446,
+            0x1F447,
+            0x1F5A2,
+            0x1F5A3,
+            0x1F591,
+            0x1F5F4,
+            0x1F5F8,
+            0x1F5F5,
+            0x2611,
+            0x2BBD,
+            0x2612,
+            0x2BBE,
+            0x2BBF,
+            0x1F6C7,
+            0x29B8,
+            0x1F671,
+            0x1F674,
+            0x1F672,
+            0x1F673,
+            0x203D,
+            0x1F679,
+            0x1F67A,
+            0x1F67B,
+            0x1F666,
+            0x1F664,
+            0x1F665,
+            0x1F667,
+            0x1F65A,
+            0x1F658,
+            0x1F659,
+            0x1F65B,
+            0x24EA,
+            0x2460,
+            0x2461,
+            0x2462,
+            0x2463,
+            0x2464,
+            0x2465,
+            0x2466,
+            0x2467,
+            0x2468,
+            0x2469,
+            0x24FF,
+            0x2776,
+            0x2777,
+            0x2778,
+            0x2779,
+            0x277A,
+            0x277B,
+            0x277C,
+            0x277D,
+            0x277E,
+            0x277F,
+            _unicodeUnknown_Char,
+            0x2609,
+            0x1F315,
+            0x263D,
+            0x263E,
+            0x2E3F,
+            0x271D,
+            0x1F547,
+            0x1F55C,
+            0x1F55D,
+            0x1F55E,
+            0x1F55F,
+            0x1F560,
+            0x1F561,
+            0x1F562,
+            0x1F563,
+            0x1F564,
+            0x1F565,
+            0x1F566,
+            0x1F567,
+            0x1F668,
+            0x1F669,
+            0x22C5,
+            0x1F784,
+            0x2981,
+            0x25CF,
+            0x25CB,
+            0x1F785,
+            0x1F787,
+            0x1F789,
+            0x2299,
+            0x29BF,
+            0x1F78C,
+            0x1F78D,
+            0x25FE,
+            0x25A0,
+            0x25A1,
+            0x1F791,
+            0x1F792,
+            0x1F793,
+            0x1F794,
+            0x25A3,
+            0x1F795,
+            0x1F796,
+            0x1F797,
+            0x1F798,
+            0x2B29,
+            0x2B25,
+            0x25C7,
+            0x1F79A,
+            0x25C8,
+            0x1F79B,
+            0x1F79C,
+            0x1F79D,
+            0x1F79E,
+            0x2B2A,
+            0x2B27,
+            0x25CA,
+            0x1F7A0,
+            0x25D6,
+            0x25D7,
+            0x2BCA,
+            0x2BCB,
+            0x2BC0,
+            0x2BC1,
+            0x2B1F,
+            0x2BC2,
+            0x2B23,
+            0x2B22,
+            0x2BC3,
+            0x2BC4,
+            0x1F7A1,
+            0x1F7A2,
+            0x1F7A3,
+            0x1F7A4,
+            0x1F7A5,
+            0x1F7A6,
+            0x1F7A7,
+            0x1F7A8,
+            0x1F7A9,
+            0x1F7AA,
+            0x1F7AB,
+            0x1F7AC,
+            0x1F7AD,
+            0x1F7AE,
+            0x1F7AF,
+            0x1F7B0,
+            0x1F7B1,
+            0x1F7B2,
+            0x1F7B3,
+            0x1F7B4,
+            0x1F7B5,
+            0x1F7B6,
+            0x1F7B7,
+            0x1F7B8,
+            0x1F7B9,
+            0x1F7BA,
+            0x1F7BB,
+            0x1F7BC,
+            0x1F7BD,
+            0x1F7BE,
+            0x1F7BF,
+            0x1F7C0,
+            0x1F7C2,
+            0x1F7C4,
+            0x1F7C6,
+            0x1F7C9,
+            0x1F7CA,
+            0x2736,
+            0x1F7CC,
+            0x1F7CE,
+            0x1F7D0,
+            0x1F7D2,
+            0x2739,
+            0x1F7C3,
+            0x1F7C7,
+            0x272F,
+            0x1F7CD,
+            0x1F7D4,
+            0x2BCC,
+            0x2BCD,
+            0x203B,
+            0x2042,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+        };
+
+        _symbolFontTables[(int)SymbolFont.Wingdings3] = new uint[224]
+        {
+            ' ',
+            0x2B60,
+            0x2B62,
+            0x2B61,
+            0x2B63,
+            0x2B66,
+            0x2B67,
+            0x2B69,
+            0x2B68,
+            0x2B70,
+            0x2B72,
+            0x2B71,
+            0x2B73,
+            0x2B76,
+            0x2B78,
+            0x2B7B,
+            0x2B7D,
+            0x2B64,
+            0x2B65,
+            0x2B6A,
+            0x2B6C,
+            0x2B6B,
+            0x2B6D,
+            0x2B4D,
+            0x2BA0,
+            0x2BA1,
+            0x2BA2,
+            0x2BA3,
+            0x2BA4,
+            0x2BA5,
+            0x2BA6,
+            0x2BA7,
+            0x2B90,
+            0x2B91,
+            0x2B92,
+            0x2B93,
+            0x2B80,
+            0x2B83,
+            0x2B7E,
+            0x2B7F,
+            0x2B84,
+            0x2B86,
+            0x2B85,
+            0x2B87,
+            0x2B8F,
+            0x2B8D,
+            0x2B8E,
+            0x2B8C,
+            0x2B6E,
+            0x2B6F,
+            0x238B,
+            0x2324,
+            0x2303,
+            0x2325,
+            0x2423,
+            0x237D,
+            0x21EA,
+            0x2BB8,
+            0x1F8A0,
+            0x1F8A1,
+            0x1F8A2,
+            0x1F8A3,
+            0x1F8A4,
+            0x1F8A5,
+            0x1F8A6,
+            0x1F8A7,
+            0x1F8A8,
+            0x1F8A9,
+            0x1F8AA,
+            0x1F8AB,
+            0x1F850,
+            0x1F852,
+            0x1F851,
+            0x1F853,
+            0x1F854,
+            0x1F855,
+            0x1F857,
+            0x1F856,
+            0x1F858,
+            0x1F859,
+            0x25B2,
+            0x25BC,
+            0x25B3,
+            0x25BD,
+            0x25C0,
+            0x25B6,
+            0x25C1,
+            0x25B7,
+            0x25E3,
+            0x25E2,
+            0x25E4,
+            0x25E5,
+            0x1F780,
+            0x1F782,
+            0x1F781,
+            _unicodeUnknown_Char,
+            0x1F783,
+            0x2BC5,
+            0x2BC6,
+            0x2BC7,
+            0x2BC8,
+            0x2B9C,
+            0x2B9E,
+            0x2B9D,
+            0x2B9F,
+            0x1F810,
+            0x1F812,
+            0x1F811,
+            0x1F813,
+            0x1F814,
+            0x1F816,
+            0x1F815,
+            0x1F817,
+            0x1F818,
+            0x1F81A,
+            0x1F819,
+            0x1F81B,
+            0x1F81C,
+            0x1F81E,
+            0x1F81D,
+            0x1F81F,
+            0x1F800,
+            0x1F802,
+            0x1F801,
+            0x1F803,
+            0x1F804,
+            0x1F806,
+            0x1F805,
+            0x1F807,
+            0x1F808,
+            0x1F80A,
+            0x1F809,
+            0x1F80B,
+            0x1F820,
+            0x1F822,
+            0x1F824,
+            0x1F826,
+            0x1F828,
+            0x1F82A,
+            0x1F82C,
+            0x1F89C,
+            0x1F89D,
+            0x1F89E,
+            0x1F89F,
+            0x1F82E,
+            0x1F830,
+            0x1F832,
+            0x1F834,
+            0x1F836,
+            0x1F838,
+            0x1F83A,
+            0x1F839,
+            0x1F83B,
+            0x1F898,
+            0x1F89A,
+            0x1F899,
+            0x1F89B,
+            0x1F83C,
+            0x1F83E,
+            0x1F83D,
+            0x1F83F,
+            0x1F840,
+            0x1F842,
+            0x1F841,
+            0x1F843,
+            0x1F844,
+            0x1F846,
+            0x1F845,
+            0x1F847,
+            0x2BA8,
+            0x2BA9,
+            0x2BAA,
+            0x2BAB,
+            0x2BAC,
+            0x2BAD,
+            0x2BAE,
+            0x2BAF,
+            0x1F860,
+            0x1F862,
+            0x1F861,
+            0x1F863,
+            0x1F864,
+            0x1F865,
+            0x1F867,
+            0x1F866,
+            0x1F870,
+            0x1F872,
+            0x1F871,
+            0x1F873,
+            0x1F874,
+            0x1F875,
+            0x1F877,
+            0x1F876,
+            0x1F880,
+            0x1F882,
+            0x1F881,
+            0x1F883,
+            0x1F884,
+            0x1F885,
+            0x1F887,
+            0x1F886,
+            0x1F890,
+            0x1F892,
+            0x1F891,
+            0x1F893,
+            0x1F894,
+            0x1F896,
+            0x1F895,
+            0x1F897,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+        };
+
         _symbolFontTables[(int)SymbolFont.Webdings] = new uint[224]
         {
             ' ',
@@ -706,7 +1155,6 @@ public sealed partial class RtfToTextConverter
             0x1F5EF,
             0x1F5F2,
 
-            // 7F is undefined
             _unicodeUnknown_Char,
 
             0x1F6B9,
@@ -838,11 +1286,245 @@ public sealed partial class RtfToTextConverter
             0x1F30E,
             0x1F54A,
         };
+
+        _symbolFontTables[(int)SymbolFont.ITCZapfDingbats] = new uint[224]
+        {
+            ' ',
+            0x2701,
+            0x2702,
+            0x2703,
+            0x2704,
+            0x260E,
+            0x2706,
+            0x2707,
+            0x2708,
+            0x2709,
+            0x261B,
+            0x261E,
+            0x270C,
+            0x270D,
+            0x270E,
+            0x270F,
+            0x2710,
+            0x2711,
+            0x2712,
+            0x2713,
+            0x2714,
+            0x2715,
+            0x2716,
+            0x2717,
+            0x2718,
+            0x2719,
+            0x271A,
+            0x271B,
+            0x271C,
+            0x271D,
+            0x271E,
+            0x271F,
+            0x2720,
+            0x2721,
+            0x2722,
+            0x2723,
+            0x2724,
+            0x2725,
+            0x2726,
+            0x2727,
+            0x2605,
+            0x2729,
+            0x272A,
+            0x272B,
+            0x272C,
+            0x272D,
+            0x272E,
+            0x272F,
+            0x2730,
+            0x2731,
+            0x2732,
+            0x2733,
+            0x2734,
+            0x2735,
+            0x2736,
+            0x2737,
+            0x2738,
+            0x2739,
+            0x273A,
+            0x273B,
+            0x273C,
+            0x273D,
+            0x273E,
+            0x273F,
+            0x2740,
+            0x2741,
+            0x2742,
+            0x2743,
+            0x2744,
+            0x2745,
+            0x2746,
+            0x2747,
+            0x2748,
+            0x2749,
+            0x274A,
+            0x274B,
+            0x25CF,
+            0x274D,
+            0x25A0,
+            0x274F,
+            0x2750,
+            0x2751,
+            0x2752,
+            0x25B2,
+            0x25BC,
+            0x25C6,
+            0x2756,
+            0x25D7,
+            0x2758,
+            0x2759,
+            0x275A,
+            0x275B,
+            0x275C,
+            0x275D,
+            0x275E,
+            _unicodeUnknown_Char,
+            0x2768,
+            0x2769,
+            0x276A,
+            0x276B,
+            0x276C,
+            0x276D,
+            0x276E,
+            0x276F,
+            0x2770,
+            0x2771,
+            0x2772,
+            0x2773,
+            0x2774,
+            0x2775,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            _unicodeUnknown_Char,
+            0x2761,
+            0x2762,
+            0x2763,
+            0x2764,
+            0x2765,
+            0x2766,
+            0x2767,
+            0x2663,
+            0x2666,
+            0x2665,
+            0x2660,
+            0x2460,
+            0x2461,
+            0x2462,
+            0x2463,
+            0x2464,
+            0x2465,
+            0x2466,
+            0x2467,
+            0x2468,
+            0x2469,
+            0x2776,
+            0x2777,
+            0x2778,
+            0x2779,
+            0x277A,
+            0x277B,
+            0x277C,
+            0x277D,
+            0x277E,
+            0x277F,
+            0x2780,
+            0x2781,
+            0x2782,
+            0x2783,
+            0x2784,
+            0x2785,
+            0x2786,
+            0x2787,
+            0x2788,
+            0x2789,
+            0x278A,
+            0x278B,
+            0x278C,
+            0x278D,
+            0x278E,
+            0x278F,
+            0x2790,
+            0x2791,
+            0x2792,
+            0x2793,
+            0x2794,
+            0x2192,
+            0x2194,
+            0x2195,
+            0x2798,
+            0x2799,
+            0x279A,
+            0x279B,
+            0x279C,
+            0x279D,
+            0x279E,
+            0x279F,
+            0x27A0,
+            0x27A1,
+            0x27A2,
+            0x27A3,
+            0x27A4,
+            0x27A5,
+            0x27A6,
+            0x27A7,
+            0x27A8,
+            0x27A9,
+            0x27AA,
+            0x27AB,
+            0x27AC,
+            0x27AD,
+            0x27AE,
+            0x27AF,
+            _unicodeUnknown_Char,
+            0x27B1,
+            0x27B2,
+            0x27B3,
+            0x27B4,
+            0x27B5,
+            0x27B6,
+            0x27B7,
+            0x27B8,
+            0x27B9,
+            0x27BA,
+            0x27BB,
+            0x27BC,
+            0x27BD,
+            0x27BE,
+            _unicodeUnknown_Char,
+        };
+
+        _symbolFontTables[(int)SymbolFont.ZapfDingbats] = _symbolFontTables[(int)SymbolFont.ITCZapfDingbats];
         // ReSharper restore RedundantExplicitArraySize
 
-        _symbolFontCharsArrays[(int)SymbolFont.Symbol] = new[] { 'S', 'y', 'm', 'b', 'o', 'l' };
-        _symbolFontCharsArrays[(int)SymbolFont.Wingdings] = new[] { 'W', 'i', 'n', 'g', 'd', 'i', 'n', 'g', 's' };
-        _symbolFontCharsArrays[(int)SymbolFont.Webdings] = new[] { 'W', 'e', 'b', 'd', 'i', 'n', 'g', 's' };
+        _symbolFontCharsArrays[(int)SymbolFont.Symbol] = "Symbol"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.Wingdings] = "Wingdings"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.Wingdings2] = "Wingdings 2"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.Wingdings3] = "Wingdings 3"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.Webdings] = "Webdings"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.ITCZapfDingbats] = "ITC Zapf Dingbats"u8.ToArray();
+        _symbolFontCharsArrays[(int)SymbolFont.ZapfDingbats] = "Zapf Dingbats"u8.ToArray();
     }
 
     #endregion
@@ -909,6 +1591,8 @@ public sealed partial class RtfToTextConverter
 
     // Highest measured was 13
     private readonly ListFast<char> _unicodeBuffer = new(20);
+
+    private readonly ListFast<char> _symbolFontNameBuffer = new(32);
 
     private bool _inHandleFontTable;
 
@@ -986,6 +1670,7 @@ public sealed partial class RtfToTextConverter
         _unicodeBuffer.ClearFast();
         _plainText.ClearFast();
         _fldinstSymbolFontName.ClearFast();
+        _symbolFontNameBuffer.ClearFast();
 
         // Extremely unlikely we'll hit any of these, but just for safety
         if (_hexBuffer.Capacity > ByteSize.MB) _hexBuffer.Capacity = 0;
@@ -994,6 +1679,7 @@ public sealed partial class RtfToTextConverter
         // @NET5: I think .NET modern has dictionary clear methods?
         if (_plainText.Capacity > ByteSize.MB) _plainText.Capacity = 0;
         if (_fldinstSymbolFontName.Capacity > ByteSize.MB) _fldinstSymbolFontName.Capacity = 0;
+        if (_symbolFontNameBuffer.Capacity > ByteSize.MB) _symbolFontNameBuffer.Capacity = 0;
 
         _inHandleFontTable = false;
     }
@@ -1032,7 +1718,6 @@ public sealed partial class RtfToTextConverter
                     {
                         if (IsNonPlainText[_rtfBytes.Array[CurrentPos]])
                         {
-                            // Support bare characters that are supposed to be displayed in a symbol font.
                             SymbolFont symbolFont = groupStack.CurrentSymbolFont;
                             if (symbolFont > SymbolFont.Unset)
                             {
@@ -1070,7 +1755,6 @@ public sealed partial class RtfToTextConverter
                 char ch = (char)_rtfBytes.Array[CurrentPos++];
                 if (!IsNonPlainText[ch])
                 {
-                    // Support bare characters that are supposed to be displayed in a symbol font.
                     GetCharFromConversionList_Byte((byte)ch, table, out ListFast<char> result);
                     _plainText.AddRange(result, result.Count);
                 }
@@ -1246,75 +1930,41 @@ public sealed partial class RtfToTextConverter
                     break;
                 default:
                 {
-                    const ulong WingdingBytes = 0x676E6964676E6957;
-                    const ushort sAndSemicolonBytes = 0x3B73;
-                    const ulong WebdingsBytes = 0x73676E6964626557;
-                    const ulong symbolAndSemicolonBytes = 0x003B6C6F626D7953;
-
                     FontEntry? fontEntry = _ctx.FontEntries.Top;
-                    if (CurrentPos >= _rtfBytes.Length - 16)
-                    {
-                        if (fontEntry != null)
-                        {
-                            fontEntry.SymbolFont = SymbolFont.None;
-                        }
-                        break;
-                    }
                     if (!_ctx.GroupStack.CurrentSkipDest &&
+                        // We can't check for codepage 42, because symbol fonts can have other codepages (although
+                        // that may be a quirk/bug or whatever, but it can happen). Too bad, otherwise we could
+                        // save time here...
                         fontEntry is { SymbolFont: SymbolFont.Unset })
                     {
-                        CurrentPos--;
+                        _symbolFontNameBuffer.ClearFast();
 
-                        ulong fontName1 = Unsafe.ReadUnaligned<ulong>(ref _rtfBytes.Array[CurrentPos]);
-                        switch (fontName1)
+                        int originalPos = CurrentPos;
+
+                        // Increment the real position instead of a temp one, so that if we get an exception
+                        // the error report will contain the real position (if we decide to report that in this
+                        // version anyway).
+                        for (int i = 0;
+                             i < _maxSymbolFontNameLength && ch != ';';
+                             i++, ch = (char)_rtfBytes[CurrentPos++])
                         {
-                            case WingdingBytes:
+                            _symbolFontNameBuffer.Add(ch);
+                        }
+
+                        CurrentPos = originalPos;
+
+                        for (int i = _symbolArraysStartingIndex; i < _symbolArraysLength; i++)
+                        {
+                            byte[] nameBytes = _symbolFontCharsArrays[i];
+                            if (SeqEqual(_symbolFontNameBuffer, nameBytes))
                             {
-                                ushort WingdingsEnd = Unsafe.ReadUnaligned<ushort>(ref _rtfBytes.Array[CurrentPos + 8]);
-                                if (WingdingsEnd == sAndSemicolonBytes)
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.Wingdings;
-                                    CurrentPos += 10;
-                                }
-                                else
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.None;
-                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
-                                    if (index > -1) CurrentPos = index;
-                                }
+                                fontEntry.SymbolFont = (SymbolFont)i;
                                 break;
                             }
-                            case WebdingsBytes:
-                            {
-                                byte semicolon = Unsafe.ReadUnaligned<byte>(ref _rtfBytes.Array[CurrentPos + 8]);
-                                if (semicolon == ';')
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.Webdings;
-                                    CurrentPos += 9;
-                                }
-                                else
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.None;
-                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
-                                    if (index > -1) CurrentPos = index;
-                                }
-                                break;
-                            }
-                            default:
-                            {
-                                if ((fontName1 & 0x00FFFFFFFFFFFFFF) == symbolAndSemicolonBytes)
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.Symbol;
-                                    CurrentPos += 7;
-                                }
-                                else
-                                {
-                                    fontEntry.SymbolFont = SymbolFont.None;
-                                    int index = Array.IndexOf(_rtfBytes.Array, (byte)';', CurrentPos, _rtfBytes.Length - CurrentPos);
-                                    if (index > -1) CurrentPos = index;
-                                }
-                                break;
-                            }
+                        }
+                        if (fontEntry.SymbolFont == SymbolFont.Unset)
+                        {
+                            fontEntry.SymbolFont = SymbolFont.None;
                         }
                     }
                     break;
@@ -1344,9 +1994,6 @@ public sealed partial class RtfToTextConverter
                     _lastUsedFontWithCodePage42 = val;
                 }
 
-                // Support bare characters that are supposed to be displayed in a symbol font. We use a simple
-                // enum so that we don't have to do a dictionary lookup on every single character, but only
-                // once per font change.
                 _ctx.GroupStack.CurrentSymbolFont = fontEntry.SymbolFont;
             }
             // \fN supersedes \langN
@@ -1384,7 +2031,6 @@ public sealed partial class RtfToTextConverter
         // none of them are null.
         if (_ctx.GroupStack.CurrentProperties[(int)Property.Hidden] == 0)
         {
-            // Support bare characters that are supposed to be displayed in a symbol font.
             GroupStack groupStack = _ctx.GroupStack;
             SymbolFont symbolFont = groupStack.CurrentSymbolFont;
             if (symbolFont > SymbolFont.Unset)
@@ -2140,7 +2786,7 @@ public sealed partial class RtfToTextConverter
 
                     for (int symbolFontI = _symbolArraysStartingIndex; symbolFontI < _symbolArraysLength; symbolFontI++)
                     {
-                        char[] symbolChars = _symbolFontCharsArrays[symbolFontI];
+                        byte[] symbolChars = _symbolFontCharsArrays[symbolFontI];
                         uint[] symbolFontTable = _symbolFontTables[symbolFontI];
 
                         if (SeqEqual(_fldinstSymbolFontName, symbolChars))
@@ -2509,7 +3155,7 @@ public sealed partial class RtfToTextConverter
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool SeqEqual(ListFast<char> seq1, char[] seq2)
+    private static bool SeqEqual(ListFast<char> seq1, byte[] seq2)
     {
         int seq1Count = seq1.Count;
         if (seq1Count != seq2.Length) return false;
