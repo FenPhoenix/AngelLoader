@@ -264,13 +264,11 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         switch (destinationType)
         {
-            // CanBeDestOrNotDest is only relevant for plaintext extraction. As we're only parsing color tables,
-            // we can just skip groups so marked.
-            // TODO: Update and diff-test this with our new knowledge: we should skip the group only if it was a destination!
-            case DestinationType.CanBeDestOrNotDest:
             case DestinationType.Skip:
                 _ctx.GroupStack.CurrentSkipDest = true;
                 return RtfError.OK;
+            // Stupid crazy type of control word, see description for enum field
+            case DestinationType.CanBeDestOrNotDest:
             default:
                 return RtfError.OK;
         }
