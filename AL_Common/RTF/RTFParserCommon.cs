@@ -714,6 +714,15 @@ public static partial class RTFParserCommon
             // There's also \- which is Optional Hyphen (the scanner is only producing single-line values, so no
             // need for this), and \: which "specifies a subentry in an index entry" (it's not clear even from
             // the spec what exactly an "index entry" is).
+
+            /*
+            Spec:
+            "A carriage return (character value 13) or line feed (character value 10) is treated as a \par
+            control if the character is preceded by a backslash. You must include the backslash; otherwise,
+            RTF ignores the control word."
+            */
+            ret['\r'] = new Symbol("\r", 0, false, KeywordType.Character, '\n');
+            ret['\n'] = new Symbol("\n", 0, false, KeywordType.Character, '\n');
             return ret;
         }
 
