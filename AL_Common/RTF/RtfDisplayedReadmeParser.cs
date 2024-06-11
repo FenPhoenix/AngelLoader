@@ -278,10 +278,10 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private RtfError ParseAndBuildColorTable()
     {
-        ClearReturnFields(RtfError.OK);
+        ClearColorTable(RtfError.OK);
 
         int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
-        if (closingBraceIndex == -1) return ClearReturnFields(RtfError.OK);
+        if (closingBraceIndex == -1) return ClearColorTable(RtfError.OK);
 
         ReadOnlySpan<byte> colorTableSpan = _rtfBytes.Array.AsSpan(CurrentPos, closingBraceIndex - CurrentPos);
 
@@ -314,9 +314,9 @@ public sealed partial class RtfDisplayedReadmeParser
             first = false;
         }
 
-        return first ? ClearReturnFields(RtfError.OK) : RtfError.OK;
+        return first ? ClearColorTable(RtfError.OK) : RtfError.OK;
 
-        RtfError ClearReturnFields(RtfError error)
+        RtfError ClearColorTable(RtfError error)
         {
             _colorTable = null;
             return error;
