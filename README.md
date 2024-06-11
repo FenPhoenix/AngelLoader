@@ -16,9 +16,9 @@ AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, Sy
 
 ## Features
 - Manage all your FMs in one place
+- Automatically detects metadata for every FM: title, author, game, release date, etc. No need to type it in!
 - Select multiple FMs at a time to quickly mark them all finished, install them in bulk, etc.
 - Search and filter your FM collection by many criteria
-- Automatically detects metadata for every FM: title, author, game, release date, etc. No need to type it in!
 - Organize your games by tab or treat them as filters
 - Disable visual or other mods on a per-FM basis with a simple visual list (no more typing an arcane string into a textbox!)
 - Choose which language to play with on a per-FM basis
