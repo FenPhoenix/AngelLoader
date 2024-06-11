@@ -278,15 +278,9 @@ public sealed partial class RtfDisplayedReadmeParser
     // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
     private RtfError ParseAndBuildColorTable()
     {
+        ClearColorTable(RtfError.OK);
+
         var _colorTableSB = new StringBuilder(4096);
-
-        RtfError ClearReturnFields(RtfError error)
-        {
-            _colorTable = null;
-            return error;
-        }
-
-        ClearReturnFields(RtfError.OK);
 
         while (true)
         {
@@ -304,7 +298,7 @@ public sealed partial class RtfDisplayedReadmeParser
         int realEntryCount = entries.Length;
         if (entries.Length == 0)
         {
-            return ClearReturnFields(RtfError.OK);
+            return ClearColorTable(RtfError.OK);
         }
         // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
         // in the loop below
@@ -333,44 +327,6 @@ public sealed partial class RtfDisplayedReadmeParser
                 const string blueString = "\\blue";
                 const int blueStringLen = 5;
 
-                static bool GetColorByte(string entry, string hueString, int hueStringLen, out byte result)
-                {
-                    int hueIndex = FindIndexOfCharSequence(entry, hueString);
-                    if (hueIndex > -1)
-                    {
-                        int indexPastHue = hueIndex + hueStringLen;
-                        if (indexPastHue < entry.Length)
-                        {
-                            char firstDigit = entry[indexPastHue];
-                            if (firstDigit.IsAsciiNumeric())
-                            {
-                                int colorValue = firstDigit - '0';
-                                for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
-                                {
-                                    char c = entry[colorI];
-                                    if (!c.IsAsciiNumeric()) break;
-                                    // Color value too long, must be 1-3 digits
-                                    if (colorI >= indexPastHue + 3)
-                                    {
-                                        result = 0;
-                                        return false;
-                                    }
-                                    colorValue *= 10;
-                                    colorValue += c - '0';
-                                }
-                                if (colorValue is >= 0 and <= 255)
-                                {
-                                    result = (byte)colorValue;
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-
-                    result = 0;
-                    return false;
-                }
-
                 if (GetColorByte(entry, redString, redStringLen, out byte red) &&
                     GetColorByte(entry, greenString, greenStringLen, out byte green) &&
                     GetColorByte(entry, blueString, blueStringLen, out byte blue))
@@ -381,6 +337,50 @@ public sealed partial class RtfDisplayedReadmeParser
         }
 
         return RtfError.OK;
+
+        RtfError ClearColorTable(RtfError error)
+        {
+            _colorTable = null;
+            return error;
+        }
+
+        static bool GetColorByte(string entry, string hueString, int hueStringLen, out byte result)
+        {
+            int hueIndex = FindIndexOfCharSequence(entry, hueString);
+            if (hueIndex > -1)
+            {
+                int indexPastHue = hueIndex + hueStringLen;
+                if (indexPastHue < entry.Length)
+                {
+                    char firstDigit = entry[indexPastHue];
+                    if (firstDigit.IsAsciiNumeric())
+                    {
+                        int colorValue = firstDigit - '0';
+                        for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
+                        {
+                            char c = entry[colorI];
+                            if (!c.IsAsciiNumeric()) break;
+                            // Color value too long, must be 1-3 digits
+                            if (colorI >= indexPastHue + 3)
+                            {
+                                result = 0;
+                                return false;
+                            }
+                            colorValue *= 10;
+                            colorValue += c - '0';
+                        }
+                        if (colorValue is >= 0 and <= 255)
+                        {
+                            result = (byte)colorValue;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            result = 0;
+            return false;
+        }
     }
 
     // Dummy
