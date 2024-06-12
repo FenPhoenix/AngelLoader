@@ -196,7 +196,7 @@ public sealed partial class MainForm : Form
         string[] rtfFiles = Directory.GetFiles(GetOriginalSetFromCacheDir(write));
         if (write) ClearPlainTextDir(rtf: false);
 
-        var rtfReader = new RtfToTextConverter();
+        var rtfConverter = new RtfToTextConverter();
 
         ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
 
@@ -222,7 +222,7 @@ public sealed partial class MainForm : Form
                 string f = rtfFiles[i];
                 Trace.WriteLine(f);
                 ArrayWithLength<byte> array = byteArrays[i];
-                (_, string text) = rtfReader.Convert(array);
+                (_, string text) = rtfConverter.Convert(array);
                 WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
             }
 
@@ -236,7 +236,7 @@ public sealed partial class MainForm : Form
 
             for (int i = 0; i < byteArrays.Length; i++)
             {
-                _ = rtfReader.Convert(byteArrays[i]);
+                _ = rtfConverter.Convert(byteArrays[i]);
             }
 
             sw.Stop();
@@ -251,7 +251,7 @@ public sealed partial class MainForm : Form
             {
                 for (int i = 0; i < byteArrays.Length; i++)
                 {
-                    _ = rtfReader.Convert(byteArrays[i]);
+                    _ = rtfConverter.Convert(byteArrays[i]);
                 }
             }
 
@@ -264,7 +264,7 @@ public sealed partial class MainForm : Form
     {
         if (write) ClearPlainTextDir(rtf: false);
 
-        var rtfreader = new RtfToTextConverter();
+        var rtfConverter = new RtfToTextConverter();
 
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__TDP20AC_theburningbedlam__FMInfo.rtf";
         //string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\__2010-08-31_Bathory_campaign_ne__info.rtf";
@@ -303,7 +303,7 @@ public sealed partial class MainForm : Form
         using var fs = File.OpenRead(file);
         byte[] array = new byte[fs.Length];
         int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-        (_, string text) = rtfreader.Convert(new ArrayWithLength<byte>(array, bytesRead));
+        (_, string text) = rtfConverter.Convert(new ArrayWithLength<byte>(array, bytesRead));
         if (write)
         {
             WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
