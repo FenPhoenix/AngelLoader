@@ -2175,10 +2175,10 @@ public sealed partial class RtfToTextConverter
         while (CurrentPos < _rtfBytes.Length)
         {
             b = _rtfBytes.Array[CurrentPos++];
-            if (b == '\\')
+            if (b == (byte)'\\')
             {
                 b = _rtfBytes[CurrentPos++];
-                if (b == '\'')
+                if (b == (byte)'\'')
                 {
                     b = _rtfBytes[CurrentPos++];
                     hexNibble1 = _charToHex[b];
