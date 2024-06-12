@@ -222,7 +222,6 @@ public static partial class RTFParserCommon
         public byte[] SymbolFonts;
         public int[][] Properties;
 
-        /// <summary>Do not modify!</summary>
         public int Count;
 
         internal GroupStack() => Init();
@@ -250,7 +249,7 @@ public static partial class RTFParserCommon
 
         private void Grow()
         {
-            int oldMaxGroups = Capacity;
+            int oldCapacity = Capacity;
 
             int newCapacity;
             try
@@ -270,7 +269,7 @@ public static partial class RTFParserCommon
             Array.Resize(ref SymbolFonts, Capacity);
             Array.Resize(ref Properties, Capacity);
 
-            for (int i = oldMaxGroups; i < Capacity; i++)
+            for (int i = oldCapacity; i < Capacity; i++)
             {
                 Properties[i] = new int[_propertiesLen];
             }
