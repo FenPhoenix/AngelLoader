@@ -248,40 +248,41 @@ public static partial class RTFParserCommon
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Grow()
+        {
+            int oldMaxGroups = Capacity;
+
+            int newCapacity;
+            try
+            {
+                // Don't let it go all the way up to array max. 262,144 is absurdly high but not so high
+                // as to take too much memory.
+                newCapacity = checked((Capacity * 2).Clamp(0, ByteSize.KB * 256));
+            }
+            catch (OverflowException)
+            {
+                newCapacity = ByteSize.KB * 256;
+            }
+
+            Capacity = newCapacity;
+            Array.Resize(ref _skipDestinations, Capacity);
+            Array.Resize(ref _inFontTables, Capacity);
+            Array.Resize(ref SymbolFonts, Capacity);
+            Array.Resize(ref Properties, Capacity);
+
+            for (int i = oldMaxGroups; i < Capacity; i++)
+            {
+                Properties[i] = new int[_propertiesLen];
+            }
+        }
+
         public void DeepCopyToNext()
         {
             // We don't really take a speed hit from this at all, but we support files with a stupid amount of
             // nested groups now.
             if (Count >= Capacity - 1)
             {
-                int oldMaxGroups = Capacity;
-
-                int newCapacity;
-                checked
-                {
-                    try
-                    {
-                        // Don't let it go all the way up to array max. 262,144 is absurdly high but not so high
-                        // as to take too much memory.
-                        newCapacity = (Capacity * 2).Clamp(0, ByteSize.KB * 256);
-                    }
-                    catch (OverflowException)
-                    {
-                        newCapacity = ByteSize.KB * 256;
-                    }
-                }
-
-                Capacity = newCapacity;
-                Array.Resize(ref _skipDestinations, Capacity);
-                Array.Resize(ref _inFontTables, Capacity);
-                Array.Resize(ref SymbolFonts, Capacity);
-                Array.Resize(ref Properties, Capacity);
-
-                for (int i = oldMaxGroups; i < Capacity; i++)
-                {
-                    Properties[i] = new int[_propertiesLen];
-                }
+                Grow();
             }
 
             _skipDestinations[Count + 1] = _skipDestinations[Count];
