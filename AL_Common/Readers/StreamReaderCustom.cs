@@ -628,11 +628,11 @@ public sealed class StreamReaderCustom
                 string retVal;
                 if (vsb.Length == 0)
                 {
-                    retVal = new string(charBufferSpan.Slice(0, idxOfNewline));
+                    retVal = new string(charBufferSpan[..idxOfNewline]);
                 }
                 else
                 {
-                    retVal = string.Concat(vsb.AsSpan(), charBufferSpan.Slice(0, idxOfNewline));
+                    retVal = string.Concat(vsb.AsSpan(), charBufferSpan[..idxOfNewline]);
                     vsb.Dispose();
                 }
 

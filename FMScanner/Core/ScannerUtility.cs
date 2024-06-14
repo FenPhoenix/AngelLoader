@@ -134,12 +134,6 @@ internal static class Utility
 
     #region StartsWith and EndsWith
 
-    private enum CaseComparison
-    {
-        GivenOrUpper,
-        GivenOrLower,
-    }
-
     /// <summary>
     /// StartsWith (given case or uppercase). Uses a fast ASCII compare where possible.
     /// </summary>
