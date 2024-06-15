@@ -116,8 +116,10 @@ public static partial class Utils
 
     #endregion
 
-    internal static string ToSingleLineComment(this string value, int maxLength)
+    internal static string ToSingleLineComment(this string value)
     {
+        const int maxLength = 100;
+
         if (value.IsEmpty()) return "";
 
         int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);

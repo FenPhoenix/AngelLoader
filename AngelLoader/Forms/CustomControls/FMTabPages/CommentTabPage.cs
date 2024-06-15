@@ -60,14 +60,16 @@ public sealed class CommentTabPage : Lazy_TabsBase
 
         string commentText = _page.CommentTextBox.Text;
 
-        // Converting a multiline comment to single line:
-        // DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first.
-        // I'm doing the same, but bumping the cutoff point to 100 chars, which is still plenty fast.
-        // fm.Comment.ToEscapes() is unbounded, but I measure tenths to hundredths of a millisecond even for
-        // 25,000+ character strings with nothing but slashes and linebreaks in them.
+        /*
+        Converting a multiline comment to single line:
+        DarkLoader copies up to the first linebreak or the 40 char mark, whichever comes first. I'm doing the
+        same, but bumping the cutoff point to 100 chars, which is still plenty fast. Escaping is unbounded, but
+        I measure tenths to hundredths of a millisecond even for 25,000+ character strings with nothing but
+        slashes and linebreaks in them.
+        */
         fm.Comment = commentText.ToRNEscapes();
         // @MEM/@PERF_TODO: Can we test if the FM comment already matches the first 100 chars and avoid an alloc?
-        fm.CommentSingleLine = commentText.ToSingleLineComment(100);
+        fm.CommentSingleLine = commentText.ToSingleLineComment();
 
         _owner.RefreshSelectedRowCell(Column.Comment);
     }
