@@ -251,7 +251,7 @@ public sealed class FanMission
     [FenGenIgnore]
     internal string CommentSingleLine
     {
-        get => _commentSingleLine ??= Comment.FromRNEscapes().ToSingleLineComment(100);
+        get => _commentSingleLine ??= Comment.FromRNEscapes().ToSingleLineComment();
         set => _commentSingleLine = value;
     }
 

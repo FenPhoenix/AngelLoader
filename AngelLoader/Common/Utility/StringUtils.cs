@@ -46,21 +46,22 @@ public static partial class Utils
 
     #endregion
 
+    private const int _singleLineCommentMaxLength = 100;
+
     /// <summary>
     /// If you know the existing single line comment is empty, call this one for less work.
     /// </summary>
     /// <param name="value"></param>
-    /// <param name="maxLength"></param>
     /// <returns></returns>
-    internal static string ToSingleLineComment(this string value, int maxLength)
+    internal static string ToSingleLineComment(this string value)
     {
         if (value.IsEmpty()) return "";
 
         int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);
 
-        return linebreakIndex > -1 && linebreakIndex <= maxLength
+        return linebreakIndex is > -1 and <= _singleLineCommentMaxLength
             ? value.Substring(0, linebreakIndex)
-            : value.Substring(0, Math.Min(value.Length, maxLength));
+            : value.Substring(0, Math.Min(value.Length, _singleLineCommentMaxLength));
     }
 
     /// <summary>
@@ -69,26 +70,25 @@ public static partial class Utils
     /// </summary>
     /// <param name="value"></param>
     /// <param name="oldSingleLine"></param>
-    /// <param name="maxLength"></param>
     /// <returns></returns>
-    internal static string ToSingleLineComment_AllocOnlyIfNeeded(this string value, string oldSingleLine, int maxLength)
+    internal static string ToSingleLineComment_AllocOnlyIfNeeded(this string value, string oldSingleLine)
     {
         if (value.IsEmpty()) return "";
 
         int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);
 
-        bool cutoffIsLineBreak = linebreakIndex > -1 && linebreakIndex <= maxLength;
+        bool cutoffIsLineBreak = linebreakIndex is > -1 and <= _singleLineCommentMaxLength;
 
         ReadOnlySpan<char> valueSpan =
             cutoffIsLineBreak
                 ? value.AsSpan(0, linebreakIndex)
-                : value.AsSpan(0, Math.Min(value.Length, maxLength));
+                : value.AsSpan(0, Math.Min(value.Length, _singleLineCommentMaxLength));
 
         if (!valueSpan.SequenceEqual(oldSingleLine))
         {
             return cutoffIsLineBreak
                 ? value.Substring(0, linebreakIndex)
-                : value.Substring(0, Math.Min(value.Length, maxLength));
+                : value.Substring(0, Math.Min(value.Length, _singleLineCommentMaxLength));
         }
         else
         {
