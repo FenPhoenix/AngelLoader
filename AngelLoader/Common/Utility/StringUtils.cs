@@ -124,7 +124,7 @@ public static partial class Utils
 
         int linebreakIndex = value.IndexOf("\r\n", InvariantCulture);
 
-        return linebreakIndex > -1 && linebreakIndex <= maxLength
+        return linebreakIndex is > -1 and <= maxLength
             ? value.Substring(0, linebreakIndex)
             : value.Substring(0, Math.Min(value.Length, maxLength));
     }
