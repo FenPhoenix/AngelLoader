@@ -196,6 +196,13 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         _owner.UIEnabled = true;
     }
 
+    /*
+    @PERF_TODO(ProgressPanel/Text setting and measuring):
+    We could cache the measured widths and text values. This would let us avoid the measurement call and also
+    the expensive Control.WindowText call to do the value comparison for earlying-out Control.Text setting,
+    unless actually necessary. Currently ~816ms is spent on these for a full-set (1919) scan.
+    */
+
     private int GetRequiredWidth()
     {
         int message1Width = TextRenderer.MeasureText(MainMessage1Label.Text, MainMessage1Label.Font).Width;
