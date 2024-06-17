@@ -26,7 +26,7 @@ sealed partial class ProgressPanel
         // 
         // Cancel_Button
         // 
-        this.Cancel_Button.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.Cancel_Button.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
         this.Cancel_Button.AutoSize = true;
         this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
         this.Cancel_Button.Location = new System.Drawing.Point(168, 152);
