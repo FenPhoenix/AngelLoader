@@ -196,25 +196,33 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         _owner.UIEnabled = true;
     }
 
-    private void AutoSizeWidth()
+    private int GetRequiredWidth()
     {
         int message1Width = TextRenderer.MeasureText(MainMessage1Label.Text, MainMessage1Label.Font).Width;
         int message2Width = TextRenderer.MeasureText(MainMessage2Label.Text, MainMessage2Label.Font).Width;
         int message3Width = TextRenderer.MeasureText(SubMessageLabel.Text, SubMessageLabel.Font).Width;
         int requiredWidth = MathMax3(message1Width, message2Width, message3Width);
+        return requiredWidth;
+    }
 
+    private void AutoSizeWidth()
+    {
         bool widthChanged = false;
 
         // Perf so as not to change width if we don't have to
         if (Width > _defaultWidth)
         {
-            Width = Math.Max(requiredWidth, _defaultWidth);
+            Width = Math.Max(GetRequiredWidth(), _defaultWidth);
             widthChanged = true;
         }
-        else if (requiredWidth > _defaultWidth)
+        else
         {
-            Width = requiredWidth;
-            widthChanged = true;
+            int requiredWidth = GetRequiredWidth();
+            if (requiredWidth > _defaultWidth)
+            {
+                Width = requiredWidth;
+                widthChanged = true;
+            }
         }
 
         if (widthChanged)
