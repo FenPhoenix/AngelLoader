@@ -59,6 +59,8 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
         get => base.Style;
         set
         {
+            if (base.Style == value) return;
+
             base.Style = value;
             // Changing style reverts us to classic mode, so reset us back to dark if necessary
             if (_darkModeEnabled) RefreshDarkModeState();
