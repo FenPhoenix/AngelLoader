@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -17,6 +18,45 @@ namespace AngelLoader.Forms.CustomControls;
 // but in-app it's 9px left/9px right like we want. Ugh.
 public sealed partial class ProgressPanel : UserControl, IDarkable
 {
+    // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
+    // Controls have a cache-text option but it's weird and causes weird issues sometimes that are not always
+    // immediately obvious, so let's just do it ourselves and not bother with the whole crap.
+    private sealed class MessageItem
+    {
+        internal readonly DarkLabel Label;
+        private string _text;
+        internal string Text
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _text;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                _text = value;
+                Label.Text = value;
+            }
+        }
+        internal int Width;
+
+        internal MessageItem(DarkLabel label)
+        {
+            Label = label;
+            _text = "";
+            Width = -1;
+        }
+    }
+
+    private enum MessageItemType
+    {
+        MainMessage1,
+        MainMessage2,
+        MainPercent,
+        SubMessage,
+        SubPercent,
+    }
+
+    private readonly MessageItem[] MessageItems;
+
     #region Consts
 
     private const ProgressSizeMode _defaultSizeMode = ProgressSizeMode.Single;
@@ -96,6 +136,16 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 #endif
 
         _defaultWidth = Width;
+
+        // ReSharper disable once RedundantExplicitArraySize
+        MessageItems = new MessageItem[5]
+        {
+            new(MainMessage1Label),
+            new(MainMessage2Label),
+            new(MainPercentLabel),
+            new(SubMessageLabel),
+            new(SubPercentLabel),
+        };
     }
 
     internal void SetSizeToDefault() => SetSizeMode(_defaultSizeMode, forceChange: true);
@@ -129,12 +179,20 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         Cancel_Button.CenterH(this);
     }
 
-    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, DarkLabel percentLabel, bool updateTaskbar)
+    private void SetLabelText(MessageItemType item, string text)
+    {
+        MessageItem messageItem = MessageItems[(int)item];
+        if (text == messageItem.Text) return;
+        messageItem.Text = text;
+        messageItem.Width = -1;
+    }
+
+    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, MessageItemType messageItemType, bool updateTaskbar)
     {
         if (progressType == ProgressType.Indeterminate)
         {
             progressBar.Style = ProgressBarStyle.Marquee;
-            percentLabel.Text = "";
+            SetLabelText(messageItemType, "");
         }
         else
         {
@@ -147,11 +205,11 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         }
     }
 
-    private void SetPercent(int percent, DarkLabel percentLabel, DarkProgressBar progressBar, bool updateTaskbar)
+    private void SetPercent(int percent, MessageItemType messageItemType, DarkProgressBar progressBar, bool updateTaskbar)
     {
         percent = percent.Clamp(0, 100);
 
-        percentLabel.Text = NonLocalizableText.PercentStrings[percent];
+        SetLabelText(messageItemType, NonLocalizableText.PercentStrings[percent]);
 
         progressBar.Value = percent;
 
@@ -171,14 +229,14 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
         Hide();
 
-        MainMessage1Label.Text = "";
-        MainMessage2Label.Text = "";
-        MainPercentLabel.Text = "";
+        SetLabelText(MessageItemType.MainMessage1, "");
+        SetLabelText(MessageItemType.MainMessage2, "");
+        SetLabelText(MessageItemType.MainPercent, "");
         MainProgressBar.Value = 0;
         MainProgressBar.Style = ProgressBarStyle.Blocks;
 
-        SubMessageLabel.Text = "";
-        SubPercentLabel.Text = "";
+        SetLabelText(MessageItemType.SubMessage, "");
+        SetLabelText(MessageItemType.SubPercent, "");
         SubProgressBar.Value = 0;
         SubProgressBar.Style = ProgressBarStyle.Blocks;
 
@@ -196,19 +254,28 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         _owner.UIEnabled = true;
     }
 
-    /*
-    @PERF_TODO(ProgressPanel/Text setting and measuring):
-    We could cache the measured widths and text values. This would let us avoid the measurement call and also
-    the expensive Control.WindowText call to do the value comparison for earlying-out Control.Text setting,
-    unless actually necessary. Currently ~816ms is spent on these for a full-set (1919) scan.
-    */
-
     private int GetRequiredWidth()
     {
-        int message1Width = TextRenderer.MeasureText(MainMessage1Label.Text, MainMessage1Label.Font).Width;
-        int message2Width = TextRenderer.MeasureText(MainMessage2Label.Text, MainMessage2Label.Font).Width;
-        int message3Width = TextRenderer.MeasureText(SubMessageLabel.Text, SubMessageLabel.Font).Width;
-        int requiredWidth = MathMax3(message1Width, message2Width, message3Width);
+        MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];
+        MessageItem messageItemMain2 = MessageItems[(int)MessageItemType.MainMessage2];
+        MessageItem messageItemSub = MessageItems[(int)MessageItemType.SubMessage];
+
+        if (messageItemMain1.Width == -1)
+        {
+            messageItemMain1.Width = TextRenderer.MeasureText(messageItemMain1.Text, messageItemMain1.Label.Font).Width;
+        }
+
+        if (messageItemMain2.Width == -1)
+        {
+            messageItemMain2.Width = TextRenderer.MeasureText(messageItemMain2.Text, messageItemMain2.Label.Font).Width;
+        }
+
+        if (messageItemSub.Width == -1)
+        {
+            messageItemSub.Width = TextRenderer.MeasureText(messageItemSub.Text, messageItemSub.Label.Font).Width;
+        }
+
+        int requiredWidth = MathMax3(messageItemMain1.Width, messageItemMain2.Width, messageItemSub.Width);
         return requiredWidth;
     }
 
@@ -278,34 +345,34 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         }
         if (mainMessage1 != null)
         {
-            MainMessage1Label.Text = mainMessage1;
+            SetLabelText(MessageItemType.MainMessage1, mainMessage1);
             AutoSizeWidth();
         }
         if (mainMessage2 != null)
         {
-            MainMessage2Label.Text = mainMessage2;
+            SetLabelText(MessageItemType.MainMessage2, mainMessage2);
             AutoSizeWidth();
         }
         if (mainPercent != null)
         {
-            SetPercent((int)mainPercent, MainPercentLabel, MainProgressBar, updateTaskbar: true);
+            SetPercent((int)mainPercent, MessageItemType.MainPercent, MainProgressBar, updateTaskbar: true);
         }
         if (mainProgressBarType != null)
         {
-            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MainPercentLabel, updateTaskbar: true);
+            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MessageItemType.MainPercent, updateTaskbar: true);
         }
         if (subMessage != null)
         {
-            SubMessageLabel.Text = subMessage;
+            SetLabelText(MessageItemType.SubMessage, subMessage);
             AutoSizeWidth();
         }
         if (subPercent != null)
         {
-            SetPercent((int)subPercent, SubPercentLabel, SubProgressBar, updateTaskbar: false);
+            SetPercent((int)subPercent, MessageItemType.SubPercent, SubProgressBar, updateTaskbar: false);
         }
         if (subProgressBarType != null)
         {
-            SetProgressBarType(SubProgressBar, (ProgressType)subProgressBarType, SubPercentLabel, updateTaskbar: false);
+            SetProgressBarType(SubProgressBar, (ProgressType)subProgressBarType, MessageItemType.SubPercent, updateTaskbar: false);
         }
         if (cancelButtonMessage != null)
         {
