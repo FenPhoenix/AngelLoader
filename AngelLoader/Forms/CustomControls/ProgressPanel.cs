@@ -41,6 +41,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         internal MessageItem(DarkLabel label)
         {
             Label = label;
+            Label.Text = "";
             _text = "";
             Width = -1;
         }
