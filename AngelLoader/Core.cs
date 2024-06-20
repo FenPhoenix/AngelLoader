@@ -1295,6 +1295,7 @@ internal static class Core
 
     internal static async Task ReadmeEncodingIdenticalityTest()
     {
+        var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
         using (var sw = new StreamWriter(@"C:\_readme_encoding_test_new.txt"))
         {
             var fms = new List<FanMission>(FMsViewList);
@@ -1317,7 +1318,6 @@ internal static class Core
                             wroteFMName = true;
                         }
                         sw.WriteLine(readme);
-                        var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
                         using var fs = File.OpenRead(readmePath);
                         Encoding? encoding = fe.DetectFileEncoding(fs);
                         if (encoding != null)
