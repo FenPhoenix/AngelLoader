@@ -18,7 +18,12 @@ internal static class GLMLConversion
         // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
         string glml = Encoding.UTF8.GetString(glmlBytes);
 
-        static string AddColorToTable(string table, Color color) => table + @"\red" + color.R + @"\green" + color.G + @"\blue" + color.B + ";";
+        static string AddColorToTable(string table, Color color) =>
+            table +
+            @"\red" + color.R.ToStrInv() +
+            @"\green" + color.G.ToStrInv() +
+            @"\blue" + color.B.ToStrInv() +
+            ";";
 
         string colorTable = @"{\colortbl ";
         colorTable = darkMode
