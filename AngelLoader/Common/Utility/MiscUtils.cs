@@ -7,6 +7,7 @@ using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -300,6 +301,24 @@ public static partial class Utils
             columns[i].DisplayIndex = i;
         }
     }
+
+    // PERF: ~0.14ms per FM for en-US Long Date format
+    // @PERF_TODO: Test with custom - dt.ToString() might be slow?
+    internal static string FormatDate(DateTime dt) => Config.DateFormat switch
+    {
+        DateFormat.CurrentCultureShort => dt.ToShortDateString(),
+        DateFormat.CurrentCultureLong => dt.ToLongDateString(),
+        _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture),
+    };
+
+    internal static string FormatSize(ulong size) =>
+        size == 0
+            ? ""
+            : size < ByteSize.MB
+                ? Math.Round(size / 1024f).ToStrCur() + " " + LText.Global.KilobyteShort
+                : size is >= ByteSize.MB and < ByteSize.GB
+                    ? Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort
+                    : Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort;
 
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
