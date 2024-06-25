@@ -4120,24 +4120,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-        // PERF: ~0.14ms per FM for en-US Long Date format
-        // @PERF_TODO: Test with custom - dt.ToString() might be slow?
-        static string FormatDate(DateTime dt) => Config.DateFormat switch
-        {
-            DateFormat.CurrentCultureShort => dt.ToShortDateString(),
-            DateFormat.CurrentCultureLong => dt.ToLongDateString(),
-            _ => dt.ToString(Config.DateCustomFormatString, CultureInfo.CurrentCulture),
-        };
-
-        static string FormatSize(ulong size) =>
-            size == 0
-            ? ""
-            : size < ByteSize.MB
-            ? Math.Round(size / 1024f).ToStrCur() + " " + LText.Global.KilobyteShort
-            : size is >= ByteSize.MB and < ByteSize.GB
-            ? Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort
-            : Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort;
-
         const string pinChar = "\U0001F4CC ";
 
         bool fmShouldBePinned = fm.Pinned && !GetShowUnavailableFMsFilter();
@@ -4173,7 +4155,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             case Column.Title:
                 string finalTitle;
-                if (Config.EnableArticles && Config.MoveArticlesToEnd)
+                if (Config is { EnableArticles: true, MoveArticlesToEnd: true })
                 {
                     string title = fm.Title;
                     for (int i = 0; i < Config.Articles.Count; i++)
@@ -4256,10 +4238,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // Manual hours display to avoid hours being reset back to 0 when days increments to 1
                 TimeSpan playTime = fm.PlayTime;
                 string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
-                string final = playTime.ToString(@"mm\" + sep + "ss");
-                double totalHours = playTime.TotalHours;
-                final = ((int)Math.Floor(totalHours)).ToStrInv() + sep + final;
-                e.Value = final;
+                e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep + playTime.ToString(@"mm\" + sep + "ss");
                 break;
             }
 
