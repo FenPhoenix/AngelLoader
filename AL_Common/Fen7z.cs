@@ -48,11 +48,35 @@ public static class Fen7z
              || (ExitCode != SevenZipExitCode.NoError && ExitCode != SevenZipExitCode.UserStopped)
              || (ExitCodeInt != null && ExitCodeInt != 0 && ExitCodeInt != 255));
 
-        public string ErrorText = "";
-        public Exception? Exception;
-        public SevenZipExitCode ExitCode = SevenZipExitCode.NoError;
-        public int? ExitCodeInt;
-        public bool Canceled;
+        public readonly string ErrorText;
+        public readonly Exception? Exception;
+        public readonly SevenZipExitCode ExitCode;
+        public readonly int? ExitCodeInt;
+        public readonly bool Canceled;
+
+        public Result(Exception exception, string errorText)
+        {
+            Exception = exception;
+            ErrorText = errorText;
+            ExitCode = SevenZipExitCode.NoError;
+        }
+
+        public Result(Exception exception, string errorText, SevenZipExitCode exitCode, bool canceled)
+        {
+            Exception = exception;
+            ErrorText = errorText;
+            ExitCode = exitCode;
+            Canceled = canceled;
+        }
+
+        public Result(Exception? exception, string errorText, SevenZipExitCode exitCode, int? exitCodeInt, bool canceled)
+        {
+            Exception = exception;
+            ErrorText = errorText;
+            ExitCode = exitCode;
+            ExitCodeInt = exitCodeInt;
+            Canceled = canceled;
+        }
 
         public override string ToString() =>
             ErrorOccurred
@@ -143,10 +167,10 @@ public static class Fen7z
             catch (Exception ex)
             {
                 return new Result
-                {
-                    Exception = ex,
-                    ErrorText = "Exception trying to write the 7z.exe list file: " + listFile,
-                };
+                (
+                    exception: ex,
+                    errorText: "Exception trying to write the 7z.exe list file: " + listFile
+                );
             }
         }
 
@@ -249,23 +273,13 @@ public static class Fen7z
 
             p.WaitForExit();
 
-            var result = new Result();
+            (SevenZipExitCode exitCode, int? exitCodeInt, Exception? exception) = GetExitCode(p);
 
-            (result.ExitCode, result.ExitCodeInt, result.Exception) = GetExitCode(p);
-            result.Canceled = canceled || result.ExitCode == SevenZipExitCode.UserStopped;
-            result.ErrorText = errorText;
-
-            return result;
+            return new Result(exception, errorText, exitCode, exitCodeInt, canceled);
         }
         catch (Exception ex)
         {
-            return new Result
-            {
-                Exception = ex,
-                Canceled = canceled,
-                ErrorText = errorText,
-                ExitCode = SevenZipExitCode.Unknown,
-            };
+            return new Result(ex, errorText, SevenZipExitCode.Unknown, canceled);
         }
         finally
         {
