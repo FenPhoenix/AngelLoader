@@ -231,24 +231,21 @@ public static class Fen7z
                 if (e.Data.IsEmpty() || report.Canceling || progress == null) return;
                 try
                 {
-                    ReadOnlySpan<char> lineT = e.Data.AsSpan().Trim();
+                    string lineT = e.Data.Trim();
 
                     int pi = lineT.IndexOf('%');
                     if (pi > -1)
                     {
-                        if (entriesCount > 0)
+                        int di;
+                        if (entriesCount > 0 &&
+                            Int_TryParseInv((di = lineT.IndexOf('-', pi + 1)) > -1
+                                ? lineT.Substring(pi + 1, di)
+                                : lineT.Substring(pi + 1), out int entriesDone))
                         {
-                            ReadOnlySpan<char> lineTPastPercent = lineT[(pi + 1)..];
-                            int di;
-                            if (Int_TryParseInv_Span((di = lineTPastPercent.IndexOf('-')) > -1
-                                    ? lineTPastPercent[..di]
-                                    : lineTPastPercent, out int entriesDone))
-                            {
-                                report.PercentOfEntries = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
-                            }
+                            report.PercentOfEntries = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
                         }
 
-                        if (Int_TryParseInv_Span(lineT[..pi], out int bytesPercent))
+                        if (Int_TryParseInv(lineT.Substring(0, pi), out int bytesPercent))
                         {
                             report.PercentOfBytes = bytesPercent;
                         }
