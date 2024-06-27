@@ -55,6 +55,9 @@ public static partial class Common
     public static bool IsAsciiAlpha(this byte b) => (uint)((b | 0x20) - 'a') <= 'z' - 'a';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiHexLetter(this char c) => (uint)((c | 0x20) - 'a') <= 'f' - 'a';
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiNumeric(this char c) => (uint)(c - '0') <= '9' - '0';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

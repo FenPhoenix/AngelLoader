@@ -234,7 +234,7 @@ public static class TryParseSpan
 
     #region Utils
 
-    private static bool IsWhite(char ch) => (ch == 0x20) || (ch >= 0x09 && ch <= 0x0D);
+    private static bool IsWhite(char ch) => (ch == 0x20) || (uint)(ch - 0x09) <= 0x0D - 0x09;
 
     private static bool TrailingZeros(ReadOnlySpan<char> s, int index)
     {
@@ -554,7 +554,7 @@ public static class TryParseSpan
         {
             if (*p != *str)
             {
-                //We only hurt the failure case
+                // We only hurt the failure case
                 if ((*str == '\u00A0') && (*p == '\u0020'))
                 {
                     // This fix is for French or Kazakh cultures. Since a user cannot type 0xA0 as a
@@ -658,8 +658,7 @@ public static class TryParseSpan
         int digEnd = 0;
         while (true)
         {
-            // @vNext: Switch to fast version for 0-9 (in all places)
-            if (ch is >= '0' and <= '9' || (((options & NumberStyles.AllowHexSpecifier) != 0) && ((ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F'))))
+            if (ch.IsAsciiNumeric() || (((options & NumberStyles.AllowHexSpecifier) != 0) && ch.IsAsciiHexLetter()))
             {
                 state |= StateDigits;
 
@@ -718,7 +717,7 @@ public static class TryParseSpan
                     ch = *(p = next);
                     negExp = true;
                 }
-                if (ch is >= '0' and <= '9')
+                if (ch.IsAsciiNumeric())
                 {
                     int exp = 0;
                     do
@@ -728,12 +727,12 @@ public static class TryParseSpan
                         if (exp > 1000)
                         {
                             exp = 9999;
-                            while (ch is >= '0' and <= '9')
+                            while (ch.IsAsciiNumeric())
                             {
                                 ch = *++p;
                             }
                         }
-                    } while (ch is >= '0' and <= '9');
+                    } while (ch.IsAsciiNumeric());
                     if (negExp)
                     {
                         exp = -exp;
