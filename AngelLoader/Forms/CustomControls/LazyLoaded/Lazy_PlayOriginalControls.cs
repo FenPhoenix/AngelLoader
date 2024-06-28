@@ -45,7 +45,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
         }
     }
 
-    public Lazy_PlayOriginalControls(MainForm owner) => _owner = owner;
+    internal Lazy_PlayOriginalControls(MainForm owner) => _owner = owner;
 
     private void ConstructSingle()
     {
