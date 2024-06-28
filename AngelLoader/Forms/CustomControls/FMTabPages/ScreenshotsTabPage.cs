@@ -200,7 +200,6 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
     {
         if (!_constructed) return;
         _page.ScreenshotsPictureBox.SetImage(null);
-        //ScreenshotFileNames.Clear();
         _currentScreenshotStream?.Dispose();
     }
 
