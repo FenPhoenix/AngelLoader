@@ -192,16 +192,10 @@ public sealed partial class Scanner : IDisposable
 
     #region Private classes
 
-    private sealed class DetectedTitle
+    private sealed class DetectedTitle(string value, bool temporary)
     {
-        internal readonly string Value;
-        internal bool Temporary;
-
-        public DetectedTitle(string value, bool temporary)
-        {
-            Value = value;
-            Temporary = temporary;
-        }
+        internal readonly string Value = value;
+        internal bool Temporary = temporary;
     }
 
     private sealed class FileInfoCustom

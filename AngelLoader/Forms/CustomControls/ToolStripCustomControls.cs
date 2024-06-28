@@ -190,11 +190,9 @@ public sealed class ToolStripMenuItemWithBackingText : ToolStripMenuItemCustom
 }
 
 [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]
-public sealed class ToolStripMenuItemWithBackingField<T> : ToolStripMenuItemCustom
+public sealed class ToolStripMenuItemWithBackingField<T>(T field) : ToolStripMenuItemCustom
 {
-    public readonly T Field;
-
-    public ToolStripMenuItemWithBackingField(T field) => Field = field;
+    public readonly T Field = field;
 }
 
 [ToolStripItemDesignerAvailability(ToolStripItemDesignerAvailability.All)]

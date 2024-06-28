@@ -105,16 +105,10 @@ public sealed class FMTagsCollection : IEnumerable<string>
 }
 
 [StructLayout(LayoutKind.Auto)]
-public readonly struct CatAndTagsList
+public readonly struct CatAndTagsList(string category, FMTagsCollection tags)
 {
-    public readonly string Category;
-    public readonly FMTagsCollection Tags;
-
-    public CatAndTagsList(string category, FMTagsCollection tags)
-    {
-        Category = category;
-        Tags = tags;
-    }
+    public readonly string Category = category;
+    public readonly FMTagsCollection Tags = tags;
 }
 
 public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>

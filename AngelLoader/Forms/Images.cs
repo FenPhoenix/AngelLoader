@@ -853,31 +853,19 @@ public static class Images
     #region Per-game image getters
 
     [PublicAPI]
-    public sealed class PerGameSizedImage
+    public sealed class PerGameSizedImage(Func<Bitmap> large, Func<Bitmap> small)
     {
-        private readonly Func<Image> _large;
-        private readonly Func<Image> _small;
+        private readonly Func<Image> _large = large;
+        private readonly Func<Image> _small = small;
         public Image Large(bool enabled = true) => enabled ? _large.Invoke() : GetDisabledImage(_large.Invoke());
         public Image Small(bool enabled = true) => enabled ? _small.Invoke() : GetDisabledImage(_small.Invoke());
-
-        public PerGameSizedImage(Func<Bitmap> large, Func<Bitmap> small)
-        {
-            _large = large;
-            _small = small;
-        }
     }
 
     [PublicAPI]
-    public sealed class PerGameImage
+    public sealed class PerGameImage(PerGameSizedImage primary, PerGameSizedImage alternate)
     {
-        public readonly PerGameSizedImage Primary;
-        public readonly PerGameSizedImage Alternate;
-
-        public PerGameImage(PerGameSizedImage primary, PerGameSizedImage alternate)
-        {
-            Primary = primary;
-            Alternate = alternate;
-        }
+        public readonly PerGameSizedImage Primary = primary;
+        public readonly PerGameSizedImage Alternate = alternate;
     }
 
     private static readonly PerGameImage[] _perGameImageGetters = InitPerGameImageGetters();

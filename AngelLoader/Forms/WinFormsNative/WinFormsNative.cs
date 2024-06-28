@@ -54,16 +54,10 @@ internal static partial class Native
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct POINT
+    public readonly struct POINT(int x, int y)
     {
-        public readonly int X;
-        public readonly int Y;
-
-        public POINT(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
+        public readonly int X = x;
+        public readonly int Y = y;
     }
 
     #region Cursor
