@@ -119,7 +119,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         {
             List<string> newList = new(ScreenshotFileNames.Count);
             Screenshots.PopulateScreenshotFileNames(fm, newList);
-            if (newList.PathSequenceEqualI(ScreenshotFileNames))
+            if (ScreenshotFileNames.Count > 0 && newList.PathSequenceEqualI(ScreenshotFileNames))
             {
                 return;
             }
