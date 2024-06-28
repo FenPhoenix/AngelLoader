@@ -77,10 +77,28 @@ public sealed class MemoryImage : IDisposable
     }
 }
 
-public sealed class BackingTab(TabPage tabPage)
+public sealed class BackingTab
 {
-    public TabPage TabPage = tabPage;
-    public FMTabVisibleIn VisibleIn = FMTabVisibleIn.Top;
+    public TabPage TabPage;
+    public FMTabVisibleIn VisibleIn;
+
+    public BackingTab(TabPage tabPage)
+    {
+        TabPage = tabPage;
+        VisibleIn = FMTabVisibleIn.Top;
+    }
+
+    public BackingTab(TabPage tabPage, FMTabVisibleIn visibleIn)
+    {
+        TabPage = tabPage;
+        VisibleIn = visibleIn;
+    }
+
+    public void CopyTo(BackingTab dest)
+    {
+        dest.TabPage = TabPage;
+        dest.VisibleIn = VisibleIn;
+    }
 }
 
 public sealed class TabControlImageCursor : IDisposable

@@ -42,7 +42,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         _backedUpBackingTabs = new List<BackingTab>(_backingTabList.Count);
         foreach (BackingTab backingTab in _backingTabList)
         {
-            _backedUpBackingTabs.Add(new BackingTab(backingTab.TabPage) { VisibleIn = backingTab.VisibleIn });
+            _backedUpBackingTabs.Add(new BackingTab(backingTab.TabPage, backingTab.VisibleIn));
         }
         if (TabCount > 1 && SelectedIndex > 0)
         {
@@ -61,8 +61,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         {
             BackingTab backingTab = _backingTabList[i];
             BackingTab backedUpBackingTab = _backedUpBackingTabs[i];
-            backingTab.TabPage = backedUpBackingTab.TabPage;
-            backingTab.VisibleIn = backedUpBackingTab.VisibleIn;
+            backedUpBackingTab.CopyTo(backingTab);
         }
         _backedUpBackingTabs = null;
     }
@@ -451,8 +450,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
             }
             for (int i = bDragTabIndex; i < bNewTabIndex; i++)
             {
-                _backingTabList[i].TabPage = _backingTabList[i + 1].TabPage;
-                _backingTabList[i].VisibleIn = _backingTabList[i + 1].VisibleIn;
+                _backingTabList[i + 1].CopyTo(_backingTabList[i]);
             }
         }
         else
@@ -463,8 +461,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
             }
             for (int i = bDragTabIndex - 1; i >= bNewTabIndex; i--)
             {
-                _backingTabList[i + 1].TabPage = _backingTabList[i].TabPage;
-                _backingTabList[i + 1].VisibleIn = _backingTabList[i].VisibleIn;
+                _backingTabList[i].CopyTo(_backingTabList[i + 1]);
             }
         }
 
@@ -496,10 +493,6 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
         ImageList.Images.Clear();
         ImageList.Images.AddRange(images);
     }
-
-    // @PERF_TODO(SetTabsFull/Show tab):
-    // We could combine these to only add the tabs to TabPages that are going to be visible, rather than adding
-    // them all and then potentially removing some again.
 
     private bool _doneTabFixHack;
     /// <summary>
