@@ -3,10 +3,9 @@
 using System.IO;
 namespace AL_Common;
 
-public readonly struct BinaryBuffer
+public readonly struct BinaryBuffer()
 {
-    public readonly byte[] Buffer;
-    public BinaryBuffer() => Buffer = new byte[8];
+    public readonly byte[] Buffer = new byte[8];
 }
 
 /// <summary>

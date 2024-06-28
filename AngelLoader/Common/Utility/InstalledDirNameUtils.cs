@@ -8,10 +8,9 @@ public static partial class Utils
     /// <summary>30</summary>
     private const int _maxDarkInstDirLength = 30;
 
-    internal readonly struct InstDirNameContext
+    internal readonly struct InstDirNameContext()
     {
-        internal readonly StringBuilder SB;
-        public InstDirNameContext() => SB = new StringBuilder(_maxDarkInstDirLength);
+        internal readonly StringBuilder SB = new(_maxDarkInstDirLength);
 
         // Static analyzer assistance to make sure I don't call this by accident
         // ReSharper disable once UnusedMember.Global

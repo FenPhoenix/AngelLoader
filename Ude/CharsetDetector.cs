@@ -40,16 +40,10 @@ using System.Buffers;
 
 namespace Ude.NetStandard;
 
-public sealed class UdeContext
+public sealed class UdeContext(int memoryStreamStartingSize)
 {
-    public readonly MemoryStreamFast MemoryStream;
-    public readonly ArrayPool<byte> ByteArrayPool;
-
-    public UdeContext(int memoryStreamStartingSize)
-    {
-        MemoryStream = new MemoryStreamFast(memoryStreamStartingSize);
-        ByteArrayPool = ArrayPool<byte>.Create();
-    }
+    public readonly MemoryStreamFast MemoryStream = new(memoryStreamStartingSize);
+    public readonly ArrayPool<byte> ByteArrayPool = ArrayPool<byte>.Create();
 }
 
 public enum Charset
