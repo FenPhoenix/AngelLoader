@@ -844,7 +844,6 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
         if (_scanOptions.ScanSize)

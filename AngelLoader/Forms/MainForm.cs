@@ -5399,7 +5399,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             Lazy_TabsBase fmTab = _fmTabPages[i];
             fmTabs.Tabs[i].DisplayIndex = TopFMTabControl.FindBackingTab(_backingFMTabs, fmTab).Index;
-            fmTabs.Tabs[i].Visible = _backingFMTabs.FirstOrDefault(x => x.TabPage == fmTab)?.VisibleIn ?? FMTabVisibleIn.Top;
+            fmTabs.Tabs[i].Visible = _backingFMTabs.Find(x => x.TabPage == fmTab)?.VisibleIn ?? FMTabVisibleIn.Top;
         }
 
         #endregion
