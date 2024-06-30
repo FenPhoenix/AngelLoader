@@ -320,9 +320,9 @@ internal static class FMScan
                             continue;
                         }
 
-                        FanMission sel = fmsToScanFiltered[i];
-
                         #endregion
+
+                        FanMission fm = fmsToScanFiltered[i];
 
                         #region Set FM fields
 
@@ -330,28 +330,28 @@ internal static class FMScan
 
                         if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                         {
-                            sel.Title =
+                            fm.Title =
                                 !scannedFM.Title.IsEmpty() ? scannedFM.Title
                                 : scannedFM.ArchiveName.ExtIsArchive() ? scannedFM.ArchiveName.RemoveExtension()
                                 : scannedFM.ArchiveName;
 
                             if (gameSup)
                             {
-                                sel.AltTitles.ClearAndAddTitleAndAltTitles(sel.Title, scannedFM.AlternateTitles);
+                                fm.AltTitles.ClearAndAddTitleAndAltTitles(fm.Title, scannedFM.AlternateTitles);
                             }
                             else
                             {
-                                sel.AltTitles.Clear();
+                                fm.AltTitles.Clear();
                             }
                         }
 
                         if (fms[i].ForceFullScan || scanOptions.ScanSize)
                         {
-                            sel.SizeBytes = gameSup ? scannedFM.Size ?? 0 : 0;
+                            fm.SizeBytes = gameSup ? scannedFM.Size ?? 0 : 0;
                         }
                         if (fms[i].ForceFullScan || scanOptions.ScanReleaseDate)
                         {
-                            sel.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
+                            fm.ReleaseDate.DateTime = gameSup ? scannedFM.LastUpdateDate : null;
                         }
                         if (fms[i].ForceFullScan || scanOptions.ScanCustomResources)
                         {
@@ -361,33 +361,33 @@ internal static class FMScan
                                 scannedFM.Game != FMScanner.Game.Thief3 &&
                                 scannedFM.Game != FMScanner.Game.TDM)
                             {
-                                sel.SetResource(CustomResources.Map, scannedFM.HasMap == true);
-                                sel.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);
-                                sel.SetResource(CustomResources.Scripts, scannedFM.HasCustomScripts == true);
-                                sel.SetResource(CustomResources.Textures, scannedFM.HasCustomTextures == true);
-                                sel.SetResource(CustomResources.Sounds, scannedFM.HasCustomSounds == true);
-                                sel.SetResource(CustomResources.Objects, scannedFM.HasCustomObjects == true);
-                                sel.SetResource(CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
-                                sel.SetResource(CustomResources.Motions, scannedFM.HasCustomMotions == true);
-                                sel.SetResource(CustomResources.Movies, scannedFM.HasMovies == true);
-                                sel.SetResource(CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
-                                sel.ResourcesScanned = true;
+                                fm.SetResource(CustomResources.Map, scannedFM.HasMap == true);
+                                fm.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);
+                                fm.SetResource(CustomResources.Scripts, scannedFM.HasCustomScripts == true);
+                                fm.SetResource(CustomResources.Textures, scannedFM.HasCustomTextures == true);
+                                fm.SetResource(CustomResources.Sounds, scannedFM.HasCustomSounds == true);
+                                fm.SetResource(CustomResources.Objects, scannedFM.HasCustomObjects == true);
+                                fm.SetResource(CustomResources.Creatures, scannedFM.HasCustomCreatures == true);
+                                fm.SetResource(CustomResources.Motions, scannedFM.HasCustomMotions == true);
+                                fm.SetResource(CustomResources.Movies, scannedFM.HasMovies == true);
+                                fm.SetResource(CustomResources.Subtitles, scannedFM.HasCustomSubtitles == true);
+                                fm.ResourcesScanned = true;
                             }
                             else
                             {
-                                sel.ResourcesScanned = false;
+                                fm.ResourcesScanned = false;
                             }
                             #endregion
                         }
 
                         if (fms[i].ForceFullScan || scanOptions.ScanAuthor)
                         {
-                            sel.Author = gameSup ? scannedFM.Author : "";
+                            fm.Author = gameSup ? scannedFM.Author : "";
                         }
 
                         if (fms[i].ForceFullScan || scanOptions.ScanGameType)
                         {
-                            sel.Game = ScannerGameToGame(scannedFM.Game);
+                            fm.Game = ScannerGameToGame(scannedFM.Game);
                         }
 
                         if (fms[i].ForceFullScan || scanOptions.ScanTags)
@@ -399,22 +399,22 @@ internal static class FMScan
                             if (gameSup)
                             {
                                 // Don't rebuild global tags for every FM; do it only once at the end
-                                FMTags.AddTagsToFM(sel, tagsString, rebuildGlobalTags: false, tagsToStringSB);
+                                FMTags.AddTagsToFM(fm, tagsString, rebuildGlobalTags: false, tagsToStringSB);
                             }
                         }
 
                         if (fms[i].ForceFullScan || scanOptions.ScanMissionCount)
                         {
-                            sel.MisCount = gameSup ? scannedFM.MissionCount ?? -1 : -1;
+                            fm.MisCount = gameSup ? scannedFM.MissionCount ?? -1 : -1;
 
                             if (gameSup && scannedFM.MissionCount is > 1)
                             {
-                                FMTags.AddTagsToFM(sel, "misc:campaign", rebuildGlobalTags: false);
+                                FMTags.AddTagsToFM(fm, "misc:campaign", rebuildGlobalTags: false);
                             }
                         }
 
-                        sel.MarkedScanned = true;
-                        if (setForceReCacheReadmes) sel.ForceReadmeReCache = true;
+                        fm.MarkedScanned = true;
+                        if (setForceReCacheReadmes) fm.ForceReadmeReCache = true;
 
                         #endregion
                     }
