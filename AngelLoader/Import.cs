@@ -42,7 +42,7 @@ internal static class Import
 
         FieldsToImport fields;
 
-        var iniFiles = new List<string>();
+        List<string> iniFiles = new();
 
         if (importType == ImportType.DarkLoader)
         {
@@ -103,10 +103,8 @@ internal static class Import
                 bool importSize) = Core.View.ShowImportFromMultipleInisWindow(importType);
 
             if (!accepted) return false;
-            foreach (string file in returnedIniFiles)
-            {
-                iniFiles.Add(file);
-            }
+
+            iniFiles.AddRange_Small(returnedIniFiles);
 
             if (iniFiles.All(static x => x.IsWhiteSpace()))
             {

@@ -501,8 +501,7 @@ internal static class TDM
                         string versionRaw = match.Groups["VersionRaw"].Value;
                         if (versionRaw.Length >= 2)
                         {
-                            versionRaw = versionRaw.Insert(1, ".");
-                            return versionRaw;
+                            return versionRaw.Insert(1, ".");
                         }
                     }
                     else

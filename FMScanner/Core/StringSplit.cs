@@ -233,7 +233,6 @@ internal static class StringSplit
             //We had a separator character at the end of a string.  Rather than just allowing
             //a null character, we'll replace the last element in the array with an empty string.
             splitStrings[arrIndex] = string.Empty;
-
         }
 
         return splitStrings;

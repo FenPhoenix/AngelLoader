@@ -189,8 +189,5 @@ public sealed partial class MainForm
 
     #endregion
 
-    public void HideProgressBox() => Invoke(() =>
-    {
-        ProgressBox?.HideThis();
-    });
+    public void HideProgressBox() => Invoke(() => ProgressBox?.HideThis());
 }

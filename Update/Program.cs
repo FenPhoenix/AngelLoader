@@ -431,7 +431,7 @@ internal static class Program
         }
         catch
         {
-            Utils.ShowAlert(View, "Unable to open log file." + "\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
+            Utils.ShowAlert(View, "Unable to open log file.\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
         }
     }
 }

@@ -13,7 +13,6 @@ public interface IDarkable
     bool DarkModeEnabled { set; }
 }
 
-
 internal static class Data
 {
     public static VisualTheme VisualTheme = VisualTheme.Classic;
