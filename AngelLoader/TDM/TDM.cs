@@ -193,7 +193,7 @@ internal static class TDM
             if (!tdmFMsPath.IsEmpty())
             {
                 // Matching game behavior - it supports zips in the base FMs dir, but renames them to pk4 once it
-                // moves them to a individual folders, and doesn't support zips inside those. Zips override pk4s.
+                // moves them to individual folders, and doesn't support zips inside those. Zips override pk4s.
                 List<string> pk4Files = FastIO.GetFilesTopOnly(tdmFMsPath, "*.pk4", returnFullPaths: false);
                 List<string> zipFiles = FastIO.GetFilesTopOnly(tdmFMsPath, "*.zip", returnFullPaths: false);
                 foreach (string pk4File in pk4Files)
