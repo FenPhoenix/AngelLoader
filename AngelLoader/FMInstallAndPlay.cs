@@ -35,17 +35,7 @@ internal static partial class FMInstallAndPlay
         FM,
     }
 
-    private static readonly byte[] _DARKMISS_Bytes =
-    {
-        (byte)'D',
-        (byte)'A',
-        (byte)'R',
-        (byte)'K',
-        (byte)'M',
-        (byte)'I',
-        (byte)'S',
-        (byte)'S',
-    };
+    private static readonly byte[] _DARKMISS_Bytes = "DARKMISS"u8.ToArray();
 
     private static Encoding? _utf8NoBOM;
     private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);

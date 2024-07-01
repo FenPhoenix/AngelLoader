@@ -481,16 +481,7 @@ public sealed partial class Scanner
 
     // ReSharper disable IdentifierTypo
 
-    private readonly byte[] OBJ_MAP =
-    {
-        (byte)'O',
-        (byte)'B',
-        (byte)'J',
-        (byte)'_',
-        (byte)'M',
-        (byte)'A',
-        (byte)'P',
-    };
+    private readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
@@ -500,19 +491,7 @@ public sealed partial class Scanner
     extra strength defense against a custom RopeyArrow archetype... except that a handful of legit T2 missions
     have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
     */
-    private readonly byte[] RopeyArrow =
-    {
-        (byte)'R',
-        (byte)'o',
-        (byte)'p',
-        (byte)'e',
-        (byte)'y',
-        (byte)'A',
-        (byte)'r',
-        (byte)'r',
-        (byte)'o',
-        (byte)'w',
-    };
+    private readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
 
     private const int _gameTypeBufferSize = 81_920;
 

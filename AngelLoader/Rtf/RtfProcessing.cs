@@ -60,80 +60,17 @@ internal static class RtfProcessing
 
     #region Colors
 
-    private static readonly byte[] _colortbl =
-    {
-        (byte)'{',
-        (byte)'\\',
-        (byte)'c',
-        (byte)'o',
-        (byte)'l',
-        (byte)'o',
-        (byte)'r',
-        (byte)'t',
-        (byte)'b',
-        (byte)'l',
-    };
+    private static readonly byte[] _colortbl = @"{\colortbl"u8.ToArray();
 
-    private static readonly byte[] _redFieldBytes =
-    {
-        (byte)'\\',
-        (byte)'r',
-        (byte)'e',
-        (byte)'d',
-    };
+    private static readonly byte[] _redFieldBytes = @"\red"u8.ToArray();
 
-    private static readonly byte[] _greenFieldBytes =
-    {
-        (byte)'\\',
-        (byte)'g',
-        (byte)'r',
-        (byte)'e',
-        (byte)'e',
-        (byte)'n',
-    };
+    private static readonly byte[] _greenFieldBytes = @"\green"u8.ToArray();
 
-    private static readonly byte[] _blueFieldBytes =
-    {
-        (byte)'\\',
-        (byte)'b',
-        (byte)'l',
-        (byte)'u',
-        (byte)'e',
-    };
+    private static readonly byte[] _blueFieldBytes = @"\blue"u8.ToArray();
 
-    private static readonly byte[] _background =
-    {
-        (byte)'\\',
-        (byte)'*',
-        (byte)'\\',
-        (byte)'b',
-        (byte)'a',
-        (byte)'c',
-        (byte)'k',
-        (byte)'g',
-        (byte)'r',
-        (byte)'o',
-        (byte)'u',
-        (byte)'n',
-        (byte)'d',
-    };
+    private static readonly byte[] _background = @"\*\background"u8.ToArray();
 
-    private static readonly byte[] _backgroundBlanked =
-    {
-        (byte)'\\',
-        (byte)'*',
-        (byte)'\\',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-        (byte)'x',
-    };
+    private static readonly byte[] _backgroundBlanked = @"\*\xxxxxxxxxx"u8.ToArray();
 
     private static readonly ListFast<byte> _colorNumberBytes = new(3);
 
@@ -144,26 +81,9 @@ internal static class RtfProcessing
     // +1 for adding a space after the digits
     private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
 
-    private static readonly byte[] _lang =
-    {
-        (byte)'\\',
-        (byte)'l',
-        (byte)'a',
-        (byte)'n',
-        (byte)'g',
-    };
+    private static readonly byte[] _lang = @"\lang"u8.ToArray();
 
-    private static readonly byte[] _ansicpg =
-    {
-        (byte)'\\',
-        (byte)'a',
-        (byte)'n',
-        (byte)'s',
-        (byte)'i',
-        (byte)'c',
-        (byte)'p',
-        (byte)'g',
-    };
+    private static readonly byte[] _ansicpg = @"\ansicpg"u8.ToArray();
 
     #endregion
 
