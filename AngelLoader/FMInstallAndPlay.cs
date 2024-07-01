@@ -1531,10 +1531,10 @@ internal static partial class FMInstallAndPlay
         internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
     }
 
-    internal static Task<bool> Install(params FanMission[] fms)
+    internal static async Task<bool> Install(params FanMission[] fms)
     {
         using var dsw = new DisableScreenshotWatchers();
-        return InstallInternal(false, false, fms);
+        return await InstallInternal(false, false, fms);
     }
 
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)

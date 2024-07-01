@@ -333,14 +333,14 @@ internal static class Core
 
         startupWorkTask.Wait();
 
-        Task DoParallelLoad(bool askForImport)
+        async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_)
         {
-            splashScreen.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
+            splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                     LText.SplashScreen.LoadingMainApp);
             // We set this beforehand because we thought there was some cross-thread font access problem, but
             // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this
             // still works, so keeping it.
-            splashScreen.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
+            splashScreen_.SetCheckMessageWidth(LText.SplashScreen.SearchingForNewFMs);
 
 #if RT_HeavyTests
 #pragma warning disable IDE0002
@@ -364,7 +364,7 @@ internal static class Core
                         GameConfigFiles.FixCharacterDetailLine((GameIndex)i, camModIniLines);
                     }
                 }
-                (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen);
+                (fmsViewListUnscanned, ex) = FindFMs.Find_Startup(splashScreen_);
                 if (ex == null)
                 {
                     // Do this before anything, because it modifies the FMs list
@@ -393,13 +393,13 @@ internal static class Core
 
             if (ex != null)
             {
-                splashScreen.Hide();
+                splashScreen_.Hide();
                 Log(ErrorText.ExRead + Paths.FMDataIni, ex);
                 Dialogs.ShowError(LText.AlertMessages.FindFMs_ExceptionReadingFMDataIni);
                 EnvironmentExitDoShutdownTasks(1);
             }
 
-            return View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen, askForImport);
+            await View.FinishInitAndShow(fmsViewListUnscanned!, splashScreen_, askForImport);
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(gameDataErrors);
@@ -407,7 +407,7 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad(false);
+            await DoParallelLoad(false, splashScreen);
         }
         else
         {
@@ -416,7 +416,7 @@ internal static class Core
             if (accepted)
             {
                 splashScreen.Show(Config.VisualTheme);
-                await DoParallelLoad(askForImport);
+                await DoParallelLoad(askForImport, splashScreen);
             }
             else
             {
