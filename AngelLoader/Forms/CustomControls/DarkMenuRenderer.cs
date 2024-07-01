@@ -112,9 +112,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
             // @DarkModeNote: What is this anyway? "Header item on open menu"? This never gets hit as far as I can tell...
             // Header item on open menu
-            if (e.Item is ToolStripMenuItem tsMenuItem &&
-                tsMenuItem.DropDown.Visible &&
-                !tsMenuItem.IsOnDropDown)
+            if (e.Item is ToolStripMenuItem { DropDown.Visible: true, IsOnDropDown: false })
             {
                 g.FillRectangle(DarkColors.Fen_DGVColumnHeaderPressedBrush, rect);
             }

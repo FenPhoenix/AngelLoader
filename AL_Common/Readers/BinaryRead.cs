@@ -1,6 +1,7 @@
 ﻿//#define ENABLE_UNUSED
 
 using System.IO;
+
 namespace AL_Common;
 
 public readonly struct BinaryBuffer()

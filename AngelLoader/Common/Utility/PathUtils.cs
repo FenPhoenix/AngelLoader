@@ -87,6 +87,7 @@ public static partial class Utils
 
     #region File extensions
 
+    // General version; might need to be different than the scanner version
     internal static bool IsValidReadme(this string value) =>
         value.ExtIsTxt() ||
         value.ExtIsRtf() ||
