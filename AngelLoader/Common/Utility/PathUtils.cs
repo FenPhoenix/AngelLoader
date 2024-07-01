@@ -40,19 +40,18 @@ public static partial class Utils
 
     #region File extensions
 
-    #region Filename extension checks
-
     // General version; might need to be different than the scanner version
-    internal static bool IsValidReadme(this string readme) =>
-        readme.ExtIsTxt() ||
-        readme.ExtIsRtf() ||
-        readme.ExtIsWri() ||
-        readme.ExtIsGlml() ||
-        readme.ExtIsHtml();
+    internal static bool IsValidReadme(this string value) =>
+        value.ExtIsTxt() ||
+        value.ExtIsRtf() ||
+        value.ExtIsWri() ||
+        value.ExtIsGlml() ||
+        value.ExtIsHtml();
 
-    #region Baked-in extension checks
-
-    // @RAR: We have too much duplicated code now, clean it up.
+    /*
+    @RAR: Finish going through these.
+    @RAR: We have too much duplicated code now, clean it up.
+    */
     internal static bool ExtIsArchive(this string value) =>
         value.ExtIsZip() ||
         value.ExtIs7z() ||
@@ -66,10 +65,6 @@ public static partial class Utils
         }
         return false;
     }
-
-    #endregion
-
-    #endregion
 
     #endregion
 

@@ -220,7 +220,6 @@ internal static class Paths
     #endregion
 
     private static string? _sevenZipPath;
-    // Use a 64-bit version if possible for even more out-of-memory prevention...
     internal static string SevenZipPath => _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z64");
 
     private static string? _sevenZipExe;

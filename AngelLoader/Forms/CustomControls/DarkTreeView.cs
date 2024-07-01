@@ -112,8 +112,7 @@ internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
         if (e.Node != null)
         {
             e.Graphics.FillRectangle(backColorBrush, e.Node.Bounds);
-            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor,
-                TextFormatFlags.NoPrefix);
+            TextRenderer.DrawText(e.Graphics, e.Node.Text, Font, e.Node.Bounds, textColor, TextFormatFlags.NoPrefix);
         }
 
         base.OnDrawNode(e);
