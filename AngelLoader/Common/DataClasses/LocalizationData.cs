@@ -260,7 +260,7 @@ internal sealed class LText_Class
         internal readonly string Patch_RemoveDML_InstallDirNotFound = "This FM's installed folder cannot be found. Unable to remove patch.";
         internal readonly string Patch_RemoveDML_UnableToRemove = "Unable to remove patch from fan mission folder.";
         [FenGenComment(
-            "This error message is displayed when the users clicks the \"Open FM folder\" button and the folder cannot be found.")]
+            "This error message is displayed when the user clicks the \"Open FM folder\" button and the folder cannot be found.")]
         internal readonly string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
         [FenGenBlankLine]
         internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";

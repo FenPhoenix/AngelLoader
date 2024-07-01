@@ -1923,7 +1923,7 @@ internal static class Core
     }
 
     /// <summary>
-    /// Returns the full path of Thief2MP.exe if any only if it exists on disk in the same directory as the
+    /// Returns the full path of Thief2MP.exe if and only if it exists on disk in the same directory as the
     /// specified Thief 2 executable. Otherwise, returns the empty string.
     /// </summary>
     /// <returns></returns>
