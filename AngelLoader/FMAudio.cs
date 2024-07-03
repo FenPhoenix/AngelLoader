@@ -92,7 +92,7 @@ internal static class FMAudio
                     percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
                 );
 
-                await ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer);
+                await ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer, CancellationToken.None);
 
                 if (!single && _conversionCts.IsCancellationRequested) return;
             }
@@ -142,12 +142,12 @@ internal static class FMAudio
         #endregion
     }
 
-    internal static Task ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    internal static Task ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
 
-    private static Task ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken? ct = null)
+    private static Task ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
         return Task.Run(async () =>
         {
@@ -236,7 +236,7 @@ internal static class FMAudio
                     return;
                 }
 
-                if (Canceled(ct)) return;
+                if (ct.IsCancellationRequested) return;
 
                 try
                 {
@@ -245,15 +245,15 @@ internal static class FMAudio
                     {
                         if (!Directory.Exists(fmSndPath)) return;
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         Dir_UnSetReadOnly(fmSndPath);
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         string[] wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         foreach (string f in wavFiles)
                         {
@@ -262,18 +262,18 @@ internal static class FMAudio
 
                             File_UnSetReadOnly(f);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             // Header wasn't wav, so skip this one
                             if (bits == -1) continue;
 
                             if (bits == 0) bits = GetBitDepthSlow(f);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             if (bits is >= 1 and <= 16) continue;
 
@@ -282,7 +282,7 @@ internal static class FMAudio
                             File.Delete(f);
                             File.Move(tempFile, f);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
                         }
                     }
                 }
@@ -303,11 +303,11 @@ internal static class FMAudio
                     {
                         if (!Directory.Exists(fmSndPath)) return;
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         Dir_UnSetReadOnly(fmSndPath);
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         string[] files;
                         try
@@ -320,7 +320,7 @@ internal static class FMAudio
                             return;
                         }
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         foreach (string f in files)
                         {
@@ -329,7 +329,7 @@ internal static class FMAudio
 
                             File_UnSetReadOnly(f);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             try
                             {
@@ -349,7 +349,7 @@ internal static class FMAudio
                                 Log(ErrorText.Ex + "deleting file " + f, ex);
                             }
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
                         }
                     }
                 }
@@ -359,8 +359,6 @@ internal static class FMAudio
                 }
             }
         });
-
-        static bool Canceled(CancellationToken? ct) => ct != null && ((CancellationToken)ct).IsCancellationRequested;
     }
 
     #endregion

@@ -378,8 +378,6 @@ internal static partial class FMInstallAndPlay
         byte[] fileStreamBuffer,
         CancellationToken ct)
     {
-        static bool Canceled(CancellationToken ct) => ct.IsCancellationRequested;
-
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
@@ -395,8 +393,6 @@ internal static partial class FMInstallAndPlay
             BackupFile backupFile = GetBackupFile(fm, archivePaths);
             if (!backupFile.Found) return;
 
-            if (Canceled(ct)) return;
-
             var fileExcludes = new HashSetPathI();
 
             string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
@@ -404,13 +400,13 @@ internal static partial class FMInstallAndPlay
 
             using (ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
             {
-                if (Canceled(ct)) return;
+                if (ct.IsCancellationRequested) return;
 
                 var entries = archive.Entries;
 
                 int entriesCount = entries.Count;
 
-                if (Canceled(ct)) return;
+                if (ct.IsCancellationRequested) return;
 
                 if (backupFile.DarkLoader)
                 {
@@ -429,7 +425,7 @@ internal static partial class FMInstallAndPlay
                             entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true);
                         }
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
                     }
                 }
                 else
@@ -441,7 +437,7 @@ internal static partial class FMInstallAndPlay
                         {
                             ZipArchiveEntry entry = entries[i];
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             string fn = entry.FullName;
 
@@ -456,25 +452,25 @@ internal static partial class FMInstallAndPlay
                                 entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true);
                             }
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
                         }
                     }
                     else
                     {
                         ZipArchiveEntry? fmSelInf = archive.GetEntry(Paths.FMSelInf);
 
-                        if (Canceled(ct)) return;
+                        if (ct.IsCancellationRequested) return;
 
                         // Null check required because GetEntry() can return null
                         if (fmSelInf != null)
                         {
                             using var eo = fmSelInf.Open();
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             using var sr = new StreamReader(eo);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
 
                             while (sr.ReadLine() is { } line)
                             {
@@ -504,7 +500,7 @@ internal static partial class FMInstallAndPlay
                                     fileExcludes.Add(val);
                                 }
 
-                                if (Canceled(ct)) return;
+                                if (ct.IsCancellationRequested) return;
                             }
                         }
 
@@ -527,7 +523,7 @@ internal static partial class FMInstallAndPlay
 
                             entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, efn), overwrite: true);
 
-                            if (Canceled(ct)) return;
+                            if (ct.IsCancellationRequested) return;
                         }
                     }
                 }
@@ -545,7 +541,7 @@ internal static partial class FMInstallAndPlay
                         File.Delete(f);
                     }
 
-                    if (Canceled(ct)) return;
+                    if (ct.IsCancellationRequested) return;
                 }
             }
         });
