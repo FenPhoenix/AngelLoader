@@ -1006,7 +1006,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #endregion
 
-                #region Update
+                #region Update page
 
                 UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
                 UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
