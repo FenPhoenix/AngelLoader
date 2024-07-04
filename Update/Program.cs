@@ -17,6 +17,7 @@ namespace Update;
 /*
 IMPORTANT: This app MUST NOT have any dependencies! It's going to copy an entire AL installation into its own directory.
 The rename of its own exe should be all that is required to allow the entire copy to succeed (no files locked).
+NuGet packages that don't actually result in a dll dependency (JetBrains Annotations, PolySharp) are fine.
 */
 
 internal static class Program
