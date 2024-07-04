@@ -1,4 +1,4 @@
-﻿//#define WPF
+﻿#define WinForms
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
 
@@ -24,7 +24,7 @@ internal sealed class PreloadState
     {
         SplashScreenPreloadTask = Task.Run(() =>
         {
-#if !WPF
+#if WinForms
             _ = Forms.Preload.AL_Icon_Bmp;
             _ = Forms.Preload.About;
             _ = Forms.Preload.AboutDark;
@@ -69,7 +69,7 @@ internal static class Program
         return;
 #endif
 
-#if !WPF
+#if WinForms
         PreloadState = new PreloadState();
 
         // Need to set these here, because the single-instance thing internally creates a window and message-
@@ -92,8 +92,7 @@ internal static class Program
 
     /*
     @PERF_TODO: SingleInstanceManager style takes ~30-35ms to get to the top of OnStartup().
-    The old way was faster, but we can't pass args the old way. We don't currently pass args right now,
-    but eh...
+    The old way was faster, but we can't pass args the old way. We don't currently pass args right now, but eh...
     */
     private sealed class SingleInstanceManager : WindowsFormsApplicationBase
     {
@@ -101,7 +100,7 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
-#if !WPF
+#if WinForms
             IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
 #else
 #endif
@@ -127,7 +126,7 @@ internal static class Program
                 }
             };
 
-#if !WPF
+#if WinForms
             System.Windows.Forms.Application.Run(new AL_AppContext(viewEnv, doUpdateCleanup: eventArgs.CommandLine.Contains("-after_update_cleanup")));
 #else
 #endif
@@ -147,7 +146,7 @@ internal static class Program
         }
     }
 
-#if !WPF
+#if WinForms
     private sealed class AL_AppContext : System.Windows.Forms.ApplicationContext
     {
         internal AL_AppContext(IViewEnvironment viewEnv, bool doUpdateCleanup) => Core.Init(viewEnv, doUpdateCleanup);

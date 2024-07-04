@@ -11,9 +11,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
 /*
-@WPF(FenGen/DesignerGen): This whole thing is WinForms-specific, but:
-It only generates into *.Designer.cs files marked with attributes, so it won't mess with WPF and if we removed
-WinForms it would just be a no-op, so let's just leave it as is.
+@NewUI(FenGen/DesignerGen): This whole thing is WinForms-specific, but:
+It only generates into *.Designer.cs files marked with attributes, so it won't mess with other UI frameworks, and
+if we removed WinForms it would just be a no-op, so let's just leave it as is.
 
 MainForm gen notes:
 [ ] Remove tab control images
