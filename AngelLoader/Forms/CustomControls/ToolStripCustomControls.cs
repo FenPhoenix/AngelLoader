@@ -35,7 +35,8 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
     }
 
     // We CAN cache one instance of the color table at least
-    private static readonly DarkModeToolStripColorTable _colorTable = new();
+    private static DarkModeToolStripColorTable? _colorTable;
+    private static DarkModeToolStripColorTable ColorTable => _colorTable ??= new DarkModeToolStripColorTable();
 
     private bool _darkModeEnabled;
     [PublicAPI]
@@ -52,7 +53,7 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
             {
                 BackColor = DarkColors.Fen_ControlBackground;
                 // We can't cache the renderer because for some reason it only takes the first time if we do
-                Renderer = new ToolStripProfessionalRenderer(_colorTable) { RoundedEdges = false };
+                Renderer = new ToolStripProfessionalRenderer(ColorTable) { RoundedEdges = false };
             }
             else
             {
