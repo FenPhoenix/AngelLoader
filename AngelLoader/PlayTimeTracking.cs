@@ -11,7 +11,6 @@ using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.NativeCommon;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -209,19 +208,6 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                 }
             }
             await Task.Delay(1000, cancellationToken);
-        }
-
-        static string GetProcessPath(int procId, StringBuilder buffer)
-        {
-            buffer.Clear();
-
-            using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
-            if (!hProc.IsInvalid)
-            {
-                int size = buffer.Capacity;
-                if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
-            }
-            return "";
         }
     }
 

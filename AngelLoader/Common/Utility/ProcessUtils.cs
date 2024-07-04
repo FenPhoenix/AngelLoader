@@ -1,9 +1,25 @@
 ﻿using System.Diagnostics;
+using System.Text;
+using Microsoft.Win32.SafeHandles;
+using static AngelLoader.NativeCommon;
 
 namespace AngelLoader;
 
 public static partial class Utils
 {
+    internal static string GetProcessPath(int procId, StringBuilder buffer)
+    {
+        buffer.Clear();
+
+        using SafeProcessHandle hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
+        if (!hProc.IsInvalid)
+        {
+            int size = buffer.Capacity;
+            if (QueryFullProcessImageNameW(hProc, 0, buffer, ref size)) return buffer.ToString();
+        }
+        return "";
+    }
+
     /*
     @NET5(ProcessUtils):
     These wrappers that set UseShellExecute to true are just here for compatibility with .NET Core 3 and
