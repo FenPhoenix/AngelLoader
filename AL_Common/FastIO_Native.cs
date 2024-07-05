@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static AL_Common.Common;
 
 namespace AL_Common;
 
@@ -92,7 +93,7 @@ public static class FastIO_Native
         public uint nFileSizeLow;
         public uint dwReserved0;
         public uint dwReserved1;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
         public string cFileName;
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
         public string cAlternateFileName;
@@ -106,7 +107,7 @@ public static class FastIO_Native
     {
         // Vital, path must not have a trailing separator
         // We also normalize it manually because we use \?\\ which skips normalization
-        path = path.ToBackSlashes().TrimEnd(Common.CA_Backslash);
+        path = path.ToBackSlashes().TrimEnd(CA_Backslash);
 
         if (!pathIsKnownValid)
         {

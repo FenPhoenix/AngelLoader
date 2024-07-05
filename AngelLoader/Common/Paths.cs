@@ -48,7 +48,6 @@ internal static class Paths
     private static string GetStartupPath()
     {
         var nullHandleRef = new HandleRef(null, IntPtr.Zero);
-        const int MAX_PATH = 260;
         const int MAX_UNICODESTRING_LEN = short.MaxValue;
         const int ERROR_INSUFFICIENT_BUFFER = 122;
 

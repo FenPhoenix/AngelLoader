@@ -11,6 +11,8 @@ namespace AL_Common;
 [PublicAPI]
 public static partial class Common
 {
+    public const int MAX_PATH = 260;
+
     #region Fields / classes
 
     public sealed class ProgressPercents

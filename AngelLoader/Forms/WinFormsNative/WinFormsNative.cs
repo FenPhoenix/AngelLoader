@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using JetBrains.Annotations;
+using static AL_Common.Common;
+
 // ReSharper disable ArrangeTrailingCommaInMultilineLists
 
 namespace AngelLoader.Forms.WinFormsNative;
@@ -155,7 +157,7 @@ internal static class Native
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260/*MAX_PATH*/)]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
         internal string szPath;
     }
 

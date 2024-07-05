@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
+using static AL_Common.Common;
 
 namespace AngelLoader;
 
@@ -28,8 +29,6 @@ internal static class NativeCommon
     // From .NET 8
     internal static unsafe string? GetProcessPath(int processId)
     {
-        const int MAX_PATH = 260;
-
         using SafeProcessHandle handle = OpenProcess(QUERY_LIMITED_INFORMATION, false, processId);
         if (handle.IsInvalid) return null;
 
