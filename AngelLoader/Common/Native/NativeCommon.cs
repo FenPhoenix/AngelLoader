@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Buffers;
 using System.Runtime.InteropServices;
-using System.Text;
 using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader;
@@ -14,13 +14,61 @@ internal static class NativeCommon
     Admin privileges(?!). At least on Framework anyway.
     */
 
-    internal const uint QUERY_LIMITED_INFORMATION = 0x00001000;
-
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    internal static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
+    private const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
     [DllImport("kernel32.dll")]
-    internal static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+    private static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern unsafe bool QueryFullProcessImageNameW(SafeHandle hProcess, uint dwFlags, char* lpBuffer, ref uint lpdwSize);
+
+    private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
+
+    // From .NET 8
+    internal static unsafe string? GetProcessPath(int processId)
+    {
+        const int MAX_PATH = 260;
+
+        using SafeProcessHandle handle = OpenProcess(QUERY_LIMITED_INFORMATION, false, processId);
+        if (handle.IsInvalid) return null;
+
+        Span<char> buffer = stackalloc char[MAX_PATH + 1];
+        char[]? rentedArray = null;
+
+        try
+        {
+            while (true)
+            {
+                uint length = (uint)buffer.Length;
+                fixed (char* pinnedBuffer = &MemoryMarshal.GetReference(buffer))
+                {
+                    if (QueryFullProcessImageNameW(handle, 0, pinnedBuffer, ref length))
+                    {
+                        return buffer[..(int)length].ToString();
+                    }
+                    else if (Marshal.GetLastWin32Error() != ERROR_INSUFFICIENT_BUFFER)
+                    {
+                        return null;
+                    }
+                }
+
+                char[]? toReturn = rentedArray;
+                buffer = rentedArray = ArrayPool<char>.Shared.Rent(buffer.Length * 2);
+                if (toReturn is not null)
+                {
+                    ArrayPool<char>.Shared.Return(toReturn);
+                }
+            }
+        }
+        finally
+        {
+            if (rentedArray is not null)
+            {
+                ArrayPool<char>.Shared.Return(rentedArray);
+            }
+        }
+    }
 
     #endregion
 

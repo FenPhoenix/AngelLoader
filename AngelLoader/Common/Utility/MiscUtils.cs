@@ -12,6 +12,7 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.NativeCommon;
 
 namespace AngelLoader;
 
@@ -121,8 +122,6 @@ public static partial class Utils
 
         #endregion
 
-        var buffer = new StringBuilder(1024);
-
         // We're doing this whole rigamarole because the game might have been started by someone other than
         // us. Otherwise, we could just persist our process object and then we wouldn't have to do this check.
 
@@ -133,7 +132,7 @@ public static partial class Utils
             {
                 try
                 {
-                    string fn = GetProcessPath(proc.Id, buffer);
+                    string? fn = GetProcessPath(proc.Id);
                     if (!fn.IsEmpty() &&
                         ((checkAllGames &&
                           (AnyGameRunning(fn) ||

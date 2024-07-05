@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -11,6 +10,7 @@ using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.NativeCommon;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -167,8 +167,6 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     private static async Task<Process> WaitForAndReturnProcess(string fullPath, CancellationToken cancellationToken)
     {
-        var buffer = new StringBuilder(1024);
-
         while (true)
         {
             Process[] processes = Process.GetProcesses();
@@ -182,7 +180,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                 {
                     try
                     {
-                        string fn = GetProcessPath(proc.Id, buffer);
+                        string? fn = GetProcessPath(proc.Id);
                         if (!fn.IsEmpty() && fn.PathEqualsI(fullPath))
                         {
                             returnProcess = proc;
