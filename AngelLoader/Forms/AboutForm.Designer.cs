@@ -78,6 +78,8 @@ partial class AboutForm
             // 
             // LicenseTextBox
             // 
+            this.LicenseTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LicenseTextBox.BackColor = System.Drawing.SystemColors.Window;
             this.LicenseTextBox.DarkModeReadOnlyColorsAreDefault = true;
             this.LicenseTextBox.Location = new System.Drawing.Point(32, 108);
@@ -116,7 +118,8 @@ partial class AboutForm
             // 
             // OK_FLP
             // 
-            this.OK_FLP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.OK_FLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.OK_FLP.Controls.Add(this.OKButton);
             this.OK_FLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.OK_FLP.Location = new System.Drawing.Point(0, 523);
