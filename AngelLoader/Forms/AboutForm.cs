@@ -60,6 +60,11 @@ public sealed partial class AboutForm : DarkFormBase
         SetTheme(Config.VisualTheme);
 
         Localize();
+
+        if (BuildDateLabel.Right > ClientRectangle.Right - 32)
+        {
+            ClientSize = new Size(Math.Min(BuildDateLabel.Right + 32, 1024), ClientSize.Height);
+        }
     }
 
     public override void RespondToSystemThemeChange() => SetTheme(Config.VisualTheme);

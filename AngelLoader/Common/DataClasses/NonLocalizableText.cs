@@ -43,7 +43,7 @@ internal static partial class NonLocalizableText
             out DateTime result);
 
         string ret = success
-            ? result.ToLocalTime().ToString("yyyy MMM dd, HH:mm:ss", CultureInfo.CurrentCulture)
+            ? result.ToLocalTime().ToString("F", DateTimeFormatInfo.CurrentInfo)
             : "";
 
         ret += $"{NL}" + RuntimeInformation.FrameworkDescription;
