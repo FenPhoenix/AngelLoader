@@ -263,12 +263,12 @@ internal static class FMScan
                                     {
                                         string msg =
                                             "One or more zip archives contain files compressed with unsupported compression methods. " +
-                                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.\r\n\r\n" +
-                                            "The following zip archives produced this error:\r\n\r\n";
+                                            $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.{NL}{NL}" +
+                                            $"The following zip archives produced this error:{NL}{NL}";
 
                                         for (int i = 0; i < Math.Min(unsupportedCompressionErrors.Count, 10); i++)
                                         {
-                                            msg += unsupportedCompressionErrors[i].FM.Path + "\r\n";
+                                            msg += unsupportedCompressionErrors[i].FM.Path + $"{NL}";
                                         }
 
                                         if (unsupportedCompressionErrors.Count > 10)
@@ -278,7 +278,7 @@ internal static class FMScan
 
                                         if (otherErrors)
                                         {
-                                            msg += "\r\n\r\nIn addition, one or more other errors occurred. See the log for details.";
+                                            msg += $"{NL}{NL}In addition, one or more other errors occurred. See the log for details.";
                                         }
 
                                         Core.Dialogs.ShowError(msg);
@@ -311,9 +311,9 @@ internal static class FMScan
                             // a refresh that gets called in that case
                             if (scanningOne)
                             {
-                                Log("(one) scanned FM was null. FM was:\r\n" +
-                                    "Archive: " + fmsToScanFiltered[0].DisplayArchive + "\r\n" +
-                                    "InstalledDir: " + fmsToScanFiltered[0].InstalledDir + "\r\n" +
+                                Log($"(one) scanned FM was null. FM was:{NL}" +
+                                    "Archive: " + fmsToScanFiltered[0].DisplayArchive + $"{NL}" +
+                                    "InstalledDir: " + fmsToScanFiltered[0].InstalledDir + $"{NL}" +
                                     "TDMInstalledDir (if applicable): " + fmsToScanFiltered[0].TDMInstalledDir);
                                 return false;
                             }

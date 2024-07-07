@@ -1,5 +1,6 @@
 //#define TESTING
 
+global using static Update.FullyGlobal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -317,9 +318,9 @@ internal static class Program
                     {
                         Log("Couldn't copy '" + file + "' to '" + finalFileName + "'.", ex);
                         DialogResult result = Utils.ShowDialogCustom(View,
-                            message: LText.Update.FileCopy_CouldNotCopyFile + "\r\n\r\n" +
-                                     LText.Update.FileCopy_Source + " " + file + "\r\n" +
-                                     LText.Update.FileCopy_Destination + " " + finalFileName + "\r\n\r\n" +
+                            message: LText.Update.FileCopy_CouldNotCopyFile + $"{NL}{NL}" +
+                                     LText.Update.FileCopy_Source + " " + file + $"{NL}" +
+                                     LText.Update.FileCopy_Destination + " " + finalFileName + $"{NL}{NL}" +
                                      LText.Update.FileCopy_CloseAngelLoader,
                             title: LText.AlertMessages.Error,
                             icon: MessageBoxIcon.Warning,
@@ -432,7 +433,7 @@ internal static class Program
         }
         catch
         {
-            Utils.ShowAlert(View, "Unable to open log file.\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
+            Utils.ShowAlert(View, $"Unable to open log file.{NL}{NL}" + Paths.LogFile, LText.AlertMessages.Error);
         }
     }
 }

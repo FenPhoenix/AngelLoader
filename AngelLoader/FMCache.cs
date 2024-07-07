@@ -726,7 +726,7 @@ internal static class FMCache
 
                     if (result.ErrorOccurred)
                     {
-                        Log("Readme caching (7z): " + fmCachePath + ":\r\n" + result);
+                        Log("Readme caching (7z): " + fmCachePath + $":{NL}" + result);
                     }
                 }
                 catch (Exception ex)

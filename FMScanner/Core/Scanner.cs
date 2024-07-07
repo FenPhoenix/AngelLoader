@@ -11,6 +11,7 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 */
 
 //#define ScanSynchronous
+global using static AL_Common.FullyGlobal;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1146,10 +1147,10 @@ public sealed partial class Scanner : IDisposable
             #endregion
             if (ex is ZipCompressionMethodException zipEx)
             {
-                Log(fm.Path + ": fm is zip.\r\n" +
-                    "UNSUPPORTED COMPRESSION METHOD\r\n" +
+                Log(fm.Path + $": fm is zip.{NL}" +
+                    $"UNSUPPORTED COMPRESSION METHOD{NL}" +
                     "Zip contains one or more files compressed with an unsupported method. " +
-                    "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.\r\n" +
+                    $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
                     "Returning 'Unknown' game type.", zipEx);
                 return (false, UnknownZip(fm.Path, null, zipEx, ""), null);
             }
@@ -1500,16 +1501,16 @@ public sealed partial class Scanner : IDisposable
 
                     if (result.ErrorOccurred)
                     {
-                        Log(fm.Path + ": fm is 7z\r\n" +
-                            "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                        Log(fm.Path + $": fm is 7z{NL}" +
+                            "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                             result);
 
                         return UnsupportedZip(
                             archivePath: fm.Path,
                             fen7zResult: result,
                             ex: null,
-                            errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
-                                       fm.Path + ": fm is 7z\r\n");
+                            errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                                       fm.Path + $": fm is 7z{NL}");
                     }
                 }
                 else
@@ -1539,7 +1540,7 @@ public sealed partial class Scanner : IDisposable
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: ex,
-                    errorInfo: "7z.exe path: " + _sevenZipExePath + "\r\n" +
+                    errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                                fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction"
                 );
             }

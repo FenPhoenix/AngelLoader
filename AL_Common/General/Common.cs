@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿global using static AL_Common.FullyGlobal;
+using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;

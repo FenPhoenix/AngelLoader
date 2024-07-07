@@ -39,8 +39,8 @@ public sealed partial class OriginalGameModsForm : DarkFormBase
         NewMantleCheckBox.Text = LText.PatchTab.NewMantle;
         MainToolTip.SetToolTip(
             NewMantleCheckBox,
-            LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
-            LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
+            LText.PatchTab.NewMantle_ToolTip_Checked + $"{NL}" +
+            LText.PatchTab.NewMantle_ToolTip_Unchecked + $"{NL}" +
             LText.PatchTab.NewMantle_ToolTip_NotSet
         );
 

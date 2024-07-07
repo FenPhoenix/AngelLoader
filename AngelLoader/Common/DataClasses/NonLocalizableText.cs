@@ -17,16 +17,16 @@ internal static partial class NonLocalizableText
     internal static readonly string ThiefBuddy = "Thief Buddy";
 
     internal static readonly string License =
-        "MIT License\r\n\r\n" +
-        "Copyright (c) 2018-" + CurrentYear + " Brian Tobin (FenPhoenix)\r\n\r\n" +
+        $"MIT License{NL}{NL}" +
+        "Copyright (c) 2018-" + CurrentYear + $" Brian Tobin (FenPhoenix){NL}{NL}" +
         "Permission is hereby granted, free of charge, to any person obtaining a copy " +
         "of this software and associated documentation files (the \"Software\"), to deal " +
         "in the Software without restriction, including without limitation the rights " +
         "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell " +
         "copies of the Software, and to permit persons to whom the Software is " +
-        "furnished to do so, subject to the following conditions:\r\n\r\n" +
+        $"furnished to do so, subject to the following conditions:{NL}{NL}" +
         "The above copyright notice and this permission notice shall be included in all " +
-        "copies or substantial portions of the Software.\r\n\r\n" +
+        $"copies or substantial portions of the Software.{NL}{NL}" +
         "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR " +
         "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, " +
         "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL " +
@@ -57,7 +57,7 @@ internal static partial class NonLocalizableText
                 string dotNetName = fn.Identifier.ContainsI("Framework")
                     ? ".NET Framework " + fn.Version
                     : ".NET " + fn.Version;
-                ret += "\r\n" + dotNetName;
+                ret += $"{NL}" + dotNetName;
             }
         }
         catch

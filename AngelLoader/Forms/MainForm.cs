@@ -5686,8 +5686,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void RefreshFMStatsLabel()
     {
-        FMCountLabel.Text = _fmsSelectedCountText + "\r\n" +
-                            _fmsAvailableCountText + "\r\n" +
+        FMCountLabel.Text = _fmsSelectedCountText + $"{NL}" +
+                            _fmsAvailableCountText + $"{NL}" +
                             _fmsFinishedCountText;
     }
 

@@ -80,9 +80,9 @@ internal static class Engine
 
         static void LogInfo(string topMsg, Exception ex, string input, string output, ConvertType convertType)
         {
-            Log((!topMsg.IsEmpty() ? topMsg + "\r\n" : "") +
-                nameof(input) + ": " + input + "\r\n" +
-                nameof(output) + ": " + output + "\r\n" +
+            Log((!topMsg.IsEmpty() ? topMsg + $"{NL}" : "") +
+                nameof(input) + ": " + input + $"{NL}" +
+                nameof(output) + ": " + output + $"{NL}" +
                 nameof(convertType) + ": " + convertType,
                 ex);
         }

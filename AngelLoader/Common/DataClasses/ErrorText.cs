@@ -34,8 +34,8 @@ internal static class ErrorText
     //internal static readonly string RetT = Ret + "'true'.";
     internal static readonly string RetF = Ret + "'false'.";
     internal static readonly string OldDarkDependentFeaturesWillFail =
-        "The following features/fixes will NOT be applied on this run:\r\n\r\n" +
-        "-Old mantling, if the FM is OldDark and \"Use old mantling for OldDark FMs\" is enabled\r\n" +
+        $"The following features/fixes will NOT be applied on this run:{NL}{NL}" +
+        $"-Old mantling, if the FM is OldDark and \"Use old mantling for OldDark FMs\" is enabled{NL}" +
         "-Palette fix, if the FM is OldDark and requires it";
     internal static readonly string LangDefault = "Language will be set to English and no other languages will be available.";
     internal static readonly string FoundRegKey = "Found the registry key but ";

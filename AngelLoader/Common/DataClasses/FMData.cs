@@ -386,17 +386,17 @@ public sealed class FanMission
         bool stackTrace = false,
         [CallerMemberName] string callerMemberName = "")
     {
-        Log("Caller: " + callerMemberName + "\r\n\r\n" +
-            topMessage + "\r\n" +
-            "" + nameof(Game) + ": " + Game + "\r\n" +
-            "" + nameof(Archive) + ": " + Archive + "\r\n" +
-            "" + nameof(InstalledDir) + ": " + InstalledDir + "\r\n" +
-            "" + nameof(TDMInstalledDir) + " (if applicable): " + TDMInstalledDir + "\r\n" +
-            "" + nameof(Installed) + ": " + Installed + "\r\n" +
+        Log("Caller: " + callerMemberName + $"{NL}{NL}" +
+            topMessage + $"{NL}" +
+            "" + nameof(Game) + ": " + Game + $"{NL}" +
+            "" + nameof(Archive) + ": " + Archive + $"{NL}" +
+            "" + nameof(InstalledDir) + ": " + InstalledDir + $"{NL}" +
+            "" + nameof(TDMInstalledDir) + " (if applicable): " + TDMInstalledDir + $"{NL}" +
+            "" + nameof(Installed) + ": " + Installed + $"{NL}" +
             (Game.ConvertsToKnownAndSupported(out GameIndex gameIndex)
                 ? "Base directory for installed FMs: " + Config.GetFMInstallPath(gameIndex)
                 : "Game type is not known or not supported.") +
-            (ex != null ? "\r\nException:\r\n" + ex : ""), stackTrace: stackTrace);
+            (ex != null ? $"{NL}Exception:{NL}" + ex : ""), stackTrace: stackTrace);
     }
 
     #endregion

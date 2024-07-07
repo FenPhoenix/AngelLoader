@@ -260,8 +260,8 @@ internal static class Core
                 ResetLanguages();
                 Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
                 Dialogs.ShowError(
-                    "Couldn't get the language .ini files.\r\n\r\n" +
-                    ErrorText.LangDefault + "\r\n\r\n" +
+                    $"Couldn't get the language .ini files.{NL}{NL}" +
+                    ErrorText.LangDefault + $"{NL}{NL}" +
                     "Path: " + Paths.Languages);
                 splashScreen.Show(Config.VisualTheme);
                 return;
@@ -434,13 +434,13 @@ internal static class Core
 
             if (error.HasFlagFast(SetGameDataError.GameDirNotWriteable))
             {
-                Log(GetLocalizedGameName(gameIndex) + ": No write permission for game directory.\r\n" +
+                Log(GetLocalizedGameName(gameIndex) + $": No write permission for game directory.{NL}" +
                     "Game path: " + Config.GetGamePath(gameIndex));
 
                 Dialogs.ShowError(
-                    GetLocalizedGameNameColon(gameIndex) + "\r\n" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_AdvanceWarning + "\r\n\r\n" +
-                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + "\r\n\r\n" +
+                    GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
+                    LText.AlertMessages.NoWriteAccessToGameDir_AdvanceWarning + $"{NL}{NL}" +
+                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
                     Config.GetGamePath(gameIndex),
                     icon: MBoxIcon.Warning
                 );
@@ -1583,8 +1583,8 @@ internal static class Core
         catch (Exception ex)
         {
             fm.LogInfo(
-                "Readme load failed.\r\n" +
-                "FM selected readme: " + fm.SelectedReadme + "\r\n" +
+                $"Readme load failed.{NL}" +
+                "FM selected readme: " + fm.SelectedReadme + $"{NL}" +
                 "Path: " + path,
                 ex);
             View.SetReadmeToErrorState(ReadmeLocalizableMessage.UnableToLoadReadme);
@@ -1764,7 +1764,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            Log(ErrorText.UnOpenHTMLReadme + "\r\n" + fm.SelectedReadme, ex);
+            Log(ErrorText.UnOpenHTMLReadme + $"{NL}" + fm.SelectedReadme, ex);
             Dialogs.ShowError(ErrorText.UnOpenHTMLReadme);
             return;
         }
@@ -1777,14 +1777,14 @@ internal static class Core
             }
             catch (Exception ex)
             {
-                Log(ErrorText.UnOpenHTMLReadme + "\r\n" + path, ex);
+                Log(ErrorText.UnOpenHTMLReadme + $"{NL}" + path, ex);
                 Dialogs.ShowError(ErrorText.UnOpenHTMLReadme + path);
             }
         }
         else
         {
             Log("File not found: " + path, stackTrace: true);
-            Dialogs.ShowError(path + "\r\n\r\n" + ErrorText.HTMLReadmeNotFound);
+            Dialogs.ShowError(path + $"{NL}{NL}" + ErrorText.HTMLReadmeNotFound);
         }
     }
 
@@ -1805,7 +1805,7 @@ internal static class Core
         if (!File.Exists(Paths.DocFile))
         {
             Log("Help file not found: " + Paths.DocFile);
-            Dialogs.ShowError(LText.AlertMessages.Help_HelpFileNotFound + "\r\n\r\n" + Paths.DocFile);
+            Dialogs.ShowError(LText.AlertMessages.Help_HelpFileNotFound + $"{NL}{NL}" + Paths.DocFile);
             return;
         }
 
@@ -1862,7 +1862,7 @@ internal static class Core
         catch (Exception ex)
         {
             Log(ErrorText.ExOpen + "link '" + link + "'", ex);
-            Dialogs.ShowError(ErrorText.UnOpenLink + "\r\n\r\n" + link);
+            Dialogs.ShowError(ErrorText.UnOpenLink + $"{NL}{NL}" + link);
         }
     }
 
@@ -1874,7 +1874,7 @@ internal static class Core
         }
         catch
         {
-            Dialogs.ShowAlert(ErrorText.UnOpenLogFile + "\r\n\r\n" + Paths.LogFile, LText.AlertMessages.Error);
+            Dialogs.ShowAlert(ErrorText.UnOpenLogFile + $"{NL}{NL}" + Paths.LogFile, LText.AlertMessages.Error);
         }
     }
 
@@ -1914,7 +1914,7 @@ internal static class Core
         }
         catch (Exception ex)
         {
-            Log(ErrorText.ExTry + "detect game editor exe\r\nGame: " + gameIndex, ex);
+            Log(ErrorText.ExTry + $"detect game editor exe{NL}Game: " + gameIndex, ex);
         }
 
         return TryCombineFilePathAndCheckExistence(gamePath, editorName + ".exe", out string fullPathExe)

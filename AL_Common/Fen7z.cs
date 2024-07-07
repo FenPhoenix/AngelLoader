@@ -80,14 +80,14 @@ public static class Fen7z
 
         public override string ToString() =>
             ErrorOccurred
-                ? "Error in 7z.exe extraction:\r\n"
-                  + ErrorText + "\r\n"
-                  + (Exception?.ToString() ?? "") + "\r\n"
-                  + "ExitCode: " + ExitCode + "\r\n"
+                ? $"Error in 7z.exe extraction:{NL}"
+                  + ErrorText + $"{NL}"
+                  + (Exception?.ToString() ?? "") + $"{NL}"
+                  + "ExitCode: " + ExitCode + $"{NL}"
                   + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "")
-                : "No error.\r\n"
-                  + "Canceled: " + Canceled + "\r\n"
-                  + "ExitCode: " + ExitCode + "\r\n"
+                : $"No error.{NL}"
+                  + "Canceled: " + Canceled + $"{NL}"
+                  + "ExitCode: " + ExitCode + $"{NL}"
                   + "ExitCodeInt: " + (ExitCodeInt?.ToString() ?? "");
     }
 
@@ -261,7 +261,7 @@ public static class Fen7z
 
             p.ErrorDataReceived += (_, e) =>
             {
-                if (!e.Data.IsWhiteSpace()) errorText += "\r\n---" + e.Data;
+                if (!e.Data.IsWhiteSpace()) errorText += $"{NL}---" + e.Data;
             };
 
             p.Start();

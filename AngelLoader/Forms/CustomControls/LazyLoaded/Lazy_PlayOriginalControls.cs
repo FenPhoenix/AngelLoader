@@ -141,7 +141,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
         {
             GameIndex gameIndex = (GameIndex)i;
             string message = GetLocalizedGamePlayOriginalText(gameIndex);
-            if (GameSupportsMods(gameIndex)) message += "\r\n" + LText.PlayOriginalGameMenu.Mods_ToolTipMessage;
+            if (GameSupportsMods(gameIndex)) message += $"{NL}" + LText.PlayOriginalGameMenu.Mods_ToolTipMessage;
             _owner.MainToolTip.SetToolTip(GameButtons[i], message);
         }
     }
