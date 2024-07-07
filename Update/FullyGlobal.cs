@@ -2,6 +2,9 @@
 
 namespace Update;
 
+/// <summary>
+/// For absolutely hardcore everything-needs-access stuff
+/// </summary>
 public static class FullyGlobal
 {
     /// <summary>
