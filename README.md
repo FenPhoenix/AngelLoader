@@ -1,5 +1,27 @@
 <h1 align="center">
 AngelLoader
+
+## This is the modern .NET version. It is believed to work fine (but doesn't receive much field testing), and you can compile and use it if you're interested to compare.
+
+There are no new features compared to the standard .NET Framework version, and the code is almost entirely the same, differing only to work around breaking changes or to take advantage of higher-performance language features.
+
+### The good:
+- General performance increase - scans get faster, anything related to zip files gets faster (intalling etc). 7z stuff does _not_ get faster because it's handled by the external native 7z.exe.
+- Potential to properly support high DPI, due to WinForms receiving ongoing development in that regard on modern .NET - however, this is NOT implemented currently.
+- Potential to use SIMD to really crank performance in bottlenecky areas (but again, not implemented).
+
+### The bad:
+- **_Horrendous_** cold startup time - this is endemic to all WinForms apps on modern .NET. It takes several seconds merely just to get to the splash screen. Personally, I find this to be an unacceptable user experience. Your tolerance for it may vary. Note that cold startup time doesn't just happen on a fresh boot; it happens whenever Windows decides to invalidate whatever cache is keeping it fast. So every time you go to start the app you wince in anticipation of it maybe being cold this time. Like I said, truly awful UX.
+- This version uses SpanExtensions.Net which (as of v1.3.0) contains a potential stack overflow risk from recursion if asked to split a string into too many parts. Unlikely to be hit in practice as you'd need a _lot_ of parts, but meh, just a heads up.
+
+### The mediocre:
+- The UI does not get any faster, unfortunately, and that's probably the place you would most notice a performance difference if there were one.
+- While the performance increases appear large in the profiler, they're not that noticeable in actual use, at least not to me.
+
+If the cold startup time were solved (either directly or through finishing of WinForms AOT support (assuming that would fix it)), I would just tweak SpanExtensions.Net myself and switch AngelLoader to modern .NET. As it stands, though, I don't find the moderate general perf increase to be an acceptable trade for the infuriating, decades-regressed cold startup performance. Seriously I'm pretty sure my 386 started apps faster. 🤷‍♂️
+
+<hr/>
+
 </h1>
 <p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v194_900w.png" /></p>
 
