@@ -2,6 +2,7 @@
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
 
+global using static AL_Common.FullyGlobal;
 using System;
 using System.Drawing;
 using System.Drawing.Text;

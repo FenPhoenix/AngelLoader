@@ -38,11 +38,11 @@ internal static class FastIO
 
         var ex = new Win32Exception(err);
         throw new Win32Exception(err,
-            whichLoop + "\r\n" +
-            "System error code: " + err.ToStrInv() + "\r\n" +
-            ex.Message + "\r\n" +
-            "path: '" + path + "'\r\n" +
-            "search patterns: " + spString + "\r\n" +
+            whichLoop + $"{NL}" +
+            "System error code: " + err.ToStrInv() + $"{NL}" +
+            ex.Message + $"{NL}" +
+            "path: '" + path + $"'{NL}" +
+            "search patterns: " + spString + $"{NL}" +
             "current search pattern: '" + pattern + "'");
     }
 

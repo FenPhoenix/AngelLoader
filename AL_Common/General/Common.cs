@@ -1,4 +1,5 @@
-﻿using System;
+﻿global using static AL_Common.FullyGlobal;
+using System;
 using System.Globalization;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -176,7 +177,7 @@ public static partial class Common
                 // It will lead to a recurrence of the bug where cam_mod.ini is written with the wrong encoding
                 // and non-ASCII game paths won't be read and FMs can't be played.
                 Logger.Log(
-                    "Unable to get the system default ANSI encoding, which is required for reading and writing certain files correctly.\r\n" +
+                    $"Unable to get the system default ANSI encoding, which is required for reading and writing certain files correctly.{NL}" +
                     "Returning .NET default encoding, which will probably be UTF8 and may cause issues for locales outside North America.",
                     ex);
                 return Encoding.Default;

@@ -344,13 +344,13 @@ internal static class GameConfigFiles
             }
             catch (Exception ex)
             {
-                Log(ErrorText.ExTry + "unset temp config values\r\n" +
-                    "GameIndex: " + gameIndex + "\r\n" +
+                Log(ErrorText.ExTry + $"unset temp config values{NL}" +
+                    "GameIndex: " + gameIndex + $"{NL}" +
                     "GameExe: " + gameExe,
                     ex);
 
-                Core.Dialogs.ShowError("Error attempting to restore previous game config file settings.\r\n" +
-                                       "Game: " + gameIndex + "\r\n" +
+                Core.Dialogs.ShowError($"Error attempting to restore previous game config file settings.{NL}" +
+                                       "Game: " + gameIndex + $"{NL}" +
                                        "Game exe: " + gameExe);
             }
         }
@@ -590,8 +590,8 @@ internal static class GameConfigFiles
         if (!TryCombineFilePathAndCheckExistence(gamePath, Paths.CamModIni, out string camModIni))
         {
             // The above try-combine thing won't log any exceptions, so let's log this one ourselves.
-            Log(Paths.CamModIni + " not found, or game path not found, or invalid game path.\r\n" +
-                "Game path: " + gamePath + "\r\n" +
+            Log(Paths.CamModIni + $" not found, or game path not found, or invalid game path.{NL}" +
+                "Game path: " + gamePath + $"{NL}" +
                 "Game: " + gameIndex,
                 stackTrace: true
             );

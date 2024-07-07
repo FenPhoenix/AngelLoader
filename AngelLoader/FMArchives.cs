@@ -137,7 +137,7 @@ internal static class FMArchives
 
                     if (!archivesLinesTruncated)
                     {
-                        if (!archivesLines.IsEmpty()) archivesLines += "\r\n";
+                        if (!archivesLines.IsEmpty()) archivesLines += $"{NL}";
                         if (archiveLineCount < maxArchivesLines)
                         {
                             archivesLines += di;
@@ -167,7 +167,7 @@ internal static class FMArchives
                         messageTop:
                         (singleArchive
                             ? LText.AddFMsToSet.AddFM_Dialog_AskMessage
-                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + "\r\n\r\n" + archivesLines + "\r\n\r\n" +
+                            : LText.AddFMsToSet.AddFMs_Dialog_AskMessage) + $"{NL}{NL}" + archivesLines + $"{NL}{NL}" +
                         (singleArchive
                             ? LText.AddFMsToSet.AddFM_Dialog_ChooseArchiveDir
                             : LText.AddFMsToSet.AddFMs_Dialog_ChooseArchiveDir),
@@ -205,8 +205,8 @@ internal static class FMArchives
                     {
                         Log(ErrorText.ExCopy + "archive '" + file + "' to '" + destDir + "'", ex);
                         Core.Dialogs.ShowError(
-                            LText.AlertMessages.AddFM_UnableToCopyFMArchive + "\r\n\r\n" +
-                            LText.AlertMessages.AddFM_FMArchiveFile + file + "\r\n\r\n" +
+                            LText.AlertMessages.AddFM_UnableToCopyFMArchive + $"{NL}{NL}" +
+                            LText.AlertMessages.AddFM_FMArchiveFile + file + $"{NL}{NL}" +
                             LText.AlertMessages.AddFM_DestinationDir + destDir);
                     }
                 }

@@ -133,7 +133,7 @@ internal static class Paths
             }
             catch (Exception ex)
             {
-                Log(ErrorText.Ex + "setting temp path subtree to all non-readonly.\r\n" +
+                Log(ErrorText.Ex + $"setting temp path subtree to all non-readonly.{NL}" +
                     "path was: " + path, ex);
             }
 
@@ -374,9 +374,9 @@ internal static class Paths
             string expectedSystemDirName = new DirectoryInfo(gamePath).Name;
             if (!expectedSystemDirName.EqualsI("System"))
             {
-                Log("Specified Thief 3 executable is not located in a folder named 'System'. This is unexpected, but continuing.\r\n" +
-                    "Thief 3 executable: " + Config.GetGameExe(GameIndex.Thief3) + "\r\n" +
-                    "Thief 3 executable directory full path: " + gamePath + "\r\n" +
+                Log($"Specified Thief 3 executable is not located in a folder named 'System'. This is unexpected, but continuing.{NL}" +
+                    "Thief 3 executable: " + Config.GetGameExe(GameIndex.Thief3) + $"{NL}" +
+                    "Thief 3 executable directory full path: " + gamePath + $"{NL}" +
                     "Thief 3 executable directory name: " + expectedSystemDirName);
             }
 
@@ -452,15 +452,15 @@ internal static class Paths
                 }
                 catch (Exception ex)
                 {
-                    Log(ErrorText.FoundRegKey + "it appears to be an invalid path (Path.Combine() failed).\r\n" +
+                    Log(ErrorText.FoundRegKey + $"it appears to be an invalid path (Path.Combine() failed).{NL}" +
                         ErrorText.RegKeyPath + regKeyStr, ex);
                     return "";
                 }
 
                 if (!File.Exists(soIni))
                 {
-                    Log(ErrorText.FoundRegKey + "couldn't find " + _sneakyOptionsIni + "\r\n" +
-                        ErrorText.RegKeyPath + regKeyStr + "\r\n" +
+                    Log(ErrorText.FoundRegKey + "couldn't find " + _sneakyOptionsIni + $"{NL}" +
+                        ErrorText.RegKeyPath + regKeyStr + $"{NL}" +
                         "Full path was: " + soIni);
                     return "";
                 }

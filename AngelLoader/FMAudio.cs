@@ -125,7 +125,7 @@ internal static class FMAudio
                     if (GameIsRunning(gameExe))
                     {
                         Core.Dialogs.ShowAlert(
-                            gameName + ":\r\n" +
+                            gameName + $":{NL}" +
                             LText.AlertMessages.AudioConversion_GameIsRunning,
                             LText.AlertMessages.Alert);
 
@@ -226,9 +226,9 @@ internal static class FMAudio
                 bool ffProbeNotFound = !File.Exists(Paths.FFprobeExe);
                 if (ffmpegNotFound || ffProbeNotFound)
                 {
-                    string message = "The following executables could not be found:\r\n\r\n" +
-                                     (ffmpegNotFound ? Paths.FFmpegExe + "\r\n" : "") +
-                                     (ffProbeNotFound ? Paths.FFprobeExe + "\r\n" : "") + "\r\n" +
+                    string message = $"The following executables could not be found:{NL}{NL}" +
+                                     (ffmpegNotFound ? Paths.FFmpegExe + $"{NL}" : "") +
+                                     (ffProbeNotFound ? Paths.FFprobeExe + $"{NL}" : "") + $"{NL}" +
                                      ErrorText.Un + "convert audio files.";
 
                     Log(message, stackTrace: true);

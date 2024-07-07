@@ -20,7 +20,6 @@ internal static partial class NativeCommon
     [LibraryImport("kernel32.dll")]
     private static partial SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
-    // From .NET 8, LibraryImport-supporting version
     [LibraryImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static unsafe partial bool QueryFullProcessImageName(SafeHandle hProcess, uint dwFlags, char* lpBuffer, ref uint lpdwSize);

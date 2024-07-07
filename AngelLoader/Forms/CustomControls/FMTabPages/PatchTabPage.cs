@@ -53,25 +53,25 @@ public sealed class PatchTabPage : Lazy_TabsBase
         _page.Patch_NewMantle_CheckBox.Text = LText.PatchTab.NewMantle;
         _owner.MainToolTip.SetToolTip(
             _page.Patch_NewMantle_CheckBox,
-            LText.PatchTab.NewMantle_ToolTip_Checked + "\r\n" +
-            LText.PatchTab.NewMantle_ToolTip_Unchecked + "\r\n" +
+            LText.PatchTab.NewMantle_ToolTip_Checked + $"{NL}" +
+            LText.PatchTab.NewMantle_ToolTip_Unchecked + $"{NL}" +
             LText.PatchTab.NewMantle_ToolTip_NotSet
         );
 
         _page.Patch_PostProc_CheckBox.Text = LText.PatchTab.PostProc;
         _owner.MainToolTip.SetToolTip(
             _page.Patch_PostProc_CheckBox,
-            LText.PatchTab.PostProc_ToolTip_Checked + "\r\n" +
-            LText.PatchTab.PostProc_ToolTip_Unchecked + "\r\n" +
+            LText.PatchTab.PostProc_ToolTip_Checked + $"{NL}" +
+            LText.PatchTab.PostProc_ToolTip_Unchecked + $"{NL}" +
             LText.PatchTab.PostProc_ToolTip_NotSet
         );
 
         _page.Patch_NDSubs_CheckBox.Text = LText.PatchTab.Subtitles;
         _owner.MainToolTip.SetToolTip(
             _page.Patch_NDSubs_CheckBox,
-            LText.PatchTab.Subtitles_ToolTip_Checked + "\r\n" +
-            LText.PatchTab.Subtitles_ToolTip_Unchecked + "\r\n" +
-            LText.PatchTab.Subtitles_ToolTip_NotSet + "\r\n\r\n" +
+            LText.PatchTab.Subtitles_ToolTip_Checked + $"{NL}" +
+            LText.PatchTab.Subtitles_ToolTip_Unchecked + $"{NL}" +
+            LText.PatchTab.Subtitles_ToolTip_NotSet + $"{NL}{NL}" +
             LText.PatchTab.Subtitles_ToolTip_NewDarkNote
         );
 

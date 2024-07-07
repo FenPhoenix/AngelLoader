@@ -138,7 +138,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
             if (result != HResult.Ok)
             {
-                throw Marshal.GetExceptionForHR((int)result) ?? new Exception("Argh!\r\n" + result);
+                throw Marshal.GetExceptionForHR((int)result) ?? new Exception($"Folder browser dialog exception:{NL}" + result);
             }
 
             dialog.SetFolder(item);

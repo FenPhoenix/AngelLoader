@@ -182,7 +182,7 @@ public static class AppUpdate
                     catch (Exception ex) when (ex is not OperationCanceledException)
                     {
                         Log("File not found: '" + Paths.UpdateExe + "'. Couldn't finish the update.");
-                        Core.Dialogs.ShowError(LText.Update.UpdaterExeNotFound + "\r\n\r\n" + Paths.UpdateExe);
+                        Core.Dialogs.ShowError(LText.Update.UpdaterExeNotFound + $"{NL}{NL}" + Paths.UpdateExe);
                         Paths.CreateOrClearTempPath(TempPaths.Update);
                         return;
                     }
@@ -197,7 +197,7 @@ public static class AppUpdate
                 catch (Exception ex) when (ex is not OperationCanceledException)
                 {
                     Log("Unable to start '" + Paths.UpdateExe + "'. Couldn't finish the update.", ex);
-                    Core.Dialogs.ShowError(LText.Update.UpdaterExeStartFailed + "\r\n\r\n" + Paths.UpdateExe);
+                    Core.Dialogs.ShowError(LText.Update.UpdaterExeStartFailed + $"{NL}{NL}" + Paths.UpdateExe);
                     Paths.CreateOrClearTempPath(TempPaths.Update);
                     return;
                 }

@@ -61,9 +61,9 @@ public static class Logger
             {
                 using var sw = new StreamWriter(_logFile, append: true);
 
-                sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + "\r\n" + message);
-                if (ex != null) sw.WriteLine("EXCEPTION:\r\n" + ex);
-                if (stackTrace) sw.WriteLine("STACK TRACE:\r\n" + new StackTrace(1));
+                sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + $"{NL}" + message);
+                if (ex != null) sw.WriteLine($"EXCEPTION:{NL}" + ex);
+                if (stackTrace) sw.WriteLine($"STACK TRACE:{NL}" + new StackTrace(1));
                 sw.WriteLine();
             }
             catch (Exception logEx)

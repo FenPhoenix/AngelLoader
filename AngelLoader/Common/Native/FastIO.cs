@@ -28,10 +28,10 @@ internal static class FastIO
 
         var ex = new Win32Exception(err);
         throw new Win32Exception(err,
-            "System error code: " + err.ToStrInv() + "\r\n" +
-            ex.Message + "\r\n" +
-            "path: '" + path + "'\r\n" +
-            "search pattern: " + searchPattern + "\r\n");
+            "System error code: " + err.ToStrInv() + $"{NL}" +
+            ex.Message + $"{NL}" +
+            "path: '" + path + $"'{NL}" +
+            "search pattern: " + searchPattern + $"{NL}");
     }
 
     internal static List<string> GetDirsTopOnly(

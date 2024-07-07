@@ -79,7 +79,7 @@ internal static class FMDelete
                 (single
                     ? LText.FMDeletion.DeleteFromDB_AlertMessage1_Single
                     : LText.FMDeletion.DeleteFromDB_AlertMessage1_Multiple) +
-                "\r\n\r\n" +
+                $"{NL}{NL}" +
                 (single
                     ? LText.FMDeletion.DeleteFromDB_AlertMessage2_Single
                     : LText.FMDeletion.DeleteFromDB_AlertMessage2_Multiple),
@@ -235,7 +235,7 @@ internal static class FMDelete
 
         (MBoxButton result, bool deleteFromDB) = Core.Dialogs.ShowMultiChoiceDialog(
             message: single
-                ? LText.FMDeletion.AboutToDelete + "\r\n\r\n" + fms[0].GetId()
+                ? LText.FMDeletion.AboutToDelete + $"{NL}{NL}" + fms[0].GetId()
                 : LText.FMDeletion.AboutToDelete_Multiple_BeforeNumber + origCount.ToStrCur() +
                   LText.FMDeletion.AboutToDelete_Multiple_AfterNumber,
             title: single ? LText.AlertMessages.DeleteFMArchive : LText.AlertMessages.DeleteFMArchives,
@@ -372,7 +372,7 @@ internal static class FMDelete
                             catch (Exception ex)
                             {
                                 Log(ErrorText.Ex + "deleting archive '" + archive + "'", ex);
-                                Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + "\r\n\r\n" + archive);
+                                Core.Dialogs.ShowError(LText.AlertMessages.DeleteFM_UnableToDelete + $"{NL}{NL}" + archive);
                             }
                         }
                     });
