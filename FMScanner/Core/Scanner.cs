@@ -4734,20 +4734,18 @@ public sealed partial class Scanner : IDisposable
         Match yearMatch = CopyrightAuthorYearRegex().Match(author);
         if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
-        const string junkChars = "!@#$%^&*";
-        bool authorLastCharIsJunk = false;
-        char lastChar = author[^1];
-        for (int i = 0; i < junkChars.Length; i++)
+        if (author.Length >= 2 && author[^2] == ' ')
         {
-            if (lastChar == junkChars[i])
+            const string junkChars = "!@#$%^&*";
+            char lastChar = author[^1];
+            for (int i = 0; i < junkChars.Length; i++)
             {
-                authorLastCharIsJunk = true;
-                break;
+                if (lastChar == junkChars[i])
+                {
+                    author = author.Substring(0, author.Length - 2);
+                    break;
+                }
             }
-        }
-        if (authorLastCharIsJunk && author[^2] == ' ')
-        {
-            author = author.Substring(0, author.Length - 2);
         }
 
         return author.TrimEnd('.').Trim();
