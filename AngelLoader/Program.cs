@@ -79,6 +79,12 @@ internal static class Program
         System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 #if HIGH_DPI
         System.Windows.Forms.Application.SetHighDpiMode(System.Windows.Forms.HighDpiMode.PerMonitorV2);
+#else
+        // Windows 11 needs to be explicitly told to use DPI-unaware auto-scaling mode for whatever reason.
+        // Windows 10 defaults to DPI-unaware as desired. If you're thinking, "wait, wouldn't this break every
+        // single app in the universe moving from Windows 10 to 11?" Yeah, that's what I'm thinking too. But hey,
+        // Microsoft knows what's best, right? Sheesh...
+        System.Windows.Forms.Application.SetHighDpiMode(System.Windows.Forms.HighDpiMode.DpiUnawareGdiScaled);
 #endif
 #if NET6_0_OR_GREATER
         // It's not like we wouldn't choose a more modern font given a clean slate, but this at least gets
