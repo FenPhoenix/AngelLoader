@@ -446,9 +446,9 @@ internal static class Paths
                     while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (lt.StartsWithI("IgnoreSaveGamePath="))
+                        if (lt.TryGetValueI("IgnoreSaveGamePath=", out string value))
                         {
-                            ignoreSaveGameKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                            ignoreSaveGameKey = value.EqualsTrue();
                             break;
                         }
                         else if (lt.IsIniHeader())

@@ -417,13 +417,13 @@ public static class AppUpdate
                     }
                     else if (updateFile != null)
                     {
-                        if (lineT.StartsWithO("ChangelogUrl="))
+                        if (lineT.TryGetValueO("ChangelogUrl=", out string value))
                         {
-                            updateFile.ChangelogUrl = new Uri(lineT.Substring("ChangelogUrl=".Length));
+                            updateFile.ChangelogUrl = new Uri(value);
                         }
-                        else if (lineT.StartsWithO("DownloadUrl="))
+                        else if (lineT.TryGetValueO("DownloadUrl=", out value))
                         {
-                            updateFile.DownloadUrl = new Uri(lineT.Substring("DownloadUrl=".Length));
+                            updateFile.DownloadUrl = new Uri(value);
                         }
                     }
                 }

@@ -408,27 +408,27 @@ internal static class Import
                                 string lts = lines[i + 1].TrimStart();
                                 string ltb = lts.TrimEnd();
 
-                                if (lts.StartsWithO("comment=\""))
+                                if (lts.TryGetValueO("comment=\"", out string value))
                                 {
-                                    string comment = ltb.Substring(9);
+                                    string comment = value;
                                     if (comment.Length >= 2 && comment[^1] == '\"')
                                     {
                                         comment = comment.Substring(0, comment.Length - 1);
                                         fm.Comment = DLUnescapeChars(comment);
                                     }
                                 }
-                                else if (lts.StartsWithO("title=\""))
+                                else if (lts.TryGetValueO("title=\"", out value))
                                 {
-                                    string title = ltb.Substring(7);
+                                    string title = value;
                                     if (title.Length >= 2 && title[^1] == '\"')
                                     {
                                         title = title.Substring(0, title.Length - 1);
                                         fm.Title = DLUnescapeChars(title);
                                     }
                                 }
-                                else if (lts.StartsWithO("misdate="))
+                                else if (lts.TryGetValueO("misdate=", out value))
                                 {
-                                    ulong.TryParse(ltb.Substring(8), out ulong result);
+                                    ulong.TryParse(value, out ulong result);
                                     try
                                     {
                                         var date = new DateTime(1899, 12, 30).AddDays(result);
@@ -439,9 +439,9 @@ internal static class Import
                                         fm.ReleaseDate.DateTime = null;
                                     }
                                 }
-                                else if (lts.StartsWithO("date="))
+                                else if (lts.TryGetValueO("date=", out value))
                                 {
-                                    ulong.TryParse(ltb.Substring(5), out ulong result);
+                                    ulong.TryParse(value, out ulong result);
                                     try
                                     {
                                         var date = new DateTime(1899, 12, 30).AddDays(result);
@@ -452,9 +452,9 @@ internal static class Import
                                         fm.LastPlayed.DateTime = null;
                                     }
                                 }
-                                else if (lts.StartsWithO("finished="))
+                                else if (lts.TryGetValueO("finished=", out value))
                                 {
-                                    uint.TryParse(ltb.Substring(9), out uint result);
+                                    uint.TryParse(value, out uint result);
                                     // result will be 0 on fail, which is the empty value so it's fine
                                     fm.FinishedOn = result;
                                 }
@@ -536,19 +536,19 @@ internal static class Import
                 while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
-                    if (lt.StartsWithI("thief1dir="))
+                    if (lt.TryGetValueI("thief1dir=", out string value))
                     {
-                        t1Dir = lt.Substring(10).Trim();
+                        t1Dir = value.Trim();
                         t1DirRead = true;
                     }
-                    else if (lt.StartsWithI("thief2dir="))
+                    else if (lt.TryGetValueI("thief2dir=", out value))
                     {
-                        t2Dir = lt.Substring(10).Trim();
+                        t2Dir = value.Trim();
                         t2DirRead = true;
                     }
-                    else if (lt.StartsWithI("shock2dir="))
+                    else if (lt.TryGetValueI("shock2dir=", out value))
                     {
-                        ss2Dir = lt.Substring(10).Trim();
+                        ss2Dir = value.Trim();
                         ss2DirRead = true;
                     }
                     else if (lt.IsIniHeader())
@@ -616,9 +616,9 @@ internal static class Import
                     while (i < lines.Count - 1)
                     {
                         string lineFM = lines[i + 1].Trim();
-                        if (lineFM.StartsWithFast("NiceName="))
+                        if (lineFM.TryGetValueO("NiceName=", out string value))
                         {
-                            fm.Title = lineFM.Substring(9);
+                            fm.Title = value;
                         }
                         /*
                         @Import/BUG: This field can have a leading subfolder!!! like "import_test\1999-06-04_PoorLordBafford.zip"
@@ -627,9 +627,8 @@ internal static class Import
                         archives in different folders with a subdir prefix and a bracketed number after the
                         install dir name and all.
                         */
-                        else if (lineFM.StartsWithFast("Archive="))
+                        else if (lineFM.TryGetValueO("Archive=", out value))
                         {
-                            string archive = lineFM.Substring(8);
                             /*
                             FMSel searches subfolders and its archive fields can have leading relative paths
                             (eg. "import_test\1999-06-04_PoorLordBafford.zip"). Stripping them takes care of the
@@ -637,46 +636,46 @@ internal static class Import
                             that there are duplicate-named files in subfolders, there's nothing we can really do
                             since we don't support this, so just taking the first is as good as any option.
                             */
-                            fm.Archive = archive.GetFileNameFast();
+                            fm.Archive = value.GetFileNameFast();
                         }
-                        else if (lineFM.StartsWithFast("ReleaseDate="))
+                        else if (lineFM.TryGetValueO("ReleaseDate=", out value))
                         {
-                            fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
+                            fm.ReleaseDate.UnixDateString = value;
                         }
-                        else if (lineFM.StartsWithFast("LastStarted="))
+                        else if (lineFM.TryGetValueO("LastStarted=", out value))
                         {
-                            fm.LastPlayed.UnixDateString = lineFM.Substring(12);
+                            fm.LastPlayed.UnixDateString = value;
                         }
-                        else if (lineFM.StartsWithFast("Completed="))
+                        else if (lineFM.TryGetValueO("Completed=", out value))
                         {
-                            int.TryParse(lineFM.Substring(10), out int result);
+                            int.TryParse(value, out int result);
                             // Unfortunately FMSel doesn't let you choose the difficulty you finished on, so
                             // we have to have this fallback value as a best-effort thing.
                             if (result > 0) fm.FinishedOnUnknown = true;
                         }
-                        else if (lineFM.StartsWithFast("Rating="))
+                        else if (lineFM.TryGetValueO("Rating=", out value))
                         {
-                            fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
+                            fm.Rating = int.TryParse(value, out int result) ? result : -1;
                         }
-                        else if (lineFM.StartsWithFast("Notes="))
+                        else if (lineFM.TryGetValueO("Notes=", out value))
                         {
-                            fm.Comment = lineFM.Substring(6)
+                            fm.Comment = value
                                 .Replace(@"\n", @"\r\n")
                                 .Replace(@"\t", "\t")
                                 .Replace(@"\""", "\"")
                                 .Replace(@"\\", "\\");
                         }
-                        else if (lineFM.StartsWithFast("ModExclude="))
+                        else if (lineFM.TryGetValueO("ModExclude=", out value))
                         {
-                            fm.DisabledMods = lineFM.Substring(11);
+                            fm.DisabledMods = value;
                         }
-                        else if (lineFM.StartsWithFast("Tags="))
+                        else if (lineFM.TryGetValueO("Tags=", out value))
                         {
-                            fm.TagsString = lineFM.Substring(5);
+                            fm.TagsString = value;
                         }
-                        else if (lineFM.StartsWithFast("InfoFile="))
+                        else if (lineFM.TryGetValueO("InfoFile=", out value))
                         {
-                            fm.SelectedReadme = lineFM.Substring(9);
+                            fm.SelectedReadme = value;
                         }
                         else if (lineFM.IsIniHeader())
                         {
@@ -763,8 +762,7 @@ internal static class Import
 
             #region Read archive directory
 
-            // Unfortunately NDL doesn't store its archive names, so we have to do a file search
-            // similar to DarkLoader
+            // Unfortunately NDL doesn't store its archive names, so we have to do a file search similar to DarkLoader
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -780,18 +778,18 @@ internal static class Import
                     while (i < lines.Count - 1)
                     {
                         string lc = lines[i + 1];
-                        if (lc.StartsWithFast("ArchiveRoot="))
+                        if (lc.TryGetValueO("ArchiveRoot=", out string value))
                         {
                             archiveRootFound = true;
-                            string dir = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            string dir = value.Trim();
                             if (dir.IsWhiteSpace() || !Directory.Exists(dir)) continue;
                             archiveRoot = dir;
                             TryAddToArchivesHash(dir, archivesDict);
                         }
-                        else if (lc.StartsWithFast("AdditionalArchiveRoots="))
+                        else if (lc.TryGetValueO("AdditionalArchiveRoots=", out value))
                         {
                             additionalArchiveRootsFound = true;
-                            string val = lc.Substring(lc.IndexOf('=') + 1).Trim();
+                            string val = value.Trim();
                             string[] dirs = val.Split(CA_Semicolon, StringSplitOptions.RemoveEmptyEntries);
                             foreach (string dir in dirs)
                             {
@@ -854,48 +852,47 @@ internal static class Import
                     while (i < lines.Count - 1)
                     {
                         string lineFM = lines[i + 1];
-                        if (lineFM.StartsWithFast("NiceName="))
+                        if (lineFM.TryGetValueO("NiceName=", out string value))
                         {
-                            fm.Title = lineFM.Substring(9);
+                            fm.Title = value;
                         }
-                        else if (lineFM.StartsWithFast("ReleaseDate="))
+                        else if (lineFM.TryGetValueO("ReleaseDate=", out value))
                         {
-                            fm.ReleaseDate.UnixDateString = lineFM.Substring(12);
+                            fm.ReleaseDate.UnixDateString = value;
                         }
-                        else if (lineFM.StartsWithFast("LastCompleted="))
+                        else if (lineFM.TryGetValueO("LastCompleted=", out value))
                         {
-                            fm.LastPlayed.UnixDateString = lineFM.Substring(14);
+                            fm.LastPlayed.UnixDateString = value;
                         }
-                        else if (lineFM.StartsWithFast("Finished="))
+                        else if (lineFM.TryGetValueO("Finished=", out value))
                         {
-                            uint.TryParse(lineFM.Substring(9), out uint result);
+                            uint.TryParse(value, out uint result);
                             // result will be 0 on fail, which is the empty value so it's fine
                             fm.FinishedOn = result;
                         }
-                        else if (lineFM.StartsWithFast("Rating="))
+                        else if (lineFM.TryGetValueO("Rating=", out value))
                         {
-                            fm.Rating = int.TryParse(lineFM.Substring(7), out int result) ? result : -1;
+                            fm.Rating = int.TryParse(value, out int result) ? result : -1;
                         }
-                        else if (lineFM.StartsWithFast("Comment="))
+                        else if (lineFM.TryGetValueO("Comment=", out value))
                         {
-                            fm.Comment = lineFM.Substring(8);
+                            fm.Comment = value;
                         }
-                        else if (lineFM.StartsWithFast("ModExclude="))
+                        else if (lineFM.TryGetValueO("ModExclude=", out value))
                         {
-                            fm.DisabledMods = lineFM.Substring(11);
+                            fm.DisabledMods = value;
                         }
-                        else if (lineFM.StartsWithFast("Tags="))
+                        else if (lineFM.TryGetValueO("Tags=", out value))
                         {
-                            string val = lineFM.Substring(5);
-                            if (!val.IsEmpty() && val != "[none]") fm.TagsString = val;
+                            if (!value.IsEmpty() && value != "[none]") fm.TagsString = value;
                         }
-                        else if (lineFM.StartsWithFast("InfoFile="))
+                        else if (lineFM.TryGetValueO("InfoFile=", out value))
                         {
-                            fm.SelectedReadme = lineFM.Substring(9);
+                            fm.SelectedReadme = value;
                         }
-                        else if (lineFM.StartsWithFast("FMSize="))
+                        else if (lineFM.TryGetValueO("FMSize=", out value))
                         {
-                            ulong.TryParse(lineFM.Substring(7), out ulong result);
+                            ulong.TryParse(value, out ulong result);
                             fm.SizeBytes = result;
                         }
                         else if (lineFM.IsIniHeader())
