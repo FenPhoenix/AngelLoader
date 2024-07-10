@@ -493,9 +493,9 @@ internal static class TDM
             {
                 string lineT = line.Trim();
                 if (inVersion &&
-                    lineT.StartsWithO("version="))
+                    lineT.TryGetValueO("version=", out string value))
                 {
-                    string versionString = lineT.Substring(lineT.IndexOf('=') + 1).Trim();
+                    string versionString = value.Trim();
                     Match match = Regex.Match(versionString, "(?<VersionRaw>[0-9]+)");
                     if (match.Success)
                     {

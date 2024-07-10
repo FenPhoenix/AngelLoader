@@ -206,8 +206,8 @@ internal static class FMAudio
                         if (e.Data.IsEmpty()) return;
 
                         string line = e.Data;
-                        if (line.StartsWithO("bits_per_sample=") &&
-                            Int_TryParseInv(line.Substring(line.IndexOf('=') + 1), out int result))
+                        if (line.TryGetValueO("bits_per_sample=", out string value) &&
+                            Int_TryParseInv(value, out int result))
                         {
                             ret = result;
                         }

@@ -46,6 +46,34 @@ public static partial class Utils
 
     #endregion
 
+    internal static bool TryGetValueO(this string line, string key, out string value)
+    {
+        if (line.StartsWithO(key))
+        {
+            value = line.Substring(key.Length);
+            return true;
+        }
+        else
+        {
+            value = "";
+            return false;
+        }
+    }
+
+    internal static bool TryGetValueI(this string line, string key, out string value)
+    {
+        if (line.StartsWithI(key))
+        {
+            value = line.Substring(key.Length);
+            return true;
+        }
+        else
+        {
+            value = "";
+            return false;
+        }
+    }
+
     private const int _singleLineCommentMaxLength = 100;
 
     /// <summary>

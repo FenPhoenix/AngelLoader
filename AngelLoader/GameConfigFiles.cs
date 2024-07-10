@@ -218,42 +218,43 @@ internal static class GameConfigFiles
             if (lineT.EqualsI("[Loader]"))
             {
                 /*
-                 Conforms to the way Sneaky Upgrade reads it:
-                 - Whitespace allowed on both sides of section headers (but not within brackets)
-                 - Section headers and keys are case-insensitive
-                 - Key-value separator is '='
-                 - Whitespace allowed on left side of key (but not right side before '=')
-                 - Case-insensitive "true" is true, anything else is false
-                 - If duplicate keys exist, the earliest one is used
+                Conforms to the way Sneaky Upgrade reads it:
+                - Whitespace allowed on both sides of section headers (but not within brackets)
+                - Section headers and keys are case-insensitive
+                - Key-value separator is '='
+                - Whitespace allowed on left side of key (but not right side before '=')
+                - Case-insensitive "true" is true, anything else is false
+                - Whitespace is NOT allowed after boolean value ("true " is false)
+                - If duplicate keys exist, the earliest one is used
                 */
                 while (i < lines.Count - 1)
                 {
-                    string lt = lines[i + 1].Trim();
+                    string lts = lines[i + 1].TrimStart();
                     if (!ignoreSavesKeyFound &&
-                        !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_IgnoreSavesKey))
+                        lts.TryGetValueI(key_IgnoreSavesKey, out string value))
                     {
-                        ignoreSavesKey = lt.Substring(lt.IndexOf('=') + 1).EqualsTrue();
+                        ignoreSavesKey = value.EqualsTrue();
                         ignoreSavesKeyFound = true;
                     }
                     else if (!fmInstPathFound &&
-                             !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_InstallPath))
+                             lts.TryGetValueI(key_InstallPath, out value))
                     {
-                        fmInstPath = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                        fmInstPath = value.Trim();
                         fmInstPathFound = true;
                     }
                     else if (!externSelectorFound &&
-                             !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_ExternSelector))
+                             lts.TryGetValueI(key_ExternSelector, out value))
                     {
-                        prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1).Trim();
+                        prevFMSelectorValue = value.Trim();
                         externSelectorFound = true;
                     }
                     else if (!alwaysShowLoaderFound &&
-                             !lt.IsEmpty() && lt[0] != '[' && lt.StartsWithI(key_AlwaysShow))
+                             lts.TryGetValueI(key_AlwaysShow, out value))
                     {
-                        alwaysShowLoader = lt.Substring(lt.IndexOf('=') + 1).Trim().EqualsTrue();
+                        alwaysShowLoader = value.EqualsTrue();
                         alwaysShowLoaderFound = true;
                     }
-                    else if (lt.IsIniHeader())
+                    else if (lts.IsIniHeader())
                     {
                         break;
                     }
@@ -791,9 +792,9 @@ internal static class GameConfigFiles
                 while (i < lines.Count - 1)
                 {
                     string lt = lines[i + 1].Trim();
-                    if (lt.StartsWithI(key_ExternSelector))
+                    if (lt.TryGetValueI(key_ExternSelector, out string value))
                     {
-                        prevFMSelectorValue = lt.Substring(lt.IndexOf('=') + 1);
+                        prevFMSelectorValue = value;
                         break;
                     }
                     else if (lt.IsIniHeader())

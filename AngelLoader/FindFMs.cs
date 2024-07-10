@@ -872,18 +872,20 @@ internal static class FindFMs
             return null;
         }
 
-        if (lines.Count < 2 || !lines[0].StartsWithI("Name=") || !lines[1].StartsWithI("Archive="))
+        if (lines.Count < 2 ||
+            !lines[0].TryGetValueI("Name=", out string installedName) ||
+            !lines[1].TryGetValueI("Archive=", out string archiveName))
         {
             return FixUp();
         }
 
-        string installedName = lines[0].Substring(lines[0].IndexOf('=') + 1).Trim();
+        installedName = installedName.Trim();
         if (!installedName.EqualsI(fm.InstalledDir))
         {
             return FixUp();
         }
 
-        string archiveName = lines[1].Substring(lines[1].IndexOf('=') + 1).Trim();
+        archiveName = archiveName.Trim();
         if (archiveName.IsEmpty())
         {
             return FixUp();
