@@ -419,13 +419,16 @@ internal static partial class FMInstallAndPlay
                         string fn = entry.FullName;
                         if (!fn.Rel_ContainsDirSep())
                         {
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath, _darkSavesDir));
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, _darkSavesDir, fn), overwrite: true, zipExtractTempBuffer);
+                            string savesFullPath = Path.Combine(fmInstalledPath, _darkSavesDir);
+                            string finalFilePath = GetExtractedNameOrThrowIfMalicious(savesFullPath, fn);
+                            Directory.CreateDirectory(savesFullPath);
+                            entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
                         }
                         else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                         {
+                            string finalFilePath = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fn);
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
                         }
 
                         if (ct.IsCancellationRequested) return;
@@ -451,8 +454,9 @@ internal static partial class FMInstallAndPlay
                                  (fm.Game == Game.SS2 &&
                                   (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                             {
+                                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fn);
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                                entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, fn), overwrite: true, zipExtractTempBuffer);
+                                entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
                             }
 
                             if (ct.IsCancellationRequested) return;
@@ -519,12 +523,12 @@ internal static partial class FMInstallAndPlay
                                 continue;
                             }
 
+                            string finalFileName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, efn);
                             if (efn.Rel_ContainsDirSep())
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                             }
-
-                            entry.ExtractToFile_Fast(Path.Combine(fmInstalledPath, efn), overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
 
                             if (ct.IsCancellationRequested) return;
                         }
@@ -538,6 +542,9 @@ internal static partial class FMInstallAndPlay
                 {
                     if (fileExcludes.Contains(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
                     {
+                        // @ZipSafety: This delete is safe, because we're only deleting files that have come straight from a GetFiles() call.
+                        // So we know they're in the actual folder.
+
                         // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
                         // If we have crf files replacing dirs, the empty dir will override the crf. We want
                         // to store whether dirs were actually removed so we can remove them again.

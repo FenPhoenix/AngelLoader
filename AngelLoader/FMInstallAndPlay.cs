@@ -1851,22 +1851,6 @@ internal static partial class FMInstallAndPlay
         return true;
     }
 
-    private static string GetExtractedNameOrThrowIfMalicious(string fmInstalledPathWithTrailingSep, string fileName)
-    {
-        // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't
-        // worry about it. This is basically what ZipFileExtensions.ExtractToDirectory() does.
-
-        string extractedName = Path.Combine(fmInstalledPathWithTrailingSep, fileName);
-        string full = Path.GetFullPath(extractedName);
-
-        return full.PathStartsWithI(fmInstalledPathWithTrailingSep)
-            ? extractedName
-            : throw new IOException(
-                $"Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).{NL}" +
-                "Entry full file name: " + fileName + $"{NL}" +
-                "Path where it wanted to end up: " + full);
-    }
-
     private static (bool Canceled, bool InstallFailed)
     InstallFMZip(
         string fmArchivePath,

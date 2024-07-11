@@ -1522,9 +1522,9 @@ public sealed partial class Scanner : IDisposable
                     while (rarReader.MoveToNextEntry())
                     {
                         string fn = rarReader.Entry.Key;
-                        string finalFileName = Path.Combine(_fmWorkingPath, fn);
                         if (fileNamesHash.Contains(fn))
                         {
+                            string finalFileName = GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
                             string dir = Path.GetDirectoryName(finalFileName)!;
                             Directory.CreateDirectory(dir);
                             rarReader.ExtractToFile_Fast(finalFileName, overwrite: true, DiskFileStreamBuffer);
@@ -1535,13 +1535,14 @@ public sealed partial class Scanner : IDisposable
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 string fmType = _fmFormat == FMFormat.SevenZip ? "7z" : "rar";
-                Log(fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction", ex);
+                string exType = _fmFormat == FMFormat.SevenZip ? "7z.exe" : "rar";
+                Log(fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction", ex);
                 return UnsupportedZip(
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: ex,
                     errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + ": fm is " + fmType + ", exception in 7z.exe extraction"
+                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction"
                 );
             }
 
