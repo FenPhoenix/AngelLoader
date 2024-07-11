@@ -1,6 +1,7 @@
 ﻿global using static AL_Common.FullyGlobal;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -146,8 +147,6 @@ public static partial class Common
 
     public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
-    #endregion
-
     // .NET Core changed the Encoding.Default return value from legacy ANSI to UTF8. This is disastrous for us
     // because we need to read and write certain files that are written in Framework Encoding.Default (ANSI).
     // So implement a manual version here...
@@ -184,4 +183,36 @@ public static partial class Common
             }
         }
     }
+
+    // @ZipSafety: Make sure all calls to this method are handling the possible exception here! (looking at you, FMBackupAndRestore)
+    // @ZipSafety: The possibility of forgetting to call this method is a problem. Architect it to reduce the likelihood somehow?
+    /// <summary>
+    /// Zip Slip prevention.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    /// <exception cref="IOException"></exception>
+    public static string GetExtractedNameOrThrowIfMalicious(string path, string fileName)
+    {
+        // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't worry about it.
+        // This is basically what ZipFileExtensions.ExtractToDirectory() does.
+
+        if (path.Length > 0 && !path[^1].IsDirSep())
+        {
+            path += "\\";
+        }
+
+        string extractedName = Path.Combine(path, fileName);
+        string full = Path.GetFullPath(extractedName);
+
+        return full.PathStartsWithI(path)
+            ? extractedName
+            : throw new IOException(
+                $"Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).{NL}" +
+                "Entry full file name: " + fileName + $"{NL}" +
+                "Path where it wanted to end up: " + full);
+    }
+
+    #endregion
 }

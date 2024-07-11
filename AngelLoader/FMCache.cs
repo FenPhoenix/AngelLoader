@@ -366,9 +366,10 @@ internal static class FMCache
         {
             foreach (NameAndIndex f in htmlRefFiles)
             {
+                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                archive.Entries[f.Index].ExtractToFile_Fast(Path.Combine(fmCachePath, f.Name), overwrite: true);
+                archive.Entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true);
             }
         }
     }
@@ -452,9 +453,10 @@ internal static class FMCache
         {
             foreach (NameAndIndex f in htmlRefFiles)
             {
+                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                entries[f.Index].ExtractToFile_Fast(Path.Combine(fmCachePath, f.Name), overwrite: true);
+                entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true);
             }
         }
     }
@@ -512,7 +514,7 @@ internal static class FMCache
                     ? Path.Combine(fmCachePath, t3ReadmeDir)
                     : fmCachePath);
 
-                string fileNameFull = Path.Combine(fmCachePath, fn);
+                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                 entry.ExtractToFile_Fast(fileNameFull, overwrite: true);
                 readmes.Add(fn);
             }
@@ -559,7 +561,7 @@ internal static class FMCache
                     ? Path.Combine(fmCachePath, t3ReadmeDir)
                     : fmCachePath);
 
-                string fileNameFull = Path.Combine(fmCachePath, fn);
+                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                 entry.ExtractToFile_Fast(fileNameFull, overwrite: true);
                 readmes.Add(fn);
             }
@@ -626,7 +628,7 @@ internal static class FMCache
                             ? Path.Combine(fmCachePath, t3ReadmeDir)
                             : fmCachePath);
 
-                        string fileNameFull = Path.Combine(fmCachePath, fn);
+                        string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                         reader.ExtractToFile_Fast(fileNameFull, overwrite: true);
                         File_UnSetReadOnly(fileNameFull);
                         readmes.Add(fn);
