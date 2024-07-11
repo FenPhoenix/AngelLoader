@@ -18,9 +18,14 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader;
 
-// @BetterErrors(FMCache)
-// We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can
-// view the log
+/*
+@BetterErrors(FMCache)
+We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can view the
+log.
+
+@BetterErrors(FMCache)/@ZipSafety(FMCache):
+Handle zip slip fails explicitly - don't fail the whole thing, but do log it
+*/
 
 internal static class FMCache
 {

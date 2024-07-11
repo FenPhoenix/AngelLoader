@@ -420,13 +420,19 @@ internal static partial class FMInstallAndPlay
                         if (!fn.Rel_ContainsDirSep())
                         {
                             string savesFullPath = Path.Combine(fmInstalledPath, _darkSavesDir);
-                            string finalFilePath = GetExtractedNameOrThrowIfMalicious(savesFullPath, fn);
+                            if (!TryGetExtractedNameOrFailIfMalicious(savesFullPath, fn, out string finalFilePath))
+                            {
+                                continue;
+                            }
                             Directory.CreateDirectory(savesFullPath);
                             entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
                         }
                         else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                         {
-                            string finalFilePath = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fn);
+                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFilePath))
+                            {
+                                continue;
+                            }
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                             entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
                         }
@@ -454,7 +460,10 @@ internal static partial class FMInstallAndPlay
                                  (fm.Game == Game.SS2 &&
                                   (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                             {
-                                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fn);
+                                if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFileName))
+                                {
+                                    continue;
+                                }
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
                                 entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
                             }
@@ -523,7 +532,10 @@ internal static partial class FMInstallAndPlay
                                 continue;
                             }
 
-                            string finalFileName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, efn);
+                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, efn, out string finalFileName))
+                            {
+                                continue;
+                            }
                             if (efn.Rel_ContainsDirSep())
                             {
                                 Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
