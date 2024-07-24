@@ -302,16 +302,21 @@ internal static class FMCache
 
         using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
+        var entries = archive.Entries;
+
         foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
         {
             if (!f.ExtIsHtml()) continue;
 
             string html = File.ReadAllText(f);
 
-            for (int i = 0; i < archive.Entries.Count; i++)
+            for (int i = 0; i < entries.Count; i++)
             {
-                ZipArchiveEntry e = archive.Entries[i];
-                if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
+                ZipArchiveEntry e = entries[i];
+
+                string name = e.Name;
+
+                if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
                 {
                     continue;
                 }
@@ -321,7 +326,7 @@ internal static class FMCache
                 // narrow it down to these because a) we want to future-proof against any new ways to link
                 // that might come about, and b) HTML files can link out to other formats like CSS and
                 // who knows what else, and we don't want to write parsers for every format under the sun.
-                if (html.ContainsI(e.Name) && htmlRefFiles.TrueForAll(x => x.Index != i))
+                if (html.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
                 {
                     htmlRefFiles.Add(new NameAndIndex(e.FullName, i));
                 }
@@ -339,7 +344,7 @@ internal static class FMCache
                     continue;
                 }
 
-                ZipArchiveEntry re = archive.Entries[f.Index];
+                ZipArchiveEntry re = entries[f.Index];
 
                 // 128k is generous. Any text or markup sort of file should be WELL under that.
                 if (re.Length > ByteSize.KB * 128) continue;
@@ -351,15 +356,18 @@ internal static class FMCache
                     content = sr.ReadToEnd();
                 }
 
-                for (int ei = 0; ei < archive.Entries.Count; ei++)
+                for (int ei = 0; ei < entries.Count; ei++)
                 {
-                    ZipArchiveEntry e = archive.Entries[ei];
-                    if (e.Name.IsEmpty() || !e.Name.Contains('.') || _htmlRefExcludes.Any(e.Name.EndsWithI))
+                    ZipArchiveEntry e = entries[ei];
+
+                    string name = e.Name;
+
+                    if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
                     {
                         continue;
                     }
 
-                    if (content.ContainsI(e.Name) && htmlRefFiles.TrueForAll(x => x.Index != ei))
+                    if (content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != ei))
                     {
                         htmlRefFiles.Add(new NameAndIndex(e.FullName, ei));
                     }
@@ -374,7 +382,7 @@ internal static class FMCache
                 string finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                archive.Entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true);
+                entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true);
             }
         }
     }
@@ -393,23 +401,25 @@ internal static class FMCache
 
             string html = File.ReadAllText(f);
 
-            for (int i = 0; i < archive.Entries.Count; i++)
+            for (int i = 0; i < entries.Length; i++)
             {
-                var e = entries[i];
+                RarArchiveEntry e = entries[i];
 
                 string name = e.Key.GetDirNameFast();
 
-                if (!name.IsEmpty() && name.Contains('.') && !_htmlRefExcludes.Any(name.EndsWithI))
+                if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
                 {
-                    // We just do a dumb string-match search through the whole file. While it's true that HTML
-                    // files have their links in specific structures (href tags etc.), we don't attempt to
-                    // narrow it down to these because a) we want to future-proof against any new ways to link
-                    // that might come about, and b) HTML files can link out to other formats like CSS and
-                    // who knows what else, and we don't want to write parsers for every format under the sun.
-                    if (html.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
-                    {
-                        htmlRefFiles.Add(new NameAndIndex(e.Key, i));
-                    }
+                    continue;
+                }
+
+                // We just do a dumb string-match search through the whole file. While it's true that HTML
+                // files have their links in specific structures (href tags etc.), we don't attempt to
+                // narrow it down to these because a) we want to future-proof against any new ways to link
+                // that might come about, and b) HTML files can link out to other formats like CSS and
+                // who knows what else, and we don't want to write parsers for every format under the sun.
+                if (html.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
+                {
+                    htmlRefFiles.Add(new NameAndIndex(e.Key, i));
                 }
             }
         }
@@ -437,10 +447,12 @@ internal static class FMCache
                     content = sr.ReadToEnd();
                 }
 
-                for (int ei = 0; ei < archive.Entries.Count; ei++)
+                for (int ei = 0; ei < entries.Length; ei++)
                 {
                     RarArchiveEntry e = entries[ei];
+
                     string name = e.Key.GetDirNameFast();
+
                     if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
                     {
                         continue;
