@@ -91,42 +91,6 @@ internal static class FMCache
     // a button, so don't worry about it
     internal static async Task<CacheData> GetCacheableData(FanMission fm, bool refreshCache)
     {
-        #region Local functions
-
-        // Does not check basePath for existence, so check it first before calling.
-        static List<string> GetValidReadmes(string basePath)
-        {
-            string[] readmePaths =
-            {
-                basePath,
-                Path.Combine(basePath, _t3ReadmeDir1),
-                Path.Combine(basePath, _t3ReadmeDir2),
-            };
-
-            var readmes = new List<string>();
-
-            for (int i = 0; i < readmePaths.Length; i++)
-            {
-                string readmePath = readmePaths[i];
-
-                // We assume the first dir exists (to prevent an expensive duplicate check), so only check for others
-                if (i == 0 || Directory.Exists(readmePath))
-                {
-                    foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
-                    {
-                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
-                        {
-                            readmes.Add(fn.Substring(basePath.Length + 1));
-                        }
-                    }
-                }
-            }
-
-            return readmes;
-        }
-
-        #endregion
-
         if (fm.Game == Game.Unsupported)
         {
             if (!fm.InstalledDir.IsEmpty()) ClearCacheDir(fm);
@@ -199,22 +163,11 @@ internal static class FMCache
                         // going to be faster than chugging through the whole thing over and over and over for
                         // each new file we find we need
 
-                        // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-                        bool htmlReadmeExists = false;
-                        for (int i = 0; i < readmes.Count; i++)
-                        {
-                            if (readmes[i].ExtIsHtml())
-                            {
-                                htmlReadmeExists = true;
-                                break;
-                            }
-                        }
-
-                        if (htmlReadmeExists && Directory.Exists(fmCachePath))
+                        if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                         {
                             try
                             {
-                                ExtractHTMLRefFiles(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
+                                ExtractHTMLRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
                             }
                             catch (Exception ex)
                             {
@@ -227,17 +180,15 @@ internal static class FMCache
                 {
                     byte[] rarExtractTempBuffer = new byte[StreamCopyBufferSize];
 
-                    bool isSolid;
                     RarArchive? archive = null;
                     try
                     {
                         archive = RarArchive.Open(fmArchivePath);
                         int entriesCount = archive.Entries.Count;
-                        isSolid = archive.IsSolid;
 
                         // @HTMLRefExtraction(FMCache):
                         // TODO: Support HTML ref extraction for solid .rar files too
-                        if (isSolid)
+                        if (archive.IsSolid)
                         {
                             archive.Dispose();
                             using var fs = File_OpenReadFast(fmArchivePath);
@@ -248,24 +199,12 @@ internal static class FMCache
                         {
                             RarExtract(archive, fmCachePath, readmes, rarExtractTempBuffer);
 
-                            // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-                            bool htmlReadmeExists = false;
-                            for (int i = 0; i < readmes.Count; i++)
-                            {
-                                if (readmes[i].ExtIsHtml())
-                                {
-                                    htmlReadmeExists = true;
-                                    break;
-                                }
-                            }
-
-                            if (htmlReadmeExists && Directory.Exists(fmCachePath))
+                            if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                             {
                                 try
                                 {
                                     archive.Dispose();
-                                    byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
-                                    ExtractHTMLRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer, fileStreamBuffer);
+                                    ExtractHTMLRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
                                 }
                                 catch (Exception ex)
                                 {
@@ -282,6 +221,19 @@ internal static class FMCache
                 else
                 {
                     await SevenZipExtract(fmArchivePath, fmCachePath, readmes);
+
+                    if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                    {
+                        try
+                        {
+                            byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
+                            ExtractHTMLRefFiles_7z(fmArchivePath, fmCachePath, fileStreamBuffer);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ex: ex);
+                        }
+                    }
                 }
 
                 fm.NoReadmes = readmes.Count == 0;
@@ -296,15 +248,61 @@ internal static class FMCache
             Log(ex: ex);
             return new CacheData();
         }
+
+        // Does not check basePath for existence, so check it first before calling.
+        static List<string> GetValidReadmes(string basePath)
+        {
+            string[] readmePaths =
+            {
+                basePath,
+                Path.Combine(basePath, _t3ReadmeDir1),
+                Path.Combine(basePath, _t3ReadmeDir2),
+            };
+
+            var readmes = new List<string>();
+
+            for (int i = 0; i < readmePaths.Length; i++)
+            {
+                string readmePath = readmePaths[i];
+
+                // We assume the first dir exists (to prevent an expensive duplicate check), so only check for others
+                if (i == 0 || Directory.Exists(readmePath))
+                {
+                    foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
+                    {
+                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
+                        {
+                            readmes.Add(fn.Substring(basePath.Length + 1));
+                        }
+                    }
+                }
+            }
+
+            return readmes;
+        }
+
+        // Guard check so we don't do useless HTML work if we don't have any HTML readmes
+        static bool HtmlReadmeExists(List<string> readmes)
+        {
+            for (int i = 0; i < readmes.Count; i++)
+            {
+                if (readmes[i].ExtIsHtml())
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 
     #region Extract
 
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
-    private static void ExtractHTMLRefFiles(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void ExtractHTMLRefFiles_Zip(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
-        var htmlRefFiles = new List<NameAndIndex>();
+        List<NameAndIndex> htmlRefFiles = new();
 
         using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
 
@@ -319,23 +317,7 @@ internal static class FMCache
             for (int i = 0; i < entries.Count; i++)
             {
                 ZipArchiveEntry e = entries[i];
-
-                string name = e.Name;
-
-                if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
-                {
-                    continue;
-                }
-
-                // We just do a dumb string-match search through the whole file. While it's true that HTML
-                // files have their links in specific structures (href tags etc.), we don't attempt to
-                // narrow it down to these because a) we want to future-proof against any new ways to link
-                // that might come about, and b) HTML files can link out to other formats like CSS and
-                // who knows what else, and we don't want to write parsers for every format under the sun.
-                if (html.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
-                {
-                    htmlRefFiles.Add(new NameAndIndex(e.FullName, i));
-                }
+                AddHtmlRefFile(name: e.Name, fullName: e.FullName, i, html, htmlRefFiles);
             }
         }
 
@@ -344,16 +326,9 @@ internal static class FMCache
             for (int ri = 0; ri < htmlRefFiles.Count; ri++)
             {
                 NameAndIndex f = htmlRefFiles[ri];
-                if (_htmlRefExcludes.Any(f.Name.EndsWithI) ||
-                    _imageFileExtensions.Any(f.Name.EndsWithI))
-                {
-                    continue;
-                }
-
                 ZipArchiveEntry re = entries[f.Index];
 
-                // 128k is generous. Any text or markup sort of file should be WELL under that.
-                if (re.Length > ByteSize.KB * 128) continue;
+                if (RefFileExcluded(f.Name, re.Length)) continue;
 
                 string content;
                 using (var es = re.Open())
@@ -365,18 +340,7 @@ internal static class FMCache
                 for (int ei = 0; ei < entries.Count; ei++)
                 {
                     ZipArchiveEntry e = entries[ei];
-
-                    string name = e.Name;
-
-                    if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
-                    {
-                        continue;
-                    }
-
-                    if (content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != ei))
-                    {
-                        htmlRefFiles.Add(new NameAndIndex(e.FullName, ei));
-                    }
+                    AddHtmlRefFile(name: e.Name, fullName: e.FullName, ei, content, htmlRefFiles);
                 }
             }
         }
@@ -393,9 +357,9 @@ internal static class FMCache
         }
     }
 
-    private static void ExtractHTMLRefFiles_Rar(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void ExtractHTMLRefFiles_Rar(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
     {
-        var htmlRefFiles = new List<NameAndIndex>();
+        List<NameAndIndex> htmlRefFiles = new();
 
         using RarArchive archive = RarArchive.Open(fmArchivePath);
 
@@ -410,23 +374,7 @@ internal static class FMCache
             for (int i = 0; i < entries.Length; i++)
             {
                 RarArchiveEntry e = entries[i];
-
-                string name = e.Key.GetDirNameFast();
-
-                if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
-                {
-                    continue;
-                }
-
-                // We just do a dumb string-match search through the whole file. While it's true that HTML
-                // files have their links in specific structures (href tags etc.), we don't attempt to
-                // narrow it down to these because a) we want to future-proof against any new ways to link
-                // that might come about, and b) HTML files can link out to other formats like CSS and
-                // who knows what else, and we don't want to write parsers for every format under the sun.
-                if (html.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
-                {
-                    htmlRefFiles.Add(new NameAndIndex(e.Key, i));
-                }
+                AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, i, html, htmlRefFiles);
             }
         }
 
@@ -435,16 +383,9 @@ internal static class FMCache
             for (int ri = 0; ri < htmlRefFiles.Count; ri++)
             {
                 NameAndIndex f = htmlRefFiles[ri];
-                if (_htmlRefExcludes.Any(f.Name.EndsWithI) ||
-                    _imageFileExtensions.Any(f.Name.EndsWithI))
-                {
-                    continue;
-                }
-
                 RarArchiveEntry re = entries[f.Index];
 
-                // 128k is generous. Any text or markup sort of file should be WELL under that.
-                if (re.Size > ByteSize.KB * 128) continue;
+                if (RefFileExcluded(f.Name, re.Size)) continue;
 
                 string content;
                 using (var es = re.OpenEntryStream())
@@ -456,18 +397,7 @@ internal static class FMCache
                 for (int ei = 0; ei < entries.Length; ei++)
                 {
                     RarArchiveEntry e = entries[ei];
-
-                    string name = e.Key.GetDirNameFast();
-
-                    if (name.IsEmpty() || !name.Contains('.') || _htmlRefExcludes.Any(name.EndsWithI))
-                    {
-                        continue;
-                    }
-
-                    if (content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != ei))
-                    {
-                        htmlRefFiles.Add(new NameAndIndex(e.Key, ei));
-                    }
+                    AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, ei, content, htmlRefFiles);
                 }
             }
         }
@@ -481,6 +411,34 @@ internal static class FMCache
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                 entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
             }
+        }
+    }
+
+    private static void ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath, byte[] fileStreamBuffer)
+    {
+        // @HTMLREF: Extract the entire archive to a temp folder here, with progress box
+        // Then do an on-disk version of the html reference file search
+    }
+
+    private static bool RefFileExcluded(string name, long size) =>
+        _htmlRefExcludes.Any(name.EndsWithI) ||
+        _imageFileExtensions.Any(name.EndsWithI) ||
+        // 128k is generous. Any text or markup sort of file should be WELL under that.
+        size > ByteSize.KB * 128;
+
+    private static void AddHtmlRefFile(string name, string fullName, int i, string content, List<NameAndIndex> htmlRefFiles)
+    {
+        /*
+        We just do a dumb string-match search through the whole file. While it's true that HTML files have their
+        links in specific structures (href tags etc.), we don't attempt to narrow it down to these because a) we
+        want to future-proof against any new ways to link that might come about, and b) HTML files can link out
+        to other formats like CSS and who knows what else, and we don't want to write parsers for every format
+        under the sun.
+        */
+        if (!name.IsEmpty() && name.Contains('.') && !_htmlRefExcludes.Any(name.EndsWithI) &&
+            content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
+        {
+            htmlRefFiles.Add(new NameAndIndex(fullName, i));
         }
     }
 
