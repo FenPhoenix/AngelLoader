@@ -230,7 +230,6 @@ public static class BinaryRead
             int n = stream.Read(buffer.Buffer, bytesRead, numBytes - bytesRead);
             if (n == 0) ThrowHelper.EndOfFile();
             bytesRead += n;
-        }
-        while (bytesRead < numBytes);
+        } while (bytesRead < numBytes);
     }
 }

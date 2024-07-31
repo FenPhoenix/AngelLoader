@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using AL_Common;
 using static AL_Common.Common;
 
 namespace AngelLoader;
@@ -36,24 +37,23 @@ internal static class WriConversion
         const ushort WIDENT_NO_OLE_VALUE = 48690;  // 0137062 octal
         const ushort WTOOL_VALUE = 43776;          // 0125400 octal
 
-        // Framework BinaryReader is fine here, because this is run for exactly one FM ever, so who cares
-        using var br = new BinaryReader(stream, Encoding.ASCII, leaveOpen: true);
+        BinaryBuffer buffer = new();
 
-        ushort wIdent = br.ReadUInt16();
+        ushort wIdent = BinaryRead.ReadUInt16(stream, buffer);
         if (wIdent != WIDENT_VALUE && wIdent != WIDENT_NO_OLE_VALUE)
         {
             return fail;
         }
 
-        if (br.ReadUInt16() != 0) return fail; // dty
-        if (br.ReadUInt16() != WTOOL_VALUE) return fail; // wTool
-        if (br.ReadUInt16() != 0) return fail; // Reserved 1
-        if (br.ReadUInt16() != 0) return fail; // Reserved 2
-        if (br.ReadUInt16() != 0) return fail; // Reserved 3
-        if (br.ReadUInt16() != 0) return fail; // Reserved 4
-        uint fcMac = br.ReadUInt32();
+        if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // dty
+        if (BinaryRead.ReadUInt16(stream, buffer) != WTOOL_VALUE) return fail; // wTool
+        if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // Reserved 1
+        if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // Reserved 2
+        if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // Reserved 3
+        if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // Reserved 4
+        uint fcMac = BinaryRead.ReadUInt32(stream, buffer);
         // 2 bytes = 1 word = 16 bits (equivalent to ReadUInt16())
-        br.BaseStream.Position +=
+        stream.Position +=
             2 + // pnPara
             2 + // pnFntb
             2 + // pnSep
@@ -61,7 +61,7 @@ internal static class WriConversion
             2 + // pnPgtb
             2 + // pnFfntb
             66; // szSsht (not used)
-        if (br.ReadUInt16() == 0) return fail; // pnMac: 0 means Word file, not Write file
+        if (BinaryRead.ReadUInt16(stream, buffer) == 0) return fail; // pnMac: 0 means Word file, not Write file
 
         // Headers are always 128 bytes long I think?!
         return (true, 128, fcMac);
