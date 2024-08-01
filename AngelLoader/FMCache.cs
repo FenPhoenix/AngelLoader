@@ -199,7 +199,7 @@ internal static class FMCache
                             {
                                 try
                                 {
-                                    ExtractHTMLRefFiles_RarSolid(fmArchivePath, fmCachePath);
+                                    await ExtractHTMLRefFiles_RarSolid(fmArchivePath, fmCachePath);
                                 }
                                 catch (Exception ex)
                                 {
@@ -238,8 +238,7 @@ internal static class FMCache
                     {
                         try
                         {
-                            byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
-                            ExtractHTMLRefFiles_7z(fmArchivePath, fmCachePath, fileStreamBuffer);
+                            await ExtractHTMLRefFiles_7z(fmArchivePath, fmCachePath);
                         }
                         catch (Exception ex)
                         {
@@ -426,7 +425,7 @@ internal static class FMCache
         }
     }
 
-    private static async void ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
+    private static async Task ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
         // @HTMLREF: Support HTML ref extraction for solid .rar files too
     }
@@ -434,7 +433,7 @@ internal static class FMCache
     // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
     // @HTMLREF: Dedupe solid ref extract code to the extent possible
     private static async Task<(bool Canceled, bool Failed)>
-    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath, byte[] fileStreamBuffer)
+    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
         /*
         @HTMLREF: Decide what to do about progress box
