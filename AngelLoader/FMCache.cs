@@ -186,13 +186,12 @@ internal static class FMCache
                         archive = RarArchive.Open(fmArchivePath);
                         int entriesCount = archive.Entries.Count;
 
-                        // @HTMLRefExtraction(FMCache):
-                        // TODO: Support HTML ref extraction for solid .rar files too
                         if (archive.IsSolid)
                         {
                             archive.Dispose();
                             using var fs = File_OpenReadFast(fmArchivePath);
                             using var reader = RarReader.Open(fs);
+                            // @HTMLREF: Support HTML ref extraction for solid .rar files too
                             await RarExtractSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
                         }
                         else
@@ -414,10 +413,151 @@ internal static class FMCache
         }
     }
 
-    private static void ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath, byte[] fileStreamBuffer)
+    // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
+    // @HTMLREF: Dedupe solid ref extract code to the extent possible
+    private static async Task<(bool Canceled, bool Failed)>
+    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath, byte[] fileStreamBuffer)
     {
-        // @HTMLREF: Extract the entire archive to a temp folder here, with progress box
-        // Then do an on-disk version of the html reference file search
+        /*
+        @HTMLREF: Decide what to do about progress box
+        Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
+        -We could leave the box up, but it would still necessarily reset to 0%.
+        -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
+         fancy, but meh.
+        -We could have this part be indeterminate progress, but it might take a long time and so that would be
+         sub-optimal UX.
+        */
+
+        // Critical
+        Core.View.Invoke(new Action(static () => Core.View.Show()));
+        // Block the view immediately after starting another thread, because otherwise we could end
+        // up allowing multiple of these to be called and all that insanity...
+
+        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+
+        return await Task.Run(() =>
+        {
+            try
+            {
+                Directory.CreateDirectory(fmCachePath);
+                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+
+                string cacheTempPath = Paths.FMCacheTemp;
+
+                int entriesCount;
+
+                using (var fs = File_OpenReadFast(fmArchivePath))
+                {
+                    var extractor = new SevenZipArchive(fs);
+                    entriesCount = extractor.GetEntryCountOnly();
+                }
+
+                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+
+                Fen7z.Result result = Fen7z.Extract(
+                        sevenZipWorkingPath: Paths.SevenZipPath,
+                        sevenZipPathAndExe: Paths.SevenZipExe,
+                        archivePath: fmArchivePath,
+                        outputPath: cacheTempPath,
+                        entriesCount: entriesCount,
+                        progress: progress
+                    );
+
+                if (result.ErrorOccurred)
+                {
+                    Log("Error extracting 7z " + fmArchivePath + " to " + cacheTempPath + $"{NL}" + result);
+                    return (result.Canceled, true);
+                }
+
+                // @HTMLREF: Don't unset readonly for all files; just unset it for the ones we actually end up copying
+                //if (!result.Canceled)
+                //{
+                //    foreach (string file in Directory.GetFiles(cacheTempPath, "*", SearchOption.AllDirectories))
+                //    {
+                //        File_UnSetReadOnly(file);
+                //    }
+                //}
+
+                List<NameAndIndex> htmlRefFiles = new();
+
+                string cacheTempPathWithTrailingSep = cacheTempPath.Length > 0 && !cacheTempPath[^1].IsDirSep()
+                        ? cacheTempPath + "\\"
+                        : cacheTempPath;
+
+                string[] tempCacheFiles = Directory.GetFiles(cacheTempPath, "*", SearchOption.AllDirectories);
+
+                foreach (string cacheFile in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
+                {
+                    if (!cacheFile.ExtIsHtml()) continue;
+
+                    string html = File.ReadAllText(cacheFile);
+
+                    for (int i = 0; i < tempCacheFiles.Length; i++)
+                    {
+                        string tempCacheFile = tempCacheFiles[i];
+                        AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, i, html, htmlRefFiles);
+                    }
+                }
+
+                if (htmlRefFiles.Count > 0)
+                {
+                    for (int ri = 0; ri < htmlRefFiles.Count; ri++)
+                    {
+                        NameAndIndex f = htmlRefFiles[ri];
+                        string refFile = tempCacheFiles[f.Index];
+
+                        FileInfo fi = new(refFile);
+
+                        if (RefFileExcluded(f.Name, fi.Length)) continue;
+
+                        string content = File.ReadAllText(f.Name);
+
+                        for (int ei = 0; ei < tempCacheFiles.Length; ei++)
+                        {
+                            string tempCacheFile = tempCacheFiles[ei];
+                            AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, ei, content, htmlRefFiles);
+                        }
+                    }
+                }
+
+                if (htmlRefFiles.Count > 0)
+                {
+                    foreach (NameAndIndex f in htmlRefFiles)
+                    {
+                        string tempCacheFile = tempCacheFiles[f.Index];
+
+                        string finalFileName =
+                                Path.Combine(fmCachePath,
+                                    tempCacheFile.Substring(cacheTempPathWithTrailingSep.Length).Trim(CA_BS_FS));
+                        string? path = Path.GetDirectoryName(finalFileName);
+                        if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
+                        File.Copy(tempCacheFile, finalFileName, overwrite: true);
+                    }
+                }
+
+                return (result.Canceled, false);
+            }
+            catch (Exception ex)
+            {
+                Log("Error extracting 7z " + fmArchivePath + " to " + TempPaths.FMCache + $"{NL}", ex);
+                return (false, true);
+            }
+            finally
+            {
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+                Core.View.HideProgressBox();
+            }
+        });
+
+        static void ReportProgress(Fen7z.ProgressReport pr)
+        {
+            if (!pr.Canceling)
+            {
+                Core.View.SetProgressPercent(pr.PercentOfEntries);
+            }
+        }
     }
 
     private static bool RefFileExcluded(string name, long size) =>
