@@ -190,9 +190,22 @@ internal static class FMCache
                         {
                             archive.Dispose();
                             using var fs = File_OpenReadFast(fmArchivePath);
-                            using var reader = RarReader.Open(fs);
-                            // @HTMLREF: Support HTML ref extraction for solid .rar files too
-                            await RarExtractSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
+                            using (var reader = RarReader.Open(fs))
+                            {
+                                await RarExtractSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
+                            }
+
+                            if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                            {
+                                try
+                                {
+                                    ExtractHTMLRefFiles_RarSolid(fmArchivePath, fmCachePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log(ex: ex);
+                                }
+                            }
                         }
                         else
                         {
@@ -411,6 +424,11 @@ internal static class FMCache
                 entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
             }
         }
+    }
+
+    private static async void ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
+    {
+        // @HTMLREF: Support HTML ref extraction for solid .rar files too
     }
 
     // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
