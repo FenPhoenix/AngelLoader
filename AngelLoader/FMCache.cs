@@ -443,10 +443,6 @@ internal static class FMCache
          fancy, but meh.
         -We could have this part be indeterminate progress, but it might take a long time and so that would be
          sub-optimal UX.
-
-        @HTMLREF: We need to search the cached HTML file(s) for references first before we do anything further!
-        If there are none, we should exit out and not do the full archive extract or even put up a progress box
-        or anything else.
         */
 
         // Critical
