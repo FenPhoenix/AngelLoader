@@ -310,6 +310,301 @@ internal static class FMCache
 
     #region Extract
 
+    // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
+    // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
+    // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
+    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    {
+        try
+        {
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+
+            for (int i = 0; i < archive.Entries.Count; i++)
+            {
+                ZipArchiveEntry entry = archive.Entries[i];
+                string fn = entry.FullName;
+                string? t3ReadmeDir = null;
+
+                if (isTDM)
+                {
+                    // @TDM_CASE("darkmod.txt", "readme.txt" constants)
+                    if (entry.Length == 0 || (!fn.EqualsI("darkmod.txt") && !fn.EqualsI("readme.txt")))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
+
+                    int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
+                    if (dirSeps == 1)
+                    {
+                        if (fn.PathStartsWithI(_t3ReadmeDir1S))
+                        {
+                            t3ReadmeDir = _t3ReadmeDir1;
+                        }
+                        else if (fn.PathStartsWithI(_t3ReadmeDir2S))
+                        {
+                            t3ReadmeDir = _t3ReadmeDir2;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                    else if (dirSeps > 1)
+                    {
+                        continue;
+                    }
+                }
+
+                Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                    ? Path.Combine(fmCachePath, t3ReadmeDir)
+                    : fmCachePath);
+
+                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
+                readmes.Add(fn);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.Ex + "in zip extract to cache", ex);
+        }
+    }
+
+    private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+    {
+        var fileNamesList = new List<string>();
+        try
+        {
+            // Critical
+            Core.View.Invoke(new Action(static () => Core.View.Show()));
+
+            // Block the view immediately after starting another thread, because otherwise we could end
+            // up allowing multiple of these to be called and all that insanity...
+
+            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(fmCachePath);
+
+                    int extractorFilesCount;
+
+                    using (var fs = File_OpenReadFast(fmArchivePath))
+                    {
+                        var archive = new SevenZipArchive(fs);
+                        ListFast<SevenZipArchiveEntry> entries = archive.Entries;
+                        extractorFilesCount = entries.Count;
+                        for (int i = 0; i < entries.Count; i++)
+                        {
+                            SevenZipArchiveEntry entry = entries[i];
+
+                            if (entry.IsAnti) continue;
+
+                            string fn = entry.FileName;
+                            int dirSeps;
+                            if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
+                                (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                                  (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                                   fn.PathStartsWithI(_t3ReadmeDir2S))) ||
+                                 dirSeps == 0))
+                            {
+                                fileNamesList.Add(fn);
+                                readmes.Add(fn);
+                            }
+                        }
+                    }
+
+                    if (fileNamesList.Count == 0) return;
+
+                    Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+
+                    static void ReportProgress(Fen7z.ProgressReport pr)
+                    {
+                        // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files
+                        // but there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving
+                        // us a useless "percentage" value for this purpose.
+                        // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
+                        Core.View.SetProgressPercent(pr.PercentOfBytes);
+                    }
+
+                    var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+
+                    string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
+
+                    Fen7z.Result result = Fen7z.Extract(
+                        sevenZipWorkingPath: Paths.SevenZipPath,
+                        sevenZipPathAndExe: Paths.SevenZipExe,
+                        archivePath: fmArchivePath,
+                        outputPath: fmCachePath,
+                        entriesCount: extractorFilesCount,
+                        listFile: listFile,
+                        fileNamesList: fileNamesList,
+                        progress: progress);
+
+                    if (result.ErrorOccurred)
+                    {
+                        Log("Readme caching (7z): " + fmCachePath + $":{NL}" + result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log(ErrorText.Ex + "in 7z extract to cache", ex);
+                }
+                finally
+                {
+                    foreach (string file in fileNamesList)
+                    {
+                        try
+                        {
+                            // Stupid Path.Combine might in theory throw
+                            File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+                    }
+                }
+            });
+        }
+        finally
+        {
+            Core.View.HideProgressBox();
+        }
+    }
+
+    private static void RarExtract(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
+    {
+        try
+        {
+            foreach (var entry in archive.Entries)
+            {
+                string fn = entry.Key;
+                string? t3ReadmeDir = null;
+
+                if (!fn.IsValidReadme() || entry.Size == 0) continue;
+
+                int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
+                if (dirSeps == 1)
+                {
+                    if (fn.PathStartsWithI(_t3ReadmeDir1S))
+                    {
+                        t3ReadmeDir = _t3ReadmeDir1;
+                    }
+                    else if (fn.PathStartsWithI(_t3ReadmeDir2S))
+                    {
+                        t3ReadmeDir = _t3ReadmeDir2;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                else if (dirSeps > 1)
+                {
+                    continue;
+                }
+
+                Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                    ? Path.Combine(fmCachePath, t3ReadmeDir)
+                    : fmCachePath);
+
+                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                readmes.Add(fn);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.Ex + "in rar extract to cache", ex);
+        }
+    }
+
+    private static async Task RarExtractSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
+    {
+        try
+        {
+            // Critical
+            Core.View.Invoke(new Action(static () => Core.View.Show()));
+
+            // Block the view immediately after starting another thread, because otherwise we could end
+            // up allowing multiple of these to be called and all that insanity...
+
+            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    Directory.CreateDirectory(fmCachePath);
+
+                    int i = -1;
+                    while (reader.MoveToNextEntry())
+                    {
+                        i++;
+                        RarReaderEntry entry = reader.Entry;
+                        string fn = entry.Key;
+                        string? t3ReadmeDir = null;
+
+                        Core.View.SetProgressPercent(GetPercentFromValue_Int(i, entriesCount));
+
+                        if (!fn.IsValidReadme() || entry.Size == 0) continue;
+
+                        int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
+                        if (dirSeps == 1)
+                        {
+                            if (fn.PathStartsWithI(_t3ReadmeDir1S))
+                            {
+                                t3ReadmeDir = _t3ReadmeDir1;
+                            }
+                            else if (fn.PathStartsWithI(_t3ReadmeDir2S))
+                            {
+                                t3ReadmeDir = _t3ReadmeDir2;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        else if (dirSeps > 1)
+                        {
+                            continue;
+                        }
+
+                        Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                            ? Path.Combine(fmCachePath, t3ReadmeDir)
+                            : fmCachePath);
+
+                        string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                        reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                        File_UnSetReadOnly(fileNameFull);
+                        readmes.Add(fn);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log(ErrorText.Ex + "in rar (solid) extract to cache", ex);
+                }
+            });
+        }
+        finally
+        {
+            Core.View.HideProgressBox();
+        }
+    }
+
+    #endregion
+
+    #region HTML reference extract
+
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
     private static void ExtractHTMLRefFiles_Zip(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
@@ -365,6 +660,109 @@ internal static class FMCache
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                 entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+            }
+        }
+    }
+
+    // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
+    // @HTMLREF: Dedupe solid ref extract code to the extent possible
+    private static async Task<(bool Canceled, bool Failed)>
+    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
+    {
+        /*
+        @HTMLREF: Decide what to do about progress box
+        Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
+        -We could leave the box up, but it would still necessarily reset to 0%.
+        -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
+         fancy, but meh.
+        -We could have this part be indeterminate progress, but it might take a long time and so that would be
+         sub-optimal UX.
+
+        @HTMLREF: Test with archives with HTML files that don't need reference extract
+        */
+
+        // Critical
+        Core.View.Invoke(new Action(static () => Core.View.Show()));
+
+        // Block the view immediately after starting another thread, because otherwise we could end
+        // up allowing multiple of these to be called and all that insanity...
+
+        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+
+        return await Task.Run(() =>
+        {
+            try
+            {
+                Directory.CreateDirectory(fmCachePath);
+                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+
+                string cacheTempPath = Paths.FMCacheTemp;
+
+                int entriesCount;
+
+                string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
+
+                List<string> archiveFileNamesNameOnly = new(0);
+                using (FileStream_LengthCached fs = File_OpenReadFast(fmArchivePath))
+                {
+                    SevenZipArchive extractor = new(fs);
+                    entriesCount = extractor.GetEntryCountOnly();
+                    archiveFileNamesNameOnly.Capacity = entriesCount;
+                    ListFast<SevenZipArchiveEntry> entries = extractor.Entries;
+                    for (int i = 0; i < entriesCount; i++)
+                    {
+                        archiveFileNamesNameOnly.Add(entries[i].FileName.GetFileNameFast());
+                    }
+                }
+
+                if (!HtmlNeedsReferenceExtract(cacheFiles, archiveFileNamesNameOnly))
+                {
+                    return (false, false);
+                }
+
+                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+
+                // @HTMLREF: We should extract only non-excluded files
+                Fen7z.Result result = Fen7z.Extract(
+                    sevenZipWorkingPath: Paths.SevenZipPath,
+                    sevenZipPathAndExe: Paths.SevenZipExe,
+                    archivePath: fmArchivePath,
+                    outputPath: cacheTempPath,
+                    entriesCount: entriesCount,
+                    progress: progress
+                );
+
+                if (result.ErrorOccurred)
+                {
+                    Log("Error extracting 7z " + fmArchivePath + " to " + cacheTempPath + $"{NL}" + result);
+                    return (result.Canceled, true);
+                }
+
+                DoHtmlReferenceCopy(cacheTempPath, fmCachePath, cacheFiles);
+
+                return (result.Canceled, false);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error extracting dependent files for html readme(s).{NL}" +
+                    $"FM archive type: 7z{NL}" +
+                    "FM archive path: " + fmArchivePath, ex);
+                return (false, true);
+            }
+            finally
+            {
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+                Core.View.HideProgressBox();
+            }
+        });
+
+        static void ReportProgress(Fen7z.ProgressReport pr)
+        {
+            if (!pr.Canceling)
+            {
+                Core.View.SetProgressPercent(pr.PercentOfEntries);
             }
         }
     }
@@ -520,109 +918,6 @@ internal static class FMCache
         });
     }
 
-    // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
-    // @HTMLREF: Dedupe solid ref extract code to the extent possible
-    private static async Task<(bool Canceled, bool Failed)>
-    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
-    {
-        /*
-        @HTMLREF: Decide what to do about progress box
-        Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
-        -We could leave the box up, but it would still necessarily reset to 0%.
-        -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
-         fancy, but meh.
-        -We could have this part be indeterminate progress, but it might take a long time and so that would be
-         sub-optimal UX.
-
-        @HTMLREF: Test with archives with HTML files that don't need reference extract
-        */
-
-        // Critical
-        Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-        // Block the view immediately after starting another thread, because otherwise we could end
-        // up allowing multiple of these to be called and all that insanity...
-
-        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
-
-        return await Task.Run(() =>
-        {
-            try
-            {
-                Directory.CreateDirectory(fmCachePath);
-                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
-                Paths.CreateOrClearTempPath(TempPaths.FMCache);
-
-                string cacheTempPath = Paths.FMCacheTemp;
-
-                int entriesCount;
-
-                string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
-
-                List<string> archiveFileNamesNameOnly = new(0);
-                using (FileStream_LengthCached fs = File_OpenReadFast(fmArchivePath))
-                {
-                    SevenZipArchive extractor = new(fs);
-                    entriesCount = extractor.GetEntryCountOnly();
-                    archiveFileNamesNameOnly.Capacity = entriesCount;
-                    ListFast<SevenZipArchiveEntry> entries = extractor.Entries;
-                    for (int i = 0; i < entriesCount; i++)
-                    {
-                        archiveFileNamesNameOnly.Add(entries[i].FileName.GetFileNameFast());
-                    }
-                }
-
-                if (!HtmlNeedsReferenceExtract(cacheFiles, archiveFileNamesNameOnly))
-                {
-                    return (false, false);
-                }
-
-                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
-
-                // @HTMLREF: We should extract only non-excluded files
-                Fen7z.Result result = Fen7z.Extract(
-                    sevenZipWorkingPath: Paths.SevenZipPath,
-                    sevenZipPathAndExe: Paths.SevenZipExe,
-                    archivePath: fmArchivePath,
-                    outputPath: cacheTempPath,
-                    entriesCount: entriesCount,
-                    progress: progress
-                );
-
-                if (result.ErrorOccurred)
-                {
-                    Log("Error extracting 7z " + fmArchivePath + " to " + cacheTempPath + $"{NL}" + result);
-                    return (result.Canceled, true);
-                }
-
-                DoHtmlReferenceCopy(cacheTempPath, fmCachePath, cacheFiles);
-
-                return (result.Canceled, false);
-            }
-            catch (Exception ex)
-            {
-                Log($"Error extracting dependent files for html readme(s).{NL}" +
-                    $"FM archive type: 7z{NL}" +
-                    "FM archive path: " + fmArchivePath, ex);
-                return (false, true);
-            }
-            finally
-            {
-                Paths.CreateOrClearTempPath(TempPaths.FMCache);
-                Core.View.HideProgressBox();
-            }
-        });
-
-        static void ReportProgress(Fen7z.ProgressReport pr)
-        {
-            if (!pr.Canceling)
-            {
-                Core.View.SetProgressPercent(pr.PercentOfEntries);
-            }
-        }
-    }
-
     private static void DoHtmlReferenceCopy(string cacheTempPath, string fmCachePath, string[] cacheFiles)
     {
         List<NameAndIndex> htmlRefFiles = new();
@@ -723,297 +1018,6 @@ internal static class FMCache
             content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
         {
             htmlRefFiles.Add(new NameAndIndex(fullName, i));
-        }
-    }
-
-    // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
-    // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
-    // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
-    {
-        try
-        {
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
-
-            for (int i = 0; i < archive.Entries.Count; i++)
-            {
-                ZipArchiveEntry entry = archive.Entries[i];
-                string fn = entry.FullName;
-                string? t3ReadmeDir = null;
-
-                if (isTDM)
-                {
-                    // @TDM_CASE("darkmod.txt", "readme.txt" constants)
-                    if (entry.Length == 0 || (!fn.EqualsI("darkmod.txt") && !fn.EqualsI("readme.txt")))
-                    {
-                        continue;
-                    }
-                }
-                else
-                {
-                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
-
-                    int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
-                    if (dirSeps == 1)
-                    {
-                        if (fn.PathStartsWithI(_t3ReadmeDir1S))
-                        {
-                            t3ReadmeDir = _t3ReadmeDir1;
-                        }
-                        else if (fn.PathStartsWithI(_t3ReadmeDir2S))
-                        {
-                            t3ReadmeDir = _t3ReadmeDir2;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                    else if (dirSeps > 1)
-                    {
-                        continue;
-                    }
-                }
-
-                Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                    ? Path.Combine(fmCachePath, t3ReadmeDir)
-                    : fmCachePath);
-
-                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
-                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
-                readmes.Add(fn);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "in zip extract to cache", ex);
-        }
-    }
-
-    private static void RarExtract(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
-    {
-        try
-        {
-            foreach (var entry in archive.Entries)
-            {
-                string fn = entry.Key;
-                string? t3ReadmeDir = null;
-
-                if (!fn.IsValidReadme() || entry.Size == 0) continue;
-
-                int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
-                if (dirSeps == 1)
-                {
-                    if (fn.PathStartsWithI(_t3ReadmeDir1S))
-                    {
-                        t3ReadmeDir = _t3ReadmeDir1;
-                    }
-                    else if (fn.PathStartsWithI(_t3ReadmeDir2S))
-                    {
-                        t3ReadmeDir = _t3ReadmeDir2;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                else if (dirSeps > 1)
-                {
-                    continue;
-                }
-
-                Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                    ? Path.Combine(fmCachePath, t3ReadmeDir)
-                    : fmCachePath);
-
-                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
-                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
-                readmes.Add(fn);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "in rar extract to cache", ex);
-        }
-    }
-
-    private static async Task RarExtractSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
-    {
-        try
-        {
-            // Critical
-            Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-            // Block the view immediately after starting another thread, because otherwise we could end
-            // up allowing multiple of these to be called and all that insanity...
-
-            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    Directory.CreateDirectory(fmCachePath);
-
-                    int i = -1;
-                    while (reader.MoveToNextEntry())
-                    {
-                        i++;
-                        RarReaderEntry entry = reader.Entry;
-                        string fn = entry.Key;
-                        string? t3ReadmeDir = null;
-
-                        Core.View.SetProgressPercent(GetPercentFromValue_Int(i, entriesCount));
-
-                        if (!fn.IsValidReadme() || entry.Size == 0) continue;
-
-                        int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
-                        if (dirSeps == 1)
-                        {
-                            if (fn.PathStartsWithI(_t3ReadmeDir1S))
-                            {
-                                t3ReadmeDir = _t3ReadmeDir1;
-                            }
-                            else if (fn.PathStartsWithI(_t3ReadmeDir2S))
-                            {
-                                t3ReadmeDir = _t3ReadmeDir2;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-                        else if (dirSeps > 1)
-                        {
-                            continue;
-                        }
-
-                        Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                            ? Path.Combine(fmCachePath, t3ReadmeDir)
-                            : fmCachePath);
-
-                        string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
-                        reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
-                        File_UnSetReadOnly(fileNameFull);
-                        readmes.Add(fn);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.Ex + "in rar (solid) extract to cache", ex);
-                }
-            });
-        }
-        finally
-        {
-            Core.View.HideProgressBox();
-        }
-    }
-
-    private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
-    {
-        var fileNamesList = new List<string>();
-        try
-        {
-            // Critical
-            Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-            // Block the view immediately after starting another thread, because otherwise we could end
-            // up allowing multiple of these to be called and all that insanity...
-
-            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    Directory.CreateDirectory(fmCachePath);
-
-                    int extractorFilesCount;
-
-                    using (var fs = File_OpenReadFast(fmArchivePath))
-                    {
-                        var archive = new SevenZipArchive(fs);
-                        ListFast<SevenZipArchiveEntry> entries = archive.Entries;
-                        extractorFilesCount = entries.Count;
-                        for (int i = 0; i < entries.Count; i++)
-                        {
-                            SevenZipArchiveEntry entry = entries[i];
-
-                            if (entry.IsAnti) continue;
-
-                            string fn = entry.FileName;
-                            int dirSeps;
-                            if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
-                                (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                                  (fn.PathStartsWithI(_t3ReadmeDir1S) ||
-                                   fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                                 dirSeps == 0))
-                            {
-                                fileNamesList.Add(fn);
-                                readmes.Add(fn);
-                            }
-                        }
-                    }
-
-                    if (fileNamesList.Count == 0) return;
-
-                    Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
-
-                    static void ReportProgress(Fen7z.ProgressReport pr)
-                    {
-                        // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files
-                        // but there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving
-                        // us a useless "percentage" value for this purpose.
-                        // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                        Core.View.SetProgressPercent(pr.PercentOfBytes);
-                    }
-
-                    var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
-
-                    string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
-
-                    Fen7z.Result result = Fen7z.Extract(
-                        sevenZipWorkingPath: Paths.SevenZipPath,
-                        sevenZipPathAndExe: Paths.SevenZipExe,
-                        archivePath: fmArchivePath,
-                        outputPath: fmCachePath,
-                        entriesCount: extractorFilesCount,
-                        listFile: listFile,
-                        fileNamesList: fileNamesList,
-                        progress: progress);
-
-                    if (result.ErrorOccurred)
-                    {
-                        Log("Readme caching (7z): " + fmCachePath + $":{NL}" + result);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.Ex + "in 7z extract to cache", ex);
-                }
-                finally
-                {
-                    foreach (string file in fileNamesList)
-                    {
-                        try
-                        {
-                            // Stupid Path.Combine might in theory throw
-                            File_UnSetReadOnly(Path.Combine(fmCachePath, file));
-                        }
-                        catch
-                        {
-                            // ignore
-                        }
-                    }
-                }
-            });
-        }
-        finally
-        {
-            Core.View.HideProgressBox();
         }
     }
 
