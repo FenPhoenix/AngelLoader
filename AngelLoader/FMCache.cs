@@ -670,9 +670,13 @@ internal static class FMCache
     @HTMLREF: Decide what to do about the scanner caching.
     Maybe just set a flag on the return object saying "we got an archive that's supposed to have its readmes cached
     during the scan, but we found an html needing ref extract, so just fall back to caching on first select".
-    Otherwise we'd end up doing a duplicate temp extract in the scanner, or else we could maybe just make the
-    partial extract a full-minus-excluded-extensions extract and then the scanner's caching would work the same
-    as this.
+    Otherwise we'd end up doing a duplicate temp extract in the scanner.
+    
+    We can't mix the ref extract in with the partial extract either, because we need to have done the partial
+    extract to get the base html readme(s) so we can scan them for references to even know if we need to do a
+    full-minus-excludes extract. I mean we could just say if we find any html readme at all then we just do a
+    full-minus-excludes extract, which would be wasteful in the arguably more common case of no html ref files.
+
     Also if we're going to have any solid html ref extract code in the scanner, we'll need to extract the relevant
     code from here out to AL_Common.
     */
