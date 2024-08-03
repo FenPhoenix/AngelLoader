@@ -467,20 +467,20 @@ internal static class FMCache
 
                 string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
 
-                List<string> archiveFileNames = new(0);
+                List<string> archiveFileNamesNameOnly = new(0);
                 using (var fs = File_OpenReadFast(fmArchivePath))
                 {
                     var extractor = new SevenZipArchive(fs);
                     entriesCount = extractor.GetEntryCountOnly();
-                    archiveFileNames.Capacity = entriesCount;
+                    archiveFileNamesNameOnly.Capacity = entriesCount;
                     ListFast<SevenZipArchiveEntry> entries = extractor.Entries;
                     for (int i = 0; i < entriesCount; i++)
                     {
-                        archiveFileNames.Add(entries[i].FileName);
+                        archiveFileNamesNameOnly.Add(entries[i].FileName.GetFileNameFast());
                     }
                 }
 
-                if (!HtmlNeedsReferenceExtract(cacheFiles, archiveFileNames))
+                if (!HtmlNeedsReferenceExtract(cacheFiles, archiveFileNamesNameOnly))
                 {
                     return (false, false);
                 }
@@ -602,8 +602,7 @@ internal static class FMCache
 
             for (int i = 0; i < archiveFileNames.Count; i++)
             {
-                // @HTMLREF: Make the list have both full name and name, because this allocates redundantly a zillion times
-                string name = archiveFileNames[i].GetFileNameFast();
+                string name = archiveFileNames[i];
                 if (!name.IsEmpty() && name.Contains('.') && !_htmlRefExcludes.Any(name.EndsWithI) &&
                     content.ContainsI(name))
                 {
