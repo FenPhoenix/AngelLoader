@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
+using SharpCompress;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Readers.Rar;
@@ -427,7 +428,96 @@ internal static class FMCache
 
     private static async Task ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
-        // @HTMLREF: Support HTML ref extraction for solid .rar files too
+        // Critical
+        Core.View.Invoke(new Action(static () => Core.View.Show()));
+
+        // Block the view immediately after starting another thread, because otherwise we could end
+        // up allowing multiple of these to be called and all that insanity...
+
+        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+
+        await Task.Run(() =>
+        {
+            try
+            {
+                Directory.CreateDirectory(fmCachePath);
+                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+
+                string cacheTempPath = Paths.FMCacheTemp;
+
+                string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
+
+                List<string> archiveFileNamesNameOnly = new(0);
+
+                using (FileStream_LengthCached fs = File_OpenReadFast(fmArchivePath))
+                {
+                    int entriesCount;
+                    using (var archive = RarArchive.Open(fs))
+                    {
+                        LazyReadOnlyCollection<RarArchiveEntry> entries = archive.Entries;
+                        entriesCount = entries.Count;
+                        for (int i = 0; i < entriesCount; i++)
+                        {
+                            archiveFileNamesNameOnly.Add(entries[i].Key.GetFileNameFast());
+                        }
+                        fs.Position = 0;
+                    }
+
+                    if (!HtmlNeedsReferenceExtract(cacheFiles, archiveFileNamesNameOnly))
+                    {
+                        return;
+                    }
+
+                    byte[] tempBuffer = new byte[StreamCopyBufferSize];
+
+                    using (RarReader reader = RarReader.Open(fs))
+                    {
+                        int i = -1;
+                        while (reader.MoveToNextEntry())
+                        {
+                            i++;
+                            RarReaderEntry entry = reader.Entry;
+                            string fullName = entry.Key;
+                            string name = fullName.GetFileNameFast();
+
+                            if (!entry.IsDirectory &&
+                                !fullName.IsEmpty() &&
+                                !fullName[^1].IsDirSep() &&
+                                !_htmlRefExcludes.Any(name.EndsWithI) &&
+                                TryGetExtractedNameOrFailIfMalicious(cacheTempPath, fullName, out string extractedName))
+                            {
+                                if (fullName.Rel_ContainsDirSep())
+                                {
+                                    Directory.CreateDirectory(Path.Combine(cacheTempPath,
+                                        fullName.Substring(0, fullName.Rel_LastIndexOfDirSep())));
+                                }
+
+                                reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+
+                                File_UnSetReadOnly(extractedName);
+                            }
+
+                            Core.View.SetProgressPercent(GetPercentFromValue_Int(i + 1, entriesCount));
+                        }
+                    }
+                }
+
+                DoHtmlReferenceCopy(cacheTempPath, fmCachePath, cacheFiles);
+            }
+            catch (Exception ex)
+            {
+                Log($"Error extracting dependent files for html readme(s).{NL}" +
+                    $"FM archive type: RAR (Solid){NL}" +
+                    "FM archive path: " + fmArchivePath, ex);
+            }
+            finally
+            {
+                Paths.CreateOrClearTempPath(TempPaths.FMCache);
+                Core.View.HideProgressBox();
+            }
+        });
     }
 
     // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
@@ -443,10 +533,13 @@ internal static class FMCache
          fancy, but meh.
         -We could have this part be indeterminate progress, but it might take a long time and so that would be
          sub-optimal UX.
+
+        @HTMLREF: Test with archives with HTML files that don't need reference extract
         */
 
         // Critical
         Core.View.Invoke(new Action(static () => Core.View.Show()));
+
         // Block the view immediately after starting another thread, because otherwise we could end
         // up allowing multiple of these to be called and all that insanity...
 
@@ -468,9 +561,9 @@ internal static class FMCache
                 string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
 
                 List<string> archiveFileNamesNameOnly = new(0);
-                using (var fs = File_OpenReadFast(fmArchivePath))
+                using (FileStream_LengthCached fs = File_OpenReadFast(fmArchivePath))
                 {
-                    var extractor = new SevenZipArchive(fs);
+                    SevenZipArchive extractor = new(fs);
                     entriesCount = extractor.GetEntryCountOnly();
                     archiveFileNamesNameOnly.Capacity = entriesCount;
                     ListFast<SevenZipArchiveEntry> entries = extractor.Entries;
@@ -487,6 +580,7 @@ internal static class FMCache
 
                 var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
+                // @HTMLREF: We should extract only non-excluded files
                 Fen7z.Result result = Fen7z.Extract(
                     sevenZipWorkingPath: Paths.SevenZipPath,
                     sevenZipPathAndExe: Paths.SevenZipExe,
@@ -502,69 +596,15 @@ internal static class FMCache
                     return (result.Canceled, true);
                 }
 
-                List<NameAndIndex> htmlRefFiles = new();
-
-                string cacheTempPathWithTrailingSep = cacheTempPath.Length > 0 && !cacheTempPath[^1].IsDirSep()
-                        ? cacheTempPath + "\\"
-                        : cacheTempPath;
-
-                string[] tempCacheFiles = Directory.GetFiles(cacheTempPath, "*", SearchOption.AllDirectories);
-
-                foreach (string cacheFile in cacheFiles)
-                {
-                    if (!cacheFile.ExtIsHtml()) continue;
-
-                    string html = File.ReadAllText(cacheFile);
-
-                    for (int i = 0; i < tempCacheFiles.Length; i++)
-                    {
-                        string tempCacheFile = tempCacheFiles[i];
-                        AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, i, html, htmlRefFiles);
-                    }
-                }
-
-                if (htmlRefFiles.Count > 0)
-                {
-                    for (int ri = 0; ri < htmlRefFiles.Count; ri++)
-                    {
-                        NameAndIndex f = htmlRefFiles[ri];
-                        string refFile = tempCacheFiles[f.Index];
-
-                        FileInfo fi = new(refFile);
-
-                        if (RefFileExcluded(f.Name, fi.Length)) continue;
-
-                        string content = File.ReadAllText(f.Name);
-
-                        for (int ei = 0; ei < tempCacheFiles.Length; ei++)
-                        {
-                            string tempCacheFile = tempCacheFiles[ei];
-                            AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, ei, content, htmlRefFiles);
-                        }
-                    }
-                }
-
-                if (htmlRefFiles.Count > 0)
-                {
-                    foreach (NameAndIndex f in htmlRefFiles)
-                    {
-                        string tempCacheFile = tempCacheFiles[f.Index];
-
-                        string finalFileName =
-                                Path.Combine(fmCachePath,
-                                    tempCacheFile.Substring(cacheTempPathWithTrailingSep.Length).Trim(CA_BS_FS));
-                        string? path = Path.GetDirectoryName(finalFileName);
-                        if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                        File.Copy(tempCacheFile, finalFileName, overwrite: true);
-                        File_UnSetReadOnly(finalFileName);
-                    }
-                }
+                DoHtmlReferenceCopy(cacheTempPath, fmCachePath, cacheFiles);
 
                 return (result.Canceled, false);
             }
             catch (Exception ex)
             {
-                Log("Error extracting 7z " + fmArchivePath + " to " + TempPaths.FMCache + $"{NL}", ex);
+                Log($"Error extracting dependent files for html readme(s).{NL}" +
+                    $"FM archive type: 7z{NL}" +
+                    "FM archive path: " + fmArchivePath, ex);
                 return (false, true);
             }
             finally
@@ -579,6 +619,65 @@ internal static class FMCache
             if (!pr.Canceling)
             {
                 Core.View.SetProgressPercent(pr.PercentOfEntries);
+            }
+        }
+    }
+
+    private static void DoHtmlReferenceCopy(string cacheTempPath, string fmCachePath, string[] cacheFiles)
+    {
+        List<NameAndIndex> htmlRefFiles = new();
+
+        string cacheTempPathWithTrailingSep = cacheTempPath.Length > 0 && !cacheTempPath[^1].IsDirSep()
+            ? cacheTempPath + "\\"
+            : cacheTempPath;
+
+        string[] tempCacheFiles = Directory.GetFiles(cacheTempPath, "*", SearchOption.AllDirectories);
+
+        foreach (string cacheFile in cacheFiles)
+        {
+            if (!cacheFile.ExtIsHtml()) continue;
+
+            string html = File.ReadAllText(cacheFile);
+
+            for (int i = 0; i < tempCacheFiles.Length; i++)
+            {
+                string tempCacheFile = tempCacheFiles[i];
+                AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, i, html, htmlRefFiles);
+            }
+        }
+
+        if (htmlRefFiles.Count > 0)
+        {
+            for (int ri = 0; ri < htmlRefFiles.Count; ri++)
+            {
+                NameAndIndex f = htmlRefFiles[ri];
+                string refFile = tempCacheFiles[f.Index];
+
+                FileInfo fi = new(refFile);
+
+                if (RefFileExcluded(f.Name, fi.Length)) continue;
+
+                string content = File.ReadAllText(f.Name);
+
+                for (int ei = 0; ei < tempCacheFiles.Length; ei++)
+                {
+                    string tempCacheFile = tempCacheFiles[ei];
+                    AddHtmlRefFile(name: tempCacheFile.GetFileNameFast(), fullName: tempCacheFile, ei, content, htmlRefFiles);
+                }
+            }
+        }
+
+        if (htmlRefFiles.Count > 0)
+        {
+            foreach (NameAndIndex f in htmlRefFiles)
+            {
+                string tempCacheFile = tempCacheFiles[f.Index];
+
+                string finalFileName = Path.Combine(fmCachePath, tempCacheFile.Substring(cacheTempPathWithTrailingSep.Length).Trim(CA_BS_FS));
+                string? path = Path.GetDirectoryName(finalFileName);
+                if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
+                File.Copy(tempCacheFile, finalFileName, overwrite: true);
+                File_UnSetReadOnly(finalFileName);
             }
         }
     }
