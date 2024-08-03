@@ -502,15 +502,6 @@ internal static class FMCache
                     return (result.Canceled, true);
                 }
 
-                // @HTMLREF: Don't unset readonly for all files; just unset it for the ones we actually end up copying
-                //if (!result.Canceled)
-                //{
-                //    foreach (string file in Directory.GetFiles(cacheTempPath, "*", SearchOption.AllDirectories))
-                //    {
-                //        File_UnSetReadOnly(file);
-                //    }
-                //}
-
                 List<NameAndIndex> htmlRefFiles = new();
 
                 string cacheTempPathWithTrailingSep = cacheTempPath.Length > 0 && !cacheTempPath[^1].IsDirSep()
