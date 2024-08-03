@@ -664,10 +664,19 @@ internal static class FMCache
         }
     }
 
-    // @HTMLREF: Do we care if we fail? Probably not, it would just be like before, no ref extracted files.
-    // @HTMLREF: Dedupe solid ref extract code to the extent possible
-    private static async Task<(bool Canceled, bool Failed)>
-    ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
+    /*
+    @HTMLREF: Dedupe solid ref extract code to the extent possible
+    
+    @HTMLREF: Decide what to do about the scanner caching.
+    Maybe just set a flag on the return object saying "we got an archive that's supposed to have its readmes cached
+    during the scan, but we found an html needing ref extract, so just fall back to caching on first select".
+    Otherwise we'd end up doing a duplicate temp extract in the scanner, or else we could maybe just make the
+    partial extract a full-minus-excluded-extensions extract and then the scanner's caching would work the same
+    as this.
+    Also if we're going to have any solid html ref extract code in the scanner, we'll need to extract the relevant
+    code from here out to AL_Common.
+    */
+    private static async Task ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
         /*
         @HTMLREF: Decide what to do about progress box
@@ -690,7 +699,7 @@ internal static class FMCache
         // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
         Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
 
-        return await Task.Run(() =>
+        await Task.Run(() =>
         {
             try
             {
@@ -757,6 +766,8 @@ internal static class FMCache
                 Core.View.HideProgressBox();
             }
         });
+
+        return;
 
         static void ReportProgress(Fen7z.ProgressReport pr)
         {
