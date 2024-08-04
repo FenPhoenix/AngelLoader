@@ -578,8 +578,7 @@ internal static class Utility
     internal static void ExtractToFile_Fast(
         this RarReader reader,
         string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
+        bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
         using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))

@@ -1527,7 +1527,7 @@ public sealed partial class Scanner : IDisposable
                             string finalFileName = GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
                             string dir = Path.GetDirectoryName(finalFileName)!;
                             Directory.CreateDirectory(dir);
-                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true, DiskFileStreamBuffer);
+                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true);
                         }
                     }
                 }
