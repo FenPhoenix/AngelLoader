@@ -23,9 +23,6 @@ namespace AngelLoader;
 @BetterErrors(FMCache)
 We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can view the
 log.
-
-@BetterErrors(FMCache)/@ZipSafety(FMCache):
-Handle zip slip fails explicitly - don't fail the whole thing, but do log it
 */
 
 internal static class FMCache
@@ -157,13 +154,6 @@ internal static class FMCache
 
                     if (fm.Game != Game.TDM)
                     {
-                        // @HTMLRefExtraction(FMCache):
-                        // TODO: Support HTML ref extraction for .7z files too
-                        // Will require full extract for the same reason scan does - we need to scan files to
-                        // know what other files to scan, etc. and a full extract is with 99.9999% certainty
-                        // going to be faster than chugging through the whole thing over and over and over for
-                        // each new file we find we need
-
                         if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                         {
                             try
@@ -363,7 +353,16 @@ internal static class FMCache
                     ? Path.Combine(fmCachePath, t3ReadmeDir)
                     : fmCachePath);
 
-                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                string fileNameFull;
+                try
+                {
+                    fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                }
+                catch
+                {
+                    // ignore, message already logged
+                    continue;
+                }
                 entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
                 readmes.Add(fn);
             }
@@ -690,8 +689,6 @@ internal static class FMCache
          fancy, but meh.
         -We could have this part be indeterminate progress, but it might take a long time and so that would be
          sub-optimal UX.
-
-        @HTMLREF: Test with archives with HTML files that don't need reference extract
         */
 
         // Critical
@@ -907,9 +904,20 @@ internal static class FMCache
                             if (!entry.IsDirectory &&
                                 !fullName.IsEmpty() &&
                                 !fullName[^1].IsDirSep() &&
-                                !_htmlRefExcludes.Any(name.EndsWithI) &&
-                                TryGetExtractedNameOrFailIfMalicious(cacheTempPath, fullName, out string extractedName))
+                                !_htmlRefExcludes.Any(name.EndsWithI))
                             {
+                                string extractedName;
+                                try
+                                {
+                                    extractedName = GetExtractedNameOrThrowIfMalicious(cacheTempPath, fullName);
+                                }
+                                catch
+                                {
+                                    // ignore, message already logged
+                                    Core.View.SetProgressPercent(GetPercentFromValue_Int(i + 1, entriesCount));
+                                    continue;
+                                }
+
                                 if (fullName.Rel_ContainsDirSep())
                                 {
                                     Directory.CreateDirectory(Path.Combine(cacheTempPath,

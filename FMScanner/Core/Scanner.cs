@@ -2057,7 +2057,7 @@ public sealed partial class Scanner : IDisposable
         var readmes = new List<(string Source, string Dest)>();
 
         /*
-        @HTMLRefExtraction(CopyReadmesToCacheDir):
+        @HTMLREF(CopyReadmesToCacheDir):
         We don't have the facility to do an HTML reference extraction here (7z scanner readme copy).
         */
 
