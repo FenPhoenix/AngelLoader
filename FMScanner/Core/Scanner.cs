@@ -1207,6 +1207,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
+        ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
 
         if (_fmFormat == FMFormat.Rar)
@@ -1268,7 +1269,6 @@ public sealed partial class Scanner : IDisposable
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
                 {
                     sevenZipSize = (ulong)fs.Length;
-                    ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
                     int entriesCount;
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -1552,7 +1552,7 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    CopyReadmesToCacheDir(fm);
+                    CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
                 }
                 catch
                 {
@@ -2048,7 +2048,10 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private void CopyReadmesToCacheDir(FMToScan fm)
+    private void CopyReadmesToCacheDir(
+        FMToScan fm,
+        ListFast<SevenZipArchiveEntry> sevenZipEntries,
+        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
     {
         string cachePath = fm.CachePath;
 
@@ -2092,6 +2095,39 @@ public sealed partial class Scanner : IDisposable
 
         if (readmes.Count > 0)
         {
+            string[] readmeFileNames = new string[readmes.Count];
+            for (int i = 0; i < readmes.Count; i++)
+            {
+                readmeFileNames[i] = readmes[i].Source;
+            }
+
+            List<string> archiveFileNames;
+            if (_fmFormat == FMFormat.SevenZip)
+            {
+                archiveFileNames = new List<string>(sevenZipEntries.Count);
+                for (int i = 0; i < sevenZipEntries.Count; i++)
+                {
+                    archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
+                }
+            }
+            else
+            {
+                archiveFileNames = new List<string>(rarEntries.Count);
+                for (int i = 0; i < rarEntries.Count; i++)
+                {
+                    archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
+                }
+            }
+
+            if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
+            {
+                // We don't want to handle HTML ref extracts here - it would complicate the code too much.
+                // So just use the cheapest, crappiest solution - delete the cache dir so that the cache will be
+                // run on the next select of the FM (or immediately after the scan if the FM is already selected).
+                DeleteDirectory(cachePath);
+                return;
+            }
+
             try
             {
                 foreach (var (source, dest) in readmes)

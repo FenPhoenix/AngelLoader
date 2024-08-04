@@ -39,14 +39,6 @@ internal static class FMCache
         ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp", ".jpg", ".jpeg", ".tiff",
     };
 
-    // Try to reject formats that don't make sense. Exclude instead of include for future-proofing.
-    private static readonly string[] _htmlRefExcludes =
-    {
-        ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
-        ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
-        ".flv", ".log", ".str", ".nut", ".db", ".obj",
-    };
-
     #endregion
 
     // We might want to add other things (thumbnails etc.) later, so it's a class
@@ -680,21 +672,6 @@ internal static class FMCache
     }
 
     /*
-    @HTMLREF: Dedupe solid ref extract code to the extent possible
-    
-    @HTMLREF: Decide what to do about the scanner caching.
-    Maybe just set a flag on the return object saying "we got an archive that's supposed to have its readmes cached
-    during the scan, but we found an html needing ref extract, so just fall back to caching on first select".
-    Otherwise we'd end up doing a duplicate temp extract in the scanner.
-    
-    We can't mix the ref extract in with the partial extract either, because we need to have done the partial
-    extract to get the base html readme(s) so we can scan them for references to even know if we need to do a
-    full-minus-excludes extract. I mean we could just say if we find any html readme at all then we just do a
-    full-minus-excludes extract, which would be wasteful in the arguably more common case of no html ref files.
-
-    Also if we're going to have any solid html ref extract code in the scanner, we'll need to extract the relevant
-    code from here out to AL_Common.
-
     @HTMLREF: Decide what to do about progress box
     Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
     -We could leave the box up, but it would still necessarily reset to 0%.
@@ -732,7 +709,7 @@ internal static class FMCache
                     for (int i = 0; i < entriesCount; i++)
                     {
                         SevenZipArchiveEntry entry = entries[i];
-                        if (!_htmlRefExcludes.Any(entry.FileName.EndsWithI))
+                        if (!HtmlRefExcludes.Any(entry.FileName.EndsWithI))
                         {
                             archiveFileNamesNameOnly.Add(entry.FileName.GetFileNameFast());
                             archiveNonExcludedFullFileNames.Add(entry.FileName);
@@ -913,7 +890,7 @@ internal static class FMCache
                             if (!entry.IsDirectory &&
                                 !fullName.IsEmpty() &&
                                 !fullName[^1].IsDirSep() &&
-                                !_htmlRefExcludes.Any(name.EndsWithI))
+                                !HtmlRefExcludes.Any(name.EndsWithI))
                             {
                                 string extractedName;
                                 try
@@ -1029,30 +1006,8 @@ internal static class FMCache
         }
     }
 
-    private static bool HtmlNeedsReferenceExtract(string[] cacheFiles, List<string> archiveFileNames)
-    {
-        foreach (string cacheFile in cacheFiles)
-        {
-            if (!cacheFile.ExtIsHtml()) continue;
-
-            string content = File.ReadAllText(cacheFile);
-
-            for (int i = 0; i < archiveFileNames.Count; i++)
-            {
-                string name = archiveFileNames[i];
-                if (!name.IsEmpty() && name.Contains('.') && !_htmlRefExcludes.Any(name.EndsWithI) &&
-                    content.ContainsI(name))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     private static bool RefFileExcluded(string name, long size) =>
-        _htmlRefExcludes.Any(name.EndsWithI) ||
+        HtmlRefExcludes.Any(name.EndsWithI) ||
         _imageFileExtensions.Any(name.EndsWithI) ||
         // 128k is generous. Any text or markup sort of file should be WELL under that.
         size > ByteSize.KB * 128;
@@ -1066,7 +1021,7 @@ internal static class FMCache
         to other formats like CSS and who knows what else, and we don't want to write parsers for every format
         under the sun.
         */
-        if (!name.IsEmpty() && name.Contains('.') && !_htmlRefExcludes.Any(name.EndsWithI) &&
+        if (!name.IsEmpty() && name.Contains('.') && !HtmlRefExcludes.Any(name.EndsWithI) &&
             content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
         {
             htmlRefFiles.Add(new NameAndIndex(fullName, i));

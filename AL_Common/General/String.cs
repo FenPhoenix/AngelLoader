@@ -29,6 +29,63 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EndsWithO(this string str, string value) => str.EndsWith(value, Ordinal);
 
+    /// <summary>
+    /// StartsWith (case-insensitive). Uses a fast ASCII compare where possible.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool StartsWithI(this string str, string value)
+    {
+        if (str.IsEmpty()) return false;
+        int valueLength = value.Length;
+        if (str.Length < valueLength) return false;
+
+        for (int si = 0, vi = 0; si < valueLength; si++, vi++)
+        {
+            char vc = value[vi];
+
+            if (vc > 127)
+            {
+                return str.StartsWith(value, OrdinalIgnoreCase);
+            }
+
+            if (!str[si].EqualsIAscii(vc)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// EndsWith (case-insensitive). Uses a fast ASCII compare where possible.
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static bool EndsWithI(this string str, string value)
+    {
+        if (str.IsEmpty()) return false;
+        int strLength = str.Length;
+        int valueLength = value.Length;
+        if (strLength < valueLength) return false;
+
+        int start = strLength - valueLength;
+
+        for (int si = start, vi = 0; si < strLength; si++, vi++)
+        {
+            char vc = value[vi];
+
+            if (vc > 127)
+            {
+                return str.EndsWith(value, OrdinalIgnoreCase);
+            }
+
+            if (!str[si].EqualsIAscii(vc)) return false;
+        }
+
+        return true;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsIniHeader(this string line) => !line.IsEmpty() && line[0] == '[' && line[^1] == ']';
 
