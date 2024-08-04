@@ -150,7 +150,7 @@ internal static class FMCache
                     byte[] zipExtractTempBuffer = new byte[StreamCopyBufferSize];
                     byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-                    ZipExtract(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, zipExtractTempBuffer, fileStreamBuffer);
+                    Extract_Zip(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, zipExtractTempBuffer, fileStreamBuffer);
 
                     if (fm.Game != Game.TDM)
                     {
@@ -158,7 +158,7 @@ internal static class FMCache
                         {
                             try
                             {
-                                ExtractHTMLRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
+                                ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
                             }
                             catch (Exception ex)
                             {
@@ -183,14 +183,14 @@ internal static class FMCache
                             using var fs = File_OpenReadFast(fmArchivePath);
                             using (var reader = RarReader.Open(fs))
                             {
-                                await RarExtractSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
+                                await Extract_RarSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
                             }
 
                             if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                             {
                                 try
                                 {
-                                    await ExtractHTMLRefFiles_RarSolid(fmArchivePath, fmCachePath);
+                                    await ExtractHtmlRefFiles_RarSolid(fmArchivePath, fmCachePath);
                                 }
                                 catch (Exception ex)
                                 {
@@ -200,14 +200,14 @@ internal static class FMCache
                         }
                         else
                         {
-                            RarExtract(archive, fmCachePath, readmes, rarExtractTempBuffer);
+                            Extract_Rar(archive, fmCachePath, readmes, rarExtractTempBuffer);
 
                             if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                             {
                                 try
                                 {
                                     archive.Dispose();
-                                    ExtractHTMLRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
+                                    ExtractHtmlRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
                                 }
                                 catch (Exception ex)
                                 {
@@ -223,13 +223,13 @@ internal static class FMCache
                 }
                 else
                 {
-                    await SevenZipExtract(fmArchivePath, fmCachePath, readmes);
+                    await Extract_7z(fmArchivePath, fmCachePath, readmes);
 
                     if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
                     {
                         try
                         {
-                            await ExtractHTMLRefFiles_7z(fmArchivePath, fmCachePath);
+                            await ExtractHtmlRefFiles_7z(fmArchivePath, fmCachePath);
                         }
                         catch (Exception ex)
                         {
@@ -303,7 +303,7 @@ internal static class FMCache
     // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
     // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
     // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void ZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void Extract_Zip(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         try
         {
@@ -374,7 +374,7 @@ internal static class FMCache
         }
     }
 
-    private static async Task SevenZipExtract(string fmArchivePath, string fmCachePath, List<string> readmes)
+    private static async Task Extract_7z(string fmArchivePath, string fmCachePath, List<string> readmes)
     {
         var fileNamesList = new List<string>();
         try
@@ -473,7 +473,7 @@ internal static class FMCache
         }
     }
 
-    private static void RarExtract(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
+    private static void Extract_Rar(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
     {
         try
         {
@@ -530,7 +530,7 @@ internal static class FMCache
         }
     }
 
-    private static async Task RarExtractSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
+    private static async Task Extract_RarSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
     {
         try
         {
@@ -612,7 +612,7 @@ internal static class FMCache
 
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
-    private static void ExtractHTMLRefFiles_Zip(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void ExtractHtmlRefFiles_Zip(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
     {
         List<NameAndIndex> htmlRefFiles = new();
 
@@ -703,7 +703,7 @@ internal static class FMCache
     -We could have this part be indeterminate progress, but it might take a long time and so that would be
      sub-optimal UX.
     */
-    private static async Task ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
+    private static async Task ExtractHtmlRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
         InitProgressBoxForSolidExtract();
 
@@ -795,7 +795,7 @@ internal static class FMCache
         }
     }
 
-    private static void ExtractHTMLRefFiles_Rar(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
+    private static void ExtractHtmlRefFiles_Rar(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
     {
         List<NameAndIndex> htmlRefFiles = new();
 
@@ -862,7 +862,7 @@ internal static class FMCache
         }
     }
 
-    private static async Task ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
+    private static async Task ExtractHtmlRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
         InitProgressBoxForSolidExtract();
 
