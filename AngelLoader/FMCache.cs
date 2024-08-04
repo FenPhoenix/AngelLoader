@@ -718,6 +718,7 @@ internal static class FMCache
                 string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
 
                 List<string> archiveFileNamesNameOnly = new(0);
+                List<string> archiveNonExcludedFullFileNames = new();
                 using (FileStream_LengthCached fs = File_OpenReadFast(fmArchivePath))
                 {
                     SevenZipArchive extractor = new(fs);
@@ -726,7 +727,12 @@ internal static class FMCache
                     ListFast<SevenZipArchiveEntry> entries = extractor.Entries;
                     for (int i = 0; i < entriesCount; i++)
                     {
-                        archiveFileNamesNameOnly.Add(entries[i].FileName.GetFileNameFast());
+                        SevenZipArchiveEntry entry = entries[i];
+                        if (!_htmlRefExcludes.Any(entry.FileName.EndsWithI))
+                        {
+                            archiveFileNamesNameOnly.Add(entry.FileName.GetFileNameFast());
+                            archiveNonExcludedFullFileNames.Add(entry.FileName);
+                        }
                     }
                 }
 
@@ -737,13 +743,16 @@ internal static class FMCache
 
                 var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
-                // @HTMLREF: We should extract only non-excluded files
+                string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
+
                 Fen7z.Result result = Fen7z.Extract(
                     sevenZipWorkingPath: Paths.SevenZipPath,
                     sevenZipPathAndExe: Paths.SevenZipExe,
                     archivePath: fmArchivePath,
                     outputPath: cacheTempPath,
                     entriesCount: entriesCount,
+                    listFile: listFile,
+                    fileNamesList: archiveNonExcludedFullFileNames,
                     progress: progress
                 );
 
