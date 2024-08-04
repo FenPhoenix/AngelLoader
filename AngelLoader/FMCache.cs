@@ -364,6 +364,7 @@ internal static class FMCache
                     continue;
                 }
                 entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
+                File_UnSetReadOnly(fileNameFull);
                 readmes.Add(fn);
             }
         }
@@ -378,14 +379,7 @@ internal static class FMCache
         var fileNamesList = new List<string>();
         try
         {
-            // Critical
-            Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-            // Block the view immediately after starting another thread, because otherwise we could end
-            // up allowing multiple of these to be called and all that insanity...
-
-            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+            InitProgressBoxForSolidExtract();
 
             await Task.Run(() =>
             {
@@ -515,8 +509,18 @@ internal static class FMCache
                     ? Path.Combine(fmCachePath, t3ReadmeDir)
                     : fmCachePath);
 
-                string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                string fileNameFull;
+                try
+                {
+                    fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                }
+                catch
+                {
+                    // ignore, message already logged
+                    continue;
+                }
                 entry.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                File_UnSetReadOnly(fileNameFull);
                 readmes.Add(fn);
             }
         }
@@ -530,14 +534,7 @@ internal static class FMCache
     {
         try
         {
-            // Critical
-            Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-            // Block the view immediately after starting another thread, because otherwise we could end
-            // up allowing multiple of these to be called and all that insanity...
-
-            // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-            Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+            InitProgressBoxForSolidExtract();
 
             await Task.Run(() =>
             {
@@ -582,7 +579,16 @@ internal static class FMCache
                             ? Path.Combine(fmCachePath, t3ReadmeDir)
                             : fmCachePath);
 
-                        string fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                        string fileNameFull;
+                        try
+                        {
+                            fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                        }
+                        catch
+                        {
+                            // ignore, message already logged
+                            continue;
+                        }
                         reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
                         File_UnSetReadOnly(fileNameFull);
                         readmes.Add(fn);
@@ -655,10 +661,20 @@ internal static class FMCache
         {
             foreach (NameAndIndex f in htmlRefFiles)
             {
-                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                string finalFileName;
+                try
+                {
+                    finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                }
+                catch
+                {
+                    // ignore, message already logged
+                    continue;
+                }
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                 entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+                File_UnSetReadOnly(finalFileName);
             }
         }
     }
@@ -678,27 +694,18 @@ internal static class FMCache
 
     Also if we're going to have any solid html ref extract code in the scanner, we'll need to extract the relevant
     code from here out to AL_Common.
+
+    @HTMLREF: Decide what to do about progress box
+    Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
+    -We could leave the box up, but it would still necessarily reset to 0%.
+    -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
+     fancy, but meh.
+    -We could have this part be indeterminate progress, but it might take a long time and so that would be
+     sub-optimal UX.
     */
     private static async Task ExtractHTMLRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
-        /*
-        @HTMLREF: Decide what to do about progress box
-        Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
-        -We could leave the box up, but it would still necessarily reset to 0%.
-        -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
-         fancy, but meh.
-        -We could have this part be indeterminate progress, but it might take a long time and so that would be
-         sub-optimal UX.
-        */
-
-        // Critical
-        Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-        // Block the view immediately after starting another thread, because otherwise we could end
-        // up allowing multiple of these to be called and all that insanity...
-
-        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+        InitProgressBoxForSolidExtract();
 
         await Task.Run(() =>
         {
@@ -837,31 +844,33 @@ internal static class FMCache
         {
             foreach (NameAndIndex f in htmlRefFiles)
             {
-                string finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                string finalFileName;
+                try
+                {
+                    finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                }
+                catch
+                {
+                    // ignore, message already logged
+                    continue;
+                }
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                 entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+                File_UnSetReadOnly(finalFileName);
             }
         }
     }
 
     private static async Task ExtractHTMLRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
-        // Critical
-        Core.View.Invoke(new Action(static () => Core.View.Show()));
-
-        // Block the view immediately after starting another thread, because otherwise we could end
-        // up allowing multiple of these to be called and all that insanity...
-
-        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+        InitProgressBoxForSolidExtract();
 
         await Task.Run(() =>
         {
             try
             {
                 Directory.CreateDirectory(fmCachePath);
-                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
                 Paths.CreateOrClearTempPath(TempPaths.FMCache);
 
                 string cacheTempPath = Paths.FMCacheTemp;
@@ -925,7 +934,6 @@ internal static class FMCache
                                 }
 
                                 reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
-
                                 File_UnSetReadOnly(extractedName);
                             }
 
@@ -948,6 +956,18 @@ internal static class FMCache
                 Core.View.HideProgressBox();
             }
         });
+    }
+
+    private static void InitProgressBoxForSolidExtract()
+    {
+        // Critical
+        Core.View.Invoke(new Action(static () => Core.View.Show()));
+
+        // Block the view immediately after starting another thread, because otherwise we could end
+        // up allowing multiple of these to be called and all that insanity...
+
+        // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
+        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
     }
 
     private static void DoHtmlReferenceCopy(string cacheTempPath, string fmCachePath, string[] cacheFiles)
