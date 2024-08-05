@@ -170,6 +170,12 @@ public sealed partial class Scanner : IDisposable
 
     #region Private classes
 
+    private enum CopyReadmesToCacheResult
+    {
+        Success,
+        NeedsHtmlRefExtract,
+    }
+
     private sealed class DetectedTitle(string value, bool temporary)
     {
         internal readonly string Value = value;
@@ -1227,6 +1233,8 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
+        bool needsHtmlRefExtract = false;
+
         if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
         {
             #region Partial 7z extract
@@ -1552,7 +1560,11 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
+                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
+                    if (result == CopyReadmesToCacheResult.NeedsHtmlRefExtract)
+                    {
+                        needsHtmlRefExtract = true;
+                    }
                 }
                 catch
                 {
@@ -1994,7 +2006,7 @@ public sealed partial class Scanner : IDisposable
         Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
-        return new ScannedFMDataAndError { ScannedFMData = fmData };
+        return new ScannedFMDataAndError { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
     }
 
     #region Fail return functions
@@ -2048,7 +2060,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private void CopyReadmesToCacheDir(
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(
         FMToScan fm,
         ListFast<SevenZipArchiveEntry> sevenZipEntries,
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
@@ -2116,11 +2128,13 @@ public sealed partial class Scanner : IDisposable
 
             if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
             {
-                // We don't want to handle HTML ref extracts here - it would complicate the code too much.
-                // So just use the cheapest, crappiest solution - delete the cache dir so that the cache will be
-                // run on the next select of the FM (or immediately after the scan if the FM is already selected).
-                DeleteDirectory(cachePath);
-                return;
+                /*
+                We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
+                send a message back telling the caller to handle it.
+                We could just delete the cache directory here, but since it could be anything, we're considering
+                that a potentially unsafe action.
+                */
+                return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
             }
 
             try
@@ -2143,6 +2157,8 @@ public sealed partial class Scanner : IDisposable
                 }
             }
         }
+
+        return CopyReadmesToCacheResult.Success;
     }
 
     #region Dates
