@@ -2059,11 +2059,6 @@ public sealed partial class Scanner : IDisposable
 
         var readmes = new List<(string Source, string Dest)>();
 
-        /*
-        @HTMLREF(CopyReadmesToCacheDir):
-        We don't have the facility to do an HTML reference extraction here (7z scanner readme copy).
-        */
-
         foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
         {
             if (f.IsValidReadme())
