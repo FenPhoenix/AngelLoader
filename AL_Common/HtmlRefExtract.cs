@@ -37,5 +37,4 @@ public static partial class Common
 
         return false;
     }
-
 }

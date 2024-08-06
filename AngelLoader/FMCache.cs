@@ -372,11 +372,11 @@ internal static class FMCache
 
     private static async Task Extract_7z(string fmArchivePath, string fmCachePath, List<string> readmes)
     {
-        var fileNamesList = new List<string>();
         InitProgressBoxForSolidExtract(html: false);
 
         await Task.Run(() =>
         {
+            List<string> fileNamesList = new();
             try
             {
                 Directory.CreateDirectory(fmCachePath);
@@ -758,7 +758,7 @@ internal static class FMCache
 
         using RarArchive archive = RarArchive.Open(fmArchivePath);
 
-        var entries = archive.Entries.ToArray();
+        RarArchiveEntry[] entries = archive.Entries.ToArray();
 
         foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
         {
