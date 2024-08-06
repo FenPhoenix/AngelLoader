@@ -242,6 +242,10 @@ internal static class FMCache
             Log(ex: ex);
             return new CacheData();
         }
+        finally
+        {
+            Core.View.HideProgressBox();
+        }
 
         // Does not check basePath for existence, so check it first before calling.
         static List<string> GetValidReadmes(string basePath)
@@ -369,100 +373,93 @@ internal static class FMCache
     private static async Task Extract_7z(string fmArchivePath, string fmCachePath, List<string> readmes)
     {
         var fileNamesList = new List<string>();
-        try
-        {
-            InitProgressBoxForSolidExtract();
+        InitProgressBoxForSolidExtract(html: false);
 
-            await Task.Run(() =>
+        await Task.Run(() =>
+        {
+            try
             {
-                try
+                Directory.CreateDirectory(fmCachePath);
+
+                int extractorFilesCount;
+
+                using (var fs = File_OpenReadFast(fmArchivePath))
                 {
-                    Directory.CreateDirectory(fmCachePath);
-
-                    int extractorFilesCount;
-
-                    using (var fs = File_OpenReadFast(fmArchivePath))
+                    var archive = new SevenZipArchive(fs);
+                    ListFast<SevenZipArchiveEntry> entries = archive.Entries;
+                    extractorFilesCount = entries.Count;
+                    for (int i = 0; i < entries.Count; i++)
                     {
-                        var archive = new SevenZipArchive(fs);
-                        ListFast<SevenZipArchiveEntry> entries = archive.Entries;
-                        extractorFilesCount = entries.Count;
-                        for (int i = 0; i < entries.Count; i++)
+                        SevenZipArchiveEntry entry = entries[i];
+
+                        if (entry.IsAnti) continue;
+
+                        string fn = entry.FileName;
+                        int dirSeps;
+                        if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
+                            (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                              (fn.PathStartsWithI(_t3ReadmeDir1S) ||
+                               fn.PathStartsWithI(_t3ReadmeDir2S))) ||
+                             dirSeps == 0))
                         {
-                            SevenZipArchiveEntry entry = entries[i];
-
-                            if (entry.IsAnti) continue;
-
-                            string fn = entry.FileName;
-                            int dirSeps;
-                            if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
-                                (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                                  (fn.PathStartsWithI(_t3ReadmeDir1S) ||
-                                   fn.PathStartsWithI(_t3ReadmeDir2S))) ||
-                                 dirSeps == 0))
-                            {
-                                fileNamesList.Add(fn);
-                                readmes.Add(fn);
-                            }
-                        }
-                    }
-
-                    if (fileNamesList.Count == 0) return;
-
-                    Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
-
-                    static void ReportProgress(Fen7z.ProgressReport pr)
-                    {
-                        // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files
-                        // but there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving
-                        // us a useless "percentage" value for this purpose.
-                        // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
-                        Core.View.SetProgressPercent(pr.PercentOfBytes);
-                    }
-
-                    var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
-
-                    string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
-
-                    Fen7z.Result result = Fen7z.Extract(
-                        sevenZipWorkingPath: Paths.SevenZipPath,
-                        sevenZipPathAndExe: Paths.SevenZipExe,
-                        archivePath: fmArchivePath,
-                        outputPath: fmCachePath,
-                        entriesCount: extractorFilesCount,
-                        listFile: listFile,
-                        fileNamesList: fileNamesList,
-                        progress: progress);
-
-                    if (result.ErrorOccurred)
-                    {
-                        Log("Readme caching (7z): " + fmCachePath + $":{NL}" + result);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.Ex + "in 7z extract to cache", ex);
-                }
-                finally
-                {
-                    foreach (string file in fileNamesList)
-                    {
-                        try
-                        {
-                            // Stupid Path.Combine might in theory throw
-                            File_UnSetReadOnly(Path.Combine(fmCachePath, file));
-                        }
-                        catch
-                        {
-                            // ignore
+                            fileNamesList.Add(fn);
+                            readmes.Add(fn);
                         }
                     }
                 }
-            });
-        }
-        finally
-        {
-            Core.View.HideProgressBox();
-        }
+
+                if (fileNamesList.Count == 0) return;
+
+                Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+
+                static void ReportProgress(Fen7z.ProgressReport pr)
+                {
+                    // For selective-file extracts, we want percent-of-bytes, otherwise if we ask for 3 files
+                    // but there's 8014 in the archive, it counts "100%" as "3 files out of 8014", thus giving
+                    // us a useless "percentage" value for this purpose.
+                    // Even if we used the files list count as the max, the percentage bar wouldn't be smooth.
+                    Core.View.SetProgressPercent(pr.PercentOfBytes);
+                }
+
+                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+
+                string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
+
+                Fen7z.Result result = Fen7z.Extract(
+                    sevenZipWorkingPath: Paths.SevenZipPath,
+                    sevenZipPathAndExe: Paths.SevenZipExe,
+                    archivePath: fmArchivePath,
+                    outputPath: fmCachePath,
+                    entriesCount: extractorFilesCount,
+                    listFile: listFile,
+                    fileNamesList: fileNamesList,
+                    progress: progress);
+
+                if (result.ErrorOccurred)
+                {
+                    Log("Readme caching (7z): " + fmCachePath + $":{NL}" + result);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in 7z extract to cache", ex);
+            }
+            finally
+            {
+                foreach (string file in fileNamesList)
+                {
+                    try
+                    {
+                        // Stupid Path.Combine might in theory throw
+                        File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                    }
+                    catch
+                    {
+                        // ignore
+                    }
+                }
+            }
+        });
     }
 
     private static void Extract_Rar(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
@@ -524,78 +521,71 @@ internal static class FMCache
 
     private static async Task Extract_RarSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
     {
-        try
-        {
-            InitProgressBoxForSolidExtract();
+        InitProgressBoxForSolidExtract(html: false);
 
-            await Task.Run(() =>
+        await Task.Run(() =>
+        {
+            try
             {
-                try
-                {
-                    Directory.CreateDirectory(fmCachePath);
+                Directory.CreateDirectory(fmCachePath);
 
-                    int i = -1;
-                    while (reader.MoveToNextEntry())
+                int i = -1;
+                while (reader.MoveToNextEntry())
+                {
+                    i++;
+                    RarReaderEntry entry = reader.Entry;
+                    string fn = entry.Key;
+                    string? t3ReadmeDir = null;
+
+                    Core.View.SetProgressPercent(GetPercentFromValue_Int(i, entriesCount));
+
+                    if (!fn.IsValidReadme() || entry.Size == 0) continue;
+
+                    int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
+                    if (dirSeps == 1)
                     {
-                        i++;
-                        RarReaderEntry entry = reader.Entry;
-                        string fn = entry.Key;
-                        string? t3ReadmeDir = null;
-
-                        Core.View.SetProgressPercent(GetPercentFromValue_Int(i, entriesCount));
-
-                        if (!fn.IsValidReadme() || entry.Size == 0) continue;
-
-                        int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
-                        if (dirSeps == 1)
+                        if (fn.PathStartsWithI(_t3ReadmeDir1S))
                         {
-                            if (fn.PathStartsWithI(_t3ReadmeDir1S))
-                            {
-                                t3ReadmeDir = _t3ReadmeDir1;
-                            }
-                            else if (fn.PathStartsWithI(_t3ReadmeDir2S))
-                            {
-                                t3ReadmeDir = _t3ReadmeDir2;
-                            }
-                            else
-                            {
-                                continue;
-                            }
+                            t3ReadmeDir = _t3ReadmeDir1;
                         }
-                        else if (dirSeps > 1)
+                        else if (fn.PathStartsWithI(_t3ReadmeDir2S))
+                        {
+                            t3ReadmeDir = _t3ReadmeDir2;
+                        }
+                        else
                         {
                             continue;
                         }
-
-                        Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
-                            ? Path.Combine(fmCachePath, t3ReadmeDir)
-                            : fmCachePath);
-
-                        string fileNameFull;
-                        try
-                        {
-                            fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
-                        }
-                        catch
-                        {
-                            // ignore, message already logged
-                            continue;
-                        }
-                        reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
-                        File_UnSetReadOnly(fileNameFull);
-                        readmes.Add(fn);
                     }
+                    else if (dirSeps > 1)
+                    {
+                        continue;
+                    }
+
+                    Directory.CreateDirectory(!t3ReadmeDir.IsEmpty()
+                        ? Path.Combine(fmCachePath, t3ReadmeDir)
+                        : fmCachePath);
+
+                    string fileNameFull;
+                    try
+                    {
+                        fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                    }
+                    catch
+                    {
+                        // ignore, message already logged
+                        continue;
+                    }
+                    reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                    File_UnSetReadOnly(fileNameFull);
+                    readmes.Add(fn);
                 }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.Ex + "in rar (solid) extract to cache", ex);
-                }
-            });
-        }
-        finally
-        {
-            Core.View.HideProgressBox();
-        }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in rar (solid) extract to cache", ex);
+            }
+        });
     }
 
     #endregion
@@ -671,18 +661,9 @@ internal static class FMCache
         }
     }
 
-    /*
-    @HTMLREF: Decide what to do about progress box
-    Currently it disappears and reappears for this code, it looks like what it is, two different extracts.
-    -We could leave the box up, but it would still necessarily reset to 0%.
-    -We could have text saying like "Caching referenced files for HTML readme(s)..." if we wanted to get
-     fancy, but meh.
-    -We could have this part be indeterminate progress, but it might take a long time and so that would be
-     sub-optimal UX.
-    */
     private static async Task ExtractHtmlRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
-        InitProgressBoxForSolidExtract();
+        InitProgressBoxForSolidExtract(html: true);
 
         await Task.Run(() =>
         {
@@ -757,7 +738,6 @@ internal static class FMCache
             finally
             {
                 Paths.CreateOrClearTempPath(TempPaths.FMCache);
-                Core.View.HideProgressBox();
             }
         });
 
@@ -841,7 +821,7 @@ internal static class FMCache
 
     private static async Task ExtractHtmlRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
-        InitProgressBoxForSolidExtract();
+        InitProgressBoxForSolidExtract(html: true);
 
         await Task.Run(() =>
         {
@@ -930,12 +910,11 @@ internal static class FMCache
             finally
             {
                 Paths.CreateOrClearTempPath(TempPaths.FMCache);
-                Core.View.HideProgressBox();
             }
         });
     }
 
-    private static void InitProgressBoxForSolidExtract()
+    private static void InitProgressBoxForSolidExtract(bool html)
     {
         // Critical
         Core.View.Invoke(new Action(static () => Core.View.Show()));
@@ -944,7 +923,11 @@ internal static class FMCache
         // up allowing multiple of these to be called and all that insanity...
 
         // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-        Core.View.ShowProgressBox_Single(message1: LText.ProgressBox.CachingReadmeFiles);
+        Core.View.ShowProgressBox_Single(message1:
+            html
+                ? LText.ProgressBox.CachingHTMLReferencedFiles
+                : LText.ProgressBox.CachingReadmeFiles
+        );
     }
 
     private static void DoHtmlReferenceCopy(string cacheTempPath, string fmCachePath, string[] cacheFiles)
