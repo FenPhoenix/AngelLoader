@@ -663,6 +663,9 @@ internal static class FMCache
 
     private static async Task ExtractHtmlRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
+        // @HTMLREF: We shouldn't say "caching html ref files" until we know we have some to cache
+        // Otherwise this box will always appear saying it's caching them, even when it's just looking for them
+        // but finding none.
         InitProgressBoxForSolidExtract(html: true);
 
         await Task.Run(() =>
