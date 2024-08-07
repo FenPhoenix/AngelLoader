@@ -146,16 +146,9 @@ internal static class FMCache
 
                     if (fm.Game != Game.TDM)
                     {
-                        if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                        if (HtmlReadmeExists(readmes, fmCachePath))
                         {
-                            try
-                            {
-                                ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(ex: ex);
-                            }
+                            ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
                         }
                     }
                 }
@@ -178,33 +171,19 @@ internal static class FMCache
                                 await Extract_RarSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
                             }
 
-                            if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                            if (HtmlReadmeExists(readmes, fmCachePath))
                             {
-                                try
-                                {
-                                    await ExtractHtmlRefFiles_RarSolid(fmArchivePath, fmCachePath);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log(ex: ex);
-                                }
+                                await ExtractHtmlRefFiles_RarSolid(fmArchivePath, fmCachePath);
                             }
                         }
                         else
                         {
                             Extract_Rar(archive, fmCachePath, readmes, rarExtractTempBuffer);
+                            archive.Dispose();
 
-                            if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                            if (HtmlReadmeExists(readmes, fmCachePath))
                             {
-                                try
-                                {
-                                    archive.Dispose();
-                                    ExtractHtmlRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log(ex: ex);
-                                }
+                                ExtractHtmlRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
                             }
                         }
                     }
@@ -217,16 +196,9 @@ internal static class FMCache
                 {
                     await Extract_7z(fmArchivePath, fmCachePath, readmes);
 
-                    if (HtmlReadmeExists(readmes) && Directory.Exists(fmCachePath))
+                    if (HtmlReadmeExists(readmes, fmCachePath))
                     {
-                        try
-                        {
-                            await ExtractHtmlRefFiles_7z(fmArchivePath, fmCachePath);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log(ex: ex);
-                        }
+                        await ExtractHtmlRefFiles_7z(fmArchivePath, fmCachePath);
                     }
                 }
 
@@ -279,9 +251,10 @@ internal static class FMCache
             return readmes;
         }
 
-        // Guard check so we don't do useless HTML work if we don't have any HTML readmes
-        static bool HtmlReadmeExists(List<string> readmes)
+        static bool HtmlReadmeExists(List<string> readmes, string fmCachePath)
         {
+            if (!Directory.Exists(fmCachePath)) return false;
+
             for (int i = 0; i < readmes.Count; i++)
             {
                 if (readmes[i].ExtIsHtml())
