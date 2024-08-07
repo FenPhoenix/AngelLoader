@@ -301,7 +301,8 @@ internal static class FMScan
 
                     for (int i = 0; i < fmsToScanFiltered.Count; i++)
                     {
-                        FMScanner.ScannedFMData? scannedFM = fmDataList[i].ScannedFMData;
+                        FMScanner.ScannedFMDataAndError scannedFMDataAndError = fmDataList[i];
+                        FMScanner.ScannedFMData? scannedFM = scannedFMDataAndError.ScannedFMData;
 
                         #region Checks
 
@@ -325,6 +326,11 @@ internal static class FMScan
                         FanMission fm = fmsToScanFiltered[i];
 
                         #region Set FM fields
+
+                        if (scannedFMDataAndError.NeedsHtmlRefExtract)
+                        {
+                            fm.ForceReadmeReCacheAlways = true;
+                        }
 
                         bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
 

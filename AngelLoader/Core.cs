@@ -2116,6 +2116,7 @@ internal static class Core
 
         View.UpdateAllFMUIDataExceptReadme(fm);
 
+        bool iniNeedsWriting = false;
         if (fm.ForceReadmeReCache)
         {
             if (!refreshCache)
@@ -2124,6 +2125,18 @@ internal static class Core
                 refreshCache = !fm.NeedsReadmesCachedDuringScan();
             }
             fm.ForceReadmeReCache = false;
+            iniNeedsWriting = true;
+        }
+
+        if (fm.ForceReadmeReCacheAlways)
+        {
+            refreshCache = true;
+            fm.ForceReadmeReCacheAlways = false;
+            iniNeedsWriting = true;
+        }
+
+        if (iniNeedsWriting)
+        {
             Ini.WriteFullFMDataIni();
         }
 

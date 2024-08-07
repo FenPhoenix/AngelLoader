@@ -26,6 +26,7 @@ internal static class TempPaths
     internal static readonly TempPath SevenZipList = new(static () => Paths.SevenZipListTemp);
     internal static readonly TempPath StubComm = new(static () => Paths.StubCommTemp);
     internal static readonly TempPath FMScanner = new(static () => Paths.FMScannerTemp);
+    internal static readonly TempPath FMCache = new(static () => Paths.FMCacheTemp);
 }
 
 internal static class Paths
@@ -98,6 +99,9 @@ internal static class Paths
     internal static string SevenZipListTemp => _sevenZipListTemp ??= PathCombineFast_NoChecks(_baseTemp, "7zl");
 
     #endregion
+
+    private static string? _fmCacheTemp;
+    internal static string FMCacheTemp => _fmCacheTemp ??= PathCombineFast_NoChecks(_baseTemp, "FMCache");
 
     #region Stub
 

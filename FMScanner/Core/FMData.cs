@@ -278,6 +278,7 @@ public sealed class ScannedFMDataAndError
     public Exception? Exception;
     public Fen7z.Result? Fen7zResult;
     public string ErrorInfo = "";
+    public bool NeedsHtmlRefExtract;
 }
 
 [PublicAPI]

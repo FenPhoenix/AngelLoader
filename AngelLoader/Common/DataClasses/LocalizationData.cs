@@ -764,6 +764,11 @@ internal sealed class LText_Class
         internal readonly string ImportingFromFMSel = "Importing from FMSel...";
         [FenGenBlankLine]
         internal readonly string CachingReadmeFiles = "Caching readme files...";
+        [FenGenComment(
+            "HTML files may reference external files such as images, CSS files, etc.",
+            "This message is saying that one or more HTML readmes have been found that contain references to",
+            "external files, and those files are being cached alongside the readme(s).")]
+        internal readonly string CachingHTMLReferencedFiles = "Caching HTML referenced files...";
         internal readonly string DeletingFMArchive = "Deleting FM archive...";
         internal readonly string DeletingFMArchives = "Deleting FM archives...";
         [FenGenBlankLine]

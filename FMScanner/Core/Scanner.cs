@@ -194,6 +194,12 @@ public sealed partial class Scanner : IDisposable
 
     #region Private classes
 
+    private enum CopyReadmesToCacheResult
+    {
+        Success,
+        NeedsHtmlRefExtract,
+    }
+
     private sealed class DetectedTitle(string value, bool temporary)
     {
         internal readonly string Value = value;
@@ -1229,6 +1235,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Setup
 
+        ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
 
         if (_fmFormat == FMFormat.Rar)
@@ -1247,6 +1254,8 @@ public sealed partial class Scanner : IDisposable
                 _rarStream = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
             }
         }
+
+        bool needsHtmlRefExtract = false;
 
         if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
         {
@@ -1290,7 +1299,6 @@ public sealed partial class Scanner : IDisposable
                 using (var fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
                 {
                     sevenZipSize = (ulong)fs.Length;
-                    ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
                     int entriesCount;
                     cancellationToken.ThrowIfCancellationRequested();
 
@@ -1574,7 +1582,11 @@ public sealed partial class Scanner : IDisposable
             {
                 try
                 {
-                    CopyReadmesToCacheDir(fm);
+                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
+                    if (result == CopyReadmesToCacheResult.NeedsHtmlRefExtract)
+                    {
+                        needsHtmlRefExtract = true;
+                    }
                 }
                 catch
                 {
@@ -2016,7 +2028,7 @@ public sealed partial class Scanner : IDisposable
         Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
-        return new ScannedFMDataAndError { ScannedFMData = fmData };
+        return new ScannedFMDataAndError { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
     }
 
     #region Fail return functions
@@ -2070,18 +2082,16 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    private void CopyReadmesToCacheDir(FMToScan fm)
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(
+        FMToScan fm,
+        ListFast<SevenZipArchiveEntry> sevenZipEntries,
+        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
     {
         string cachePath = fm.CachePath;
 
         Directory.CreateDirectory(cachePath);
 
         var readmes = new List<(string Source, string Dest)>();
-
-        /*
-        @HTMLRefExtraction(CopyReadmesToCacheDir):
-        We don't have the facility to do an HTML reference extraction here (7z scanner readme copy).
-        */
 
         foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
         {
@@ -2114,6 +2124,41 @@ public sealed partial class Scanner : IDisposable
 
         if (readmes.Count > 0)
         {
+            string[] readmeFileNames = new string[readmes.Count];
+            for (int i = 0; i < readmes.Count; i++)
+            {
+                readmeFileNames[i] = readmes[i].Source;
+            }
+
+            List<string> archiveFileNames;
+            if (_fmFormat == FMFormat.SevenZip)
+            {
+                archiveFileNames = new List<string>(sevenZipEntries.Count);
+                for (int i = 0; i < sevenZipEntries.Count; i++)
+                {
+                    archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
+                }
+            }
+            else
+            {
+                archiveFileNames = new List<string>(rarEntries.Count);
+                for (int i = 0; i < rarEntries.Count; i++)
+                {
+                    archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
+                }
+            }
+
+            if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
+            {
+                /*
+                We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
+                send a message back telling the caller to handle it.
+                We could just delete the cache directory here, but since it could be anything, we're considering
+                that a potentially unsafe action.
+                */
+                return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
+            }
+
             try
             {
                 foreach (var (source, dest) in readmes)
@@ -2134,6 +2179,8 @@ public sealed partial class Scanner : IDisposable
                 }
             }
         }
+
+        return CopyReadmesToCacheResult.Success;
     }
 
     #region Dates

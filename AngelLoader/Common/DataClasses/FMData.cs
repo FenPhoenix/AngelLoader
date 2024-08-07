@@ -43,11 +43,12 @@ public sealed class FanMission
         Installed = 1 << 5,
         NoReadmes = 1 << 6,
         ForceReadmeReCache = 1 << 7,
-        FinishedOnUnknown = 1 << 8,
-        DisableAllMods = 1 << 9,
-        ResourcesScanned = 1 << 10,
-        LangsScanned = 1 << 11,
-        ShownInFilter = 1 << 12,
+        ForceReadmeReCacheAlways = 1 << 8,
+        FinishedOnUnknown = 1 << 9,
+        DisableAllMods = 1 << 10,
+        ResourcesScanned = 1 << 11,
+        LangsScanned = 1 << 12,
+        ShownInFilter = 1 << 13,
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,6 +190,18 @@ public sealed class FanMission
         get => GetFMFlag(FMFlag.ForceReadmeReCache);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => SetFMFlag(FMFlag.ForceReadmeReCache, value);
+    }
+
+    // Used when an FMs was supposed to have its readmes cached during the scan, but couldn't because it had at
+    // least one HTML readme with dependent files. This will force the FM to have its cache refreshed on next
+    // select even in this case (ForceReadmeReCache will not work in this case).
+    [FenGenIgnore]
+    internal bool ForceReadmeReCacheAlways
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => GetFMFlag(FMFlag.ForceReadmeReCacheAlways);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        set => SetFMFlag(FMFlag.ForceReadmeReCacheAlways, value);
     }
 
     [FenGenIgnore]

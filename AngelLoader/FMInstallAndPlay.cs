@@ -1945,10 +1945,10 @@ internal static partial class FMInstallAndPlay
             while (reader.MoveToNextEntry())
             {
                 i++;
-                var entry = reader.Entry;
+                RarReaderEntry entry = reader.Entry;
                 string fileName = entry.Key;
 
-                if (!entry.IsDirectory && !fileName[^1].IsDirSep())
+                if (!entry.IsDirectory && !fileName.IsEmpty() && !fileName[^1].IsDirSep())
                 {
                     string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
