@@ -419,17 +419,16 @@ internal static class FMCache
             }
             finally
             {
-                foreach (string file in fileNamesList)
+                try
                 {
-                    try
+                    foreach (string file in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
                     {
-                        // Stupid Path.Combine might in theory throw
-                        File_UnSetReadOnly(Path.Combine(fmCachePath, file));
+                        File_UnSetReadOnly(file);
                     }
-                    catch
-                    {
-                        // ignore
-                    }
+                }
+                catch
+                {
+                    // ignore
                 }
             }
         });
