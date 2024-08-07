@@ -372,7 +372,7 @@ internal static class FMCache
 
     private static async Task Extract_7z(string fmArchivePath, string fmCachePath, List<string> readmes)
     {
-        InitProgressBoxForSolidExtract(html: false);
+        InitProgressBoxForSolidExtract();
 
         await Task.Run(() =>
         {
@@ -521,7 +521,7 @@ internal static class FMCache
 
     private static async Task Extract_RarSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
     {
-        InitProgressBoxForSolidExtract(html: false);
+        InitProgressBoxForSolidExtract();
 
         await Task.Run(() =>
         {
@@ -663,11 +663,6 @@ internal static class FMCache
 
     private static async Task ExtractHtmlRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
-        // @HTMLREF: We shouldn't say "caching html ref files" until we know we have some to cache
-        // Otherwise this box will always appear saying it's caching them, even when it's just looking for them
-        // but finding none.
-        InitProgressBoxForSolidExtract(html: true);
-
         await Task.Run(() =>
         {
             try
@@ -705,6 +700,10 @@ internal static class FMCache
                 {
                     return (false, false);
                 }
+
+                Core.View.SetProgressBoxState_Single(
+                    message1: LText.ProgressBox.CachingHTMLReferencedFiles,
+                    percent: 0);
 
                 var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
 
@@ -824,8 +823,6 @@ internal static class FMCache
 
     private static async Task ExtractHtmlRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
     {
-        InitProgressBoxForSolidExtract(html: true);
-
         await Task.Run(() =>
         {
             try
@@ -857,6 +854,10 @@ internal static class FMCache
                     {
                         return;
                     }
+
+                    Core.View.SetProgressBoxState_Single(
+                        message1: LText.ProgressBox.CachingHTMLReferencedFiles,
+                        percent: 0);
 
                     byte[] tempBuffer = new byte[StreamCopyBufferSize];
 
@@ -917,7 +918,7 @@ internal static class FMCache
         });
     }
 
-    private static void InitProgressBoxForSolidExtract(bool html)
+    private static void InitProgressBoxForSolidExtract()
     {
         // Critical
         Core.View.Invoke(new Action(static () => Core.View.Show()));
@@ -926,11 +927,7 @@ internal static class FMCache
         // up allowing multiple of these to be called and all that insanity...
 
         // Show progress box on UI thread to seal thread gaps (make auto-refresh blocking airtight)
-        Core.View.ShowProgressBox_Single(message1:
-            html
-                ? LText.ProgressBox.CachingHTMLReferencedFiles
-                : LText.ProgressBox.CachingReadmeFiles
-        );
+        Core.View.ShowProgressBox_Single(LText.ProgressBox.CachingReadmeFiles);
     }
 
     private static void DoHtmlReferenceCopy(string cacheTempPath, string fmCachePath, string[] cacheFiles)
