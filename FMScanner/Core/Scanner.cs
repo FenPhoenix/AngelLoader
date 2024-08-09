@@ -32,6 +32,7 @@ using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Readers.Rar;
+using Ude.NetStandard;
 using Ude.NetStandard.SimpleHelpers;
 using static System.StringComparison;
 using static AL_Common.Common;
@@ -47,6 +48,8 @@ public sealed partial class Scanner : IDisposable
 #endif
 
     #region Private fields
+
+    private bool _titlesStrIsOEM850;
 
     private static byte[] InitRomanToDecimalTable()
     {
@@ -175,6 +178,13 @@ public sealed partial class Scanner : IDisposable
     {
         Success,
         NeedsHtmlRefExtract,
+    }
+
+    private enum DetectEncodingType
+    {
+        Standard,
+        TitlesStr,
+        NewGameStr,
     }
 
     private sealed class DetectedTitle(string value, bool temporary)
@@ -468,6 +478,7 @@ public sealed partial class Scanner : IDisposable
 
     private void ResetCachedFields()
     {
+        _titlesStrIsOEM850 = false;
         _tempLines.Clear();
         _topLines.Clear();
         _readmeFiles.Clear();
@@ -4149,7 +4160,7 @@ public sealed partial class Scanner : IDisposable
 
         if (newGameStrFileIndex == -1) return "";
 
-        ReadAllLinesDetectEncoding(_intrfaceDirFiles[newGameStrFileIndex], _tempLines);
+        ReadAllLinesDetectEncoding(_intrfaceDirFiles[newGameStrFileIndex], _tempLines, type: DetectEncodingType.NewGameStr);
 
         for (int i = 0; i < _tempLines.Count; i++)
         {
@@ -4317,7 +4328,7 @@ public sealed partial class Scanner : IDisposable
 
             if (titlesFileIndex == -1) continue;
 
-            ReadAllLinesDetectEncoding(_stringsDirFiles[titlesFileIndex], _tempLines);
+            ReadAllLinesDetectEncoding(_stringsDirFiles[titlesFileIndex], _tempLines, type: DetectEncodingType.TitlesStr);
             titlesStrLines = _tempLines;
 
             break;
@@ -5563,7 +5574,110 @@ public sealed partial class Scanner : IDisposable
 
     #region Read all lines
 
-    private void ReadAllLinesDetectEncoding(NameAndIndex item, List<string> lines)
+    // The general purpose character encoding detector can't detect OEM 850, so use some domain knowledge to
+    // detect it ourselves.
+
+    private static bool TryGetBufferFromStream(Stream stream, [NotNullWhen(true)] out byte[]? buffer)
+    {
+        if (stream is MemoryStream ms)
+        {
+            try
+            {
+                buffer = ms.GetBuffer();
+            }
+            catch
+            {
+                buffer = null;
+                return false;
+            }
+        }
+        else
+        {
+            buffer = new byte[stream.Length];
+            int bytesRead = stream.ReadAll(buffer, 0, buffer.Length);
+            if (bytesRead != buffer.Length)
+            {
+                buffer = null;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private bool TryDetectTitlesStrEncoding(Stream stream, [NotNullWhen(true)] out Encoding? encoding)
+    {
+        try
+        {
+            if (!TryGetBufferFromStream(stream, out byte[]? buffer))
+            {
+                encoding = null;
+                return false;
+            }
+
+            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, buffer.Length);
+            if (bomCharset != Charset.Null)
+            {
+                encoding = CharsetDetector.CharsetToEncoding(bomCharset);
+                return true;
+            }
+
+            // This looks bad for perf, but it takes negligible time over the full set, so optimization is not
+            // urgent.
+            foreach (byte[] item in TitlesStrOEM850KeyPhrases)
+            {
+                if (buffer.Contains(item, (int)stream.Length))
+                {
+                    encoding = Encoding.GetEncoding(850);
+                    _titlesStrIsOEM850 = true;
+                    return true;
+                }
+            }
+
+            encoding = null;
+            return false;
+        }
+        finally
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+    }
+
+    private bool TryDetectNewGameStrEncoding(Stream stream, [NotNullWhen(true)] out Encoding? encoding)
+    {
+        try
+        {
+            if (!TryGetBufferFromStream(stream, out byte[]? buffer))
+            {
+                encoding = null;
+                return false;
+            }
+
+            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, buffer.Length);
+            if (bomCharset != Charset.Null)
+            {
+                encoding = CharsetDetector.CharsetToEncoding(bomCharset);
+                return true;
+            }
+
+            if (_titlesStrIsOEM850)
+            {
+                encoding = Encoding.GetEncoding(850);
+                return true;
+            }
+
+            encoding = null;
+            return false;
+        }
+        finally
+        {
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+    }
+
+    private void ReadAllLinesDetectEncoding(
+        NameAndIndex item, List<string> lines,
+        DetectEncodingType type = DetectEncodingType.Standard)
     {
         lines.Clear();
 
@@ -5594,8 +5708,7 @@ public sealed partial class Scanner : IDisposable
                 StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
                 _generalMemoryStream.Position = 0;
 
-                Encoding encoding = _fileEncoding.DetectFileEncoding(_generalMemoryStream) ??
-                                    Encoding.GetEncoding(1252);
+                Encoding encoding = DetectEncoding(_generalMemoryStream);
                 _generalMemoryStream.Position = 0;
 
                 using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false,
@@ -5610,12 +5723,23 @@ public sealed partial class Scanner : IDisposable
         else
         {
             using FileStream_LengthCached stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
-            Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
+            Encoding encoding = DetectEncoding(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
             using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
             while (sr.Reader.ReadLine() is { } line) lines.Add(line);
         }
+
+        return;
+
+        Encoding DetectEncoding(Stream stream) =>
+            type == DetectEncodingType.NewGameStr && _titlesStrIsOEM850 &&
+            TryDetectNewGameStrEncoding(stream, out Encoding? newGameStrEncoding)
+                ? newGameStrEncoding
+                : type == DetectEncodingType.TitlesStr &&
+                  TryDetectTitlesStrEncoding(stream, out Encoding? titlesStrEncoding)
+                    ? titlesStrEncoding
+                    : _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
     }
 
     private void ReadAllLinesUTF8(NameAndIndex item, List<string> lines)
