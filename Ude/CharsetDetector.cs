@@ -37,6 +37,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Ude.NetStandard;
 
@@ -219,6 +221,19 @@ public sealed class CharsetDetector
             }
             : Charset.Null;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetCharsetCodePage(Charset charset) => CharsetToCodePage[(int)charset];
+
+    public static Encoding CharsetToEncoding(Charset bomCharset) => bomCharset switch
+    {
+        Charset.UTF8 => Encoding.UTF8,
+        Charset.UTF16LE => Encoding.Unicode,
+        Charset.UTF16BE => Encoding.BigEndianUnicode,
+        Charset.UTF32LE => Encoding.UTF32,
+        Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
+        _ => Encoding.UTF8,
+    };
 
     public void Run(byte[] buf, int offset, int len, UdeContext context)
     {

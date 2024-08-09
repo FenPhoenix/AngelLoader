@@ -60,9 +60,6 @@ public sealed class FileEncoding
 
     public FileEncoding(int contextSize) => _udeContext = new UdeContext(contextSize);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int GetCharsetCodePage(Charset charset) => CharsetDetector.CharsetToCodePage[(int)charset];
-
     /// <summary>
     /// Tries to detect the file encoding.
     /// </summary>
@@ -86,15 +83,7 @@ public sealed class FileEncoding
                     Charset bomCharset = CharsetDetector.GetBOMCharset(_buffer, bytesRead);
                     if (bomCharset != Charset.Null)
                     {
-                        return bomCharset switch
-                        {
-                            Charset.UTF8 => Encoding.UTF8,
-                            Charset.UTF16LE => Encoding.Unicode,
-                            Charset.UTF16BE => Encoding.BigEndianUnicode,
-                            Charset.UTF32LE => Encoding.UTF32,
-                            Charset.UTF32BE => Encoding.GetEncoding(GetCharsetCodePage(Charset.UTF32BE)),
-                            _ => Encoding.UTF8,
-                        };
+                        return CharsetDetector.CharsetToEncoding(bomCharset);
                     }
                 }
 
@@ -134,7 +123,7 @@ public sealed class FileEncoding
                     Charset.Windows1252 => Windows1252Encoding,
                     Charset.Windows1251 => Windows1251Encoding,
                     Charset.ShiftJIS => ShiftJISEncoding,
-                    _ => Encoding.GetEncoding(GetCharsetCodePage(charset)),
+                    _ => Encoding.GetEncoding(CharsetDetector.GetCharsetCodePage(charset)),
                 };
 
                 return encoding;
