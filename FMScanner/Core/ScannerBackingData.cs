@@ -821,7 +821,7 @@ public sealed partial class Scanner
     
     NOTE: Do NOT add the surrounding quotes to the byte sequences, or performance will tank!
     This is because hits are way more expensive than misses, and quotes will cause a zillion hits for the first
-    char of each keyphrase due to all the quotes in the file). Not having quotes is fine because we're only
+    char of each keyphrase due to all the quotes in the file. Not having quotes is fine because we're only
     detecting the phrases in OEM850 encoding, so if they show up in some other encoding we won't match them.
     Even the otherwise worryingly short/common-sounding "Mörder" is fine because of this.
     */
