@@ -130,11 +130,11 @@ public sealed partial class Scanner : IDisposable
     private string FMWorkingPathDirName => _fmWorkingPathDirName ??= FMWorkingPathDirInfo.Name;
 
     // 50 entries is more than we're ever likely to need in this list, but still small enough not to be wasteful.
-    private List<string>? _sevenZipExtractedFilesList;
-    private List<string> SevenZipExtractedFilesList => _sevenZipExtractedFilesList ??= new List<string>(50);
+    private List<string>? _solidExtractedFilesList;
+    private List<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new List<string>(50);
 
-    private List<string>? _sevenZipExtractedFilesTempList;
-    private List<string> SevenZipExtractedFilesTempList => _sevenZipExtractedFilesTempList ??= new List<string>(50);
+    private List<string>? _solidExtractedFilesTempList;
+    private List<string> SolidZipExtractedFilesTempList => _solidExtractedFilesTempList ??= new List<string>(50);
 
     private readonly List<string> _tempLines = new();
     private const int _maxTopLines = 5;
@@ -476,8 +476,8 @@ public sealed partial class Scanner : IDisposable
         _fmWorkingPathDirName = null;
         _fmWorkingPathDirInfo = null;
         _fmFormat = FMFormat.NotInArchive;
-        _sevenZipExtractedFilesList?.Clear();
-        _sevenZipExtractedFilesTempList?.Clear();
+        _solidExtractedFilesList?.Clear();
+        _solidExtractedFilesTempList?.Clear();
 
         _title1_TempNonWhitespaceChars?.ClearFast();
         _title2_TempNonWhitespaceChars?.ClearFast();
@@ -1238,7 +1238,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
         {
-            #region Partial 7z extract
+            #region Partial solid archive extract
 
             /*
             Rather than extracting everything, we only extract files we might need. We may still end up
@@ -1247,7 +1247,7 @@ public sealed partial class Scanner : IDisposable
             FMs may still be about as slow depending on their structure and content, but meh. Improvement
             is improvement.
 
-            IMPORTANT(Scanner partial 7z extract):
+            IMPORTANT(Scanner partial solid archive extract):
             The logic for deciding which files to extract (taking files and then de-duping the list) needs
             to match the logic for using them. If we change the usage logic, we need to change this too!
             */
@@ -1256,8 +1256,8 @@ public sealed partial class Scanner : IDisposable
             {
                 // Stupid micro-optimization:
                 // Init them both just once, avoiding repeated null checks on the properties
-                var fileNamesList = SevenZipExtractedFilesList;
-                var tempList = SevenZipExtractedFilesTempList;
+                var fileNamesList = SolidExtractedFilesList;
+                var tempList = SolidZipExtractedFilesTempList;
 
                 static bool EndsWithTitleFile(string fileName)
                 {
@@ -1318,9 +1318,8 @@ public sealed partial class Scanner : IDisposable
 
                         int dirSeps;
 
-                        // Always extract readmes no matter what, so our .7z caching is always correct.
-                        // Also maybe we would need to always extract them regardless for other reasons, but
-                        // yeah.
+                        // Always extract readmes no matter what, so our cache copying is always correct.
+                        // Also maybe we would need to always extract them regardless for other reasons, but yeah.
                         if (fn.IsValidReadme() && uncompressedSize > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
                               (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
@@ -1372,7 +1371,7 @@ public sealed partial class Scanner : IDisposable
                                  ) &&
                                  !fn.Rel_ContainsDirSep() &&
                                  (fn.ExtIsMis()
-                                 // 7z scans don't use .gam files, so shave a small amount of time off here
+                                 // Solid scans don't use .gam files, so shave a small amount of time off here
                                  //|| fn.ExtIsGam()
                                  ))
                         {
@@ -1543,8 +1542,18 @@ public sealed partial class Scanner : IDisposable
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                string fmType = _fmFormat == FMFormat.SevenZip ? "7z" : "rar";
-                string exType = _fmFormat == FMFormat.SevenZip ? "7z.exe" : "rar";
+                string fmType = _fmFormat switch
+                {
+                    FMFormat.SevenZip => "7z",
+                    FMFormat.RarSolid => "rar (solid)",
+                    _ => "rar",
+                };
+                string exType = _fmFormat switch
+                {
+                    FMFormat.SevenZip => "7z.exe",
+                    FMFormat.RarSolid => "rar (solid)",
+                    _ => "rar",
+                };
                 Log(fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction", ex);
                 return UnsupportedZip(
                     archivePath: fm.Path,
@@ -2883,7 +2892,7 @@ public sealed partial class Scanner : IDisposable
                 }
             }
         }
-        else // Dir only; 7z is now handled up there as well
+        else // Dir only; solid is now handled up there as well
         {
             string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
             if (Directory.Exists(t3DetectPath) &&
@@ -5257,7 +5266,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            // We only need the .gam file for zip FMs, so we can save extracting it for 7z FMs
+            // We only need the .gam file for non-solid FMs, so we can save extracting it otherwise.
             Stream? stream = null;
             try
             {
