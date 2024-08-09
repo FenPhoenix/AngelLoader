@@ -809,6 +809,17 @@ public sealed partial class Scanner
 
     #region Titles.str encoding detection
 
+    /*
+    Titles.str files are often in OEM850, but we can't detect this with the general purpose charset detector.
+    So we detect by looking for byte sequences that represent non-ASCII stock mission names in OEM850.
+
+    NOTE: Do NOT add the surrounding quotes to the byte sequences, or performance will tank!
+    This is because hits are way more expensive than misses, and quotes will cause a zillion hits for the first
+    char of each keyphrase due to all the quotes in the file). Not having quotes is fine because we're only
+    detecting the phrases in OEM850 encoding, so if they show up in some other encoding we won't match them.
+    Even the otherwise worryingly short/common-sounding "Mörder" is fine because of this.
+    */
+
     private readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
         // Das Hüter-Training
