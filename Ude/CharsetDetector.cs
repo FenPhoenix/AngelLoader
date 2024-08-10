@@ -253,8 +253,6 @@ public sealed class CharsetDetector
             _gotData = true;
         }
 
-        const byte NoBreakSpace = 0xA0;
-
         for (int i = 0; i < len; i++)
         {
             byte b = buf[i];
@@ -269,29 +267,26 @@ public sealed class CharsetDetector
                     DomainSpecificGuess = DomainSpecificGuess.CannotBeAscii;
                 }
 
-                if (b != NoBreakSpace)
+                // we got a non-ascii byte (high-byte)
+                if (_inputState != InputState.HighByte)
                 {
-                    // we got a non-ascii byte (high-byte)
-                    if (_inputState != InputState.HighByte)
-                    {
-                        _inputState = InputState.HighByte;
+                    _inputState = InputState.HighByte;
 
-                        // kill EscCharsetProber if it is active
-                        _escCharsetProber = null;
+                    // kill EscCharsetProber if it is active
+                    _escCharsetProber = null;
 
-                        // start multibyte and singlebyte charset prober
-                        _charsetProbers[0] ??= new MBCSGroupProber();
-                        _charsetProbers[1] ??= new SBCSGroupProber();
-                        _charsetProbers[2] ??= new Latin1Prober();
-                    }
+                    // start multibyte and singlebyte charset prober
+                    _charsetProbers[0] ??= new MBCSGroupProber();
+                    _charsetProbers[1] ??= new SBCSGroupProber();
+                    _charsetProbers[2] ??= new Latin1Prober();
+                }
 
-                    // Fen: We see copyright symbols in readmes a lot, and UTF-8 copyright is C2 A9. The general
-                    // detector doesn't take this into account, so let's help it out.
-                    // Fixes "Nightwalk" and "Troubling Transitions".
-                    if (b == 0xA9 && _lastChar == 0xC2)
-                    {
-                        DomainSpecificGuess = DomainSpecificGuess.UTF8;
-                    }
+                // Fen: We see copyright symbols in readmes a lot, and UTF-8 copyright is C2 A9. The general
+                // detector doesn't take this into account, so let's help it out.
+                // Fixes "Nightwalk" and "Troubling Transitions".
+                if (b == 0xA9 && _lastChar == 0xC2)
+                {
+                    DomainSpecificGuess = DomainSpecificGuess.UTF8;
                 }
             }
             else
