@@ -5642,6 +5642,12 @@ public sealed partial class Scanner : IDisposable
     {
         try
         {
+            if (!_titlesStrIsOEM850)
+            {
+                encoding = null;
+                return false;
+            }
+
             if (!TryGetBufferFromStream(stream, out byte[]? buffer))
             {
                 encoding = null;
@@ -5655,14 +5661,8 @@ public sealed partial class Scanner : IDisposable
                 return true;
             }
 
-            if (_titlesStrIsOEM850)
-            {
-                encoding = Encoding.GetEncoding(850);
-                return true;
-            }
-
-            encoding = null;
-            return false;
+            encoding = Encoding.GetEncoding(850);
+            return true;
         }
         finally
         {
@@ -5728,7 +5728,7 @@ public sealed partial class Scanner : IDisposable
         return;
 
         Encoding DetectEncoding(Stream stream) =>
-            type == DetectEncodingType.NewGameStr && _titlesStrIsOEM850 &&
+            type == DetectEncodingType.NewGameStr &&
             TryDetectNewGameStrEncoding(stream, out Encoding? newGameStrEncoding)
                 ? newGameStrEncoding
                 : type == DetectEncodingType.TitlesStr &&
