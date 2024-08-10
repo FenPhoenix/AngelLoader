@@ -826,6 +826,108 @@ public sealed partial class Scanner
     Even the otherwise worryingly short/common-sounding "Mörder" is fine because of this.
     */
 
+    // Bytes which, in one encoding, would be unexpected characters (symbols, box-drawing chars, etc.), but which
+    // in the other encoding would be commonly expected characters.
+
+    private static bool[] InitSuspected1252Bytes()
+    {
+        bool[] ret = new bool[256];
+
+        ret[0xB0] = true;
+        ret[0xB1] = true;
+        ret[0xB2] = true;
+        ret[0xB3] = true;
+        ret[0xB4] = true;
+        ret[0xB9] = true;
+        ret[0xBA] = true;
+        ret[0xBB] = true;
+        ret[0xBC] = true;
+        ret[0xBF] = true;
+
+        ret[0xC0] = true;
+        ret[0xC1] = true;
+        ret[0xC2] = true;
+        ret[0xC3] = true;
+        ret[0xC4] = true;
+        ret[0xC5] = true;
+        ret[0xC8] = true;
+        ret[0xC9] = true;
+        ret[0xCA] = true;
+        ret[0xCB] = true;
+        ret[0xCC] = true;
+        ret[0xCD] = true;
+        ret[0xCE] = true;
+
+        ret[0xD9] = true;
+        ret[0xDA] = true;
+        ret[0xDB] = true;
+        ret[0xDC] = true;
+        ret[0xDD] = true;
+        ret[0xDF] = true;
+
+        ret[0xEE] = true;
+
+        ret[0xF0] = true;
+        ret[0xF1] = true;
+        ret[0xF2] = true;
+        ret[0xF3] = true;
+        ret[0xF4] = true;
+        ret[0xF5] = true;
+        ret[0xF6] = true;
+        ret[0xF8] = true;
+        ret[0xF9] = true;
+        ret[0xFA] = true;
+        ret[0xFB] = true;
+        ret[0xFC] = true;
+        ret[0xFD] = true;
+        ret[0xFE] = true;
+        ret[0xFF] = true;
+
+        return ret;
+    }
+
+    private static bool[] InitSuspected850Bytes()
+    {
+        bool[] ret = new bool[256];
+
+        ret[0x80] = true;
+        ret[0x81] = true;
+        ret[0x82] = true;
+        ret[0x83] = true;
+        ret[0x84] = true;
+        ret[0x85] = true;
+        ret[0x86] = true;
+        ret[0x87] = true;
+        ret[0x88] = true;
+        ret[0x89] = true;
+        ret[0x8B] = true;
+        ret[0x8D] = true;
+        ret[0x8F] = true;
+
+        ret[0xA0] = true;
+        // A1 is either ¡ (1252) or í (850) - this is sort of a toss-up...
+        // Let's leave out A1 for now.
+        ret[0xA2] = true;
+        ret[0xA3] = true;
+        ret[0xA4] = true;
+        ret[0xA5] = true;
+
+        ret[0xB5] = true;
+        ret[0xB6] = true;
+        ret[0xB7] = true;
+
+        // C6: Æ in 1252; ã in 850
+        // C7: Ç in 1252; Ã in 850
+
+        ret[0xD7] = true;
+
+        return ret;
+    }
+
+    private readonly bool[] Suspected1252Bytes = InitSuspected1252Bytes();
+
+    private readonly bool[] Suspected850Bytes = InitSuspected850Bytes();
+
     private readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
         // Das Hüter-Training

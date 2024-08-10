@@ -5572,45 +5572,91 @@ public sealed partial class Scanner : IDisposable
     // The general purpose character encoding detector can't detect OEM 850, so use some domain knowledge to
     // detect it ourselves.
 
-    private static bool TryGetBufferFromStream(Stream stream, [NotNullWhen(true)] out byte[]? buffer)
+    private static bool TryGetBufferFromStream(Stream stream, [NotNullWhen(true)] out byte[]? buffer, out int bufferLength)
     {
-        if (stream is MemoryStream ms)
+        try
         {
-            try
+            if (stream is MemoryStream ms)
             {
-                buffer = ms.GetBuffer();
+                try
+                {
+                    buffer = ms.GetBuffer();
+                    bufferLength = (int)stream.Length;
+                    return true;
+                }
+                catch
+                {
+                    buffer = null;
+                    bufferLength = 0;
+                    return false;
+                }
             }
-            catch
+            else
             {
-                buffer = null;
-                return false;
+                buffer = new byte[stream.Length];
+                int bytesRead = stream.ReadAll(buffer, 0, buffer.Length);
+                if (bytesRead != buffer.Length)
+                {
+                    buffer = null;
+                    bufferLength = 0;
+                    return false;
+                }
+                else
+                {
+                    bufferLength = buffer.Length;
+                    return true;
+                }
             }
         }
-        else
+        finally
         {
-            buffer = new byte[stream.Length];
-            int bytesRead = stream.ReadAll(buffer, 0, buffer.Length);
-            if (bytesRead != buffer.Length)
+            stream.Seek(0, SeekOrigin.Begin);
+        }
+    }
+
+    private Encoding? GetEncodingFromSuspected(byte[] buffer, int bufferLength)
+    {
+        int suspected1252ByteCount = 0;
+        int suspected850ByteCount = 0;
+
+        for (int i = 0; i < bufferLength; i++)
+        {
+            byte b = buffer[i];
+            if (Suspected1252Bytes[b])
             {
-                buffer = null;
-                return false;
+                suspected1252ByteCount++;
+            }
+            else if (Suspected850Bytes[b])
+            {
+                suspected850ByteCount++;
             }
         }
 
-        return true;
+        if (suspected1252ByteCount == 0 && suspected850ByteCount == 0)
+        {
+            return null;
+        }
+        else if (suspected1252ByteCount > suspected850ByteCount)
+        {
+            return Encoding.GetEncoding(1252);
+        }
+        else
+        {
+            return Encoding.GetEncoding(850);
+        }
     }
 
     private bool TryDetectTitlesStrEncoding(Stream stream, [NotNullWhen(true)] out Encoding? encoding)
     {
         try
         {
-            if (!TryGetBufferFromStream(stream, out byte[]? buffer))
+            if (!TryGetBufferFromStream(stream, out byte[]? buffer, out int bufferLength))
             {
                 encoding = null;
                 return false;
             }
 
-            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, buffer.Length);
+            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, bufferLength);
             if (bomCharset != Charset.Null)
             {
                 encoding = CharsetDetector.CharsetToEncoding(bomCharset);
@@ -5621,12 +5667,19 @@ public sealed partial class Scanner : IDisposable
             // urgent.
             foreach (byte[] item in TitlesStrOEM850KeyPhrases)
             {
-                if (buffer.Contains(item, (int)stream.Length))
+                if (buffer.Contains(item, bufferLength))
                 {
                     encoding = Encoding.GetEncoding(850);
                     _titlesStrIsOEM850 = true;
                     return true;
                 }
+            }
+
+            encoding = GetEncodingFromSuspected(buffer, bufferLength);
+            if (encoding != null)
+            {
+                _titlesStrIsOEM850 = encoding.CodePage == 850;
+                return true;
             }
 
             encoding = null;
@@ -5642,27 +5695,33 @@ public sealed partial class Scanner : IDisposable
     {
         try
         {
-            if (!_titlesStrIsOEM850)
+            if (!TryGetBufferFromStream(stream, out byte[]? buffer, out int bufferLength))
             {
                 encoding = null;
                 return false;
             }
 
-            if (!TryGetBufferFromStream(stream, out byte[]? buffer))
-            {
-                encoding = null;
-                return false;
-            }
-
-            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, buffer.Length);
+            Charset bomCharset = CharsetDetector.GetBOMCharset(buffer, bufferLength);
             if (bomCharset != Charset.Null)
             {
                 encoding = CharsetDetector.CharsetToEncoding(bomCharset);
                 return true;
             }
 
-            encoding = Encoding.GetEncoding(850);
-            return true;
+            if (_titlesStrIsOEM850)
+            {
+                encoding = Encoding.GetEncoding(850);
+                return true;
+            }
+
+            encoding = GetEncodingFromSuspected(buffer, bufferLength);
+            if (encoding != null)
+            {
+                return true;
+            }
+
+            encoding = null;
+            return false;
         }
         finally
         {
