@@ -598,7 +598,9 @@ public sealed partial class Scanner : IDisposable
                 {
                     try
                     {
-                        _fmWorkingPath = Path.Combine(tempPath, Path.GetFileNameWithoutExtension(fmPath).Trim());
+                        // Random name for solid archive temp extract folder, to prevent possible folder name
+                        // clashes in future parallelized scenario.
+                        _fmWorkingPath = Path.Combine(tempPath, Path.GetRandomFileName().Trim());
                     }
                     catch (Exception ex)
                     {
