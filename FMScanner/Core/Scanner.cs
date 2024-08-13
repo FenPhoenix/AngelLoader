@@ -546,6 +546,10 @@ public sealed partial class Scanner : IDisposable
 
             ResetCachedFields();
 
+            // Random name for solid archive temp extract operations, to prevent possible file/folder name
+            // clashes in future parallelized scenario.
+            string tempRandomName = Path.GetRandomFileName().Trim();
+
             bool nullAlreadyAdded = false;
 
             #region Init
@@ -577,9 +581,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     try
                     {
-                        // Random name for solid archive temp extract folder, to prevent possible folder name
-                        // clashes in future parallelized scenario.
-                        _fmWorkingPath = Path.Combine(tempPath, Path.GetRandomFileName().Trim());
+                        _fmWorkingPath = Path.Combine(tempPath, tempRandomName);
                     }
                     catch (Exception ex)
                     {
@@ -631,7 +633,7 @@ public sealed partial class Scanner : IDisposable
                         scannedFMAndError =
                             fm.IsTDM
                                 ? ScanCurrentDarkModFM(fm)
-                                : ScanCurrentFM(fm, tempPath, cancellationToken);
+                                : ScanCurrentFM(fm, tempPath, tempRandomName, cancellationToken);
                     }
                     catch (OperationCanceledException)
                     {
@@ -1211,7 +1213,7 @@ public sealed partial class Scanner : IDisposable
     }
 
     private ScannedFMDataAndError
-    ScanCurrentFM(FMToScan fm, string tempPath, CancellationToken cancellationToken)
+    ScanCurrentFM(FMToScan fm, string tempPath, string tempRandomName, CancellationToken cancellationToken)
     {
 #if DEBUG
         _overallTimer.Restart();
@@ -1507,7 +1509,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (_fmFormat == FMFormat.SevenZip)
                 {
-                    string listFile = Path.Combine(tempPath, FMWorkingPathDirName + ".7zl");
+                    string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
 
                     Fen7z.Result result = Fen7z.Extract(
                         sevenZipWorkingPath: _sevenZipWorkingPath,
