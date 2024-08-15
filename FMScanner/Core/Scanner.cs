@@ -861,7 +861,9 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        if (_scanOptions.ScanMissionCount)
+        bool singleMission = true;
+
+        if (_scanOptions.ScanMissionCount || _scanOptions.ScanTags)
         {
             int misCount = 0;
 
@@ -925,17 +927,28 @@ public sealed partial class Scanner : IDisposable
                     }
                 }
 
-                fmData.MissionCount = misCount == 0 ? 1 : misCount;
+                if (_scanOptions.ScanMissionCount)
+                {
+                    fmData.MissionCount = misCount == 0 ? 1 : misCount;
+                }
+                singleMission = misCount is 0 or 1;
             }
             catch
             {
-                fmData.MissionCount = null;
+                if (_scanOptions.ScanMissionCount)
+                {
+                    fmData.MissionCount = null;
+                }
+                singleMission = true;
             }
 
-            if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
+            if (_scanOptions.ScanMissionCount)
             {
-                // Early return for perf if we're not scanning anything else
-                return new ScannedFMDataAndError { ScannedFMData = fmData };
+                if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
+                {
+                    // Early return for perf if we're not scanning anything else
+                    return new ScannedFMDataAndError { ScannedFMData = fmData };
+                }
             }
         }
 
@@ -1026,6 +1039,11 @@ public sealed partial class Scanner : IDisposable
                     fmData.LastUpdateDate = GetReleaseDate();
                 }
             }
+        }
+
+        if (_scanOptions.ScanTags && !singleMission)
+        {
+            AddCampaignTag(fmData);
         }
 
         return new ScannedFMDataAndError { ScannedFMData = fmData };
@@ -2001,7 +2019,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTags)
         {
-            if (!singleMission) SetMiscTag(fmData, "campaign");
+            if (!singleMission) AddCampaignTag(fmData);
 
             if (!fmData.Author.IsEmpty())
             {
@@ -2610,6 +2628,8 @@ public sealed partial class Scanner : IDisposable
             fmData.TagsString += "language:" + LanguagesC[i];
         }
     }
+
+    private void AddCampaignTag(ScannedFMData fmData) => SetMiscTag(fmData, "campaign");
 
     private void SetMiscTag(ScannedFMData fmData, string tag)
     {
