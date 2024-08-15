@@ -5626,14 +5626,8 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < bufferLength; i++)
         {
             byte b = buffer[i];
-            if (Suspected1252Bytes[b])
-            {
-                suspected1252ByteCount++;
-            }
-            else if (Suspected850Bytes[b])
-            {
-                suspected850ByteCount++;
-            }
+            suspected1252ByteCount += Suspected1252Bytes[b];
+            suspected850ByteCount += Suspected850Bytes[b];
         }
 
         if (suspected1252ByteCount == 0 && suspected850ByteCount == 0)
