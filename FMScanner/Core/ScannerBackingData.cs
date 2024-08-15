@@ -823,104 +823,106 @@ public sealed partial class Scanner
     // Bytes which, in one encoding, would be unexpected characters (symbols, box-drawing chars, etc.), but which
     // in the other encoding would be commonly expected characters.
 
-    private static bool[] InitSuspected1252Bytes()
+    // 1/0 for true/false, to enable branchless occurrence counting
+
+    private static byte[] InitSuspected1252Bytes()
     {
-        bool[] ret = new bool[256];
+        byte[] ret = new byte[256];
 
-        ret[0xB0] = true;
-        ret[0xB1] = true;
-        ret[0xB2] = true;
-        ret[0xB3] = true;
-        ret[0xB4] = true;
-        ret[0xB9] = true;
-        ret[0xBA] = true;
-        ret[0xBB] = true;
-        ret[0xBC] = true;
-        ret[0xBF] = true;
+        ret[0xB0] = 1;
+        ret[0xB1] = 1;
+        ret[0xB2] = 1;
+        ret[0xB3] = 1;
+        ret[0xB4] = 1;
+        ret[0xB9] = 1;
+        ret[0xBA] = 1;
+        ret[0xBB] = 1;
+        ret[0xBC] = 1;
+        ret[0xBF] = 1;
 
-        ret[0xC0] = true;
-        ret[0xC1] = true;
-        ret[0xC2] = true;
-        ret[0xC3] = true;
-        ret[0xC4] = true;
-        ret[0xC5] = true;
-        ret[0xC8] = true;
-        ret[0xC9] = true;
-        ret[0xCA] = true;
-        ret[0xCB] = true;
-        ret[0xCC] = true;
-        ret[0xCD] = true;
-        ret[0xCE] = true;
+        ret[0xC0] = 1;
+        ret[0xC1] = 1;
+        ret[0xC2] = 1;
+        ret[0xC3] = 1;
+        ret[0xC4] = 1;
+        ret[0xC5] = 1;
+        ret[0xC8] = 1;
+        ret[0xC9] = 1;
+        ret[0xCA] = 1;
+        ret[0xCB] = 1;
+        ret[0xCC] = 1;
+        ret[0xCD] = 1;
+        ret[0xCE] = 1;
 
-        ret[0xD9] = true;
-        ret[0xDA] = true;
-        ret[0xDB] = true;
-        ret[0xDC] = true;
-        ret[0xDD] = true;
-        ret[0xDF] = true;
+        ret[0xD9] = 1;
+        ret[0xDA] = 1;
+        ret[0xDB] = 1;
+        ret[0xDC] = 1;
+        ret[0xDD] = 1;
+        ret[0xDF] = 1;
 
-        ret[0xEE] = true;
+        ret[0xEE] = 1;
 
-        ret[0xF0] = true;
-        ret[0xF1] = true;
-        ret[0xF2] = true;
-        ret[0xF3] = true;
-        ret[0xF4] = true;
-        ret[0xF5] = true;
-        ret[0xF6] = true;
-        ret[0xF8] = true;
-        ret[0xF9] = true;
-        ret[0xFA] = true;
-        ret[0xFB] = true;
-        ret[0xFC] = true;
-        ret[0xFD] = true;
-        ret[0xFE] = true;
-        ret[0xFF] = true;
+        ret[0xF0] = 1;
+        ret[0xF1] = 1;
+        ret[0xF2] = 1;
+        ret[0xF3] = 1;
+        ret[0xF4] = 1;
+        ret[0xF5] = 1;
+        ret[0xF6] = 1;
+        ret[0xF8] = 1;
+        ret[0xF9] = 1;
+        ret[0xFA] = 1;
+        ret[0xFB] = 1;
+        ret[0xFC] = 1;
+        ret[0xFD] = 1;
+        ret[0xFE] = 1;
+        ret[0xFF] = 1;
 
         return ret;
     }
 
-    private static bool[] InitSuspected850Bytes()
+    private static byte[] InitSuspected850Bytes()
     {
-        bool[] ret = new bool[256];
+        byte[] ret = new byte[256];
 
-        ret[0x80] = true;
-        ret[0x81] = true;
-        ret[0x82] = true;
-        ret[0x83] = true;
-        ret[0x84] = true;
-        ret[0x85] = true;
-        ret[0x86] = true;
-        ret[0x87] = true;
-        ret[0x88] = true;
-        ret[0x89] = true;
-        ret[0x8B] = true;
-        ret[0x8D] = true;
-        ret[0x8F] = true;
+        ret[0x80] = 1;
+        ret[0x81] = 1;
+        ret[0x82] = 1;
+        ret[0x83] = 1;
+        ret[0x84] = 1;
+        ret[0x85] = 1;
+        ret[0x86] = 1;
+        ret[0x87] = 1;
+        ret[0x88] = 1;
+        ret[0x89] = 1;
+        ret[0x8B] = 1;
+        ret[0x8D] = 1;
+        ret[0x8F] = 1;
 
-        ret[0xA0] = true;
+        ret[0xA0] = 1;
         // A1 is either ¡ (1252) or í (850) - this is sort of a toss-up...
         // Let's leave out A1 for now.
-        ret[0xA2] = true;
-        ret[0xA3] = true;
-        ret[0xA4] = true;
-        ret[0xA5] = true;
+        ret[0xA2] = 1;
+        ret[0xA3] = 1;
+        ret[0xA4] = 1;
+        ret[0xA5] = 1;
 
-        ret[0xB5] = true;
-        ret[0xB6] = true;
-        ret[0xB7] = true;
+        ret[0xB5] = 1;
+        ret[0xB6] = 1;
+        ret[0xB7] = 1;
 
         // C6: Æ in 1252; ã in 850
         // C7: Ç in 1252; Ã in 850
 
-        ret[0xD7] = true;
+        ret[0xD7] = 1;
 
         return ret;
     }
 
-    private readonly bool[] Suspected1252Bytes = InitSuspected1252Bytes();
+    private readonly byte[] Suspected1252Bytes = InitSuspected1252Bytes();
 
-    private readonly bool[] Suspected850Bytes = InitSuspected850Bytes();
+    private readonly byte[] Suspected850Bytes = InitSuspected850Bytes();
 
     private readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
