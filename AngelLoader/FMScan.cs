@@ -1,4 +1,7 @@
-﻿using System;
+﻿#define TIMING_TEST
+
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -17,6 +20,21 @@ namespace AngelLoader;
 
 internal static class FMScan
 {
+#if TIMING_TEST
+    private static readonly System.Diagnostics.Stopwatch _timingTestStopWatch = new();
+
+    private static void StartTiming()
+    {
+        _timingTestStopWatch.Restart();
+    }
+
+    private static void StopTimingAndPrintResult()
+    {
+        _timingTestStopWatch.Stop();
+        System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
+    }
+#endif
+
     private static CancellationTokenSource _scanCts = new();
     private static void CancelToken() => _scanCts.CancelIfNotDisposed();
 
@@ -48,6 +66,15 @@ internal static class FMScan
         scanOptions ??= GetDefaultScanOptions();
 
         bool scanningOne = fmsToScan.Single;
+
+        int lastPercent = 0;
+        int fmsTotalCount = 0;
+
+        // IMPORTANT(Multithreaded scan):
+        // The progress object MUST be constructed here on the UI thread! This is what allows it to report smoothly
+        // and without the endless and unsolvable issues we get when we merely invoke to the UI thread from the
+        // report function.
+        var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -177,8 +204,6 @@ internal static class FMScan
                     List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
                     try
                     {
-                        var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
-
                         Paths.CreateOrClearTempPath(TempPaths.FMScanner);
                         Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
@@ -195,18 +220,59 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-                        using var scanner = new FMScanner.Scanner(
-                            sevenZipWorkingPath: Paths.SevenZipPath,
-                            sevenZipExePath: Paths.SevenZipExe,
-                            fullScanOptions: GetDefaultScanOptions(),
-                            tdmContext: tdmContext);
+                        // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
+                        int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
 
-                        fmDataList = await scanner.ScanAsync(
-                            missions: fms,
-                            tempPath: Paths.FMScannerTemp,
-                            scanOptions: scanOptions,
-                            progress: progress,
-                            cancellationToken: _scanCts.Token);
+                        Task[] tasks0 = new Task[taskCount];
+                        ConcurrentQueue<FMScanner.FMToScan> cq = new(fms);
+
+                        fmsTotalCount = fms.Count;
+
+#if TIMING_TEST
+                        StartTiming();
+#endif
+
+                        // @MT_TASK: Handle exceptions in this loop, as if something throws we won't clean up
+                        // I don't think anyway
+                        // Also we probably need to handle the cancellation exception in this loop too
+                        for (int i = 0; i < taskCount; i++)
+                        {
+                            tasks0[i] = Task.Run(async () =>
+                            {
+                                using var scanner = new FMScanner.Scanner(
+                                    sevenZipWorkingPath: Paths.SevenZipPath,
+                                    sevenZipExePath: Paths.SevenZipExe,
+                                    fullScanOptions: GetDefaultScanOptions(),
+                                    tdmContext: tdmContext);
+
+                                await scanner.ScanAsync(
+                                    cq,
+                                    tempPath: Paths.FMScannerTemp,
+                                    scanOptions: scanOptions,
+                                    progress: progress,
+                                    // @MT_TASK: Figure out the proper way to pass this token
+                                    cancellationToken: _scanCts.Token);
+                            });
+                        }
+
+                        try
+                        {
+                            await Task.WhenAll(tasks0);
+                        }
+                        catch
+                        {
+                            // ignore
+                        }
+                        finally
+                        {
+#if TIMING_TEST
+                            StopTimingAndPrintResult();
+#endif
+                            tasks0.DisposeAll();
+                        }
+
+                        // @MT_TASK: Temporary - implement actual list return
+                        return false;
                     }
                     catch (OperationCanceledException)
                     {
@@ -465,19 +531,36 @@ internal static class FMScan
             scanTags: true,
             scanMissionCount: true);
 
-        void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
-            message1:
-            scanMessage ??
-            (LText.ProgressBox.ReportScanningFirst +
-             pr.FMNumber.ToString(NumberFormatInfo.CurrentInfo) +
-             (pr.CachedString ??=
-                 (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                  pr.FMsTotal.ToString(NumberFormatInfo.CurrentInfo) +
-                  LText.ProgressBox.ReportScanningLast))),
-            message2:
-            pr.FMName,
-            percent: pr.Percent
-        );
+        void ReportProgress(FMScanner.ProgressReport pr)
+        {
+            int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
+            int percent = Common.GetPercentFromValue_Int(fmNumber, fmsTotalCount);
+
+            /*
+            @MT_TASK: Necessary if we have multiple threads to allow UI time to catch up
+            But if we're on one thread, we don't need and shouldn't have this, as it's less accurate.
+            @MT_TASK(Multiple items):
+            We could try multiple items again, now that our UI behavior is good.
+            */
+            if (percent > lastPercent)
+            {
+                Core.View.SetProgressBoxState_Single(
+                    message1:
+                    scanMessage ??
+                    (LText.ProgressBox.ReportScanningFirst +
+                     fmNumber.ToString(NumberFormatInfo.CurrentInfo) +
+                     (pr.CachedString ??=
+                         (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                          fmsTotalCount.ToString(NumberFormatInfo.CurrentInfo) +
+                          LText.ProgressBox.ReportScanningLast))),
+                    message2:
+                    pr.FMName,
+                    percent: percent
+                );
+
+                lastPercent = percent;
+            }
+        }
 
         #endregion
     }

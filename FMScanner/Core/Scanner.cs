@@ -14,6 +14,7 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 
 global using static AL_Common.FullyGlobal;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -465,7 +466,7 @@ public sealed partial class Scanner : IDisposable
 
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>> ScanAsync(
-        List<FMToScan> missions,
+        ConcurrentQueue<FMToScan> missions,
         string tempPath,
         ScanOptions scanOptions,
         IProgress<ProgressReport> progress,
@@ -506,8 +507,12 @@ public sealed partial class Scanner : IDisposable
         _t3GmpFiles?.Clear();
     }
 
+    // @MT_TASK: Make readonly data into a separate context so it doesn't get instantiated once per scanner object
+    // @MT_TASK: Update all Scan* methods (including ifdeffed ones) to take the ConcurrentQueue
+    // @MT_TASK: Update FMInfoGen to use these methods
+
     private List<ScannedFMDataAndError>
-    ScanMany(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+    ScanMany(ConcurrentQueue<FMToScan> missions, string tempPath, ScanOptions scanOptions,
              IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
     {
         // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
@@ -523,11 +528,6 @@ public sealed partial class Scanner : IDisposable
         }
 
         if (missions == null) throw new ArgumentNullException(nameof(missions));
-        if (missions.Count == 0 || (missions.Count == 1 && missions[0].Path.IsEmpty()))
-        {
-            Log("No mission(s) specified. tempPath: " + tempPath);
-            ThrowHelper.ArgumentException("No mission(s) specified.", nameof(missions));
-        }
 
         // Deep-copy the scan options object because we might have to change its values in some cases, but we
         // don't want to modify the original because the caller will still have a reference to it and may
@@ -540,10 +540,8 @@ public sealed partial class Scanner : IDisposable
 
         var progressReport = new ProgressReport();
 
-        for (int i = 0; i < missions.Count; i++)
+        while (missions.TryDequeue(out FMToScan mission))
         {
-            FMToScan mission = missions[i];
-
             ResetCachedFields();
 
             // Random name for solid archive temp extract operations, to prevent possible file/folder name
@@ -605,9 +603,7 @@ public sealed partial class Scanner : IDisposable
             if (progress != null)
             {
                 progressReport.FMName = mission.DisplayName;
-                progressReport.FMNumber = i + 1;
-                progressReport.FMsTotal = missions.Count;
-                progressReport.Percent = GetPercentFromValue_Int(missions.Count == 1 ? 0 : i + 1, missions.Count);
+                progressReport.FMsRemainingInQueue = missions.Count;
 
                 progress.Report(progressReport);
             }
@@ -664,11 +660,12 @@ public sealed partial class Scanner : IDisposable
                 }
             }
 
-            if (progress != null && i == missions.Count - 1)
-            {
-                progressReport.Percent = 100;
-                progress.Report(progressReport);
-            }
+            // @MT_TASK: Implement this caller-side, we might still need it for single 7z fms? Or something?
+            //if (progress != null && i == missions.Count - 1)
+            //{
+            //    progressReport.Percent = 100;
+            //    progress.Report(progressReport);
+            //}
         }
 
         return scannedFMDataList;

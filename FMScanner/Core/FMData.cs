@@ -196,9 +196,7 @@ public sealed class ProgressReport
     public string? CachedString;
 
     public string FMName = "";
-    public int FMNumber;
-    public int FMsTotal;
-    public int Percent;
+    public int FMsRemainingInQueue;
 }
 
 [PublicAPI]
