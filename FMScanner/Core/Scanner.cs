@@ -659,13 +659,6 @@ public sealed partial class Scanner : IDisposable
                     }
                 }
             }
-
-            // @MT_TASK: Implement this caller-side, we might still need it for single 7z fms? Or something?
-            //if (progress != null && i == missions.Count - 1)
-            //{
-            //    progressReport.Percent = 100;
-            //    progress.Report(progressReport);
-            //}
         }
 
         return scannedFMDataList;

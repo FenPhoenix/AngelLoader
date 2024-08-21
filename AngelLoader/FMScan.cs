@@ -265,6 +265,7 @@ internal static class FMScan
                         }
                         finally
                         {
+                            Core.View.SetProgressPercent(100);
 #if TIMING_TEST
                             StopTimingAndPrintResult();
 #endif
@@ -534,15 +535,16 @@ internal static class FMScan
         void ReportProgress(FMScanner.ProgressReport pr)
         {
             int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
-            int percent = Common.GetPercentFromValue_Int(fmNumber, fmsTotalCount);
+            int percent = Common.GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
 
             /*
             @MT_TASK: Necessary if we have multiple threads to allow UI time to catch up
             But if we're on one thread, we don't need and shouldn't have this, as it's less accurate.
             @MT_TASK(Multiple items):
             We could try multiple items again, now that our UI behavior is good.
+            @MT_TASK: Diff test with previous version the 100% behavior, and percent in general
             */
-            if (percent > lastPercent)
+            if (scanningOne || fmNumber is 0 or 1 || percent > lastPercent)
             {
                 Core.View.SetProgressBoxState_Single(
                     message1:
