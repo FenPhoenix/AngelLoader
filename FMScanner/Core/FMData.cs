@@ -233,6 +233,8 @@ public enum FMType
 [PublicAPI]
 public sealed class FMToScan
 {
+    public readonly int OriginalIndex;
+
     public readonly string Path;
     public readonly bool ForceFullScan;
     /// <summary>
@@ -246,7 +248,7 @@ public sealed class FMToScan
     public readonly bool IsTDM;
     public readonly bool IsArchive;
 
-    public FMToScan(string path, bool forceFullScan, string cachePath, bool isTDM, string displayName, bool isArchive)
+    public FMToScan(string path, bool forceFullScan, string cachePath, bool isTDM, string displayName, bool isArchive,int originalIndex)
     {
         Path = path;
         ForceFullScan = forceFullScan;
@@ -254,9 +256,10 @@ public sealed class FMToScan
         DisplayName = displayName;
         IsTDM = isTDM;
         IsArchive = isArchive;
+        OriginalIndex = originalIndex;
     }
 
-    public FMToScan(string path, bool forceFullScan, bool isTDM, string displayName, bool isArchive)
+    public FMToScan(string path, bool forceFullScan, bool isTDM, string displayName, bool isArchive, int originalIndex)
     {
         Path = path;
         ForceFullScan = forceFullScan;
@@ -264,6 +267,7 @@ public sealed class FMToScan
         DisplayName = displayName;
         IsTDM = isTDM;
         IsArchive = isArchive;
+        OriginalIndex = originalIndex;
     }
 }
 
@@ -277,6 +281,12 @@ public sealed class ScannedFMDataAndError
     public Fen7z.Result? Fen7zResult;
     public string ErrorInfo = "";
     public bool NeedsHtmlRefExtract;
+    public readonly int OriginalIndex;
+
+    public ScannedFMDataAndError(int originalIndex)
+    {
+        OriginalIndex = originalIndex;
+    }
 }
 
 [PublicAPI]

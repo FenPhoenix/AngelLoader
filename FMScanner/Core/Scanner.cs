@@ -554,7 +554,7 @@ public sealed partial class Scanner : IDisposable
 
             if (mission.Path.IsEmpty())
             {
-                scannedFMDataList.Add(new ScannedFMDataAndError());
+                scannedFMDataList.Add(new ScannedFMDataAndError(mission.OriginalIndex));
                 nullAlreadyAdded = true;
             }
             else
@@ -584,7 +584,7 @@ public sealed partial class Scanner : IDisposable
                     catch (Exception ex)
                     {
                         Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
-                        scannedFMDataList.Add(new ScannedFMDataAndError());
+                        scannedFMDataList.Add(new ScannedFMDataAndError(mission.OriginalIndex));
                         nullAlreadyAdded = true;
                     }
                 }
@@ -613,7 +613,7 @@ public sealed partial class Scanner : IDisposable
             // If there was an error then we already added null to the list. DON'T add any extra items!
             if (!nullAlreadyAdded)
             {
-                var scannedFMAndError = new ScannedFMDataAndError();
+                var scannedFMAndError = new ScannedFMDataAndError(mission.OriginalIndex);
                 ScanOptions? _tempScanOptions = null;
                 try
                 {
@@ -829,7 +829,8 @@ public sealed partial class Scanner : IDisposable
                         archivePath: fm.Path,
                         fen7zResult: null,
                         ex: null,
-                        errorInfo: "FM directory: " + fm.Path
+                        errorInfo: "FM directory: " + fm.Path,
+                        originalIndex: fm.OriginalIndex
                     );
                 }
             }
@@ -936,7 +937,7 @@ public sealed partial class Scanner : IDisposable
                 if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
                 {
                     // Early return for perf if we're not scanning anything else
-                    return new ScannedFMDataAndError { ScannedFMData = fmData };
+                    return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
                 }
             }
         }
@@ -1035,7 +1036,7 @@ public sealed partial class Scanner : IDisposable
             AddCampaignTag(fmData);
         }
 
-        return new ScannedFMDataAndError { ScannedFMData = fmData };
+        return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
 
         (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
         AddReadmeFromPK4(List<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
@@ -1113,7 +1114,7 @@ public sealed partial class Scanner : IDisposable
             if (checkForZeroEntries && entriesCount == 0)
             {
                 Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                return (false, UnsupportedZip(fm.Path, null, null, ""), null);
+                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
             }
         }
         catch (Exception ex)
@@ -1181,14 +1182,14 @@ public sealed partial class Scanner : IDisposable
                     "Zip contains one or more files compressed with an unsupported method. " +
                     $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
                     "Returning 'Unknown' game type.", zipEx);
-                return (false, UnknownZip(fm.Path, null, zipEx, ""), null);
+                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
             }
             else
             {
                 Log(fm.Path + ": fm is zip, exception in " +
                     nameof(ZipArchiveFast) +
                     " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                return (false, UnsupportedZip(fm.Path, null, ex, ""), null);
+                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
             }
         }
 
@@ -1540,7 +1541,8 @@ public sealed partial class Scanner : IDisposable
                             fen7zResult: result,
                             ex: null,
                             errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                                       fm.Path + $": fm is 7z{NL}");
+                                       fm.Path + $": fm is 7z{NL}",
+                            originalIndex: fm.OriginalIndex);
                     }
                 }
                 else
@@ -1582,7 +1584,8 @@ public sealed partial class Scanner : IDisposable
                     fen7zResult: null,
                     ex: ex,
                     errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction"
+                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction",
+                    originalIndex: fm.OriginalIndex
                 );
             }
 
@@ -1625,7 +1628,7 @@ public sealed partial class Scanner : IDisposable
             {
                 Log(fm.Path + ": fm is dir, but " + nameof(_fmWorkingPath) +
                     " (" + _fmWorkingPath + ") doesn't exist. Returning 'Unsupported' game type.", stackTrace: false);
-                return UnsupportedDir(null, null, "");
+                return UnsupportedDir(null, null, "", fm.OriginalIndex);
             }
             Debug.WriteLine("----------" + _fmWorkingPath);
         }
@@ -1704,7 +1707,9 @@ public sealed partial class Scanner : IDisposable
             Log(fm.Path + ": fm is " + ext + ", " +
                 nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
 
-            return _fmFormat > FMFormat.NotInArchive ? UnsupportedZip(fm.Path, null, null, "") : UnsupportedDir(null, null, "");
+            return _fmFormat > FMFormat.NotInArchive
+                ? UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex)
+                : UnsupportedDir(null, null, "", fm.OriginalIndex);
         }
 
         #endregion
@@ -1739,7 +1744,7 @@ public sealed partial class Scanner : IDisposable
         if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
         {
             // Early return for perf if we're not scanning anything else
-            return new ScannedFMDataAndError { ScannedFMData = fmData };
+            return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
         }
 
         List<string> titles = new();
@@ -1770,7 +1775,7 @@ public sealed partial class Scanner : IDisposable
                     fmData.Game = game;
                     if (fmData.Game == Game.Unsupported)
                     {
-                        return new ScannedFMDataAndError { ScannedFMData = fmData };
+                        return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
                     }
                 }
             }
@@ -2033,57 +2038,80 @@ public sealed partial class Scanner : IDisposable
         Debug.WriteLine(@"This FM took:\r\n" + _overallTimer.Elapsed.ToString(@"hh\:mm\:ss\.fffffff"));
 #endif
 
-        return new ScannedFMDataAndError { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
+        return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
     }
 
     #region Fail return functions
 
-    private static ScannedFMDataAndError UnsupportedTDM(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-    {
-        ScannedFMData = new ScannedFMData
+    private static ScannedFMDataAndError UnsupportedTDM(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            ArchiveName = Path.GetFileName(archivePath),
-            Game = Game.Unsupported,
-            MissionCount = 0,
-        },
-        Fen7zResult = fen7zResult,
-        Exception = ex,
-        ErrorInfo = errorInfo,
-    };
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Unsupported,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
-    private static ScannedFMDataAndError UnsupportedZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-    {
-        ScannedFMData = new ScannedFMData
+    private static ScannedFMDataAndError UnsupportedZip(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            ArchiveName = Path.GetFileName(archivePath),
-            Game = Game.Unsupported,
-            MissionCount = 0,
-        },
-        Fen7zResult = fen7zResult,
-        Exception = ex,
-        ErrorInfo = errorInfo,
-    };
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Unsupported,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
-    private static ScannedFMDataAndError UnknownZip(string archivePath, Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-    {
-        ScannedFMData = new ScannedFMData
+    private static ScannedFMDataAndError UnknownZip(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            ArchiveName = Path.GetFileName(archivePath),
-            Game = Game.Null,
-            MissionCount = 0,
-        },
-        Fen7zResult = fen7zResult,
-        Exception = ex,
-        ErrorInfo = errorInfo,
-    };
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Null,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
-    private static ScannedFMDataAndError UnsupportedDir(Fen7z.Result? fen7zResult, Exception? ex, string errorInfo) => new()
-    {
-        ScannedFMData = null,
-        Fen7zResult = fen7zResult,
-        Exception = ex,
-        ErrorInfo = errorInfo,
-    };
+    private static ScannedFMDataAndError UnsupportedDir(
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
+        {
+            ScannedFMData = null,
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
     #endregion
 

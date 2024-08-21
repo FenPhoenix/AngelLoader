@@ -4,9 +4,10 @@ using System.IO;
 using System.Runtime.InteropServices;
 using AL_Common;
 using AngelLoader.DataClasses;
-using static AngelLoader.GameSupport;
+using FMScanner;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using Game = AngelLoader.GameSupport.Game;
 
 namespace AngelLoader;
 
@@ -49,6 +50,8 @@ internal static class Comparers
     internal static readonly FileNameNoExtComparer FileNameNoExt = new();
 
     internal static readonly ScreenshotComparer Screenshot = new();
+
+    internal static readonly FMScanOriginalIndexComparer FMScanOriginalIndex = new();
 
     #endregion
 
@@ -569,6 +572,14 @@ internal static class Comparers
                 ? string.Compare(x.Name, y.Name, StringComparison.OrdinalIgnoreCase)
                 : cmp;
             return SortDirection == SortDirection.Descending ? -ret : ret;
+        }
+    }
+
+    internal sealed class FMScanOriginalIndexComparer : IComparer<ScannedFMDataAndError>
+    {
+        public int Compare(ScannedFMDataAndError x, ScannedFMDataAndError y)
+        {
+            return x.OriginalIndex.CompareTo(y.OriginalIndex);
         }
     }
 

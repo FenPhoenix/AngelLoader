@@ -11,10 +11,13 @@ using System.Threading.Tasks;
 using AL_Common;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
+using FMScanner;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using Game = AngelLoader.GameSupport.Game;
+using ScannerGame = FMScanner.Game;
 
 namespace AngelLoader;
 
@@ -57,7 +60,7 @@ internal static class FMScan
     /// <returns></returns>
     internal static async Task<bool> ScanFMs(
         NonEmptyList<FanMission> fmsToScan,
-        FMScanner.ScanOptions? scanOptions = null,
+        ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
         bool suppressSingleFMProgressBoxIfFast = false,
         bool setForceReCacheReadmes = false,
@@ -74,7 +77,7 @@ internal static class FMScan
         // The progress object MUST be constructed here on the UI thread! This is what allows it to report smoothly
         // and without the endless and unsolvable issues we get when we merely invoke to the UI thread from the
         // report function.
-        var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
+        var progress = new Progress<ProgressReport>(ReportProgress);
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -129,7 +132,7 @@ internal static class FMScan
 
                     _scanCts = _scanCts.Recreate();
 
-                    var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
+                    var fms = new List<FMToScan>(fmsToScan.Count);
 
                     // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                     // cause then it will hit the actual disk rather than just going through a list of paths in
@@ -161,7 +164,7 @@ internal static class FMScan
                             !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths)).IsEmpty())
                         {
                             fmsToScanFiltered.Add(fm);
-                            fms.Add(new FMScanner.FMToScan
+                            fms.Add(new FMToScan
                             (
                                 path: fmArchivePath,
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
@@ -170,7 +173,8 @@ internal static class FMScan
                                     : "",
                                 isTDM: fm.Game == Game.TDM,
                                 displayName: fm.Archive,
-                                isArchive: true
+                                isArchive: true,
+                                originalIndex: fms.Count
                             ));
                             if (fm.Game == Game.TDM) tdmDataRequired = true;
                         }
@@ -180,13 +184,14 @@ internal static class FMScan
                             if (!fmInstalledPath.IsEmpty())
                             {
                                 fmsToScanFiltered.Add(fm);
-                                fms.Add(new FMScanner.FMToScan
+                                fms.Add(new FMToScan
                                 (
                                     path: Path.Combine(fmInstalledPath, fm.RealInstalledDir),
                                     forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                                     isTDM: fm.Game == Game.TDM,
                                     displayName: fm.RealInstalledDir,
-                                    isArchive: false
+                                    isArchive: false,
+                                    originalIndex: fms.Count
                                 ));
                                 if (fm.Game == Game.TDM) tdmDataRequired = true;
                             }
@@ -201,7 +206,7 @@ internal static class FMScan
 
                     #region Run scanner
 
-                    List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
+                    List<ScannedFMDataAndError> fmDataList = new(fmsTotalCount);
                     try
                     {
                         Paths.CreateOrClearTempPath(TempPaths.FMScanner);
@@ -223,8 +228,9 @@ internal static class FMScan
                         // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
                         int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
 
-                        Task[] tasks0 = new Task[taskCount];
-                        ConcurrentQueue<FMScanner.FMToScan> cq = new(fms);
+                        Task[] tasks = new Task[taskCount];
+                        ConcurrentQueue<FMToScan> cq = new(fms);
+                        ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
                         fmsTotalCount = fms.Count;
 
@@ -237,27 +243,32 @@ internal static class FMScan
                         // Also we probably need to handle the cancellation exception in this loop too
                         for (int i = 0; i < taskCount; i++)
                         {
-                            tasks0[i] = Task.Run(async () =>
+                            tasks[i] = Task.Run(async () =>
                             {
-                                using var scanner = new FMScanner.Scanner(
+                                using var scanner = new Scanner(
                                     sevenZipWorkingPath: Paths.SevenZipPath,
                                     sevenZipExePath: Paths.SevenZipExe,
                                     fullScanOptions: GetDefaultScanOptions(),
                                     tdmContext: tdmContext);
 
-                                await scanner.ScanAsync(
+                                returnLists.Add(await scanner.ScanAsync(
                                     cq,
                                     tempPath: Paths.FMScannerTemp,
                                     scanOptions: scanOptions,
                                     progress: progress,
                                     // @MT_TASK: Figure out the proper way to pass this token
-                                    cancellationToken: _scanCts.Token);
+                                    cancellationToken: _scanCts.Token));
                             });
                         }
 
                         try
                         {
-                            await Task.WhenAll(tasks0);
+                            await Task.WhenAll(tasks);
+                            foreach (List<ScannedFMDataAndError> list in returnLists)
+                            {
+                                fmDataList.AddRange(list);
+                            }
+                            fmDataList.Sort(Comparers.FMScanOriginalIndex);
                         }
                         catch
                         {
@@ -269,11 +280,8 @@ internal static class FMScan
 #if TIMING_TEST
                             StopTimingAndPrintResult();
 #endif
-                            tasks0.DisposeAll();
+                            tasks.DisposeAll();
                         }
-
-                        // @MT_TASK: Temporary - implement actual list return
-                        return false;
                     }
                     catch (OperationCanceledException)
                     {
@@ -283,18 +291,18 @@ internal static class FMScan
                     }
                     finally
                     {
-                        if (fmDataList != null)
+                        if (fmDataList.Count > 0)
                         {
                             // @MEM(Scanner/unsupported compression errors):
                             // We're looping through the whole thing always just to see if there are errors!
                             // The scanner should just return a list and we can skip this if it's empty.
                             bool errors = false;
                             bool otherErrors = false;
-                            var unsupportedCompressionErrors = new List<(FMScanner.FMToScan FM, FMScanner.ScannedFMDataAndError ScannedFMDataAndError)>();
+                            var unsupportedCompressionErrors = new List<(FMToScan FM, ScannedFMDataAndError ScannedFMDataAndError)>();
 
                             for (int i = 0; i < fmsToScanFiltered.Count; i++)
                             {
-                                FMScanner.ScannedFMDataAndError item = fmDataList[i];
+                                ScannedFMDataAndError item = fmDataList[i];
                                 if (item.Fen7zResult != null ||
                                     item.Exception != null ||
                                     !item.ErrorInfo.IsEmpty())
@@ -368,8 +376,8 @@ internal static class FMScan
 
                     for (int i = 0; i < fmsToScanFiltered.Count; i++)
                     {
-                        FMScanner.ScannedFMDataAndError scannedFMDataAndError = fmDataList[i];
-                        FMScanner.ScannedFMData? scannedFM = scannedFMDataAndError.ScannedFMData;
+                        ScannedFMDataAndError scannedFMDataAndError = fmDataList[i];
+                        ScannedFMData? scannedFM = scannedFMDataAndError.ScannedFMData;
 
                         #region Checks
 
@@ -399,7 +407,7 @@ internal static class FMScan
                             fm.ForceReadmeReCacheAlways = true;
                         }
 
-                        bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
+                        bool gameSup = scannedFM.Game != ScannerGame.Unsupported;
 
                         if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                         {
@@ -431,8 +439,8 @@ internal static class FMScan
                             #region This exact setup is needed to get identical results to the old method. Don't change.
                             // We don't scan custom resources for Thief 3, so they should never be set in that case.
                             if (gameSup &&
-                                scannedFM.Game != FMScanner.Game.Thief3 &&
-                                scannedFM.Game != FMScanner.Game.TDM)
+                                scannedFM.Game != ScannerGame.Thief3 &&
+                                scannedFM.Game != ScannerGame.TDM)
                             {
                                 fm.SetResource(CustomResources.Map, scannedFM.HasMap == true);
                                 fm.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);
@@ -522,7 +530,7 @@ internal static class FMScan
 
         #region Local functions
 
-        static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
+        static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(
             scanTitle: true,
             scanAuthor: true,
             scanGameType: true,
@@ -532,7 +540,7 @@ internal static class FMScan
             scanTags: true,
             scanMissionCount: true);
 
-        void ReportProgress(FMScanner.ProgressReport pr)
+        void ReportProgress(ProgressReport pr)
         {
             int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
             int percent = Common.GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
@@ -570,13 +578,13 @@ internal static class FMScan
     internal static Task ScanNewFMs(NonEmptyList<FanMission> newFMs)
     {
         return ScanFMs(newFMs,
-            FMScanner.ScanOptions.FalseDefault(scanGameType: true),
+            ScanOptions.FalseDefault(scanGameType: true),
             scanFullIfNew: true);
     }
 
-    private static FMScanner.ScanOptions? GetScanOptionsFromDialog(bool selected)
+    private static ScanOptions? GetScanOptionsFromDialog(bool selected)
     {
-        (bool accepted, FMScanner.ScanOptions scanOptions, bool noneSelected) =
+        (bool accepted, ScanOptions scanOptions, bool noneSelected) =
             Core.View.ShowScanAllFMsWindow(selected);
 
         if (!accepted) return null;
@@ -597,7 +605,7 @@ internal static class FMScan
             return;
         }
 
-        FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
+        ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
         if (scanOptions == null) return;
 
         if (await ScanFMs(fmsToScan, scanOptions))
@@ -622,7 +630,7 @@ internal static class FMScan
         }
         else
         {
-            FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
+            ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
             if (scanOptions == null) return;
 
             if (await ScanFMs(fmsToScan, scanOptions, setForceReCacheReadmes: true))
