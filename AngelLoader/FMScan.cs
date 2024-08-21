@@ -202,6 +202,10 @@ internal static class FMScan
 
                     if (fmsToScanFiltered.Count == 0) return false;
 
+                    // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
+                    int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
+                    Task[] tasks = new Task[taskCount];
+
                     #endregion
 
                     #region Run scanner
@@ -225,10 +229,6 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-                        // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
-                        int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
-
-                        Task[] tasks = new Task[taskCount];
                         ConcurrentQueue<FMToScan> cq = new(fms);
                         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
@@ -238,59 +238,59 @@ internal static class FMScan
                         StartTiming();
 #endif
 
-                        // @MT_TASK: Handle exceptions in this loop, as if something throws we won't clean up
-                        // I don't think anyway
-                        // Also we probably need to handle the cancellation exception in this loop too
-                        for (int i = 0; i < taskCount; i++)
-                        {
-                            tasks[i] = Task.Run(async () =>
-                            {
-                                using var scanner = new Scanner(
-                                    sevenZipWorkingPath: Paths.SevenZipPath,
-                                    sevenZipExePath: Paths.SevenZipExe,
-                                    fullScanOptions: GetDefaultScanOptions(),
-                                    tdmContext: tdmContext);
-
-                                returnLists.Add(await scanner.ScanAsync(
-                                    cq,
-                                    tempPath: Paths.FMScannerTemp,
-                                    scanOptions: scanOptions,
-                                    progress: progress,
-                                    // @MT_TASK: Figure out the proper way to pass this token
-                                    cancellationToken: _scanCts.Token));
-                            });
-                        }
-
                         try
                         {
-                            await Task.WhenAll(tasks);
-                            foreach (List<ScannedFMDataAndError> list in returnLists)
+                            for (int i = 0; i < taskCount; i++)
                             {
-                                fmDataList.AddRange(list);
+                                tasks[i] = Task.Run(async () =>
+                                {
+                                    using var scanner = new Scanner(
+                                        sevenZipWorkingPath: Paths.SevenZipPath,
+                                        sevenZipExePath: Paths.SevenZipExe,
+                                        fullScanOptions: GetDefaultScanOptions(),
+                                        tdmContext: tdmContext);
+
+                                    returnLists.Add(await scanner.ScanAsync(
+                                        cq,
+                                        tempPath: Paths.FMScannerTemp,
+                                        scanOptions: scanOptions,
+                                        progress: progress,
+                                        // ReSharper disable once AccessToDisposedClosure
+                                        cancellationToken: _scanCts.Token));
+                                });
                             }
-                            fmDataList.Sort(Comparers.FMScanOriginalIndex);
+
+                            await Task.WhenAll(tasks);
                         }
-                        catch
+                        catch (OperationCanceledException)
                         {
-                            // ignore
+                            CleanupAfterCancel();
+                            return false;
                         }
                         finally
                         {
-                            Core.View.SetProgressPercent(100);
-#if TIMING_TEST
-                            StopTimingAndPrintResult();
-#endif
-                            tasks.DisposeAll();
+                            await Task.WhenAll(tasks);
                         }
+
+                        foreach (List<ScannedFMDataAndError> list in returnLists)
+                        {
+                            fmDataList.AddRange(list);
+                        }
+                        fmDataList.Sort(Comparers.FMScanOriginalIndex);
                     }
                     catch (OperationCanceledException)
                     {
-                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
-                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+                        CleanupAfterCancel();
                         return false;
                     }
                     finally
                     {
+                        Core.View.SetProgressPercent(100);
+#if TIMING_TEST
+                        StopTimingAndPrintResult();
+#endif
+                        tasks.DisposeAll();
+
                         if (fmDataList.Count > 0)
                         {
                             // @MEM(Scanner/unsupported compression errors):
@@ -570,6 +570,17 @@ internal static class FMScan
 
                 lastPercent = percent;
             }
+        }
+
+        // @MT_TASK: This runs twice (are more times possible?) - we should run it only once
+        // @MT_TASK: Canceling now has a delay before the progress box disappears - maybe have a "Canceling" message?
+        static void CleanupAfterCancel()
+        {
+#if TIMING_TEST
+            System.Diagnostics.Trace.WriteLine("Canceled");
+#endif
+            Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
         }
 
         #endregion
