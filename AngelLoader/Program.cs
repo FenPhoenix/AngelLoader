@@ -14,14 +14,14 @@ using static AL_Common.Logger;
 
 namespace AngelLoader;
 
-internal sealed class PreloadState
+internal sealed class SplashScreenPreloadState
 {
     internal PrivateFontCollection? FontCollection;
     internal Font? MessageFont;
 
     internal readonly Task SplashScreenPreloadTask;
 
-    internal PreloadState()
+    internal SplashScreenPreloadState()
     {
         SplashScreenPreloadTask = Task.Run(() =>
         {
@@ -50,7 +50,7 @@ internal sealed class PreloadState
 
 internal static class Program
 {
-    internal static PreloadState PreloadState = null!;
+    internal static SplashScreenPreloadState SplashScreenPreloadState = null!;
 
     /// <summary>
     /// The main entry point for the application.
@@ -71,7 +71,7 @@ internal static class Program
 #endif
 
 #if WinForms
-        PreloadState = new PreloadState();
+        SplashScreenPreloadState = new SplashScreenPreloadState();
 
         // Need to set these here, because the single-instance thing internally creates a window and message-
         // loop etc... that's also why we straight-up ditched our clever "init the ConfigurationManager in
