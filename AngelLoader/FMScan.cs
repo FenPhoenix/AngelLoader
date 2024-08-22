@@ -237,7 +237,7 @@ internal static class FMScan
 #if TIMING_TEST
                         StartTiming();
 #endif
-
+                        ReadOnlyDataContext ctx = new();
                         try
                         {
                             for (int i = 0; i < taskCount; i++)
@@ -248,6 +248,7 @@ internal static class FMScan
                                         sevenZipWorkingPath: Paths.SevenZipPath,
                                         sevenZipExePath: Paths.SevenZipExe,
                                         fullScanOptions: GetDefaultScanOptions(),
+                                        readOnlyDataContext: ctx,
                                         tdmContext: tdmContext);
 
                                     returnLists.Add(await scanner.ScanAsync(

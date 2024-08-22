@@ -50,19 +50,9 @@ public sealed partial class Scanner : IDisposable
 
     #region Private fields
 
+    private readonly ReadOnlyDataContext _ctx;
+
     private bool _titlesStrIsOEM850;
-
-    private static byte[] InitRomanToDecimalTable()
-    {
-        byte[] ret = new byte['X' + 1];
-        ret['I'] = 1;
-        ret['V'] = 5;
-        ret['X'] = 10;
-        return ret;
-    }
-
-    private byte[]? _romanNumeralToDecimalTable;
-    private byte[] RomanNumeralToDecimalTable => _romanNumeralToDecimalTable ??= InitRomanToDecimalTable();
 
     #region Disposable
 
@@ -113,8 +103,6 @@ public sealed partial class Scanner : IDisposable
     private string _fmWorkingPath = "";
 
     private readonly List<ReadmeInternal> _readmeFiles = new();
-
-    private readonly TitlesStrNaturalNumericSort _titlesStrNaturalNumericSort = new();
 
     private bool _ss2Fingerprinted;
 
@@ -344,6 +332,7 @@ public sealed partial class Scanner : IDisposable
         string sevenZipWorkingPath,
         string sevenZipExePath,
         ScanOptions fullScanOptions,
+        ReadOnlyDataContext readOnlyDataContext,
         ScannerTDMContext tdmContext)
     {
 #if !NETFRAMEWORK
@@ -352,49 +341,12 @@ public sealed partial class Scanner : IDisposable
 
         _fullScanOptions = fullScanOptions;
 
+        _ctx = readOnlyDataContext;
+
         _sevenZipWorkingPath = sevenZipWorkingPath;
         _sevenZipExePath = sevenZipExePath;
 
         _tdmContext = tdmContext;
-
-        #region Array construction
-
-        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
-        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
-        LanguagesC = new string[SupportedLanguageCount];
-
-        #region FMFiles_TitlesStrLocations
-
-        // Do not change search order: strings/english, strings, strings/[any other language]
-        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
-        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
-        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
-        FMFiles_TitlesStrLocations[3] = "strings/title.str";
-
-        for (int i = 1; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
-        }
-
-        #endregion
-
-        #region Languages
-
-        for (int i = 0; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            Languages_FS_Lang_FS[i] = "/" + lang + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
-
-            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
-            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
-        }
-
-        #endregion
-
-        #endregion
     }
 
     #endregion
@@ -507,7 +459,6 @@ public sealed partial class Scanner : IDisposable
         _t3GmpFiles?.Clear();
     }
 
-    // @MT_TASK: Make readonly data into a separate context so it doesn't get instantiated once per scanner object
     // @MT_TASK: Update all Scan* methods (including ifdeffed ones) to take the ConcurrentQueue
     // @MT_TASK: Update FMInfoGen to use these methods
 
@@ -910,7 +861,7 @@ public sealed partial class Scanner : IDisposable
                         "Mission" line to be one mission, and if it has multiple maps then it's one mission
                         with loading zones.
                         */
-                        else if (DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
+                        else if (_ctx.DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
                         {
                             misCount++;
                         }
@@ -961,7 +912,7 @@ public sealed partial class Scanner : IDisposable
             // That's _TERRIBLE_ but we want to match behavior.
             if (darkModTxtReadme != null)
             {
-                MatchCollection matches = DarkModTxtFieldsRegex.Matches(darkModTxtReadme.Text);
+                MatchCollection matches = _ctx.DarkModTxtFieldsRegex.Matches(darkModTxtReadme.Text);
                 int plus = 0;
                 foreach (Match match in matches)
                 {
@@ -978,7 +929,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
 
@@ -986,12 +937,12 @@ public sealed partial class Scanner : IDisposable
             {
                 if (darkModTxtReadme != null && readmeTxtReadme != null)
                 {
-                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, singleReadme: darkModTxtReadme));
-                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect, singleReadme: readmeTxtReadme));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect, singleReadme: darkModTxtReadme));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect, singleReadme: readmeTxtReadme));
                 }
                 else
                 {
-                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
+                    SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect));
                 }
 
                 if (infoFromServer != null)
@@ -1088,7 +1039,7 @@ public sealed partial class Scanner : IDisposable
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    readme.Lines.ClearFullAndAdd(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                     _readmeFiles.Add(readme);
                 }
                 catch
@@ -1201,13 +1152,13 @@ public sealed partial class Scanner : IDisposable
         if (fmData.Author.IsEmpty())
         {
             List<string>? passTitles = titles.Count > 0 ? titles : null;
-            string author = GetValueFromReadme(SpecialLogic.Author, SA_AuthorDetect, passTitles);
+            string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
             fmData.Author = CleanupValue(author).Trim();
         }
 
         if (!fmData.Author.IsEmpty())
         {
-            Match match = AuthorEmailRegex.Match(fmData.Author);
+            Match match = _ctx.AuthorEmailRegex.Match(fmData.Author);
             if (match.Success)
             {
                 fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
@@ -1503,7 +1454,7 @@ public sealed partial class Scanner : IDisposable
 
                 PopulateTempList(fileNamesList, tempList, EndsWithTitleFile);
 
-                foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
+                foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
                 {
                     string? titlesFileToUse = tempList.Find(x => x.PathEqualsI(titlesFileLocation));
                     if (titlesFileToUse != null)
@@ -1945,7 +1896,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle)
         {
-            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, SA_TitleDetect));
+            SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect));
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
 
@@ -2257,14 +2208,14 @@ public sealed partial class Scanner : IDisposable
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
 
             // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, SA_LatestUpdateDateDetect);
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_LatestUpdateDateDetect);
             DateTime? dt = null;
             bool dtIsAmbiguous = false;
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
 
             if (ds.IsEmpty() || dt == null)
             {
-                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, SA_ReleaseDateDetect);
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_ReleaseDateDetect);
             }
 
             if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
@@ -2431,7 +2382,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (lineT.IsWhiteSpace()) continue;
 
-                if (LineContainsMonthName(lineT, _monthNames))
+                if (LineContainsMonthName(lineT, _ctx._monthNames))
                 {
                     if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
                     {
@@ -2464,12 +2415,12 @@ public sealed partial class Scanner : IDisposable
     {
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
-        if (EuropeanDateRegex.Match(dateString).Success)
+        if (_ctx.EuropeanDateRegex.Match(dateString).Success)
         {
-            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(CA_Period);
+            string dateStringTemp = _ctx.PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(_ctx.CA_Period);
             if (DateTime.TryParseExact(
                     dateStringTemp,
-                    _dateFormatsEuropean,
+                    _ctx._dateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
                     out DateTime eurDateResult))
@@ -2480,39 +2431,39 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        dateString = DateSeparatorsRegex.Replace(dateString, " ");
-        dateString = DateOfSeparatorRegex.Replace(dateString, " ");
-        dateString = OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
+        dateString = _ctx.DateSeparatorsRegex.Replace(dateString, " ");
+        dateString = _ctx.DateOfSeparatorRegex.Replace(dateString, " ");
+        dateString = _ctx.OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
 
-        dateString = FebrRegex.Replace(dateString, "Feb ");
-        dateString = SeptRegex.Replace(dateString, "Sep ");
-        dateString = OktRegex.Replace(dateString, "Oct ");
+        dateString = _ctx.FebrRegex.Replace(dateString, "Feb ");
+        dateString = _ctx.SeptRegex.Replace(dateString, "Sep ");
+        dateString = _ctx.OktRegex.Replace(dateString, "Oct ");
 
-        dateString = HalloweenRegex.Replace(dateString, "Oct 31");
-        dateString = ChristmasRegex.Replace(dateString, "Dec 25");
+        dateString = _ctx.HalloweenRegex.Replace(dateString, "Oct 31");
+        dateString = _ctx.ChristmasRegex.Replace(dateString, "Dec 25");
 
         // Cute...
-        dateString = Y2KRegex.Replace(dateString, "2000");
+        dateString = _ctx.Y2KRegex.Replace(dateString, "2000");
 
-        dateString = JanuaryVariationsRegex.Replace(dateString, "Jan");
-        dateString = FebruaryVariationsRegex.Replace(dateString, "Feb");
-        dateString = MarchVariationsRegex.Replace(dateString, "Mar");
-        dateString = AprilVariationsRegex.Replace(dateString, "Apr");
-        dateString = MayVariationsRegex.Replace(dateString, "May");
-        dateString = JuneVariationsRegex.Replace(dateString, "Jun");
-        dateString = JulyVariationsRegex.Replace(dateString, "Jul");
-        dateString = AugustVariationsRegex.Replace(dateString, "Aug");
-        dateString = SeptemberVariationsRegex.Replace(dateString, "Sep");
-        dateString = OctoberVariationsRegex.Replace(dateString, "Oct");
-        dateString = NovemberVariationsRegex.Replace(dateString, "Nov");
-        dateString = DecemberVariationsRegex.Replace(dateString, "Dec");
+        dateString = _ctx.JanuaryVariationsRegex.Replace(dateString, "Jan");
+        dateString = _ctx.FebruaryVariationsRegex.Replace(dateString, "Feb");
+        dateString = _ctx.MarchVariationsRegex.Replace(dateString, "Mar");
+        dateString = _ctx.AprilVariationsRegex.Replace(dateString, "Apr");
+        dateString = _ctx.MayVariationsRegex.Replace(dateString, "May");
+        dateString = _ctx.JuneVariationsRegex.Replace(dateString, "Jun");
+        dateString = _ctx.JulyVariationsRegex.Replace(dateString, "Jul");
+        dateString = _ctx.AugustVariationsRegex.Replace(dateString, "Aug");
+        dateString = _ctx.SeptemberVariationsRegex.Replace(dateString, "Sep");
+        dateString = _ctx.OctoberVariationsRegex.Replace(dateString, "Oct");
+        dateString = _ctx.NovemberVariationsRegex.Replace(dateString, "Nov");
+        dateString = _ctx.DecemberVariationsRegex.Replace(dateString, "Dec");
 
-        dateString = dateString.Trim(CA_Period);
-        dateString = dateString.Trim(CA_Parens);
+        dateString = dateString.Trim(_ctx.CA_Period);
+        dateString = dateString.Trim(_ctx.CA_Parens);
         dateString = dateString.Trim();
 
         // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-        Match match = DaySuffixesRegex.Match(dateString);
+        Match match = _ctx.DaySuffixesRegex.Match(dateString);
         if (match.Success)
         {
             Group suffix = match.Groups["Suffix"];
@@ -2525,7 +2476,7 @@ public sealed partial class Scanner : IDisposable
         bool success = false;
         bool canBeAmbiguous = false;
         DateTime? result = null!;
-        foreach (var item in _dateFormats)
+        foreach (var item in _ctx._dateFormats)
         {
             success = DateTime.TryParseExact(
                 dateString,
@@ -2574,7 +2525,7 @@ public sealed partial class Scanner : IDisposable
                 return true;
             }
 
-            string[] nums = dateString.Split_Char(CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
+            string[] nums = dateString.Split_Char(_ctx.CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
             if (nums.Length == 3)
             {
                 bool unambiguousYearFound = false;
@@ -2634,7 +2585,7 @@ public sealed partial class Scanner : IDisposable
 
             if (fmData.TagsString.Contains(lang, Ordinal))
             {
-                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + LanguagesC[i]);
+                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + _ctx.LanguagesC[i]);
             }
 
             // PERF: 5ms over the whole 1098 set, whatever
@@ -2642,7 +2593,7 @@ public sealed partial class Scanner : IDisposable
             if (match.Success) continue;
 
             if (fmData.TagsString != "") fmData.TagsString += ", ";
-            fmData.TagsString += "language:" + LanguagesC[i];
+            fmData.TagsString += "language:" + _ctx.LanguagesC[i];
         }
     }
 
@@ -2864,7 +2815,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomMotions == null &&
                              fn.PathStartsWithI(FMDirs.MotionsS) &&
-                             FileExtensionFound(fn, MotionFileExtensions))
+                             FileExtensionFound(fn, _ctx.MotionFileExtensions))
                     {
                         fmd.HasCustomMotions = true;
                     }
@@ -2876,7 +2827,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if (fmd.HasCustomTextures == null &&
                              fn.PathStartsWithI(FMDirs.FamS) &&
-                             FileExtensionFound(fn, ImageFileExtensions))
+                             FileExtensionFound(fn, _ctx.ImageFileExtensions))
                     {
                         fmd.HasCustomTextures = true;
                     }
@@ -2894,7 +2845,7 @@ public sealed partial class Scanner : IDisposable
                     }
                     else if ((fmd.HasCustomScripts == null &&
                               !fn.Rel_ContainsDirSep() &&
-                              FileExtensionFound(fn, ScriptFileExtensions)) ||
+                              FileExtensionFound(fn, _ctx.ScriptFileExtensions)) ||
                              (fn.PathStartsWithI(FMDirs.ScriptsS) &&
                               fn.HasFileExtension()))
                     {
@@ -2943,7 +2894,7 @@ public sealed partial class Scanner : IDisposable
         {
             string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
             if (Directory.Exists(t3DetectPath) &&
-                FastIO.FilesExistSearchTop(t3DetectPath, SA_T3DetectExtensions))
+                FastIO.FilesExistSearchTop(t3DetectPath, _ctx.SA_T3DetectExtensions))
             {
                 t3Found = true;
                 if (_scanOptions.ScanMissionCount)
@@ -3040,40 +2991,40 @@ public sealed partial class Scanner : IDisposable
 
                         fmd.HasCustomMotions =
                             baseDirFolders.ContainsI(FMDirs.Motions) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Motions), MotionFilePatterns);
+                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Motions), _ctx.MotionFilePatterns);
 
                         fmd.HasMovies =
                             (baseDirFolders.ContainsI(FMDirs.Movies) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Movies), SA_AllFiles)) ||
+                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Movies), _ctx.SA_AllFiles)) ||
                             (baseDirFolders.ContainsI(FMDirs.Cutscenes) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes), SA_AllFiles));
+                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Cutscenes), _ctx.SA_AllFiles));
 
                         fmd.HasCustomTextures =
                             baseDirFolders.ContainsI(FMDirs.Fam) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Fam), ImageFilePatterns);
+                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Fam), _ctx.ImageFilePatterns);
 
                         fmd.HasCustomObjects =
                             baseDirFolders.ContainsI(FMDirs.Obj) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Obj), SA_AllBinFiles);
+                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Obj), _ctx.SA_AllBinFiles);
 
                         fmd.HasCustomCreatures =
                             baseDirFolders.ContainsI(FMDirs.Mesh) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), SA_AllBinFiles);
+                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), _ctx.SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
-                            BaseDirScriptFileExtensions(_baseDirFiles, ScriptFileExtensions) ||
+                            BaseDirScriptFileExtensions(_baseDirFiles, _ctx.ScriptFileExtensions) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), SA_AllFiles));
+                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), _ctx.SA_AllFiles));
 
                         fmd.HasCustomSounds =
                             (baseDirFolders.ContainsI(FMDirs.Snd) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd), SA_AllFiles)) ||
+                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd), _ctx.SA_AllFiles)) ||
                             (baseDirFolders.ContainsI(FMDirs.Snd2) &&
-                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd2), SA_AllFiles));
+                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Snd2), _ctx.SA_AllFiles));
 
                         fmd.HasCustomSubtitles =
                             baseDirFolders.ContainsI(FMDirs.Subtitles) &&
-                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), SA_AllSubFiles);
+                            FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Subtitles), _ctx.SA_AllSubFiles);
                     }
 
                     if (SS2FingerprintRequiredAndNotDone() &&
@@ -3408,7 +3359,7 @@ public sealed partial class Scanner : IDisposable
             if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
                 CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
             {
-                fmIni.Descr = fmIni.Descr.Trim(CA_UnicodeQuotes);
+                fmIni.Descr = fmIni.Descr.Trim(_ctx.CA_UnicodeQuotes);
             }
 
             fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
@@ -3716,7 +3667,7 @@ public sealed partial class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                            last.Lines.ClearFullAndAdd(text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                         }
                     }
                     finally
@@ -3736,7 +3687,7 @@ public sealed partial class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split_String(SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    last.Lines.ClearFullAndAdd(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
             finally
@@ -3807,13 +3758,13 @@ public sealed partial class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    Match newDarkMatch = NewDarkAndNumberRegex.Match(ret);
+                    Match newDarkMatch = _ctx.NewDarkAndNumberRegex.Match(ret);
                     if (newDarkMatch.Success)
                     {
                         ret = ret.Substring(0, newDarkMatch.Index);
                     }
 
-                    Match rtlNumberMatch = AnyDateNumberRTLRegex.Match(ret);
+                    Match rtlNumberMatch = _ctx.AnyDateNumberRTLRegex.Match(ret);
                     if (rtlNumberMatch.Success)
                     {
                         ret = ret.Substring(0, rtlNumberMatch.Index + rtlNumberMatch.Length);
@@ -3924,7 +3875,7 @@ public sealed partial class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI_Local("Version History") ||
                     lineStartTrimmed.ContainsI("NewDark") ||
                     lineStartTrimmed.ContainsI("64 Cubed") ||
-                    VersionExclude1Regex.Match(lineStartTrimmed).Success:
+                    _ctx.VersionExclude1Regex.Match(lineStartTrimmed).Success:
 #endif
                 case SpecialLogic.Author when
                     lineStartTrimmed.StartsWithI_Local("Authors note"):
@@ -3972,9 +3923,9 @@ public sealed partial class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    lineStartTrimmed = MultipleColonsRegex.Replace(lineStartTrimmed, ":");
-                    lineStartTrimmed = MultipleDashesRegex.Replace(lineStartTrimmed, "-");
-                    lineStartTrimmed = MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
+                    lineStartTrimmed = _ctx.MultipleColonsRegex.Replace(lineStartTrimmed, ":");
+                    lineStartTrimmed = _ctx.MultipleDashesRegex.Replace(lineStartTrimmed, "-");
+                    lineStartTrimmed = _ctx.MultipleUnicodeDashesRegex.Replace(lineStartTrimmed, "\u2013");
                 }
 
                 // Don't count these chars if they're part of a key
@@ -4042,12 +3993,12 @@ public sealed partial class Scanner : IDisposable
         if ((value[0] == LeftDoubleQuote || value[0] == RightDoubleQuote) &&
             (value[^1] == LeftDoubleQuote || value[^1] == RightDoubleQuote))
         {
-            value = value.Trim(CA_UnicodeQuotes);
+            value = value.Trim(_ctx.CA_UnicodeQuotes);
         }
 
         value = value.RemoveUnpairedLeadingOrTrailingQuotes();
 
-        value = MultipleWhiteSpaceRegex.Replace(value, " ");
+        value = _ctx.MultipleWhiteSpaceRegex.Replace(value, " ");
         value = value.Replace('\t', ' ');
 
         #region Parentheses
@@ -4057,8 +4008,8 @@ public sealed partial class Scanner : IDisposable
         bool containsOpenParen = value.Contains('(');
         bool containsCloseParen = value.Contains(')');
 
-        if (containsOpenParen) value = OpenParenSpacesRegex.Replace(value, "(");
-        if (containsCloseParen) value = CloseParenSpacesRegex.Replace(value, ")");
+        if (containsOpenParen) value = _ctx.OpenParenSpacesRegex.Replace(value, "(");
+        if (containsCloseParen) value = _ctx.CloseParenSpacesRegex.Replace(value, ")");
 
         // If there's stuff like "(this an incomplete sentence and" at the end, chop it right off
         if (containsOpenParen && !containsCloseParen && value.CharAppearsExactlyOnce('('))
@@ -4076,9 +4027,9 @@ public sealed partial class Scanner : IDisposable
             value = value.Substring(0, value.Length - 1);
         }
 
-        value = value.Trim(CA_Asterisk);
+        value = value.Trim(_ctx.CA_Asterisk);
 
-        foreach (AsciiCharWithNonAsciiEquivalent item in _nonAsciiCharsWithAsciiEquivalents)
+        foreach (AsciiCharWithNonAsciiEquivalent item in _ctx._nonAsciiCharsWithAsciiEquivalents)
         {
             value = value.Replace(item.Original, item.Ascii);
         }
@@ -4122,10 +4073,10 @@ public sealed partial class Scanner : IDisposable
                     (lineT.StartsWithI_Local("By ") || lineT.StartsWithI_Local("By: ") ||
                      lineT.StartsWithI_Local("Original concept by ") ||
                      lineT.StartsWithI_Local("Created by ") ||
-                     AThiefMissionRegex.Match(lineT).Success ||
+                     _ctx.AThiefMissionRegex.Match(lineT).Success ||
                      lineT.StartsWithI_Local("A fan mission") ||
                      lineT.StartsWithI_Local("A Thief 3") ||
-                     AThief3MissionRegex.Match(lineT).Success ||
+                     _ctx.AThief3MissionRegex.Match(lineT).Success ||
                      lineT.StartsWithI_Local("A System Shock") ||
                      lineT.StartsWithI_Local("An SS2")))
                 {
@@ -4349,7 +4300,7 @@ public sealed partial class Scanner : IDisposable
 
         #region Read title(s).str file
 
-        foreach (string titlesFileLocation in FMFiles_TitlesStrLocations)
+        foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
         {
             int titlesFileIndex = -1;
             for (int i = 0; i < _stringsDirFiles.Count; i++)
@@ -4429,7 +4380,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        tfLinesD.Sort(_titlesStrNaturalNumericSort);
+        tfLinesD.Sort(_ctx.TitlesStrNaturalNumericSort);
 
         #endregion
 
@@ -4459,7 +4410,7 @@ public sealed partial class Scanner : IDisposable
             {
                 if (value.Contains("  ", Ordinal))
                 {
-                    string[] titleWords = value.Split_String(SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext.IntArrayPool);
+                    string[] titleWords = value.Split_String(_ctx.SA_DoubleSpaces, StringSplitOptions.None, _sevenZipContext.IntArrayPool);
                     for (int i = 0; i < titleWords.Length; i++)
                     {
                         titleWords[i] = titleWords[i].Replace(" ", "");
@@ -4508,9 +4459,9 @@ public sealed partial class Scanner : IDisposable
 
         _titleAcronymChars.ClearFast();
 
-        byte[] romanNumeralToDecimalTable = RomanNumeralToDecimalTable;
+        byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
 
-        bool titleContainsAcronym = AcronymRegex.Match(mainTitle.Value).Success;
+        bool titleContainsAcronym = _ctx.AcronymRegex.Match(mainTitle.Value).Success;
         Utility.GetAcronym(mainTitle.Value, _titleAcronymChars, romanNumeralToDecimalTable);
 
         bool swapDone = false;
@@ -4558,7 +4509,7 @@ public sealed partial class Scanner : IDisposable
 
         if (!swapDone &&
             !serverTitle.IsEmpty() &&
-            !AcronymRegex.Match(serverTitle).Success &&
+            !_ctx.AcronymRegex.Match(serverTitle).Success &&
             (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
@@ -4659,7 +4610,7 @@ public sealed partial class Scanner : IDisposable
             }
             else
             {
-                Match m = AuthorGeneralCopyrightRegex.Match(lineT);
+                Match m = _ctx.AuthorGeneralCopyrightRegex.Match(lineT);
                 if (!m.Success) continue;
 
                 string author = CleanupCopyrightAuthor(m.Groups["Author"].Value);
@@ -4672,7 +4623,7 @@ public sealed partial class Scanner : IDisposable
 
     private string GetAuthorFromText(string text)
     {
-        foreach (Regex regex in AuthorRegexes)
+        foreach (Regex regex in _ctx.AuthorRegexes)
         {
             Match match = regex.Match(text);
             if (match.Success) return match.Groups["Author"].Value;
@@ -4724,7 +4675,7 @@ public sealed partial class Scanner : IDisposable
 
                 string secondHalf = lineT.Substring(lineT.IndexOf(" by", OrdinalIgnoreCase));
 
-                Match match = TitleByAuthorRegex.Match(secondHalf);
+                Match match = _ctx.TitleByAuthorRegex.Match(secondHalf);
                 if (match.Success) return match.Groups["Author"].Value;
             }
         }
@@ -4766,8 +4717,8 @@ public sealed partial class Scanner : IDisposable
                     // This whole nonsense is just to support the use of @ as a copyright symbol (used by some
                     // Theker missions); we want to be very specific about when we decide that "@" means "©".
                     Match m = !pastFirstLineOfCopyrightSection
-                        ? AuthorGeneralCopyrightIncludeAtSymbolRegex.Match(line)
-                        : AuthorGeneralCopyrightRegex.Match(line);
+                        ? _ctx.AuthorGeneralCopyrightIncludeAtSymbolRegex.Match(line)
+                        : _ctx.AuthorGeneralCopyrightRegex.Match(line);
                     if (m.Success)
                     {
                         author = m.Groups["Author"].Value;
@@ -4778,14 +4729,14 @@ public sealed partial class Scanner : IDisposable
                     pastFirstLineOfCopyrightSection = true;
                 }
 
-                author = AuthorCopyrightRegexesMatch(line, AuthorMissionCopyrightRegexes);
+                author = AuthorCopyrightRegexesMatch(line, _ctx.AuthorMissionCopyrightRegexes);
                 if (!author.IsEmpty())
                 {
                     foundAuthor = true;
                     break;
                 }
 
-                string lineT = line.Trim(CA_AsteriskHyphen).Trim();
+                string lineT = line.Trim(_ctx.CA_AsteriskHyphen).Trim();
                 if (lineT.EqualsI_Local("Copyright Information") || lineT.EqualsI_Local("Copyright"))
                 {
                     inCopyrightSection = true;
@@ -4808,7 +4759,7 @@ public sealed partial class Scanner : IDisposable
         index = author.IndexOf(". ", Ordinal);
         if (index > -1) author = author.Substring(0, index);
 
-        Match yearMatch = CopyrightAuthorYearRegex.Match(author);
+        Match yearMatch = _ctx.CopyrightAuthorYearRegex.Match(author);
         if (yearMatch.Success) author = author.Substring(0, yearMatch.Index);
 
         if (author.Length >= 2 && author[^2] == ' ')
@@ -4825,7 +4776,7 @@ public sealed partial class Scanner : IDisposable
             }
         }
 
-        return author.TrimEnd(CA_Period).Trim();
+        return author.TrimEnd(_ctx.CA_Period).Trim();
     }
 
     #endregion
@@ -4833,7 +4784,7 @@ public sealed partial class Scanner : IDisposable
 #if FMScanner_FullCode
     private string GetVersion()
     {
-        string version = GetValueFromReadme(SpecialLogic.Version, SA_VersionDetect);
+        string version = GetValueFromReadme(SpecialLogic.Version, _ctx.SA_VersionDetect);
 
         if (version.IsEmpty()) return "";
 
@@ -4858,7 +4809,7 @@ public sealed partial class Scanner : IDisposable
         else // Starts with non-numbers
         {
             // Find index of the first numeric character
-            Match match = VersionFirstNumberRegex.Match(version);
+            Match match = _ctx.VersionFirstNumberRegex.Match(version);
             if (match.Success)
             {
                 version = version.Substring(match.Index);
@@ -4910,8 +4861,8 @@ public sealed partial class Scanner : IDisposable
 
                     // We say HasFileExtension() because we only want to count lang dirs that have files in them
                     if (dfName.HasFileExtension() &&
-                        (dfName.ContainsI(Languages_FS_Lang_FS[langIndex]) ||
-                         dfName.ContainsI(Languages_FS_Lang_Language_FS[langIndex])))
+                        (dfName.ContainsI(_ctx.Languages_FS_Lang_FS[langIndex]) ||
+                         dfName.ContainsI(_ctx.Languages_FS_Lang_Language_FS[langIndex])))
                     {
                         langs |= language;
                         break;
@@ -5167,13 +5118,13 @@ public sealed partial class Scanner : IDisposable
                 _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
             };
 
-            for (int i = 0; i < _locations.Length; i++)
+            for (int i = 0; i < _ctx._locations.Length; i++)
             {
                 if (
 #if FMScanner_FullCode
                     !_scanOptions.ScanNewDarkRequired &&
 #endif
-                    (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2))
+                    (_ctx._locations[i] == _newDarkLoc1 || _ctx._locations[i] == _newDarkLoc2))
                 {
                     break;
                 }
@@ -5183,20 +5134,20 @@ public sealed partial class Scanner : IDisposable
                 if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
                 {
                     buffer = _zipOffsetBuffers[i];
-                    int length = _zipOffsets[i];
+                    int length = _ctx._zipOffsets[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
                 }
                 else
                 {
                     buffer = _gameDetectStringBuffer;
-                    misStream.Position = _locations[i];
+                    misStream.Position = _ctx._locations[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
                     if (bytesRead < _gameDetectStringBufferLength) break;
                 }
 
-                if ((_locations[i] == _ss2MapParamNewDarkLoc ||
-                     _locations[i] == _ss2MapParamOldDarkLoc) &&
+                if ((_ctx._locations[i] == _ss2MapParamNewDarkLoc ||
+                     _ctx._locations[i] == _ss2MapParamOldDarkLoc) &&
                     EndsWithMAPPARAM(buffer))
                 {
                     /*
@@ -5219,14 +5170,14 @@ public sealed partial class Scanner : IDisposable
                     return Game.SS2;
 #endif
                 }
-                else if ((_locations[i] == _oldDarkT2Loc ||
-                          _locations[i] == _newDarkLoc1 ||
-                          _locations[i] == _newDarkLoc2) &&
+                else if ((_ctx._locations[i] == _oldDarkT2Loc ||
+                          _ctx._locations[i] == _newDarkLoc1 ||
+                          _ctx._locations[i] == _newDarkLoc2) &&
                          EndsWithSKYOBJVAR(buffer))
                 {
                     // Zip reading is going to check the NewDark locations the other way round, but fortunately
                     // they're interchangeable in meaning so we don't have to do anything
-                    if (_locations[i] == _newDarkLoc1 || _locations[i] == _newDarkLoc2)
+                    if (_ctx._locations[i] == _newDarkLoc1 || _ctx._locations[i] == _newDarkLoc2)
                     {
 #if FMScanner_FullCode
                         ret.NewDarkRequired = true;
@@ -5234,7 +5185,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                         break;
                     }
-                    else if (_locations[i] == _oldDarkT2Loc)
+                    else if (_ctx._locations[i] == _oldDarkT2Loc)
                     {
                         foundAtOldDarkThief2Location = true;
                         break;
@@ -5334,7 +5285,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                     = StreamContainsIdentString(
                         stream,
-                        RopeyArrow,
+                        _ctx.RopeyArrow,
                         GameTypeBuffer_ChunkPlusRopeyArrow,
                         _gameTypeBufferSize)
                         ? Game.Thief2
@@ -5362,7 +5313,7 @@ public sealed partial class Scanner : IDisposable
                 uint offset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
                 int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
-                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(OBJ_MAP)) continue;
+                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
@@ -5377,7 +5328,7 @@ public sealed partial class Scanner : IDisposable
 #else
                     game
 #endif
-                        = content.Contains(RopeyArrow, objMapBytesRead)
+                        = content.Contains(_ctx.RopeyArrow, objMapBytesRead)
                             ? Game.Thief2
                             : Game.Thief1;
                 }
@@ -5424,7 +5375,7 @@ public sealed partial class Scanner : IDisposable
 #else
             game
 #endif
-            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, FMFiles_SS2MisFiles)))
+            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
         {
             using Stream stream = _fmFormat switch
             {
@@ -5475,9 +5426,9 @@ public sealed partial class Scanner : IDisposable
     {
         string version = "";
 
-        for (int i = 0; i < NewDarkVersionRegexes.Length; i++)
+        for (int i = 0; i < _ctx.NewDarkVersionRegexes.Length; i++)
         {
-            Match match = NewDarkVersionRegexes[i].Match(text);
+            Match match = _ctx.NewDarkVersionRegexes[i].Match(text);
             if (match.Success)
             {
                 version = match.Groups["Version"].Value;
@@ -5487,7 +5438,7 @@ public sealed partial class Scanner : IDisposable
 
         if (version.IsEmpty()) return "";
 
-        string ndv = version.Trim(CA_Period);
+        string ndv = version.Trim(_ctx.CA_Period);
         int index = ndv.IndexOf('.');
         if (index > -1 && ndv.Substring(index + 1).Length < 2)
         {
@@ -5663,8 +5614,8 @@ public sealed partial class Scanner : IDisposable
         for (int i = 0; i < bufferLength; i++)
         {
             byte b = buffer[i];
-            suspected1252ByteCount += Suspected1252Bytes[b];
-            suspected850ByteCount += Suspected850Bytes[b];
+            suspected1252ByteCount += _ctx.Suspected1252Bytes[b];
+            suspected850ByteCount += _ctx.Suspected850Bytes[b];
         }
 
         if (suspected1252ByteCount == 0 && suspected850ByteCount == 0)
@@ -5700,7 +5651,7 @@ public sealed partial class Scanner : IDisposable
 
             // This looks bad for perf, but it takes negligible time over the full set, so optimization is not
             // urgent.
-            foreach (byte[] item in TitlesStrOEM850KeyPhrases)
+            foreach (byte[] item in _ctx.TitlesStrOEM850KeyPhrases)
             {
                 if (buffer.Contains(item, bufferLength))
                 {

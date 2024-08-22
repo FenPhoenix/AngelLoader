@@ -248,7 +248,7 @@ public sealed class FMToScan
     public readonly bool IsTDM;
     public readonly bool IsArchive;
 
-    public FMToScan(string path, bool forceFullScan, string cachePath, bool isTDM, string displayName, bool isArchive,int originalIndex)
+    public FMToScan(string path, bool forceFullScan, string cachePath, bool isTDM, string displayName, bool isArchive, int originalIndex)
     {
         Path = path;
         ForceFullScan = forceFullScan;
