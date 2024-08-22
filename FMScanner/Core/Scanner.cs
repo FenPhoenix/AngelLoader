@@ -375,16 +375,14 @@ public sealed partial class Scanner : IDisposable
 
 #endif
 
-    // Debug - scan on UI thread so breaks will actually break where they're supposed to (test frontend use only)
-#if DEBUG || ScanSynchronous
+    // Debug should also use this - scan on UI thread so breaks will actually break where they're supposed to
     [PublicAPI]
     public List<ScannedFMDataAndError>
-    Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+    Scan(ConcurrentQueue<FMToScan> missions, string tempPath, ScanOptions scanOptions,
          IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
         return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
     }
-#endif
 
     #endregion
 

@@ -242,7 +242,7 @@ internal static class FMScan
                         {
                             for (int i = 0; i < taskCount; i++)
                             {
-                                tasks[i] = Task.Run(async () =>
+                                tasks[i] = Task.Run(() =>
                                 {
                                     using var scanner = new Scanner(
                                         sevenZipWorkingPath: Paths.SevenZipPath,
@@ -251,7 +251,7 @@ internal static class FMScan
                                         readOnlyDataContext: ctx,
                                         tdmContext: tdmContext);
 
-                                    returnLists.Add(await scanner.ScanAsync(
+                                    returnLists.Add(scanner.Scan(
                                         cq,
                                         tempPath: Paths.FMScannerTemp,
                                         scanOptions: scanOptions,
