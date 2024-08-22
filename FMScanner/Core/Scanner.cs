@@ -317,12 +317,12 @@ public sealed partial class Scanner : IDisposable
 
 #if FMScanner_FullCode
     [PublicAPI]
-    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions(), new ScannerTDMContext(""))
+    public Scanner(string sevenZipExePath) : this(Path.GetDirectoryName(sevenZipExePath)!, sevenZipExePath, new ScanOptions(), new ReadOnlyDataContext(), new ScannerTDMContext(""))
     {
     }
 
     [PublicAPI]
-    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions(), new ScannerTDMContext(""))
+    public Scanner(string sevenZipWorkingPath, string sevenZipExePath) : this(sevenZipWorkingPath, sevenZipExePath, new ScanOptions(), new ReadOnlyDataContext(), new ScannerTDMContext(""))
     {
     }
 #endif
@@ -427,18 +427,24 @@ public sealed partial class Scanner : IDisposable
     public ScannedFMDataAndError
     Scan(string mission, string tempPath, bool forceFullIfNew, string name, bool isArchive)
     {
-        return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false, isArchive: isArchive) },
-            tempPath, _scanOptions, null, CancellationToken.None)[0];
+        ConcurrentQueue<FMToScan> cq = new(new List<FMToScan>
+        {
+            new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
+                isArchive: isArchive, originalIndex: 0),
+        });
+        return ScanMany(cq, tempPath, _scanOptions, null, CancellationToken.None)[0];
     }
 
     [PublicAPI]
     public ScannedFMDataAndError
     Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
     {
-        return ScanMany(
-            new List<FMToScan> { new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false, isArchive: isArchive) },
-            tempPath, scanOptions, null, CancellationToken.None)[0];
+        ConcurrentQueue<FMToScan> cq = new(new List<FMToScan>
+        {
+            new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
+                isArchive: isArchive, originalIndex: 0),
+        });
+        return ScanMany(cq, tempPath, scanOptions, null, CancellationToken.None)[0];
     }
 
 #endif
@@ -462,14 +468,16 @@ public sealed partial class Scanner : IDisposable
     public Task<List<ScannedFMDataAndError>>
     ScanAsync(List<FMToScan> missions, string tempPath)
     {
-        return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, null, CancellationToken.None));
+        ConcurrentQueue<FMToScan> cq = new(missions);
+        return Task.Run(() => ScanMany(cq, tempPath, _scanOptions, null, CancellationToken.None));
     }
 
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>>
     ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
     {
-        return Task.Run(() => ScanMany(missions, tempPath, scanOptions, null, CancellationToken.None));
+        ConcurrentQueue<FMToScan> cq = new(missions);
+        return Task.Run(() => ScanMany(cq, tempPath, scanOptions, null, CancellationToken.None));
     }
 
     [PublicAPI]
@@ -477,7 +485,8 @@ public sealed partial class Scanner : IDisposable
     ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
               CancellationToken cancellationToken)
     {
-        return Task.Run(() => ScanMany(missions, tempPath, _scanOptions, progress, cancellationToken));
+        ConcurrentQueue<FMToScan> cq = new(missions);
+        return Task.Run(() => ScanMany(cq, tempPath, _scanOptions, progress, cancellationToken));
     }
 
 #endif
