@@ -240,6 +240,9 @@ internal static class FMScan
                         ReadOnlyDataContext ctx = new();
                         try
                         {
+                            // @MT_TASK: Maybe move the threading into the scanner itself through a static method
+                            // We pass it how many threads we want and so on, and it returns the sorted list.
+                            // That way we wouldn't have to add all this cruft to FMInfoGen.
                             for (int i = 0; i < taskCount; i++)
                             {
                                 tasks[i] = Task.Run(() =>
