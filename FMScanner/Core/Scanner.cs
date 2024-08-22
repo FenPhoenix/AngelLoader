@@ -463,7 +463,7 @@ public sealed partial class Scanner : IDisposable
     // @MT_TASK: Update FMInfoGen to use these methods
 
     private List<ScannedFMDataAndError>
-    ScanMany(ConcurrentQueue<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+    ScanMany(ConcurrentQueue<FMToScan> fms, string tempPath, ScanOptions scanOptions,
              IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
     {
         // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
@@ -478,7 +478,7 @@ public sealed partial class Scanner : IDisposable
             ThrowHelper.ArgumentException("Argument is null or empty.", nameof(tempPath));
         }
 
-        if (missions == null) throw new ArgumentNullException(nameof(missions));
+        if (fms == null) throw new ArgumentNullException(nameof(fms));
 
         // Deep-copy the scan options object because we might have to change its values in some cases, but we
         // don't want to modify the original because the caller will still have a reference to it and may
@@ -487,11 +487,11 @@ public sealed partial class Scanner : IDisposable
 
         #endregion
 
-        var scannedFMDataList = new List<ScannedFMDataAndError>(missions.Count);
+        var scannedFMDataList = new List<ScannedFMDataAndError>(fms.Count);
 
         var progressReport = new ProgressReport();
 
-        while (missions.TryDequeue(out FMToScan mission))
+        while (fms.TryDequeue(out FMToScan fm))
         {
             ResetCachedFields();
 
@@ -503,16 +503,16 @@ public sealed partial class Scanner : IDisposable
 
             #region Init
 
-            if (mission.Path.IsEmpty())
+            if (fm.Path.IsEmpty())
             {
-                scannedFMDataList.Add(new ScannedFMDataAndError(mission.OriginalIndex));
+                scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
                 nullAlreadyAdded = true;
             }
             else
             {
-                string fmPath = mission.Path;
+                string fmPath = fm.Path;
                 _fmFormat =
-                    !mission.IsArchive
+                    !fm.IsArchive
                         ? FMFormat.NotInArchive
                         : fmPath.ExtIsZip()
                             ? FMFormat.Zip
@@ -535,7 +535,7 @@ public sealed partial class Scanner : IDisposable
                     catch (Exception ex)
                     {
                         Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
-                        scannedFMDataList.Add(new ScannedFMDataAndError(mission.OriginalIndex));
+                        scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
                         nullAlreadyAdded = true;
                     }
                 }
@@ -553,8 +553,8 @@ public sealed partial class Scanner : IDisposable
 
             if (progress != null)
             {
-                progressReport.FMName = mission.DisplayName;
-                progressReport.FMsRemainingInQueue = missions.Count;
+                progressReport.FMName = fm.DisplayName;
+                progressReport.FMsRemainingInQueue = fms.Count;
 
                 progress.Report(progressReport);
             }
@@ -564,11 +564,11 @@ public sealed partial class Scanner : IDisposable
             // If there was an error then we already added null to the list. DON'T add any extra items!
             if (!nullAlreadyAdded)
             {
-                var scannedFMAndError = new ScannedFMDataAndError(mission.OriginalIndex);
+                var scannedFMAndError = new ScannedFMDataAndError(fm.OriginalIndex);
                 ScanOptions? _tempScanOptions = null;
                 try
                 {
-                    if (mission.ForceFullScan)
+                    if (fm.ForceFullScan)
                     {
                         _tempScanOptions = _scanOptions.DeepCopy();
                         _scanOptions = _fullScanOptions.DeepCopy();
@@ -577,9 +577,9 @@ public sealed partial class Scanner : IDisposable
                     try
                     {
                         scannedFMAndError =
-                            mission.IsTDM
-                                ? ScanCurrentDarkModFM(mission)
-                                : ScanCurrentFM(mission, tempPath, tempRandomName, cancellationToken);
+                            fm.IsTDM
+                                ? ScanCurrentDarkModFM(fm)
+                                : ScanCurrentFM(fm, tempPath, tempRandomName, cancellationToken);
                     }
                     catch (OperationCanceledException)
                     {
@@ -587,14 +587,14 @@ public sealed partial class Scanner : IDisposable
                     }
                     catch (Exception ex)
                     {
-                        Log(mission.Path + ": Exception in FM scan", ex);
+                        Log(fm.Path + ": Exception in FM scan", ex);
                         scannedFMAndError.ScannedFMData = null;
                         scannedFMAndError.Exception = ex;
-                        scannedFMAndError.ErrorInfo = mission.Path + ": Exception in FM scan";
+                        scannedFMAndError.ErrorInfo = fm.Path + ": Exception in FM scan";
                     }
                     finally
                     {
-                        if (mission.IsArchive && (mission.Path.ExtIs7z() || mission.Path.ExtIsRar()))
+                        if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
                         {
                             DeleteFMWorkingPath();
                         }
@@ -604,7 +604,7 @@ public sealed partial class Scanner : IDisposable
                 }
                 finally
                 {
-                    if (mission.ForceFullScan)
+                    if (fm.ForceFullScan)
                     {
                         _scanOptions = _tempScanOptions!.DeepCopy();
                     }
