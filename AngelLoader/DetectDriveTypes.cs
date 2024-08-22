@@ -66,7 +66,7 @@ internal static class DetectDriveTypes
 
     private static List<PhysicalDisk> GetPhysicalDisks()
     {
-        using ManagementObjectSearcher physicalSearcher = new(@"\\.\root\microsoft\windows\storage", "SELECT * FROM MSFT_PhysicalDisk");
+        using ManagementObjectSearcher physicalSearcher = new(@"\\.\root\microsoft\windows\storage", "SELECT DeviceId, MediaType FROM MSFT_PhysicalDisk");
 
         ManagementObjectCollection physResults = physicalSearcher.Get();
         List<PhysicalDisk> physDisks = new(physResults.Count);
