@@ -199,4 +199,12 @@ public sealed partial class Scanner
             return xNum - yNum;
         }
     }
+
+    internal sealed class FMScanOriginalIndexComparer : IComparer<ScannedFMDataAndError>
+    {
+        public int Compare(ScannedFMDataAndError x, ScannedFMDataAndError y)
+        {
+            return x.OriginalIndex.CompareTo(y.OriginalIndex);
+        }
+    }
 }

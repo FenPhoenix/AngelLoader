@@ -351,6 +351,74 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    public static async Task<List<ScannedFMDataAndError>>
+    ScanThreaded(
+        string sevenZipWorkingPath,
+        string sevenZipExePath,
+        ScanOptions fullScanOptions,
+        ScannerTDMContext tdmContext,
+        int threadCount,
+        List<FMToScan> fms,
+        string tempPath,
+        ScanOptions scanOptions,
+        IProgress<ProgressReport> progress,
+        CancellationToken cancellationToken)
+    {
+        Task[] tasks = new Task[threadCount];
+
+        ConcurrentQueue<FMToScan> cq = new(fms);
+        ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
+
+        ReadOnlyDataContext ctx = new();
+        try
+        {
+            for (int i = 0; i < threadCount; i++)
+            {
+                tasks[i] = Task.Run(() =>
+                {
+                    using var scanner = new Scanner(
+                        sevenZipWorkingPath: sevenZipWorkingPath,
+                        sevenZipExePath: sevenZipExePath,
+                        fullScanOptions: fullScanOptions,
+                        readOnlyDataContext: ctx,
+                        tdmContext: tdmContext);
+
+                    returnLists.Add(scanner.Scan(
+                        cq,
+                        tempPath: tempPath,
+                        scanOptions: scanOptions,
+                        progress: progress,
+                        cancellationToken: cancellationToken));
+                }, cancellationToken);
+            }
+
+            await Task.WhenAll(tasks);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log(ex: ex);
+        }
+        finally
+        {
+            await Task.WhenAll(tasks);
+            tasks.DisposeAll();
+        }
+
+        List<ScannedFMDataAndError> returnListFinal = new(fms.Count);
+
+        foreach (List<ScannedFMDataAndError> list in returnLists)
+        {
+            returnListFinal.AddRange(list);
+        }
+        returnListFinal.Sort(new FMScanOriginalIndexComparer());
+
+        return returnListFinal;
+    }
+
     #region Scan synchronous
 
 #if FMScanner_FullCode

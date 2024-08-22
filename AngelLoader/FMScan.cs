@@ -1,7 +1,6 @@
 ﻿#define TIMING_TEST
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -202,10 +201,6 @@ internal static class FMScan
 
                     if (fmsToScanFiltered.Count == 0) return false;
 
-                    // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
-                    int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
-                    Task[] tasks = new Task[taskCount];
-
                     #endregion
 
                     #region Run scanner
@@ -229,58 +224,25 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-                        ConcurrentQueue<FMToScan> cq = new(fms);
-                        ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
-
                         fmsTotalCount = fms.Count;
 
 #if TIMING_TEST
                         StartTiming();
 #endif
-                        ReadOnlyDataContext ctx = new();
-                        try
-                        {
-                            // @MT_TASK: Maybe move the threading into the scanner itself through a static method
-                            // We pass it how many threads we want and so on, and it returns the sorted list.
-                            // That way we wouldn't have to add all this cruft to FMInfoGen.
-                            for (int i = 0; i < taskCount; i++)
-                            {
-                                tasks[i] = Task.Run(() =>
-                                {
-                                    using var scanner = new Scanner(
-                                        sevenZipWorkingPath: Paths.SevenZipPath,
-                                        sevenZipExePath: Paths.SevenZipExe,
-                                        fullScanOptions: GetDefaultScanOptions(),
-                                        readOnlyDataContext: ctx,
-                                        tdmContext: tdmContext);
+                        // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
+                        int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
 
-                                    returnLists.Add(scanner.Scan(
-                                        cq,
-                                        tempPath: Paths.FMScannerTemp,
-                                        scanOptions: scanOptions,
-                                        progress: progress,
-                                        // ReSharper disable once AccessToDisposedClosure
-                                        cancellationToken: _scanCts.Token));
-                                });
-                            }
-
-                            await Task.WhenAll(tasks);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            CleanupAfterCancel();
-                            return false;
-                        }
-                        finally
-                        {
-                            await Task.WhenAll(tasks);
-                        }
-
-                        foreach (List<ScannedFMDataAndError> list in returnLists)
-                        {
-                            fmDataList.AddRange(list);
-                        }
-                        fmDataList.Sort(Comparers.FMScanOriginalIndex);
+                        fmDataList = await Scanner.ScanThreaded(
+                            Paths.SevenZipPath,
+                            Paths.SevenZipExe,
+                            fullScanOptions: GetDefaultScanOptions(),
+                            tdmContext: tdmContext,
+                            threadCount: taskCount,
+                            fms: fms,
+                            tempPath: Paths.FMScannerTemp,
+                            scanOptions: scanOptions,
+                            progress: progress,
+                            cancellationToken: _scanCts.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -293,8 +255,6 @@ internal static class FMScan
 #if TIMING_TEST
                         StopTimingAndPrintResult();
 #endif
-                        tasks.DisposeAll();
-
                         if (fmDataList.Count > 0)
                         {
                             // @MEM(Scanner/unsupported compression errors):
