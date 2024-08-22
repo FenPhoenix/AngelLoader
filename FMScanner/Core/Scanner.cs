@@ -534,9 +534,6 @@ public sealed partial class Scanner : IDisposable
         _t3GmpFiles?.Clear();
     }
 
-    // @MT_TASK: Update all Scan* methods (including ifdeffed ones) to take the ConcurrentQueue
-    // @MT_TASK: Update FMInfoGen to use these methods
-
     private List<ScannedFMDataAndError>
     ScanMany(ConcurrentQueue<FMToScan> fms, string tempPath, ScanOptions scanOptions,
              IProgress<ProgressReport>? progress, CancellationToken cancellationToken)

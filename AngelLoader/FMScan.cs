@@ -243,91 +243,90 @@ internal static class FMScan
                             scanOptions: scanOptions,
                             progress: progress,
                             cancellationToken: _scanCts.Token);
+
+                        Core.View.SetProgressPercent(100);
+#if TIMING_TEST
+                        StopTimingAndPrintResult();
+#endif
                     }
                     catch (OperationCanceledException)
                     {
                         CleanupAfterCancel();
                         return false;
                     }
-                    finally
+
+                    if (fmDataList.Count > 0)
                     {
-                        Core.View.SetProgressPercent(100);
-#if TIMING_TEST
-                        StopTimingAndPrintResult();
-#endif
-                        if (fmDataList.Count > 0)
+                        // @MEM(Scanner/unsupported compression errors):
+                        // We're looping through the whole thing always just to see if there are errors!
+                        // The scanner should just return a list and we can skip this if it's empty.
+                        bool errors = false;
+                        bool otherErrors = false;
+                        var unsupportedCompressionErrors = new List<(FMToScan FM, ScannedFMDataAndError ScannedFMDataAndError)>();
+
+                        for (int i = 0; i < fmsToScanFiltered.Count; i++)
                         {
-                            // @MEM(Scanner/unsupported compression errors):
-                            // We're looping through the whole thing always just to see if there are errors!
-                            // The scanner should just return a list and we can skip this if it's empty.
-                            bool errors = false;
-                            bool otherErrors = false;
-                            var unsupportedCompressionErrors = new List<(FMToScan FM, ScannedFMDataAndError ScannedFMDataAndError)>();
-
-                            for (int i = 0; i < fmsToScanFiltered.Count; i++)
+                            ScannedFMDataAndError item = fmDataList[i];
+                            if (item.Fen7zResult != null ||
+                                item.Exception != null ||
+                                !item.ErrorInfo.IsEmpty())
                             {
-                                ScannedFMDataAndError item = fmDataList[i];
-                                if (item.Fen7zResult != null ||
-                                    item.Exception != null ||
-                                    !item.ErrorInfo.IsEmpty())
+                                if (item.Exception is ZipCompressionMethodException)
                                 {
-                                    if (item.Exception is ZipCompressionMethodException)
-                                    {
-                                        unsupportedCompressionErrors.Add((fms[i], item));
-                                    }
-                                    else
-                                    {
-                                        otherErrors = true;
-                                    }
-
-                                    errors = true;
-                                }
-                            }
-
-                            if (errors)
-                            {
-                                // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
-                                // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
-                                if (unsupportedCompressionErrors.Count > 0)
-                                {
-                                    if (unsupportedCompressionErrors.Count == 1)
-                                    {
-                                        Core.Dialogs.ShowError(
-                                            "The zip archive '"
-                                            + unsupportedCompressionErrors[0].FM.Path +
-                                            "' contains one or more files compressed with an unsupported compression method. " +
-                                            "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archive.");
-                                    }
-                                    else
-                                    {
-                                        string msg =
-                                            "One or more zip archives contain files compressed with unsupported compression methods. " +
-                                            $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.{NL}{NL}" +
-                                            $"The following zip archives produced this error:{NL}{NL}";
-
-                                        for (int i = 0; i < Math.Min(unsupportedCompressionErrors.Count, 10); i++)
-                                        {
-                                            msg += unsupportedCompressionErrors[i].FM.Path + $"{NL}";
-                                        }
-
-                                        if (unsupportedCompressionErrors.Count > 10)
-                                        {
-                                            msg += "[See the log for the rest]";
-                                        }
-
-                                        if (otherErrors)
-                                        {
-                                            msg += $"{NL}{NL}In addition, one or more other errors occurred. See the log for details.";
-                                        }
-
-                                        Core.Dialogs.ShowError(msg);
-                                    }
+                                    unsupportedCompressionErrors.Add((fms[i], item));
                                 }
                                 else
                                 {
-                                    Core.Dialogs.ShowError(
-                                        "One or more errors occurred while scanning. See the log for details.");
+                                    otherErrors = true;
                                 }
+
+                                errors = true;
+                            }
+                        }
+
+                        if (errors)
+                        {
+                            // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
+                            // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
+                            if (unsupportedCompressionErrors.Count > 0)
+                            {
+                                if (unsupportedCompressionErrors.Count == 1)
+                                {
+                                    Core.Dialogs.ShowError(
+                                        "The zip archive '"
+                                        + unsupportedCompressionErrors[0].FM.Path +
+                                        "' contains one or more files compressed with an unsupported compression method. " +
+                                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archive.");
+                                }
+                                else
+                                {
+                                    string msg =
+                                        "One or more zip archives contain files compressed with unsupported compression methods. " +
+                                        $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.{NL}{NL}" +
+                                        $"The following zip archives produced this error:{NL}{NL}";
+
+                                    for (int i = 0; i < Math.Min(unsupportedCompressionErrors.Count, 10); i++)
+                                    {
+                                        msg += unsupportedCompressionErrors[i].FM.Path + $"{NL}";
+                                    }
+
+                                    if (unsupportedCompressionErrors.Count > 10)
+                                    {
+                                        msg += "[See the log for the rest]";
+                                    }
+
+                                    if (otherErrors)
+                                    {
+                                        msg += $"{NL}{NL}In addition, one or more other errors occurred. See the log for details.";
+                                    }
+
+                                    Core.Dialogs.ShowError(msg);
+                                }
+                            }
+                            else
+                            {
+                                Core.Dialogs.ShowError(
+                                    "One or more errors occurred while scanning. See the log for details.");
                             }
                         }
                     }
@@ -536,7 +535,6 @@ internal static class FMScan
             }
         }
 
-        // @MT_TASK: This runs twice (are more times possible?) - we should run it only once
         // @MT_TASK: Canceling now has a delay before the progress box disappears - maybe have a "Canceling" message?
         static void CleanupAfterCancel()
         {
