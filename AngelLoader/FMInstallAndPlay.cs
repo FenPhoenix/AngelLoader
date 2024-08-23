@@ -1540,93 +1540,9 @@ internal static partial class FMInstallAndPlay
         return await InstallInternal(false, false, fms);
     }
 
+    // @MT_TASK(InstallInternal): Multithread this
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
-        #region Local functions
-
-        static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
-        {
-            return Task.Run(() =>
-            {
-                bool single = fmDataList.Length == 1;
-                static void RemoveFMFromDisk(FMData fmData)
-                {
-                    string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-                    if (!DeleteFMInstalledDirectory(fmInstalledPath))
-                    {
-                        // Don't log it here because the deleter method will already have logged it
-                        Core.Dialogs.ShowError(
-                            message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" +
-                                     fmInstalledPath);
-                    }
-                    // This is going to get set based on this anyway at the next load from disk, might as well
-                    // do it now
-                    fmData.FM.Installed = Directory.Exists(fmInstalledPath);
-                }
-
-                if (rollBackCurrentOnly)
-                {
-                    try
-                    {
-                        if (single)
-                        {
-                            Core.View.SetProgressBoxState_Single(
-                                message1: LText.ProgressBox.CleaningUpFailedInstall,
-                                progressType: ProgressType.Indeterminate,
-                                cancelAction: NullAction
-                            );
-                        }
-                        else
-                        {
-                            Core.View.SetProgressBoxState_Double(
-                                subMessage: LText.ProgressBox.CleaningUpFailedInstall,
-                                subProgressType: ProgressType.Indeterminate
-                            );
-                        }
-
-                        RemoveFMFromDisk(fmDataList[lastInstalledFMIndex]);
-                    }
-                    finally
-                    {
-                        if (!single)
-                        {
-                            Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
-                        }
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        Core.View.SetProgressBoxState_Single(
-                            message1: LText.ProgressBox.CancelingInstall,
-                            percent: 100,
-                            progressType: ProgressType.Determinate,
-                            cancelAction: NullAction
-                        );
-
-                        for (int j = lastInstalledFMIndex; j >= 0; j--)
-                        {
-                            FMData fmData = fmDataList[j];
-
-                            Core.View.SetProgressBoxState_Single(
-                                message2: fmData.FM.GetId(),
-                                percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
-                            RemoveFMFromDisk(fmData);
-                        }
-                    }
-                    finally
-                    {
-                        Ini.WriteFullFMDataIni();
-                        Core.View.HideProgressBox();
-                    }
-                }
-            });
-        }
-
-        #endregion
-
         var fmDataList = new FMData[fms.Length];
 
         bool single = fmDataList.Length == 1;
@@ -1849,6 +1765,92 @@ internal static partial class FMInstallAndPlay
         Core.View.RefreshAllSelectedFMs_UpdateInstallState();
 
         return true;
+
+        // @MT_TASK(RollBackInstalls): Handle multithreading here too
+        static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
+        {
+            return Task.Run(() =>
+            {
+                bool single = fmDataList.Length == 1;
+
+                if (rollBackCurrentOnly)
+                {
+                    try
+                    {
+                        if (single)
+                        {
+                            Core.View.SetProgressBoxState_Single(
+                                message1: LText.ProgressBox.CleaningUpFailedInstall,
+                                progressType: ProgressType.Indeterminate,
+                                cancelAction: NullAction
+                            );
+                        }
+                        else
+                        {
+                            Core.View.SetProgressBoxState_Double(
+                                subMessage: LText.ProgressBox.CleaningUpFailedInstall,
+                                subProgressType: ProgressType.Indeterminate
+                            );
+                        }
+
+                        RemoveFMFromDisk(fmDataList[lastInstalledFMIndex]);
+                    }
+                    finally
+                    {
+                        if (!single)
+                        {
+                            Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        Core.View.SetProgressBoxState_Single(
+                            message1: LText.ProgressBox.CancelingInstall,
+                            percent: 100,
+                            progressType: ProgressType.Determinate,
+                            cancelAction: NullAction
+                        );
+
+                        for (int j = lastInstalledFMIndex; j >= 0; j--)
+                        {
+                            FMData fmData = fmDataList[j];
+
+                            Core.View.SetProgressBoxState_Single(
+                                message2: fmData.FM.GetId(),
+                                percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
+                            RemoveFMFromDisk(fmData);
+                        }
+                    }
+                    finally
+                    {
+                        Ini.WriteFullFMDataIni();
+                        Core.View.HideProgressBox();
+                    }
+                }
+
+                return;
+
+                static void RemoveFMFromDisk(FMData fmData)
+                {
+                    string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+                    if (!DeleteFMInstalledDirectory(fmInstalledPath))
+                    {
+                        // Don't log it here because the deleter method will already have logged it
+                        // @MT_TASK: Dialog in multithreading area
+                        Core.Dialogs.ShowError(
+                            message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" +
+                                     fmInstalledPath);
+                    }
+                    // This is going to get set based on this anyway at the next load from disk, might as well
+                    // do it now
+                    fmData.FM.Installed = Directory.Exists(fmInstalledPath);
+                }
+            });
+        }
     }
 
     private static (bool Canceled, bool InstallFailed)
@@ -1918,6 +1920,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+            // @MT_TASK: Dialog in multithreading area
             Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
             return (false, true);
         }
@@ -2005,6 +2008,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             Log("Error extracting rar " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            // @MT_TASK: Dialog in multithreading area
             Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
             return (false, true);
         }
@@ -2065,6 +2069,7 @@ internal static partial class FMInstallAndPlay
             {
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
 
+                // @MT_TASK: Dialog in multithreading area
                 Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
                 return (result.Canceled, true);
@@ -2083,6 +2088,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            // @MT_TASK: Dialog in multithreading area
             Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
             return (false, true);
         }
@@ -2092,6 +2098,7 @@ internal static partial class FMInstallAndPlay
 
     #region Uninstall
 
+    // @MT_TASK(Uninstall): Multithread this (remember that FM deletion code calls this too!)
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
