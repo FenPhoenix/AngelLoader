@@ -147,7 +147,7 @@ internal static class FMAudio
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
 
-    private static Task ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
+    private static Task<ConvertAudioError> ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
         return Task.Run(async () =>
         {
@@ -232,28 +232,31 @@ internal static class FMAudio
                                      ErrorText.Un + "convert audio files.";
 
                     Log(message, stackTrace: true);
-                    Core.Dialogs.ShowError(message);
-                    return;
+                    // @MT_TASK(Audio): We're not putting up a dialog for this case anymore.
+                    // If we wanted to add it back, we'd have to do it at the callsite now.
+                    // But maybe we shouldn't bother, since we're not throwing errors at any of the other error
+                    // cases...
+                    return ConvertAudioError.FFmpegNotFound;
                 }
 
-                if (ct.IsCancellationRequested) return;
+                if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                 try
                 {
                     string[] fmSndPaths = GetFMSoundPathsByGame(fm);
                     foreach (string fmSndPath in fmSndPaths)
                     {
-                        if (!Directory.Exists(fmSndPath)) return;
+                        if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         Dir_UnSetReadOnly(fmSndPath);
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         string[] wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         foreach (string f in wavFiles)
                         {
@@ -262,18 +265,18 @@ internal static class FMAudio
 
                             File_UnSetReadOnly(f);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                             int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                             // Header wasn't wav, so skip this one
                             if (bits == -1) continue;
 
                             if (bits == 0) bits = GetBitDepthSlow(f);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                             if (bits is >= 1 and <= 16) continue;
 
@@ -282,7 +285,7 @@ internal static class FMAudio
                             File.Delete(f);
                             File.Move(tempFile, f);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
                         }
                     }
                 }
@@ -301,13 +304,13 @@ internal static class FMAudio
                     string[] fmSndPaths = GetFMSoundPathsByGame(fm);
                     foreach (string fmSndPath in fmSndPaths)
                     {
-                        if (!Directory.Exists(fmSndPath)) return;
+                        if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         Dir_UnSetReadOnly(fmSndPath);
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         string[] files;
                         try
@@ -317,10 +320,10 @@ internal static class FMAudio
                         catch (Exception ex)
                         {
                             Log(ErrorText.ExGet + "files in " + fmSndPath, ex);
-                            return;
+                            return ConvertAudioError.None;
                         }
 
-                        if (ct.IsCancellationRequested) return;
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                         foreach (string f in files)
                         {
@@ -329,7 +332,7 @@ internal static class FMAudio
 
                             File_UnSetReadOnly(f);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                             try
                             {
@@ -349,7 +352,7 @@ internal static class FMAudio
                                 Log(ErrorText.Ex + "deleting file " + f, ex);
                             }
 
-                            if (ct.IsCancellationRequested) return;
+                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
                         }
                     }
                 }
@@ -358,6 +361,8 @@ internal static class FMAudio
                     fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
+
+            return ConvertAudioError.None;
         });
     }
 

@@ -45,6 +45,12 @@ internal enum ImportError
     Unknown,
 }
 
+internal enum ConvertAudioError
+{
+    None,
+    FFmpegNotFound,
+}
+
 #if false
 internal enum StubResponseError
 {
