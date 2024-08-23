@@ -183,6 +183,10 @@ public sealed class DisableScreenshotWatchers : IDisposable
     If we ever make it so that things can go in parallel (install/uninstall, scan, delete, etc.), this will
     no longer be safe! We're threading noobs so we don't know if volatile will solve the problem or what.
     Needs testing.
+    
+    @MT_TASK(DisableScreenshotWatchers): Is it actually the case that this will not be safe anymore when we multithread the install code?
+    Could we just move the calls out of any threaded loop area and then it would be safe again?
+    Could we use Interlocked to make this safe?
     */
     private static int _count;
 
