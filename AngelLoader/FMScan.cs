@@ -533,7 +533,11 @@ internal static class FMScan
             }
         }
 
-        // @MT_TASK: Canceling now has a delay before the progress box disappears - maybe have a "Canceling" message?
+        /*
+        @MT_TASK: Canceling now has a delay before the progress box disappears - maybe have a "Canceling" message?
+        2024-08-22:
+        We can't set a canceling message, as the delay happens before even Fen7z can run its canceling code.
+        */
         static void CleanupAfterCancel()
         {
 #if TIMING_TEST

@@ -364,6 +364,11 @@ public sealed partial class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
+        if (threadCount == -1)
+        {
+            threadCount = Math.Min(Environment.ProcessorCount, fms.Count);
+        }
+
         ConcurrentQueue<FMToScan> cq = new(fms);
         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
@@ -376,7 +381,7 @@ public sealed partial class Scanner : IDisposable
                 MaxDegreeOfParallelism = threadCount,
             };
 
-            ParallelLoopResult result = Parallel.For(0, fms.Count, po, _ =>
+            ParallelLoopResult result = Parallel.For(0, threadCount, po, _ =>
             {
                 using var scanner = new Scanner(
                     sevenZipWorkingPath: sevenZipWorkingPath,
