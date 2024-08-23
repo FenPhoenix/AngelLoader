@@ -351,7 +351,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
-    public static async Task<List<ScannedFMDataAndError>>
+    public static List<ScannedFMDataAndError>
     ScanThreaded(
         string sevenZipWorkingPath,
         string sevenZipExePath,
@@ -364,35 +364,35 @@ public sealed partial class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
-        Task[] tasks = new Task[threadCount];
-
         ConcurrentQueue<FMToScan> cq = new(fms);
         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
         ReadOnlyDataContext ctx = new();
         try
         {
-            for (int i = 0; i < threadCount; i++)
+            ParallelOptions po = new()
             {
-                tasks[i] = Task.Run(() =>
-                {
-                    using var scanner = new Scanner(
-                        sevenZipWorkingPath: sevenZipWorkingPath,
-                        sevenZipExePath: sevenZipExePath,
-                        fullScanOptions: fullScanOptions,
-                        readOnlyDataContext: ctx,
-                        tdmContext: tdmContext);
+                CancellationToken = cancellationToken,
+                MaxDegreeOfParallelism = threadCount,
+            };
 
-                    returnLists.Add(scanner.Scan(
-                        cq,
-                        tempPath: tempPath,
-                        scanOptions: scanOptions,
-                        progress: progress,
-                        cancellationToken: cancellationToken));
-                }, cancellationToken);
-            }
+            ParallelLoopResult result = Parallel.For(0, fms.Count, po, _ =>
+            {
+                using var scanner = new Scanner(
+                    sevenZipWorkingPath: sevenZipWorkingPath,
+                    sevenZipExePath: sevenZipExePath,
+                    fullScanOptions: fullScanOptions,
+                    readOnlyDataContext: ctx,
+                    tdmContext: tdmContext);
 
-            await Task.WhenAll(tasks);
+                returnLists.Add(scanner.Scan(
+                    cq,
+                    tempPath: tempPath,
+                    scanOptions: scanOptions,
+                    progress: progress,
+                    cancellationToken: cancellationToken));
+            });
+
         }
         catch (OperationCanceledException)
         {
@@ -401,11 +401,6 @@ public sealed partial class Scanner : IDisposable
         catch (Exception ex)
         {
             Log(ex: ex);
-        }
-        finally
-        {
-            await Task.WhenAll(tasks);
-            tasks.DisposeAll();
         }
 
         List<ScannedFMDataAndError> returnListFinal = new(fms.Count);

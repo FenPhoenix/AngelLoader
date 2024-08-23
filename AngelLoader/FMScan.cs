@@ -231,14 +231,14 @@ internal static class FMScan
                         StartTiming();
 #endif
                         // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
-                        int taskCount = Math.Min(Environment.ProcessorCount, fms.Count);
+                        int threadCount = Math.Min(Environment.ProcessorCount, fms.Count);
 
-                        fmDataList = await Scanner.ScanThreaded(
+                        fmDataList = Scanner.ScanThreaded(
                             Paths.SevenZipPath,
                             Paths.SevenZipExe,
                             fullScanOptions: GetDefaultScanOptions(),
                             tdmContext: tdmContext,
-                            threadCount: taskCount,
+                            threadCount: -1,
                             fms: fms,
                             tempPath: Paths.FMScannerTemp,
                             scanOptions: scanOptions,
