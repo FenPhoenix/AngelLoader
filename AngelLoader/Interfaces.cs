@@ -170,6 +170,11 @@ public interface IView : ISettingsChangeableView
     /// </summary>
     void HideProgressBox();
 
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// </summary>
+    bool ProgressBoxVisible();
+
     #endregion
 
     #region Init and show

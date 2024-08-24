@@ -39,7 +39,19 @@ internal static class FMScan
 #endif
 
     private static CancellationTokenSource _scanCts = new();
-    private static void CancelToken() => _scanCts.CancelIfNotDisposed();
+    private static void CancelToken()
+    {
+        // Multithreaded scans can in certain cases take a significant amount of time to cancel, so inform the
+        // user that we're trying our best here.
+        Core.View.Invoke(static () =>
+        {
+            if (Core.View.ProgressBoxVisible())
+            {
+                Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CancelingScan);
+            }
+        });
+        _scanCts.CancelIfNotDisposed();
+    }
 
     /// <summary>
     /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
