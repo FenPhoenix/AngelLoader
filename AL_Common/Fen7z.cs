@@ -268,6 +268,31 @@ public static class Fen7z
             p.BeginOutputReadLine();
             p.BeginErrorReadLine();
 
+            /*
+            If we only check for cancellation in the output callback, we can only cancel on callback granularity.
+            This is fine for a single FM (alone or in sequence), but for multithreading, the small delays add up
+            and come at different offsets, thus creating the possibility of an objectionably long delay before
+            all tasks get canceled.
+
+            We can attempt to solve this by checking in a loop, however:
+            
+            - We still need to call WaitForExit() after checking for cancellation, to prevent race conditions with
+            writing/clearing the temp dirs. And that brings back the long delay potential anyway, so it doesn't
+            really help us.
+
+            We could easily put a "Canceling..." message on the progress box to at least let the user know. This
+            isn't ideal, but it's something.
+            
+            -Old notes (these would apply if we didn't wait for exit):-
+            HasExited is heavy and calling it every 50ms adds time to the scan, about 269ms over the 43 7z FM
+            set. That's about 6.3ms per FM. We could reduce that by raising the sleep interval, but then we would
+            also increase the cancel delay. 6.3ms per FM is not that bad, though, given that 7z scans often take
+            a second or more.
+
+            However, what we could do is have a parameter saying whether to use the high or low frequency cancel
+            check, and use low/efficient for single-thread or single FM, and high/inefficient for multithread.
+            -end old notes-
+            */
             p.WaitForExit();
 
             (SevenZipExitCode exitCode, int? exitCodeInt, Exception? exception) = GetExitCode(p);
