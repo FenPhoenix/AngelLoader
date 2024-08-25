@@ -43,14 +43,16 @@ internal static class FMScan
     {
         // Multithreaded scans can in certain cases take a significant amount of time to cancel, so inform the
         // user that we're trying our best here.
-        Core.View.Invoke(static () =>
-        {
-            if (Core.View.ProgressBoxVisible())
-            {
-                Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CancelingScan);
-            }
-        });
         _scanCts.CancelIfNotDisposed();
+        Core.View.Invoke(ShowCancelingScanMessage);
+    }
+
+    private static void ShowCancelingScanMessage()
+    {
+        if (Core.View.ProgressBoxVisible())
+        {
+            Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CancelingScan);
+        }
     }
 
     /// <summary>
@@ -515,6 +517,12 @@ internal static class FMScan
 
         void ReportProgress(ProgressReport pr)
         {
+            if (_scanCts.IsCancellationRequested)
+            {
+                ShowCancelingScanMessage();
+                return;
+            }
+
             int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
             int percent = Common.GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
 
