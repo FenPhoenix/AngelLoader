@@ -1995,7 +1995,6 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             using var fs = File_OpenReadFast(fmArchivePath);
             int entriesCount;
@@ -2075,8 +2074,6 @@ internal static partial class FMInstallAndPlay
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            // @MT_TASK: Don't clear the whole dir, delete only our individual list file! (goes for all instances of this)
-            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             int entriesCount;
 
