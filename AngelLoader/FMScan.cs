@@ -172,10 +172,6 @@ internal static class FMScan
 
                         if (_scanCts.IsCancellationRequested) return false;
 
-                        // @MT_TASK: Can we have FMs with different installed dirs but same archive?
-                        // If so, we need to handle this case and make sure we don't get conflicts from maybe
-                        // trying to read the same archive in two different threads. Shouldn't, if we're opening
-                        // with read sharing permissions, but check to be sure!
                         if (!fm.Archive.IsEmpty() &&
                             !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths)).IsEmpty())
                         {
