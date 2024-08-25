@@ -568,7 +568,7 @@ public sealed partial class Scanner : IDisposable
             ResetCachedFields();
 
             // Random name for solid archive temp extract operations, to prevent possible file/folder name
-            // clashes in future parallelized scenario.
+            // clashes in parallelized scenario.
             string tempRandomName = Path.GetRandomFileName().Trim();
 
             bool nullAlreadyAdded = false;
