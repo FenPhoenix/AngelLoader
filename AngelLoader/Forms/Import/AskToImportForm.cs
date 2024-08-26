@@ -5,6 +5,7 @@ using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms;
+
 public sealed partial class AskToImportForm : DarkFormBase
 {
     public ImportType SelectedImportType;
