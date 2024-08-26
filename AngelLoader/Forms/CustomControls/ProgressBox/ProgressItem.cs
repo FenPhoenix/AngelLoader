@@ -15,7 +15,8 @@ public sealed class ProgressItem : Panel, IDarkable
     {
         if (disposing)
         {
-
+            _label.Dispose();
+            _progressBar.Dispose();
         }
         base.Dispose(disposing);
     }
@@ -72,4 +73,8 @@ public sealed class ProgressItem : Panel, IDarkable
             Size = new Size(400, 16),
         };
     }
+
+    public void SetText(string text) => _label.Text = text;
+
+    public void SetProgressPercent(int percent) => _progressBar.Value = percent;
 }

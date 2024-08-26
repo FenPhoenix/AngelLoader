@@ -471,7 +471,14 @@ public sealed class ConfigData
     // This should be set on startup by the disk detector to either 1 (if HDDs present) or -1 (if only SSDs)
     // User can also set this explicitly. We may or may not want to have it user settable. If we do, we'll want
     // an "Auto" bool too so we can still store this value even though it's disabled.
-    internal int MaxIOThreads = -1;
+    internal bool AutoSetMaxIOThreads = true;
+
+    private int _maxIOThreads = CoreCount;
+    internal int MaxIOThreads
+    {
+        get => _maxIOThreads;
+        set => _maxIOThreads = value.ClampToMin(1);
+    }
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

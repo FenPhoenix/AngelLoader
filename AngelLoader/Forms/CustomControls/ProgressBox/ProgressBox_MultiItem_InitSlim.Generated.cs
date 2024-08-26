@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls;
 
-partial class ProgressBox_MultiItem
+sealed partial class ProgressBox_MultiItem
 {
     /// <summary>
     /// Custom generated component initializer with cruft removed.

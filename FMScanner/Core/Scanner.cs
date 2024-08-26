@@ -364,11 +364,6 @@ public sealed partial class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
-        if (threadCount == -1)
-        {
-            threadCount = Math.Min(Environment.ProcessorCount, fms.Count);
-        }
-
         ConcurrentQueue<FMToScan> cq = new(fms);
         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 

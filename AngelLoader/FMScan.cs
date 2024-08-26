@@ -249,7 +249,7 @@ internal static class FMScan
                             Paths.SevenZipExe,
                             fullScanOptions: GetDefaultScanOptions(),
                             tdmContext: tdmContext,
-                            threadCount: Config.MaxIOThreads,
+                            threadCount: Utils.GetThreadCountForParallelOperation(fms.Count),
                             fms: fms,
                             tempPath: Paths.FMScannerTemp,
                             scanOptions: scanOptions,

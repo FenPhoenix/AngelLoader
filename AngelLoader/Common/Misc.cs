@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
@@ -146,6 +147,8 @@ public static partial class Misc
     #endregion
 
     internal static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnCount];
+
+    internal static readonly int CoreCount = Environment.ProcessorCount.ClampToMin(1);
 
     static Misc()
     {

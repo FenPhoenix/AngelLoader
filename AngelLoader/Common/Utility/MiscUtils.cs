@@ -304,6 +304,12 @@ public static partial class Utils
         _ => Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort,
     };
 
+    internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount)
+    {
+        int threads = Config.AutoSetMaxIOThreads ? CoreCount : Config.MaxIOThreads;
+        return Math.Min(threads, maxWorkItemsCount);
+    }
+
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {
