@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls;
 // IMPORTANT (ProgressBox layout / size of controls / centering):
 // Designer layout is NOT accurate on the right edge! Progress bar dimensions look like 9px left/11px right,
 // but in-app it's 9px left/9px right like we want. Ugh.
-public sealed partial class ProgressPanel : UserControl, IDarkable
+public sealed partial class ProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
     // Controls have a cache-text option but it's weird and causes weird issues sometimes that are not always
@@ -126,7 +126,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
     #region Init
 
-    public ProgressPanel(MainForm owner)
+    public ProgressBox(MainForm owner)
     {
         _owner = owner;
 

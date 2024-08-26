@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls;
 
-sealed partial class ProgressPanel
+sealed partial class ProgressBox
 {
     /// <summary>
     /// Custom generated component initializer with cruft removed.
@@ -82,7 +82,7 @@ sealed partial class ProgressPanel
         this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
         this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
-        // ProgressPanel
+        // ProgressBox
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

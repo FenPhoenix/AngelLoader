@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms.CustomControls;
 
-sealed partial class ProgressPanel
+sealed partial class ProgressBox
 {
     /// <summary> 
     /// Required designer variable.
@@ -127,7 +127,7 @@ sealed partial class ProgressPanel
             this.MainMessage2Label.Text = "Current thing";
             this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // ProgressPanel
+            // ProgressBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -140,7 +140,7 @@ sealed partial class ProgressPanel
             this.Controls.Add(this.MainProgressBar);
             this.Controls.Add(this.SubMessageLabel);
             this.Controls.Add(this.MainMessage2Label);
-            this.Name = "ProgressPanel";
+            this.Name = "ProgressBox";
             this.Size = new System.Drawing.Size(424, 192);
             this.ResumeLayout(false);
             this.PerformLayout();

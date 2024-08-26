@@ -10,7 +10,7 @@ public sealed partial class MainForm
 {
     // Not great code really, but works.
 
-    private ProgressPanel? ProgressBox;
+    private ProgressBox? ProgressBox;
 
     // Note! If we WEREN'T always invoking this, we would want to have a lock around it!
 
@@ -19,7 +19,7 @@ public sealed partial class MainForm
     {
         if (ProgressBox != null) return;
 
-        ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
+        ProgressBox = new ProgressBox(this) { Tag = LoadType.Lazy, Visible = false };
         Controls.Add(ProgressBox);
         ProgressBox.Anchor = AnchorStyles.None;
         ProgressBox.DarkModeEnabled = Global.Config.DarkMode;
@@ -51,11 +51,11 @@ public sealed partial class MainForm
             mainMessage1: message1 ?? "",
             mainMessage2: message2 ?? "",
             mainPercent: 0,
-            mainProgressBarType: progressType ?? ProgressPanel.DefaultProgressType,
+            mainProgressBarType: progressType ?? ProgressBox.DefaultProgressType,
             subMessage: "",
             subPercent: 0,
             subProgressBarType: ProgressType.Determinate,
-            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
 
@@ -76,11 +76,11 @@ public sealed partial class MainForm
             mainMessage1: mainMessage1 ?? "",
             mainMessage2: mainMessage2 ?? "",
             mainPercent: 0,
-            mainProgressBarType: mainProgressType ?? ProgressPanel.DefaultProgressType,
+            mainProgressBarType: mainProgressType ?? ProgressBox.DefaultProgressType,
             subMessage: subMessage ?? "",
             subPercent: 0,
-            subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
-            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            subProgressBarType: subProgressType ?? ProgressBox.DefaultProgressType,
+            cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
 #endif
