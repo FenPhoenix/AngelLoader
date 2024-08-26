@@ -9,7 +9,11 @@ public partial class ProgressBox_MultiItem : UserControl
 
     public ProgressBox_MultiItem()
     {
+#if DEBUG
         InitializeComponent();
+#else
+        InitSlim();
+#endif
     }
 
     /// <summary>
