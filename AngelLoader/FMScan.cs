@@ -86,6 +86,7 @@ internal static class FMScan
         bool scanningOne = fmsToScan.Single;
 
         int fmsTotalCount = 0;
+        int lastFMNumber = 0;
 
         Stopwatch reportThrottleSW = new();
 
@@ -537,7 +538,9 @@ internal static class FMScan
             We could try multiple items again, now that our UI behavior is good.
             @MT_TASK: Diff test with previous version the 100% behavior, and percent in general
             */
-            if (scanningOne || fmNumber is 0 or 1 || reportThrottleSW.ElapsedMilliseconds > 4)
+            if (scanningOne ||
+                fmNumber is 0 or 1 ||
+                (fmNumber > lastFMNumber && reportThrottleSW.ElapsedMilliseconds > 4))
             {
                 Core.View.SetProgressBoxState_Single(
                     message1:
@@ -553,6 +556,7 @@ internal static class FMScan
                     percent: percent
                 );
 
+                lastFMNumber = fmNumber;
                 reportThrottleSW.Restart();
             }
         }
