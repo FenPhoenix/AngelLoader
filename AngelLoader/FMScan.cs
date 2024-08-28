@@ -87,6 +87,8 @@ internal static class FMScan
 
         int fmsTotalCount = 0;
         int lastFMNumber = 0;
+        // Cache once globally, not once per-thread (allocation reduction)
+        string reportCachedString = "";
 
         Stopwatch reportThrottleSW = new();
 
@@ -249,6 +251,11 @@ internal static class FMScan
 #if TIMING_TEST
                         StartTiming();
 #endif
+                        reportCachedString =
+                            LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                            fmsTotalCount.ToString(NumberFormatInfo.CurrentInfo) +
+                            LText.ProgressBox.ReportScanningLast;
+
                         fmDataList = Scanner.ScanThreaded(
                             Paths.SevenZipPath,
                             Paths.SevenZipExe,
@@ -545,12 +552,9 @@ internal static class FMScan
                 Core.View.SetProgressBoxState_Single(
                     message1:
                     scanMessage ??
-                    (LText.ProgressBox.ReportScanningFirst +
-                     fmNumber.ToString(NumberFormatInfo.CurrentInfo) +
-                     (pr.CachedString ??=
-                         (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                          fmsTotalCount.ToString(NumberFormatInfo.CurrentInfo) +
-                          LText.ProgressBox.ReportScanningLast))),
+                    LText.ProgressBox.ReportScanningFirst +
+                    fmNumber.ToString(NumberFormatInfo.CurrentInfo) +
+                    reportCachedString,
                     message2:
                     pr.FMName,
                     percent: percent
