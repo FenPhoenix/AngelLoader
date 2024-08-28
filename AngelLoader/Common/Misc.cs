@@ -111,6 +111,8 @@ public static partial class Misc
             "#settings_other_section",
             "#settings_thief_buddy_section",
             "#settings_update_section",
+            // @MT_TASK: Add this
+            "#settings_advanced_section",
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 

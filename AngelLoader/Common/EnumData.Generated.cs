@@ -10,7 +10,7 @@ public static partial class Misc
     public const int ColumnCount = 15;
     public const int HideableFilterControlsCount = 10;
     public const int FMTabCount = 7;
-    public const int SettingsTabCount = 5;
+    public const int SettingsTabCount = 6;
     public static readonly string[] CustomResourcesNames =
     {
         "None",

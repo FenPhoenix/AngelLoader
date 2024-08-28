@@ -87,6 +87,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
     private readonly UpdatePage UpdatePage;
+    private readonly AdvancedPage AdvancedPage;
 
     private enum PathError { True, False }
 
@@ -176,6 +177,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
+            (PerformanceRadioButton, AdvancedPage = new AdvancedPage { Visible = false }),
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -656,6 +658,22 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked = config.CheckForUpdates == CheckForUpdates.True;
 
             #endregion
+
+            #region Advanced page
+
+            if (config.AutoSetMaxIOThreads)
+            {
+                AdvancedPage.IOThreadsAutomaticRadioButton.Checked = true;
+            }
+            else
+            {
+                AdvancedPage.IOThreadsManualRadioButton.Checked = true;
+            }
+            SetIOThreadsState();
+
+            AdvancedPage.IOThreadsManualNumericUpDown.Value = Config.MaxIOThreads;
+
+            #endregion
         }
 
         #endregion
@@ -745,6 +763,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             _thiefBuddyExistenceCheckTimer.Start();
 
             ThiefBuddyPage.GetTBLinkLabel.LinkClicked += ThiefBuddyPage_GetTBLinkLabel_LinkClicked;
+
+            #endregion
+
+            #region Advanced page
+
+            AdvancedPage.IOThreadsAutomaticRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.IOThreadsManualRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
 
             #endregion
         }
@@ -1011,6 +1036,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
                 UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
                 UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
+
+                #endregion
+
+                #region Advanced page
+
+                PerformanceRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
+                AdvancedPage.IOThreadsGroupBox.Text = LText.SettingsWindow.Advanced_DiskThreads;
+                AdvancedPage.IOThreadsAutomaticRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Auto;
+                AdvancedPage.IOThreadsManualRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Manual;
 
                 #endregion
             }
@@ -1340,6 +1374,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OutConfig.CheckForUpdates = UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked
                 ? CheckForUpdates.True
                 : CheckForUpdates.False;
+
+            #endregion
+
+            #region Advanced page
+
+            OutConfig.AutoSetMaxIOThreads = AdvancedPage.IOThreadsAutomaticRadioButton.Checked;
+            OutConfig.MaxIOThreads = (int)AdvancedPage.IOThreadsManualNumericUpDown.Value;
 
             #endregion
         }
@@ -1896,6 +1937,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
         Core.OpenLink(NonLocalizableText.ThiefBuddyLink);
+    }
+
+    #endregion
+
+    #region Advanced page
+
+    private void IOThreadsRadioButtons_CheckedChanged(object sender, EventArgs e)
+    {
+        SetIOThreadsState();
+    }
+
+    private void SetIOThreadsState()
+    {
+        AdvancedPage.IOThreadsManualNumericUpDown.Enabled = AdvancedPage.IOThreadsManualRadioButton.Checked;
     }
 
     #endregion

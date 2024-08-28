@@ -682,6 +682,13 @@ internal static class Core
 
         #endregion
 
+        #region Advanced page
+
+        Config.AutoSetMaxIOThreads = outConfig.AutoSetMaxIOThreads;
+        Config.MaxIOThreads = outConfig.MaxIOThreads;
+
+        #endregion
+
         // This MUST NOT be set on startup, because the source values won't be valid
         View.UpdateConfig();
 

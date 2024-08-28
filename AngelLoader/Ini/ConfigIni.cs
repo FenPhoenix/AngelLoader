@@ -100,6 +100,14 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_SettingsAdvancedVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.SetSettingsTabVScrollPos(SettingsTab.Advanced, result);
+        }
+    }
+
     #endregion
 
     private static void Config_LaunchGamesWithSteam_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -865,6 +873,19 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_AutoSetMaxIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.AutoSetMaxIOThreads = valTrimmed.EqualsTrue();
+    }
+
+    private static void Config_MaxIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.MaxIOThreads = result;
+        }
+    }
+
     #endregion
 
     private readonly unsafe struct Config_DelegatePointerWrapper
@@ -890,6 +911,7 @@ internal static partial class Ini
         { "SettingsOtherVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
         { "SettingsThiefBuddyVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
         { "SettingsUpdateVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsUpdateVScrollPos_Set) },
+        { "SettingsAdvancedVScrollPos", new Config_DelegatePointerWrapper(&Config_SettingsAdvancedVScrollPos_Set) },
 
         #endregion
 
@@ -1066,6 +1088,9 @@ internal static partial class Ini
         { "EnableFuzzySearch", new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
+
+        { "AutoSetMaxIOThreads", new Config_DelegatePointerWrapper(&Config_AutoSetMaxIOThreads_Set) },
+        { "MaxIOThreads", new Config_DelegatePointerWrapper(&Config_MaxIOThreads_Set) },
 
         #region Backward compatibility
 
@@ -1246,6 +1271,7 @@ internal static partial class Ini
         sw.Append("SettingsOtherVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Other));
         sw.Append("SettingsThiefBuddyVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy));
         sw.Append("SettingsUpdateVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Update));
+        sw.Append("SettingsAdvancedVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Advanced));
 
         #endregion
 
@@ -1473,5 +1499,9 @@ internal static partial class Ini
         sw.Append("EnableFuzzySearch=").AppendLine(config.EnableFuzzySearch);
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
+
+        sw.Append("AutoSetMaxIOThreads=").AppendLine(config.AutoSetMaxIOThreads);
+        sw.Append("MaxIOThreads=").AppendLine(config.MaxIOThreads);
+
     }
 }

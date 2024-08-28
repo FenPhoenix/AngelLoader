@@ -26,12 +26,13 @@ partial class SettingsForm
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
+            this.UpdateRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.UpdateRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
+            this.PerformanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.BottomFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -92,6 +93,12 @@ partial class SettingsForm
             this.ErrorIconPictureBox.TabStop = false;
             this.ErrorIconPictureBox.Visible = false;
             // 
+            // MainToolTip
+            // 
+            this.MainToolTip.AutoPopDelay = 32767;
+            this.MainToolTip.InitialDelay = 500;
+            this.MainToolTip.ReshowDelay = 100;
+            // 
             // MainSplitContainer
             // 
             this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -104,6 +111,7 @@ partial class SettingsForm
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.MainSplitContainer.Panel1.Controls.Add(this.PerformanceRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.UpdateRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
             this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
@@ -117,6 +125,17 @@ partial class SettingsForm
             this.MainSplitContainer.Size = new System.Drawing.Size(694, 613);
             this.MainSplitContainer.SplitterDistance = 155;
             this.MainSplitContainer.TabIndex = 5;
+            // 
+            // UpdateRadioButton
+            // 
+            this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
+            this.UpdateRadioButton.Name = "UpdateRadioButton";
+            this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
+            this.UpdateRadioButton.TabIndex = 4;
+            this.UpdateRadioButton.Text = "Update";
+            this.UpdateRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
             // 
             // ThiefBuddyRadioButton
             // 
@@ -170,16 +189,16 @@ partial class SettingsForm
             this.PagePanel.Size = new System.Drawing.Size(535, 613);
             this.PagePanel.TabIndex = 2;
             // 
-            // UpdateRadioButton
+            // PerformanceRadioButton
             // 
-            this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.PerformanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
-            this.UpdateRadioButton.Name = "UpdateRadioButton";
-            this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.UpdateRadioButton.TabIndex = 4;
-            this.UpdateRadioButton.Text = "Update";
-            this.UpdateRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
+            this.PerformanceRadioButton.Location = new System.Drawing.Point(8, 128);
+            this.PerformanceRadioButton.Name = "PerformanceRadioButton";
+            this.PerformanceRadioButton.Size = new System.Drawing.Size(136, 23);
+            this.PerformanceRadioButton.TabIndex = 5;
+            this.PerformanceRadioButton.Text = "Performance";
+            this.PerformanceRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
             // 
             // SettingsForm
             // 
@@ -224,4 +243,5 @@ partial class SettingsForm
     private System.Windows.Forms.PictureBox ErrorIconPictureBox;
     private CustomControls.DarkRadioButtonCustom ThiefBuddyRadioButton;
     private CustomControls.DarkRadioButtonCustom UpdateRadioButton;
+    private CustomControls.DarkRadioButtonCustom PerformanceRadioButton;
 }

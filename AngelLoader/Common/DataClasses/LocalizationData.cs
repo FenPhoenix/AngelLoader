@@ -909,6 +909,11 @@ internal sealed class LText_Class
         internal readonly string Update_TabText = "Update";
         internal readonly string Update_UpdateOptions = "Update options";
         internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
+        [FenGenBlankLine]
+        internal readonly string Advanced_TabText = "Advanced";
+        internal readonly string Advanced_DiskThreads = "Threads for disk access";
+        internal readonly string Advanced_DiskThreads_Auto = "Auto";
+        internal readonly string Advanced_DiskThreads_Manual = "Manual";
     }
 
     internal sealed class DateFilterBox_Class
