@@ -300,7 +300,7 @@ public static partial class Utils
     {
         0 => "",
         < ByteSize.MB => Math.Round(size / 1024f).ToStrCur() + " " + LText.Global.KilobyteShort,
-        >= ByteSize.MB and < ByteSize.GB => Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort,
+        < ByteSize.GB => Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort,
         _ => Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort,
     };
 
