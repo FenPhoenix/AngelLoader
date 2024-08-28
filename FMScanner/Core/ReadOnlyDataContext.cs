@@ -770,7 +770,7 @@ public sealed class ReadOnlyDataContext
 
     // 1/0 for true/false, to enable branchless occurrence counting
 
-    internal static byte[] InitSuspected1252Bytes()
+    private static byte[] InitSuspected1252Bytes()
     {
         byte[] ret = new byte[256];
 
@@ -827,7 +827,7 @@ public sealed class ReadOnlyDataContext
         return ret;
     }
 
-    internal static byte[] InitSuspected850Bytes()
+    private static byte[] InitSuspected850Bytes()
     {
         byte[] ret = new byte[256];
 

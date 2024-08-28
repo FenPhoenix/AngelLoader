@@ -376,7 +376,7 @@ public sealed partial class Scanner : IDisposable
                 MaxDegreeOfParallelism = threadCount,
             };
 
-            ParallelLoopResult result = Parallel.For(0, threadCount, po, _ =>
+            _ = Parallel.For(0, threadCount, po, _ =>
             {
                 using var scanner = new Scanner(
                     sevenZipWorkingPath: sevenZipWorkingPath,

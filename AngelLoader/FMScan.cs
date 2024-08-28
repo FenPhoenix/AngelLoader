@@ -223,7 +223,7 @@ internal static class FMScan
 
                     #region Run scanner
 
-                    List<ScannedFMDataAndError> fmDataList = new(fmsTotalCount);
+                    List<ScannedFMDataAndError> fmDataList;
                     try
                     {
                         Paths.CreateOrClearTempPath(TempPaths.FMScanner);
