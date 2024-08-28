@@ -548,8 +548,6 @@ internal static class FMScan
             /*
             @MT_TASK: Necessary if we have multiple threads to allow UI time to catch up.
             Not necessary if we're on one thread, but does no harm either.
-            @MT_TASK(Multiple items):
-            We could try multiple items again, now that our UI behavior is good.
             @MT_TASK: Diff test with previous version the 100% behavior, and percent in general
             */
             if (scanningOne ||
