@@ -25,6 +25,9 @@ namespace AngelLoader;
 internal static class FMScan
 {
 #if TIMING_TEST
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+    // ReSharper disable RedundantNameQualifier
     private static readonly System.Diagnostics.Stopwatch _timingTestStopWatch = new();
 
     private static void StartTiming()
@@ -35,8 +38,12 @@ internal static class FMScan
     private static void StopTimingAndPrintResult()
     {
         _timingTestStopWatch.Stop();
+        // ReSharper disable RedundantNameQualifier
         System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
     }
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+    // ReSharper restore RedundantNameQualifier
 #endif
 
     private static CancellationTokenSource _scanCts = new();
@@ -568,7 +575,10 @@ internal static class FMScan
         static void CleanupAfterCancel()
         {
 #if TIMING_TEST
+#pragma warning disable IDE0002
+            // ReSharper disable RedundantNameQualifier
             System.Diagnostics.Trace.WriteLine("Canceled");
+#pragma warning restore IDE0002
 #endif
             Paths.CreateOrClearTempPath(TempPaths.FMScanner);
             Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
