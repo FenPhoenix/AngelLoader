@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -28,41 +27,6 @@ namespace AngelLoader;
 internal static partial class FMInstallAndPlay
 {
     #region Private fields
-
-    private enum InstallResultType
-    {
-        Success,
-        Canceled,
-        Error,
-    }
-
-    private enum ArchiveType
-    {
-        Zip,
-        Rar,
-        SevenZip,
-    }
-
-    // @MT_TASK: We may want other things in here like fm archive path/install path etc.
-    private readonly struct FMInstallResult
-    {
-        internal readonly InstallResultType ResultType;
-        internal readonly ArchiveType ArchiveType;
-        internal readonly string ErrorMessage;
-
-        public FMInstallResult(InstallResultType resultType)
-        {
-            ResultType = resultType;
-            ErrorMessage = "";
-        }
-
-        public FMInstallResult(InstallResultType resultType, ArchiveType archiveType, string errorMessage)
-        {
-            ResultType = resultType;
-            ArchiveType = archiveType;
-            ErrorMessage = errorMessage;
-        }
-    }
 
     private enum PlaySource
     {
@@ -1576,7 +1540,6 @@ internal static partial class FMInstallAndPlay
         return await InstallInternal(false, false, fms);
     }
 
-    // @MT_TASK(InstallInternal): Multithread this
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
         var fmDataList = new FMData[fms.Length];
@@ -1636,8 +1599,6 @@ internal static partial class FMInstallAndPlay
             BinaryBuffer binaryBuffer = new();
             Buffers buffers = new();
 
-            ConcurrentBag<FMInstallResult> results = new();
-
             for (int i = 0; i < fmDataList.Length; i++)
             {
                 FMData fmData = fmDataList[i];
@@ -1653,39 +1614,26 @@ internal static partial class FMInstallAndPlay
                 // But we don't want to parse out stupid console output for error detection and junk if we
                 // don't have to so whatever.
 
-                FMInstallResult fmInstallResult = await (
-                    fmData.ArchivePath.ExtIsZip() ? Task.Run(() => InstallFMZip(
+                (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
+                    ? Task.Run(() => InstallFMZip(
                         fmData.ArchivePath,
                         fmInstalledPath,
                         fmData.FM.Archive,
                         mainPercent,
                         fmDataList.Length,
                         buffers.ExtractTempBuffer,
-                        buffers.FileStreamBuffer)) :
-                    fmData.ArchivePath.ExtIsRar() ? Task.Run(() => InstallFMRar(
-                        fmData.ArchivePath,
-                        fmInstalledPath,
-                        fmData.FM.Archive,
-                        mainPercent,
-                        fmDataList.Length,
-                        buffers.ExtractTempBuffer)) :
-                    Task.Run(() => InstallFMSevenZip(
-                        fmData.ArchivePath,
-                        fmInstalledPath,
-                        fmData.FM.Archive,
-                        mainPercent,
-                        fmDataList.Length)));
+                        buffers.FileStreamBuffer))
+                    : fmData.ArchivePath.ExtIsRar()
+                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length, buffers.ExtractTempBuffer))
+                    : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
 
-                results.Add(fmInstallResult);
-
-                // @MT_TASK: Rolling back needs re-architecting for multithreading
-                if (fmInstallResult.ResultType == InstallResultType.Error)
+                if (installFailed)
                 {
                     await RollBackInstalls(fmDataList, i, rollBackCurrentOnly: true);
                     continue;
                 }
 
-                if (fmInstallResult.ResultType == InstallResultType.Canceled)
+                if (canceled)
                 {
                     await RollBackInstalls(fmDataList, i);
                     return false;
@@ -1817,7 +1765,6 @@ internal static partial class FMInstallAndPlay
 
         return true;
 
-        // @MT_TASK(RollBackInstalls): Handle multithreading here too
         static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
         {
             return Task.Run(() =>
@@ -1891,7 +1838,6 @@ internal static partial class FMInstallAndPlay
                     if (!DeleteFMInstalledDirectory(fmInstalledPath))
                     {
                         // Don't log it here because the deleter method will already have logged it
-                        // @MT_TASK: Dialog in multithreading area
                         Core.Dialogs.ShowError(
                             message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" +
                                      fmInstalledPath);
@@ -1904,7 +1850,7 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static FMInstallResult
+    private static (bool Canceled, bool InstallFailed)
     InstallFMZip(
         string fmArchivePath,
         string fmInstalledPath,
@@ -1964,22 +1910,21 @@ internal static partial class FMInstallAndPlay
 
                 if (_installCts.Token.IsCancellationRequested)
                 {
-                    return new FMInstallResult(InstallResultType.Canceled);
+                    return (true, false);
                 }
             }
         }
         catch (Exception ex)
         {
             Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.Zip, ex.Message);
+            Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+            return (false, true);
         }
 
-        return new FMInstallResult(InstallResultType.Success);
+        return (false, false);
     }
 
-    private static FMInstallResult
+    private static (bool Canceled, bool InstallFailed)
     InstallFMRar(
         string fmArchivePath,
         string fmInstalledPath,
@@ -2029,7 +1974,7 @@ internal static partial class FMInstallAndPlay
 
                     if (_installCts.Token.IsCancellationRequested)
                     {
-                        return new FMInstallResult(InstallResultType.Canceled);
+                        return (true, false);
                     }
                 }
 
@@ -2053,20 +1998,17 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            return new FMInstallResult(_installCts.IsCancellationRequested
-                ? InstallResultType.Canceled
-                : InstallResultType.Success);
+            return (_installCts.IsCancellationRequested, false);
         }
         catch (Exception ex)
         {
             Log("Error extracting rar " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.Rar, ex.Message);
+            Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
+            return (false, true);
         }
     }
 
-    private static FMInstallResult
+    private static (bool Canceled, bool InstallFailed)
     InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
     {
         bool single = fmCount == 1;
@@ -2120,10 +2062,9 @@ internal static partial class FMInstallAndPlay
             {
                 Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
 
-                // @MT_TASK: Dialog in multithreading area
-                //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
+                Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
-                return new FMInstallResult(InstallResultType.Error, ArchiveType.SevenZip, result.ErrorText);
+                return (result.Canceled, true);
             }
 
             if (!result.Canceled)
@@ -2134,14 +2075,13 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            return new FMInstallResult(result.Canceled ? InstallResultType.Canceled : InstallResultType.Success);
+            return (result.Canceled, false);
         }
         catch (Exception ex)
         {
             Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.SevenZip, ex.Message);
+            Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
+            return (false, true);
         }
     }
 
@@ -2149,7 +2089,6 @@ internal static partial class FMInstallAndPlay
 
     #region Uninstall
 
-    // @MT_TASK(Uninstall): Multithread this (remember that FM deletion code calls this too!)
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {

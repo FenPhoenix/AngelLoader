@@ -23,7 +23,6 @@ namespace AngelLoader;
  We could allow disk deletion and be heroes, but meh to it for now.
 */
 
-// @MT_TASK(FMDelete): Ensure this works properly with multithreaded Uninstall() - and should we multithread this too?
 internal static class FMDelete
 {
     #region Fields
