@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -84,8 +85,9 @@ internal static class FMScan
 
         bool scanningOne = fmsToScan.Single;
 
-        int lastPercent = 0;
         int fmsTotalCount = 0;
+
+        Stopwatch reportThrottleSW = new();
 
         // IMPORTANT(Multithreaded scan):
         // The progress object MUST be constructed here on the UI thread! This is what allows it to report smoothly
@@ -240,6 +242,8 @@ internal static class FMScan
                         }
 
                         fmsTotalCount = fms.Count;
+
+                        reportThrottleSW.Start();
 
 #if TIMING_TEST
                         StartTiming();
@@ -533,7 +537,7 @@ internal static class FMScan
             We could try multiple items again, now that our UI behavior is good.
             @MT_TASK: Diff test with previous version the 100% behavior, and percent in general
             */
-            if (scanningOne || fmNumber is 0 or 1 || percent > lastPercent)
+            if (scanningOne || fmNumber is 0 or 1 || reportThrottleSW.ElapsedMilliseconds > 4)
             {
                 Core.View.SetProgressBoxState_Single(
                     message1:
@@ -549,7 +553,7 @@ internal static class FMScan
                     percent: percent
                 );
 
-                lastPercent = percent;
+                reportThrottleSW.Restart();
             }
         }
 
