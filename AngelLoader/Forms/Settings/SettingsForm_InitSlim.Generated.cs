@@ -15,13 +15,13 @@ partial class SettingsForm
         this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
         this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
+        this.AdvancedRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.UpdateRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.PagePanel = new System.Windows.Forms.Panel();
-        this.PerformanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.BottomFLP.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -82,7 +82,7 @@ partial class SettingsForm
         // MainSplitContainer.Panel1
         // 
         this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
-        this.MainSplitContainer.Panel1.Controls.Add(this.PerformanceRadioButton);
+        this.MainSplitContainer.Panel1.Controls.Add(this.AdvancedRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.UpdateRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
@@ -96,6 +96,15 @@ partial class SettingsForm
         this.MainSplitContainer.Size = new System.Drawing.Size(694, 613);
         this.MainSplitContainer.SplitterDistance = 155;
         this.MainSplitContainer.TabIndex = 5;
+        // 
+        // AdvancedRadioButton
+        // 
+        this.AdvancedRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.AdvancedRadioButton.Location = new System.Drawing.Point(8, 128);
+        this.AdvancedRadioButton.Size = new System.Drawing.Size(136, 23);
+        this.AdvancedRadioButton.TabIndex = 5;
+        this.AdvancedRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // UpdateRadioButton
         // 
@@ -147,15 +156,6 @@ partial class SettingsForm
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.PagePanel.Size = new System.Drawing.Size(535, 613);
         this.PagePanel.TabIndex = 2;
-        // 
-        // PerformanceRadioButton
-        // 
-        this.PerformanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.PerformanceRadioButton.Location = new System.Drawing.Point(8, 128);
-        this.PerformanceRadioButton.Size = new System.Drawing.Size(136, 23);
-        this.PerformanceRadioButton.TabIndex = 5;
-        this.PerformanceRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // SettingsForm
         // 

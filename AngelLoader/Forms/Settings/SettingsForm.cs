@@ -177,7 +177,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
-            (PerformanceRadioButton, AdvancedPage = new AdvancedPage { Visible = false }),
+            (AdvancedRadioButton, AdvancedPage = new AdvancedPage { Visible = false }),
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -663,7 +663,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             if (config.AutoSetMaxIOThreads)
             {
-                AdvancedPage.IOThreadsAutomaticRadioButton.Checked = true;
+                AdvancedPage.IOThreadsAutoRadioButton.Checked = true;
             }
             else
             {
@@ -768,7 +768,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            AdvancedPage.IOThreadsAutomaticRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.IOThreadsAutoRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
             AdvancedPage.IOThreadsManualRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
 
             #endregion
@@ -1041,9 +1041,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Advanced page
 
-                PerformanceRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
+                AdvancedRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
                 AdvancedPage.IOThreadsGroupBox.Text = LText.SettingsWindow.Advanced_DiskThreads;
-                AdvancedPage.IOThreadsAutomaticRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Auto;
+                AdvancedPage.IOThreadsAutoRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Auto;
                 AdvancedPage.IOThreadsManualRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Manual;
 
                 #endregion
@@ -1379,7 +1379,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            OutConfig.AutoSetMaxIOThreads = AdvancedPage.IOThreadsAutomaticRadioButton.Checked;
+            OutConfig.AutoSetMaxIOThreads = AdvancedPage.IOThreadsAutoRadioButton.Checked;
             OutConfig.MaxIOThreads = (int)AdvancedPage.IOThreadsManualNumericUpDown.Value;
 
             #endregion
