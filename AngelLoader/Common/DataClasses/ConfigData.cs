@@ -466,11 +466,7 @@ public sealed class ConfigData
         set => _screenshotGammaPercent = value.Clamp(0, 100);
     }
 
-    // @MT_TASK: Implement HDD/SSD autodetect system, and single-thread it if HDDs are involved
-    // @MT_TASK: Temporary, implement and finalize name later
-    // This should be set on startup by the disk detector to either 1 (if HDDs present) or -1 (if only SSDs)
-    // User can also set this explicitly. We may or may not want to have it user settable. If we do, we'll want
-    // an "Auto" bool too so we can still store this value even though it's disabled.
+    // @MT_TASK: Finalize names
     internal bool AutoSetMaxIOThreads = true;
 
     private int _maxIOThreads = CoreCount;
@@ -482,6 +478,7 @@ public sealed class ConfigData
 
     // Session-only; don't write out
     internal bool AllDrivesAreSSD;
+    // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

@@ -4,6 +4,8 @@ using AL_Common;
 namespace AngelLoader.Forms;
 public partial class AdvancedPage : UserControl, Interfaces.ISettingsPage
 {
+    // @MT_TASK: In addition to "Auto", do we want like a "Max" option, or even just a "Max" button by the threads field?
+
     public AdvancedPage()
     {
 #if DEBUG
