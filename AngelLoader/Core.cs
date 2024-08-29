@@ -204,6 +204,11 @@ internal static class Core
 
         _configReadARE.WaitOne();
 
+        Task setDriveTypesTask = Task.Run(static () =>
+        {
+            SetDriveTypes(showWaitCursorOnMainView: false, sourceConfig: Config);
+        });
+
         if (doUpdateCleanup)
         {
             await Task.Run(static () =>
@@ -371,6 +376,7 @@ internal static class Core
             View = ViewEnv.GetView();
 
             findFMsTask.Wait();
+            setDriveTypesTask.Wait();
 
 #if RT_HeavyTests
 #pragma warning disable IDE0002
@@ -397,10 +403,11 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad(false, splashScreen);
+            await DoParallelLoad(askForImport: false, splashScreen);
         }
         else
         {
+            setDriveTypesTask.Wait();
             splashScreen.Hide();
             (bool accepted, bool askForImport) = await OpenSettings(settingsWindowState);
             if (accepted)
@@ -410,6 +417,7 @@ internal static class Core
             }
             else
             {
+                // Don't wait for set drives task; just quit immediately
                 return;
             }
         }
@@ -573,6 +581,11 @@ internal static class Core
 
             Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
         }
+
+        // This one must come before startup early exit, because it needs to run again even on startup in case
+        // the paths changed. But we need to use the out-config value because it hasn't been copied to the main
+        // config object yet.
+        SetDriveTypes(showWaitCursorOnMainView: !startup, sourceConfig: outConfig);
 
         ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
         ThrowDialogIfGameDirNotWriteable(setGameDataErrors);
@@ -1018,13 +1031,43 @@ internal static class Core
             watcher.EnableWatching = false;
         }
 
-        // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
-        List<string> paths = new(Config.FMArchivePaths.Count + SupportedGameCount);
-        paths.AddRange_Small(Config.FMArchivePaths);
-        paths.AddRange_Small(Config.GameExes);
-        Config.AllDrivesAreSSD = DetectDriveTypes.AllDrivesAreSolidState(paths);
-
         return (error, enableTDMWatchers, camModIniLines);
+    }
+
+    private static void SetDriveTypes(bool showWaitCursorOnMainView, ConfigData sourceConfig)
+    {
+        ConfigData destConfig = Config;
+        if (sourceConfig.AutoSetMaxIOThreads)
+        {
+            // @MT_TASK: Remove for final release
+            Trace.WriteLine(nameof(SetDriveTypes) + ": Auto path");
+            try
+            {
+                if (showWaitCursorOnMainView)
+                {
+                    View.SetWaitCursor(true);
+                }
+
+                // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
+                List<string> paths = new(sourceConfig.FMArchivePaths.Count + SupportedGameCount);
+                paths.AddRange_Small(sourceConfig.FMArchivePaths);
+                paths.AddRange_Small(sourceConfig.GameExes);
+                destConfig.AllDrivesAreSSD = DetectDriveTypes.AllDrivesAreSolidState(paths);
+            }
+            finally
+            {
+                if (showWaitCursorOnMainView)
+                {
+                    View.SetWaitCursor(false);
+                }
+            }
+        }
+        else
+        {
+            // @MT_TASK: Remove for final release
+            Trace.WriteLine(nameof(SetDriveTypes) + ": Manual path");
+            destConfig.AllDrivesAreSSD = true;
+        }
     }
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)

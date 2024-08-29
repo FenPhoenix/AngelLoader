@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// @MT_TASK: Remove for final release
+//#define TIMING_TEST
+
+using System.Collections.Generic;
 using System.IO;
 using System.Management;
 using System.Threading.Tasks;
@@ -38,8 +41,13 @@ internal static class DetectDriveTypes
         return await Task.Run(() => AllDrivesAreSolidState(paths));
     }
 
+    // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
     internal static bool AllDrivesAreSolidState(List<string> paths)
     {
+#if TIMING_TEST
+        var sw = new System.Diagnostics.Stopwatch();
+        sw.Start();
+#endif
         try
         {
             List<PhysicalDisk> physDisks = GetPhysicalDisks();
@@ -62,6 +70,13 @@ internal static class DetectDriveTypes
         {
             return false;
         }
+#if TIMING_TEST
+        finally
+        {
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine(sw.Elapsed);
+        }
+#endif
     }
 
     private static List<PhysicalDisk> GetPhysicalDisks()
