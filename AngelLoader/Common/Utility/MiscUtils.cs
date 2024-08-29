@@ -164,8 +164,20 @@ public static partial class Utils
             OperatingSystem osVersion = Environment.OSVersion;
             return osVersion.Platform == PlatformID.Win32NT &&
                    osVersion.Version >= new Version(6, 1);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-            // Win8 check: same but version is 6, 2
+    internal static bool WinVersionIs8OrAbove()
+    {
+        try
+        {
+            OperatingSystem osVersion = Environment.OSVersion;
+            return osVersion.Platform == PlatformID.Win32NT &&
+                   osVersion.Version >= new Version(6, 2);
         }
         catch
         {

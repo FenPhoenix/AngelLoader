@@ -50,6 +50,14 @@ internal static class DetectDriveTypes
 #endif
         try
         {
+            /*
+            Some of these WMI things are Windows 8+ ("MSFT_PhysicalDisk" for instance).
+            Let's just always return false for Windows 7. Win7 is old enough that hardly anyone should be using
+            it, and if they do, well then they get a single-threaded scan by default. If they want threaded,
+            they'll have to set it manually.
+            */
+            if (!Utils.WinVersionIs8OrAbove()) return false;
+
             List<PhysicalDisk> physDisks = GetPhysicalDisks();
 
             for (int i = 0; i < paths.Count; i++)
