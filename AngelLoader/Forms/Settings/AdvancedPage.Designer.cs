@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms;
 
-partial class AdvancedPage
+sealed partial class AdvancedPage
 {
     /// <summary> 
     /// Required designer variable.
