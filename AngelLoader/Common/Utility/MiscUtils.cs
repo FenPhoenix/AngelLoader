@@ -306,7 +306,7 @@ public static partial class Utils
 
     internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount)
     {
-        int threads = Config.AutoSetMaxIOThreads ? CoreCount : Config.MaxIOThreads;
+        int threads = Config.AutoSetMaxIOThreads ? Config.AllDrivesAreSSD ? CoreCount : 1 : Config.MaxIOThreads;
         return Math.Min(threads, maxWorkItemsCount);
     }
 

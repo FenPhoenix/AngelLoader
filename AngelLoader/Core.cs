@@ -1018,6 +1018,12 @@ internal static class Core
             watcher.EnableWatching = false;
         }
 
+        // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
+        List<string> paths = new(Config.FMArchivePaths.Count + SupportedGameCount);
+        paths.AddRange_Small(Config.FMArchivePaths);
+        paths.AddRange_Small(Config.GameExes);
+        Config.AllDrivesAreSSD = DetectDriveTypes.AllDrivesAreSolidState(paths);
+
         return (error, enableTDMWatchers, camModIniLines);
     }
 

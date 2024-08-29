@@ -28,7 +28,7 @@ public sealed class ConfigData
 
         _disabledMods = new string[SupportedGameCount];
 
-        _gameExes = new string[SupportedGameCount];
+        GameExes = new string[SupportedGameCount];
         _gamePaths = new string[SupportedGameCount];
         _fmInstallPaths = new string[SupportedGameCount];
 
@@ -46,7 +46,7 @@ public sealed class ConfigData
             // We want them empty strings, not null, for safety
             _disabledMods[i] = "";
 
-            _gameExes[i] = "";
+            GameExes[i] = "";
             _gamePaths[i] = "";
             _fmInstallPaths[i] = "";
 
@@ -163,11 +163,11 @@ public sealed class ConfigData
 
     #region Game exes
 
-    private readonly string[] _gameExes;
+    internal readonly string[] GameExes;
 
-    internal string GetGameExe(GameIndex index) => _gameExes[(uint)index];
+    internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
 
-    internal void SetGameExe(GameIndex index, string value) => _gameExes[(uint)index] = value;
+    internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
 
     #endregion
 
@@ -479,6 +479,8 @@ public sealed class ConfigData
         get => _maxIOThreads;
         set => _maxIOThreads = value.ClampToMin(1);
     }
+
+    internal bool AllDrivesAreSSD;
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
