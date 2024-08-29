@@ -480,6 +480,7 @@ public sealed class ConfigData
         set => _maxIOThreads = value.ClampToMin(1);
     }
 
+    // Session-only; don't write out
     internal bool AllDrivesAreSSD;
 
 #if !ReleaseBeta && !ReleasePublic
