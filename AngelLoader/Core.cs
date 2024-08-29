@@ -551,6 +551,13 @@ internal static class Core
         bool fuzzySearchChanged =
             !startup && Config.EnableFuzzySearch != outConfig.EnableFuzzySearch;
 
+        // Used even on startup
+        bool diskTypeNeedsUpdate =
+            startup ||
+            archivePathsChanged ||
+            gamePathsChanged ||
+            Config.AutoSetMaxIOThreads != outConfig.AutoSetMaxIOThreads;
+
         #endregion
 
         #region Set config data
@@ -585,7 +592,10 @@ internal static class Core
         // This one must come before startup early exit, because it needs to run again even on startup in case
         // the paths changed. But we need to use the out-config value because it hasn't been copied to the main
         // config object yet.
-        SetDriveTypes(showWaitCursorOnMainView: !startup, sourceConfig: outConfig);
+        if (diskTypeNeedsUpdate)
+        {
+            SetDriveTypes(showWaitCursorOnMainView: !startup, sourceConfig: outConfig);
+        }
 
         ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
         ThrowDialogIfGameDirNotWriteable(setGameDataErrors);
