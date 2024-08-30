@@ -1,9 +1,12 @@
 ﻿// @MT_TASK: Remove for final release
 //#define TIMING_TEST
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Management;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AL_Common;
 using JetBrains.Annotations;
@@ -42,9 +45,8 @@ internal static class DetectDriveTypes
     }
 
     // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
-    // @MT_TASK: This breaks when drives are all dynamic or whatever the damn RAID thing asked me to make them
-    // Now it always returns Unspecified. So this whole thing is useless.
-    // Also it doesn't detect RAM disks at all.
+    // This can return Unspecified for all if you've messed around with Disk Management (I guess?!)
+    // That's okay in that case, we'll just fall back to HDD 1-threaded version...
     internal static bool AllDrivesAreSolidState(List<string> paths)
     {
 #if TIMING_TEST
@@ -61,15 +63,38 @@ internal static class DetectDriveTypes
             */
             if (!Utils.WinVersionIs8OrAbove()) return false;
 
-            List<PhysicalDisk> physDisks = GetPhysicalDisks();
+            List<string> letters = new(paths.Count);
 
             for (int i = 0; i < paths.Count; i++)
             {
                 string letter = Path.GetPathRoot(paths[i]).TrimEnd(Common.CA_BS_FS);
-                if (letter.IsEmpty()) return false;
+                if (letter.IsEmpty())
+                {
+                    return false;
+                }
+                if (letter.Length is not 2 || !letter[0].IsAsciiAlpha())
+                {
+                    return false;
+                }
+
+                letters.Add(letter);
+            }
+
+            letters = letters.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+            if (letters.Count == 0) return false;
+
+            List<PhysicalDisk> physDisks = GetPhysicalDisks();
+
+            for (int i = 0; i < letters.Count; i++)
+            {
+                string letter = letters[i];
 
                 MediaType mediaType = GetMediaType(letter, physDisks);
-                if (mediaType is not MediaType.SSD and not MediaType.SCM)
+#if TIMING_TEST
+                System.Diagnostics.Trace.WriteLine(letter + " " + mediaType);
+#endif
+                if (!IsSolidState(mediaType))
                 {
                     return false;
                 }
@@ -150,7 +175,7 @@ internal static class DetectDriveTypes
 
                     // RAID drives are reported as however many drives there are in the RAID, with each one having
                     // its respective type. So quit once we've found spinning rust or something unknown, for perf.
-                    if (returnMediaType is not MediaType.SSD and not MediaType.SCM)
+                    if (!IsSolidState(returnMediaType))
                     {
                         return returnMediaType;
                     }
@@ -184,4 +209,7 @@ internal static class DetectDriveTypes
             return MediaType.Unspecified;
         }
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsSolidState(MediaType mediaType) => mediaType is MediaType.SSD or MediaType.SCM;
 }
