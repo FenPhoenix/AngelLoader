@@ -132,14 +132,33 @@ internal static class DetectDriveTypes
                 using ManagementObjectSearcher queryResults2 = new(query);
                 ManagementObjectCollection drives = queryResults2.Get();
 
-                // @MT_TASK(Drive type detect): Test with RAID and see what result it gives
-                // Can there be more than one drive per partition...? Is it like if you have a RAID then there can be?
+#if TIMING_TEST
+                var sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+#endif
+
+                MediaType returnMediaType = MediaType.Unspecified;
+
                 foreach (ManagementBaseObject drive in drives)
                 {
                     string deviceId = drive["DeviceID"].ToString();
                     string idStr = deviceId.Substring(@"\\.\PHYSICALDRIVE".Length);
-                    return GetMediaTypeForId(physDisks, idStr);
+                    returnMediaType = GetMediaTypeForId(physDisks, idStr);
+
+                    // RAID drives are reported as however many drives there are in the RAID, with each one having
+                    // its respective type. So quit once we've found spinning rust or something unknown, for perf.
+                    if (returnMediaType is not MediaType.SSD and not MediaType.SCM)
+                    {
+                        return returnMediaType;
+                    }
                 }
+
+#if TIMING_TEST
+                sw.Stop();
+                System.Diagnostics.Trace.WriteLine("LOOP TIME: " + sw.Elapsed);
+#endif
+
+                return returnMediaType;
             }
 
             return MediaType.Unspecified;
