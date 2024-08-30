@@ -42,6 +42,8 @@ internal static class DetectDriveTypes
     }
 
     // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
+    // @MT_TASK: This breaks when drives are all dynamic or whatever the damn RAID thing asked me to make them
+    // Now it always returns Unspecified. So this whole thing is useless.
     internal static bool AllDrivesAreSolidState(List<string> paths)
     {
 #if TIMING_TEST
