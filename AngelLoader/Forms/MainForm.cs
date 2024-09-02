@@ -266,6 +266,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
+        using var f = new DGV_Test();
+        f.ShowDialog();
+    }
+
+    private async Task InstallTestSet()
+    {
         // @MT_TASK: Remove this test stuff for final release
         string[] fmArchives =
         {
