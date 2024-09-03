@@ -17,7 +17,7 @@ There are no new features compared to the standard .NET Framework version, and t
 - The UI does not get any faster, unfortunately, and that's probably the place you would most notice a performance difference if there was one.
 - While the performance increases appear large in the profiler, they're not that noticeable in actual use, at least not to me.
 
-If the cold startup time were solved (either directly or through finishing of WinForms AOT support (assuming that would fix it)), I would just tweak SpanExtensions.Net myself and switch AngelLoader to modern .NET. As it stands, though, I don't find the moderate general perf increase to be an acceptable trade for the infuriating, decades-regressed cold startup performance. Seriously I'm pretty sure my 386 started apps faster. 🤷‍♂️
+If the cold startup time were solved (either directly or through finishing of WinForms AOT support (assuming that would fix it)), I would just switch AngelLoader to modern .NET. As it stands, though, I don't find the moderate general perf increase to be an acceptable trade for the infuriating, decades-regressed cold startup performance. Seriously I'm pretty sure my 386 started apps faster. 🤷‍♂️
 
 <hr/>
 
