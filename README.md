@@ -12,7 +12,6 @@ There are no new features compared to the standard .NET Framework version, and t
 
 ### The bad:
 - **_Horrendous_** cold startup time - this is endemic to all WinForms apps on modern .NET. It takes several seconds merely just to get to the splash screen. Personally, I find this to be an unacceptable user experience. Your tolerance for it may vary. Note that cold startup doesn't just happen on a fresh boot; it happens whenever Windows decides to invalidate whatever cache is keeping it fast. So every time you go to start the app you wince in anticipation of it maybe being cold this time. Like I said, truly awful UX.
-- This version uses SpanExtensions.Net which (as of v1.3.0) contains a potential stack overflow risk from recursion if asked to split a string into too many parts. Unlikely to be hit in practice as you'd need a _lot_ of parts, but meh, just a heads up.
 
 ### The mediocre:
 - The UI does not get any faster, unfortunately, and that's probably the place you would most notice a performance difference if there was one.

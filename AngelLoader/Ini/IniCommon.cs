@@ -295,7 +295,6 @@ internal static partial class Ini
 
         fm.Langs = Language.Default;
 
-        // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
         foreach (ReadOnlySpan<char> item in langsSpan.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (Langs_TryGetValue(item, 0, item.Length, out Language result))
@@ -311,7 +310,6 @@ internal static partial class Ini
         fm.Resources = CustomResources.None;
 
         bool first = true;
-        // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
         foreach (ReadOnlySpan<char> item in fieldsSpan.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             if (first && item.SequenceEqual(nameof(CustomResources.None)))
@@ -445,7 +443,6 @@ internal static partial class Ini
         // form "category:" (with no tags list). This is because we allow filtering by entire category,
         // whereas we don't allow FMs to have categories with no tags in them.
 
-        // @SpanExtOverflow: RemoveEmptyEntries uses un-optimized tail call recursion (stack overflow possible!)
         foreach (ReadOnlySpan<char> part in tagsToAdd.SplitAny(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries))
         {
             if (!FMTags.TryGetCatAndTag(part, out string cat, out string tag) ||
