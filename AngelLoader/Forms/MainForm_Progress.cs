@@ -192,4 +192,29 @@ public sealed partial class MainForm
     public void HideProgressBox() => Invoke(() => ProgressBox?.HideThis());
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
+
+    public void ShowMultiItemProgressBox(
+        string? message1 = null,
+        string? message2 = null,
+        ProgressType? progressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+
+    });
+
+    public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
+    {
+
+    });
+
+    public void MultiItemProgress_CloseItemHandle(int handle) => Invoke(() =>
+    {
+
+    });
+
+    public void MultiItemProgress_SetItemData(int handle, string text) => Invoke(() =>
+    {
+
+    });
 }
