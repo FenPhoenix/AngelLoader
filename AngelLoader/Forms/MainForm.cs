@@ -386,6 +386,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
+    private readonly DataGridView _MultiItemTestDGV;
+
     #region Message handling
 
     protected override void WndProc(ref Message m)
@@ -874,6 +876,15 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 #endif
 
+        // @MT_TASK: Remove for final
+        _MultiItemTestDGV = new DataGridView
+        {
+            Size = new Size(800, 400),
+        };
+
+        ReadmeContainer.Controls.Add(_MultiItemTestDGV);
+        _MultiItemTestDGV.BringToFront();
+
         #endregion
 
         #region Control arrays
@@ -1349,6 +1360,8 @@ public sealed partial class MainForm : DarkFormBase,
         _splashScreen = null;
 
         StartupState = false;
+
+        _MultiItemTestDGV.CenterHV(MainSplitContainer.Panel2);
     }
 
     #endregion
