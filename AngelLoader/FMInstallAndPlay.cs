@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -1600,6 +1601,18 @@ internal static partial class FMInstallAndPlay
         return await InstallInternal(false, false, fms);
     }
 
+    private sealed class ProgressReport_Install
+    {
+        internal int Handle;
+        internal string Text = "";
+        internal int Percent;
+    }
+
+    private static void ReportProgress_Install(ProgressReport_Install report)
+    {
+        Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, report.Percent);
+    }
+
     // @MT_TASK(InstallInternal): Multithread this
     /*
     @MT_TASK: We're getting very poor scaling here.
@@ -1641,32 +1654,38 @@ internal static partial class FMInstallAndPlay
             if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
         }
 
+        var progress = new Progress<ProgressReport_Install>(ReportProgress_Install);
+
         try
         {
             _installCts = _installCts.Recreate();
 
-            Core.View.ShowProgressBox_Single(
-                message1: LText.ProgressBox.PreparingToInstall,
-                progressType: ProgressType.Indeterminate,
-                cancelAction: CancelInstallToken
-            );
+            //Core.View.ShowProgressBox_Single(
+            //    message1: LText.ProgressBox.PreparingToInstall,
+            //    progressType: ProgressType.Indeterminate,
+            //    cancelAction: CancelInstallToken
+            //);
+
+            Core.View.MultiItemProgress_Show(
+                message1: "Installing test",
+                progressType: ProgressType.Determinate);
 
             (bool success, List<string> archivePaths) =
                 await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
 
             if (!success) return false;
 
-            Core.View.SetProgressBoxState(
-                size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
-                mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                mainMessage2: "",
-                mainPercent: 0,
-                mainProgressType: ProgressType.Determinate,
-                subMessage: "",
-                subPercent: 0,
-                subProgressType: ProgressType.Determinate,
-                cancelMessage: LText.Global.Cancel
-            );
+            //Core.View.SetProgressBoxState(
+            //    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
+            //    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
+            //    mainMessage2: "",
+            //    mainPercent: 0,
+            //    mainProgressType: ProgressType.Determinate,
+            //    subMessage: "",
+            //    subPercent: 0,
+            //    subProgressType: ProgressType.Determinate,
+            //    cancelMessage: LText.Global.Cancel
+            //);
 
             //BinaryBuffer binaryBuffer = new();
 
@@ -1715,6 +1734,7 @@ internal static partial class FMInstallAndPlay
 
                             FMInstallResult fmInstallResult =
                                 fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
+                                    progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
                                     fmData.FM.Archive,
@@ -1723,6 +1743,7 @@ internal static partial class FMInstallAndPlay
                                     buffers[i].ExtractTempBuffer,
                                     buffers[i].FileStreamBuffer) :
                                 fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
+                                    progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
                                     fmData.FM.Archive,
@@ -1730,6 +1751,7 @@ internal static partial class FMInstallAndPlay
                                     fmDataList.Count,
                                     buffers[i].ExtractTempBuffer) :
                                 InstallFMSevenZip(
+                                    progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
                                     fmData.FM.Archive,
@@ -1876,6 +1898,10 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: Rollback here
                     return false;
                 }
+                finally
+                {
+                    Core.View.MultiItemProgress_Hide();
+                }
 
                 return true;
             });
@@ -1985,6 +2011,7 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMZip(
+        IProgress<ProgressReport_Install> progress,
         string fmArchivePath,
         string fmInstalledPath,
         string fmArchive,
@@ -1997,8 +2024,12 @@ internal static partial class FMInstallAndPlay
 
         fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
+        int handle = Core.View.MultiItemProgress_GetNewItemHandle();
+
         try
         {
+            var report = new ProgressReport_Install();
+
             Directory.CreateDirectory(fmInstalledPath);
 
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
@@ -2041,6 +2072,12 @@ internal static partial class FMInstallAndPlay
                     //);
                 }
 
+                //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, percent);
+                report.Handle = handle;
+                report.Text = fmArchive;
+                report.Percent = percent;
+                progress.Report(report);
+
                 _installCts.Token.ThrowIfCancellationRequested();
             }
         }
@@ -2051,12 +2088,17 @@ internal static partial class FMInstallAndPlay
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
             return new FMInstallResult(InstallResultType.Error, ArchiveType.Zip, ex.Message);
         }
+        finally
+        {
+            Core.View.MultiItemProgress_CloseItemHandle(handle);
+        }
 
         return new FMInstallResult(InstallResultType.Success);
     }
 
     private static FMInstallResult
     InstallFMRar(
+        IProgress<ProgressReport_Install> progress,
         string fmArchivePath,
         string fmInstalledPath,
         string fmArchive,
@@ -2068,8 +2110,12 @@ internal static partial class FMInstallAndPlay
 
         fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
+        int handle = Core.View.MultiItemProgress_GetNewItemHandle();
+
         try
         {
+            var report = new ProgressReport_Install();
+
             Directory.CreateDirectory(fmInstalledPath);
 
             using var fs = File_OpenReadFast(fmArchivePath);
@@ -2123,6 +2169,12 @@ internal static partial class FMInstallAndPlay
                         //    subPercent: percentOfEntries
                         //);
                     }
+
+                    //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, percentOfEntries);
+                    report.Handle = handle;
+                    report.Text = fmArchive;
+                    report.Percent = percentOfEntries;
+                    progress.Report(report);
                 }
             }
 
@@ -2137,15 +2189,29 @@ internal static partial class FMInstallAndPlay
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
             return new FMInstallResult(InstallResultType.Error, ArchiveType.Rar, ex.Message);
         }
+        finally
+        {
+            Core.View.MultiItemProgress_CloseItemHandle(handle);
+        }
     }
 
     private static FMInstallResult
-    InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    InstallFMSevenZip(
+        IProgress<ProgressReport_Install> progressInstall,
+        string fmArchivePath,
+        string fmInstalledPath,
+        string fmArchive,
+        int mainPercent,
+        int fmCount)
     {
         bool single = fmCount == 1;
 
+        int handle = Core.View.MultiItemProgress_GetNewItemHandle();
+
         try
         {
+            var report = new ProgressReport_Install();
+
             Directory.CreateDirectory(fmInstalledPath);
 
             int entriesCount;
@@ -2174,6 +2240,12 @@ internal static partial class FMInstallAndPlay
                         //    subPercent: pr.PercentOfEntries
                         //);
                     }
+
+                    //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, pr.PercentOfEntries);
+                    report.Handle = handle;
+                    report.Text = fmArchive;
+                    report.Percent = pr.PercentOfEntries;
+                    progressInstall.Report(report);
                 }
             }
 
@@ -2222,6 +2294,10 @@ internal static partial class FMInstallAndPlay
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
             return new FMInstallResult(InstallResultType.Error, ArchiveType.SevenZip, ex.Message);
+        }
+        finally
+        {
+            Core.View.MultiItemProgress_CloseItemHandle(handle);
         }
     }
 

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
+using AL_Common;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
@@ -193,28 +195,88 @@ public sealed partial class MainForm
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
 
-    public void ShowMultiItemProgressBox(
+    private sealed class ProgressItemData
+    {
+        internal int Handle;
+        internal string Text;
+        internal int Percent;
+
+        public ProgressItemData(string text, int percent, int handle)
+        {
+            Text = text;
+            Percent = percent;
+            Handle = handle;
+        }
+    }
+
+    private readonly List<ProgressItemData> _progressItems = new();
+
+    public void MultiItemProgress_Show(
         string? message1 = null,
         string? message2 = null,
         ProgressType? progressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
+        if (_MultiItemTestDGV.Visible) return;
+        _progressItems.Clear();
+        _MultiItemTestDGV.BringToFront();
+        _MultiItemTestDGV.RowCount = 100;
+        _MultiItemTestDGV.Show();
+    });
 
+    public void MultiItemProgress_Hide() => Invoke(() =>
+    {
+        _MultiItemTestDGV.Hide();
+        _progressItems.Clear();
     });
 
     public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
     {
-
+        ProgressItemData item = new("", 0, 0);
+        item.Handle = item.GetHashCode();
+        _progressItems.Add(item);
+        _MultiItemTestDGV.Refresh();
+        return item.Handle;
     });
 
     public void MultiItemProgress_CloseItemHandle(int handle) => Invoke(() =>
     {
-
+        for (int i = 0; i < _progressItems.Count; i++)
+        {
+            ProgressItemData item = _progressItems[i];
+            if (item.Handle == handle)
+            {
+                _progressItems.RemoveAt(i);
+                break;
+            }
+        }
+        _MultiItemTestDGV.Refresh();
     });
 
-    public void MultiItemProgress_SetItemData(int handle, string text) => Invoke(() =>
+    public void MultiItemProgress_SetItemData(int handle, string text, int percent) => Invoke(() =>
     {
-
+        ProgressItemData? item = _progressItems.Find(x => x.Handle == handle);
+        if (item == null) return;
+        item.Text = text;
+        item.Percent = percent;
+        //_MultiItemTestDGV.Invalidate();
+        _MultiItemTestDGV.InvalidateRow(_progressItems.IndexOf(item));
     });
+
+    private void _MultiItemTestDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
+    {
+        if (_progressItems.Count == 0) return;
+
+        if (e.RowIndex > _progressItems.Count - 1)
+        {
+            e.Value = "";
+            return;
+        }
+
+        ProgressItemData item = _progressItems[e.RowIndex];
+
+        e.Value = item.Text + ", " + item.Percent.ToStrCur();
+    }
+
 }

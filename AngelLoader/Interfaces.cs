@@ -382,8 +382,9 @@ public interface IView : ISettingsChangeableView
     void ShowUpdateNotification(bool show);
 
     void RefreshFMScreenshots(FanMission fm);
-    void ShowMultiItemProgressBox(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
+    void MultiItemProgress_Show(string? message1 = null, string? message2 = null, ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
     int MultiItemProgress_GetNewItemHandle();
     void MultiItemProgress_CloseItemHandle(int handle);
-    void MultiItemProgress_SetItemData(int handle, string text);
+    void MultiItemProgress_SetItemData(int handle, string text, int percent);
+    void MultiItemProgress_Hide();
 }

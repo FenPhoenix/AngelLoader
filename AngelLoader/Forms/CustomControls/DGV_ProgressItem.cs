@@ -2,10 +2,12 @@
 using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls;
+
 public sealed class DGV_ProgressItem : DataGridView
 {
     public DGV_ProgressItem()
     {
+        DoubleBuffered = true;
     }
 
     protected override void OnSelectionChanged(EventArgs e)

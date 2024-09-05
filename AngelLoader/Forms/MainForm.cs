@@ -266,8 +266,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     private async void Test3Button_Click(object sender, EventArgs e)
     {
-        using var f = new DGV_Test();
-        f.ShowDialog();
+        //using var f = new DGV_Test();
+        //f.ShowDialog();
+        _MultiItemTestDGV.Show();
+        _MultiItemTestDGV.RowCount = 2;
     }
 
     private async Task InstallTestSet()
@@ -386,7 +388,8 @@ public sealed partial class MainForm : DarkFormBase,
 
     #endregion
 
-    private readonly DataGridView _MultiItemTestDGV;
+    private readonly DGV_ProgressItem _MultiItemTestDGV;
+    private readonly DataGridViewTextBoxColumn _MultiItemTestDGV_Column1;
 
     #region Message handling
 
@@ -876,11 +879,39 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 #endif
 
-        // @MT_TASK: Remove for final
-        _MultiItemTestDGV = new DataGridView
+        _MultiItemTestDGV_Column1 = new DataGridViewTextBoxColumn
         {
-            Size = new Size(800, 400),
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+            ReadOnly = true,
+            Resizable = DataGridViewTriState.False,
+            SortMode = DataGridViewColumnSortMode.Programmatic,
         };
+
+        // @MT_TASK: Remove for final
+        _MultiItemTestDGV = new DGV_ProgressItem
+        {
+            AllowUserToAddRows = false,
+            AllowUserToDeleteRows = false,
+            AllowUserToResizeRows = false,
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+            ColumnHeadersVisible = false,
+            MultiSelect = false,
+            ReadOnly = true,
+            RowHeadersVisible = false,
+            RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing,
+            SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+            Size = new Size(800, 400),
+            StandardTab = true,
+            VirtualMode = true,
+
+            Visible = false,
+        };
+        _MultiItemTestDGV.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+        _MultiItemTestDGV.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+
+        _MultiItemTestDGV.Columns.Add(_MultiItemTestDGV_Column1);
+
+        _MultiItemTestDGV.CellValueNeeded += _MultiItemTestDGV_CellValueNeeded;
 
         ReadmeContainer.Controls.Add(_MultiItemTestDGV);
         _MultiItemTestDGV.BringToFront();
