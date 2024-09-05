@@ -212,6 +212,7 @@ public sealed partial class MainForm
     private readonly List<ProgressItemData> _progressItems = new();
 
     public void MultiItemProgress_Show(
+        int rows,
         string? message1 = null,
         string? message2 = null,
         ProgressType? progressType = null,
@@ -221,7 +222,7 @@ public sealed partial class MainForm
         if (_MultiItemTestDGV.Visible) return;
         _progressItems.Clear();
         _MultiItemTestDGV.BringToFront();
-        _MultiItemTestDGV.RowCount = 100;
+        _MultiItemTestDGV.RowCount = rows;
         _MultiItemTestDGV.Show();
     });
 

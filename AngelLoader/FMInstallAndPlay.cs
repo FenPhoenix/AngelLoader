@@ -1660,15 +1660,11 @@ internal static partial class FMInstallAndPlay
         {
             _installCts = _installCts.Recreate();
 
-            //Core.View.ShowProgressBox_Single(
-            //    message1: LText.ProgressBox.PreparingToInstall,
-            //    progressType: ProgressType.Indeterminate,
-            //    cancelAction: CancelInstallToken
-            //);
-
-            Core.View.MultiItemProgress_Show(
-                message1: "Installing test",
-                progressType: ProgressType.Determinate);
+            Core.View.ShowProgressBox_Single(
+                message1: LText.ProgressBox.PreparingToInstall,
+                progressType: ProgressType.Indeterminate,
+                cancelAction: CancelInstallToken
+            );
 
             (bool success, List<string> archivePaths) =
                 await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
@@ -1695,6 +1691,12 @@ internal static partial class FMInstallAndPlay
             int threadCount =
                 //1;
                 GetThreadCountForParallelOperation(fmDataList.Count);
+
+            Core.View.HideProgressBox();
+
+            Core.View.MultiItemProgress_Show(threadCount, message1: "Installing test",
+                progressType: ProgressType.Determinate);
+
             Buffers[] buffers = InitializedArray<Buffers>(threadCount);
 
             // @MT_TASK: Remove for final release
