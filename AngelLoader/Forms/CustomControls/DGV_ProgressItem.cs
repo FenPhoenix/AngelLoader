@@ -30,7 +30,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             }
             else
             {
-                BackgroundColor = SystemColors.ControlDark;
+                BackgroundColor = SystemColors.Window;
                 RowsDefaultCellStyle.ForeColor = SystemColors.ControlText;
                 RowsDefaultCellStyle.BackColor = SystemColors.Window;
             }
@@ -56,6 +56,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     public DGV_ProgressItem()
     {
         DoubleBuffered = true;
+        BackgroundColor = SystemColors.Window;
     }
 
     protected override void OnSelectionChanged(EventArgs e)
@@ -97,28 +98,25 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         }
     }
 
-    // @MT_TASK: Paint borders because we get indeterminate drawing in the border areas otherwise
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
         base.OnCellPainting(e);
 
         if (e.Graphics == null) return;
+        if (e.RowIndex <= -1) return;
 
-        if (e.RowIndex > -1)
+        Brush bgBrush = _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
+        e.Graphics.FillRectangle(bgBrush, e.CellBounds);
+
+        if (ProgressItems.Count == 0 || e.RowIndex < ProgressItems.Count)
         {
-            Brush bgBrush = _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
-            e.Graphics.FillRectangle(bgBrush, e.CellBounds);
-
-            if (ProgressItems.Count == 0 || e.RowIndex < ProgressItems.Count)
-            {
-                ProgressItemData item = ProgressItems[e.RowIndex];
-                e.Graphics.FillRectangle(
-                    Brushes.Green,
-                    e.CellBounds.Left,
-                    e.CellBounds.Top,
-                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width),
-                    e.CellBounds.Height);
-            }
+            ProgressItemData item = ProgressItems[e.RowIndex];
+            e.Graphics.FillRectangle(
+                Brushes.Green,
+                e.CellBounds.Left,
+                e.CellBounds.Top,
+                GetValueFromPercent_Int(item.Percent, e.CellBounds.Width),
+                e.CellBounds.Height);
         }
 
         if (_darkModeEnabled)
@@ -127,6 +125,11 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         }
 
         e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
+
+        Pen borderPen = _darkModeEnabled
+            ? DarkColors.Fen_DGVCellBordersPen
+            : SystemPens.ControlDark;
+        e.Graphics.DrawRectangle(borderPen, e.CellBounds);
 
         e.Handled = true;
     }
