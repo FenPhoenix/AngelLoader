@@ -105,14 +105,31 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         if (e.Graphics == null) return;
         if (e.RowIndex <= -1) return;
 
-        Brush bgBrush = _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
+        Brush bgBrush;
+        Pen borderPen;
+        // @MT_TASK: We need better colors for light/dark progress green
+        // Either that or just make the cells taller and put the progress bar below the text
+        Brush progressBrush;
+        if (_darkModeEnabled)
+        {
+            bgBrush = DarkColors.DarkBackgroundBrush;
+            borderPen = DarkColors.Fen_DGVCellBordersPen;
+            progressBrush = DarkColors.DGV_PinnedBackgroundDarkBrush;
+        }
+        else
+        {
+            bgBrush = SystemBrushes.Window;
+            borderPen = SystemPens.ControlDark;
+            progressBrush = DarkColors.DGV_PinnedBackgroundLightBrush;
+        }
+
         e.Graphics.FillRectangle(bgBrush, e.CellBounds);
 
         if (ProgressItems.Count == 0 || e.RowIndex < ProgressItems.Count)
         {
             ProgressItemData item = ProgressItems[e.RowIndex];
             e.Graphics.FillRectangle(
-                Brushes.Green,
+                progressBrush,
                 e.CellBounds.Left,
                 e.CellBounds.Top,
                 GetValueFromPercent_Int(item.Percent, e.CellBounds.Width),
@@ -126,9 +143,6 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
 
-        Pen borderPen = _darkModeEnabled
-            ? DarkColors.Fen_DGVCellBordersPen
-            : SystemPens.ControlDark;
         e.Graphics.DrawRectangle(borderPen, e.CellBounds);
 
         e.Handled = true;

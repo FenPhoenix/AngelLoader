@@ -162,6 +162,7 @@ public static class DarkColors
     public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
     //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
+    public static readonly SolidBrush DGV_PinnedBackgroundLightBrush = new SolidBrush(DGV_PinnedBackgroundLight);
     public static readonly SolidBrush DGV_PinnedBackgroundDarkBrush = new SolidBrush(DGV_PinnedBackgroundDark);
 
     #endregion
