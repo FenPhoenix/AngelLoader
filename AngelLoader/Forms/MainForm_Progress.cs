@@ -219,7 +219,7 @@ public sealed partial class MainForm
 
     public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
     {
-        DGV_ProgressItem.ProgressItemData item = new("", 0, 0);
+        DGV_ProgressItem.ProgressItemData item = new("", "", 0, 0);
         item.Handle = item.GetHashCode();
         _MultiItemTestDGV.ProgressItems.Add(item);
         _MultiItemTestDGV.Refresh();
@@ -240,12 +240,19 @@ public sealed partial class MainForm
         _MultiItemTestDGV.Refresh();
     });
 
-    public void MultiItemProgress_SetItemData(int handle, string text, int percent) => Invoke(() =>
+    public void MultiItemProgress_SetItemData(
+        int handle,
+        string? line1 = null,
+        string? line2 = null,
+        int? percent = null) => Invoke(() =>
     {
         DGV_ProgressItem.ProgressItemData? item = _MultiItemTestDGV.ProgressItems.Find(x => x.Handle == handle);
         if (item == null) return;
-        item.Text = text;
-        item.Percent = percent;
+
+        if (line1 != null) item.Line1 = line1;
+        if (line2 != null) item.Line2 = line2;
+        if (percent != null) item.Percent = (int)percent;
+
         _MultiItemTestDGV.InvalidateRow(_MultiItemTestDGV.ProgressItems.IndexOf(item));
     });
 }

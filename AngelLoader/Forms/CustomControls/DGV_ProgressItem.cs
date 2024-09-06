@@ -40,12 +40,14 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     public sealed class ProgressItemData
     {
         public int Handle;
-        public string Text;
+        public string Line1;
+        public string Line2;
         public int Percent;
 
-        public ProgressItemData(string text, int percent, int handle)
+        public ProgressItemData(string line1, string line2, int percent, int handle)
         {
-            Text = text;
+            Line1 = line1;
+            Line2 = line2;
             Percent = percent;
             Handle = handle;
         }
@@ -118,6 +120,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             bgBrush = DarkColors.DarkBackgroundBrush;
             borderPen = DarkColors.Fen_DGVCellBordersPen;
             progressBrush = DarkColors.DGV_PinnedBackgroundDarkBrush;
+            e.CellStyle.ForeColor = DarkColors.Fen_DarkForeground;
         }
         else
         {
@@ -130,7 +133,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         if (ProgressItems.Count == 0 || e.RowIndex < ProgressItems.Count)
         {
-            int fontHeight = DefaultCellStyle.Font.Height + 10;
+            int fontHeight = DefaultCellStyle.Font.Height + 20;
 
             ProgressItemData item = ProgressItems[e.RowIndex];
             e.Graphics.FillRectangle(
@@ -138,12 +141,15 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                 e.CellBounds.Left + 4,
                 e.CellBounds.Top + fontHeight,
                 GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 12) + 4,
-                e.CellBounds.Height - (fontHeight + 9));
-        }
+                e.CellBounds.Height - (fontHeight + 5));
 
-        if (_darkModeEnabled)
-        {
-            e.CellStyle.ForeColor = DarkColors.Fen_DarkForeground;
+            // Draw the second line manually because linebreaks are ignored by the standard text cell
+            TextRenderer.DrawText(
+                e.Graphics,
+                item.Line2,
+                e.CellStyle.Font,
+                new Point(e.CellBounds.Left, e.CellBounds.Top + e.CellStyle.Font.Height + 4),
+                e.CellStyle.ForeColor);
         }
 
         e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
@@ -167,6 +173,6 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         ProgressItemData item = ProgressItems[e.RowIndex];
 
-        e.Value = item.Text.IsEmpty() ? "" : item.Text + ", " + item.Percent.ToStrCur();
+        e.Value = item.Line1;
     }
 }

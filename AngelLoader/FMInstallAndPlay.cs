@@ -1616,7 +1616,7 @@ internal static partial class FMInstallAndPlay
 
     private static void ReportProgress_Install(ProgressReport_Install report)
     {
-        Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, report.Percent);
+        Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
     }
 
     // @MT_TASK(InstallInternal): Multithread this
@@ -1830,7 +1830,7 @@ internal static partial class FMInstallAndPlay
                                         //    );
                                         //}
 
-                                        Core.View.MultiItemProgress_SetItemData(handle, LText.ProgressBox.ConvertingAudioFiles, 100);
+                                        Core.View.MultiItemProgress_SetItemData(handle, line2: LText.ProgressBox.ConvertingAudioFiles, percent: 100);
 
                                         // Dark engine games can't play MP3s, so they must be converted in all cases.
                                         // This one won't be called anywhere except during install, because it always runs during
@@ -1907,7 +1907,7 @@ internal static partial class FMInstallAndPlay
                                     //);
                                 }
 
-                                Core.View.MultiItemProgress_SetItemData(handle, LText.ProgressBox.RestoringBackup, 100);
+                                Core.View.MultiItemProgress_SetItemData(handle, line2: LText.ProgressBox.RestoringBackup, percent: 100);
 
                                 try
                                 {
