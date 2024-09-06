@@ -1833,7 +1833,7 @@ internal static partial class FMInstallAndPlay
                                         using Task task1 = FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM, AudioConvert.MP3ToWAV,
                                             binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                        task1.Wait();
+                                        task1.Wait(po.CancellationToken);
 
                                         // @MT_TASK: Implement rollback
                                         //if (_installCts.IsCancellationRequested)
@@ -1848,7 +1848,7 @@ internal static partial class FMInstallAndPlay
                                             using Task task2 = FMAudio.ConvertAsPartOfInstall(
                                                 validAudioConvertibleFM, AudioConvert.OGGToWAV,
                                                 binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                            task2.Wait();
+                                            task2.Wait(po.CancellationToken);
                                         }
 
                                         // @MT_TASK: Implement rollback
@@ -1865,7 +1865,7 @@ internal static partial class FMInstallAndPlay
                                                 validAudioConvertibleFM,
                                                 AudioConvert.WAVToWAV16, binaryBuffer, buffer.FileStreamBuffer,
                                                 po.CancellationToken);
-                                            task3.Wait();
+                                            task3.Wait(po.CancellationToken);
                                         }
 
                                         // @MT_TASK: Implement rollback
@@ -1875,10 +1875,9 @@ internal static partial class FMInstallAndPlay
                                         //    return false;
                                         //}
                                     }
-                                    catch (Exception ex)
+                                    catch (Exception ex) when (ex is not OperationCanceledException)
                                     {
-                                        validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion",
-                                            ex);
+                                        validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
                                     }
                                 }
 
