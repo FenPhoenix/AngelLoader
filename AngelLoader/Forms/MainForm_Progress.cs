@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Misc;
 
@@ -195,22 +193,6 @@ public sealed partial class MainForm
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
 
-    private sealed class ProgressItemData
-    {
-        internal int Handle;
-        internal string Text;
-        internal int Percent;
-
-        public ProgressItemData(string text, int percent, int handle)
-        {
-            Text = text;
-            Percent = percent;
-            Handle = handle;
-        }
-    }
-
-    private readonly List<ProgressItemData> _progressItems = new();
-
     public void MultiItemProgress_Show(
         int rows,
         string? message1 = null,
@@ -220,35 +202,38 @@ public sealed partial class MainForm
         Action? cancelAction = null) => Invoke(() =>
     {
         if (_MultiItemTestDGV.Visible) return;
-        _progressItems.Clear();
+        _MultiItemTestDGV.ProgressItems.Clear();
         _MultiItemTestDGV.BringToFront();
+
+        _MultiItemTestDGV.Rows.Clear();
         _MultiItemTestDGV.RowCount = rows;
+
         _MultiItemTestDGV.Show();
     });
 
     public void MultiItemProgress_Hide() => Invoke(() =>
     {
         _MultiItemTestDGV.Hide();
-        _progressItems.Clear();
+        _MultiItemTestDGV.ProgressItems.Clear();
     });
 
     public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
     {
-        ProgressItemData item = new("", 0, 0);
+        DGV_ProgressItem.ProgressItemData item = new("", 0, 0);
         item.Handle = item.GetHashCode();
-        _progressItems.Add(item);
+        _MultiItemTestDGV.ProgressItems.Add(item);
         _MultiItemTestDGV.Refresh();
         return item.Handle;
     });
 
     public void MultiItemProgress_CloseItemHandle(int handle) => Invoke(() =>
     {
-        for (int i = 0; i < _progressItems.Count; i++)
+        for (int i = 0; i < _MultiItemTestDGV.ProgressItems.Count; i++)
         {
-            ProgressItemData item = _progressItems[i];
+            DGV_ProgressItem.ProgressItemData item = _MultiItemTestDGV.ProgressItems[i];
             if (item.Handle == handle)
             {
-                _progressItems.RemoveAt(i);
+                _MultiItemTestDGV.ProgressItems.RemoveAt(i);
                 break;
             }
         }
@@ -257,27 +242,10 @@ public sealed partial class MainForm
 
     public void MultiItemProgress_SetItemData(int handle, string text, int percent) => Invoke(() =>
     {
-        ProgressItemData? item = _progressItems.Find(x => x.Handle == handle);
+        DGV_ProgressItem.ProgressItemData? item = _MultiItemTestDGV.ProgressItems.Find(x => x.Handle == handle);
         if (item == null) return;
         item.Text = text;
         item.Percent = percent;
-        //_MultiItemTestDGV.Invalidate();
-        _MultiItemTestDGV.InvalidateRow(_progressItems.IndexOf(item));
+        _MultiItemTestDGV.InvalidateRow(_MultiItemTestDGV.ProgressItems.IndexOf(item));
     });
-
-    private void _MultiItemTestDGV_CellValueNeeded(object sender, DataGridViewCellValueEventArgs e)
-    {
-        if (_progressItems.Count == 0) return;
-
-        if (e.RowIndex > _progressItems.Count - 1)
-        {
-            e.Value = "";
-            return;
-        }
-
-        ProgressItemData item = _progressItems[e.RowIndex];
-
-        e.Value = item.Text + ", " + item.Percent.ToStrCur();
-    }
-
 }

@@ -911,8 +911,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         _MultiItemTestDGV.Columns.Add(_MultiItemTestDGV_Column1);
 
-        _MultiItemTestDGV.CellValueNeeded += _MultiItemTestDGV_CellValueNeeded;
-
         ReadmeContainer.Controls.Add(_MultiItemTestDGV);
         _MultiItemTestDGV.BringToFront();
 
