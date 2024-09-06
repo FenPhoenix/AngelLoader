@@ -1107,9 +1107,16 @@ internal static partial class FMInstallAndPlay
             catch (Exception ex)
             {
                 fm.LogInfo(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
-                Core.Dialogs.ShowError($"Failed trying to generate a missflag.str file for the following FM:{NL}{NL}" +
-                                       fm.GetId() + $"{NL}{NL}" +
-                                       "The FM will probably not be able to play its mission(s).");
+                // IMPORTANT: Do NOT put up this dialog during threaded install!
+                // Don't bother returning the exception or anything; we'll try to generate again on play and show
+                // the dialog then if it still fails.
+                if (errorOnCantPlay)
+                {
+                    Core.Dialogs.ShowError(
+                        $"Failed trying to generate a missflag.str file for the following FM:{NL}{NL}" +
+                        fm.GetId() + $"{NL}{NL}" +
+                        "The FM will probably not be able to play its mission(s).");
+                }
             }
         }
         catch (Exception ex)
