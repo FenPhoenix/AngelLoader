@@ -1837,10 +1837,10 @@ internal static partial class FMInstallAndPlay
                                         // install so there's no need to make it optional elsewhere. So we don't need to have a
                                         // check bool or anything.
                                         // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                        using Task task1 = FMAudio.ConvertAsPartOfInstall(
+                                        using Task mp3ToWavTask = FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM, AudioConvert.MP3ToWAV,
                                             binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                        task1.Wait(po.CancellationToken);
+                                        mp3ToWavTask.Wait(po.CancellationToken);
 
                                         // @MT_TASK: Implement rollback
                                         //if (_installCts.IsCancellationRequested)
@@ -1852,10 +1852,10 @@ internal static partial class FMInstallAndPlay
                                         if (Config.ConvertOGGsToWAVsOnInstall)
                                         {
                                             // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                            using Task task2 = FMAudio.ConvertAsPartOfInstall(
+                                            using Task oggToWavTask = FMAudio.ConvertAsPartOfInstall(
                                                 validAudioConvertibleFM, AudioConvert.OGGToWAV,
                                                 binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                            task2.Wait(po.CancellationToken);
+                                            oggToWavTask.Wait(po.CancellationToken);
                                         }
 
                                         // @MT_TASK: Implement rollback
@@ -1868,11 +1868,11 @@ internal static partial class FMInstallAndPlay
                                         if (Config.ConvertWAVsTo16BitOnInstall)
                                         {
                                             // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                            using Task task3 = FMAudio.ConvertAsPartOfInstall(
+                                            using Task wavToWav16Task = FMAudio.ConvertAsPartOfInstall(
                                                 validAudioConvertibleFM,
                                                 AudioConvert.WAVToWAV16, binaryBuffer, buffer.FileStreamBuffer,
                                                 po.CancellationToken);
-                                            task3.Wait(po.CancellationToken);
+                                            wavToWav16Task.Wait(po.CancellationToken);
                                         }
 
                                         // @MT_TASK: Implement rollback
@@ -1907,6 +1907,8 @@ internal static partial class FMInstallAndPlay
                                     //);
                                 }
 
+                                Core.View.MultiItemProgress_SetItemData(handle, LText.ProgressBox.RestoringBackup, 100);
+
                                 try
                                 {
                                     //await RestoreFM(
@@ -1915,8 +1917,16 @@ internal static partial class FMInstallAndPlay
                                     //    buffers.ExtractTempBuffer,
                                     //    buffers.FileStreamBuffer,
                                     //    po.CancellationToken);
+
+                                    Task restoreTask = RestoreFM(
+                                        fmData.FM,
+                                        archivePaths,
+                                        buffer.ExtractTempBuffer,
+                                        buffer.FileStreamBuffer,
+                                        po.CancellationToken);
+                                    restoreTask.Wait(po.CancellationToken);
                                 }
-                                catch (Exception ex)
+                                catch (Exception ex) when (ex is not OperationCanceledException)
                                 {
                                     Log(ex: ex);
                                 }
