@@ -57,6 +57,9 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     {
         DoubleBuffered = true;
         BackgroundColor = SystemColors.Window;
+        DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft;
+        RowTemplate.Height = (DefaultCellStyle.Font.Height + 4) * 3;
+        //DefaultCellStyle.Padding = new Padding(0, 6, 0, 0);
     }
 
     protected override void OnSelectionChanged(EventArgs e)
@@ -127,13 +130,15 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         if (ProgressItems.Count == 0 || e.RowIndex < ProgressItems.Count)
         {
+            int fontHeight = DefaultCellStyle.Font.Height + 10;
+
             ProgressItemData item = ProgressItems[e.RowIndex];
             e.Graphics.FillRectangle(
-                progressBrush,
-                e.CellBounds.Left,
-                e.CellBounds.Top,
-                GetValueFromPercent_Int(item.Percent, e.CellBounds.Width),
-                e.CellBounds.Height);
+                Brushes.Green,
+                e.CellBounds.Left + 4,
+                e.CellBounds.Top + fontHeight,
+                GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 12) + 4,
+                e.CellBounds.Height - (fontHeight + 9));
         }
 
         if (_darkModeEnabled)
