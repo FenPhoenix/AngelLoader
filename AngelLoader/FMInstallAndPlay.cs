@@ -1102,7 +1102,7 @@ internal static partial class FMInstallAndPlay
                     missFlagLines.Add(curLine);
                 }
 
-                File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
+                File.WriteAllLines(missFlagFile, missFlagLines, UTF8NoBOM);
             }
             catch (Exception ex)
             {
