@@ -1614,11 +1614,6 @@ internal static partial class FMInstallAndPlay
         internal int Percent;
     }
 
-    private static void ReportProgress_Install(ProgressReport_Install report)
-    {
-        Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
-    }
-
     // @MT_TASK(InstallInternal): Multithread this
     /*
     @MT_TASK: We're getting very poor scaling here.
@@ -1659,6 +1654,9 @@ internal static partial class FMInstallAndPlay
 
             if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
         }
+
+        var reportThrottleSW = new Stopwatch();
+        reportThrottleSW.Start();
 
         var progress = new Progress<ProgressReport_Install>(ReportProgress_Install);
 
@@ -1809,8 +1807,7 @@ internal static partial class FMInstallAndPlay
                                 }
 
                                 // Only Dark engine games need audio conversion
-                                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM,
-                                        out ValidAudioConvertibleFM validAudioConvertibleFM))
+                                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
                                 {
                                     try
                                     {
@@ -1973,6 +1970,17 @@ internal static partial class FMInstallAndPlay
         Core.View.RefreshAllSelectedFMs_UpdateInstallState();
 
         return true;
+
+        void ReportProgress_Install(ProgressReport_Install report)
+        {
+            // @MT_TASK: Fixes the not-displayed audio convert text, but makes UI update chunky at times
+            // Don't really know how to solve this yet, but look into it
+            if (reportThrottleSW.ElapsedMilliseconds > 1)
+            {
+                Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
+                reportThrottleSW.Restart();
+            }
+        }
 
         // @MT_TASK(RollBackInstalls): Handle multithreading here too
         static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
