@@ -739,6 +739,7 @@ internal sealed class LText_Class
         internal readonly string CancelingInstall = "Canceling install...";
         [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
+        internal readonly string InstallFailed = "Install failed.";
         [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
         internal readonly string RestoringBackup = "Restoring backup...";
         internal readonly string InstallComplete = "Install complete.";
