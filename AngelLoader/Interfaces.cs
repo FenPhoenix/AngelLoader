@@ -384,8 +384,6 @@ public interface IView : ISettingsChangeableView
     void RefreshFMScreenshots(FanMission fm);
     void MultiItemProgress_Show(int rows, string? message1 = null, string? message2 = null,
         ProgressType? progressType = null, string? cancelMessage = null, Action? cancelAction = null);
-    int MultiItemProgress_GetNewItemHandle();
-    void MultiItemProgress_CloseItemHandle(int handle);
     void MultiItemProgress_SetItemData(int handle, string? line1 = null, string? line2 = null, int? percent = null);
     void MultiItemProgress_Hide();
 }

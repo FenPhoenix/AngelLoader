@@ -39,17 +39,15 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
     public sealed class ProgressItemData
     {
-        public int Handle;
         public string Line1;
         public string Line2;
         public int Percent;
 
-        public ProgressItemData(string line1, string line2, int percent, int handle)
+        public ProgressItemData(string line1, string line2, int percent)
         {
             Line1 = line1;
             Line2 = line2;
             Percent = percent;
-            Handle = handle;
         }
     }
 

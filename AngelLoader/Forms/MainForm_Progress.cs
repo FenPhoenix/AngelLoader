@@ -226,18 +226,6 @@ public sealed partial class MainForm
 
     public void MultiItemProgress_Hide() => Invoke(() => MultiItemProgressBox?.Hide());
 
-    public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
-    {
-        ConstructMultiItemProgressBox();
-        return MultiItemProgressBox.GetNewItemHandle();
-    });
-
-    public void MultiItemProgress_CloseItemHandle(int handle) => Invoke(() =>
-    {
-        ConstructMultiItemProgressBox();
-        MultiItemProgressBox.CloseItemHandle(handle);
-    });
-
     public void MultiItemProgress_SetItemData(
         int handle,
         string? line1 = null,

@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -14,10 +9,9 @@ using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
-using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms.CustomControls;
-public partial class MultiItemProgressBox : UserControl, IDarkable
+public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
     // Controls have a cache-text option but it's weird and causes weird issues sometimes that are not always
@@ -232,10 +226,15 @@ public partial class MultiItemProgressBox : UserControl, IDarkable
                 Cancel_Button.Focus();
 
                 // This must come after show, or else the scroll bars are broken on second show.
-                if (rows != null)
+                if (rows is { } rowsInt)
                 {
                     ItemsDGV.Rows.Clear();
-                    ItemsDGV.RowCount = (int)rows;
+                    ItemsDGV.RowCount = rowsInt;
+                    ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowsInt);
+                    for (int i = 0; i < rowsInt; i++)
+                    {
+                        ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData("", "", 0));
+                    }
                 }
             }
             else
@@ -245,16 +244,15 @@ public partial class MultiItemProgressBox : UserControl, IDarkable
         }
     }
 
-    internal void SetItemData(int handle, string? line1, string? line2, int? percent)
+    internal void SetItemData(int index, string? line1, string? line2, int? percent)
     {
-        DGV_ProgressItem.ProgressItemData? item = ItemsDGV.ProgressItems.Find(x => x.Handle == handle);
-        if (item == null) return;
+        DGV_ProgressItem.ProgressItemData item = ItemsDGV.ProgressItems[index];
 
         if (line1 != null) item.Line1 = line1;
         if (line2 != null) item.Line2 = line2;
         if (percent != null) item.Percent = (int)percent;
 
-        ItemsDGV.InvalidateRow(ItemsDGV.ProgressItems.IndexOf(item));
+        ItemsDGV.InvalidateRow(index);
     }
 
     internal new void Hide()
@@ -273,28 +271,5 @@ public partial class MultiItemProgressBox : UserControl, IDarkable
 
         Enabled = false;
         _owner.UIEnabled = true;
-    }
-
-    internal int GetNewItemHandle()
-    {
-        DGV_ProgressItem.ProgressItemData item = new("", "", 0, 0);
-        item.Handle = item.GetHashCode();
-        ItemsDGV.ProgressItems.Add(item);
-        ItemsDGV.Refresh();
-        return item.Handle;
-    }
-
-    internal void CloseItemHandle(int handle)
-    {
-        for (int i = 0; i < ItemsDGV.ProgressItems.Count; i++)
-        {
-            DGV_ProgressItem.ProgressItemData item = ItemsDGV.ProgressItems[i];
-            if (item.Handle == handle)
-            {
-                ItemsDGV.ProgressItems.RemoveAt(i);
-                break;
-            }
-        }
-        ItemsDGV.Refresh();
     }
 }

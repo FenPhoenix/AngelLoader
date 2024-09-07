@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms.CustomControls;
 
-partial class MultiItemProgressBox
+sealed partial class MultiItemProgressBox
 {
     /// <summary> 
     /// Required designer variable.
