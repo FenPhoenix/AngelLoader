@@ -1704,8 +1704,7 @@ internal static partial class FMInstallAndPlay
             {
                 fmDataList[i].Index = i;
                 fmInstallInitialItems[i].Line1 = fmDataList[i].FM.Archive;
-                // @MT_TASK: Localize this
-                fmInstallInitialItems[i].Line2 = "Queued...";
+                fmInstallInitialItems[i].Line2 = LText.ProgressBox.Queued;
             }
 
             ConcurrentQueue<FMData> cq = new(fmDataList);
@@ -1717,7 +1716,6 @@ internal static partial class FMInstallAndPlay
 
             Core.View.HideProgressBox();
 
-            // @MT_TASK: Fill out all rows in advance with FM name and "Waiting..." or something
             Core.View.MultiItemProgress_Show(
                 initialRowTexts: fmInstallInitialItems,
                 message1: "Installing test",
@@ -1955,8 +1953,7 @@ internal static partial class FMInstallAndPlay
                             //    return false;
                             //}
 
-                            // @MT_TASK: Localize this
-                            Core.View.MultiItemProgress_SetItemData(index, line2: "Install complete.", percent: 100);
+                            Core.View.MultiItemProgress_SetItemData(index, line2: LText.ProgressBox.InstallComplete, percent: 100);
                         }
                     });
                 }

@@ -732,6 +732,7 @@ internal sealed class LText_Class
 
     internal sealed class ProgressBox_Class
     {
+        internal readonly string Queued = "Queued...";
         internal readonly string InstallingFM = "Installing FM...";
         internal readonly string InstallingFMs = "Installing FMs...";
         internal readonly string PreparingToInstall = "Preparing to install...";
@@ -740,6 +741,7 @@ internal sealed class LText_Class
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
         [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
         internal readonly string RestoringBackup = "Restoring backup...";
+        internal readonly string InstallComplete = "Install complete.";
         [FenGenBlankLine]
         internal readonly string UninstallingFM = "Uninstalling FM...";
         internal readonly string UninstallingFMs = "Uninstalling FMs...";
