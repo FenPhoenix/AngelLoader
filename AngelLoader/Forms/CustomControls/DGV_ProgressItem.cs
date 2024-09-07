@@ -57,7 +57,33 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
     public DGV_ProgressItem()
     {
+        AllowUserToAddRows = false;
+        AllowUserToDeleteRows = false;
+        AllowUserToResizeRows = false;
+        ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+        ColumnHeadersVisible = false;
         DoubleBuffered = true;
+        MultiSelect = false;
+        ReadOnly = true;
+        RowHeadersVisible = false;
+        RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        Size = new Size(800, 400);
+        StandardTab = true;
+        VirtualMode = true;
+
+        ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
+        DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+
+        DataGridViewTextBoxColumn column1 = new()
+        {
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+            ReadOnly = true,
+            Resizable = DataGridViewTriState.False,
+            SortMode = DataGridViewColumnSortMode.Programmatic,
+        };
+        Columns.Add(column1);
+
         BackgroundColor = SystemColors.Window;
         DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft;
         RowTemplate.Height = (DefaultCellStyle.Font.Height + 4) * 3;

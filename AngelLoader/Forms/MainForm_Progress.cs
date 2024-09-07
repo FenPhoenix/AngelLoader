@@ -11,6 +11,7 @@ public sealed partial class MainForm
     // Not great code really, but works.
 
     private ProgressBox? ProgressBox;
+    private MultiItemProgressBox? MultiItemProgressBox;
 
     // Note! If we WEREN'T always invoking this, we would want to have a lock around it!
 
@@ -24,6 +25,17 @@ public sealed partial class MainForm
         ProgressBox.Anchor = AnchorStyles.None;
         ProgressBox.DarkModeEnabled = Global.Config.DarkMode;
         ProgressBox.SetSizeToDefault();
+    }
+
+    [MemberNotNull(nameof(MultiItemProgressBox))]
+    private void ConstructMultiItemProgressBox()
+    {
+        if (MultiItemProgressBox != null) return;
+
+        MultiItemProgressBox = new MultiItemProgressBox(this) { Tag = LoadType.Lazy, Visible = false };
+        Controls.Add(MultiItemProgressBox);
+        MultiItemProgressBox.Anchor = AnchorStyles.None;
+        MultiItemProgressBox.DarkModeEnabled = Global.Config.DarkMode;
     }
 
     // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
@@ -193,6 +205,8 @@ public sealed partial class MainForm
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
 
+    #region Multi-item progress box
+
     public void MultiItemProgress_Show(
         int rows,
         string? message1 = null,
@@ -201,43 +215,27 @@ public sealed partial class MainForm
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
-        if (_MultiItemTestDGV.Visible) return;
-        _MultiItemTestDGV.ProgressItems.Clear();
-        _MultiItemTestDGV.BringToFront();
-
-        _MultiItemTestDGV.Rows.Clear();
-        _MultiItemTestDGV.RowCount = rows;
-
-        _MultiItemTestDGV.Show();
+        ConstructMultiItemProgressBox();
+        MultiItemProgressBox.SetState(
+            rows: rows,
+            visible: true,
+            mainMessage1: message1,
+            cancelButtonMessage: cancelMessage,
+            cancelAction: cancelAction);
     });
 
-    public void MultiItemProgress_Hide() => Invoke(() =>
-    {
-        _MultiItemTestDGV.Hide();
-        _MultiItemTestDGV.ProgressItems.Clear();
-    });
+    public void MultiItemProgress_Hide() => Invoke(() => MultiItemProgressBox?.Hide());
 
     public int MultiItemProgress_GetNewItemHandle() => (int)Invoke(() =>
     {
-        DGV_ProgressItem.ProgressItemData item = new("", "", 0, 0);
-        item.Handle = item.GetHashCode();
-        _MultiItemTestDGV.ProgressItems.Add(item);
-        _MultiItemTestDGV.Refresh();
-        return item.Handle;
+        ConstructMultiItemProgressBox();
+        return MultiItemProgressBox.GetNewItemHandle();
     });
 
     public void MultiItemProgress_CloseItemHandle(int handle) => Invoke(() =>
     {
-        for (int i = 0; i < _MultiItemTestDGV.ProgressItems.Count; i++)
-        {
-            DGV_ProgressItem.ProgressItemData item = _MultiItemTestDGV.ProgressItems[i];
-            if (item.Handle == handle)
-            {
-                _MultiItemTestDGV.ProgressItems.RemoveAt(i);
-                break;
-            }
-        }
-        _MultiItemTestDGV.Refresh();
+        ConstructMultiItemProgressBox();
+        MultiItemProgressBox.CloseItemHandle(handle);
     });
 
     public void MultiItemProgress_SetItemData(
@@ -246,13 +244,9 @@ public sealed partial class MainForm
         string? line2 = null,
         int? percent = null) => Invoke(() =>
     {
-        DGV_ProgressItem.ProgressItemData? item = _MultiItemTestDGV.ProgressItems.Find(x => x.Handle == handle);
-        if (item == null) return;
-
-        if (line1 != null) item.Line1 = line1;
-        if (line2 != null) item.Line2 = line2;
-        if (percent != null) item.Percent = (int)percent;
-
-        _MultiItemTestDGV.InvalidateRow(_MultiItemTestDGV.ProgressItems.IndexOf(item));
+        ConstructMultiItemProgressBox();
+        MultiItemProgressBox.SetItemData(handle, line1, line2, percent);
     });
+
+    #endregion
 }
