@@ -174,7 +174,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                 e.Graphics,
                 item.Line2,
                 e.CellStyle.Font,
-                new Point(e.CellBounds.Left, e.CellBounds.Top + e.CellStyle.Font.Height + 4),
+                new Point(e.CellBounds.Left + 2, e.CellBounds.Top + e.CellStyle.Font.Height + 4),
                 e.CellStyle.ForeColor);
         }
 
