@@ -160,12 +160,15 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             int fontHeight = DefaultCellStyle.Font.Height + 20;
 
             ProgressItemData item = ProgressItems[e.RowIndex];
-            e.Graphics.FillRectangle(
-                Brushes.Green,
-                e.CellBounds.Left + 4,
-                e.CellBounds.Top + fontHeight,
-                GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 12) + 4,
-                e.CellBounds.Height - (fontHeight + 5));
+            if (item.Percent > 0)
+            {
+                e.Graphics.FillRectangle(
+                    Brushes.Green,
+                    e.CellBounds.Left + 4,
+                    e.CellBounds.Top + fontHeight,
+                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 12) + 4,
+                    e.CellBounds.Height - (fontHeight + 5));
+            }
 
             // Draw the second line manually because linebreaks are ignored by the standard text cell
             TextRenderer.DrawText(

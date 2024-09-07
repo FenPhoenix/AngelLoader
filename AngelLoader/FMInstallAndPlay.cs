@@ -1698,9 +1698,14 @@ internal static partial class FMInstallAndPlay
 
             //BinaryBuffer binaryBuffer = new();
 
+            (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
+
             for (int i = 0; i < fmDataList.Count; i++)
             {
                 fmDataList[i].Index = i;
+                fmInstallInitialItems[i].Line1 = fmDataList[i].FM.Archive;
+                // @MT_TASK: Localize this
+                fmInstallInitialItems[i].Line2 = "Queued...";
             }
 
             ConcurrentQueue<FMData> cq = new(fmDataList);
@@ -1713,7 +1718,9 @@ internal static partial class FMInstallAndPlay
             Core.View.HideProgressBox();
 
             // @MT_TASK: Fill out all rows in advance with FM name and "Waiting..." or something
-            Core.View.MultiItemProgress_Show(fmDataList.Count, message1: "Installing test",
+            Core.View.MultiItemProgress_Show(
+                initialRowTexts: fmInstallInitialItems,
+                message1: "Installing test",
                 progressType: ProgressType.Determinate);
 
             //Buffers[] buffers = InitializedArray<Buffers>(threadCount);
@@ -1756,8 +1763,8 @@ internal static partial class FMInstallAndPlay
 
                             // Framework zip extracting is much faster, so use it if possible
                             // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
-                            // But we don't want to parse out stupid console output for error detection and junk if we
-                            // don't have to so whatever.
+                            // But we don't want to parse out stupid console output for error detection and junk
+                            // if we don't have to so whatever.
 
                             FMInstallResult fmInstallResult =
                                 fmData.ArchivePath.ExtIsZip() ? InstallFMZip(

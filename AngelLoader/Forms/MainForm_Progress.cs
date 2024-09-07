@@ -208,7 +208,7 @@ public sealed partial class MainForm
     #region Multi-item progress box
 
     public void MultiItemProgress_Show(
-        int rows,
+        (string Line1, string Line2)[] initialRowTexts,
         string? message1 = null,
         string? message2 = null,
         ProgressType? progressType = null,
@@ -217,7 +217,7 @@ public sealed partial class MainForm
     {
         ConstructMultiItemProgressBox();
         MultiItemProgressBox.SetState(
-            rows: rows,
+            initialRowTexts: initialRowTexts,
             visible: true,
             mainMessage1: message1,
             cancelButtonMessage: cancelMessage,

@@ -181,13 +181,13 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     /// <summary>
     /// Sets the state of the progress box. A null parameter means no change.
     /// </summary>
-    /// <param name="rows"></param>
+    /// <param name="initialRowTexts"></param>
     /// <param name="visible"></param>
     /// <param name="mainMessage1"></param>
     /// <param name="cancelButtonMessage"></param>
     /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
     internal void SetState(
-        int? rows,
+        (string Line1, string Line2)[]? initialRowTexts,
         bool? visible,
         string? mainMessage1,
         string? cancelButtonMessage,
@@ -226,14 +226,18 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
                 Cancel_Button.Focus();
 
                 // This must come after show, or else the scroll bars are broken on second show.
-                if (rows is { } rowsInt)
+                if (initialRowTexts != null)
                 {
+                    int rowCount = initialRowTexts.Length;
                     ItemsDGV.Rows.Clear();
-                    ItemsDGV.RowCount = rowsInt;
-                    ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowsInt);
-                    for (int i = 0; i < rowsInt; i++)
+                    ItemsDGV.RowCount = rowCount;
+                    ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowCount);
+                    for (int i = 0; i < rowCount; i++)
                     {
-                        ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData("", "", 0));
+                        ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData(
+                            initialRowTexts[i].Line1,
+                            initialRowTexts[i].Line2,
+                            0));
                     }
                 }
             }
