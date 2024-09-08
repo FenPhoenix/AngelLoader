@@ -11,6 +11,8 @@ using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
+
+// @MT_TASK: Make this resizable somehow? Maybe even make it a window?
 public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
@@ -252,15 +254,44 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     {
         DGV_ProgressItem.ProgressItemData item = ItemsDGV.ProgressItems[index];
 
-        if (line1 != null) item.Line1 = line1;
-        if (line2 != null) item.Line2 = line2;
-        if (percent != null) item.Percent = (int)percent;
+        bool refreshRequired = false;
 
-        ItemsDGV.InvalidateRow(index);
+        if (line1 != null)
+        {
+            if (item.Line1 != line1)
+            {
+                refreshRequired = true;
+                item.Line1 = line1;
+            }
+        }
+
+        if (line2 != null)
+        {
+            if (item.Line2 != line2)
+            {
+                refreshRequired = true;
+                item.Line2 = line2;
+            }
+        }
+
+        if (percent is { } percentInt)
+        {
+            if (item.Percent != percentInt)
+            {
+                refreshRequired = true;
+                item.Percent = percentInt;
+            }
+        }
+
+        if (refreshRequired)
+        {
+            ItemsDGV.InvalidateRow(index);
+        }
     }
 
     internal new void Hide()
     {
+        // @MT_TASK: Implement taskbar progress
         if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
 
         ItemsDGV.RowCount = 0;
