@@ -1773,10 +1773,6 @@ internal static partial class FMInstallAndPlay
                             int index = fmData.Index;
                             fmData.InstallStarted = true;
 
-                            //FMData fmData = fmDataList[i];
-
-                            //if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
-
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 
                             int mainPercent = GetPercentFromValue_Int(i, fmDataList.Count);
@@ -1827,13 +1823,7 @@ internal static partial class FMInstallAndPlay
 
                             results.Add(fmInstallResult);
 
-                            // @MT_TASK: Implement rollback
-                            //if (fmInstallResult.ResultType == InstallResultType.Canceled)
-                            //{
-                            //    //await RollBackInstalls(fmDataList, i);
-                            //    //return false;
-                            //    state.Stop();
-                            //}
+                            po.CancellationToken.ThrowIfCancellationRequested();
 
                             fmData.FM.Installed = true;
 
@@ -1892,12 +1882,7 @@ internal static partial class FMInstallAndPlay
                                         po.CancellationToken);
                                     mp3ToWavTask.Wait();
 
-                                    // @MT_TASK: Implement rollback
-                                    //if (_installCts.IsCancellationRequested)
-                                    //{
-                                    //    await RollBackInstalls(fmDataList, i);
-                                    //    return false;
-                                    //}
+                                    po.CancellationToken.ThrowIfCancellationRequested();
 
                                     if (Config.ConvertOGGsToWAVsOnInstall)
                                     {
@@ -1911,12 +1896,7 @@ internal static partial class FMInstallAndPlay
                                         oggToWavTask.Wait();
                                     }
 
-                                    // @MT_TASK: Implement rollback
-                                    //if (_installCts.IsCancellationRequested)
-                                    //{
-                                    //    await RollBackInstalls(fmDataList, i);
-                                    //    return false;
-                                    //}
+                                    po.CancellationToken.ThrowIfCancellationRequested();
 
                                     if (Config.ConvertWAVsTo16BitOnInstall)
                                     {
@@ -1930,12 +1910,7 @@ internal static partial class FMInstallAndPlay
                                         wavToWav16Task.Wait();
                                     }
 
-                                    // @MT_TASK: Implement rollback
-                                    //if (_installCts.IsCancellationRequested)
-                                    //{
-                                    //    await RollBackInstalls(fmDataList, i);
-                                    //    return false;
-                                    //}
+                                    po.CancellationToken.ThrowIfCancellationRequested();
                                 }
                                 catch (Exception ex) when (ex is not OperationCanceledException)
                                 {
@@ -1945,22 +1920,6 @@ internal static partial class FMInstallAndPlay
 
                             // Don't be lazy about this; there can be no harm and only benefits by doing it right away
                             GenerateMissFlagFileIfRequired(fmData.FM);
-
-                            if (single)
-                            {
-                                //Core.View.SetProgressBoxState_Single(
-                                //    message1: LText.ProgressBox.RestoringBackup,
-                                //    message2: "",
-                                //    progressType: ProgressType.Indeterminate
-                                //);
-                            }
-                            else
-                            {
-                                //Core.View.SetProgressBoxState_Double(
-                                //    subMessage: LText.ProgressBox.RestoringBackup,
-                                //    subPercent: 100
-                                //);
-                            }
 
                             Core.View.MultiItemProgress_SetItemData(
                                 handle: index,
@@ -1991,12 +1950,7 @@ internal static partial class FMInstallAndPlay
                                 Log(ex: ex);
                             }
 
-                            // @MT_TASK: Implement rollback
-                            //if (_installCts.IsCancellationRequested)
-                            //{
-                            //    await RollBackInstalls(fmDataList, i);
-                            //    return false;
-                            //}
+                            po.CancellationToken.ThrowIfCancellationRequested();
 
                             Core.View.MultiItemProgress_SetItemData(
                                 handle: index,
