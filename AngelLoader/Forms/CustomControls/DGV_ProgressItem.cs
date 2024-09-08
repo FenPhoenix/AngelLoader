@@ -24,9 +24,9 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
             if (_darkModeEnabled)
             {
-                BackgroundColor = DarkColors.Fen_DarkBackground;
+                BackgroundColor = DarkColors.DarkBackground;
                 RowsDefaultCellStyle.ForeColor = DarkColors.Fen_DarkForeground;
-                RowsDefaultCellStyle.BackColor = DarkColors.Fen_DarkBackground;
+                RowsDefaultCellStyle.BackColor = DarkColors.DarkBackground;
             }
             else
             {
