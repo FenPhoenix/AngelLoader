@@ -1864,50 +1864,39 @@ internal static partial class FMInstallAndPlay
                                         line2: LText.ProgressBox.ConvertingAudioFiles,
                                         percent: 100);
 
-                                    // @MT_TASK (task wait hack / cancellation tokens):
-                                    // Don't pass cancellation token to task.Wait() because then if canceled it
-                                    // terminates the wait and then we have a race condition with Dispose(), which
-                                    // throws with "task not finished" if the race condition comes out the wrong way
-
                                     // Dark engine games can't play MP3s, so they must be converted in all cases.
                                     // This one won't be called anywhere except during install, because it always runs during
                                     // install so there's no need to make it optional elsewhere. So we don't need to have a
                                     // check bool or anything.
-                                    // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                    using Task mp3ToWavTask = FMAudio.ConvertAsPartOfInstall(
+                                    FMAudio.ConvertAsPartOfInstall(
                                         validAudioConvertibleFM,
                                         AudioConvert.MP3ToWAV,
                                         binaryBuffer,
                                         buffer.FileStreamBuffer,
                                         po.CancellationToken);
-                                    mp3ToWavTask.Wait();
 
                                     po.CancellationToken.ThrowIfCancellationRequested();
 
                                     if (Config.ConvertOGGsToWAVsOnInstall)
                                     {
-                                        // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                        using Task oggToWavTask = FMAudio.ConvertAsPartOfInstall(
+                                        FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM,
                                             AudioConvert.OGGToWAV,
                                             binaryBuffer,
                                             buffer.FileStreamBuffer,
                                             po.CancellationToken);
-                                        oggToWavTask.Wait();
                                     }
 
                                     po.CancellationToken.ThrowIfCancellationRequested();
 
                                     if (Config.ConvertWAVsTo16BitOnInstall)
                                     {
-                                        // @MT_TASK: Cheap hack for now to get this async convert working, make better later
-                                        using Task wavToWav16Task = FMAudio.ConvertAsPartOfInstall(
+                                        FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM,
                                             AudioConvert.WAVToWAV16,
                                             binaryBuffer,
                                             buffer.FileStreamBuffer,
                                             po.CancellationToken);
-                                        wavToWav16Task.Wait();
                                     }
 
                                     po.CancellationToken.ThrowIfCancellationRequested();
@@ -1928,22 +1917,12 @@ internal static partial class FMInstallAndPlay
 
                             try
                             {
-                                //await RestoreFM(
-                                //    fmData.FM,
-                                //    archivePaths,
-                                //    buffers.ExtractTempBuffer,
-                                //    buffers.FileStreamBuffer,
-                                //    po.CancellationToken);
-
-                                // @MT_TASK: Make sure RestoreFM() doesn't throw on cancel, but just returns
-                                // Otherwise we might not catch it probably due to this stupid hack task wait thing
-                                Task restoreTask = RestoreFM(
+                                RestoreFM(
                                     fmData.FM,
                                     archivePaths,
                                     buffer.ExtractTempBuffer,
                                     buffer.FileStreamBuffer,
                                     po.CancellationToken);
-                                restoreTask.Wait();
                             }
                             catch (Exception ex) when (ex is not OperationCanceledException)
                             {

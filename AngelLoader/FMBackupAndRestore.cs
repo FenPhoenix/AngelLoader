@@ -372,7 +372,7 @@ internal static partial class FMInstallAndPlay
         });
     }
 
-    private static Task RestoreFM(
+    private static void RestoreFM(
         FanMission fm,
         List<string> archivePaths,
         byte[] zipExtractTempBuffer,
@@ -382,59 +382,88 @@ internal static partial class FMInstallAndPlay
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-            return VoidTask;
+            return;
         }
 
         bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
         bool fmIsT3 = fm.Game == Game.Thief3;
 
-        return Task.Run(() =>
+        BackupFile backupFile = GetBackupFile(fm, archivePaths);
+        if (!backupFile.Found) return;
+
+        if (ct.IsCancellationRequested) return;
+
+        var fileExcludes = new HashSetPathI();
+
+        string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
+        string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
+
+        using (ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
         {
-            BackupFile backupFile = GetBackupFile(fm, archivePaths);
-            if (!backupFile.Found) return;
+            if (ct.IsCancellationRequested) return;
+
+            var entries = archive.Entries;
+
+            int entriesCount = entries.Count;
 
             if (ct.IsCancellationRequested) return;
 
-            var fileExcludes = new HashSetPathI();
-
-            string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
-            string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
-
-            using (ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
+            if (backupFile.DarkLoader)
             {
-                if (ct.IsCancellationRequested) return;
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    ZipArchiveEntry entry = entries[i];
+                    string fn = entry.FullName;
+                    if (!fn.Rel_ContainsDirSep())
+                    {
+                        string savesFullPath = Path.Combine(fmInstalledPath, _darkSavesDir);
+                        if (!TryGetExtractedNameOrFailIfMalicious(savesFullPath, fn, out string finalFilePath))
+                        {
+                            continue;
+                        }
+                        Directory.CreateDirectory(savesFullPath);
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
+                    }
+                    else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
+                    {
+                        if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFilePath))
+                        {
+                            continue;
+                        }
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
+                    }
 
-                var entries = archive.Entries;
-
-                int entriesCount = entries.Count;
-
-                if (ct.IsCancellationRequested) return;
-
-                if (backupFile.DarkLoader)
+                    if (ct.IsCancellationRequested) return;
+                }
+            }
+            else
+            {
+                string savesDirS = fmIsT3 ? _t3SavesDirS : _darkSavesDirS;
+                if (restoreSavesAndScreensOnly)
                 {
                     for (int i = 0; i < entriesCount; i++)
                     {
                         ZipArchiveEntry entry = entries[i];
+
+                        if (ct.IsCancellationRequested) return;
+
                         string fn = entry.FullName;
-                        if (!fn.Rel_ContainsDirSep())
+
+                        if (fn.Length > 0 && !fn[^1].IsDirSep() &&
+                            (fn.PathStartsWithI(savesDirS) ||
+                             fn.PathStartsWithI(_darkNetSavesDirS) ||
+                             fn.PathStartsWithI(_screensDirS) ||
+                             (fm.Game == Game.SS2 &&
+                              (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                         {
-                            string savesFullPath = Path.Combine(fmInstalledPath, _darkSavesDir);
-                            if (!TryGetExtractedNameOrFailIfMalicious(savesFullPath, fn, out string finalFilePath))
-                            {
-                                continue;
-                            }
-                            Directory.CreateDirectory(savesFullPath);
-                            entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
-                        }
-                        else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
-                        {
-                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFilePath))
+                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFileName))
                             {
                                 continue;
                             }
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
                         }
 
                         if (ct.IsCancellationRequested) return;
@@ -442,131 +471,99 @@ internal static partial class FMInstallAndPlay
                 }
                 else
                 {
-                    string savesDirS = fmIsT3 ? _t3SavesDirS : _darkSavesDirS;
-                    if (restoreSavesAndScreensOnly)
+                    ZipArchiveEntry? fmSelInf = archive.GetEntry(Paths.FMSelInf);
+
+                    if (ct.IsCancellationRequested) return;
+
+                    // Null check required because GetEntry() can return null
+                    if (fmSelInf != null)
                     {
-                        for (int i = 0; i < entriesCount; i++)
-                        {
-                            ZipArchiveEntry entry = entries[i];
-
-                            if (ct.IsCancellationRequested) return;
-
-                            string fn = entry.FullName;
-
-                            if (fn.Length > 0 && !fn[^1].IsDirSep() &&
-                                (fn.PathStartsWithI(savesDirS) ||
-                                 fn.PathStartsWithI(_darkNetSavesDirS) ||
-                                 fn.PathStartsWithI(_screensDirS) ||
-                                 (fm.Game == Game.SS2 &&
-                                  (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
-                            {
-                                if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFileName))
-                                {
-                                    continue;
-                                }
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                                entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
-                            }
-
-                            if (ct.IsCancellationRequested) return;
-                        }
-                    }
-                    else
-                    {
-                        ZipArchiveEntry? fmSelInf = archive.GetEntry(Paths.FMSelInf);
+                        using var eo = fmSelInf.Open();
 
                         if (ct.IsCancellationRequested) return;
 
-                        // Null check required because GetEntry() can return null
-                        if (fmSelInf != null)
+                        using var sr = new StreamReader(eo);
+
+                        if (ct.IsCancellationRequested) return;
+
+                        while (sr.ReadLine() is { } line)
                         {
-                            using var eo = fmSelInf.Open();
+                            bool startsWithRemoveFile = line.StartsWithFast(_removeFileEq);
 
-                            if (ct.IsCancellationRequested) return;
+                            if (!startsWithRemoveFile) continue;
 
-                            using var sr = new StreamReader(eo);
-
-                            if (ct.IsCancellationRequested) return;
-
-                            while (sr.ReadLine() is { } line)
+                            string val = line.Substring(_removeFileEqLen).Trim();
+                            if (!val.PathStartsWithI(savesDirS) &&
+                                !val.PathStartsWithI(_darkNetSavesDirS) &&
+                                !val.PathStartsWithI(_screensDirS) &&
+                                (fm.Game != Game.SS2 ||
+                                 (!_ss2SaveDirsInZipRegex.IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
+                                !val.EqualsI(Paths.FMSelInf) &&
+                                !val.EqualsI(_startMisSav) &&
+                                // Reject malformed and/or maliciously formed paths - we're going to
+                                // delete these files, and we don't want to delete anything outside
+                                // the FM folder
+                                // @DIRSEP: Relative, no UNC paths can occur here (and if they do we want to reject them anyway)
+                                !val.StartsWithDirSep() &&
+                                !val.EndsWithDirSep() &&
+                                !val.Contains(':') &&
+                                // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
+                                !val.Contains("./", StringComparison.Ordinal) &&
+                                !val.Contains(".\\", StringComparison.Ordinal))
                             {
-                                bool startsWithRemoveFile = line.StartsWithFast(_removeFileEq);
-
-                                if (!startsWithRemoveFile) continue;
-
-                                string val = line.Substring(_removeFileEqLen).Trim();
-                                if (!val.PathStartsWithI(savesDirS) &&
-                                    !val.PathStartsWithI(_darkNetSavesDirS) &&
-                                    !val.PathStartsWithI(_screensDirS) &&
-                                    (fm.Game != Game.SS2 ||
-                                     (!_ss2SaveDirsInZipRegex.IsMatch(val) && !val.PathStartsWithI(_ss2CurrentDirS))) &&
-                                    !val.EqualsI(Paths.FMSelInf) &&
-                                    !val.EqualsI(_startMisSav) &&
-                                    // Reject malformed and/or maliciously formed paths - we're going to
-                                    // delete these files, and we don't want to delete anything outside
-                                    // the FM folder
-                                    // @DIRSEP: Relative, no UNC paths can occur here (and if they do we want to reject them anyway)
-                                    !val.StartsWithDirSep() &&
-                                    !val.EndsWithDirSep() &&
-                                    !val.Contains(':') &&
-                                    // @DIRSEP: Critical: Check both / and \ here because we have no dirsep-agnostic string.Contains()
-                                    !val.Contains("./", StringComparison.Ordinal) &&
-                                    !val.Contains(".\\", StringComparison.Ordinal))
-                                {
-                                    fileExcludes.Add(val);
-                                }
-
-                                if (ct.IsCancellationRequested) return;
+                                fileExcludes.Add(val);
                             }
-                        }
-
-                        for (int i = 0; i < entriesCount; i++)
-                        {
-                            ZipArchiveEntry entry = entries[i];
-                            string efn = entry.FullName.ToBackSlashes();
-
-                            if (IsIgnoredFile(efn) ||
-                                efn.EndsWithDirSep() ||
-                                fileExcludes.Contains(efn))
-                            {
-                                continue;
-                            }
-
-                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, efn, out string finalFileName))
-                            {
-                                continue;
-                            }
-                            if (efn.Rel_ContainsDirSep())
-                            {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
-                            }
-                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
 
                             if (ct.IsCancellationRequested) return;
                         }
                     }
-                }
-            }
 
-            if (!restoreSavesAndScreensOnly)
-            {
-                foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
-                {
-                    if (fileExcludes.Contains(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
+                    for (int i = 0; i < entriesCount; i++)
                     {
-                        // @ZipSafety: This delete is safe, because we're only deleting files that have come straight from a GetFiles() call.
-                        // So we know they're in the actual folder.
+                        ZipArchiveEntry entry = entries[i];
+                        string efn = entry.FullName.ToBackSlashes();
 
-                        // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
-                        // If we have crf files replacing dirs, the empty dir will override the crf. We want
-                        // to store whether dirs were actually removed so we can remove them again.
-                        File.Delete(f);
+                        if (IsIgnoredFile(efn) ||
+                            efn.EndsWithDirSep() ||
+                            fileExcludes.Contains(efn))
+                        {
+                            continue;
+                        }
+
+                        if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, efn, out string finalFileName))
+                        {
+                            continue;
+                        }
+                        if (efn.Rel_ContainsDirSep())
+                        {
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
+                        }
+                        entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+
+                        if (ct.IsCancellationRequested) return;
                     }
-
-                    if (ct.IsCancellationRequested) return;
                 }
             }
-        });
+        }
+
+        if (!restoreSavesAndScreensOnly)
+        {
+            foreach (string f in Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories))
+            {
+                if (fileExcludes.Contains(f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS)))
+                {
+                    // @ZipSafety: This delete is safe, because we're only deleting files that have come straight from a GetFiles() call.
+                    // So we know they're in the actual folder.
+
+                    // TODO: Deleted dirs are not detected, they're detected as "delete every file in this dir"
+                    // If we have crf files replacing dirs, the empty dir will override the crf. We want
+                    // to store whether dirs were actually removed so we can remove them again.
+                    File.Delete(f);
+                }
+
+                if (ct.IsCancellationRequested) return;
+            }
+        }
     }
 
     #endregion

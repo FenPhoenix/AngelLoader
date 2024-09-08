@@ -83,19 +83,22 @@ internal static class FMAudio
             BinaryBuffer buffer = new();
             byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-            for (int i = 0; i < validFMs.Count; i++)
+            await Task.Run(() =>
             {
-                ValidAudioConvertibleFM fm = validFMs[i];
+                for (int i = 0; i < validFMs.Count; i++)
+                {
+                    ValidAudioConvertibleFM fm = validFMs[i];
 
-                Core.View.SetProgressBoxState_Single(
-                    message2: fm.GetId(),
-                    percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
-                );
+                    Core.View.SetProgressBoxState_Single(
+                        message2: fm.GetId(),
+                        percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
+                    );
 
-                await ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer, CancellationToken.None);
+                    ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer, CancellationToken.None);
 
-                if (!single && _conversionCts.IsCancellationRequested) return;
-            }
+                    if (!single && _conversionCts.IsCancellationRequested) return;
+                }
+            });
         }
         finally
         {
@@ -142,228 +145,225 @@ internal static class FMAudio
         #endregion
     }
 
-    internal static Task ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
+    internal static ConvertAudioError ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
 
-    private static Task<ConvertAudioError> ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
+    private static ConvertAudioError ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
-        return Task.Run(async () =>
+        if (type == AudioConvert.WAVToWAV16)
         {
-            if (type == AudioConvert.WAVToWAV16)
+            bool ffmpegNotFound = !File.Exists(Paths.FFmpegExe);
+            bool ffProbeNotFound = !File.Exists(Paths.FFprobeExe);
+            if (ffmpegNotFound || ffProbeNotFound)
             {
-                #region Local functions
+                string message = $"The following executables could not be found:{NL}{NL}" +
+                                 (ffmpegNotFound ? Paths.FFmpegExe + $"{NL}" : "") +
+                                 (ffProbeNotFound ? Paths.FFprobeExe + $"{NL}" : "") + $"{NL}" +
+                                 ErrorText.Un + "convert audio files.";
 
-                static int GetBitDepthFast(string file, BinaryBuffer buffer, byte[] fileStreamBuffer)
+                Log(message, stackTrace: true);
+                // @MT_TASK(Audio): We're not putting up a dialog for this case anymore.
+                // If we wanted to add it back, we'd have to do it at the callsite now.
+                // But maybe we shouldn't bother, since we're not throwing errors at any of the other error
+                // cases...
+                return ConvertAudioError.FFmpegNotFound;
+            }
+
+            if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+            try
+            {
+                string[] fmSndPaths = GetFMSoundPathsByGame(fm);
+                foreach (string fmSndPath in fmSndPaths)
                 {
-                    // In case we read past the end of the file or can't open the file or whatever. We're trying
-                    // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
-                    // it in a minute.
-                    try
+                    if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
+
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    Dir_UnSetReadOnly(fmSndPath);
+
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    string[] wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    foreach (string f in wavFiles)
                     {
-                        using var fs = GetReadModeFileStreamWithCachedBuffer(file, fileStreamBuffer);
+                        // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                        if (!f.EndsWithI(".wav")) continue;
 
-                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                        if (!buffer.Buffer.StartsWith(_riff)) return -1;
-
-                        fs.Seek(4, SeekOrigin.Current);
-
-                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                        if (!buffer.Buffer.StartsWith(_wave)) return 0;
-
-                        _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                        if (!buffer.Buffer.StartsWith(_fmt)) return 0;
-
-                        fs.Seek(18, SeekOrigin.Current);
-
-                        ushort bits = BinaryRead.ReadUInt16(fs, buffer);
-                        return bits;
-                    }
-                    catch
-                    {
-                        return 0;
-                    }
-                }
-
-                // @PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
-                // I suspect it may be just the fact that it's a separate program that's constantly being started
-                // and stopped. If that's the case, MEH. :\
-                static int GetBitDepthSlow(string file)
-                {
-                    int ret = 0;
-
-                    using var p = new Process();
-                    p.EnableRaisingEvents = true;
-                    p.StartInfo.FileName = Paths.FFprobeExe;
-                    p.StartInfo.RedirectStandardOutput = true;
-                    p.StartInfo.Arguments = "-show_format -show_streams -hide_banner \"" + file + "\"";
-                    p.StartInfo.CreateNoWindow = true;
-                    p.StartInfo.UseShellExecute = false;
-
-                    p.OutputDataReceived += (_, e) =>
-                    {
-                        if (e.Data.IsEmpty()) return;
-
-                        string line = e.Data;
-                        if (line.TryGetValueO("bits_per_sample=", out string value) &&
-                            Int_TryParseInv(value, out int result))
-                        {
-                            ret = result;
-                        }
-                    };
-
-                    p.Start();
-                    p.BeginOutputReadLine();
-
-                    p.WaitForExit();
-                    return ret;
-                }
-
-                #endregion
-
-                bool ffmpegNotFound = !File.Exists(Paths.FFmpegExe);
-                bool ffProbeNotFound = !File.Exists(Paths.FFprobeExe);
-                if (ffmpegNotFound || ffProbeNotFound)
-                {
-                    string message = $"The following executables could not be found:{NL}{NL}" +
-                                     (ffmpegNotFound ? Paths.FFmpegExe + $"{NL}" : "") +
-                                     (ffProbeNotFound ? Paths.FFprobeExe + $"{NL}" : "") + $"{NL}" +
-                                     ErrorText.Un + "convert audio files.";
-
-                    Log(message, stackTrace: true);
-                    // @MT_TASK(Audio): We're not putting up a dialog for this case anymore.
-                    // If we wanted to add it back, we'd have to do it at the callsite now.
-                    // But maybe we shouldn't bother, since we're not throwing errors at any of the other error
-                    // cases...
-                    return ConvertAudioError.FFmpegNotFound;
-                }
-
-                if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                try
-                {
-                    string[] fmSndPaths = GetFMSoundPathsByGame(fm);
-                    foreach (string fmSndPath in fmSndPaths)
-                    {
-                        if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
+                        File_UnSetReadOnly(f);
 
                         if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                        Dir_UnSetReadOnly(fmSndPath);
+                        int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
                         if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                        string[] wavFiles = Directory.GetFiles(fmSndPath, "*.wav", SearchOption.AllDirectories);
+                        // Header wasn't wav, so skip this one
+                        if (bits == -1) continue;
+
+                        if (bits == 0) bits = GetBitDepthSlow(f);
 
                         if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                        foreach (string f in wavFiles)
-                        {
-                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                            if (!f.EndsWithI(".wav")) continue;
+                        if (bits is >= 1 and <= 16) continue;
 
-                            File_UnSetReadOnly(f);
+                        string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
+                        FFmpeg.NET.Engine.Convert(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
+                        File.Delete(f);
+                        File.Move(tempFile, f);
 
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                            int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
-
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                            // Header wasn't wav, so skip this one
-                            if (bits == -1) continue;
-
-                            if (bits == 0) bits = GetBitDepthSlow(f);
-
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                            if (bits is >= 1 and <= 16) continue;
-
-                            string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
-                            await FFmpeg.NET.Engine.ConvertAsync(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
-                            File.Delete(f);
-                            File.Move(tempFile, f);
-
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-                        }
+                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
                     }
-                }
-                catch (Exception ex)
-                {
-                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                try
+                fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
+            }
+        }
+        else
+        {
+            try
+            {
+                string pattern = type == AudioConvert.MP3ToWAV ? "*.mp3" : "*.ogg";
+                string ext = type == AudioConvert.MP3ToWAV ? ".mp3" : ".ogg";
+
+                string[] fmSndPaths = GetFMSoundPathsByGame(fm);
+                foreach (string fmSndPath in fmSndPaths)
                 {
-                    string pattern = type == AudioConvert.MP3ToWAV ? "*.mp3" : "*.ogg";
-                    string ext = type == AudioConvert.MP3ToWAV ? ".mp3" : ".ogg";
+                    if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
 
-                    string[] fmSndPaths = GetFMSoundPathsByGame(fm);
-                    foreach (string fmSndPath in fmSndPaths)
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    Dir_UnSetReadOnly(fmSndPath);
+
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    string[] files;
+                    try
                     {
-                        if (!Directory.Exists(fmSndPath)) return ConvertAudioError.None;
+                        files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(ErrorText.ExGet + "files in " + fmSndPath, ex);
+                        return ConvertAudioError.None;
+                    }
+
+                    if (ct.IsCancellationRequested) return ConvertAudioError.None;
+
+                    foreach (string f in files)
+                    {
+                        // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                        if (!f.EndsWithI(ext)) continue;
+
+                        File_UnSetReadOnly(f);
 
                         if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                        Dir_UnSetReadOnly(fmSndPath);
-
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                        string[] files;
                         try
                         {
-                            files = Directory.GetFiles(fmSndPath, pattern, SearchOption.AllDirectories);
+                            FFmpeg.NET.Engine.Convert(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
                         }
                         catch (Exception ex)
                         {
-                            Log(ErrorText.ExGet + "files in " + fmSndPath, ex);
-                            return ConvertAudioError.None;
+                            fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
+                        }
+
+                        try
+                        {
+                            File.Delete(f);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log(ErrorText.Ex + "deleting file " + f, ex);
                         }
 
                         if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                        foreach (string f in files)
-                        {
-                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                            if (!f.EndsWithI(ext)) continue;
-
-                            File_UnSetReadOnly(f);
-
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                            try
-                            {
-                                await FFmpeg.NET.Engine.ConvertAsync(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
-                            }
-                            catch (Exception ex)
-                            {
-                                fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
-                            }
-
-                            try
-                            {
-                                File.Delete(f);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(ErrorText.Ex + "deleting file " + f, ex);
-                            }
-
-                            if (ct.IsCancellationRequested) return ConvertAudioError.None;
-                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
-                }
             }
+            catch (Exception ex)
+            {
+                fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
+            }
+        }
 
-            return ConvertAudioError.None;
-        });
+        return ConvertAudioError.None;
+
+        #region Local functions
+
+        static int GetBitDepthFast(string file, BinaryBuffer buffer, byte[] fileStreamBuffer)
+        {
+            // In case we read past the end of the file or can't open the file or whatever. We're trying
+            // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
+            // it in a minute.
+            try
+            {
+                using var fs = GetReadModeFileStreamWithCachedBuffer(file, fileStreamBuffer);
+
+                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                if (!buffer.Buffer.StartsWith(_riff)) return -1;
+
+                fs.Seek(4, SeekOrigin.Current);
+
+                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                if (!buffer.Buffer.StartsWith(_wave)) return 0;
+
+                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
+                if (!buffer.Buffer.StartsWith(_fmt)) return 0;
+
+                fs.Seek(18, SeekOrigin.Current);
+
+                ushort bits = BinaryRead.ReadUInt16(fs, buffer);
+                return bits;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        // @PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
+        // I suspect it may be just the fact that it's a separate program that's constantly being started
+        // and stopped. If that's the case, MEH. :\
+        static int GetBitDepthSlow(string file)
+        {
+            int ret = 0;
+
+            using var p = new Process();
+            p.EnableRaisingEvents = true;
+            p.StartInfo.FileName = Paths.FFprobeExe;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.Arguments = "-show_format -show_streams -hide_banner \"" + file + "\"";
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.UseShellExecute = false;
+
+            p.OutputDataReceived += (_, e) =>
+            {
+                if (e.Data.IsEmpty()) return;
+
+                string line = e.Data;
+                if (line.TryGetValueO("bits_per_sample=", out string value) &&
+                    Int_TryParseInv(value, out int result))
+                {
+                    ret = result;
+                }
+            };
+
+            p.Start();
+            p.BeginOutputReadLine();
+
+            p.WaitForExit();
+            return ret;
+        }
+
+        #endregion
     }
 
     #endregion
