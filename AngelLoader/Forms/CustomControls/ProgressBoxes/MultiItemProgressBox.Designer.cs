@@ -33,9 +33,9 @@ sealed partial class MultiItemProgressBox
             this.Message1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ItemsDGV = new AngelLoader.Forms.CustomControls.DGV_ProgressItem();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MainProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
             this.MainPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.ItemsDGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -102,10 +102,19 @@ sealed partial class MultiItemProgressBox
             this.ItemsDGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.ItemsDGV.RowTemplate.Height = 51;
             this.ItemsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ItemsDGV.Size = new System.Drawing.Size(408, 286);
+            this.ItemsDGV.Size = new System.Drawing.Size(406, 284);
             this.ItemsDGV.StandardTab = true;
             this.ItemsDGV.TabIndex = 9;
             this.ItemsDGV.VirtualMode = true;
+            // 
+            // Column1
+            // 
+            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Column1.HeaderText = "Column1";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // MainProgressBar
             // 
@@ -126,15 +135,6 @@ sealed partial class MultiItemProgressBox
             this.MainPercentLabel.TabIndex = 11;
             this.MainPercentLabel.Text = "%";
             this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // Column1
-            // 
-            this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.Column1.HeaderText = "Column1";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // MultiItemProgressBox
             // 
