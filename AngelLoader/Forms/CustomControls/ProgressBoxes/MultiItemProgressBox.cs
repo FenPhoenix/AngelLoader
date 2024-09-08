@@ -261,10 +261,10 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             Cancel_Button.Visible = cancelAction != NullAction;
         }
 
-        // Put this last so the localization and whatever else can be right
-        if (visible != null)
+        switch (visible)
         {
-            if (visible == true)
+            // Put this last so the localization and whatever else can be right
+            case true:
             {
                 _owner.UIEnabled = false;
                 Enabled = true;
@@ -277,26 +277,26 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
                 BringToFront();
                 Show();
                 Cancel_Button.Focus();
-
-                // This must come after show, or else the scroll bars are broken on second show.
-                if (initialRowTexts != null)
-                {
-                    int rowCount = initialRowTexts.Length;
-                    ItemsDGV.Rows.Clear();
-                    ItemsDGV.RowCount = rowCount;
-                    ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowCount);
-                    for (int i = 0; i < rowCount; i++)
-                    {
-                        ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData(
-                            initialRowTexts[i].Line1,
-                            initialRowTexts[i].Line2,
-                            0));
-                    }
-                }
+                break;
             }
-            else
-            {
+            case false:
                 Hide();
+                break;
+        }
+
+        if (Visible && initialRowTexts != null)
+        {
+            // This must come after show, or else the scroll bars are broken on second show.
+            int rowCount = initialRowTexts.Length;
+            ItemsDGV.Rows.Clear();
+            ItemsDGV.RowCount = rowCount;
+            ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowCount);
+            for (int i = 0; i < rowCount; i++)
+            {
+                ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData(
+                    initialRowTexts[i].Line1,
+                    initialRowTexts[i].Line2,
+                    0));
             }
         }
     }

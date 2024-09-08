@@ -214,7 +214,7 @@ public sealed partial class MainForm
     public bool MultiItemProgress_Visible() => (bool)Invoke(() => MultiItemProgressBox is { Visible: true });
 
     public void MultiItemProgress_Show(
-        (string Line1, string Line2)[] initialRowTexts,
+        (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         int? mainPercent = null,
         ProgressType? mainProgressType = null,
@@ -233,6 +233,7 @@ public sealed partial class MainForm
     });
 
     public void MultiItemProgress_SetState(
+        (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         int? mainPercent = null,
         ProgressType? mainProgressType = null,
@@ -241,7 +242,7 @@ public sealed partial class MainForm
     {
         ConstructMultiItemProgressBox();
         MultiItemProgressBox.SetState(
-            initialRowTexts: null,
+            initialRowTexts: initialRowTexts,
             visible: null,
             mainMessage1: message1,
             mainPercent: mainPercent,

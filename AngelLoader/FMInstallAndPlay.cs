@@ -31,6 +31,9 @@ namespace AngelLoader;
 internal static partial class FMInstallAndPlay
 {
 #if TIMING_TEST
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+    // ReSharper disable RedundantNameQualifier
     private static readonly System.Diagnostics.Stopwatch _timingTestStopWatch = new();
 
     private static void StartTiming()
@@ -43,6 +46,9 @@ internal static partial class FMInstallAndPlay
         _timingTestStopWatch.Stop();
         System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
     }
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+    // ReSharper restore RedundantNameQualifier
 #endif
 
     #region Private fields
@@ -1467,8 +1473,6 @@ internal static partial class FMInstallAndPlay
     {
         var fail = (false, new List<string>());
 
-        static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
-
         bool single = fms.Length == 1;
 
         bool[] gamesChecked = new bool[SupportedGameCount];
@@ -1593,6 +1597,8 @@ internal static partial class FMInstallAndPlay
         }
 
         return (true, archivePaths);
+
+        static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
     }
 
     #region Install
@@ -1683,78 +1689,78 @@ internal static partial class FMInstallAndPlay
 
         var progress = new Progress<ProgressReport_Install>(ReportProgress_Install);
 
-        try
+        _installCts = _installCts.Recreate();
+
+        //Core.View.ShowProgressBox_Single(
+        //    message1: LText.ProgressBox.PreparingToInstall,
+        //    progressType: ProgressType.Indeterminate,
+        //    cancelAction: CancelInstallToken
+        //);
+
+        Core.View.MultiItemProgress_Show(
+            message1: LText.ProgressBox.PreparingToInstall,
+            mainProgressType: ProgressType.Indeterminate,
+            cancelMessage: LText.Global.Cancel,
+            cancelAction: CancelInstallToken);
+
+        return await Task.Run(async () =>
         {
-            _installCts = _installCts.Recreate();
-
-            Core.View.ShowProgressBox_Single(
-                message1: LText.ProgressBox.PreparingToInstall,
-                progressType: ProgressType.Indeterminate,
-                cancelAction: CancelInstallToken
-            );
-
-            (bool success, List<string> archivePaths) =
-                await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
-
-            if (!success) return false;
-
-            //Core.View.SetProgressBoxState(
-            //    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
-            //    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-            //    mainMessage2: "",
-            //    mainPercent: 0,
-            //    mainProgressType: ProgressType.Determinate,
-            //    subMessage: "",
-            //    subPercent: 0,
-            //    subProgressType: ProgressType.Determinate,
-            //    cancelMessage: LText.Global.Cancel
-            //);
-
-            //BinaryBuffer binaryBuffer = new();
-
-            (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
-
-            for (int i = 0; i < fmDataList.Count; i++)
+            try
             {
-                fmDataList[i].Index = i;
-                fmInstallInitialItems[i].Line1 = fmDataList[i].FM.Archive;
-                fmInstallInitialItems[i].Line2 = LText.ProgressBox.Queued;
-            }
+                (bool success, List<string> archivePaths) = DoPreChecks(fms, fmDataList, install: true);
 
-            ConcurrentQueue<FMData> cq = new(fmDataList);
-            ConcurrentBag<FMInstallResult> results = new();
+                if (!success) return false;
+                if (fmDataList.Count == 0) return false;
 
-            int threadCount =
-                //1;
-                GetThreadCountForParallelOperation(fmDataList.Count);
+                //Core.View.SetProgressBoxState(
+                //    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
+                //    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
+                //    mainMessage2: "",
+                //    mainPercent: 0,
+                //    mainProgressType: ProgressType.Determinate,
+                //    subMessage: "",
+                //    subPercent: 0,
+                //    subProgressType: ProgressType.Determinate,
+                //    cancelMessage: LText.Global.Cancel
+                //);
 
-            Core.View.HideProgressBox();
+                (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
 
-            Core.View.MultiItemProgress_Show(
-                initialRowTexts: fmInstallInitialItems,
-                message1: "Installing test",
-                mainPercent: 0,
-                mainProgressType: ProgressType.Determinate,
-                cancelMessage: LText.Global.Cancel,
-                cancelAction: CancelInstallToken);
+                for (int i = 0; i < fmDataList.Count; i++)
+                {
+                    fmDataList[i].Index = i;
+                    fmInstallInitialItems[i].Line1 = fmDataList[i].FM.Archive;
+                    fmInstallInitialItems[i].Line2 = LText.ProgressBox.Queued;
+                }
 
-            //Buffers[] buffers = InitializedArray<Buffers>(threadCount);
+                Core.View.MultiItemProgress_SetState(
+                    initialRowTexts: fmInstallInitialItems,
+                    message1: fmDataList.Count == 1 ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
+                    mainPercent: 0,
+                    mainProgressType: ProgressType.Determinate,
+                    cancelMessage: LText.Global.Cancel,
+                    cancelAction: CancelInstallToken);
 
-            // @MT_TASK: Remove for final release
-            Trace.WriteLine(threadCount);
+                ConcurrentQueue<FMData> cq = new(fmDataList);
+                ConcurrentBag<FMInstallResult> results = new();
 
-            ParallelOptions po = new()
-            {
-                CancellationToken = _installCts.Token,
-                MaxDegreeOfParallelism = threadCount,
-            };
+                int threadCount =
+                        //1;
+                        GetThreadCountForParallelOperation(fmDataList.Count);
+
+                // @MT_TASK: Remove for final release
+                Trace.WriteLine(threadCount);
+
+                ParallelOptions po = new()
+                {
+                    CancellationToken = _installCts.Token,
+                    MaxDegreeOfParallelism = threadCount,
+                };
 
 #if TIMING_TEST
-            StartTiming();
+                StartTiming();
 #endif
 
-            bool parallelSuccess = await Task.Run(async () =>
-            {
                 try
                 {
                     Parallel.For(0, threadCount, po, i =>
@@ -1863,7 +1869,10 @@ internal static partial class FMInstallAndPlay
                                     //    );
                                     //}
 
-                                    Core.View.MultiItemProgress_SetItemData(index, line2: LText.ProgressBox.ConvertingAudioFiles, percent: 100);
+                                    Core.View.MultiItemProgress_SetItemData(
+                                        handle: index,
+                                        line2: LText.ProgressBox.ConvertingAudioFiles,
+                                        percent: 100);
 
                                     // @MT_TASK (task wait hack / cancellation tokens):
                                     // Don't pass cancellation token to task.Wait() because then if canceled it
@@ -1876,8 +1885,11 @@ internal static partial class FMInstallAndPlay
                                     // check bool or anything.
                                     // @MT_TASK: Cheap hack for now to get this async convert working, make better later
                                     using Task mp3ToWavTask = FMAudio.ConvertAsPartOfInstall(
-                                        validAudioConvertibleFM, AudioConvert.MP3ToWAV,
-                                        binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
+                                        validAudioConvertibleFM,
+                                        AudioConvert.MP3ToWAV,
+                                        binaryBuffer,
+                                        buffer.FileStreamBuffer,
+                                        po.CancellationToken);
                                     mp3ToWavTask.Wait();
 
                                     // @MT_TASK: Implement rollback
@@ -1891,8 +1903,11 @@ internal static partial class FMInstallAndPlay
                                     {
                                         // @MT_TASK: Cheap hack for now to get this async convert working, make better later
                                         using Task oggToWavTask = FMAudio.ConvertAsPartOfInstall(
-                                            validAudioConvertibleFM, AudioConvert.OGGToWAV,
-                                            binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
+                                            validAudioConvertibleFM,
+                                            AudioConvert.OGGToWAV,
+                                            binaryBuffer,
+                                            buffer.FileStreamBuffer,
+                                            po.CancellationToken);
                                         oggToWavTask.Wait();
                                     }
 
@@ -1908,7 +1923,9 @@ internal static partial class FMInstallAndPlay
                                         // @MT_TASK: Cheap hack for now to get this async convert working, make better later
                                         using Task wavToWav16Task = FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM,
-                                            AudioConvert.WAVToWAV16, binaryBuffer, buffer.FileStreamBuffer,
+                                            AudioConvert.WAVToWAV16,
+                                            binaryBuffer,
+                                            buffer.FileStreamBuffer,
                                             po.CancellationToken);
                                         wavToWav16Task.Wait();
                                     }
@@ -1945,7 +1962,10 @@ internal static partial class FMInstallAndPlay
                                 //);
                             }
 
-                            Core.View.MultiItemProgress_SetItemData(index, line2: LText.ProgressBox.RestoringBackup, percent: 100);
+                            Core.View.MultiItemProgress_SetItemData(
+                                handle: index,
+                                line2: LText.ProgressBox.RestoringBackup,
+                                percent: 100);
 
                             try
                             {
@@ -1978,7 +1998,10 @@ internal static partial class FMInstallAndPlay
                             //    return false;
                             //}
 
-                            Core.View.MultiItemProgress_SetItemData(index, line2: LText.ProgressBox.InstallComplete, percent: 100);
+                            Core.View.MultiItemProgress_SetItemData(
+                                handle: index,
+                                line2: LText.ProgressBox.InstallComplete,
+                                percent: 100);
                         }
                     });
                 }
@@ -1995,26 +2018,22 @@ internal static partial class FMInstallAndPlay
                     Core.View.MultiItemProgress_Hide();
                 }
 
-                return true;
-            });
+                Core.View.Invoke(Core.View.RefreshAllSelectedFMs_UpdateInstallState);
 
-            if (!parallelSuccess) return false;
-        }
-        finally
-        {
+                return true;
+            }
+            finally
+            {
 #if TIMING_TEST
-            StopTimingAndPrintResult();
+                StopTimingAndPrintResult();
 #endif
 
-            Ini.WriteFullFMDataIni();
-            Core.View.HideProgressBox();
+                Ini.WriteFullFMDataIni();
+                Core.View.HideProgressBox();
 
-            _installCts.Dispose();
-        }
-
-        Core.View.RefreshAllSelectedFMs_UpdateInstallState();
-
-        return true;
+                _installCts.Dispose();
+            }
+        });
 
         void ReportProgress_Install(ProgressReport_Install report)
         {
@@ -2569,7 +2588,7 @@ internal static partial class FMInstallAndPlay
                 If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
                 This file will be included in the search when restoring, and the newest will be taken as
                 usual.
-                
+
                 fm.Archive can be blank at this point when all of the following conditions are true:
                 -fm is installed
                 -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
