@@ -1719,7 +1719,7 @@ internal static partial class FMInstallAndPlay
             Core.View.MultiItemProgress_Show(
                 initialRowTexts: fmInstallInitialItems,
                 message1: "Installing test",
-                progressType: ProgressType.Determinate);
+                mainProgressType: ProgressType.Determinate);
 
             //Buffers[] buffers = InitializedArray<Buffers>(threadCount);
 

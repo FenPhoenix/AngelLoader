@@ -386,8 +386,8 @@ public interface IView : ISettingsChangeableView
     void MultiItemProgress_Show(
         (string Line1, string Line2)[] initialRowTexts,
         string? message1 = null,
-        string? message2 = null,
-        ProgressType? progressType = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null);
 

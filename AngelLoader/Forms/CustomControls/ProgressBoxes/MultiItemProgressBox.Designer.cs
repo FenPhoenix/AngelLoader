@@ -32,6 +32,8 @@ sealed partial class MultiItemProgressBox
             this.Message1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.ItemsDGV = new AngelLoader.Forms.CustomControls.DGV_ProgressItem();
+            this.MainProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
+            this.MainPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.ItemsDGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -52,7 +54,7 @@ sealed partial class MultiItemProgressBox
             this.Cancel_Button.AutoSize = true;
             this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Cancel_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.Cancel_Button.Location = new System.Drawing.Point(168, 32);
+            this.Cancel_Button.Location = new System.Drawing.Point(168, 72);
             this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
@@ -75,22 +77,44 @@ sealed partial class MultiItemProgressBox
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.ItemsDGV.DefaultCellStyle = dataGridViewCellStyle1;
-            this.ItemsDGV.Location = new System.Drawing.Point(8, 72);
+            this.ItemsDGV.Location = new System.Drawing.Point(8, 104);
             this.ItemsDGV.Name = "ItemsDGV";
             this.ItemsDGV.RowTemplate.Height = 51;
-            this.ItemsDGV.Size = new System.Drawing.Size(408, 236);
+            this.ItemsDGV.Size = new System.Drawing.Size(408, 286);
             this.ItemsDGV.TabIndex = 9;
+            // 
+            // MainProgressBar
+            // 
+            this.MainProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainProgressBar.Location = new System.Drawing.Point(8, 40);
+            this.MainProgressBar.Name = "MainProgressBar";
+            this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
+            this.MainProgressBar.TabIndex = 10;
+            // 
+            // MainPercentLabel
+            // 
+            this.MainPercentLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPercentLabel.Location = new System.Drawing.Point(4, 24);
+            this.MainPercentLabel.Name = "MainPercentLabel";
+            this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
+            this.MainPercentLabel.TabIndex = 11;
+            this.MainPercentLabel.Text = "%";
+            this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // MultiItemProgressBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.Controls.Add(this.MainPercentLabel);
+            this.Controls.Add(this.MainProgressBar);
             this.Controls.Add(this.ItemsDGV);
             this.Controls.Add(this.Cancel_Button);
             this.Controls.Add(this.Message1Label);
             this.Name = "MultiItemProgressBox";
-            this.Size = new System.Drawing.Size(424, 316);
+            this.Size = new System.Drawing.Size(424, 398);
             ((System.ComponentModel.ISupportInitialize)(this.ItemsDGV)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -102,4 +126,6 @@ sealed partial class MultiItemProgressBox
     private DarkLabel Message1Label;
     private DarkButton Cancel_Button;
     private DGV_ProgressItem ItemsDGV;
+    private DarkProgressBar MainProgressBar;
+    private DarkLabel MainPercentLabel;
 }

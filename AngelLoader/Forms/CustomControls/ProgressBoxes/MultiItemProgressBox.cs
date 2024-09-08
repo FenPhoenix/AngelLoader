@@ -48,7 +48,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     {
         MainMessage1,
         //MainMessage2,
-        //MainPercent,
+        MainPercent,
         //SubMessage,
         //SubPercent,
     }
@@ -88,6 +88,11 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             Message1Label.ForeColor = fore;
             Message1Label.BackColor = back;
 
+            MainPercentLabel.ForeColor = fore;
+            MainPercentLabel.BackColor = back;
+
+            MainProgressBar.DarkModeEnabled = _darkModeEnabled;
+
             ItemsDGV.DarkModeEnabled = _darkModeEnabled;
         }
     }
@@ -101,9 +106,10 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         _defaultWidth = Width;
 
         // ReSharper disable once RedundantExplicitArraySize
-        MessageItems = new MessageItem[1]
+        MessageItems = new MessageItem[2]
         {
             new(Message1Label),
+            new(MainPercentLabel),
         };
 
         this.CenterHV(_owner, clientSize: true);
@@ -115,9 +121,44 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         Cancel_Button.CenterH(this);
     }
 
-    private void SetLabelText(string text)
+    private void SetLabelText(MessageItemType item, string text)
     {
-        Message1Label.Text = text;
+        MessageItem messageItem = MessageItems[(int)item];
+        if (text == messageItem.Text) return;
+        messageItem.Text = text;
+        messageItem.Width = -1;
+    }
+
+    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, MessageItemType messageItemType, bool updateTaskbar)
+    {
+        if (progressType == ProgressType.Indeterminate)
+        {
+            progressBar.Style = ProgressBarStyle.Marquee;
+            SetLabelText(messageItemType, "");
+        }
+        else
+        {
+            progressBar.Style = ProgressBarStyle.Blocks;
+        }
+
+        if (updateTaskbar && _owner.IsHandleCreated)
+        {
+            TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+        }
+    }
+
+    private void SetPercent(int percent, MessageItemType messageItemType, DarkProgressBar progressBar, bool updateTaskbar)
+    {
+        percent = percent.Clamp(0, 100);
+
+        SetLabelText(messageItemType, NonLocalizableText.PercentStrings[percent]);
+
+        progressBar.Value = percent;
+
+        if (updateTaskbar && _owner.IsHandleCreated)
+        {
+            TaskBarProgress.SetValue(_owner.Handle, percent, 100);
+        }
     }
 
     // @MT_TASK: Finish implementing this, add a main progress bar probably etc.
@@ -174,7 +215,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             Invalidate();
             if (_darkModeEnabled)
             {
-                //MainProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
+                MainProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
                 //SubProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
             }
         }
@@ -186,19 +227,31 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     /// <param name="initialRowTexts"></param>
     /// <param name="visible"></param>
     /// <param name="mainMessage1"></param>
+    /// <param name="mainPercent"></param>
+    /// <param name="mainProgressBarType"></param>
     /// <param name="cancelButtonMessage"></param>
     /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
     internal void SetState(
         (string Line1, string Line2)[]? initialRowTexts,
         bool? visible,
         string? mainMessage1,
+        int? mainPercent,
+        ProgressType? mainProgressBarType,
         string? cancelButtonMessage,
         Action? cancelAction)
     {
         if (mainMessage1 != null)
         {
-            SetLabelText(mainMessage1);
+            SetLabelText(MessageItemType.MainMessage1, mainMessage1);
             AutoSizeWidth();
+        }
+        if (mainPercent != null)
+        {
+            SetPercent((int)mainPercent, MessageItemType.MainPercent, MainProgressBar, updateTaskbar: true);
+        }
+        if (mainProgressBarType != null)
+        {
+            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MessageItemType.MainPercent, updateTaskbar: true);
         }
         if (cancelButtonMessage != null)
         {
@@ -295,9 +348,14 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
 
         ItemsDGV.RowCount = 0;
+
         base.Hide();
 
-        SetLabelText("");
+        SetLabelText(MessageItemType.MainMessage1, "");
+        SetLabelText(MessageItemType.MainPercent, "");
+        MainProgressBar.Value = 0;
+        MainProgressBar.Style = ProgressBarStyle.Blocks;
+
         ItemsDGV.ProgressItems.Clear();
 
         SetCancelButtonText("");

@@ -210,8 +210,8 @@ public sealed partial class MainForm
     public void MultiItemProgress_Show(
         (string Line1, string Line2)[] initialRowTexts,
         string? message1 = null,
-        string? message2 = null,
-        ProgressType? progressType = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
@@ -220,6 +220,8 @@ public sealed partial class MainForm
             initialRowTexts: initialRowTexts,
             visible: true,
             mainMessage1: message1,
+            mainPercent: mainPercent,
+            mainProgressBarType: mainProgressType,
             cancelButtonMessage: cancelMessage,
             cancelAction: cancelAction);
     });
