@@ -1984,11 +1984,9 @@ internal static partial class FMInstallAndPlay
                 }
                 catch (OperationCanceledException)
                 {
-                    // @MT_TASK: We get a UI thread block for a sec while the cancel finishes triggering.
-                    // The fact the loop is in a Task.Run() doesn't help for some reason. Removing restore and
-                    // audio convert and rollback calls and UI progress report updating all doesn't help either.
-                    // The scanner is set up the exact same way as this, but for some infuriating reason it doesn't
-                    // block the UI thread while cancellation is in progress, while here we do.
+                    // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
+                    // Apparently because it has to spew out all those exception messages in the output console.
+                    // Everything's fine outside of VS. So just ignore this during dev.
                     await RollBackMultipleFMs(fmDataList);
                     return false;
                 }
