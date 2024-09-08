@@ -94,7 +94,20 @@ internal static partial class FMInstallAndPlay
     private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
 
     private static CancellationTokenSource _installCts = new();
-    private static void CancelInstallToken() => _installCts.CancelIfNotDisposed();
+
+    private static void CancelInstallToken()
+    {
+        _installCts.CancelIfNotDisposed();
+        Core.View.Invoke(ShowCancelingInstallMessage);
+    }
+
+    private static void ShowCancelingInstallMessage()
+    {
+        if (Core.View.MultiItemProgress_Visible())
+        {
+            Core.View.MultiItemProgress_SetState(message1: LText.ProgressBox.CancelingInstall);
+        }
+    }
 
     private static CancellationTokenSource _uninstallCts = new();
     private static void CancelUninstallToken() => _uninstallCts.CancelIfNotDisposed();
@@ -1744,8 +1757,7 @@ internal static partial class FMInstallAndPlay
             {
                 try
                 {
-                    //for (int i = 0; i < fmDataList.Length; i++)
-                    Parallel.For(0, threadCount, po, (i, state) =>
+                    Parallel.For(0, threadCount, po, i =>
                     {
                         Buffers buffer = new();
                         BinaryBuffer binaryBuffer = new();
@@ -1821,8 +1833,7 @@ internal static partial class FMInstallAndPlay
 
                             try
                             {
-                                using var sw =
-                                    new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf));
+                                using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf));
                                 sw.WriteLine("Name=" + fmData.FM.InstalledDir);
                                 sw.WriteLine("Archive=" + fmData.FM.Archive);
                             }
@@ -1854,6 +1865,11 @@ internal static partial class FMInstallAndPlay
 
                                     Core.View.MultiItemProgress_SetItemData(index, line2: LText.ProgressBox.ConvertingAudioFiles, percent: 100);
 
+                                    // @MT_TASK (task wait hack / cancellation tokens):
+                                    // Don't pass cancellation token to task.Wait() because then if canceled it
+                                    // terminates the wait and then we have a race condition with Dispose(), which
+                                    // throws with "task not finished" if the race condition comes out the wrong way
+
                                     // Dark engine games can't play MP3s, so they must be converted in all cases.
                                     // This one won't be called anywhere except during install, because it always runs during
                                     // install so there's no need to make it optional elsewhere. So we don't need to have a
@@ -1862,7 +1878,7 @@ internal static partial class FMInstallAndPlay
                                     using Task mp3ToWavTask = FMAudio.ConvertAsPartOfInstall(
                                         validAudioConvertibleFM, AudioConvert.MP3ToWAV,
                                         binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                    mp3ToWavTask.Wait(po.CancellationToken);
+                                    mp3ToWavTask.Wait();
 
                                     // @MT_TASK: Implement rollback
                                     //if (_installCts.IsCancellationRequested)
@@ -1877,7 +1893,7 @@ internal static partial class FMInstallAndPlay
                                         using Task oggToWavTask = FMAudio.ConvertAsPartOfInstall(
                                             validAudioConvertibleFM, AudioConvert.OGGToWAV,
                                             binaryBuffer, buffer.FileStreamBuffer, po.CancellationToken);
-                                        oggToWavTask.Wait(po.CancellationToken);
+                                        oggToWavTask.Wait();
                                     }
 
                                     // @MT_TASK: Implement rollback
@@ -1894,7 +1910,7 @@ internal static partial class FMInstallAndPlay
                                             validAudioConvertibleFM,
                                             AudioConvert.WAVToWAV16, binaryBuffer, buffer.FileStreamBuffer,
                                             po.CancellationToken);
-                                        wavToWav16Task.Wait(po.CancellationToken);
+                                        wavToWav16Task.Wait();
                                     }
 
                                     // @MT_TASK: Implement rollback
@@ -1940,13 +1956,15 @@ internal static partial class FMInstallAndPlay
                                 //    buffers.FileStreamBuffer,
                                 //    po.CancellationToken);
 
+                                // @MT_TASK: Make sure RestoreFM() doesn't throw on cancel, but just returns
+                                // Otherwise we might not catch it probably due to this stupid hack task wait thing
                                 Task restoreTask = RestoreFM(
                                     fmData.FM,
                                     archivePaths,
                                     buffer.ExtractTempBuffer,
                                     buffer.FileStreamBuffer,
                                     po.CancellationToken);
-                                restoreTask.Wait(po.CancellationToken);
+                                restoreTask.Wait();
                             }
                             catch (Exception ex) when (ex is not OperationCanceledException)
                             {
@@ -1967,8 +1985,10 @@ internal static partial class FMInstallAndPlay
                 catch (OperationCanceledException)
                 {
                     // @MT_TASK: We get a UI thread block for a sec while the cancel finishes triggering.
-                    // Framework doesn't have async versions of the Parallel.For* loops. The fact the loop is in
-                    // a Task.Run() doesn't help for some reason.
+                    // The fact the loop is in a Task.Run() doesn't help for some reason. Removing restore and
+                    // audio convert calls and UI progress report updating all doesn't help either.
+                    // The scanner is set up the exact same way as this, but for some infuriating reason it doesn't
+                    // block the UI thread while cancellation is in progress, while here we do.
                     await RollBackMultipleFMs(fmDataList);
                     return false;
                 }
@@ -1979,6 +1999,8 @@ internal static partial class FMInstallAndPlay
 
                 return true;
             });
+
+            if (!parallelSuccess) return false;
         }
         finally
         {
@@ -1998,6 +2020,12 @@ internal static partial class FMInstallAndPlay
 
         void ReportProgress_Install(ProgressReport_Install report)
         {
+            if (_installCts.Token.IsCancellationRequested)
+            {
+                ShowCancelingInstallMessage();
+                return;
+            }
+
             // @MT_TASK: Fixes the not-displayed audio convert text, but makes UI update chunky at times
             // Don't really know how to solve this yet, but look into it
             if (reportThrottleSW.ElapsedMilliseconds > 1)
@@ -2042,8 +2070,6 @@ internal static partial class FMInstallAndPlay
                     //);
 
                     // @MT_TASK: Figure out a way to move the progress bar backward like before
-                    Core.View.MultiItemProgress_SetState(message1: LText.ProgressBox.CancelingInstall);
-
                     for (int i = 0; i < fmDataList.Count; i++)
                     {
                         FMData fmData = fmDataList[i];
@@ -2094,8 +2120,7 @@ internal static partial class FMInstallAndPlay
                     type,
                     LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" + fmInstalledPath);
             }
-            // This is going to get set based on this anyway at the next load from disk, might as well
-            // do it now
+            // This is going to get set based on this anyway at the next load from disk, might as well do it now
             fmData.FM.Installed = Directory.Exists(fmInstalledPath);
 
             return new FMInstallResult(InstallResultType.Success);

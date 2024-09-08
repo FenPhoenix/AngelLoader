@@ -10,6 +10,8 @@ public sealed partial class MainForm
 {
     // Not great code really, but works.
 
+    #region Progress box
+
     private ProgressBox? ProgressBox;
     private MultiItemProgressBox? MultiItemProgressBox;
 
@@ -205,7 +207,11 @@ public sealed partial class MainForm
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
 
+    #endregion
+
     #region Multi-item progress box
+
+    public bool MultiItemProgress_Visible() => (bool)Invoke(() => MultiItemProgressBox is { Visible: true });
 
     public void MultiItemProgress_Show(
         (string Line1, string Line2)[] initialRowTexts,
