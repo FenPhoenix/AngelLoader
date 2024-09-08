@@ -14,6 +14,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
+using AngelLoader.Forms.WinFormsNative.Taskbar;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -1062,4 +1063,20 @@ internal static class ControlUtils
     }
 
     #endregion
+
+    internal static void SetTaskBarState(this Form form, TaskbarStates states)
+    {
+        if (form.IsHandleCreated)
+        {
+            TaskBarProgress.SetState(form.Handle, states);
+        }
+    }
+
+    internal static void SetTaskBarValue(this Form form, int progressValue, int progressMax)
+    {
+        if (form.IsHandleCreated)
+        {
+            TaskBarProgress.SetValue(form.Handle, progressValue, progressMax);
+        }
+    }
 }

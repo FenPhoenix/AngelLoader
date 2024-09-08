@@ -133,25 +133,22 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         messageItem.Width = -1;
     }
 
-    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, MessageItemType messageItemType, bool updateTaskbar)
+    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, MessageItemType messageItemType)
     {
         if (progressType == ProgressType.Indeterminate)
         {
             progressBar.Style = ProgressBarStyle.Marquee;
             SetLabelText(messageItemType, "");
+            _owner.SetTaskBarState(TaskbarStates.Indeterminate);
         }
         else
         {
             progressBar.Style = ProgressBarStyle.Blocks;
-        }
-
-        if (updateTaskbar && _owner.IsHandleCreated)
-        {
-            TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+            _owner.SetTaskBarState(TaskbarStates.Normal);
         }
     }
 
-    private void SetPercent(int percent, MessageItemType messageItemType, DarkProgressBar progressBar, bool updateTaskbar)
+    private void SetPercent(int percent, MessageItemType messageItemType, DarkProgressBar progressBar)
     {
         percent = percent.Clamp(0, 100);
 
@@ -159,10 +156,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 
         progressBar.Value = percent;
 
-        if (updateTaskbar && _owner.IsHandleCreated)
-        {
-            TaskBarProgress.SetValue(_owner.Handle, percent, 100);
-        }
+        _owner.SetTaskBarValue(0, 100);
     }
 
     // @MT_TASK: Finish implementing this, add a main progress bar probably etc.
@@ -251,11 +245,11 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         }
         if (mainPercent != null)
         {
-            SetPercent((int)mainPercent, MessageItemType.MainPercent, MainProgressBar, updateTaskbar: true);
+            SetPercent((int)mainPercent, MessageItemType.MainPercent, MainProgressBar);
         }
         if (mainProgressBarType != null)
         {
-            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MessageItemType.MainPercent, updateTaskbar: true);
+            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MessageItemType.MainPercent);
         }
         if (cancelButtonMessage != null)
         {
@@ -348,8 +342,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 
     internal new void Hide()
     {
-        // @MT_TASK: Implement taskbar progress
-        if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
+        _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
         ItemsDGV.RowCount = 0;
 

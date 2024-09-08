@@ -2142,9 +2142,11 @@ public sealed partial class MainForm : DarkFormBase,
                 SetThemeBase(
                     theme: theme,
                     excludePredicate: x =>
-                        x.EqualsIfNotNull(ProgressBox)
-                        || (ProgressBox != null && x is Control xControl &&
-                            ProgressBox.Controls.Contains(xControl))
+                        x.EqualsIfNotNull(ProgressBox) ||
+                        x.EqualsIfNotNull(MultiItemProgressBox)
+                        || (x is Control xControl &&
+                            (ProgressBox?.Controls.Contains(xControl) == true ||
+                            MultiItemProgressBox?.Controls.Contains(xControl) == true))
                         || x is SplitterPanel,
                     createControlHandles: createControlHandles,
                     createHandlePredicate: CreateHandlePredicate,
@@ -2191,6 +2193,7 @@ public sealed partial class MainForm : DarkFormBase,
                     lazyLoadedControl.DarkModeEnabled = darkMode;
                 }
                 if (ProgressBox != null) ProgressBox.DarkModeEnabled = darkMode;
+                if (MultiItemProgressBox != null) MultiItemProgressBox.DarkModeEnabled = darkMode;
             }
 
             if (Config.GameOrganization == GameOrganization.ByTab)

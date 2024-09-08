@@ -227,7 +227,7 @@ public sealed partial class MainForm
     });
 
     public void MultiItemProgress_SetState(
-        string? message1=null,
+        string? message1 = null,
         int? mainPercent = null,
         ProgressType? mainProgressType = null,
         string? cancelMessage = null,

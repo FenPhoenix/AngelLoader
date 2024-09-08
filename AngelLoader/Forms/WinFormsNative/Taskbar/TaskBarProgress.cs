@@ -9,8 +9,8 @@ internal enum TaskbarStates
 {
     NoProgress = 0,
     Indeterminate = 1,
-#if false
     Normal = 2,
+#if false
     Error = 4,
     Paused = 8,
 #endif

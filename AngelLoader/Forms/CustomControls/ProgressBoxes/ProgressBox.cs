@@ -194,15 +194,18 @@ public sealed partial class ProgressBox : UserControl, IDarkable
         {
             progressBar.Style = ProgressBarStyle.Marquee;
             SetLabelText(messageItemType, "");
+            if (updateTaskbar)
+            {
+                _owner.SetTaskBarState(TaskbarStates.Indeterminate);
+            }
         }
         else
         {
             progressBar.Style = ProgressBarStyle.Blocks;
-        }
-
-        if (updateTaskbar && _owner.IsHandleCreated)
-        {
-            TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+            if (updateTaskbar)
+            {
+                _owner.SetTaskBarState(TaskbarStates.Normal);
+            }
         }
     }
 
@@ -214,9 +217,9 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
         progressBar.Value = percent;
 
-        if (updateTaskbar && _owner.IsHandleCreated)
+        if (updateTaskbar)
         {
-            TaskBarProgress.SetValue(_owner.Handle, percent, 100);
+            _owner.SetTaskBarValue(percent, 100);
         }
     }
 
@@ -226,7 +229,7 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
     internal void HideThis()
     {
-        if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
+        _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
         Hide();
 
