@@ -226,6 +226,24 @@ public sealed partial class MainForm
             cancelAction: cancelAction);
     });
 
+    public void MultiItemProgress_SetState(
+        string? message1=null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null) => Invoke(() =>
+    {
+        ConstructMultiItemProgressBox();
+        MultiItemProgressBox.SetState(
+            initialRowTexts: null,
+            visible: null,
+            mainMessage1: message1,
+            mainPercent: mainPercent,
+            mainProgressBarType: mainProgressType,
+            cancelButtonMessage: cancelMessage,
+            cancelAction: cancelAction);
+    });
+
     public void MultiItemProgress_Hide() => Invoke(() => MultiItemProgressBox?.Hide());
 
     public void MultiItemProgress_SetItemData(

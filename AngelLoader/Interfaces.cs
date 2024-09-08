@@ -394,4 +394,5 @@ public interface IView : ISettingsChangeableView
     void MultiItemProgress_SetItemData(int handle, string? line1 = null, string? line2 = null, int? percent = null);
 
     void MultiItemProgress_Hide();
+    void MultiItemProgress_SetState(string? message1 = null, int? mainPercent = null, ProgressType? mainProgressType = null, string? cancelMessage = null, Action? cancelAction = null);
 }

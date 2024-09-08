@@ -1591,6 +1591,7 @@ internal static partial class FMInstallAndPlay
         internal readonly string InstBasePath;
         internal readonly GameIndex GameIndex;
         internal int Index;
+        internal bool InstallStarted;
 
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
@@ -1739,7 +1740,7 @@ internal static partial class FMInstallAndPlay
             StartTiming();
 #endif
 
-            bool parallelSuccess = await Task.Run(() =>
+            bool parallelSuccess = await Task.Run(async () =>
             {
                 try
                 {
@@ -1752,13 +1753,13 @@ internal static partial class FMInstallAndPlay
                         while (cq.TryDequeue(out FMData fmData))
                         {
                             int index = fmData.Index;
+                            fmData.InstallStarted = true;
 
                             //FMData fmData = fmDataList[i];
 
                             //if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
 
-                            string fmInstalledPath =
-                                Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
+                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 
                             int mainPercent = GetPercentFromValue_Int(i, fmDataList.Count);
 
@@ -1965,7 +1966,10 @@ internal static partial class FMInstallAndPlay
                 }
                 catch (OperationCanceledException)
                 {
-                    // @MT_TASK: Rollback here
+                    // @MT_TASK: We get a UI thread block for a sec while the cancel finishes triggering.
+                    // Framework doesn't have async versions of the Parallel.For* loops. The fact the loop is in
+                    // a Task.Run() doesn't help for some reason.
+                    await RollBackMultipleFMs(fmDataList);
                     return false;
                 }
                 finally
@@ -2024,84 +2028,49 @@ internal static partial class FMInstallAndPlay
         }
 
         // @MT_TASK(RollBackInstalls): Handle multithreading here too
-        static void RollBackInstalls(List<FMData> fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
+        static async Task RollBackMultipleFMs(List<FMData> fmDataList)
         {
-            //return Task.Run(() =>
+            await Task.Run(() =>
             {
-                //bool single = fmDataList.Length == 1;
-
-                if (rollBackCurrentOnly)
+                try
                 {
-                    FMData fm = fmDataList[lastInstalledFMIndex];
-                    try
-                    {
-                        //if (single)
-                        //{
-                        //    //Core.View.SetProgressBoxState_Single(
-                        //    //    message1: LText.ProgressBox.CleaningUpFailedInstall,
-                        //    //    progressType: ProgressType.Indeterminate,
-                        //    //    cancelAction: NullAction
-                        //    //);
-                        //}
-                        //else
-                        //{
-                        //    //Core.View.SetProgressBoxState_Double(
-                        //    //    subMessage: LText.ProgressBox.CleaningUpFailedInstall,
-                        //    //    subProgressType: ProgressType.Indeterminate
-                        //    //);
-                        //}
+                    //Core.View.SetProgressBoxState_Single(
+                    //    message1: LText.ProgressBox.CancelingInstall,
+                    //    percent: 100,
+                    //    progressType: ProgressType.Determinate,
+                    //    cancelAction: NullAction
+                    //);
 
-                        Core.View.MultiItemProgress_SetItemData(
-                            handle: fm.Index,
-                            line2: LText.ProgressBox.CleaningUpFailedInstall,
-                            percent: 100);
+                    // @MT_TASK: Figure out a way to move the progress bar backward like before
+                    Core.View.MultiItemProgress_SetState(message1: LText.ProgressBox.CancelingInstall);
 
-                        RemoveFMFromDisk(fm);
-                    }
-                    finally
+                    for (int i = 0; i < fmDataList.Count; i++)
                     {
-                        Core.View.MultiItemProgress_SetItemData(
-                            handle: fm.Index,
-                            line2: LText.ProgressBox.InstallFailed,
-                            percent: 100);
-                        //if (!single)
-                        //{
-                        //    //Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
-                        //}
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        //Core.View.SetProgressBoxState_Single(
-                        //    message1: LText.ProgressBox.CancelingInstall,
-                        //    percent: 100,
-                        //    progressType: ProgressType.Determinate,
-                        //    cancelAction: NullAction
-                        //);
-
-                        for (int j = lastInstalledFMIndex; j >= 0; j--)
+                        FMData fmData = fmDataList[i];
+                        if (fmData.InstallStarted)
                         {
-                            FMData fmData = fmDataList[j];
-
-                            //Core.View.SetProgressBoxState_Single(
-                            //    message2: fmData.FM.GetId(),
-                            //    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
+                            // @MT_TASK: Return a list of error objects - or somehow add data to the existing one?
                             RemoveFMFromDisk(fmData);
                         }
                     }
-                    finally
-                    {
-                        Ini.WriteFullFMDataIni();
-                        Core.View.HideProgressBox();
-                    }
-                }
 
-                return;
-            }
-            //);
+                    //for (int j = lastInstalledFMIndex; j >= 0; j--)
+                    //{
+                    //    FMData fmData = fmDataList[j];
+
+                    //    //Core.View.SetProgressBoxState_Single(
+                    //    //    message2: fmData.FM.GetId(),
+                    //    //    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
+                    //    RemoveFMFromDisk(fmData);
+                    //}
+                }
+                finally
+                {
+                    Ini.WriteFullFMDataIni();
+                    Core.View.HideProgressBox();
+                }
+            });
         }
 
         static FMInstallResult RemoveFMFromDisk(FMData fmData)
