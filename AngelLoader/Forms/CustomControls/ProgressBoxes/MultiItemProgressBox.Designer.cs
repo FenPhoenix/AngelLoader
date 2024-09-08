@@ -1,4 +1,6 @@
-﻿namespace AngelLoader.Forms.CustomControls;
+﻿#define FenGen_DesignerSource
+
+namespace AngelLoader.Forms.CustomControls;
 
 sealed partial class MultiItemProgressBox
 {
@@ -22,6 +24,7 @@ sealed partial class MultiItemProgressBox
 
     #region Component Designer generated code
 
+#if DEBUG
     /// <summary> 
     /// Required method for Designer support - do not modify 
     /// the contents of this method with the code editor.
@@ -46,7 +49,7 @@ sealed partial class MultiItemProgressBox
             this.Message1Label.Location = new System.Drawing.Point(4, 8);
             this.Message1Label.Name = "Message1Label";
             this.Message1Label.Size = new System.Drawing.Size(416, 13);
-            this.Message1Label.TabIndex = 1;
+            this.Message1Label.TabIndex = 0;
             this.Message1Label.Text = "Message";
             this.Message1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -61,7 +64,7 @@ sealed partial class MultiItemProgressBox
             this.Cancel_Button.Name = "Cancel_Button";
             this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
-            this.Cancel_Button.TabIndex = 8;
+            this.Cancel_Button.TabIndex = 3;
             this.Cancel_Button.Text = "Cancel";
             // 
             // ItemsDGV
@@ -104,7 +107,7 @@ sealed partial class MultiItemProgressBox
             this.ItemsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.ItemsDGV.Size = new System.Drawing.Size(406, 284);
             this.ItemsDGV.StandardTab = true;
-            this.ItemsDGV.TabIndex = 9;
+            this.ItemsDGV.TabIndex = 4;
             this.ItemsDGV.VirtualMode = true;
             // 
             // Column1
@@ -123,7 +126,7 @@ sealed partial class MultiItemProgressBox
             this.MainProgressBar.Location = new System.Drawing.Point(8, 40);
             this.MainProgressBar.Name = "MainProgressBar";
             this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
-            this.MainProgressBar.TabIndex = 10;
+            this.MainProgressBar.TabIndex = 2;
             // 
             // MainPercentLabel
             // 
@@ -132,7 +135,7 @@ sealed partial class MultiItemProgressBox
             this.MainPercentLabel.Location = new System.Drawing.Point(4, 24);
             this.MainPercentLabel.Name = "MainPercentLabel";
             this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
-            this.MainPercentLabel.TabIndex = 11;
+            this.MainPercentLabel.TabIndex = 1;
             this.MainPercentLabel.Text = "%";
             this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
@@ -153,6 +156,7 @@ sealed partial class MultiItemProgressBox
             this.PerformLayout();
 
     }
+#endif
 
     #endregion
 

@@ -101,7 +101,11 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     {
         _owner = owner;
 
+#if DEBUG
         InitializeComponent();
+#else
+        InitSlim();
+#endif
 
         _defaultWidth = Width;
 
