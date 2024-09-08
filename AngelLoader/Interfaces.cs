@@ -177,6 +177,36 @@ public interface IView : ISettingsChangeableView
 
     #endregion
 
+    #region Multi-item progress box
+
+    void MultiItemProgress_Show(
+        (string Line1, string Line2)[]? initialRowTexts = null,
+        string? message1 = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null);
+
+    void MultiItemProgress_SetState(
+        (string Line1, string Line2)[]? initialRowTexts = null,
+        string? message1 = null,
+        int? mainPercent = null,
+        ProgressType? mainProgressType = null,
+        string? cancelMessage = null,
+        Action? cancelAction = null);
+
+    void MultiItemProgress_SetItemData(
+        int index,
+        string? line1 = null,
+        string? line2 = null,
+        int? percent = null);
+
+    void MultiItemProgress_Hide();
+
+    bool MultiItemProgress_Visible();
+
+    #endregion
+
     #region Init and show
 
     /// <summary>
@@ -382,24 +412,4 @@ public interface IView : ISettingsChangeableView
     void ShowUpdateNotification(bool show);
 
     void RefreshFMScreenshots(FanMission fm);
-
-    void MultiItemProgress_Show(
-        (string Line1, string Line2)[]? initialRowTexts = null,
-        string? message1 = null,
-        int? mainPercent = null,
-        ProgressType? mainProgressType = null,
-        string? cancelMessage = null,
-        Action? cancelAction = null);
-
-    void MultiItemProgress_SetItemData(int handle, string? line1 = null, string? line2 = null, int? percent = null);
-
-    void MultiItemProgress_Hide();
-    void MultiItemProgress_SetState(
-        (string Line1, string Line2)[]? initialRowTexts = null,
-        string? message1 = null,
-        int? mainPercent = null,
-        ProgressType? mainProgressType = null,
-        string? cancelMessage = null,
-        Action? cancelAction = null);
-    bool MultiItemProgress_Visible();
 }

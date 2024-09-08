@@ -1609,7 +1609,7 @@ internal static partial class FMInstallAndPlay
         internal readonly string ArchivePath;
         internal readonly string InstBasePath;
         internal readonly GameIndex GameIndex;
-        internal int Index;
+        internal int ViewItemIndex;
         internal bool InstallStarted;
 
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
@@ -1638,7 +1638,7 @@ internal static partial class FMInstallAndPlay
 
     private sealed class ProgressReport_Install
     {
-        internal int Handle;
+        internal int ViewItemIndex;
         internal string Text = "";
         internal int Percent;
     }
@@ -1728,7 +1728,7 @@ internal static partial class FMInstallAndPlay
 
                 for (int i = 0; i < fmDataList.Count; i++)
                 {
-                    fmDataList[i].Index = i;
+                    fmDataList[i].ViewItemIndex = i;
                     fmInstallInitialItems[i].Line1 = fmDataList[i].FM.Archive;
                     fmInstallInitialItems[i].Line2 = LText.ProgressBox.Queued;
                 }
@@ -1770,7 +1770,7 @@ internal static partial class FMInstallAndPlay
 
                         while (cq.TryDequeue(out FMData fmData))
                         {
-                            int index = fmData.Index;
+                            int viewItemIndex = fmData.ViewItemIndex;
                             fmData.InstallStarted = true;
 
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
@@ -1784,7 +1784,7 @@ internal static partial class FMInstallAndPlay
 
                             FMInstallResult fmInstallResult =
                                 fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
-                                    index,
+                                    viewItemIndex,
                                     progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
@@ -1794,7 +1794,7 @@ internal static partial class FMInstallAndPlay
                                     buffer.ExtractTempBuffer,
                                     buffer.FileStreamBuffer) :
                                 fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
-                                    index,
+                                    viewItemIndex,
                                     progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
@@ -1803,7 +1803,7 @@ internal static partial class FMInstallAndPlay
                                     fmDataList.Count,
                                     buffer.ExtractTempBuffer) :
                                 InstallFMSevenZip(
-                                    index,
+                                    viewItemIndex,
                                     progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
@@ -1860,7 +1860,7 @@ internal static partial class FMInstallAndPlay
                                     //}
 
                                     Core.View.MultiItemProgress_SetItemData(
-                                        handle: index,
+                                        index: viewItemIndex,
                                         line2: LText.ProgressBox.ConvertingAudioFiles,
                                         percent: 100);
 
@@ -1911,7 +1911,7 @@ internal static partial class FMInstallAndPlay
                             GenerateMissFlagFileIfRequired(fmData.FM);
 
                             Core.View.MultiItemProgress_SetItemData(
-                                handle: index,
+                                index: viewItemIndex,
                                 line2: LText.ProgressBox.RestoringBackup,
                                 percent: 100);
 
@@ -1932,7 +1932,7 @@ internal static partial class FMInstallAndPlay
                             po.CancellationToken.ThrowIfCancellationRequested();
 
                             Core.View.MultiItemProgress_SetItemData(
-                                handle: index,
+                                index: viewItemIndex,
                                 line2: LText.ProgressBox.InstallComplete,
                                 percent: 100);
                         }
@@ -1980,7 +1980,7 @@ internal static partial class FMInstallAndPlay
             // Don't really know how to solve this yet, but look into it
             if (reportThrottleSW.ElapsedMilliseconds > 1)
             {
-                Core.View.MultiItemProgress_SetItemData(report.Handle, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
+                Core.View.MultiItemProgress_SetItemData(report.ViewItemIndex, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
                 reportThrottleSW.Restart();
             }
         }
@@ -1990,7 +1990,7 @@ internal static partial class FMInstallAndPlay
             try
             {
                 Core.View.MultiItemProgress_SetItemData(
-                    handle: fm.Index,
+                    index: fm.ViewItemIndex,
                     line2: LText.ProgressBox.CleaningUpFailedInstall,
                     percent: 100);
 
@@ -1999,7 +1999,7 @@ internal static partial class FMInstallAndPlay
             finally
             {
                 Core.View.MultiItemProgress_SetItemData(
-                    handle: fm.Index,
+                    index: fm.ViewItemIndex,
                     line2: LText.ProgressBox.InstallFailed,
                     percent: 100);
             }
@@ -2079,7 +2079,7 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMZip(
-        int handle,
+        int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
         string fmArchivePath,
         string fmInstalledPath,
@@ -2089,8 +2089,6 @@ internal static partial class FMInstallAndPlay
         byte[] tempBuffer,
         byte[] fileStreamBuffer)
     {
-        bool single = fmCount == 1;
-
         fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
         try
@@ -2124,23 +2122,10 @@ internal static partial class FMInstallAndPlay
 
                 int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
+                // @MT_TASK: Show main percent on UI (for all zip, 7z, rar)
                 int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                if (single)
-                {
-                    //Core.View.SetProgressPercent(percent);
-                }
-                else
-                {
-                    //Core.View.SetProgressBoxState_Double(
-                    //    mainPercent: newMainPercent,
-                    //    subMessage: fmArchive,
-                    //    subPercent: percent
-                    //);
-                }
-
-                //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, percent);
-                report.Handle = handle;
+                report.ViewItemIndex = viewItemIndex;
                 report.Text = fmArchive;
                 report.Percent = percent;
                 progress.Report(report);
@@ -2161,7 +2146,7 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMRar(
-        int handle,
+        int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
         string fmArchivePath,
         string fmInstalledPath,
@@ -2170,8 +2155,6 @@ internal static partial class FMInstallAndPlay
         int fmCount,
         byte[] tempBuffer)
     {
-        bool single = fmCount == 1;
-
         fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
         try
@@ -2219,21 +2202,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!_installCts.IsCancellationRequested)
                 {
-                    if (single)
-                    {
-                        //Core.View.SetProgressPercent(percentOfEntries);
-                    }
-                    else
-                    {
-                        //Core.View.SetProgressBoxState_Double(
-                        //    mainPercent: newMainPercent,
-                        //    subMessage: fmArchive,
-                        //    subPercent: percentOfEntries
-                        //);
-                    }
-
-                    //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, percentOfEntries);
-                    report.Handle = handle;
+                    report.ViewItemIndex = viewItemIndex;
                     report.Text = fmArchive;
                     report.Percent = percentOfEntries;
                     progress.Report(report);
@@ -2255,7 +2224,7 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMSevenZip(
-        int handle,
+        int viewItemIndex,
         IProgress<ProgressReport_Install> progressInstall,
         string fmArchivePath,
         string fmInstalledPath,
@@ -2263,8 +2232,6 @@ internal static partial class FMInstallAndPlay
         int mainPercent,
         int fmCount)
     {
-        bool single = fmCount == 1;
-
         try
         {
             var report = new ProgressReport_Install();
@@ -2285,21 +2252,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!pr.Canceling)
                 {
-                    if (single)
-                    {
-                        //Core.View.SetProgressPercent(pr.PercentOfEntries);
-                    }
-                    else
-                    {
-                        //Core.View.SetProgressBoxState_Double(
-                        //    mainPercent: newMainPercent,
-                        //    subMessage: fmArchive,
-                        //    subPercent: pr.PercentOfEntries
-                        //);
-                    }
-
-                    //Core.View.MultiItemProgress_SetItemData(handle, fmArchive, pr.PercentOfEntries);
-                    report.Handle = handle;
+                    report.ViewItemIndex = viewItemIndex;
                     report.Text = fmArchive;
                     report.Percent = pr.PercentOfEntries;
                     progressInstall.Report(report);

@@ -254,13 +254,13 @@ public sealed partial class MainForm
     public void MultiItemProgress_Hide() => Invoke(() => MultiItemProgressBox?.Hide());
 
     public void MultiItemProgress_SetItemData(
-        int handle,
+        int index,
         string? line1 = null,
         string? line2 = null,
         int? percent = null) => Invoke(() =>
     {
         ConstructMultiItemProgressBox();
-        MultiItemProgressBox.SetItemData(handle, line1, line2, percent);
+        MultiItemProgressBox.SetItemData(index, line1, line2, percent);
     });
 
     #endregion
