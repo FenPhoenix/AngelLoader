@@ -35,7 +35,8 @@ sealed partial class MultiItemProgressBox
         this.Cancel_Button.Location = new System.Drawing.Point(168, 72);
         this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
         this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-        this.Cancel_Button.TabIndex = 8;
+        this.Cancel_Button.TabIndex = 3;
+        this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
         // 
         // ItemsDGV
         // 
@@ -76,7 +77,7 @@ sealed partial class MultiItemProgressBox
         this.ItemsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
         this.ItemsDGV.Size = new System.Drawing.Size(406, 284);
         this.ItemsDGV.StandardTab = true;
-        this.ItemsDGV.TabIndex = 9;
+        this.ItemsDGV.TabIndex = 4;
         this.ItemsDGV.VirtualMode = true;
         // 
         // Column1

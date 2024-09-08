@@ -369,4 +369,19 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         Enabled = false;
         _owner.UIEnabled = true;
     }
+
+    private void Cancel_Button_Click(object sender, EventArgs e)
+    {
+        if (_cancelAction != NullAction) _cancelAction.Invoke();
+    }
+
+    protected override void OnPaint(PaintEventArgs e)
+    {
+        base.OnPaint(e);
+
+        if (_darkModeEnabled && BorderStyle == BorderStyle.FixedSingle)
+        {
+            e.Graphics.DrawRectangle(DarkColors.GreySelectionPen, 0, 0, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+        }
+    }
 }

@@ -66,6 +66,7 @@ sealed partial class MultiItemProgressBox
             this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
             this.Cancel_Button.TabIndex = 3;
             this.Cancel_Button.Text = "Cancel";
+            this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
             // 
             // ItemsDGV
             // 
