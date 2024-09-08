@@ -133,6 +133,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             ProgressItemData item = ProgressItems[e.RowIndex];
             if (item.Percent > 0)
             {
+                // @MT_TASK: Implement indeterminate progress (we'll need a timer and all)
                 e.Graphics.FillRectangle(
                     Brushes.Green,
                     e.CellBounds.Left + 4,
