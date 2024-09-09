@@ -138,21 +138,11 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             // @MT_TASK: Implement indeterminate progress (we'll need a timer and all)
             if (item.ProgressType == ProgressType.Indeterminate)
             {
-                e.Graphics.FillRectangle(
-                    Brushes.Orange,
-                    e.CellBounds.Left + 4,
-                    e.CellBounds.Top + fontHeight,
-                    GetValueFromPercent_Int(100, e.CellBounds.Width - 12) + 4,
-                    e.CellBounds.Height - (fontHeight + 5));
+                DrawProgressBar(item, fontHeight, ProgressType.Indeterminate);
             }
             else if (item.Percent > 0)
             {
-                e.Graphics.FillRectangle(
-                    Brushes.Green,
-                    e.CellBounds.Left + 4,
-                    e.CellBounds.Top + fontHeight,
-                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 12) + 4,
-                    e.CellBounds.Height - (fontHeight + 5));
+                DrawProgressBar(item, fontHeight, ProgressType.Determinate);
             }
 
             // Draw the second line manually because linebreaks are ignored by the standard text cell
@@ -169,6 +159,31 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         e.Graphics.DrawRectangle(borderPen, e.CellBounds);
 
         e.Handled = true;
+
+        return;
+
+        void DrawProgressBar(ProgressItemData item, int fontHeight, ProgressType progressType)
+        {
+            Brush brush;
+            int percent;
+            if (progressType == ProgressType.Determinate)
+            {
+                brush = Brushes.Green;
+                percent = item.Percent;
+            }
+            else
+            {
+                brush = Brushes.Orange;
+                percent = 100;
+            }
+
+            e.Graphics.FillRectangle(
+                brush,
+                e.CellBounds.Left + 4,
+                e.CellBounds.Top + fontHeight,
+                GetValueFromPercent_Int(percent, e.CellBounds.Width - 11) + 4,
+                e.CellBounds.Height - (fontHeight + 5));
+        }
     }
 
     protected override void OnCellValueNeeded(DataGridViewCellValueEventArgs e)
