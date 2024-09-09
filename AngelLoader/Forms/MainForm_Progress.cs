@@ -227,7 +227,7 @@ public sealed partial class MainForm
             mainMessage1: message1,
             mainProgressMessage: mainProgressMessage,
             cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
-            cancelAction: cancelAction);
+            cancelAction: cancelAction ?? NullAction);
     });
 
     public void MultiItemProgress_SetState(
