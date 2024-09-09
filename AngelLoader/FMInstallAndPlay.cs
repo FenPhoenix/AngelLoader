@@ -111,7 +111,9 @@ internal static partial class FMInstallAndPlay
     {
         if (Core.View.MultiItemProgress_Visible())
         {
-            Core.View.MultiItemProgress_SetState(message1: LText.ProgressBox.CancelingInstall);
+            Core.View.MultiItemProgress_SetState(
+                message1: LText.ProgressBox.CancelingInstall,
+                mainProgressMessage: "");
         }
     }
 
@@ -1699,7 +1701,6 @@ internal static partial class FMInstallAndPlay
 
         Core.View.MultiItemProgress_Show(
             message1: LText.ProgressBox.PreparingToInstall,
-            mainProgressType: ProgressType.Indeterminate,
             cancelMessage: LText.Global.Cancel,
             cancelAction: CancelInstallToken);
 
@@ -1733,11 +1734,12 @@ internal static partial class FMInstallAndPlay
                     fmInstallInitialItems[i].Line2 = LText.ProgressBox.Queued;
                 }
 
+                int fmsFinishedCount = 0;
+
                 Core.View.MultiItemProgress_SetState(
                     initialRowTexts: fmInstallInitialItems,
                     message1: fmDataList.Count == 1 ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                    mainPercent: 0,
-                    mainProgressType: ProgressType.Determinate,
+                    mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count,
                     cancelMessage: LText.Global.Cancel,
                     cancelAction: CancelInstallToken);
 
@@ -1745,8 +1747,8 @@ internal static partial class FMInstallAndPlay
                 ConcurrentBag<FMInstallResult> results = new();
 
                 int threadCount =
-                        //1;
-                        GetThreadCountForParallelOperation(fmDataList.Count);
+                    //1;
+                    GetThreadCountForParallelOperation(fmDataList.Count);
 
                 // @MT_TASK: Remove for final release
                 Trace.WriteLine(threadCount);
@@ -1775,8 +1777,6 @@ internal static partial class FMInstallAndPlay
 
                             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
 
-                            int mainPercent = GetPercentFromValue_Int(i, fmDataList.Count);
-
                             // Framework zip extracting is much faster, so use it if possible
                             // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
                             // But we don't want to parse out stupid console output for error detection and junk
@@ -1789,8 +1789,6 @@ internal static partial class FMInstallAndPlay
                                     fmData.ArchivePath,
                                     fmInstalledPath,
                                     fmData.FM.Archive,
-                                    mainPercent,
-                                    fmDataList.Count,
                                     buffer.ExtractTempBuffer,
                                     buffer.FileStreamBuffer) :
                                 fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
@@ -1799,17 +1797,13 @@ internal static partial class FMInstallAndPlay
                                     fmData.ArchivePath,
                                     fmInstalledPath,
                                     fmData.FM.Archive,
-                                    mainPercent,
-                                    fmDataList.Count,
                                     buffer.ExtractTempBuffer) :
                                 InstallFMSevenZip(
                                     viewItemIndex,
                                     progress,
                                     fmData.ArchivePath,
                                     fmInstalledPath,
-                                    fmData.FM.Archive,
-                                    mainPercent,
-                                    fmDataList.Count);
+                                    fmData.FM.Archive);
 
                             // @MT_TASK: Rolling back needs re-architecting for multithreading
                             if (fmInstallResult.ResultType == InstallResultType.Error)
@@ -1933,11 +1927,17 @@ internal static partial class FMInstallAndPlay
 
                             po.CancellationToken.ThrowIfCancellationRequested();
 
+                            Interlocked.Increment(ref fmsFinishedCount);
+
                             Core.View.MultiItemProgress_SetItemData(
                                 index: viewItemIndex,
                                 line2: LText.ProgressBox.InstallComplete,
                                 percent: 100,
                                 progressType: ProgressType.Determinate);
+
+                            Core.View.MultiItemProgress_SetState(
+                                mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count
+                            );
                         }
                     });
                 }
@@ -2094,8 +2094,6 @@ internal static partial class FMInstallAndPlay
         string fmArchivePath,
         string fmInstalledPath,
         string fmArchive,
-        int mainPercent,
-        int fmCount,
         byte[] tempBuffer,
         byte[] fileStreamBuffer)
     {
@@ -2132,8 +2130,6 @@ internal static partial class FMInstallAndPlay
 
                 int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                // @MT_TASK: Show main percent on UI (for all zip, 7z, rar)
-                int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                 report.ViewItemIndex = viewItemIndex;
                 report.Text = fmArchive;
@@ -2161,8 +2157,6 @@ internal static partial class FMInstallAndPlay
         string fmArchivePath,
         string fmInstalledPath,
         string fmArchive,
-        int mainPercent,
-        int fmCount,
         byte[] tempBuffer)
     {
         fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
@@ -2208,7 +2202,6 @@ internal static partial class FMInstallAndPlay
                 }
 
                 int percentOfEntries = GetPercentFromValue_Int(i, entriesCount).Clamp(0, 100);
-                int newMainPercent = mainPercent + (percentOfEntries / fmCount).ClampToZero();
 
                 if (!_installCts.IsCancellationRequested)
                 {
@@ -2238,9 +2231,7 @@ internal static partial class FMInstallAndPlay
         IProgress<ProgressReport_Install> progressInstall,
         string fmArchivePath,
         string fmInstalledPath,
-        string fmArchive,
-        int mainPercent,
-        int fmCount)
+        string fmArchive)
     {
         try
         {
@@ -2258,7 +2249,6 @@ internal static partial class FMInstallAndPlay
 
             void ReportProgress(Fen7z.ProgressReport pr)
             {
-                int newMainPercent = mainPercent + (pr.PercentOfEntries / fmCount).ClampToZero();
 
                 if (!pr.Canceling)
                 {

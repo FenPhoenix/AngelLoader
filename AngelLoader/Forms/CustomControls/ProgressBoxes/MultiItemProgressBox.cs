@@ -47,10 +47,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     private enum MessageItemType
     {
         MainMessage1,
-        //MainMessage2,
-        MainPercent,
-        //SubMessage,
-        //SubPercent,
+        MainProgress,
     }
 
     private readonly MessageItem[] MessageItems;
@@ -88,10 +85,8 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             Message1Label.ForeColor = fore;
             Message1Label.BackColor = back;
 
-            MainPercentLabel.ForeColor = fore;
-            MainPercentLabel.BackColor = back;
-
-            MainProgressBar.DarkModeEnabled = _darkModeEnabled;
+            MainProgressLabel.ForeColor = fore;
+            MainProgressLabel.BackColor = back;
 
             ItemsDGV.DarkModeEnabled = _darkModeEnabled;
         }
@@ -113,7 +108,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         MessageItems = new MessageItem[2]
         {
             new(Message1Label),
-            new(MainPercentLabel),
+            new(MainProgressLabel),
         };
 
         this.CenterHV(_owner, clientSize: true);
@@ -163,12 +158,18 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     private int GetRequiredWidth()
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];
+        MessageItem messageItemProgress= MessageItems[(int)MessageItemType.MainProgress];
         //MessageItem messageItemMain2 = MessageItems[(int)MessageItemType.MainMessage2];
         //MessageItem messageItemSub = MessageItems[(int)MessageItemType.SubMessage];
 
         if (messageItemMain1.Width == -1)
         {
             messageItemMain1.Width = TextRenderer.MeasureText(messageItemMain1.Text, messageItemMain1.Label.Font).Width;
+        }
+
+        if (messageItemProgress.Width == -1)
+        {
+            messageItemProgress.Width = TextRenderer.MeasureText(messageItemProgress.Text, messageItemProgress.Label.Font).Width;
         }
 
         //if (messageItemMain2.Width == -1)
@@ -182,7 +183,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         //}
 
         //int requiredWidth = MathMax3(messageItemMain1.Width, messageItemMain2.Width, messageItemSub.Width);
-        int requiredWidth = messageItemMain1.Width;
+        int requiredWidth = Math.Max(messageItemMain1.Width, messageItemProgress.Width);
         return requiredWidth;
     }
 
@@ -208,14 +209,9 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 
         if (widthChanged)
         {
-            // Hacks to fix various visual glitches, and the progress bar partially losing its dark mode state
+            // Hacks to fix various visual glitches
             this.CenterH(_owner, clientSize: true);
             Invalidate();
-            if (_darkModeEnabled)
-            {
-                MainProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
-                //SubProgressBar.RefreshDarkModeState(recreateHandleFirstIfDarkMode: true);
-            }
         }
     }
 
@@ -225,16 +221,14 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     /// <param name="initialRowTexts"></param>
     /// <param name="visible"></param>
     /// <param name="mainMessage1"></param>
-    /// <param name="mainPercent"></param>
-    /// <param name="mainProgressBarType"></param>
+    /// <param name="mainProgressMessage"></param>
     /// <param name="cancelButtonMessage"></param>
     /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
     internal void SetState(
         (string Line1, string Line2)[]? initialRowTexts,
         bool? visible,
         string? mainMessage1,
-        int? mainPercent,
-        ProgressType? mainProgressBarType,
+        string? mainProgressMessage,
         string? cancelButtonMessage,
         Action? cancelAction)
     {
@@ -243,13 +237,10 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             SetLabelText(MessageItemType.MainMessage1, mainMessage1);
             AutoSizeWidth();
         }
-        if (mainPercent != null)
+        if (mainProgressMessage != null)
         {
-            SetPercent((int)mainPercent, MessageItemType.MainPercent, MainProgressBar);
-        }
-        if (mainProgressBarType != null)
-        {
-            SetProgressBarType(MainProgressBar, (ProgressType)mainProgressBarType, MessageItemType.MainPercent);
+            SetLabelText(MessageItemType.MainProgress, mainProgressMessage);
+            AutoSizeWidth();
         }
         if (cancelButtonMessage != null)
         {
@@ -364,9 +355,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         base.Hide();
 
         SetLabelText(MessageItemType.MainMessage1, "");
-        SetLabelText(MessageItemType.MainPercent, "");
-        MainProgressBar.Value = 0;
-        MainProgressBar.Style = ProgressBarStyle.Blocks;
+        SetLabelText(MessageItemType.MainProgress, "");
 
         ItemsDGV.ProgressItems.Clear();
 
