@@ -294,14 +294,20 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             for (int i = 0; i < rowCount; i++)
             {
                 ItemsDGV.ProgressItems.Add(new DGV_ProgressItem.ProgressItemData(
-                    initialRowTexts[i].Line1,
-                    initialRowTexts[i].Line2,
-                    0));
+                    line1: initialRowTexts[i].Line1,
+                    line2: initialRowTexts[i].Line2,
+                    percent: 0,
+                    ProgressType.Determinate));
             }
         }
     }
 
-    internal void SetItemData(int index, string? line1, string? line2, int? percent)
+    internal void SetItemData(
+        int index,
+        string? line1,
+        string? line2,
+        int? percent,
+        ProgressType? progressType)
     {
         DGV_ProgressItem.ProgressItemData item = ItemsDGV.ProgressItems[index];
 
@@ -331,6 +337,15 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             {
                 refreshRequired = true;
                 item.Percent = percentInt;
+            }
+        }
+
+        if (progressType is { } progressTypeReal)
+        {
+            if (item.ProgressType != progressTypeReal)
+            {
+                refreshRequired = true;
+                item.ProgressType = progressTypeReal;
             }
         }
 

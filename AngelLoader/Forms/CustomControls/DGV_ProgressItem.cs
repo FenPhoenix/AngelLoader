@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
+using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
 
@@ -42,12 +43,14 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         public string Line1;
         public string Line2;
         public int Percent;
+        public ProgressType ProgressType;
 
-        public ProgressItemData(string line1, string line2, int percent)
+        public ProgressItemData(string line1, string line2, int percent, ProgressType progressType)
         {
             Line1 = line1;
             Line2 = line2;
             Percent = percent;
+            ProgressType = progressType;
         }
     }
 
@@ -131,9 +134,19 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             int fontHeight = DefaultCellStyle.Font.Height + 20;
 
             ProgressItemData item = ProgressItems[e.RowIndex];
-            if (item.Percent > 0)
+            // @MT_TASK: Temporary, get a proper indeterminate progress bar here eventually
+            // @MT_TASK: Implement indeterminate progress (we'll need a timer and all)
+            if (item.ProgressType == ProgressType.Indeterminate)
             {
-                // @MT_TASK: Implement indeterminate progress (we'll need a timer and all)
+                e.Graphics.FillRectangle(
+                    Brushes.Orange,
+                    e.CellBounds.Left + 4,
+                    e.CellBounds.Top + fontHeight,
+                    GetValueFromPercent_Int(100, e.CellBounds.Width - 12) + 4,
+                    e.CellBounds.Height - (fontHeight + 5));
+            }
+            else if (item.Percent > 0)
+            {
                 e.Graphics.FillRectangle(
                     Brushes.Green,
                     e.CellBounds.Left + 4,

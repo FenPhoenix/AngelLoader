@@ -257,10 +257,11 @@ public sealed partial class MainForm
         int index,
         string? line1 = null,
         string? line2 = null,
-        int? percent = null) => Invoke(() =>
+        int? percent = null,
+        ProgressType? progressType = null) => Invoke(() =>
     {
         ConstructMultiItemProgressBox();
-        MultiItemProgressBox.SetItemData(index, line1, line2, percent);
+        MultiItemProgressBox.SetItemData(index, line1, line2, percent, progressType);
     });
 
     #endregion

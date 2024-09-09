@@ -1862,7 +1862,8 @@ internal static partial class FMInstallAndPlay
                                     Core.View.MultiItemProgress_SetItemData(
                                         index: viewItemIndex,
                                         line2: LText.ProgressBox.ConvertingAudioFiles,
-                                        percent: 100);
+                                        percent: 100,
+                                        progressType: ProgressType.Indeterminate);
 
                                     // Dark engine games can't play MP3s, so they must be converted in all cases.
                                     // This one won't be called anywhere except during install, because it always runs during
@@ -1913,7 +1914,8 @@ internal static partial class FMInstallAndPlay
                             Core.View.MultiItemProgress_SetItemData(
                                 index: viewItemIndex,
                                 line2: LText.ProgressBox.RestoringBackup,
-                                percent: 100);
+                                percent: 100,
+                                progressType: ProgressType.Indeterminate);
 
                             try
                             {
@@ -1934,7 +1936,8 @@ internal static partial class FMInstallAndPlay
                             Core.View.MultiItemProgress_SetItemData(
                                 index: viewItemIndex,
                                 line2: LText.ProgressBox.InstallComplete,
-                                percent: 100);
+                                percent: 100,
+                                progressType: ProgressType.Determinate);
                         }
                     });
                 }
@@ -1980,7 +1983,12 @@ internal static partial class FMInstallAndPlay
             // Don't really know how to solve this yet, but look into it
             if (reportThrottleSW.ElapsedMilliseconds > 1)
             {
-                Core.View.MultiItemProgress_SetItemData(report.ViewItemIndex, report.Text, LText.ProgressBox.InstallingFM, report.Percent);
+                Core.View.MultiItemProgress_SetItemData(
+                    index: report.ViewItemIndex,
+                    line1: report.Text,
+                    line2: LText.ProgressBox.InstallingFM,
+                    percent: report.Percent,
+                    progressType: ProgressType.Determinate);
                 reportThrottleSW.Restart();
             }
         }
@@ -1992,7 +2000,8 @@ internal static partial class FMInstallAndPlay
                 Core.View.MultiItemProgress_SetItemData(
                     index: fm.ViewItemIndex,
                     line2: LText.ProgressBox.CleaningUpFailedInstall,
-                    percent: 100);
+                    percent: 100,
+                    progressType: ProgressType.Indeterminate);
 
                 return RemoveFMFromDisk(fm);
             }
@@ -2001,7 +2010,8 @@ internal static partial class FMInstallAndPlay
                 Core.View.MultiItemProgress_SetItemData(
                     index: fm.ViewItemIndex,
                     line2: LText.ProgressBox.InstallFailed,
-                    percent: 100);
+                    percent: 100,
+                    progressType: ProgressType.Determinate);
             }
         }
 

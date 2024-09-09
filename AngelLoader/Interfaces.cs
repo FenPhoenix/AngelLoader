@@ -199,7 +199,8 @@ public interface IView : ISettingsChangeableView
         int index,
         string? line1 = null,
         string? line2 = null,
-        int? percent = null);
+        int? percent = null,
+        ProgressType? progressType = null);
 
     void MultiItemProgress_Hide();
 
