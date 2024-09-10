@@ -415,7 +415,7 @@ public sealed class FanMission
     #endregion
 }
 
-public readonly struct ValidAudioConvertibleFM
+public readonly struct ValidAudioConvertibleFM : IEquatable<ValidAudioConvertibleFM>
 {
     private readonly FanMission InternalFM;
 
