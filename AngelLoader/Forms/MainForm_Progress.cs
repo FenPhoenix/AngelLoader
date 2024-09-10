@@ -8,14 +8,10 @@ namespace AngelLoader.Forms;
 
 public sealed partial class MainForm
 {
-    // Not great code really, but works.
-
-    #region Progress box
-
     private ProgressBox? ProgressBox;
     private MultiItemProgressBox? MultiItemProgressBox;
 
-    // Note! If we WEREN'T always invoking this, we would want to have a lock around it!
+    // Note! If we WEREN'T always invoking these, we would want to have a lock around them!
 
     [MemberNotNull(nameof(ProgressBox))]
     private void ConstructProgressBox()
@@ -40,13 +36,10 @@ public sealed partial class MainForm
         MultiItemProgressBox.DarkModeEnabled = Global.Config.DarkMode;
     }
 
+    #region Progress box
+
     // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
     // simple.
-
-    // We don't cache the actions anymore, because we still ended up recreating the params object[] array
-    // every time, which was in almost all cases _larger_ than the 32 bytes of an action. Also, it made our
-    // parameters un-statically-checkable for correct number and types, since they were a variable-length
-    // array of plain objects. So... yeah, not worth it.
 
     // Convenience methods for first show - they handle a few parameters for you
     #region Show methods
