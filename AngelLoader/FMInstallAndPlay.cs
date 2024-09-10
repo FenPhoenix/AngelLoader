@@ -55,8 +55,10 @@ internal static partial class FMInstallAndPlay
 
     private enum InstallResultType
     {
-        Success,
-        Error,
+        InstallSucceeded,
+        InstallFailed,
+        RollbackSucceeded,
+        RollbackFailed,
     }
 
     private enum ArchiveType
@@ -69,18 +71,21 @@ internal static partial class FMInstallAndPlay
     // @MT_TASK: We may want other things in here like fm archive path/install path etc.
     private readonly struct FMInstallResult
     {
+        internal readonly FMData FMData;
         internal readonly InstallResultType ResultType;
         internal readonly ArchiveType ArchiveType;
         internal readonly string ErrorMessage;
 
-        public FMInstallResult(InstallResultType resultType)
+        public FMInstallResult(FMData fmData, InstallResultType resultType)
         {
+            FMData = fmData;
             ResultType = resultType;
             ErrorMessage = "";
         }
 
-        public FMInstallResult(InstallResultType resultType, ArchiveType archiveType, string errorMessage)
+        public FMInstallResult(FMData fmData, InstallResultType resultType, ArchiveType archiveType, string errorMessage)
         {
+            FMData = fmData;
             ResultType = resultType;
             ArchiveType = archiveType;
             ErrorMessage = errorMessage;
@@ -1610,6 +1615,7 @@ internal static partial class FMInstallAndPlay
         internal readonly FanMission FM;
         internal readonly string ArchivePath;
         internal readonly string InstBasePath;
+        internal readonly string InstalledPath;
         internal readonly GameIndex GameIndex;
         internal int ViewItemIndex;
         internal bool InstallStarted;
@@ -1619,6 +1625,7 @@ internal static partial class FMInstallAndPlay
             FM = fm;
             ArchivePath = archivePath;
             InstBasePath = instBasePath;
+            InstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
             GameIndex = gameIndex;
         }
     }
@@ -1775,8 +1782,6 @@ internal static partial class FMInstallAndPlay
                             int viewItemIndex = fmData.ViewItemIndex;
                             fmData.InstallStarted = true;
 
-                            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-
                             // Framework zip extracting is much faster, so use it if possible
                             // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
                             // But we don't want to parse out stupid console output for error detection and junk
@@ -1786,32 +1791,24 @@ internal static partial class FMInstallAndPlay
                                 fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
                                     viewItemIndex,
                                     progress,
-                                    fmData.ArchivePath,
-                                    fmInstalledPath,
-                                    fmData.FM.Archive,
+                                    fmData,
                                     buffer.ExtractTempBuffer,
                                     buffer.FileStreamBuffer) :
                                 fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
                                     viewItemIndex,
                                     progress,
-                                    fmData.ArchivePath,
-                                    fmInstalledPath,
-                                    fmData.FM.Archive,
+                                    fmData,
                                     buffer.ExtractTempBuffer) :
                                 InstallFMSevenZip(
                                     viewItemIndex,
                                     progress,
-                                    fmData.ArchivePath,
-                                    fmInstalledPath,
-                                    fmData.FM.Archive);
+                                    fmData);
 
                             // @MT_TASK: Rolling back needs re-architecting for multithreading
-                            if (fmInstallResult.ResultType == InstallResultType.Error)
+                            if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                             {
                                 FMInstallResult result = RollBackSingleFM(fmData);
-                                results.Add(result.ResultType == InstallResultType.Error
-                                    ? result
-                                    : fmInstallResult);
+                                results.Add(result);
                                 continue;
                             }
 
@@ -1819,17 +1816,15 @@ internal static partial class FMInstallAndPlay
 
                             po.CancellationToken.ThrowIfCancellationRequested();
 
-                            fmData.FM.Installed = true;
-
                             try
                             {
-                                using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf));
+                                using var sw = new StreamWriter(Path.Combine(fmData.InstalledPath, Paths.FMSelInf));
                                 sw.WriteLine("Name=" + fmData.FM.InstalledDir);
                                 sw.WriteLine("Archive=" + fmData.FM.Archive);
                             }
                             catch (Exception ex)
                             {
-                                Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmInstalledPath, ex);
+                                Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmData.InstalledPath, ex);
                             }
 
                             // Only Dark engine games need audio conversion
@@ -1976,6 +1971,22 @@ internal static partial class FMInstallAndPlay
                     Core.View.MultiItemProgress_Hide();
                 }
 
+                // @MT_TASK: If any errors, show dialog with them here
+                foreach (FMInstallResult result in results)
+                {
+                    // Set this after the operation is finished, to prevent the UI from prematurely updating
+                    // with the new installed statuses if it gets redrawn
+                    if (result.ResultType == InstallResultType.InstallSucceeded)
+                    {
+                        result.FMData.FM.Installed = true;
+                    }
+                    else if (result.ResultType == InstallResultType.RollbackFailed)
+                    {
+                        // Rollbacks failing should be the rare case, so it's okay to take a disk hit here
+                        result.FMData.FM.Installed = Directory.Exists(result.FMData.InstalledPath);
+                    }
+                }
+
                 Core.View.Invoke(Core.View.RefreshAllSelectedFMs_UpdateInstallState);
 
                 return true;
@@ -2098,14 +2109,15 @@ internal static partial class FMInstallAndPlay
                     ArchiveType.Rar;
 
                 return new FMInstallResult(
-                    InstallResultType.Error,
+                    fmData,
+                    InstallResultType.RollbackFailed,
                     type,
                     LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" + fmInstalledPath);
             }
             // This is going to get set based on this anyway at the next load from disk, might as well do it now
             fmData.FM.Installed = Directory.Exists(fmInstalledPath);
 
-            return new FMInstallResult(InstallResultType.Success);
+            return new FMInstallResult(fmData, InstallResultType.RollbackSucceeded);
         }
     }
 
@@ -2113,13 +2125,11 @@ internal static partial class FMInstallAndPlay
     InstallFMZip(
         int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
-        string fmArchivePath,
-        string fmInstalledPath,
-        string fmArchive,
+        FMData fmData,
         byte[] tempBuffer,
         byte[] fileStreamBuffer)
     {
-        fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
         try
         {
@@ -2127,7 +2137,7 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmData.ArchivePath, fileStreamBuffer);
 
             int filesCount = archive.Entries.Count;
             for (int i = 0; i < filesCount; i++)
@@ -2154,7 +2164,7 @@ internal static partial class FMInstallAndPlay
 
 
                 report.ViewItemIndex = viewItemIndex;
-                report.Text = fmArchive;
+                report.Text = fmData.FM.Archive;
                 report.Percent = percent;
                 progress.Report(report);
 
@@ -2163,25 +2173,23 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.Zip, ex.Message);
+            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.Zip, ex.Message);
         }
 
-        return new FMInstallResult(InstallResultType.Success);
+        return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
     private static FMInstallResult
     InstallFMRar(
         int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
-        string fmArchivePath,
-        string fmInstalledPath,
-        string fmArchive,
+        FMData fmData,
         byte[] tempBuffer)
     {
-        fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
         try
         {
@@ -2189,7 +2197,7 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
-            using var fs = File_OpenReadFast(fmArchivePath);
+            using var fs = File_OpenReadFast(fmData.ArchivePath);
             int entriesCount;
             using (var archive = RarArchive.Open(fs))
             {
@@ -2228,7 +2236,7 @@ internal static partial class FMInstallAndPlay
                 if (!_installCts.IsCancellationRequested)
                 {
                     report.ViewItemIndex = viewItemIndex;
-                    report.Text = fmArchive;
+                    report.Text = fmData.FM.Archive;
                     report.Percent = percentOfEntries;
                     progress.Report(report);
                 }
@@ -2236,14 +2244,14 @@ internal static partial class FMInstallAndPlay
 
             _installCts.Token.ThrowIfCancellationRequested();
 
-            return new FMInstallResult(InstallResultType.Success);
+            return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting rar " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            Log("Error extracting rar " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.Rar, ex.Message);
+            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.Rar, ex.Message);
         }
     }
 
@@ -2251,10 +2259,10 @@ internal static partial class FMInstallAndPlay
     InstallFMSevenZip(
         int viewItemIndex,
         IProgress<ProgressReport_Install> progressInstall,
-        string fmArchivePath,
-        string fmInstalledPath,
-        string fmArchive)
+        FMData fmData)
     {
+        string fmInstalledPath = fmData.InstalledPath;
+
         try
         {
             var report = new ProgressReport_Install();
@@ -2263,7 +2271,7 @@ internal static partial class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var fs = File_OpenReadFast(fmArchivePath))
+            using (var fs = File_OpenReadFast(fmData.ArchivePath))
             {
                 var extractor = new SevenZipArchive(fs);
                 entriesCount = extractor.GetEntryCountOnly();
@@ -2275,7 +2283,7 @@ internal static partial class FMInstallAndPlay
                 if (!pr.Canceling)
                 {
                     report.ViewItemIndex = viewItemIndex;
-                    report.Text = fmArchive;
+                    report.Text = fmData.FM.Archive;
                     report.Percent = pr.PercentOfEntries;
                     progressInstall.Report(report);
                 }
@@ -2286,7 +2294,7 @@ internal static partial class FMInstallAndPlay
             Fen7z.Result result = Fen7z.Extract(
                 Paths.SevenZipPath,
                 Paths.SevenZipExe,
-                fmArchivePath,
+                fmData.ArchivePath,
                 fmInstalledPath,
                 cancellationToken: _installCts.Token,
                 entriesCount,
@@ -2295,12 +2303,12 @@ internal static partial class FMInstallAndPlay
 
             if (result.ErrorOccurred)
             {
-                Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
+                Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
 
                 // @MT_TASK: Dialog in multithreading area
                 //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
-                return new FMInstallResult(InstallResultType.Error, ArchiveType.SevenZip, result.ErrorText);
+                return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.SevenZip, result.ErrorText);
             }
 
             if (!result.Canceled)
@@ -2317,15 +2325,15 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                return new FMInstallResult(InstallResultType.Success);
+                return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(InstallResultType.Error, ArchiveType.SevenZip, ex.Message);
+            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.SevenZip, ex.Message);
         }
     }
 
