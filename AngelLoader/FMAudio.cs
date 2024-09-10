@@ -150,6 +150,10 @@ internal static class FMAudio
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
 
+    // @MT_TASK(ConvertToWAVs): Parallel.ForEach-ing this gives a 4x speedup. We need to do that for the final.
+    // But, that means we should put the audio conversion for all FMs at the end of the entire install process,
+    // so that the parallel loop here doesn't fight for resources with the already-going parallel loop for the
+    // install.
     private static ConvertAudioError ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
     {
         if (type == AudioConvert.WAVToWAV16)

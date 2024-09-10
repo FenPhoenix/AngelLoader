@@ -46,9 +46,9 @@ internal static partial class FMInstallAndPlay
         _timingTestStopWatch.Stop();
         System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
     }
+    // ReSharper restore RedundantNameQualifier
 #pragma warning restore IDE0002
 #pragma warning restore IDE0001
-    // ReSharper restore RedundantNameQualifier
 #endif
 
     #region Private fields
@@ -1859,6 +1859,17 @@ internal static partial class FMInstallAndPlay
                                         percent: 100,
                                         progressType: ProgressType.Indeterminate);
 
+#if TIMING_TEST
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+                                    // ReSharper disable RedundantNameQualifier
+                                    var audioConvertSW = new System.Diagnostics.Stopwatch();
+                                    // ReSharper restore RedundantNameQualifier
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+                                    audioConvertSW.Start();
+#endif
+
                                     // Dark engine games can't play MP3s, so they must be converted in all cases.
                                     // This one won't be called anywhere except during install, because it always runs during
                                     // install so there's no need to make it optional elsewhere. So we don't need to have a
@@ -1893,6 +1904,17 @@ internal static partial class FMInstallAndPlay
                                             buffer.FileStreamBuffer,
                                             po.CancellationToken);
                                     }
+
+#if TIMING_TEST
+                                    audioConvertSW.Stop();
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+                                    // ReSharper disable RedundantNameQualifier
+                                    System.Diagnostics.Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
+                                    // ReSharper restore RedundantNameQualifier
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+#endif
 
                                     po.CancellationToken.ThrowIfCancellationRequested();
                                 }
