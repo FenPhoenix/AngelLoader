@@ -265,6 +265,9 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
         [FenGenBlankLine]
+        // @MT_TASK: Find all unused stuff in here and use it where it's supposed to be used
+        // Some of the stuff may be unused because we removed the during-operation dialogs and we now need to put
+        // it in the after-operation dialog(s)
         internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extraction failed fully or partially.";
         internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-Zip extraction failed fully or partially.";
         internal readonly string Extract_RarExtractFailedFullyOrPartially = "RAR extraction failed fully or partially.";

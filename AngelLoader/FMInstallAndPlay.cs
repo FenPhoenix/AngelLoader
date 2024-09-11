@@ -75,6 +75,7 @@ internal static partial class FMInstallAndPlay
         internal readonly InstallResultType ResultType;
         internal readonly ArchiveType ArchiveType;
         internal readonly string ErrorMessage;
+        internal readonly Exception? Exception;
 
         public FMInstallResult(FMData fmData, InstallResultType resultType)
         {
@@ -89,6 +90,15 @@ internal static partial class FMInstallAndPlay
             ResultType = resultType;
             ArchiveType = archiveType;
             ErrorMessage = errorMessage;
+        }
+
+        public FMInstallResult(FMData fmData, InstallResultType resultType, ArchiveType archiveType, string errorMessage, Exception? exception)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ArchiveType = archiveType;
+            ErrorMessage = errorMessage;
+            Exception = exception;
         }
     }
 
@@ -1963,6 +1973,7 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
+                    // @MT_TASK: Get result objects from this too, and display errors just like below
                     await RollBackMultipleFMs(fmDataList);
                     return false;
                 }
@@ -1971,7 +1982,8 @@ internal static partial class FMInstallAndPlay
                     Core.View.MultiItemProgress_Hide();
                 }
 
-                // @MT_TASK: If any errors, show dialog with them here
+                List<FMInstallResult> errorResults = new();
+
                 foreach (FMInstallResult result in results)
                 {
                     // Set this after the operation is finished, to prevent the UI from prematurely updating
@@ -1980,11 +1992,25 @@ internal static partial class FMInstallAndPlay
                     {
                         result.FMData.FM.Installed = true;
                     }
-                    else if (result.ResultType == InstallResultType.RollbackFailed)
+                    else
                     {
-                        // Rollbacks failing should be the rare case, so it's okay to take a disk hit here
-                        result.FMData.FM.Installed = Directory.Exists(result.FMData.InstalledPath);
+                        if (result.ResultType == InstallResultType.RollbackFailed)
+                        {
+                            // Rollbacks failing should be the rare case, so it's okay to take a disk hit here
+                            result.FMData.FM.Installed = Directory.Exists(result.FMData.InstalledPath);
+                        }
+                        errorResults.Add(result);
                     }
+                }
+
+                if (errorResults.Count > 0)
+                {
+                    // @MT_TASK: We probably want a custom dialog that lists the errors and still has a view log button too
+                    Core.Dialogs.ShowError(
+                        // @MT_TASK: Localize this
+                        "The following FMs could not be installed:",
+                        LText.AlertMessages.Error,
+                        icon: MBoxIcon.Warning);
                 }
 
                 Core.View.Invoke(Core.View.RefreshAllSelectedFMs_UpdateInstallState);
@@ -2176,7 +2202,12 @@ internal static partial class FMInstallAndPlay
             Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.Zip, ex.Message);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Zip,
+                LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                ex);
         }
 
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
@@ -2251,7 +2282,12 @@ internal static partial class FMInstallAndPlay
             Log("Error extracting rar " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
-            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.Rar, ex.Message);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Rar,
+                LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially,
+                ex);
         }
     }
 
@@ -2308,7 +2344,13 @@ internal static partial class FMInstallAndPlay
                 // @MT_TASK: Dialog in multithreading area
                 //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
 
-                return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.SevenZip, result.ErrorText);
+                return new FMInstallResult(
+                    fmData,
+                    InstallResultType.InstallFailed,
+                    ArchiveType.SevenZip,
+                    LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially + $"{NL}" +
+                    result.ErrorText,
+                    result.Exception);
             }
 
             if (!result.Canceled)
@@ -2333,7 +2375,12 @@ internal static partial class FMInstallAndPlay
             Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
             // @MT_TASK: Dialog in multithreading area
             //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-            return new FMInstallResult(fmData, InstallResultType.InstallFailed, ArchiveType.SevenZip, ex.Message);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.SevenZip,
+                LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                ex);
         }
     }
 
