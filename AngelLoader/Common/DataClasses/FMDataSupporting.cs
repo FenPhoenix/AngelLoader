@@ -57,6 +57,7 @@ internal sealed class ExpandableDate_FromTicks
     {
         get
         {
+            // @LAZY_INIT_THREAD_SAFETY_CHECK
             _dateTime ??= DateTime.FromFileTimeUtc(_ticks).ToLocalTime();
             return (DateTime)_dateTime;
         }

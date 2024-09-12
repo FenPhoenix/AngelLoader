@@ -98,7 +98,7 @@ public static class AppUpdate
                 var progress = new Progress<ProgressPercents>(ReportProgress);
                 try
                 {
-                    using var request = await GlobalHttpClient.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
+                    using var request = await GlobalHttpClient.Instance.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
 
                     if (!request.IsSuccessStatusCode)
                     {
@@ -302,7 +302,7 @@ public static class AppUpdate
                 return CheckUpdateResult.NoUpdateAvailable;
             }
 
-            using var request = await GlobalHttpClient.GetAsync(_latestVersionFile, cancellationToken);
+            using var request = await GlobalHttpClient.Instance.GetAsync(_latestVersionFile, cancellationToken);
 
             if (!request.IsSuccessStatusCode)
             {
@@ -385,7 +385,7 @@ public static class AppUpdate
 
             UpdateInfoInternal? updateFile = null;
 
-            using var request = await GlobalHttpClient.GetAsync(_versionsFile, _detailsDownloadCTS.Token);
+            using var request = await GlobalHttpClient.Instance.GetAsync(_versionsFile, _detailsDownloadCTS.Token);
 
             _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
@@ -442,7 +442,7 @@ public static class AppUpdate
 
                 if (changelogUri != null && downloadUri != null)
                 {
-                    using var changelogRequest = await GlobalHttpClient.GetAsync(changelogUri, _detailsDownloadCTS.Token);
+                    using var changelogRequest = await GlobalHttpClient.Instance.GetAsync(changelogUri, _detailsDownloadCTS.Token);
 
                     _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 

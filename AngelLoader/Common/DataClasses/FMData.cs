@@ -269,6 +269,7 @@ public sealed class FanMission
     [FenGenIgnore]
     internal string CommentSingleLine
     {
+        // @LAZY_INIT_THREAD_SAFETY_CHECK
         get => _commentSingleLine ??= Comment.FromRNEscapes().ToSingleLineComment();
         set => _commentSingleLine = value;
     }

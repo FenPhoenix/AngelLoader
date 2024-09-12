@@ -156,9 +156,11 @@ public sealed class ConfigData
     }
 
     private string? _darkLoaderBackupPath;
+    // @LAZY_INIT_THREAD_SAFETY_CHECK
     internal string DarkLoaderBackupPath => _darkLoaderBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveBakDir);
 
     private string? _darkLoaderOriginalBackupPath;
+    // @LAZY_INIT_THREAD_SAFETY_CHECK
     internal string DarkLoaderOriginalBackupPath => _darkLoaderOriginalBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
 
     #region Game exes

@@ -2,7 +2,8 @@
 
 namespace AL_Common;
 
-public static partial class Common
+// Static class to provide cheap thread-safe lazy init
+public static class GlobalHttpClient
 {
     /*
     @TDM_NOTE(Http):
@@ -16,6 +17,5 @@ public static partial class Common
     */
 
     // Only one instance is supposed to exist app-wide
-    private static HttpClient? _globalHttpClient;
-    public static HttpClient GlobalHttpClient => _globalHttpClient ??= new HttpClient();
+    public static readonly HttpClient Instance = new();
 }

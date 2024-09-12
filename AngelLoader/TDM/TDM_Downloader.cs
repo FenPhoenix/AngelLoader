@@ -54,7 +54,7 @@ internal static class TDM_Downloader
             foreach (string url in _availableMissionsUrls)
             {
                 request?.Dispose();
-                request = await GlobalHttpClient.GetAsync(url, cancellationToken);
+                request = await GlobalHttpClient.Instance.GetAsync(url, cancellationToken);
                 if (request.IsSuccessStatusCode)
                 {
                     success = true;

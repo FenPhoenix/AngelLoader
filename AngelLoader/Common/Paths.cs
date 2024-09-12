@@ -31,6 +31,7 @@ internal static class TempPaths
     internal static readonly TempPath FMCache = new(static () => Paths.FMCacheTemp);
 }
 
+// @LAZY_INIT_THREAD_SAFETY_CHECK (All lazy loaded paths in here)
 internal static class Paths
 {
     // Fields that will, or will most likely, be used pretty much right away are initialized normally here.

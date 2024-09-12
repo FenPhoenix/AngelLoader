@@ -53,6 +53,7 @@ public static partial class Common
     {
         buffer.Clear();
 
+        // @LAZY_INIT_THREAD_SAFETY_CHECK
         if (_fieldStreamBufferFieldFound == null)
         {
             try

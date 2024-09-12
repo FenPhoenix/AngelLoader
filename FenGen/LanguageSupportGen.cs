@@ -104,6 +104,7 @@ internal static class LanguageSupport
         w.WL("{");
         w.WL("get");
         w.WL("{");
+        // @LAZY_INIT_THREAD_SAFETY_CHECK
         w.WL("if (_fspl == null)");
         w.WL("{");
         w.WL("_fspl = new string[" + count.ToStrInv() + "];");
