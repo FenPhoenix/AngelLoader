@@ -108,13 +108,17 @@ internal static partial class FMInstallAndPlay
 
     #region Public methods
 
-    private static BackupFile GetBackupFile(FanMission fm, List<string> archivePaths, bool findDarkLoaderOnly = false)
+    private static BackupFile GetBackupFile(
+        DarkLoaderBackupContext ctx,
+        FanMission fm,
+        List<string> archivePaths,
+        bool findDarkLoaderOnly = false)
     {
-        static FileNameBoth GetDarkLoaderArchiveFiles()
+        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
         {
             // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
             // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-            List<string> fullPaths = FastIO.GetFilesTopOnly(Config.DarkLoaderBackupPath, "*.zip");
+            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
             var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
 
             for (int i = 0; i < fullPaths.Count; i++)
@@ -141,11 +145,11 @@ internal static partial class FMInstallAndPlay
 
         #region DarkLoader
 
-        if (Directory.Exists(Config.DarkLoaderBackupPath))
+        if (Directory.Exists(ctx.DarkLoaderBackupPath))
         {
             // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
             // Rather than just using File.Exists()?!
-            FileNameBoth dlArchives = GetDarkLoaderArchiveFiles();
+            FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
             for (int i = 0; i < dlArchives.FullPaths.Count; i++)
             {
                 string f = dlArchives.FullPaths[i];
@@ -233,6 +237,7 @@ internal static partial class FMInstallAndPlay
     }
 
     private static Task BackupFM(
+        DarkLoaderBackupContext ctx,
         FanMission fm,
         string fmInstalledPath,
         string fmArchivePath,
@@ -308,7 +313,7 @@ internal static partial class FMInstallAndPlay
                     AddEntry(archive, f, fn, fileStreamBuffer);
                 }
 
-                MoveDarkLoaderBackup(fm, archivePaths);
+                MoveDarkLoaderBackup(ctx, fm, archivePaths);
                 return;
             }
 
@@ -363,7 +368,7 @@ internal static partial class FMInstallAndPlay
                     }
                 }
 
-                MoveDarkLoaderBackup(fm, archivePaths);
+                MoveDarkLoaderBackup(ctx, fm, archivePaths);
             }
             catch (Exception ex)
             {
@@ -373,6 +378,7 @@ internal static partial class FMInstallAndPlay
     }
 
     private static void RestoreFM(
+        DarkLoaderBackupContext ctx,
         FanMission fm,
         List<string> archivePaths,
         byte[] zipExtractTempBuffer,
@@ -389,7 +395,7 @@ internal static partial class FMInstallAndPlay
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
         bool fmIsT3 = fm.Game == Game.Thief3;
 
-        BackupFile backupFile = GetBackupFile(fm, archivePaths);
+        BackupFile backupFile = GetBackupFile(ctx, fm, archivePaths);
         if (!backupFile.Found) return;
 
         if (ct.IsCancellationRequested) return;
@@ -578,13 +584,13 @@ internal static partial class FMInstallAndPlay
     don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
     which is not at all what the user expects given we tell them that existing backups haven't been changed.
     */
-    private static void MoveDarkLoaderBackup(FanMission fm, List<string> archivePaths)
+    private static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
     {
-        BackupFile dlBackup = GetBackupFile(fm, archivePaths, findDarkLoaderOnly: true);
+        BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
         if (dlBackup.Found)
         {
-            Directory.CreateDirectory(Config.DarkLoaderOriginalBackupPath);
-            File.Move(dlBackup.Name, Path.Combine(Config.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
+            Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
+            File.Move(dlBackup.Name, Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
         }
     }
 

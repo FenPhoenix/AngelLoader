@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -143,25 +142,7 @@ public sealed class ConfigData
     2023/10/11:
     Backup path is now only required if you've specified one or more games that require it (TDM doesn't).
     */
-    private string _fmsBackupPath = "";
-    internal string FMsBackupPath
-    {
-        get => _fmsBackupPath;
-        set
-        {
-            _fmsBackupPath = value;
-            _darkLoaderBackupPath = null;
-            _darkLoaderOriginalBackupPath = null;
-        }
-    }
-
-    private string? _darkLoaderBackupPath;
-    // @LAZY_INIT_THREAD_SAFETY_CHECK
-    internal string DarkLoaderBackupPath => _darkLoaderBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveBakDir);
-
-    private string? _darkLoaderOriginalBackupPath;
-    // @LAZY_INIT_THREAD_SAFETY_CHECK
-    internal string DarkLoaderOriginalBackupPath => _darkLoaderOriginalBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+    internal string FMsBackupPath = "";
 
     #region Game exes
 

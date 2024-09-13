@@ -565,6 +565,8 @@ internal static class Import
 
         if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 
+        DarkLoaderBackupContext ctx = new();
+
         for (int i = 0; i < 3; i++)
         {
             if (i == 0 && t1Dir.IsEmpty()) continue;
@@ -574,13 +576,13 @@ internal static class Import
             string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
             if (!Directory.Exists(savesPath)) continue;
 
-            Directory.CreateDirectory(Config.DarkLoaderBackupPath);
+            Directory.CreateDirectory(ctx.DarkLoaderBackupPath);
 
             // Converting takes too long, so just copy them to our backup folder and they'll be handled
             // appropriately next time the user installs an FM
             foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
             {
-                string dest = Path.Combine(Config.DarkLoaderBackupPath, f.GetFileNameFast());
+                string dest = Path.Combine(ctx.DarkLoaderBackupPath, f.GetFileNameFast());
                 File.Copy(f, dest, overwrite: true);
             }
         }

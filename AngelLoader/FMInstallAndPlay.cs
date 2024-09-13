@@ -1777,6 +1777,8 @@ internal static partial class FMInstallAndPlay
                     MaxDegreeOfParallelism = threadCount,
                 };
 
+                DarkLoaderBackupContext ctx = new();
+
 #if TIMING_TEST
                 StartTiming();
 #endif
@@ -1942,6 +1944,7 @@ internal static partial class FMInstallAndPlay
                             try
                             {
                                 RestoreFM(
+                                    ctx,
                                     fmData.FM,
                                     archivePaths,
                                     buffer.ExtractTempBuffer,
@@ -2501,6 +2504,8 @@ internal static partial class FMInstallAndPlay
 
             byte[]? fileStreamBuffer = null;
 
+            DarkLoaderBackupContext ctx = new();
+
             for (int i = 0; i < fmDataList.Count; i++)
             {
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
@@ -2565,7 +2570,16 @@ internal static partial class FMInstallAndPlay
                 archive folder on initial setup, and hasn't imported from NDL by this point.
                 */
 
-                if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath, archivePaths, fileStreamBuffer ??= new byte[FileStreamBufferSize]);
+                if (doBackup)
+                {
+                    await BackupFM(
+                        ctx,
+                        fm,
+                        fmInstalledPath,
+                        fmData.ArchivePath,
+                        archivePaths,
+                        fileStreamBuffer ??= new byte[FileStreamBufferSize]);
+                }
 
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
 
