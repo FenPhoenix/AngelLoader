@@ -1640,7 +1640,6 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    // @LAZY_INIT_THREAD_SAFETY_CHECK
     private sealed class Buffers
     {
         private byte[]? _extractBuffer;
