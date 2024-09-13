@@ -99,25 +99,14 @@ internal static class LanguageSupport
         w.WL("public static readonly string[] SupportedLanguages =");
         WriteListBody(w, langEnum.LangIndexEnumNamesLowercase, addQuotes: true);
 
-        w.WL("private static string[]? _fspl;");
-        w.WL("public static string[] FSPrefixedLangs");
-        w.WL("{");
-        w.WL("get");
-        w.WL("{");
-        // @LAZY_INIT_THREAD_SAFETY_CHECK
-        w.WL("if (_fspl == null)");
-        w.WL("{");
-        w.WL("_fspl = new string[" + count.ToStrInv() + "];");
-        w.WL("for (int i = 0; i < " + count.ToStrInv() + "; i++)");
-        w.WL("{");
-        w.WL("_fspl[i] = \"/\" + SupportedLanguages[i];");
-        w.WL("}");
-        w.WL("}");
-        w.WL();
-        w.WL("return _fspl;");
-        w.WL("}");
-        w.WL("}");
-        w.WL();
+        List<string> fsPrefixedLangs = new(langEnum.LangIndexEnumNamesLowercase.Count);
+        foreach (string item in langEnum.LangIndexEnumNamesLowercase)
+        {
+            fsPrefixedLangs.Add("/" + item);
+        }
+
+        w.WL("public static readonly string[] FSPrefixedLangs =");
+        WriteListBody(w, fsPrefixedLangs, addQuotes: true);
 
         w.WL("// Even though we have the perfect hash, this one is required for things that need case-insensitivity");
         w.WL("// in the keys!");

@@ -45,23 +45,20 @@ public static partial class LanguageSupport
         "spanish",
     };
 
-    private static string[]? _fspl;
-    public static string[] FSPrefixedLangs
+    public static readonly string[] FSPrefixedLangs =
     {
-        get
-        {
-            if (_fspl == null)
-            {
-                _fspl = new string[11];
-                for (int i = 0; i < 11; i++)
-                {
-                    _fspl[i] = "/" + SupportedLanguages[i];
-                }
-            }
-
-            return _fspl;
-        }
-    }
+        "/english",
+        "/czech",
+        "/dutch",
+        "/french",
+        "/german",
+        "/hungarian",
+        "/italian",
+        "/japanese",
+        "/polish",
+        "/russian",
+        "/spanish",
+    };
 
     // Even though we have the perfect hash, this one is required for things that need case-insensitivity
     // in the keys!
