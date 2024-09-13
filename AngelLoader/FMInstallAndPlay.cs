@@ -111,9 +111,8 @@ internal static partial class FMInstallAndPlay
 
     private static readonly byte[] _DARKMISS_Bytes = "DARKMISS"u8.ToArray();
 
-    private static Encoding? _utf8NoBOM;
-    // @LAZY_INIT_THREAD_SAFETY_CHECK
-    private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
+    // Immediately static init for thread safety
+    private static readonly Encoding UTF8NoBOM = new UTF8Encoding(false, true);
 
     private static CancellationTokenSource _installCts = new();
 
