@@ -309,7 +309,7 @@ internal static class FMAudio
             // it in a minute.
             try
             {
-                using var fs = GetReadModeFileStreamWithCachedBuffer(file, fileStreamBuffer);
+                using FileStreamCustom fs = FileStreamCustom.CreateRead(file, fileStreamBuffer);
 
                 _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
                 if (!buffer.Buffer.StartsWith(_riff)) return -1;

@@ -7,11 +7,14 @@ public static partial class Common
 {
     #region Classes
 
-    private static bool? _fieldStreamBufferFieldFound;
-    private static FieldInfo? _fieldStreamBufferFieldInfo;
-
-    public sealed class FileStream_LengthCached : FileStream
+    /// <summary>
+    /// A file stream with performance/allocation improvements.
+    /// </summary>
+    public sealed class FileStreamCustom : FileStream
     {
+        private static bool _fieldStreamBufferFieldFound;
+        private static FieldInfo? _fieldStreamBufferFieldInfo;
+
         private long _length = -1;
         public override long Length
         {
@@ -25,36 +28,8 @@ public static partial class Common
             }
         }
 
-        public FileStream_LengthCached(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share,
-            int bufferSize)
-            : base(path, mode, access, share, bufferSize)
-        {
-        }
-
-        public FileStream_LengthCached(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share)
-            : base(path, mode, access, share)
-        {
-        }
-    }
-
-    #endregion
-
-    #region Methods
-
-    public static FileStream_LengthCached GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
-    {
-        buffer.Clear();
-
-        // @LAZY_INIT_THREAD_SAFETY_CHECK
-        if (_fieldStreamBufferFieldFound == null)
+        // Init reflection stuff in static ctor for thread safety
+        static FileStreamCustom()
         {
             try
             {
@@ -67,8 +42,9 @@ public static partial class Common
                         "_buffer",
                         BindingFlags.NonPublic | BindingFlags.Instance);
 
-                _fieldStreamBufferFieldFound = _fieldStreamBufferFieldInfo != null &&
-                                               _fieldStreamBufferFieldInfo.FieldType == typeof(byte[]);
+                _fieldStreamBufferFieldFound =
+                    _fieldStreamBufferFieldInfo != null &&
+                    _fieldStreamBufferFieldInfo.FieldType == typeof(byte[]);
             }
             catch
             {
@@ -77,26 +53,52 @@ public static partial class Common
             }
         }
 
-        var fs =
-            _fieldStreamBufferFieldFound == true
-                ? new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
-                : new FileStream_LengthCached(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-        if (_fieldStreamBufferFieldFound == true)
+        public FileStreamCustom(
+            string path,
+            FileMode mode,
+            FileAccess access,
+            FileShare share,
+            int bufferSize)
+            : base(path, mode, access, share, bufferSize)
         {
-            try
-            {
-                _fieldStreamBufferFieldInfo?.SetValue(fs, buffer);
-            }
-            catch
-            {
-                _fieldStreamBufferFieldFound = false;
-                _fieldStreamBufferFieldInfo = null;
-            }
         }
 
-        return fs;
+        public FileStreamCustom(
+            string path,
+            FileMode mode,
+            FileAccess access,
+            FileShare share)
+            : base(path, mode, access, share)
+        {
+        }
+
+        public static FileStreamCustom CreateRead(string path, byte[] buffer)
+        {
+            FileStreamCustom fs =
+                _fieldStreamBufferFieldFound
+                    ? new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
+                    : new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            if (_fieldStreamBufferFieldFound)
+            {
+                try
+                {
+                    _fieldStreamBufferFieldInfo?.SetValue(fs, buffer);
+                }
+                catch
+                {
+                    _fieldStreamBufferFieldFound = false;
+                    _fieldStreamBufferFieldInfo = null;
+                }
+            }
+
+            return fs;
+        }
     }
+
+    #endregion
+
+    #region Methods
 
     public static int ReadAll(this Stream stream, byte[] buffer, int offset, int count)
     {
