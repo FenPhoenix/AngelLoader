@@ -1977,12 +1977,19 @@ internal static partial class FMInstallAndPlay
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
                     // @MT_TASK: Get result objects from this too, and display errors just like below
-                    await RollBackMultipleFMs(fmDataList);
+                    List<FMInstallResult> rollbackErrorResults = await RollBackMultipleFMs(fmDataList);
+
+                    if (rollbackErrorResults.Count > 0)
+                    {
+                        // @MT_TASK: We probably want a custom dialog that lists the errors and still has a view log button too
+                        Core.Dialogs.ShowError(
+                            // @MT_TASK: Localize this
+                            "The following FMs could not be rolled back:",
+                            LText.AlertMessages.Error,
+                            icon: MBoxIcon.Warning);
+                    }
+
                     return false;
-                }
-                finally
-                {
-                    Core.View.MultiItemProgress_Hide();
                 }
 
                 List<FMInstallResult> errorResults = new();
@@ -2027,7 +2034,7 @@ internal static partial class FMInstallAndPlay
 #endif
 
                 Ini.WriteFullFMDataIni();
-                Core.View.HideProgressBox();
+                Core.View.MultiItemProgress_Hide();
 
                 _installCts.Dispose();
             }
@@ -2078,56 +2085,56 @@ internal static partial class FMInstallAndPlay
         }
 
         // @MT_TASK(RollBackInstalls): Handle multithreading here too
-        static async Task RollBackMultipleFMs(List<FMData> fmDataList)
+        static async Task<List<FMInstallResult>> RollBackMultipleFMs(List<FMData> fmDataList)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
-                try
-                {
-                    //Core.View.SetProgressBoxState_Single(
-                    //    message1: LText.ProgressBox.CancelingInstall,
-                    //    percent: 100,
-                    //    progressType: ProgressType.Determinate,
-                    //    cancelAction: NullAction
-                    //);
+                List<FMInstallResult> ret = new();
 
-                    for (int i = 0; i < fmDataList.Count; i++)
+                //Core.View.SetProgressBoxState_Single(
+                //    message1: LText.ProgressBox.CancelingInstall,
+                //    percent: 100,
+                //    progressType: ProgressType.Determinate,
+                //    cancelAction: NullAction
+                //);
+
+                for (int i = 0; i < fmDataList.Count; i++)
+                {
+                    FMData fmData = fmDataList[i];
+                    if (fmData.InstallStarted)
                     {
-                        FMData fmData = fmDataList[i];
-                        if (fmData.InstallStarted)
+                        Core.View.MultiItemProgress_SetItemData(
+                            index: fmData.ViewItemIndex,
+                            line2: LText.ProgressBox.CancelingInstall,
+                            progressType: ProgressType.Indeterminate);
+
+                        FMInstallResult result = RemoveFMFromDisk(fmData);
+                        if (result.ResultType == InstallResultType.RollbackFailed)
                         {
-                            Core.View.MultiItemProgress_SetItemData(
-                                index: fmData.ViewItemIndex,
-                                line2: LText.ProgressBox.CancelingInstall,
-                                progressType: ProgressType.Indeterminate);
-
-                            // @MT_TASK: Return a list of error objects - or somehow add data to the existing one?
-                            RemoveFMFromDisk(fmData);
-
-                            Core.View.MultiItemProgress_SetItemData(
-                                index: fmData.ViewItemIndex,
-                                line2: LText.ProgressBox.Canceled,
-                                percent: 0,
-                                progressType: ProgressType.Determinate);
+                            ret.Add(result);
                         }
+
+                        // @MT_TASK: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
+                        Core.View.MultiItemProgress_SetItemData(
+                            index: fmData.ViewItemIndex,
+                            line2: LText.ProgressBox.Canceled,
+                            percent: 0,
+                            progressType: ProgressType.Determinate);
                     }
-
-                    //for (int j = lastInstalledFMIndex; j >= 0; j--)
-                    //{
-                    //    FMData fmData = fmDataList[j];
-
-                    //    //Core.View.SetProgressBoxState_Single(
-                    //    //    message2: fmData.FM.GetId(),
-                    //    //    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
-                    //    RemoveFMFromDisk(fmData);
-                    //}
                 }
-                finally
-                {
-                    Ini.WriteFullFMDataIni();
-                    Core.View.HideProgressBox();
-                }
+
+                return ret;
+
+                //for (int j = lastInstalledFMIndex; j >= 0; j--)
+                //{
+                //    FMData fmData = fmDataList[j];
+
+                //    //Core.View.SetProgressBoxState_Single(
+                //    //    message2: fmData.FM.GetId(),
+                //    //    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
+                //    RemoveFMFromDisk(fmData);
+                //}
             });
         }
 
