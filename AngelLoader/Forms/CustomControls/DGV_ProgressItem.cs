@@ -72,12 +72,6 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         }
     }
 
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-        e.Handled = true;
-        base.OnKeyDown(e);
-    }
-
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
