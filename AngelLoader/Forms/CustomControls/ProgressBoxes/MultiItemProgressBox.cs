@@ -281,6 +281,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             int rowCount = initialRowTexts.Length;
             ItemsDGV.Rows.Clear();
             ItemsDGV.RowCount = rowCount;
+            ItemsDGV.IndeterminateProgressBarsRefCount = 0;
             ItemsDGV.ProgressItems.ClearAndEnsureCapacity(rowCount);
             for (int i = 0; i < rowCount; i++)
             {
