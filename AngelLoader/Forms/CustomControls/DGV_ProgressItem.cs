@@ -135,9 +135,9 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             int displayedRowCount = DisplayedRowCount(includePartialRow: true);
             int lastDisplayedIndex = firstDisplayedIndex + displayedRowCount;
 
+            int rowCount = RowCount;
             for (int i = firstDisplayedIndex; i < lastDisplayedIndex; i++)
             {
-                int rowCount = RowCount;
                 if (i > ProgressItems.Count - 1 || i > rowCount - 1) continue;
                 if (ProgressItems[i].ProgressType == ProgressType.Indeterminate)
                 {
