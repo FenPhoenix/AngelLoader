@@ -2091,14 +2091,24 @@ internal static partial class FMInstallAndPlay
                     //    cancelAction: NullAction
                     //);
 
-                    // @MT_TASK: Figure out a way to move the progress bar backward like before
                     for (int i = 0; i < fmDataList.Count; i++)
                     {
                         FMData fmData = fmDataList[i];
                         if (fmData.InstallStarted)
                         {
+                            Core.View.MultiItemProgress_SetItemData(
+                                index: fmData.ViewItemIndex,
+                                line2: LText.ProgressBox.CancelingInstall,
+                                progressType: ProgressType.Indeterminate);
+
                             // @MT_TASK: Return a list of error objects - or somehow add data to the existing one?
                             RemoveFMFromDisk(fmData);
+
+                            Core.View.MultiItemProgress_SetItemData(
+                                index: fmData.ViewItemIndex,
+                                line2: LText.ProgressBox.Canceled,
+                                percent: 0,
+                                progressType: ProgressType.Determinate);
                         }
                     }
 

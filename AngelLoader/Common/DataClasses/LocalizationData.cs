@@ -735,11 +735,13 @@ internal sealed class LText_Class
 
     internal sealed class ProgressBox_Class
     {
+        // @MT_TASK: Go through here and polish up any text that needs it
         internal readonly string Queued = "Queued...";
         internal readonly string InstallingFM = "Installing FM...";
         internal readonly string InstallingFMs = "Installing FMs...";
         internal readonly string PreparingToInstall = "Preparing to install...";
         internal readonly string CancelingInstall = "Canceling install...";
+        internal readonly string Canceled = "Canceled.";
         [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
         internal readonly string InstallFailed = "Install failed.";
