@@ -1976,7 +1976,6 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
-                    // @MT_TASK: Get result objects from this too, and display errors just like below
                     List<FMInstallResult> rollbackErrorResults = await RollBackMultipleFMs(fmDataList);
 
                     if (rollbackErrorResults.Count > 0)
