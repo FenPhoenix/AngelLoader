@@ -264,10 +264,8 @@ public sealed partial class MainForm : DarkFormBase,
         Height = 872;
     }
 
-    private async void Test3Button_Click(object sender, EventArgs e)
+    private void Test3Button_Click(object sender, EventArgs e)
     {
-        using var f = new MT_Task_TestForm();
-        f.ShowDialog();
     }
 
     private async Task InstallTestSet()

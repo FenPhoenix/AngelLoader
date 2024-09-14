@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
@@ -12,6 +14,33 @@ namespace AngelLoader.Forms.CustomControls;
 
 public sealed class DGV_ProgressItem : DataGridView, IDarkable
 {
+    private readonly Bitmap _progressBitmap;
+
+    private const int _barLength = 380;
+    private const int _barHeight = 13;
+    private const int _segmentLength = 26;
+
+    private readonly System.Timers.Timer IndeterminateProgressAnimTimer;
+
+    private uint _indeterminateProgressBarsRefCount;
+    public uint IndeterminateProgressBarsRefCount
+    {
+        get => _indeterminateProgressBarsRefCount;
+        set
+        {
+            if (_indeterminateProgressBarsRefCount == 0 && value > 0)
+            {
+                IndeterminateProgressAnimTimer.Enabled = true;
+            }
+            else if (_indeterminateProgressBarsRefCount > 0 && value == 0)
+            {
+                IndeterminateProgressAnimTimer.Enabled = false;
+            }
+
+            _indeterminateProgressBarsRefCount = value;
+        }
+    }
+
     private bool _darkModeEnabled;
     [PublicAPI]
     [Browsable(false)]
@@ -45,6 +74,8 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         public int Percent;
         public ProgressType ProgressType;
 
+        internal int IndeterminateAnimPosition;
+
         public ProgressItemData(string line1, string line2, int percent, ProgressType progressType)
         {
             Line1 = line1;
@@ -58,8 +89,66 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
     public DGV_ProgressItem()
     {
+        using (Bitmap sectionBmp = new(_segmentLength, _barHeight, PixelFormat.Format32bppPArgb))
+        {
+            _progressBitmap = new Bitmap(_barLength + (_segmentLength * 2), _barHeight, PixelFormat.Format32bppPArgb);
+
+            using Graphics sectionBmpG = Graphics.FromImage(sectionBmp);
+            using Graphics progressBmpG = Graphics.FromImage(_progressBitmap);
+
+            sectionBmpG.SmoothingMode = SmoothingMode.HighQuality;
+            progressBmpG.SmoothingMode = SmoothingMode.HighQuality;
+
+            PointF[] points =
+            {
+                new(0, 0),
+                new(13, 0),
+                new(26, 13),
+                new(13, 13),
+                new(0, 0),
+            };
+
+            sectionBmpG.FillPolygon(Brushes.Green, points);
+
+            for (int i = 0; i < _barLength + (_segmentLength * 2); i += _segmentLength)
+            {
+                progressBmpG.DrawImageUnscaled(sectionBmp, i, 0);
+            }
+        }
+
         DoubleBuffered = true;
         RowTemplate.Height = (DefaultCellStyle.Font.Height + 4) * 3;
+
+        IndeterminateProgressAnimTimer = new System.Timers.Timer();
+        IndeterminateProgressAnimTimer.SynchronizingObject = this;
+        IndeterminateProgressAnimTimer.Interval = 16;
+        IndeterminateProgressAnimTimer.Elapsed += IndeterminateProgressAnimTimer_Elapsed;
+    }
+
+    private void IndeterminateProgressAnimTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (_indeterminateProgressBarsRefCount == 0) return;
+
+        try
+        {
+            int firstDisplayedIndex = FirstDisplayedScrollingRowIndex;
+            int displayedRowCount = DisplayedRowCount(includePartialRow: true);
+            int lastDisplayedIndex = firstDisplayedIndex + displayedRowCount;
+
+            for (int i = firstDisplayedIndex; i < lastDisplayedIndex; i++)
+            {
+                int rowCount = RowCount;
+                if (i > ProgressItems.Count - 1 || i > rowCount - 1) continue;
+                if (ProgressItems[i].ProgressType == ProgressType.Indeterminate)
+                {
+                    InvalidateRow(i);
+                }
+            }
+        }
+        catch
+        {
+            // ignore
+        }
     }
 
     protected override void OnSelectionChanged(EventArgs e)
@@ -95,6 +184,8 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         }
     }
 
+    private Brush GetItemBackgroundBrush() => _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
+
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
         base.OnCellPainting(e);
@@ -102,21 +193,18 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         if (e.Graphics == null) return;
         if (e.RowIndex <= -1) return;
 
-        Brush bgBrush;
+        Brush bgBrush = GetItemBackgroundBrush();
         Pen borderPen;
-        // @MT_TASK: We need better colors for light/dark progress green
-        // Either that or just make the cells taller and put the progress bar below the text
+        // @MT_TASK: We need better colors for light/dark progress green - should we use normal blue (dark) and green (light)?
         Brush progressBrush;
         if (_darkModeEnabled)
         {
-            bgBrush = DarkColors.DarkBackgroundBrush;
             borderPen = DarkColors.Fen_DGVCellBordersPen;
             progressBrush = DarkColors.DGV_PinnedBackgroundDarkBrush;
             e.CellStyle.ForeColor = DarkColors.Fen_DarkForeground;
         }
         else
         {
-            bgBrush = SystemBrushes.Window;
             borderPen = SystemPens.ControlDark;
             progressBrush = DarkColors.DGV_PinnedBackgroundLightBrush;
         }
@@ -128,8 +216,6 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             int fontHeight = DefaultCellStyle.Font.Height + 20;
 
             ProgressItemData item = ProgressItems[e.RowIndex];
-            // @MT_TASK: Temporary, get a proper indeterminate progress bar here eventually
-            // @MT_TASK: Implement indeterminate progress (we'll need a timer and all)
             if (item.ProgressType == ProgressType.Indeterminate)
             {
                 DrawProgressBar(item, fontHeight, ProgressType.Indeterminate);
@@ -158,25 +244,43 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         void DrawProgressBar(ProgressItemData item, int fontHeight, ProgressType progressType)
         {
-            Brush brush;
-            int percent;
             if (progressType == ProgressType.Determinate)
             {
-                brush = Brushes.Green;
-                percent = item.Percent;
+                e.Graphics.FillRectangle(
+                    Brushes.Green,
+                    e.CellBounds.Left + 4,
+                    e.CellBounds.Top + fontHeight,
+                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 11) + 4,
+                    e.CellBounds.Height - (fontHeight + 5));
             }
             else
             {
-                brush = Brushes.Orange;
-                percent = 100;
-            }
+                if (item.IndeterminateAnimPosition >= 0)
+                {
+                    item.IndeterminateAnimPosition = -_segmentLength;
+                }
 
-            e.Graphics.FillRectangle(
-                brush,
-                e.CellBounds.Left + 4,
-                e.CellBounds.Top + fontHeight,
-                GetValueFromPercent_Int(percent, e.CellBounds.Width - 11) + 4,
-                e.CellBounds.Height - (fontHeight + 5));
+                e.Graphics.DrawImageUnscaled(
+                    _progressBitmap,
+                    e.CellBounds.Left + item.IndeterminateAnimPosition,
+                    e.CellBounds.Top + fontHeight);
+
+                e.Graphics.FillRectangle(
+                    bgBrush,
+                    e.CellBounds.Left,
+                    e.CellBounds.Top,
+                    4,
+                    e.CellBounds.Height);
+
+                e.Graphics.FillRectangle(
+                    bgBrush,
+                    e.CellBounds.Right - 4,
+                    e.CellBounds.Top,
+                    4,
+                    e.CellBounds.Height);
+
+                item.IndeterminateAnimPosition++;
+            }
         }
     }
 
@@ -195,5 +299,15 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         ProgressItemData item = ProgressItems[e.RowIndex];
 
         e.Value = item.Line1;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            IndeterminateProgressAnimTimer.Dispose();
+            _progressBitmap.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

@@ -158,7 +158,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     private int GetRequiredWidth()
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];
-        MessageItem messageItemProgress= MessageItems[(int)MessageItemType.MainProgress];
+        MessageItem messageItemProgress = MessageItems[(int)MessageItemType.MainProgress];
         //MessageItem messageItemMain2 = MessageItems[(int)MessageItemType.MainMessage2];
         //MessageItem messageItemSub = MessageItems[(int)MessageItemType.SubMessage];
 
@@ -337,6 +337,14 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             {
                 refreshRequired = true;
                 item.ProgressType = progressTypeReal;
+                if (progressTypeReal == ProgressType.Indeterminate)
+                {
+                    ItemsDGV.IndeterminateProgressBarsRefCount++;
+                }
+                else
+                {
+                    ItemsDGV.IndeterminateProgressBarsRefCount--;
+                }
             }
         }
 
@@ -348,6 +356,8 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 
     internal new void Hide()
     {
+        ItemsDGV.IndeterminateProgressBarsRefCount = 0;
+
         _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
         ItemsDGV.RowCount = 0;
