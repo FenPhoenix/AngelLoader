@@ -1784,7 +1784,7 @@ internal static partial class FMInstallAndPlay
 
                 try
                 {
-                    Parallel.For(0, threadCount, po, i =>
+                    Parallel.For(0, threadCount, po, _ =>
                     {
                         Buffers buffer = new();
                         BinaryBuffer binaryBuffer = new();
@@ -2207,7 +2207,6 @@ internal static partial class FMInstallAndPlay
 
                 int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-
                 report.ViewItemIndex = viewItemIndex;
                 report.Text = fmData.FM.Archive;
                 report.Percent = percent;
@@ -2334,7 +2333,6 @@ internal static partial class FMInstallAndPlay
 
             void ReportProgress(Fen7z.ProgressReport pr)
             {
-
                 if (!pr.Canceling)
                 {
                     report.ViewItemIndex = viewItemIndex;

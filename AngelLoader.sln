@@ -204,8 +204,8 @@ Global
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.Release|x86.Build.0 = Release|x86
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|Any CPU.ActiveCfg = Release_Testing|x64
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|Any CPU.Build.0 = Release_Testing|x64
-		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x64.ActiveCfg = Release_Testing|x64
-		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x64.Build.0 = Release_Testing|x64
+		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x64.ActiveCfg = RT_HeavyTests|x64
+		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x64.Build.0 = RT_HeavyTests|x64
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x86.ActiveCfg = RT_HeavyTests|x86
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_HeavyTests|x86.Build.0 = RT_HeavyTests|x86
 		{AF85B663-5D2C-481A-B301-D9047D494C2C}.RT_StartupOnly|Any CPU.ActiveCfg = RT_StartupOnly|x64

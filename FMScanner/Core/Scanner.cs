@@ -392,7 +392,6 @@ public sealed partial class Scanner : IDisposable
                     progress: progress,
                     cancellationToken: cancellationToken));
             });
-
         }
         catch (OperationCanceledException)
         {

@@ -343,7 +343,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         foreach (string fmArchive in fmArchives)
         {
-            FanMission? fm = FMsViewList.FirstOrDefault(x => x.Archive.EqualsI(fmArchive));
+            FanMission? fm = FMsViewList.Find(x => x.Archive.EqualsI(fmArchive));
             if (fm != null)
             {
                 fms.Add(fm);

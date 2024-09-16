@@ -1502,6 +1502,5 @@ internal static partial class Ini
 
         sw.Append("AutoSetMaxIOThreads=").AppendLine(config.AutoSetMaxIOThreads);
         sw.Append("MaxIOThreads=").AppendLine(config.MaxIOThreads);
-
     }
 }
