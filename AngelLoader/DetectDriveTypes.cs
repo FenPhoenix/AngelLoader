@@ -27,15 +27,42 @@ internal static class DetectDriveTypes
         SCM = 5,
     }
 
+    [PublicAPI]
+    private enum BusType : ushort
+    {
+        Unknown = 0,
+        SCSI = 1,
+        ATAPI = 2,
+        ATA = 3,
+        _1394 = 4,
+        SSA = 5,
+        FibreChannel = 6,
+        USB = 7,
+        RAID = 8,
+        iSCSI = 9,
+        SAS = 10,
+        SATA = 11,
+        SD = 12,
+        MMC = 13,
+        MAX = 14,
+        FileBackedVirtual = 15,
+        StorageSpaces = 16,
+        NVMe = 17,
+        MicrosoftReserved = 18,
+    }
+
     private sealed class PhysicalDisk
     {
         internal readonly string DeviceId;
         internal readonly MediaType MediaType;
+        // @MT_TASK: Use the BusType to detect NVMe to enable ultra-threaded mode
+        internal readonly BusType BusType;
 
-        public PhysicalDisk(string deviceId, MediaType mediaType)
+        public PhysicalDisk(string deviceId, MediaType mediaType, BusType busType)
         {
             DeviceId = deviceId;
             MediaType = mediaType;
+            BusType = busType;
         }
     }
 
@@ -125,6 +152,7 @@ internal static class DetectDriveTypes
         {
             string deviceId = "";
             MediaType mediaType = default;
+            BusType busType = default;
 
             object? deviceIdObj = physQueryObj["DeviceId"];
             if (deviceIdObj is string deviceIdValue)
@@ -138,7 +166,13 @@ internal static class DetectDriveTypes
                 mediaType = (MediaType)mediaTypeValue;
             }
 
-            physDisks.Add(new PhysicalDisk(deviceId, mediaType));
+            object? busTypeObj = physQueryObj["BusType"];
+            if (busTypeObj is ushort busTypeValue)
+            {
+                busType = (BusType)busTypeValue;
+            }
+
+            physDisks.Add(new PhysicalDisk(deviceId, mediaType, busType));
         }
 
         return physDisks;
