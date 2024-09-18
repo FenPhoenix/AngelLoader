@@ -305,6 +305,8 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
+    // @MT_TASK (Framework Seek perf): Could we use reads instead of seeks here, since we're always going forward?
+    // Try it and measure the difference. It could be too minor to matter, but not sure.
     internal static bool TrySkipBlock(Stream stream, long streamLength, ZipContext context)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
