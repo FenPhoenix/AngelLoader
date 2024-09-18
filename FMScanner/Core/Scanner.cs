@@ -781,7 +781,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     _archive = zipResult.Archive!;
                     __zipEntries = new List<ZipArchiveFastEntry>();
-                    var entries = _archive.Entries;
+                    ListFast<ZipArchiveFastEntry> entries = _archive.Entries;
                     for (int i = 0; i < entries.Count; i++)
                     {
                         ZipArchiveFastEntry entry = entries[i];

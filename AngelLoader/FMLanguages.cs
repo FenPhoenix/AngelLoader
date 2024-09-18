@@ -271,11 +271,12 @@ internal static class FMLanguages
             if (archivePath.ExtIsZip())
             {
                 using var zipArchive = new ZipArchiveFast(File_OpenReadFast(archivePath), allowUnsupportedEntries: true);
-                int filesCount = zipArchive.Entries.Count;
+                ListFast<ZipArchiveFastEntry> entries = zipArchive.Entries;
+                int filesCount = entries.Count;
                 for (int i = 0; i < filesCount; i++)
                 {
                     // ZipArchiveFast guarantees full names to never contain backslashes
-                    string fn = zipArchive.Entries[i].FullName;
+                    string fn = entries[i].FullName;
                     var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
                     if (result.EarlyOutEnglish) return (true, result.Languages!);
                 }
