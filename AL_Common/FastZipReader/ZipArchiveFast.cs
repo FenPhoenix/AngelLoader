@@ -5,9 +5,9 @@
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using AL_Common.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
@@ -29,16 +29,6 @@ public sealed class ZipArchiveFast : IDisposable
     }
 
     #endregion
-
-    // We don't want to bloat the archive entry class with crap that's only there for error checking purposes.
-    // Since errors should be the rare case, we'll check for errors as we do the initial read, and just
-    // put bad entries in here and check it when we go to open.
-    // @MT_TASK: This is the only thing we actually need to transfer to all threads' archive classes
-    // We can even just transfer the dictionary itself and be safe, although that's a little sketchy
-    // But what we're doing with the shared entries list is already sketchy enough so I guess it's fine?
-    // We could just copy the entries to a new dictionary instance per-archive if we wanted to be cautious.
-    private Dictionary<ZipArchiveFastEntry, string>? _unopenableArchives;
-    private Dictionary<ZipArchiveFastEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveFastEntry, string>();
 
     // invalid until ReadCentralDirectory
     private long _centralDirectoryStart;
@@ -322,9 +312,16 @@ public sealed class ZipArchiveFast : IDisposable
     {
         message = "";
 
-        if (_unopenableArchives != null && _unopenableArchives.TryGetValue(entry, out string result))
+        if (entry.CompressionMethod != CompressionMethodValues.Stored &&
+            entry.CompressionMethod != CompressionMethodValues.Deflate &&
+            entry.CompressionMethod != CompressionMethodValues.Deflate64)
         {
-            message = result;
+            message = entry.CompressionMethod switch
+            {
+                CompressionMethodValues.BZip2 or CompressionMethodValues.LZMA => GetUnsupportedCompressionMethodErrorMessage(entry.CompressionMethod),
+                _ => SR.UnsupportedCompression,
+            };
+
             return false;
         }
 
@@ -430,15 +427,12 @@ public sealed class ZipArchiveFast : IDisposable
                                 {
                                     case CompressionMethodValues.BZip2:
                                     case CompressionMethodValues.LZMA:
-                                        string msg = string.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
-                                        UnopenableArchives[entry] = msg;
                                         if (!_allowUnsupportedEntries)
                                         {
-                                            ThrowHelper.ZipCompressionMethodException(msg);
+                                            ThrowHelper.ZipCompressionMethodException(GetUnsupportedCompressionMethodErrorMessage(compressionMethod));
                                         }
                                         break;
                                     default:
-                                        UnopenableArchives[entry] = SR.UnsupportedCompression;
                                         if (!_allowUnsupportedEntries)
                                         {
                                             ThrowHelper.ZipCompressionMethodException(SR.UnsupportedCompression);
@@ -466,6 +460,12 @@ public sealed class ZipArchiveFast : IDisposable
 
             return _context.Entries;
         }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string GetUnsupportedCompressionMethodErrorMessage(CompressionMethodValues compressionMethod)
+    {
+        return string.Format(SR.UnsupportedCompressionMethod, compressionMethod.ToString());
     }
 
     // This function reads all the EOCD stuff it needs to find the offset to the start of the central directory
