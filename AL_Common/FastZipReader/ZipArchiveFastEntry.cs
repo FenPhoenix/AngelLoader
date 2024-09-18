@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using JetBrains.Annotations;
@@ -11,6 +12,13 @@ namespace AL_Common.FastZipReader;
 [PublicAPI]
 public sealed class ZipArchiveFastEntry
 {
+    [Flags]
+    private enum BitFlagValues : ushort
+    {
+        DataDescriptor = 8,
+        UnicodeFileName = 2048, // 0x0800
+    }
+
     #region Fields
 
     internal long OffsetOfLocalHeader;
@@ -45,10 +53,19 @@ public sealed class ZipArchiveFastEntry
 
     #endregion
 
-    public ZipArchiveFastEntry(ZipCentralDirectoryFileHeader cd) => Set(in cd);
+    internal ZipArchiveFastEntry(
+        ZipCentralDirectoryFileHeader cd,
+        Encoding? entryNameEncoding,
+        bool useEntryNameEncodingCodePath)
+    {
+        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath);
+    }
 
     [MemberNotNull(nameof(FullName))]
-    public void Set(in ZipCentralDirectoryFileHeader cd)
+    internal void Set(
+        in ZipCentralDirectoryFileHeader cd,
+        Encoding? entryNameEncoding,
+        bool useEntryNameEncodingCodePath)
     {
         CompressionMethod = (ZipArchiveFast.CompressionMethodValues)cd.CompressionMethod;
 
@@ -63,8 +80,26 @@ public sealed class ZipArchiveFastEntry
         // but entryname/extra length could be different in LH
         StoredOffsetOfCompressedData = null;
 
+        // @MT_TASK: Test identicality in filenames for all FM zips between ZipArchive and ZipArchiveFast
+        Encoding finalEncoding;
+        if (!useEntryNameEncodingCodePath)
+        {
+            finalEncoding = Encoding.UTF8;
+        }
+        else if (((BitFlagValues)cd.GeneralPurposeBitFlag & BitFlagValues.UnicodeFileName) != 0)
+        {
+            finalEncoding = Encoding.UTF8;
+        }
+        else
+        {
+            // @MT_TASK: Pretty sure "Encoding.GetEncoding(0)" means "Encoding.Default", but check
+            // .NET modern replaces "default" with UTF8:
+            // _storedEntryName = (_archive.EntryNameAndCommentEncoding ?? Encoding.UTF8).GetString(_storedEntryNameBytes);
+            finalEncoding = entryNameEncoding ?? Encoding.GetEncoding(0);
+        }
+
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
         // backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
-        FullName = Encoding.UTF8.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
+        FullName = finalEncoding.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
     }
 }

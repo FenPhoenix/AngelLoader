@@ -332,6 +332,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 {
     private const uint SignatureConstant = 0x02014B50;
 
+    internal readonly ushort GeneralPurposeBitFlag;
     internal readonly ushort CompressionMethod;
     internal readonly uint LastModified;
     internal readonly long CompressedSize;
@@ -343,6 +344,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     internal readonly ushort FilenameLength;
 
     private ZipCentralDirectoryFileHeader(
+        ushort generalPurposeBitFlag,
         ushort compressionMethod,
         uint lastModified,
         long compressedSize,
@@ -352,6 +354,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         byte[] filename,
         ushort filenameLength)
     {
+        GeneralPurposeBitFlag = generalPurposeBitFlag;
         CompressionMethod = compressionMethod;
         LastModified = lastModified;
         CompressedSize = compressedSize;
@@ -378,7 +381,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeBySpecification
         BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeByCompatibility
         BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionNeededToExtract
-        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // GeneralPurposeBitFlag
+        ushort generalPurposeBitFlag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
         BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // Crc32
@@ -423,6 +426,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         uint diskNumberStart = zip64.StartDiskNumber ?? diskNumberStartSmall;
 
         header = new ZipCentralDirectoryFileHeader(
+            generalPurposeBitFlag: generalPurposeBitFlag,
             compressionMethod: compressionMethod,
             lastModified: lastModified,
             compressedSize: compressedSize,
