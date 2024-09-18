@@ -1780,6 +1780,8 @@ internal static partial class FMInstallAndPlay
                         BinaryBuffer binaryBuffer = new();
 
                         FMData fmData = fmDataList[0];
+                        fmData.InstallStarted = true;
+
                         results.Add(InstallFMZip_ThreadedPerEntry(
                             viewItemIndex: fmData.ViewItemIndex,
                             progress: progress,
@@ -2231,10 +2233,14 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
+            _installCts.Token.ThrowIfCancellationRequested();
+
             var sw0 = new Stopwatch();
             sw0.Start();
 
             List<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
+
+            _installCts.Token.ThrowIfCancellationRequested();
 
             int entriesTotalCount = entries.Count;
 
@@ -2263,7 +2269,12 @@ internal static partial class FMInstallAndPlay
                 byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
                 using var fs = FileStreamCustom.CreateRead(fmDataArchivePath, fileStreamBuffer);
+
+                po.CancellationToken.ThrowIfCancellationRequested();
+
                 using ZipArchiveFast archive = new(fs, allowUnsupportedEntries: true);
+
+                po.CancellationToken.ThrowIfCancellationRequested();
 
                 while (cq.TryDequeue(out ZipArchiveFastEntry entry))
                 {
@@ -2277,11 +2288,17 @@ internal static partial class FMInstallAndPlay
                     {
                         Directory.CreateDirectory(Path.Combine(fmInstalledPath,
                             fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+                        po.CancellationToken.ThrowIfCancellationRequested();
                     }
 
                     archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, tempBuffer);
 
+                    po.CancellationToken.ThrowIfCancellationRequested();
+
                     File_UnSetReadOnly(extractedName);
+
+                    po.CancellationToken.ThrowIfCancellationRequested();
 
                     int entryNumber = entriesTotalCount - cq.Count;
 
@@ -2292,7 +2309,7 @@ internal static partial class FMInstallAndPlay
                     report.Percent = percent;
                     progress.Report(report);
 
-                    _installCts.Token.ThrowIfCancellationRequested();
+                    po.CancellationToken.ThrowIfCancellationRequested();
                 }
             });
 
