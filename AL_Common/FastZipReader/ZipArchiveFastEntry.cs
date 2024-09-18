@@ -38,6 +38,7 @@ public sealed class ZipArchiveFastEntry
     /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
+    // @MT_TASK: Test identicality of LastWriteTime with ZipArchive vs ZipArchiveFast
     public uint LastWriteTime;
 
     /// <summary>

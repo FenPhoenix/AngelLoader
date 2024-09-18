@@ -4,6 +4,8 @@
 
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
+// @MT_TASK: Test identicality between this and the .NET 8 version, once we lock our final I/O threading code in
+
 using System;
 using System.Diagnostics;
 using System.IO;
