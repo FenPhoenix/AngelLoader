@@ -154,7 +154,6 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         _owner.SetTaskBarValue(0, 100);
     }
 
-    // @MT_TASK: Finish implementing this, add a main progress bar probably etc.
     private int GetRequiredWidth()
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];

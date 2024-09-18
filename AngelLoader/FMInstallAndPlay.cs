@@ -1712,12 +1712,6 @@ internal static partial class FMInstallAndPlay
 
         _installCts = _installCts.Recreate();
 
-        //Core.View.ShowProgressBox_Single(
-        //    message1: LText.ProgressBox.PreparingToInstall,
-        //    progressType: ProgressType.Indeterminate,
-        //    cancelAction: CancelInstallToken
-        //);
-
         Core.View.MultiItemProgress_Show(
             message1: LText.ProgressBox.PreparingToInstall,
             cancelMessage: LText.Global.Cancel,
@@ -1731,18 +1725,6 @@ internal static partial class FMInstallAndPlay
 
                 if (!success) return false;
                 if (fmDataList.Count == 0) return false;
-
-                //Core.View.SetProgressBoxState(
-                //    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
-                //    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                //    mainMessage2: "",
-                //    mainPercent: 0,
-                //    mainProgressType: ProgressType.Determinate,
-                //    subMessage: "",
-                //    subPercent: 0,
-                //    subProgressType: ProgressType.Determinate,
-                //    cancelMessage: LText.Global.Cancel
-                //);
 
                 (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
 
@@ -1822,11 +1804,6 @@ internal static partial class FMInstallAndPlay
                             {
                                 int viewItemIndex = fmData.ViewItemIndex;
                                 fmData.InstallStarted = true;
-
-                                // Framework zip extracting is much faster, so use it if possible
-                                // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
-                                // But we don't want to parse out stupid console output for error detection and junk
-                                // if we don't have to so whatever.
 
                                 FMInstallResult fmInstallResult =
                                     fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
@@ -1990,13 +1967,6 @@ internal static partial class FMInstallAndPlay
             {
                 List<FMInstallResult> ret = new();
 
-                //Core.View.SetProgressBoxState_Single(
-                //    message1: LText.ProgressBox.CancelingInstall,
-                //    percent: 100,
-                //    progressType: ProgressType.Determinate,
-                //    cancelAction: NullAction
-                //);
-
                 for (int i = 0; i < fmDataList.Count; i++)
                 {
                     FMData fmData = fmDataList[i];
@@ -2023,17 +1993,6 @@ internal static partial class FMInstallAndPlay
                 }
 
                 return ret;
-
-                //for (int j = lastInstalledFMIndex; j >= 0; j--)
-                //{
-                //    FMData fmData = fmDataList[j];
-
-                //    //Core.View.SetProgressBoxState_Single(
-                //    //    message2: fmData.FM.GetId(),
-                //    //    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
-                //    RemoveFMFromDisk(fmData);
-                //}
             });
         }
 
@@ -2043,10 +2002,6 @@ internal static partial class FMInstallAndPlay
             if (!DeleteFMInstalledDirectory(fmInstalledPath))
             {
                 // Don't log it here because the deleter method will already have logged it
-                // @MT_TASK: Dialog in multithreading area
-                //Core.Dialogs.ShowError(
-                //    message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" +
-                //             fmInstalledPath);
 
                 ArchiveType type =
                     fmData.FM.Archive.ExtIsZip() ? ArchiveType.Zip :
@@ -2093,22 +2048,6 @@ internal static partial class FMInstallAndPlay
         {
             try
             {
-                //if (single)
-                //{
-                //    Core.View.SetProgressBoxState_Single(
-                //        message1: LText.ProgressBox.ConvertingAudioFiles,
-                //        message2: "",
-                //        progressType: ProgressType.Indeterminate
-                //    );
-                //}
-                //else
-                //{
-                //    Core.View.SetProgressBoxState_Double(
-                //        subMessage: LText.ProgressBox.ConvertingAudioFiles,
-                //        subPercent: 100
-                //    );
-                //}
-
                 Core.View.MultiItemProgress_SetItemData(
                     index: viewItemIndex,
                     line2: LText.ProgressBox.ConvertingAudioFiles,
@@ -2324,8 +2263,6 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2387,8 +2324,6 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2467,8 +2402,6 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log("Error extracting rar " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2527,9 +2460,6 @@ internal static partial class FMInstallAndPlay
             {
                 Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
 
-                // @MT_TASK: Dialog in multithreading area
-                //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-
                 return new FMInstallResult(
                     fmData,
                     InstallResultType.InstallFailed,
@@ -2559,8 +2489,6 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            // @MT_TASK: Dialog in multithreading area
-            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,

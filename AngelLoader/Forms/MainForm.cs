@@ -268,9 +268,9 @@ public sealed partial class MainForm : DarkFormBase,
     {
     }
 
+    // @MT_TASK: Remove this test stuff for final release
     private async Task InstallTestSet()
     {
-        // @MT_TASK: Remove this test stuff for final release
         string[] fmArchives =
         {
             "10Rooms_AHome.zip",
