@@ -886,6 +886,11 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_AggressiveIOThreading_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.AggressiveIOThreading = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     private readonly unsafe struct Config_DelegatePointerWrapper
@@ -1091,6 +1096,7 @@ internal static partial class Ini
 
         { "AutoSetMaxIOThreads", new Config_DelegatePointerWrapper(&Config_AutoSetMaxIOThreads_Set) },
         { "MaxIOThreads", new Config_DelegatePointerWrapper(&Config_MaxIOThreads_Set) },
+        { "AggressiveIOThreading", new Config_DelegatePointerWrapper(&Config_AggressiveIOThreading_Set) },
 
         #region Backward compatibility
 
@@ -1502,5 +1508,6 @@ internal static partial class Ini
 
         sw.Append("AutoSetMaxIOThreads=").AppendLine(config.AutoSetMaxIOThreads);
         sw.Append("MaxIOThreads=").AppendLine(config.MaxIOThreads);
+        sw.Append("AggressiveIOThreading=").AppendLine(config.AggressiveIOThreading);
     }
 }

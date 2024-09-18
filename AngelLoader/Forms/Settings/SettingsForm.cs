@@ -673,6 +673,24 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             AdvancedPage.IOThreadsManualNumericUpDown.Value = Config.MaxIOThreads;
 
+            /*
+            @MT_TASK(I/O Threading Settings UI): Finalize these: should we call it "parallel zip extraction"?
+            That's all it is right now, but we can foresee there may be other opportunities for NVMe-only I/O
+            threading in the future, so maybe we should leave it less specific?
+
+            @MT_TASK: Maybe we should just have "Auto", "HDD", "SATA SSD", "NVMe SSD", and then "Custom"
+            Where "Custom" lets you set the thread count and the parallel zip extract checkbox. "Auto" should
+            detect that setting too, it should see if all paths are on NVMe, and only then enable it.
+            
+            To be really fancy, we could even set the value per-archive where it looks to see where an archive
+            will be extracted from and to, and then turn it on or off per-archive. However, that would preclude
+            the parallel-per-archive extract, so may or may not end up slower in the end.
+
+            We should probably just do the non-fancy option.
+            */
+
+            AdvancedPage.AggressiveIOThreadingCheckBox.Checked = config.AggressiveIOThreading;
+
             #endregion
         }
 
@@ -1046,6 +1064,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 AdvancedPage.IOThreadsAutoRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Auto;
                 AdvancedPage.IOThreadsManualRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Manual;
 
+                // @MT_TASK(I/O Threading Settings UI): Localize these
+                AdvancedPage.AggressiveIOThreadingCheckBox.Text = "Aggressive I/O threading";
+                // @MT_TASK: If we want to keep this message, implement the manual layout like in the Paths page
+                // @MT_TASK: The option needs to be clearer. "Performance" means what, from the user's perspective?
+                // What it means is it may increase single zip extract performance, specifically. We should convey
+                // that.
+                AdvancedPage.AggressiveIOThreadingHelpLabel.Text =
+                    "If you have an NVMe SSD, this option may increase performance. If you have a SATA SSD or other drive type, it will probably degrade performance.";
+
                 #endregion
             }
         }
@@ -1381,6 +1408,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OutConfig.AutoSetMaxIOThreads = AdvancedPage.IOThreadsAutoRadioButton.Checked;
             OutConfig.MaxIOThreads = (int)AdvancedPage.IOThreadsManualNumericUpDown.Value;
+            OutConfig.AggressiveIOThreading = AdvancedPage.AggressiveIOThreadingCheckBox.Checked;
 
             #endregion
         }

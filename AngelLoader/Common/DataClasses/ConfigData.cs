@@ -461,6 +461,9 @@ public sealed class ConfigData
 
     // Session-only; don't write out
     internal bool AllDrivesAreSSD;
+
+    // @MT_TASK: Finish implementing (parallel-per-zip-entry extract)
+    internal bool AggressiveIOThreading;
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic

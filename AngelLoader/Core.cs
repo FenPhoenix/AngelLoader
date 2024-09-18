@@ -709,6 +709,7 @@ internal static class Core
 
         Config.AutoSetMaxIOThreads = outConfig.AutoSetMaxIOThreads;
         Config.MaxIOThreads = outConfig.MaxIOThreads;
+        Config.AggressiveIOThreading = outConfig.AggressiveIOThreading;
 
         #endregion
 

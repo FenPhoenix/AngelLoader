@@ -14,6 +14,8 @@ public sealed partial class AdvancedPage : UserControl, Interfaces.ISettingsPage
 #else
         InitSlim();
 #endif
+
+        AggressiveIOThreadingPictureBox.Image = Images.HelpSmall;
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);
