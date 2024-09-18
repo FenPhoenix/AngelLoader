@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -79,7 +80,7 @@ public static partial class Common
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [PublicAPI]
-    public sealed class ListFast<T>
+    public sealed class ListFast<T> : IEnumerable<T>
     {
         public T[] ItemsArray;
         private int _itemsArrayLength;
@@ -256,6 +257,16 @@ public static partial class Common
             EnsureCapacity(capacity);
             ClearFast();
         }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                yield return ItemsArray[i];
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     #endregion
