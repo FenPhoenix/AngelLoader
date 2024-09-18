@@ -2213,7 +2213,6 @@ internal static partial class FMInstallAndPlay
         Core.View.MultiItemProgress_SetState(
             mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount
         );
-
     }
 
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
