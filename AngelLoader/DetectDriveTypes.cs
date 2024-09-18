@@ -94,6 +94,8 @@ internal static class DetectDriveTypes
 
             for (int i = 0; i < paths.Count; i++)
             {
+                if (paths[i].IsWhiteSpace()) continue;
+
                 string letter = Path.GetPathRoot(paths[i]).TrimEnd(Common.CA_BS_FS);
                 if (letter.IsEmpty())
                 {
