@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using JetBrains.Annotations;
@@ -222,6 +223,21 @@ public static partial class Common
             result = "";
             return false;
         }
+    }
+
+    public static Encoding GetOEMCodePageOrFallback(Encoding fallback)
+    {
+        Encoding enc;
+        try
+        {
+            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch
+        {
+            enc = fallback;
+        }
+
+        return enc;
     }
 
     #endregion

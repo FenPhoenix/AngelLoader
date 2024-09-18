@@ -7,6 +7,7 @@
 // @MT_TASK: Test identicality between this and the .NET 8 version, once we lock our final I/O threading code in
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -308,6 +309,32 @@ public sealed class ZipArchiveFast : IDisposable
         }
 
         return uncompressedStream;
+    }
+
+    /// <summary>
+    /// Returns a list of entries that have been prepared for use in a per-entry threaded scenario.
+    /// </summary>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    // @MT_TASK/@MEM: We could make ListFast implement IEnumerable and then we could pass it to the ConcurrentQueue
+    // Which would let us just return the ListFast of entries without copying it to a new list
+    public static List<ZipArchiveFastEntry> GetThreadableEntries(string fileName)
+    {
+        List<ZipArchiveFastEntry> entries = new();
+
+        using FileStreamCustom fs = FileStreamCustom.CreateRead(fileName, new byte[FileStreamBufferSize]);
+        using ZipArchiveFast archive = new(
+            stream: fs,
+            allowUnsupportedEntries: true,
+            entryNameEncoding: GetOEMCodePageOrFallback(Encoding.UTF8));
+
+        ListFast<ZipArchiveFastEntry> entriesTemp = archive.Entries;
+        for (int i = 0; i < entriesTemp.Count; i++)
+        {
+            entries.Add(entriesTemp[i]);
+        }
+
+        return entries;
     }
 
     // @MT_TASK(IsOpenable): This needs to be pre-run for every entry beforehand in order for the threaded instances to be thread-safe

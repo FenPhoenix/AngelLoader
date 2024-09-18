@@ -1,4 +1,6 @@
 ﻿// @MT_TASK: Comment this out for final release
+// @MT_TASK: There are some catch (Exception) that don't filter for OperationCanceledException - do they need changing to that?
+// @MT_TASK: Some strings not being checked for empty before accessing [^1]
 #define TIMING_TEST
 
 using System;
@@ -13,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
@@ -1760,23 +1763,7 @@ internal static partial class FMInstallAndPlay
                     cancelMessage: LText.Global.Cancel,
                     cancelAction: CancelInstallToken);
 
-                ConcurrentQueue<FMData> cq = new(fmDataList);
                 ConcurrentBag<FMInstallResult> results = new();
-
-                int threadCount =
-                    //1;
-                    GetThreadCountForParallelOperation(fmDataList.Count);
-
-                // @MT_TASK: Remove for final release
-                Trace.WriteLine(threadCount);
-
-                ParallelOptions po = new()
-                {
-                    CancellationToken = _installCts.Token,
-                    MaxDegreeOfParallelism = threadCount,
-                };
-
-                DarkLoaderBackupContext ctx = new();
 
 #if TIMING_TEST
                 StartTiming();
@@ -1784,192 +1771,102 @@ internal static partial class FMInstallAndPlay
 
                 try
                 {
-                    Parallel.For(0, threadCount, po, _ =>
+                    DarkLoaderBackupContext ctx = new();
+
+                    if (Config.AggressiveIOThreading && fmDataList.Count == 1)
                     {
                         Buffers buffer = new();
                         BinaryBuffer binaryBuffer = new();
 
-                        while (cq.TryDequeue(out FMData fmData))
+                        FMData fmData = fmDataList[0];
+                        results.Add(InstallFMZip_ThreadedPerEntry(
+                            viewItemIndex: fmData.ViewItemIndex,
+                            progress: progress,
+                            fmData: fmData));
+
+                        DoPostInstallWork(
+                            fmData,
+                            fmData.ViewItemIndex,
+                            binaryBuffer,
+                            buffer,
+                            _installCts.Token,
+                            ref fmsFinishedCount,
+                            ctx,
+                            archivePaths,
+                            fmDataList.Count);
+                    }
+                    else
+                    {
+                        int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
+
+                        // @MT_TASK: Remove for final release
+                        Trace.WriteLine(nameof(InstallInternal) + "Parallel.For thread count: " + threadCount);
+
+                        ConcurrentQueue<FMData> cq = new(fmDataList);
+
+                        ParallelOptions po = new()
                         {
-                            int viewItemIndex = fmData.ViewItemIndex;
-                            fmData.InstallStarted = true;
+                            CancellationToken = _installCts.Token,
+                            MaxDegreeOfParallelism = threadCount,
+                        };
 
-                            // Framework zip extracting is much faster, so use it if possible
-                            // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
-                            // But we don't want to parse out stupid console output for error detection and junk
-                            // if we don't have to so whatever.
+                        Parallel.For(0, threadCount, po, _ =>
+                        {
+                            Buffers buffer = new();
+                            BinaryBuffer binaryBuffer = new();
 
-                            FMInstallResult fmInstallResult =
-                                fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
-                                    viewItemIndex,
-                                    progress,
-                                    fmData,
-                                    buffer.ExtractTempBuffer,
-                                    buffer.FileStreamBuffer) :
-                                fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
-                                    viewItemIndex,
-                                    progress,
-                                    fmData,
-                                    buffer.ExtractTempBuffer) :
-                                InstallFMSevenZip(
-                                    viewItemIndex,
-                                    progress,
-                                    fmData);
-
-                            // @MT_TASK: Rolling back needs re-architecting for multithreading
-                            if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
+                            while (cq.TryDequeue(out FMData fmData))
                             {
-                                FMInstallResult result = RollBackSingleFM(fmData);
-                                results.Add(result);
-                                continue;
-                            }
+                                int viewItemIndex = fmData.ViewItemIndex;
+                                fmData.InstallStarted = true;
 
-                            results.Add(fmInstallResult);
+                                // Framework zip extracting is much faster, so use it if possible
+                                // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
+                                // But we don't want to parse out stupid console output for error detection and junk
+                                // if we don't have to so whatever.
 
-                            po.CancellationToken.ThrowIfCancellationRequested();
+                                FMInstallResult fmInstallResult =
+                                    fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
+                                        viewItemIndex,
+                                        progress,
+                                        fmData,
+                                        buffer.ExtractTempBuffer,
+                                        buffer.FileStreamBuffer) :
+                                    fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
+                                        viewItemIndex,
+                                        progress,
+                                        fmData,
+                                        buffer.ExtractTempBuffer) :
+                                    InstallFMSevenZip(
+                                        viewItemIndex,
+                                        progress,
+                                        fmData);
 
-                            try
-                            {
-                                using var sw = new StreamWriter(Path.Combine(fmData.InstalledPath, Paths.FMSelInf));
-                                sw.WriteLine("Name=" + fmData.FM.InstalledDir);
-                                sw.WriteLine("Archive=" + fmData.FM.Archive);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmData.InstalledPath, ex);
-                            }
-
-                            // Only Dark engine games need audio conversion
-                            if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
-                            {
-                                try
+                                // @MT_TASK: Rolling back needs re-architecting for multithreading
+                                if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                                 {
-                                    //if (single)
-                                    //{
-                                    //    Core.View.SetProgressBoxState_Single(
-                                    //        message1: LText.ProgressBox.ConvertingAudioFiles,
-                                    //        message2: "",
-                                    //        progressType: ProgressType.Indeterminate
-                                    //    );
-                                    //}
-                                    //else
-                                    //{
-                                    //    Core.View.SetProgressBoxState_Double(
-                                    //        subMessage: LText.ProgressBox.ConvertingAudioFiles,
-                                    //        subPercent: 100
-                                    //    );
-                                    //}
-
-                                    Core.View.MultiItemProgress_SetItemData(
-                                        index: viewItemIndex,
-                                        line2: LText.ProgressBox.ConvertingAudioFiles,
-                                        percent: 100,
-                                        progressType: ProgressType.Indeterminate);
-
-#if TIMING_TEST
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-                                    // ReSharper disable RedundantNameQualifier
-                                    var audioConvertSW = new System.Diagnostics.Stopwatch();
-                                    // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
-                                    audioConvertSW.Start();
-#endif
-
-                                    // Dark engine games can't play MP3s, so they must be converted in all cases.
-                                    // This one won't be called anywhere except during install, because it always runs during
-                                    // install so there's no need to make it optional elsewhere. So we don't need to have a
-                                    // check bool or anything.
-                                    FMAudio.ConvertAsPartOfInstall(
-                                        validAudioConvertibleFM,
-                                        AudioConvert.MP3ToWAV,
-                                        binaryBuffer,
-                                        buffer.FileStreamBuffer,
-                                        po.CancellationToken);
-
-                                    po.CancellationToken.ThrowIfCancellationRequested();
-
-                                    if (Config.ConvertOGGsToWAVsOnInstall)
-                                    {
-                                        FMAudio.ConvertAsPartOfInstall(
-                                            validAudioConvertibleFM,
-                                            AudioConvert.OGGToWAV,
-                                            binaryBuffer,
-                                            buffer.FileStreamBuffer,
-                                            po.CancellationToken);
-                                    }
-
-                                    po.CancellationToken.ThrowIfCancellationRequested();
-
-                                    if (Config.ConvertWAVsTo16BitOnInstall)
-                                    {
-                                        FMAudio.ConvertAsPartOfInstall(
-                                            validAudioConvertibleFM,
-                                            AudioConvert.WAVToWAV16,
-                                            binaryBuffer,
-                                            buffer.FileStreamBuffer,
-                                            po.CancellationToken);
-                                    }
-
-#if TIMING_TEST
-                                    audioConvertSW.Stop();
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-                                    // ReSharper disable RedundantNameQualifier
-                                    System.Diagnostics.Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
-                                    // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
-#endif
-
-                                    po.CancellationToken.ThrowIfCancellationRequested();
+                                    FMInstallResult result = RollBackSingleFM(fmData);
+                                    results.Add(result);
+                                    continue;
                                 }
-                                catch (Exception ex) when (ex is not OperationCanceledException)
-                                {
-                                    validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
-                                }
-                            }
 
-                            // Don't be lazy about this; there can be no harm and only benefits by doing it right away
-                            GenerateMissFlagFileIfRequired(fmData.FM);
+                                results.Add(fmInstallResult);
 
-                            Core.View.MultiItemProgress_SetItemData(
-                                index: viewItemIndex,
-                                line2: LText.ProgressBox.RestoringBackup,
-                                percent: 100,
-                                progressType: ProgressType.Indeterminate);
+                                po.CancellationToken.ThrowIfCancellationRequested();
 
-                            try
-                            {
-                                RestoreFM(
+                                DoPostInstallWork(
+                                    fmData,
+                                    viewItemIndex,
+                                    binaryBuffer,
+                                    buffer,
+                                    po.CancellationToken,
+                                    ref fmsFinishedCount,
                                     ctx,
-                                    fmData.FM,
                                     archivePaths,
-                                    buffer.ExtractTempBuffer,
-                                    buffer.FileStreamBuffer,
-                                    po.CancellationToken);
+                                    fmDataList.Count);
                             }
-                            catch (Exception ex) when (ex is not OperationCanceledException)
-                            {
-                                Log(ex: ex);
-                            }
-
-                            po.CancellationToken.ThrowIfCancellationRequested();
-
-                            Interlocked.Increment(ref fmsFinishedCount);
-
-                            Core.View.MultiItemProgress_SetItemData(
-                                index: viewItemIndex,
-                                line2: LText.ProgressBox.InstallComplete,
-                                percent: 100,
-                                progressType: ProgressType.Determinate);
-
-                            Core.View.MultiItemProgress_SetState(
-                                mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count
-                            );
-                        }
-                    });
+                        });
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -2163,6 +2060,261 @@ internal static partial class FMInstallAndPlay
             fmData.FM.Installed = Directory.Exists(fmInstalledPath);
 
             return new FMInstallResult(fmData, InstallResultType.RollbackSucceeded);
+        }
+    }
+
+    private static void DoPostInstallWork(
+        FMData fmData,
+        int viewItemIndex,
+        BinaryBuffer binaryBuffer,
+        Buffers buffer,
+        CancellationToken cancellationToken,
+        ref int fmsFinishedCount,
+        DarkLoaderBackupContext ctx,
+        List<string> archivePaths,
+        int fmDataListCount)
+    {
+        try
+        {
+            using var sw = new StreamWriter(Path.Combine(fmData.InstalledPath, Paths.FMSelInf));
+            sw.WriteLine("Name=" + fmData.FM.InstalledDir);
+            sw.WriteLine("Archive=" + fmData.FM.Archive);
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmData.InstalledPath, ex);
+        }
+
+        // Only Dark engine games need audio conversion
+        if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
+        {
+            try
+            {
+                //if (single)
+                //{
+                //    Core.View.SetProgressBoxState_Single(
+                //        message1: LText.ProgressBox.ConvertingAudioFiles,
+                //        message2: "",
+                //        progressType: ProgressType.Indeterminate
+                //    );
+                //}
+                //else
+                //{
+                //    Core.View.SetProgressBoxState_Double(
+                //        subMessage: LText.ProgressBox.ConvertingAudioFiles,
+                //        subPercent: 100
+                //    );
+                //}
+
+                Core.View.MultiItemProgress_SetItemData(
+                    index: viewItemIndex,
+                    line2: LText.ProgressBox.ConvertingAudioFiles,
+                    percent: 100,
+                    progressType: ProgressType.Indeterminate);
+
+#if TIMING_TEST
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+                // ReSharper disable RedundantNameQualifier
+                var audioConvertSW = new System.Diagnostics.Stopwatch();
+                // ReSharper restore RedundantNameQualifier
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+                audioConvertSW.Start();
+#endif
+
+                // Dark engine games can't play MP3s, so they must be converted in all cases.
+                // This one won't be called anywhere except during install, because it always runs during
+                // install so there's no need to make it optional elsewhere. So we don't need to have a
+                // check bool or anything.
+                FMAudio.ConvertAsPartOfInstall(
+                    validAudioConvertibleFM,
+                    AudioConvert.MP3ToWAV,
+                    binaryBuffer,
+                    buffer.FileStreamBuffer,
+                    cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (Config.ConvertOGGsToWAVsOnInstall)
+                {
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.OGGToWAV,
+                        binaryBuffer,
+                        buffer.FileStreamBuffer,
+                        cancellationToken);
+                }
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (Config.ConvertWAVsTo16BitOnInstall)
+                {
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.WAVToWAV16,
+                        binaryBuffer,
+                        buffer.FileStreamBuffer,
+                        cancellationToken);
+                }
+
+#if TIMING_TEST
+                audioConvertSW.Stop();
+#pragma warning disable IDE0001
+#pragma warning disable IDE0002
+                // ReSharper disable RedundantNameQualifier
+                System.Diagnostics.Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
+                // ReSharper restore RedundantNameQualifier
+#pragma warning restore IDE0002
+#pragma warning restore IDE0001
+#endif
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
+            }
+        }
+
+        // Don't be lazy about this; there can be no harm and only benefits by doing it right away
+        GenerateMissFlagFileIfRequired(fmData.FM);
+
+        Core.View.MultiItemProgress_SetItemData(
+            index: viewItemIndex,
+            line2: LText.ProgressBox.RestoringBackup,
+            percent: 100,
+            progressType: ProgressType.Indeterminate);
+
+        try
+        {
+            RestoreFM(
+                ctx,
+                fmData.FM,
+                archivePaths,
+                buffer.ExtractTempBuffer,
+                buffer.FileStreamBuffer,
+                cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Log(ex: ex);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        Interlocked.Increment(ref fmsFinishedCount);
+
+        Core.View.MultiItemProgress_SetItemData(
+            index: viewItemIndex,
+            line2: LText.ProgressBox.InstallComplete,
+            percent: 100,
+            progressType: ProgressType.Determinate);
+
+        Core.View.MultiItemProgress_SetState(
+            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount
+        );
+
+    }
+
+    private static FMInstallResult InstallFMZip_ThreadedPerEntry(
+        int viewItemIndex,
+        IProgress<ProgressReport_Install> progress,
+        FMData fmData)
+    {
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
+        try
+        {
+            var report = new ProgressReport_Install();
+
+            string fmDataArchivePath = fmData.ArchivePath;
+
+            Directory.CreateDirectory(fmInstalledPath);
+
+            var sw0 = new Stopwatch();
+            sw0.Start();
+
+            List<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
+
+            int entriesTotalCount = entries.Count;
+
+            sw0.Stop();
+            Trace.WriteLine("sw0: " + sw0.Elapsed);
+
+            ConcurrentQueue<ZipArchiveFastEntry> cq = new(entries);
+
+            int threadCount = GetThreadCountForParallelOperation(entriesTotalCount);
+
+            // @MT_TASK: Remove for final release
+            Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
+
+            ParallelOptions po = new()
+            {
+                CancellationToken = _installCts.Token,
+                MaxDegreeOfParallelism = threadCount,
+            };
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            Parallel.For(0, threadCount, po, i =>
+            {
+                byte[] tempBuffer = new byte[StreamCopyBufferSize];
+                byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
+
+                using var fs = FileStreamCustom.CreateRead(fmDataArchivePath, fileStreamBuffer);
+                using ZipArchiveFast archive = new(fs, allowUnsupportedEntries: true);
+
+                while (cq.TryDequeue(out ZipArchiveFastEntry entry))
+                {
+                    string fileName = entry.FullName;
+
+                    if (fileName[^1].IsDirSep()) continue;
+
+                    string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+                    if (fileName.Rel_ContainsDirSep())
+                    {
+                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                    }
+
+                    archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, tempBuffer);
+
+                    File_UnSetReadOnly(extractedName);
+
+                    int entryNumber = entriesTotalCount - cq.Count;
+
+                    int percent = GetPercentFromValue_Int(entryNumber + 1, entriesTotalCount);
+
+                    report.ViewItemIndex = viewItemIndex;
+                    report.Text = fmData.FM.Archive;
+                    report.Percent = percent;
+                    progress.Report(report);
+
+                    _installCts.Token.ThrowIfCancellationRequested();
+                }
+            });
+
+            sw.Stop();
+            Trace.WriteLine($"Zip extract threaded:{NL}" +
+                            "Thread count: " + threadCount + $"{NL}" +
+                            "Initial read: " + sw0.Elapsed + $"{NL}" +
+                            "Full archive threaded extract: " + sw.Elapsed);
+
+            return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
+            // @MT_TASK: Dialog in multithreading area
+            //Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Zip,
+                LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                ex);
         }
     }
 

@@ -1059,6 +1059,7 @@ internal static class Core
                     View.SetWaitCursor(true);
                 }
 
+                // @MT_TASK: We probably want "all drives" to include the backup path drive too
                 List<string> paths = new(sourceConfig.FMArchivePaths.Count + SupportedGameCount);
                 paths.AddRange_Small(sourceConfig.FMArchivePaths);
                 paths.AddRange_Small(sourceConfig.GameExes);
