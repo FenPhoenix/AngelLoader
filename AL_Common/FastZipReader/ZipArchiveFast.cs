@@ -255,6 +255,7 @@ public sealed class ZipArchiveFast : IDisposable
 
             context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
 
+            // @MT_TASK: Make it so we don't run this if we're a threaded instance (perf)
             ReadEndOfCentralDirectory();
         }
         catch
