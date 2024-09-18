@@ -524,6 +524,7 @@ internal static class FMData
             dictFields.Add(new Field { Name = item });
         }
 
+        w.WL("[StructLayout(LayoutKind.Auto)]");
         w.WL("private readonly unsafe struct FMData_DelegatePointerWrapper");
         w.WL("{");
         w.WL("internal readonly delegate*<FanMission, string, int, void> Action;");

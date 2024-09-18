@@ -337,6 +337,7 @@ internal static class Win32ThemeHooks
     unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
     least it's temporary.
     */
+    [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct DialogScope
     {
         private readonly bool _active;
@@ -407,6 +408,7 @@ internal static class Win32ThemeHooks
     // color change
     private static Override SysColorOverride = Override.None;
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct OverrideSysColorScope
     {
         public OverrideSysColorScope(Override @override) => SysColorOverride = @override;

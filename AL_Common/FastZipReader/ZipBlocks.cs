@@ -20,6 +20,7 @@ back to seeks.
 // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
 // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct ZipGenericExtraField
 {
     internal readonly ushort Tag;
@@ -214,6 +215,7 @@ internal readonly ref struct Zip64ExtraField
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct Zip64EndOfCentralDirectoryLocator
 {
     internal const uint SignatureConstant = 0x07064B50;
@@ -300,6 +302,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct ZipLocalFileHeader
 {
     private const uint SignatureConstant = 0x04034B50;
@@ -330,6 +333,7 @@ internal readonly ref struct ZipLocalFileHeader
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipCentralDirectoryFileHeader
 {
     private const uint SignatureConstant = 0x02014B50;

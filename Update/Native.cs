@@ -114,6 +114,7 @@ internal static class Native
     [DllImport("user32.dll")]
     private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
         private readonly IntPtr _hWnd;

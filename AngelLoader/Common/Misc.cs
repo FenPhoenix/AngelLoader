@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -281,6 +282,7 @@ public static partial class Misc
         static () => LText.StatisticsTab.Subtitles,
     };
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct PerGameGoFlags
     {
         private readonly bool[] _array;
@@ -307,6 +309,7 @@ public static partial class Misc
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct NonEmptyList<T> : IEnumerable<T>
     {
         private readonly List<T> _list;

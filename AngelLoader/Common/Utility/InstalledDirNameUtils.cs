@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace AngelLoader;
@@ -8,6 +9,7 @@ public static partial class Utils
     /// <summary>30</summary>
     private const int _maxDarkInstDirLength = 30;
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct InstDirNameContext()
     {
         internal readonly StringBuilder SB = new(_maxDarkInstDirLength);

@@ -766,10 +766,6 @@ public sealed class ZipArchiveFast : IDisposable
 
     #region Dispose
 
-    /// <summary>
-    /// Releases the unmanaged resources used by ZipArchive and optionally finishes writing the archive and releases the managed resources.
-    /// </summary>
-    /// <param name="disposing">true to finish writing the archive and release unmanaged and managed resources, false to release only unmanaged resources.</param>
     private void Dispose(bool disposing)
     {
         if (disposing && !_isDisposed)
@@ -784,9 +780,6 @@ public sealed class ZipArchiveFast : IDisposable
         }
     }
 
-    /// <summary>
-    /// Finishes writing the archive and releases all resources used by the ZipArchive object, unless the object was constructed with leaveOpen as true. Any streams from opened entries in the ZipArchive still open will throw exceptions on subsequent writes, as the underlying streams will have been closed.
-    /// </summary>
     public void Dispose() => Dispose(true);
 
     #endregion

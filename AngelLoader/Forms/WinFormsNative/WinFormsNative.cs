@@ -309,6 +309,7 @@ internal static class Native
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
         private readonly IntPtr _hWnd;

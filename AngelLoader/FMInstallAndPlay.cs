@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -71,6 +72,7 @@ internal static partial class FMInstallAndPlay
     }
 
     // @MT_TASK: We may want other things in here like fm archive path/install path etc.
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct FMInstallResult
     {
         internal readonly FMData FMData;

@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+
 #if ENABLE_UNUSED
 using System.Runtime.InteropServices;
 #endif
@@ -19,6 +21,7 @@ public sealed class StreamReaderCustom
     /// For convenience of using-semantics, but without actually constructing or disposing the underlying
     /// <see cref="T:StreamReaderCustom"/> object (allocation avoidance).
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct SRC_Wrapper
     {
         public readonly StreamReaderCustom Reader;

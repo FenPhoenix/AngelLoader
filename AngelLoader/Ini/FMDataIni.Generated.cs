@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
@@ -359,6 +360,7 @@ internal static partial class Ini
 
     #endregion
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly unsafe struct FMData_DelegatePointerWrapper
     {
         internal readonly delegate*<FanMission, string, int, void> Action;

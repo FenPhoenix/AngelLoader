@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
@@ -893,6 +894,7 @@ internal static partial class Ini
 
     #endregion
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly unsafe struct Config_DelegatePointerWrapper
     {
         internal readonly delegate*<ConfigData, string, string, GameIndex, bool, void> Action;

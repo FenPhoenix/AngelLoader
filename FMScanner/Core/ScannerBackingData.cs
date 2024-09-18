@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using AL_Common;
 using static AL_Common.Common;
 
@@ -20,6 +21,7 @@ public sealed partial class Scanner
     internal const char LeftDoubleQuote = '\u201C';
     internal const char RightDoubleQuote = '\u201D';
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct AsciiCharWithNonAsciiEquivalent(char original, char ascii)
     {
         internal readonly char Original = original;
