@@ -1,6 +1,5 @@
 ﻿// @MT_TASK: Comment this out for final release
 // @MT_TASK: There are some catch (Exception) that don't filter for OperationCanceledException - do they need changing to that?
-// @MT_TASK: Some strings not being checked for empty before accessing [^1]
 #define TIMING_TEST
 
 using System;
@@ -2269,7 +2268,7 @@ internal static partial class FMInstallAndPlay
                 {
                     string fileName = entry.FullName;
 
-                    if (fileName[^1].IsDirSep()) continue;
+                    if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
 
                     string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
@@ -2343,7 +2342,7 @@ internal static partial class FMInstallAndPlay
 
                 string fileName = entry.FullName;
 
-                if (fileName[^1].IsDirSep()) continue;
+                if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
 
                 string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
