@@ -308,6 +308,8 @@ public sealed class ZipArchiveFast : IDisposable
         return uncompressedStream;
     }
 
+    // @MT_TASK(IsOpenable): This needs to be pre-run for every entry beforehand in order for the threaded instances to be thread-safe
+    // We could re-architect this a bit, or just make sure this gets run.
     private bool IsOpenable(ZipArchiveFastEntry entry, out string message)
     {
         message = "";
