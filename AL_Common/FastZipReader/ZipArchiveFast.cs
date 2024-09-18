@@ -33,6 +33,10 @@ public sealed class ZipArchiveFast : IDisposable
     // We don't want to bloat the archive entry class with crap that's only there for error checking purposes.
     // Since errors should be the rare case, we'll check for errors as we do the initial read, and just
     // put bad entries in here and check it when we go to open.
+    // @MT_TASK: This is the only thing we actually need to transfer to all threads' archive classes
+    // We can even just transfer the dictionary itself and be safe, although that's a little sketchy
+    // But what we're doing with the shared entries list is already sketchy enough so I guess it's fine?
+    // We could just copy the entries to a new dictionary instance per-archive if we wanted to be cautious.
     private Dictionary<ZipArchiveFastEntry, string>? _unopenableArchives;
     private Dictionary<ZipArchiveFastEntry, string> UnopenableArchives => _unopenableArchives ??= new Dictionary<ZipArchiveFastEntry, string>();
 
