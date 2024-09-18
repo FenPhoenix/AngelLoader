@@ -1772,7 +1772,9 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    if (Config.AggressiveIOThreading && fmDataList.Count == 1)
+                    if (Config.AggressiveIOThreading &&
+                        fmDataList.Count == 1 &&
+                        fmDataList[0].ArchivePath.ExtIsZip())
                     {
                         Buffers buffer = new();
                         BinaryBuffer binaryBuffer = new();
