@@ -57,6 +57,8 @@ public sealed class ZipArchiveFast : IDisposable
     // we do when we find a null encoding is different in those two situations.
     private readonly bool _useEntryNameEncodingCodePath;
 
+    private readonly bool _isThreadedArchive;
+
     private Encoding? _entryNameEncoding;
     internal Encoding? EntryNameEncoding
     {
@@ -106,7 +108,46 @@ public sealed class ZipArchiveFast : IDisposable
             disposeContext: true,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: entryNameEncoding,
-            useEntryNameEncodingCodePath: true)
+            useEntryNameEncodingCodePath: true,
+            isThreadedArchive: false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of ZipArchive on the given stream.
+    /// </summary>
+    /// <exception cref="ArgumentException">The stream is already closed.</exception>
+    /// <exception cref="ArgumentNullException">The stream is null.</exception>
+    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+    /// <param name="stream">The input or output stream.</param>
+    /// <param name="allowUnsupportedEntries">
+    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+    /// <br/>
+    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+    /// entries with unsupported compression methods are found.
+    /// </param>
+    /// <param name="entryNameEncoding">The encoding to use when reading entry names in this archive.
+    /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
+    /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
+    /// <param name="isThreadedArchive">
+    /// <see langword="true"/> to signify that this archive will be used to extract a shared list of archive
+    /// entries in a multithreaded scenario, and certain initialization work can be skipped. In this mode, <see cref="Entries"/>
+    /// will throw an <see cref="InvalidOperationException"/> when accessed, and you must provide an external list
+    /// of entries to be opened with <see cref="OpenEntry"/>.
+    /// </param>
+    public ZipArchiveFast(
+        Stream stream,
+        bool allowUnsupportedEntries,
+        Encoding entryNameEncoding,
+        bool isThreadedArchive) :
+        this(
+            stream: stream,
+            context: new ZipContext(),
+            disposeContext: true,
+            allowUnsupportedEntries: allowUnsupportedEntries,
+            entryNameEncoding: entryNameEncoding,
+            useEntryNameEncodingCodePath: true,
+            isThreadedArchive: isThreadedArchive)
     {
     }
 
@@ -139,7 +180,49 @@ public sealed class ZipArchiveFast : IDisposable
             disposeContext: false,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: entryNameEncoding,
-            useEntryNameEncodingCodePath: true)
+            useEntryNameEncodingCodePath: true,
+            isThreadedArchive: false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of ZipArchive on the given stream.
+    /// </summary>
+    /// <exception cref="ArgumentException">The stream is already closed.</exception>
+    /// <exception cref="ArgumentNullException">The stream is null.</exception>
+    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+    /// <param name="stream">The input or output stream.</param>
+    /// <param name="context"></param>
+    /// <param name="allowUnsupportedEntries">
+    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+    /// <br/>
+    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+    /// entries with unsupported compression methods are found.
+    /// </param>
+    /// <param name="entryNameEncoding">The encoding to use when reading entry names in this archive.
+    /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
+    /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
+    /// <param name="isThreadedArchive">
+    /// <see langword="true"/> to signify that this archive will be used to extract a shared list of archive
+    /// entries in a multithreaded scenario, and certain initialization work can be skipped. In this mode, <see cref="Entries"/>
+    /// will throw an <see cref="InvalidOperationException"/> when accessed, and you must provide an external list
+    /// of entries to be opened with <see cref="OpenEntry"/>.
+    /// </param>
+    [PublicAPI]
+    public ZipArchiveFast(
+        Stream stream,
+        ZipContext context,
+        bool allowUnsupportedEntries,
+        Encoding entryNameEncoding,
+        bool isThreadedArchive) :
+        this(
+            stream: stream,
+            context: context,
+            disposeContext: false,
+            allowUnsupportedEntries: allowUnsupportedEntries,
+            entryNameEncoding: entryNameEncoding,
+            useEntryNameEncodingCodePath: true,
+            isThreadedArchive: isThreadedArchive)
     {
     }
 
@@ -165,7 +248,42 @@ public sealed class ZipArchiveFast : IDisposable
             disposeContext: true,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: null,
-            useEntryNameEncodingCodePath: false)
+            useEntryNameEncodingCodePath: false,
+            isThreadedArchive: false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of ZipArchive on the given stream.
+    /// </summary>
+    /// <exception cref="ArgumentException">The stream is already closed.</exception>
+    /// <exception cref="ArgumentNullException">The stream is null.</exception>
+    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+    /// <param name="stream">The input or output stream.</param>
+    /// <param name="allowUnsupportedEntries">
+    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+    /// <br/>
+    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+    /// entries with unsupported compression methods are found.
+    /// </param>
+    /// <param name="isThreadedArchive">
+    /// <see langword="true"/> to signify that this archive will be used to extract a shared list of archive
+    /// entries in a multithreaded scenario, and certain initialization work can be skipped. In this mode, <see cref="Entries"/>
+    /// will throw an <see cref="InvalidOperationException"/> when accessed, and you must provide an external list
+    /// of entries to be opened with <see cref="OpenEntry"/>.
+    /// </param>
+    public ZipArchiveFast(
+        Stream stream,
+        bool allowUnsupportedEntries,
+        bool isThreadedArchive) :
+        this(
+            stream: stream,
+            context: new ZipContext(),
+            disposeContext: true,
+            allowUnsupportedEntries: allowUnsupportedEntries,
+            entryNameEncoding: null,
+            useEntryNameEncodingCodePath: false,
+            isThreadedArchive: isThreadedArchive)
     {
     }
 
@@ -194,7 +312,45 @@ public sealed class ZipArchiveFast : IDisposable
             disposeContext: false,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: null,
-            useEntryNameEncodingCodePath: false)
+            useEntryNameEncodingCodePath: false,
+            isThreadedArchive: false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of ZipArchive on the given stream.
+    /// </summary>
+    /// <exception cref="ArgumentException">The stream is already closed.</exception>
+    /// <exception cref="ArgumentNullException">The stream is null.</exception>
+    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
+    /// <param name="stream">The input or output stream.</param>
+    /// <param name="context"></param>
+    /// <param name="allowUnsupportedEntries">
+    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
+    /// <br/>
+    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
+    /// entries with unsupported compression methods are found.
+    /// </param>
+    /// <param name="isThreadedArchive">
+    /// <see langword="true"/> to signify that this archive will be used to extract a shared list of archive
+    /// entries in a multithreaded scenario, and certain initialization work can be skipped. In this mode, <see cref="Entries"/>
+    /// will throw an <see cref="InvalidOperationException"/> when accessed, and you must provide an external list
+    /// of entries to be opened with <see cref="OpenEntry"/>.
+    /// </param>
+    [PublicAPI]
+    public ZipArchiveFast(
+        Stream stream,
+        ZipContext context,
+        bool allowUnsupportedEntries,
+        bool isThreadedArchive) :
+        this(
+            stream: stream,
+            context: context,
+            disposeContext: false,
+            allowUnsupportedEntries: allowUnsupportedEntries,
+            entryNameEncoding: null,
+            useEntryNameEncodingCodePath: false,
+            isThreadedArchive: isThreadedArchive)
     {
     }
 
@@ -205,13 +361,16 @@ public sealed class ZipArchiveFast : IDisposable
         bool disposeContext,
         bool allowUnsupportedEntries,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool isThreadedArchive)
     {
 #if !NETFRAMEWORK
         System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 #endif
 
         _allowUnsupportedEntries = allowUnsupportedEntries;
+
+        _isThreadedArchive = isThreadedArchive;
 
         _disposeContext = disposeContext;
 
@@ -248,8 +407,10 @@ public sealed class ZipArchiveFast : IDisposable
 
             context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
 
-            // @MT_TASK: Make it so we don't run this if we're a threaded instance (perf)
-            ReadEndOfCentralDirectory();
+            if (!isThreadedArchive)
+            {
+                ReadEndOfCentralDirectory();
+            }
         }
         catch
         {
@@ -401,6 +562,7 @@ public sealed class ZipArchiveFast : IDisposable
         get
         {
             ThrowIfDisposed();
+            ThrowIfThreadedArchive();
 
             if (!_entriesInitialized)
             {
@@ -597,12 +759,23 @@ public sealed class ZipArchiveFast : IDisposable
         }
     }
 
-    #region Dispose
-
     private void ThrowIfDisposed()
     {
-        if (_isDisposed) throw new ObjectDisposedException(typeof(ZipArchiveFast).ToString());
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(typeof(ZipArchiveFast).ToString());
+        }
     }
+
+    private void ThrowIfThreadedArchive()
+    {
+        if (_isThreadedArchive)
+        {
+            throw new InvalidOperationException("Attempted to access " + nameof(Entries) + " in threaded archive mode.");
+        }
+    }
+
+    #region Dispose
 
     /// <summary>
     /// Releases the unmanaged resources used by ZipArchive and optionally finishes writing the archive and releases the managed resources.

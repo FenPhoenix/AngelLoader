@@ -2211,7 +2211,10 @@ internal static partial class FMInstallAndPlay
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
-                using ZipArchiveFast archive = new(fs, allowUnsupportedEntries: true);
+                using ZipArchiveFast archive = new(
+                    stream: fs,
+                    allowUnsupportedEntries: true,
+                    isThreadedArchive: true);
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
