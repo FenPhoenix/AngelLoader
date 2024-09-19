@@ -2160,7 +2160,6 @@ internal static partial class FMInstallAndPlay
         );
     }
 
-    // @MT_TASK: We could try threading the archive by chunk of entries of approximately equal byte size, and see if perf differs
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
         int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
