@@ -4,7 +4,8 @@
 
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
-// @MT_TASK: Test identicality between this and the .NET 8 version, once we lock our final I/O threading code in
+// @MT_TASK/@NET5: Test identicality between this and the .NET 8 version, once we lock in our final I/O threading code
+// @MT_TASK/@NET5: Also test perf on .NET 8 or 9 or whatever as at least 9 is using zlib-ng
 
 using System;
 using System.Diagnostics;
