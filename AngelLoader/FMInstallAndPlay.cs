@@ -1756,113 +1756,84 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    if (Config.AggressiveIOThreading &&
-                        fmDataList.Count == 1 &&
-                        fmDataList[0].ArchivePath.ExtIsZip())
+                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
+
+                    // @MT_TASK: Remove for final release
+                    Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
+
+                    ConcurrentQueue<FMData> cq = new(fmDataList);
+
+                    ParallelOptions po = new()
+                    {
+                        CancellationToken = _installCts.Token,
+                        MaxDegreeOfParallelism = threadCount,
+                    };
+
+                    Parallel.For(0, threadCount, po, _ =>
                     {
                         Buffers buffer = new();
                         BinaryBuffer binaryBuffer = new();
 
-                        FMData fmData = fmDataList[0];
-                        fmData.InstallStarted = true;
-
-                        results.Add(InstallFMZip_ThreadedPerEntry(
-                            viewItemIndex: fmData.ViewItemIndex,
-                            progress: progress,
-                            fmData: fmData));
-
-                        DoPostInstallWork(
-                            fmData,
-                            fmData.ViewItemIndex,
-                            binaryBuffer,
-                            buffer,
-                            _installCts.Token,
-                            ref fmsFinishedCount,
-                            ctx,
-                            archivePaths,
-                            fmDataList.Count);
-                    }
-                    else
-                    {
-                        int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
-
-                        // @MT_TASK: Remove for final release
-                        Trace.WriteLine(nameof(InstallInternal) + "Parallel.For thread count: " + threadCount);
-
-                        ConcurrentQueue<FMData> cq = new(fmDataList);
-
-                        ParallelOptions po = new()
+                        while (cq.TryDequeue(out FMData fmData))
                         {
-                            CancellationToken = _installCts.Token,
-                            MaxDegreeOfParallelism = threadCount,
-                        };
+                            int viewItemIndex = fmData.ViewItemIndex;
+                            fmData.InstallStarted = true;
 
-                        Parallel.For(0, threadCount, po, _ =>
-                        {
-                            Buffers buffer = new();
-                            BinaryBuffer binaryBuffer = new();
+                            FMInstallResult fmInstallResult =
+                                fmData.ArchivePath.ExtIsZip()
+                                    /*
+                                    @MT_TASK(Aggressive threading on multiple):
+                                    This seems to work fine and achieve the same or better speed as non-aggressive
+                                    per-archive overlap. The threads don't appear to be stepping on each others'
+                                    toes like I thought they would. But test with the NVME and do a more thorough
+                                    diff test.
+                                    */
+                                    ? Config.AggressiveIOThreading
+                                        ? InstallFMZip_ThreadedPerEntry(
+                                            viewItemIndex: fmData.ViewItemIndex,
+                                            progress: progress,
+                                            fmData: fmData)
+                                        : InstallFMZip(
+                                            viewItemIndex,
+                                            progress,
+                                            fmData,
+                                            buffer.ExtractTempBuffer,
+                                            buffer.FileStreamBuffer)
+                                    : fmData.ArchivePath.ExtIsRar()
+                                        ? InstallFMRar(
+                                            viewItemIndex,
+                                            progress,
+                                            fmData,
+                                            buffer.ExtractTempBuffer)
+                                        : InstallFMSevenZip(
+                                            viewItemIndex,
+                                            progress,
+                                            fmData);
 
-                            while (cq.TryDequeue(out FMData fmData))
+                            // @MT_TASK: Rolling back needs re-architecting for multithreading
+                            if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                             {
-                                int viewItemIndex = fmData.ViewItemIndex;
-                                fmData.InstallStarted = true;
-
-                                FMInstallResult fmInstallResult =
-                                    fmData.ArchivePath.ExtIsZip()
-                                        /*
-                                        @MT_TASK(Aggressive threading on multiple):
-                                        This seems to work fine and achieve the same or better speed as non-
-                                        aggressive per-archive overlap. The threads don't appear to be stepping
-                                        on each others' toes like I thought they would. But test with the NVME
-                                        and do a more thorough diff test.
-                                        */
-                                        ? Config.AggressiveIOThreading
-                                            ? InstallFMZip_ThreadedPerEntry(
-                                                viewItemIndex: fmData.ViewItemIndex,
-                                                progress: progress,
-                                                fmData: fmData)
-                                            : InstallFMZip(
-                                                viewItemIndex,
-                                                progress,
-                                                fmData,
-                                                buffer.ExtractTempBuffer,
-                                                buffer.FileStreamBuffer)
-                                        : fmData.ArchivePath.ExtIsRar()
-                                            ? InstallFMRar(
-                                                viewItemIndex,
-                                                progress,
-                                                fmData,
-                                                buffer.ExtractTempBuffer)
-                                            : InstallFMSevenZip(
-                                                viewItemIndex,
-                                                progress,
-                                                fmData);
-
-                                // @MT_TASK: Rolling back needs re-architecting for multithreading
-                                if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
-                                {
-                                    FMInstallResult result = RollBackSingleFM(fmData);
-                                    results.Add(result);
-                                    continue;
-                                }
-
-                                results.Add(fmInstallResult);
-
-                                po.CancellationToken.ThrowIfCancellationRequested();
-
-                                DoPostInstallWork(
-                                    fmData,
-                                    viewItemIndex,
-                                    binaryBuffer,
-                                    buffer,
-                                    po.CancellationToken,
-                                    ref fmsFinishedCount,
-                                    ctx,
-                                    archivePaths,
-                                    fmDataList.Count);
+                                FMInstallResult result = RollBackSingleFM(fmData);
+                                results.Add(result);
+                                continue;
                             }
-                        });
-                    }
+
+                            results.Add(fmInstallResult);
+
+                            po.CancellationToken.ThrowIfCancellationRequested();
+
+                            DoPostInstallWork(
+                                fmData,
+                                viewItemIndex,
+                                binaryBuffer,
+                                buffer,
+                                po.CancellationToken,
+                                ref fmsFinishedCount,
+                                ctx,
+                                archivePaths,
+                                fmDataList.Count);
+                        }
+                    });
                 }
                 catch (OperationCanceledException)
                 {
