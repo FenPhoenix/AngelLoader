@@ -236,7 +236,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
 
-        e.Graphics.DrawRectangle(borderPen, e.CellBounds);
+        e.Graphics.DrawRectangle(borderPen, e.CellBounds with { Width = e.CellBounds.Width - 1 });
 
         e.Handled = true;
 
@@ -250,7 +250,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                     Brushes.Green,
                     e.CellBounds.Left + 4,
                     e.CellBounds.Top + fontHeight,
-                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 11) + 4,
+                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 11) + 3,
                     e.CellBounds.Height - (fontHeight + 5));
             }
             else
