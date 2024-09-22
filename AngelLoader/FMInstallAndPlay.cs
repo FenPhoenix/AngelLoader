@@ -1808,21 +1808,35 @@ internal static partial class FMInstallAndPlay
                                 fmData.InstallStarted = true;
 
                                 FMInstallResult fmInstallResult =
-                                    fmData.ArchivePath.ExtIsZip() ? InstallFMZip(
-                                        viewItemIndex,
-                                        progress,
-                                        fmData,
-                                        buffer.ExtractTempBuffer,
-                                        buffer.FileStreamBuffer) :
-                                    fmData.ArchivePath.ExtIsRar() ? InstallFMRar(
-                                        viewItemIndex,
-                                        progress,
-                                        fmData,
-                                        buffer.ExtractTempBuffer) :
-                                    InstallFMSevenZip(
-                                        viewItemIndex,
-                                        progress,
-                                        fmData);
+                                    fmData.ArchivePath.ExtIsZip()
+                                        /*
+                                        @MT_TASK(Aggressive threading on multiple):
+                                        This seems to work fine and achieve the same or better speed as non-
+                                        aggressive per-archive overlap. The threads don't appear to be stepping
+                                        on each others' toes like I thought they would. But test with the NVME
+                                        and do a more thorough diff test.
+                                        */
+                                        ? Config.AggressiveIOThreading
+                                            ? InstallFMZip_ThreadedPerEntry(
+                                                viewItemIndex: fmData.ViewItemIndex,
+                                                progress: progress,
+                                                fmData: fmData)
+                                            : InstallFMZip(
+                                                viewItemIndex,
+                                                progress,
+                                                fmData,
+                                                buffer.ExtractTempBuffer,
+                                                buffer.FileStreamBuffer)
+                                        : fmData.ArchivePath.ExtIsRar()
+                                            ? InstallFMRar(
+                                                viewItemIndex,
+                                                progress,
+                                                fmData,
+                                                buffer.ExtractTempBuffer)
+                                            : InstallFMSevenZip(
+                                                viewItemIndex,
+                                                progress,
+                                                fmData);
 
                                 // @MT_TASK: Rolling back needs re-architecting for multithreading
                                 if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
