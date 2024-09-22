@@ -250,7 +250,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                     Brushes.Green,
                     e.CellBounds.Left + 4,
                     e.CellBounds.Top + fontHeight,
-                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 11) + 3,
+                    GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 8),
                     e.CellBounds.Height - (fontHeight + 5));
             }
             else
