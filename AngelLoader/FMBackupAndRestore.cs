@@ -108,134 +108,6 @@ internal static partial class FMInstallAndPlay
 
     #region Public methods
 
-    private static BackupFile GetBackupFile(
-        DarkLoaderBackupContext ctx,
-        FanMission fm,
-        List<string> archivePaths,
-        bool findDarkLoaderOnly = false)
-    {
-        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
-        {
-            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
-            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
-            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
-
-            for (int i = 0; i < fullPaths.Count; i++)
-            {
-                string fullPath = fullPaths[i];
-
-                string fileNameOnly = fullPath.GetFileNameFast();
-
-                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-
-                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
-
-                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
-            }
-
-            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
-        }
-
-        var ret = new BackupFile();
-
-        // TODO: Do I need both or is the use of the non-trimmed version a mistake?
-        string fmArchiveNoExt = fm.Archive.RemoveExtension();
-        string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
-
-        #region DarkLoader
-
-        if (Directory.Exists(ctx.DarkLoaderBackupPath))
-        {
-            // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
-            // Rather than just using File.Exists()?!
-            FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
-            for (int i = 0; i < dlArchives.FullPaths.Count; i++)
-            {
-                string f = dlArchives.FullPaths[i];
-
-                string an = dlArchives.FileNamesMinusSavesSuffix[i];
-                if (an.IsEmpty()) continue;
-
-                // Account for the fact that DarkLoader trims archive names for save backup zips
-                // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
-                // way, so whatever.
-                if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
-                {
-                    ret.Set(true, f, true);
-                    if (findDarkLoaderOnly) return ret;
-                    break;
-                }
-            }
-        }
-
-        #endregion
-
-        if (findDarkLoaderOnly)
-        {
-            ret.Set(false, "", false);
-            return ret;
-        }
-
-        #region AngelLoader / FMSel / NewDarkLoader
-
-        if (ret.Name.IsEmpty())
-        {
-            // This is as much as we can cache unfortunately. Every FM's name will be different each call
-            // so we can't cache the combined config path and FM name with backup extension. But at least
-            // we can cache just the FM name with backup extension, so it's better than nothing.
-            string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
-            string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
-            var bakFiles = new List<FileInfo>();
-
-            void AddBakFilesFrom(string path)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    string fNoExt = i == 0 ? fmArchivePlusBackupExt : fmInstalledDirPlusBackupExt;
-                    string bakFile = Path.Combine(path, fNoExt);
-                    if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
-                }
-            }
-
-            // Our backup path, separate to avoid creating any more ambiguity
-            AddBakFilesFrom(Config.FMsBackupPath);
-
-            // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
-            ret.Name = bakFiles.Count == 1
-                ? bakFiles[0].FullName
-                : bakFiles.Count > 1
-                    ? bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName
-                    : "";
-
-            bakFiles.Clear();
-
-            // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
-            // (for automatic use of FMSel/NDL saves)
-            if (ret.Name.IsEmpty())
-            {
-                foreach (string path in archivePaths)
-                {
-                    AddBakFilesFrom(path);
-                }
-
-                if (bakFiles.Count == 0)
-                {
-                    ret.Set(false, "", false);
-                    return ret;
-                }
-
-                // Use the newest of all files found in all archive dirs
-                ret.Name = bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName;
-            }
-        }
-
-        #endregion
-
-        ret.Found = true;
-        return ret;
-    }
-
     private static Task BackupFM(
         DarkLoaderBackupContext ctx,
         FanMission fm,
@@ -575,6 +447,134 @@ internal static partial class FMInstallAndPlay
     #endregion
 
     #region Private methods
+
+    private static BackupFile GetBackupFile(
+    DarkLoaderBackupContext ctx,
+    FanMission fm,
+    List<string> archivePaths,
+    bool findDarkLoaderOnly = false)
+    {
+        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
+        {
+            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
+            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
+            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
+            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
+
+            for (int i = 0; i < fullPaths.Count; i++)
+            {
+                string fullPath = fullPaths[i];
+
+                string fileNameOnly = fullPath.GetFileNameFast();
+
+                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+
+                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
+
+                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
+            }
+
+            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
+        }
+
+        var ret = new BackupFile();
+
+        // TODO: Do I need both or is the use of the non-trimmed version a mistake?
+        string fmArchiveNoExt = fm.Archive.RemoveExtension();
+        string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
+
+        #region DarkLoader
+
+        if (Directory.Exists(ctx.DarkLoaderBackupPath))
+        {
+            // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
+            // Rather than just using File.Exists()?!
+            FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
+            for (int i = 0; i < dlArchives.FullPaths.Count; i++)
+            {
+                string f = dlArchives.FullPaths[i];
+
+                string an = dlArchives.FileNamesMinusSavesSuffix[i];
+                if (an.IsEmpty()) continue;
+
+                // Account for the fact that DarkLoader trims archive names for save backup zips
+                // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
+                // way, so whatever.
+                if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
+                {
+                    ret.Set(true, f, true);
+                    if (findDarkLoaderOnly) return ret;
+                    break;
+                }
+            }
+        }
+
+        #endregion
+
+        if (findDarkLoaderOnly)
+        {
+            ret.Set(false, "", false);
+            return ret;
+        }
+
+        #region AngelLoader / FMSel / NewDarkLoader
+
+        if (ret.Name.IsEmpty())
+        {
+            // This is as much as we can cache unfortunately. Every FM's name will be different each call
+            // so we can't cache the combined config path and FM name with backup extension. But at least
+            // we can cache just the FM name with backup extension, so it's better than nothing.
+            string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
+            string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
+            var bakFiles = new List<FileInfo>();
+
+            void AddBakFilesFrom(string path)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    string fNoExt = i == 0 ? fmArchivePlusBackupExt : fmInstalledDirPlusBackupExt;
+                    string bakFile = Path.Combine(path, fNoExt);
+                    if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
+                }
+            }
+
+            // Our backup path, separate to avoid creating any more ambiguity
+            AddBakFilesFrom(Config.FMsBackupPath);
+
+            // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
+            ret.Name = bakFiles.Count == 1
+                ? bakFiles[0].FullName
+                : bakFiles.Count > 1
+                    ? bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName
+                    : "";
+
+            bakFiles.Clear();
+
+            // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
+            // (for automatic use of FMSel/NDL saves)
+            if (ret.Name.IsEmpty())
+            {
+                foreach (string path in archivePaths)
+                {
+                    AddBakFilesFrom(path);
+                }
+
+                if (bakFiles.Count == 0)
+                {
+                    ret.Set(false, "", false);
+                    return ret;
+                }
+
+                // Use the newest of all files found in all archive dirs
+                ret.Name = bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName;
+            }
+        }
+
+        #endregion
+
+        ret.Found = true;
+        return ret;
+    }
 
     /*
     Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
