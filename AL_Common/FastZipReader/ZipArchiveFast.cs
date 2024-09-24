@@ -22,13 +22,37 @@ public sealed class ZipArchiveFast : IDisposable
 {
     #region Enums
 
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     internal enum CompressionMethodValues : ushort
     {
         Stored = 0,
+        Shrink = 1,
+        ReduceWithCompressionFactor1 = 2,
+        ReduceWithCompressionFactor2 = 3,
+        ReduceWithCompressionFactor3 = 4,
+        ReduceWithCompressionFactor4 = 5,
+        Implode = 6,
+        // "Reserved for Tokenizing compression algorithm" = 7,
         Deflate = 8,
         Deflate64 = 9,
+        IBM_TERSE_OLD = 10,
+        // Reserved = 11,
         BZip2 = 12,
+        // Reserved = 13,
         LZMA = 14,
+        // Reserved - 15,
+        IBM_z_OS_CMPSC = 16,
+        // Reserved - 17,
+        IBM_TERSE_NEW = 18,
+        IBM_LZ77_z_Architecture = 19,
+        ZStandard_Deprecated = 20,
+        ZStandard = 93,
+        MP3 = 94,
+        XZ = 95,
+        JPEGVariant = 96,
+        WavPack = 97,
+        PPMd = 98,
+        // "AE-x encryption marker (see APPENDIX E)" = 99,
     }
 
     #endregion
@@ -438,7 +462,10 @@ public sealed class ZipArchiveFast : IDisposable
     {
         ThrowIfDisposed();
 
-        if (!IsOpenable(entry, out string message)) ThrowHelper.InvalidData(message);
+        if (!IsOpenable(entry, out string message))
+        {
+            ThrowHelper.InvalidData(message);
+        }
 
         // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
@@ -488,20 +515,20 @@ public sealed class ZipArchiveFast : IDisposable
         return archive.Entries;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool CompressionMethodSupported(CompressionMethodValues compressionMethod) =>
+        compressionMethod
+            is CompressionMethodValues.Stored
+            or CompressionMethodValues.Deflate
+            or CompressionMethodValues.Deflate64;
+
     private bool IsOpenable(ZipArchiveFastEntry entry, out string message)
     {
         message = "";
 
-        if (entry.CompressionMethod != CompressionMethodValues.Stored &&
-            entry.CompressionMethod != CompressionMethodValues.Deflate &&
-            entry.CompressionMethod != CompressionMethodValues.Deflate64)
+        if (!CompressionMethodSupported(entry.CompressionMethod))
         {
-            message = entry.CompressionMethod switch
-            {
-                CompressionMethodValues.BZip2 or CompressionMethodValues.LZMA => GetUnsupportedCompressionMethodErrorMessage(entry.CompressionMethod),
-                _ => SR.UnsupportedCompression,
-            };
-
+            message = GetUnsupportedCompressionMethodErrorMessage(entry.CompressionMethod);
             return false;
         }
 
@@ -597,29 +624,12 @@ public sealed class ZipArchiveFast : IDisposable
                         {
                             ThrowHelper.SplitSpanned();
                         }
-                        else
+                        else if (!_allowUnsupportedEntries)
                         {
                             CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
-                            if (compressionMethod != CompressionMethodValues.Stored &&
-                                compressionMethod != CompressionMethodValues.Deflate &&
-                                compressionMethod != CompressionMethodValues.Deflate64)
+                            if (!CompressionMethodSupported(compressionMethod))
                             {
-                                switch (compressionMethod)
-                                {
-                                    case CompressionMethodValues.BZip2:
-                                    case CompressionMethodValues.LZMA:
-                                        if (!_allowUnsupportedEntries)
-                                        {
-                                            ThrowHelper.ZipCompressionMethodException(GetUnsupportedCompressionMethodErrorMessage(compressionMethod));
-                                        }
-                                        break;
-                                    default:
-                                        if (!_allowUnsupportedEntries)
-                                        {
-                                            ThrowHelper.ZipCompressionMethodException(SR.UnsupportedCompression);
-                                        }
-                                        break;
-                                }
+                                ThrowHelper.ZipCompressionMethodException(GetUnsupportedCompressionMethodErrorMessage(compressionMethod));
                             }
                         }
                     }

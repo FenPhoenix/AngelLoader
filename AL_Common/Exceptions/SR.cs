@@ -41,8 +41,7 @@ public static class SR
     public static readonly string SetLengthRequiresSeekingAndWriting = "SetLength requires a stream that supports seeking and writing.";
     public static readonly string SplitSpanned = "Split or spanned archives are not supported.";
     public static readonly string UnexpectedEndOfStream = "Zip file corrupt: unexpected end of stream reached.";
-    public static readonly string UnsupportedCompression = "The archive entry was compressed using an unsupported compression method.";
-    public static readonly string UnsupportedCompressionMethod = "The archive entry was compressed using {0} and is not supported.";
+    public static readonly string UnsupportedCompressionMethod = "The archive entry was compressed using an unsupported compression method: '{0}'.";
     public static readonly string WritingNotSupported = "This stream from ZipArchiveEntry does not support writing.";
     public static readonly string Zip64EOCDNotWhereExpected = "Zip 64 End of Central Directory Record not where indicated.";
     public static readonly string EOF_ReadBeyondEOF = "Unable to read beyond the end of the stream.";
