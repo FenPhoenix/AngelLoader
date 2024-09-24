@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -41,6 +42,7 @@ internal static class FMAudio
     // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
     // them to WAV files during installation."
 
+    // @MT_TASK: Test this manual convert too
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
         using var dsw = new DisableScreenshotWatchers();
@@ -145,7 +147,12 @@ internal static class FMAudio
         #endregion
     }
 
-    internal static ConvertAudioError ConvertAsPartOfInstall(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
+    internal static ConvertAudioError ConvertAsPartOfInstall(
+        ValidAudioConvertibleFM fm,
+        AudioConvert type,
+        BinaryBuffer buffer,
+        byte[] fileStreamBuffer,
+        CancellationToken ct)
     {
         return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
     }
@@ -154,7 +161,12 @@ internal static class FMAudio
     // But, that means we should put the audio conversion for all FMs at the end of the entire install process,
     // so that the parallel loop here doesn't fight for resources with the already-going parallel loop for the
     // install.
-    private static ConvertAudioError ConvertToWAVs(ValidAudioConvertibleFM fm, AudioConvert type, BinaryBuffer buffer, byte[] fileStreamBuffer, CancellationToken ct)
+    private static ConvertAudioError ConvertToWAVs(
+        ValidAudioConvertibleFM fm,
+        AudioConvert type,
+        BinaryBuffer buffer,
+        byte[] fileStreamBuffer,
+        CancellationToken ct)
     {
         if (type == AudioConvert.WAVToWAV16)
         {
@@ -194,36 +206,53 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    foreach (string f in wavFiles)
+                    int threadCount = GetThreadCount(wavFiles.Length);
+
+                    ParallelOptions po = new()
                     {
-                        // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                        if (!f.EndsWithI(".wav")) continue;
+                        CancellationToken = ct,
+                        MaxDegreeOfParallelism = threadCount,
+                    };
 
-                        File_UnSetReadOnly(f);
+                    ConcurrentQueue<string> cq = new(wavFiles);
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
+                    Parallel.For(0, threadCount, po, _ =>
+                    {
+                        while (cq.TryDequeue(out string f))
+                        {
+                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                            if (!f.EndsWithI(".wav")) continue;
 
-                        int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
+                            File_UnSetReadOnly(f);
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
+                            ct.ThrowIfCancellationRequested();
 
-                        // Header wasn't wav, so skip this one
-                        if (bits == -1) continue;
+                            int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
-                        if (bits == 0) bits = GetBitDepthSlow(f);
+                            ct.ThrowIfCancellationRequested();
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
+                            // Header wasn't wav, so skip this one
+                            if (bits == -1) continue;
 
-                        if (bits is >= 1 and <= 16) continue;
+                            if (bits == 0) bits = GetBitDepthSlow(f);
 
-                        string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
-                        FFmpeg.NET.Engine.Convert(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
-                        File.Delete(f);
-                        File.Move(tempFile, f);
+                            ct.ThrowIfCancellationRequested();
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
-                    }
+                            if (bits is >= 1 and <= 16) continue;
+
+                            string tempFile = f.RemoveExtension() + ".al_16bit_.wav";
+                            FFmpeg.NET.Engine.Convert(f, tempFile, FFmpeg.NET.ConvertType.AudioBitRateTo16Bit);
+                            File.Delete(f);
+                            File.Move(tempFile, f);
+
+                            ct.ThrowIfCancellationRequested();
+                        }
+                    });
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                return ConvertAudioError.None;
             }
             catch (Exception ex)
             {
@@ -261,36 +290,54 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    foreach (string f in files)
+                    int threadCount = GetThreadCount(files.Length);
+
+                    ParallelOptions po = new()
                     {
-                        // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                        if (!f.EndsWithI(ext)) continue;
+                        CancellationToken = ct,
+                        MaxDegreeOfParallelism = threadCount,
+                    };
 
-                        File_UnSetReadOnly(f);
+                    ConcurrentQueue<string> cq = new(files);
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
-
-                        try
+                    Parallel.For(0, threadCount, po, _ =>
+                    {
+                        while (cq.TryDequeue(out string f))
                         {
-                            FFmpeg.NET.Engine.Convert(f, f.RemoveExtension() + ".wav", FFmpeg.NET.ConvertType.FormatConvert);
-                        }
-                        catch (Exception ex)
-                        {
-                            fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
-                        }
+                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                            if (!f.EndsWithI(ext)) continue;
 
-                        try
-                        {
-                            File.Delete(f);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log(ErrorText.Ex + "deleting file " + f, ex);
-                        }
+                            File_UnSetReadOnly(f);
 
-                        if (ct.IsCancellationRequested) return ConvertAudioError.None;
-                    }
+                            ct.ThrowIfCancellationRequested();
+
+                            try
+                            {
+                                FFmpeg.NET.Engine.Convert(f, f.RemoveExtension() + ".wav",
+                                    FFmpeg.NET.ConvertType.FormatConvert);
+                            }
+                            catch (Exception ex)
+                            {
+                                fm.LogInfo(ErrorText.Ex + "in FFmpeg convert (" + type + ")", ex);
+                            }
+
+                            try
+                            {
+                                File.Delete(f);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log(ErrorText.Ex + "deleting file " + f, ex);
+                            }
+
+                            ct.ThrowIfCancellationRequested();
+                        }
+                    });
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                return ConvertAudioError.None;
             }
             catch (Exception ex)
             {
@@ -367,23 +414,24 @@ internal static class FMAudio
             return ret;
         }
 
+        // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
+        // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
+        // assume Thief 3 doesn't need it and leave it at that.
+        static string[] GetFMSoundPathsByGame(ValidAudioConvertibleFM fm)
+        {
+            string instPath = Path.Combine(Config.GetFMInstallPath(fm.GameIndex), fm.InstalledDir);
+            string sndPath = Path.Combine(instPath, "snd");
+            return fm.GameIndex == GameIndex.SS2
+                ? new[] { sndPath, Path.Combine(instPath, "snd2") }
+                : new[] { sndPath };
+        }
+
+        static int GetThreadCount(int maxWorkItemsCount) =>
+            Config.UseAggressiveIOThreading
+                ? GetThreadCountForParallelOperation(maxWorkItemsCount)
+                : 1;
+
         #endregion
-    }
-
-    #endregion
-
-    #region Helpers
-
-    // Only Dark games can have audio converted for now, because it looks like SU's FMSel pointedly
-    // doesn't do any conversion whatsoever, neither automatically nor even with a menu option. I'll
-    // assume Thief 3 doesn't need it and leave it at that.
-    private static string[] GetFMSoundPathsByGame(ValidAudioConvertibleFM fm)
-    {
-        string instPath = Path.Combine(Config.GetFMInstallPath(fm.GameIndex), fm.InstalledDir);
-        string sndPath = Path.Combine(instPath, "snd");
-        return fm.GameIndex == GameIndex.SS2
-            ? new[] { sndPath, Path.Combine(instPath, "snd2") }
-            : new[] { sndPath };
     }
 
     #endregion
