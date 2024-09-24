@@ -551,9 +551,6 @@ public sealed class ZipArchiveFast : IDisposable
             return false;
         }
 
-        // At this point, this is really just caching a FileStream.Position, which does have some logic in
-        // its getter, but probably isn't slow enough to warrant being cached... but I guess ArchiveStream
-        // could be any kind of stream, so better to guarantee performance than to hope for it, I guess.
         entry.StoredOffsetOfCompressedData ??= _archiveStream.Position;
 
         if (entry.StoredOffsetOfCompressedData + entry.CompressedLength > ArchiveStreamLength)
