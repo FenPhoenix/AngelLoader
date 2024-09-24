@@ -450,6 +450,7 @@ public sealed class ConfigData
     }
 
     // @MT_TASK: Finalize names
+
     internal bool AutoSetMaxIOThreads = true;
 
     private int _maxIOThreads = CoreCount;
@@ -460,10 +461,20 @@ public sealed class ConfigData
     }
 
     // Session-only; don't write out
-    internal bool AllDrivesAreSSD;
+    internal AllDrives AllDrivesType;
 
     // @MT_TASK: Finish implementing (parallel-per-zip-entry extract)
     internal bool AggressiveIOThreading;
+
+    /// <summary>
+    /// Returns <see langword="true"/> if either the user has set <see cref="AggressiveIOThreading"/> to <see langword="true"/>,
+    /// or if we're in auto mode and have determined it to be an appropriate setting.
+    /// </summary>
+    internal bool UseAggressiveIOThreading =>
+        AutoSetMaxIOThreads
+            ? AllDrivesType == AllDrives.NVMe_SSD
+            : AggressiveIOThreading;
+
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic

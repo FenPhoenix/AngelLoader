@@ -214,6 +214,13 @@ public enum CheckForUpdates
     False,
 }
 
+public enum AllDrives
+{
+    Other,
+    SATA_SSD,
+    NVMe_SSD,
+}
+
 #region FM tabs
 
 // IMPORTANT(FM tabs enum): Do not rename members, they're used in the config file

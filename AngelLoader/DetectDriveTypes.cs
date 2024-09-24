@@ -9,6 +9,7 @@ using System.Management;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using AL_Common;
+using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 
 namespace AngelLoader;
@@ -66,7 +67,7 @@ internal static class DetectDriveTypes
         }
     }
 
-    internal static async Task<bool> AllDrivesAreSolidStateAsync(List<string> paths)
+    internal static async Task<AllDrives> AllDrivesAreSolidStateAsync(List<string> paths)
     {
         return await Task.Run(() => AllDrivesAreSolidState(paths));
     }
@@ -74,7 +75,7 @@ internal static class DetectDriveTypes
     // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
     // This can return Unspecified for all if you've messed around with Disk Management (I guess?!)
     // That's okay in that case, we'll just fall back to HDD 1-threaded version...
-    internal static bool AllDrivesAreSolidState(List<string> paths)
+    internal static AllDrives AllDrivesAreSolidState(List<string> paths)
     {
 #if TIMING_TEST
         var sw = new System.Diagnostics.Stopwatch();
@@ -88,7 +89,7 @@ internal static class DetectDriveTypes
             it, and if they do, well then they get a single-threaded scan by default. If they want threaded,
             they'll have to set it manually.
             */
-            if (!Utils.WinVersionIs8OrAbove()) return false;
+            if (!Utils.WinVersionIs8OrAbove()) return AllDrives.Other;
 
             List<string> letters = new(paths.Count);
 
@@ -99,11 +100,11 @@ internal static class DetectDriveTypes
                 string letter = Path.GetPathRoot(paths[i]).TrimEnd(Common.CA_BS_FS);
                 if (letter.IsEmpty())
                 {
-                    return false;
+                    return AllDrives.Other;
                 }
                 if (letter.Length is not 2 || !letter[0].IsAsciiAlpha())
                 {
-                    return false;
+                    return AllDrives.Other;
                 }
 
                 letters.Add(letter);
@@ -111,29 +112,45 @@ internal static class DetectDriveTypes
 
             letters = letters.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-            if (letters.Count == 0) return false;
+            if (letters.Count == 0) return AllDrives.Other;
 
             List<PhysicalDisk> physDisks = GetPhysicalDisks();
+
+            AllDrives[] driveTypes = new AllDrives[letters.Count];
 
             for (int i = 0; i < letters.Count; i++)
             {
                 string letter = letters[i];
 
-                MediaType mediaType = GetMediaType(letter, physDisks);
+                AllDrives driveType = GetMediaType(letter, physDisks);
 #if TIMING_TEST
-                System.Diagnostics.Trace.WriteLine(letter + " " + mediaType);
+                System.Diagnostics.Trace.WriteLine(letter + " " + driveType);
 #endif
-                if (!IsSolidState(mediaType))
+                if (driveType == AllDrives.Other)
                 {
-                    return false;
+#if TIMING_TEST
+                    System.Diagnostics.Trace.WriteLine("All drives are considered: " + AllDrives.Other);
+#endif
+                    return AllDrives.Other;
                 }
+
+                driveTypes[i] = driveType;
             }
 
-            return true;
+            AllDrives ret =
+                driveTypes.All(static x => x == AllDrives.NVMe_SSD) ? AllDrives.NVMe_SSD :
+                driveTypes.All(static x => x == AllDrives.SATA_SSD) ? AllDrives.SATA_SSD :
+                AllDrives.Other;
+
+#if TIMING_TEST
+            System.Diagnostics.Trace.WriteLine("All drives are considered: " + ret);
+#endif
+
+            return ret;
         }
         catch
         {
-            return false;
+            return AllDrives.Other;
         }
 #if TIMING_TEST
         finally
@@ -182,7 +199,7 @@ internal static class DetectDriveTypes
         return physDisks;
     }
 
-    private static MediaType GetMediaType(string driveLetter, List<PhysicalDisk> physDisks)
+    private static AllDrives GetMediaType(string driveLetter, List<PhysicalDisk> physDisks)
     {
         try
         {
@@ -203,19 +220,32 @@ internal static class DetectDriveTypes
                 sw.Start();
 #endif
 
-                MediaType returnMediaType = MediaType.Unspecified;
+                AllDrives returnMediaType = AllDrives.Other;
 
                 foreach (ManagementBaseObject drive in drives)
                 {
                     string deviceId = drive["DeviceID"].ToString();
                     string idStr = deviceId.Substring(@"\\.\PHYSICALDRIVE".Length);
-                    returnMediaType = GetMediaTypeForId(physDisks, idStr);
+                    AllDrives thisDriveMediaType = GetMediaTypeForId(physDisks, idStr);
 
                     // RAID drives are reported as however many drives there are in the RAID, with each one having
                     // its respective type. So quit once we've found spinning rust or something unknown, for perf.
-                    if (!IsSolidState(returnMediaType))
+                    if (thisDriveMediaType == AllDrives.Other)
                     {
-                        return returnMediaType;
+                        return AllDrives.Other;
+                    }
+                    else if (thisDriveMediaType == AllDrives.NVMe_SSD)
+                    {
+                        // Don't override SATA with NVMe; the lowest speed drive in the array is what we should
+                        // report the whole drive as.
+                        if (returnMediaType == AllDrives.Other)
+                        {
+                            returnMediaType = AllDrives.NVMe_SSD;
+                        }
+                    }
+                    else
+                    {
+                        returnMediaType = thisDriveMediaType;
                     }
                 }
 
@@ -227,24 +257,30 @@ internal static class DetectDriveTypes
                 return returnMediaType;
             }
 
-            return MediaType.Unspecified;
+            return AllDrives.Other;
         }
         catch
         {
-            return MediaType.Unspecified;
+            return AllDrives.Other;
         }
 
-        static MediaType GetMediaTypeForId(List<PhysicalDisk> physDisks, string id)
+        static AllDrives GetMediaTypeForId(List<PhysicalDisk> physDisks, string id)
         {
             foreach (PhysicalDisk physDisk in physDisks)
             {
                 if (physDisk.DeviceId == id)
                 {
-                    return physDisk.MediaType;
+                    return IsSolidState(physDisk.MediaType)
+                        ? physDisk.BusType == BusType.NVMe
+                            ? AllDrives.NVMe_SSD
+                            : physDisk.BusType == BusType.SATA
+                                ? AllDrives.SATA_SSD
+                                : AllDrives.Other
+                        : AllDrives.Other;
                 }
             }
 
-            return MediaType.Unspecified;
+            return AllDrives.Other;
         }
     }
 

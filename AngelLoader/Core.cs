@@ -1066,7 +1066,7 @@ internal static class Core
                 // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
                 // @MT_TASK: We could run this in a thread in the Settings window and wait on it before exit
                 // Or after exit if we pass back the task or whatever, if we wanted to be fancy
-                destConfig.AllDrivesAreSSD = DetectDriveTypes.AllDrivesAreSolidState(paths);
+                destConfig.AllDrivesType = DetectDriveTypes.AllDrivesAreSolidState(paths);
             }
             finally
             {
@@ -1080,7 +1080,7 @@ internal static class Core
         {
             // @MT_TASK: Remove for final release
             Trace.WriteLine(nameof(SetDriveTypes) + ": Manual path");
-            destConfig.AllDrivesAreSSD = true;
+            destConfig.AllDrivesType = AllDrives.NVMe_SSD;
         }
     }
 
