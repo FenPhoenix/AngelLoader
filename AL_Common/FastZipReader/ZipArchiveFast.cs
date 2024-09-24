@@ -431,7 +431,7 @@ public sealed class ZipArchiveFast : IDisposable
 
             context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
 
-            if (!isThreadedArchive)
+            if (!_isThreadedArchive)
             {
                 ReadEndOfCentralDirectory();
             }
