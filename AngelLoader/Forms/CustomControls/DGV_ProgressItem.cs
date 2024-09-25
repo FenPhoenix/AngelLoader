@@ -20,7 +20,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     private const int _barHeight = 13;
     private const int _segmentLength = 26;
 
-    private readonly System.Timers.Timer IndeterminateProgressAnimTimer;
+    private readonly Timer IndeterminateProgressAnimTimer;
 
     private uint _indeterminateProgressBarsRefCount;
     public uint IndeterminateProgressBarsRefCount
@@ -119,13 +119,12 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         DoubleBuffered = true;
         RowTemplate.Height = (DefaultCellStyle.Font.Height + 4) * 3;
 
-        IndeterminateProgressAnimTimer = new System.Timers.Timer();
-        IndeterminateProgressAnimTimer.SynchronizingObject = this;
+        IndeterminateProgressAnimTimer = new Timer();
         IndeterminateProgressAnimTimer.Interval = 16;
-        IndeterminateProgressAnimTimer.Elapsed += IndeterminateProgressAnimTimer_Elapsed;
+        IndeterminateProgressAnimTimer.Tick += IndeterminateProgressAnimTimer_Tick; ;
     }
 
-    private void IndeterminateProgressAnimTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private void UpdateIndeterminateProgress()
     {
         if (_indeterminateProgressBarsRefCount == 0) return;
 
@@ -149,6 +148,13 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         {
             // ignore
         }
+    }
+
+    private void IndeterminateProgressAnimTimer_Tick(object sender, EventArgs e)
+    {
+        // System.Windows.Forms.Timer-and-Invoke() rather than System.Timers.Timer-and-sync-object, because the
+        // latter causes the animation to freeze up in some cases. Don't know why exactly but whatever...
+        Invoke(UpdateIndeterminateProgress);
     }
 
     protected override void OnSelectionChanged(EventArgs e)
