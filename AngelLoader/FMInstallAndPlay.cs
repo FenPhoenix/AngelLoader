@@ -1772,11 +1772,9 @@ internal static partial class FMInstallAndPlay
                     Parallel.For(0, threadCount, po, _ =>
                     {
                         Buffers buffer = new();
-                        BinaryBuffer binaryBuffer = new();
 
                         while (cq.TryDequeue(out FMData fmData))
                         {
-                            int viewItemIndex = fmData.ViewItemIndex;
                             fmData.InstallStarted = true;
 
                             FMInstallResult fmInstallResult =
@@ -1790,23 +1788,19 @@ internal static partial class FMInstallAndPlay
                                     */
                                     ? Config.UseAggressiveIOThreading
                                         ? InstallFMZip_ThreadedPerEntry(
-                                            viewItemIndex: fmData.ViewItemIndex,
-                                            progress: progress,
-                                            fmData: fmData)
+                                            progress,
+                                            fmData)
                                         : InstallFMZip(
-                                            viewItemIndex,
                                             progress,
                                             fmData,
                                             buffer.ExtractTempBuffer,
                                             buffer.FileStreamBuffer)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
-                                            viewItemIndex,
                                             progress,
                                             fmData,
                                             buffer.ExtractTempBuffer)
                                         : InstallFMSevenZip(
-                                            viewItemIndex,
                                             progress,
                                             fmData);
 
@@ -1830,8 +1824,6 @@ internal static partial class FMInstallAndPlay
 
                             DoPostInstallWork(
                                 fmData,
-                                viewItemIndex,
-                                binaryBuffer,
                                 buffer,
                                 po.CancellationToken,
                                 ref fmsFinishedCount,
@@ -2016,8 +2008,6 @@ internal static partial class FMInstallAndPlay
 
     private static void DoPostInstallWork(
         FMData fmData,
-        int viewItemIndex,
-        BinaryBuffer binaryBuffer,
         Buffers buffer,
         CancellationToken cancellationToken,
         ref int fmsFinishedCount,
@@ -2042,7 +2032,7 @@ internal static partial class FMInstallAndPlay
             try
             {
                 Core.View.MultiItemProgress_SetItemData(
-                    index: viewItemIndex,
+                    index: fmData.ViewItemIndex,
                     line2: LText.ProgressBox.ConvertingAudioFiles,
                     percent: 100,
                     progressType: ProgressType.Indeterminate);
@@ -2065,7 +2055,6 @@ internal static partial class FMInstallAndPlay
                 FMAudio.ConvertAsPartOfInstall(
                     validAudioConvertibleFM,
                     AudioConvert.MP3ToWAV,
-                    binaryBuffer,
                     buffer.FileStreamBuffer,
                     cancellationToken);
 
@@ -2076,7 +2065,6 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.OGGToWAV,
-                        binaryBuffer,
                         buffer.FileStreamBuffer,
                         cancellationToken);
                 }
@@ -2088,7 +2076,6 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.WAVToWAV16,
-                        binaryBuffer,
                         buffer.FileStreamBuffer,
                         cancellationToken);
                 }
@@ -2116,7 +2103,7 @@ internal static partial class FMInstallAndPlay
         GenerateMissFlagFileIfRequired(fmData.FM);
 
         Core.View.MultiItemProgress_SetItemData(
-            index: viewItemIndex,
+            index: fmData.ViewItemIndex,
             line2: LText.ProgressBox.RestoringBackup,
             percent: 100,
             progressType: ProgressType.Indeterminate);
@@ -2141,7 +2128,7 @@ internal static partial class FMInstallAndPlay
         Interlocked.Increment(ref fmsFinishedCount);
 
         Core.View.MultiItemProgress_SetItemData(
-            index: viewItemIndex,
+            index: fmData.ViewItemIndex,
             line2: LText.ProgressBox.InstallComplete,
             percent: 100,
             progressType: ProgressType.Determinate);
@@ -2152,7 +2139,6 @@ internal static partial class FMInstallAndPlay
     }
 
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
-        int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
         FMData fmData)
     {
@@ -2239,7 +2225,7 @@ internal static partial class FMInstallAndPlay
 
                     int percent = GetPercentFromValue_Int(entryNumber + 1, entriesTotalCount);
 
-                    report.ViewItemIndex = viewItemIndex;
+                    report.ViewItemIndex = fmData.ViewItemIndex;
                     report.Text = fmData.FM.Archive;
                     report.Percent = percent;
                     progress.Report(report);
@@ -2270,7 +2256,6 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMZip(
-        int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         byte[] tempBuffer,
@@ -2309,7 +2294,7 @@ internal static partial class FMInstallAndPlay
 
                 int percent = GetPercentFromValue_Int(i + 1, filesCount);
 
-                report.ViewItemIndex = viewItemIndex;
+                report.ViewItemIndex = fmData.ViewItemIndex;
                 report.Text = fmData.FM.Archive;
                 report.Percent = percent;
                 progress.Report(report);
@@ -2333,7 +2318,6 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMRar(
-        int viewItemIndex,
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         byte[] tempBuffer)
@@ -2384,7 +2368,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!_installCts.IsCancellationRequested)
                 {
-                    report.ViewItemIndex = viewItemIndex;
+                    report.ViewItemIndex = fmData.ViewItemIndex;
                     report.Text = fmData.FM.Archive;
                     report.Percent = percentOfEntries;
                     progress.Report(report);
@@ -2409,7 +2393,6 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult
     InstallFMSevenZip(
-        int viewItemIndex,
         IProgress<ProgressReport_Install> progressInstall,
         FMData fmData)
     {
@@ -2433,7 +2416,7 @@ internal static partial class FMInstallAndPlay
             {
                 if (!pr.Canceling)
                 {
-                    report.ViewItemIndex = viewItemIndex;
+                    report.ViewItemIndex = fmData.ViewItemIndex;
                     report.Text = fmData.FM.Archive;
                     report.Percent = pr.PercentOfEntries;
                     progressInstall.Report(report);

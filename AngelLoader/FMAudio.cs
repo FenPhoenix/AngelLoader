@@ -82,7 +82,6 @@ internal static class FMAudio
                 cancelAction: single ? null : CancelToken
             );
 
-            BinaryBuffer buffer = new();
             byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
             await Task.Run(() =>
@@ -96,7 +95,7 @@ internal static class FMAudio
                         percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
                     );
 
-                    ConvertToWAVs(fm, convertType, buffer, fileStreamBuffer, CancellationToken.None);
+                    ConvertToWAVs(fm, convertType, fileStreamBuffer, CancellationToken.None);
 
                     if (!single && _conversionCts.IsCancellationRequested) return;
                 }
@@ -150,11 +149,10 @@ internal static class FMAudio
     internal static ConvertAudioError ConvertAsPartOfInstall(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
-        BinaryBuffer buffer,
         byte[] fileStreamBuffer,
         CancellationToken ct)
     {
-        return ConvertToWAVs(fm, type, buffer, fileStreamBuffer, ct);
+        return ConvertToWAVs(fm, type, fileStreamBuffer, ct);
     }
 
     /*
@@ -168,7 +166,6 @@ internal static class FMAudio
     private static ConvertAudioError ConvertToWAVs(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
-        BinaryBuffer buffer,
         byte[] fileStreamBuffer,
         CancellationToken ct)
     {
@@ -222,6 +219,8 @@ internal static class FMAudio
 
                     Parallel.For(0, threadCount, po, _ =>
                     {
+                        BinaryBuffer buffer = new();
+
                         while (cq.TryDequeue(out string f))
                         {
                             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
