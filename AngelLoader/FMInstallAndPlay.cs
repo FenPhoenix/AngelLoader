@@ -1,5 +1,4 @@
 ﻿// @MT_TASK: Comment this out for final release
-// @MT_TASK: There are some catch (Exception) that don't filter for OperationCanceledException - do they need changing to that?
 #define TIMING_TEST
 
 using System;
@@ -1909,8 +1908,6 @@ internal static partial class FMInstallAndPlay
                 return;
             }
 
-            // @MT_TASK: Fixes the not-displayed audio convert text, but makes UI update chunky at times
-            // Don't really know how to solve this yet, but look into it
             if (reportThrottleSW.ElapsedMilliseconds > 1)
             {
                 Core.View.MultiItemProgress_SetItemData(
