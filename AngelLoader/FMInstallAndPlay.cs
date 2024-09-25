@@ -2458,7 +2458,10 @@ internal static partial class FMInstallAndPlay
 
             if (result.Canceled)
             {
-                throw new OperationCanceledException();
+                // MUST pass the token or else the exception doesn't get caught and the whole app crashes.
+                // Best guess is the Parallel.For needs the token in order to throw the exception outside the
+                // threading or however the hell it works. Whatever man, fixed, moving on.
+                throw new OperationCanceledException(_installCts.Token);
             }
             else
             {

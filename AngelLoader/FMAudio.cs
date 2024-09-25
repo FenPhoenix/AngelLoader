@@ -257,7 +257,7 @@ internal static class FMAudio
             {
                 return ConvertAudioError.None;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
             }
@@ -342,7 +342,7 @@ internal static class FMAudio
             {
                 return ConvertAudioError.None;
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
                 fm.LogInfo(ErrorText.Ex + "in file conversion (" + type + ")", ex);
             }
