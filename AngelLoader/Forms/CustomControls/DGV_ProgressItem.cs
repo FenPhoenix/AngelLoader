@@ -14,7 +14,43 @@ namespace AngelLoader.Forms.CustomControls;
 
 public sealed class DGV_ProgressItem : DataGridView, IDarkable
 {
-    private readonly Bitmap _progressBitmap;
+    private Bitmap? _progressBitmap_Light;
+    private Bitmap? _progressBitmap_Dark;
+
+    private Bitmap ProgressBitmap => _darkModeEnabled
+        ? _progressBitmap_Dark ??= CreateProgressBitmap()
+        : _progressBitmap_Light ??= CreateProgressBitmap();
+
+    private Bitmap CreateProgressBitmap()
+    {
+        using Bitmap sectionBmp = new(_segmentLength, _barHeight, PixelFormat.Format32bppPArgb);
+
+        Bitmap ret = new(_barLength + (_segmentLength * 2), _barHeight, PixelFormat.Format32bppPArgb);
+
+        using Graphics sectionBmpG = Graphics.FromImage(sectionBmp);
+        using Graphics progressBmpG = Graphics.FromImage(ret);
+
+        sectionBmpG.SmoothingMode = SmoothingMode.HighQuality;
+        progressBmpG.SmoothingMode = SmoothingMode.HighQuality;
+
+        PointF[] points =
+        {
+            new(0, 0),
+            new(13, 0),
+            new(26, 13),
+            new(13, 13),
+            new(0, 0),
+        };
+
+        sectionBmpG.FillPolygon(GetItemProgressBarBrush(), points);
+
+        for (int i = 0; i < _barLength + (_segmentLength * 2); i += _segmentLength)
+        {
+            progressBmpG.DrawImageUnscaled(sectionBmp, i, 0);
+        }
+
+        return ret;
+    }
 
     private const int _barLength = 380;
     private const int _barHeight = 13;
@@ -89,33 +125,6 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
     public DGV_ProgressItem()
     {
-        using (Bitmap sectionBmp = new(_segmentLength, _barHeight, PixelFormat.Format32bppPArgb))
-        {
-            _progressBitmap = new Bitmap(_barLength + (_segmentLength * 2), _barHeight, PixelFormat.Format32bppPArgb);
-
-            using Graphics sectionBmpG = Graphics.FromImage(sectionBmp);
-            using Graphics progressBmpG = Graphics.FromImage(_progressBitmap);
-
-            sectionBmpG.SmoothingMode = SmoothingMode.HighQuality;
-            progressBmpG.SmoothingMode = SmoothingMode.HighQuality;
-
-            PointF[] points =
-            {
-                new(0, 0),
-                new(13, 0),
-                new(26, 13),
-                new(13, 13),
-                new(0, 0),
-            };
-
-            sectionBmpG.FillPolygon(Brushes.Green, points);
-
-            for (int i = 0; i < _barLength + (_segmentLength * 2); i += _segmentLength)
-            {
-                progressBmpG.DrawImageUnscaled(sectionBmp, i, 0);
-            }
-        }
-
         DoubleBuffered = true;
         RowTemplate.Height = (DefaultCellStyle.Font.Height + 4) * 3;
 
@@ -191,6 +200,9 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     }
 
     private Brush GetItemBackgroundBrush() => _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
+    // @MT_TASK: Can we get the general color of the themed progress bar for light mode?
+    // Currently just approximating the green one with Brushes.Green
+    private Brush GetItemProgressBarBrush() => _darkModeEnabled ? DarkColors.BlueHighlightBrush : Brushes.Green;
 
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
@@ -201,18 +213,14 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         Brush bgBrush = GetItemBackgroundBrush();
         Pen borderPen;
-        // @MT_TASK: We need better colors for light/dark progress green - should we use normal blue (dark) and green (light)?
-        Brush progressBrush;
         if (_darkModeEnabled)
         {
             borderPen = DarkColors.Fen_DGVCellBordersPen;
-            progressBrush = DarkColors.DGV_PinnedBackgroundDarkBrush;
             e.CellStyle.ForeColor = DarkColors.Fen_DarkForeground;
         }
         else
         {
             borderPen = SystemPens.ControlDark;
-            progressBrush = DarkColors.DGV_PinnedBackgroundLightBrush;
         }
 
         e.Graphics.FillRectangle(bgBrush, e.CellBounds);
@@ -253,7 +261,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
             if (progressType == ProgressType.Determinate)
             {
                 e.Graphics.FillRectangle(
-                    Brushes.Green,
+                    GetItemProgressBarBrush(),
                     e.CellBounds.Left + 4,
                     e.CellBounds.Top + fontHeight,
                     GetValueFromPercent_Int(item.Percent, e.CellBounds.Width - 8),
@@ -267,7 +275,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                 }
 
                 e.Graphics.DrawImageUnscaled(
-                    _progressBitmap,
+                    ProgressBitmap,
                     e.CellBounds.Left + item.IndeterminateAnimPosition,
                     e.CellBounds.Top + fontHeight);
 
@@ -312,7 +320,8 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
         if (disposing)
         {
             IndeterminateProgressAnimTimer.Dispose();
-            _progressBitmap.Dispose();
+            _progressBitmap_Light?.Dispose();
+            _progressBitmap_Dark?.Dispose();
         }
         base.Dispose(disposing);
     }
