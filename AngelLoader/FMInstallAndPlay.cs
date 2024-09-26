@@ -1718,7 +1718,7 @@ internal static partial class FMInstallAndPlay
             cancelMessage: LText.Global.Cancel,
             cancelAction: CancelInstallToken);
 
-        return await Task.Run(async () =>
+        return await Task.Run(() =>
         {
             try
             {
@@ -2202,7 +2202,7 @@ internal static partial class FMInstallAndPlay
             var sw = new Stopwatch();
             sw.Start();
 
-            Parallel.For(0, threadCount, po, i =>
+            Parallel.For(0, threadCount, po, _ =>
             {
                 byte[] tempBuffer = new byte[StreamCopyBufferSize];
                 byte[] fileStreamBuffer = new byte[FileStreamBufferSize];

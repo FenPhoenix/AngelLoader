@@ -130,7 +130,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
 
         IndeterminateProgressAnimTimer = new Timer();
         IndeterminateProgressAnimTimer.Interval = 16;
-        IndeterminateProgressAnimTimer.Tick += IndeterminateProgressAnimTimer_Tick; ;
+        IndeterminateProgressAnimTimer.Tick += IndeterminateProgressAnimTimer_Tick;
     }
 
     private void UpdateIndeterminateProgress()

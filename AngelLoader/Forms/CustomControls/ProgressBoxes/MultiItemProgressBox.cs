@@ -128,32 +128,6 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         messageItem.Width = -1;
     }
 
-    private void SetProgressBarType(DarkProgressBar progressBar, ProgressType progressType, MessageItemType messageItemType)
-    {
-        if (progressType == ProgressType.Indeterminate)
-        {
-            progressBar.Style = ProgressBarStyle.Marquee;
-            SetLabelText(messageItemType, "");
-            _owner.SetTaskBarState(TaskbarStates.Indeterminate);
-        }
-        else
-        {
-            progressBar.Style = ProgressBarStyle.Blocks;
-            _owner.SetTaskBarState(TaskbarStates.Normal);
-        }
-    }
-
-    private void SetPercent(int percent, MessageItemType messageItemType, DarkProgressBar progressBar)
-    {
-        percent = percent.Clamp(0, 100);
-
-        SetLabelText(messageItemType, NonLocalizableText.PercentStrings[percent]);
-
-        progressBar.Value = percent;
-
-        _owner.SetTaskBarValue(0, 100);
-    }
-
     private int GetRequiredWidth()
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];

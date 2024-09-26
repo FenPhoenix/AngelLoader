@@ -219,7 +219,7 @@ public sealed partial class MainForm
             visible: true,
             mainMessage1: message1,
             mainProgressMessage: mainProgressMessage,
-            cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
+            cancelButtonMessage: cancelMessage ?? MultiItemProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
 
