@@ -138,6 +138,8 @@ internal static partial class FMInstallAndPlay
             string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _screensDir);
             string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _ss2CurrentDir);
 
+            // @MT_TASK(BackupFM): Conflict possibility with backup archive name
+            // If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
             string bakFile = Path.Combine(Config.FMsBackupPath,
                 (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
                 Paths.FMBackupSuffix);
@@ -583,6 +585,9 @@ internal static partial class FMInstallAndPlay
     -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
     don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
     which is not at all what the user expects given we tell them that existing backups haven't been changed.
+
+    @MT_TASK(MoveDarkLoaderBackup): Possible conflict here - can we be trying to move the same DL bak file for multiple FMs?
+    Don't know for sure, we need to check if it's possible
     */
     private static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
     {
