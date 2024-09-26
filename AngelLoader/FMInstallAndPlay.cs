@@ -1837,7 +1837,7 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
-                    List<FMInstallResult> rollbackErrorResults = await RollBackMultipleFMs(fmDataList);
+                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList);
 
                     if (rollbackErrorResults.Count > 0)
                     {
@@ -1942,40 +1942,64 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        // @MT_TASK(RollBackInstalls): Handle multithreading here too
-        static async Task<List<FMInstallResult>> RollBackMultipleFMs(List<FMData> fmDataList)
+        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList)
         {
-            return await Task.Run(() =>
+            List<FMInstallResult> ret = new();
+
+            List<FMData> filteredList = new();
+
+            for (int i = 0; i < fmDataList.Count; i++)
             {
-                List<FMInstallResult> ret = new();
-
-                for (int i = 0; i < fmDataList.Count; i++)
+                FMData fmData = fmDataList[i];
+                if (fmData.InstallStarted)
                 {
-                    FMData fmData = fmDataList[i];
-                    if (fmData.InstallStarted)
-                    {
-                        Core.View.MultiItemProgress_SetItemData(
-                            index: fmData.ViewItemIndex,
-                            line2: LText.ProgressBox.CancelingInstall,
-                            progressType: ProgressType.Indeterminate);
-
-                        FMInstallResult result = RemoveFMFromDisk(fmData);
-                        if (result.ResultType == InstallResultType.RollbackFailed)
-                        {
-                            ret.Add(result);
-                        }
-
-                        // @MT_TASK: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
-                        Core.View.MultiItemProgress_SetItemData(
-                            index: fmData.ViewItemIndex,
-                            line2: LText.ProgressBox.Canceled,
-                            percent: 0,
-                            progressType: ProgressType.Determinate);
-                    }
+                    filteredList.Add(fmData);
                 }
+            }
 
-                return ret;
+            ConcurrentQueue<FMData> cq = new(filteredList);
+
+            int threadCount = GetThreadCountForParallelOperation(filteredList.Count);
+
+            ParallelOptions po = new()
+            {
+                MaxDegreeOfParallelism = threadCount,
+            };
+
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
+            Parallel.For(0, threadCount, po, _ =>
+            {
+                while (cq.TryDequeue(out FMData fmData))
+                {
+                    Core.View.MultiItemProgress_SetItemData(
+                        index: fmData.ViewItemIndex,
+                        line2: LText.ProgressBox.CancelingInstall,
+                        progressType: ProgressType.Indeterminate);
+
+                    FMInstallResult result = RemoveFMFromDisk(fmData);
+                    if (result.ResultType == InstallResultType.RollbackFailed)
+                    {
+                        ret.Add(result);
+                    }
+
+                    // @MT_TASK: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
+                    Core.View.MultiItemProgress_SetItemData(
+                        index: fmData.ViewItemIndex,
+                        line2: LText.ProgressBox.Canceled,
+                        percent: 0,
+                        progressType: ProgressType.Determinate);
+                }
             });
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine("Rollback: " + sw.Elapsed);
+#endif
+
+            return ret;
         }
 
         static FMInstallResult RemoveFMFromDisk(FMData fmData)
