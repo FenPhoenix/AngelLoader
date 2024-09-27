@@ -93,10 +93,10 @@ public sealed class ZipArchiveFastEntry
         }
         else
         {
-            // @MT_TASK: Pretty sure "Encoding.GetEncoding(0)" means "Encoding.Default", but check
-            // .NET modern replaces "default" with UTF8:
+            // @MT_TASK: .NET modern replaces "default" with UTF8:
             // _storedEntryName = (_archive.EntryNameAndCommentEncoding ?? Encoding.UTF8).GetString(_storedEntryNameBytes);
-            finalEncoding = entryNameEncoding ?? Encoding.GetEncoding(0);
+            // Encoding.GetEncoding(0) is the same as Encoding.Default
+            finalEncoding = entryNameEncoding ?? Encoding.Default;
         }
 
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have

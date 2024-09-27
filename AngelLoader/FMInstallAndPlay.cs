@@ -70,7 +70,6 @@ internal static partial class FMInstallAndPlay
         SevenZip,
     }
 
-    // @MT_TASK: We may want other things in here like fm archive path/install path etc.
     [StructLayout(LayoutKind.Auto)]
     private readonly struct FMInstallResult
     {
@@ -1665,18 +1664,6 @@ internal static partial class FMInstallAndPlay
         internal int Percent;
     }
 
-    // @MT_TASK(InstallInternal): Multithread this
-    /*
-    @MT_TASK: We're getting very poor scaling here.
-    Speedup ranges from none to 2x for 12 threads, and this is SSD to other SSD.
-
-    We should do some test code (not in this class) that just extracts archives in parallel and look at the perf
-    there, devoid of all the mess in here so we can see the best case clearly.
-
-    However, it might just be that extracting a ton of small files is just not going to get good perf or parallelization
-    even from an SSD. It's possible an NVME SSD might handle it better, but I don't have the equipment to test
-    that at the moment.
-    */
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
         var fmDataList = new List<FMData>(fms.Length);

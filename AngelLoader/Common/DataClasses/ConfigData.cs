@@ -450,7 +450,6 @@ public sealed class ConfigData
     // Session-only; don't write out
     internal AL_DriveType AllDrivesType;
 
-    // @MT_TASK: Finish implementing (parallel-per-zip-entry extract)
     internal bool AggressiveIOThreading;
 
     /// <summary>
