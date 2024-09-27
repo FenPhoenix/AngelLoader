@@ -2277,6 +2277,7 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
+            // @MT_TASK: Use fast zip reader for this too, since we're using it for the multithreaded version now
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmData.ArchivePath, fileStreamBuffer);
 
             int filesCount = archive.Entries.Count;
