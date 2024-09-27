@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1758,6 +1757,7 @@ internal static partial class FMInstallAndPlay
                     Parallel.For(0, threadCount, po, _ =>
                     {
                         Buffers buffer = new();
+                        ZipContext zipCtx = new();
 
                         while (cq.TryDequeue(out FMData fmData))
                         {
@@ -1780,7 +1780,8 @@ internal static partial class FMInstallAndPlay
                                             progress,
                                             fmData,
                                             buffer.ExtractTempBuffer,
-                                            buffer.FileStreamBuffer)
+                                            buffer.FileStreamBuffer,
+                                            zipCtx)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
                                             progress,
@@ -2168,14 +2169,14 @@ internal static partial class FMInstallAndPlay
 
             _installCts.Token.ThrowIfCancellationRequested();
 
-            int entriesTotalCount = entries.Count;
+            int entriesCount = entries.Count;
 
             sw0.Stop();
             Trace.WriteLine("sw0: " + sw0.Elapsed);
 
             ConcurrentQueue<ZipArchiveFastEntry> cq = new(entries);
 
-            int threadCount = GetThreadCountForParallelOperation(entriesTotalCount);
+            int threadCount = GetThreadCountForParallelOperation(entriesCount);
 
             // @MT_TASK: Remove for final release
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
@@ -2207,38 +2208,17 @@ internal static partial class FMInstallAndPlay
 
                 while (cq.TryDequeue(out ZipArchiveFastEntry entry))
                 {
-                    string fileName = entry.FullName;
-
-                    if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
-
-                    string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                    if (fileName.Rel_ContainsDirSep())
-                    {
-                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-
-                        po.CancellationToken.ThrowIfCancellationRequested();
-                    }
-
-                    archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, tempBuffer);
-
-                    po.CancellationToken.ThrowIfCancellationRequested();
-
-                    File_UnSetReadOnly(extractedName);
-
-                    po.CancellationToken.ThrowIfCancellationRequested();
-
-                    int entryNumber = entriesTotalCount - cq.Count;
-
-                    int percent = GetPercentFromValue_Int(entryNumber + 1, entriesTotalCount);
-
-                    report.ViewItemIndex = fmData.ViewItemIndex;
-                    report.Text = fmData.FM.Archive;
-                    report.Percent = percent;
-                    progress.Report(report);
-
-                    po.CancellationToken.ThrowIfCancellationRequested();
+                    DoZipExtractLoop(
+                        fmInstalledPath: fmInstalledPath,
+                        archive: archive,
+                        entry: entry,
+                        progress: progress,
+                        report: report,
+                        entryNumber: entriesCount - cq.Count,
+                        entriesCount: entriesCount,
+                        fmData: fmData,
+                        tempBuffer: tempBuffer,
+                        ct: po.CancellationToken);
                 }
             });
 
@@ -2267,7 +2247,8 @@ internal static partial class FMInstallAndPlay
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         byte[] tempBuffer,
-        byte[] fileStreamBuffer)
+        byte[] fileStreamBuffer,
+        ZipContext ctx)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
@@ -2278,37 +2259,29 @@ internal static partial class FMInstallAndPlay
             Directory.CreateDirectory(fmInstalledPath);
 
             // @MT_TASK: Use fast zip reader for this too, since we're using it for the multithreaded version now
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmData.ArchivePath, fileStreamBuffer);
+            using ZipArchiveFast archive =
+                GetReadModeZipArchiveCharEnc_Fast(
+                    fmData.ArchivePath,
+                    fileStreamBuffer,
+                    ctx);
 
-            int filesCount = archive.Entries.Count;
-            for (int i = 0; i < filesCount; i++)
+            ListFast<ZipArchiveFastEntry> entries = archive.Entries;
+            int entriesCount = entries.Count;
+            for (int i = 0; i < entriesCount; i++)
             {
-                ZipArchiveEntry entry = archive.Entries[i];
+                ZipArchiveFastEntry entry = entries[i];
 
-                string fileName = entry.FullName;
-
-                if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
-
-                string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                if (fileName.Rel_ContainsDirSep())
-                {
-                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-                }
-
-                entry.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
-
-                File_UnSetReadOnly(extractedName);
-
-                int percent = GetPercentFromValue_Int(i + 1, filesCount);
-
-                report.ViewItemIndex = fmData.ViewItemIndex;
-                report.Text = fmData.FM.Archive;
-                report.Percent = percent;
-                progress.Report(report);
-
-                _installCts.Token.ThrowIfCancellationRequested();
+                DoZipExtractLoop(
+                    fmInstalledPath: fmInstalledPath,
+                    archive: archive,
+                    entry: entry,
+                    progress: progress,
+                    report: report,
+                    entryNumber: i,
+                    entriesCount: entriesCount,
+                    fmData: fmData,
+                    tempBuffer: tempBuffer,
+                    ct: _installCts.Token);
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -2323,6 +2296,50 @@ internal static partial class FMInstallAndPlay
         }
 
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+    }
+
+    private static void DoZipExtractLoop(
+        string fmInstalledPath,
+        ZipArchiveFast archive,
+        ZipArchiveFastEntry entry,
+        IProgress<ProgressReport_Install> progress,
+        ProgressReport_Install report,
+        int entryNumber,
+        int entriesCount,
+        FMData fmData,
+        byte[] tempBuffer,
+        CancellationToken ct)
+    {
+        string fileName = entry.FullName;
+
+        if (fileName.IsEmpty() || fileName[^1].IsDirSep()) return;
+
+        string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+        if (fileName.Rel_ContainsDirSep())
+        {
+            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+            ct.ThrowIfCancellationRequested();
+        }
+
+        archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, tempBuffer);
+
+        ct.ThrowIfCancellationRequested();
+
+        File_UnSetReadOnly(extractedName);
+
+        ct.ThrowIfCancellationRequested();
+
+        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+
+        report.ViewItemIndex = fmData.ViewItemIndex;
+        report.Text = fmData.FM.Archive;
+        report.Percent = percent;
+        progress.Report(report);
+
+        ct.ThrowIfCancellationRequested();
     }
 
     private static FMInstallResult

@@ -312,6 +312,7 @@ internal readonly ref struct ZipLocalFileHeader
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
+        // @MT_TASK: Zip context (threaded mode) used field: BinaryReadBuffer
         if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant) return false;
         if (stream.Length < stream.Position + offsetToFilenameLength) return false;
 

@@ -465,6 +465,7 @@ public sealed class ZipArchiveFast : IDisposable
 
         // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
+        // @MT_TASK: Zip context (threaded mode) used field: ArchiveSubReadStream
         _context.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
 
         return GetDataDecompressor(entry, _context.ArchiveSubReadStream);
@@ -642,6 +643,9 @@ public sealed class ZipArchiveFast : IDisposable
                 #endregion
             }
 
+            // @MT_TASK: Zip context (threaded mode): Entries are a reference to context.Entries
+            // If we were to reuse one context, we'd have to make sure we don't modify that context's entries list
+            // while the threaded archives are using it (because it's the same as the shared one)
             return _context.Entries;
         }
     }
@@ -775,9 +779,11 @@ public sealed class ZipArchiveFast : IDisposable
         if (disposing && !_isDisposed)
         {
             _archiveStream.Dispose();
+            // @MT_TASK: Zip context (threaded mode) used field: ArchiveSubReadStream (Dispose)
             _context.ArchiveSubReadStream.SetSuperStream(null);
             _backingStream?.Dispose();
 
+            // @MT_TASK: Zip context (threaded mode) dispose - make sure this doesn't cause problems either
             if (_disposeContext) _context.Dispose();
 
             _isDisposed = true;

@@ -21,6 +21,20 @@ public static partial class Utils
         return new ZipArchive(FileStreamCustom.CreateRead(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
+    internal static ZipArchiveFast GetReadModeZipArchiveCharEnc_Fast(
+        string fileName,
+        byte[] buffer,
+        ZipContext ctx)
+    {
+        // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
+        Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
+        return new ZipArchiveFast(
+            stream: FileStreamCustom.CreateRead(fileName, buffer),
+            context: ctx,
+            allowUnsupportedEntries: true,
+            entryNameEncoding: enc);
+    }
+
     internal static void Update_ExtractToDirectory_Fast(
         this ZipArchive source,
         string destinationDirectoryName,
