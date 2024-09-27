@@ -214,7 +214,7 @@ public enum CheckForUpdates
     False,
 }
 
-public enum AllDrives
+public enum AL_DriveType
 {
     Other,
     SATA_SSD,

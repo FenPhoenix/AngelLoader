@@ -304,7 +304,7 @@ public static partial class Utils
     {
         int threads =
             Config.AutoSetMaxIOThreads
-                ? Config.AllDrivesType != AllDrives.Other
+                ? Config.AllDrivesType != AL_DriveType.Other
                     ? CoreCount
                     : 1
                 : Config.MaxIOThreads;

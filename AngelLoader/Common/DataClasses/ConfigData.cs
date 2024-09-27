@@ -461,7 +461,7 @@ public sealed class ConfigData
     }
 
     // Session-only; don't write out
-    internal AllDrives AllDrivesType;
+    internal AL_DriveType AllDrivesType;
 
     // @MT_TASK: Finish implementing (parallel-per-zip-entry extract)
     internal bool AggressiveIOThreading;
@@ -472,7 +472,7 @@ public sealed class ConfigData
     /// </summary>
     internal bool UseAggressiveIOThreading =>
         AutoSetMaxIOThreads
-            ? AllDrivesType == AllDrives.NVMe_SSD
+            ? AllDrivesType == AL_DriveType.NVMe_SSD
             : AggressiveIOThreading;
 
     // @MT_TASK: End finalize names

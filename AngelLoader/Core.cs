@@ -1080,7 +1080,7 @@ internal static class Core
         {
             // @MT_TASK: Remove for final release
             Trace.WriteLine(nameof(SetDriveTypes) + ": Manual path");
-            destConfig.AllDrivesType = AllDrives.NVMe_SSD;
+            destConfig.AllDrivesType = AL_DriveType.NVMe_SSD;
         }
     }
 
