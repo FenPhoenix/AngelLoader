@@ -15,16 +15,9 @@ NOTE: MainForm notes:
 -Rating columns (text or image) - one or the other will not be shown
 -Tab area empty message labels (but a pain due to Show() needing to be lazy executed as well)
 
-@NET5: Fonts will change and control sizes will all change too.
--.NET 6 seems to have an option to set the font to the old MS Sans Serif 8.25pt app-wide.
--If converting the whole app to Segoe UI, remember to change all MinimumSize (button min size "75,23" etc.)
-IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
-
 -The controls move positions because they're accounting for the scroll bar
-but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
-the scroll bar was).
-
-@X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
+ but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
+ the scroll bar was).
 
 @SEL_SYNC_HACK enlightenment:
 There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of

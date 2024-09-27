@@ -757,7 +757,7 @@ internal static class Native
     [DllImport("uxtheme.dll", ExactSpelling = true)]
     internal static extern bool IsThemeActive();
 
-#if !NETFRAMEWORK || !X64
+#if !X64
     [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern IntPtr CreateSolidBrush(int crColor);
 #endif

@@ -46,7 +46,7 @@ internal static class Win32ThemeHooks
 
     #region GetSysColorBrush
 
-#if !NETFRAMEWORK || !X64
+#if !X64
 
     private static LocalHook? _getSysColorBrushHook;
 
@@ -116,7 +116,7 @@ internal static class Win32ThemeHooks
             // on x64. Sigh... Fortunately, this thing seems to only be used for the Win7 non-Aero scroll bar
             // corners...? I don't see any difference with this disabled on Win10. So... not the worst thing...
             // 2023-11-11: This seems to work with CoreHook.
-#if !NETFRAMEWORK || !X64
+#if !X64
             (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
                 "user32.dll",
                 "GetSysColorBrush",
@@ -137,7 +137,7 @@ internal static class Win32ThemeHooks
         {
             // If we fail, oh well, just keep the classic-mode colors then... better than nothing
             _getSysColorHook?.Dispose();
-#if !NETFRAMEWORK || !X64
+#if !X64
             _getSysColorBrushHook?.Dispose();
 #endif
             _drawThemeBackgroundHook?.Dispose();
@@ -283,7 +283,7 @@ internal static class Win32ThemeHooks
             : GetSysColor_Original!(nIndex);
     }
 
-#if !NETFRAMEWORK || !X64
+#if !X64
 
     private static IntPtr GetSysColorBrush_Hooked(int nIndex)
     {
@@ -379,7 +379,7 @@ internal static class Win32ThemeHooks
     private const int COLOR_3DFACE = 15;
     private const int COLOR_GRAYTEXT = 17;
 
-#if !NETFRAMEWORK || !X64
+#if !X64
 
     private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
     private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));

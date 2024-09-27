@@ -58,13 +58,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-#if !NETFRAMEWORK
-        // Absolute first thing, so it comes before any Process calls (so we can tell it to use UTF8 if we need).
-        // We don't know if there might be any Process calls somewhere in this SingleInstance mess, or somewhere
-        // else, so just assume there are and do this first.
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
-
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
         Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
         return;

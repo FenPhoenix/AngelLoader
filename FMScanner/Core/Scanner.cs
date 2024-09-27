@@ -335,10 +335,6 @@ public sealed partial class Scanner : IDisposable
         ReadOnlyDataContext readOnlyDataContext,
         ScannerTDMContext tdmContext)
     {
-#if !NETFRAMEWORK
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
-
         _fullScanOptions = fullScanOptions;
 
         _ctx = readOnlyDataContext;

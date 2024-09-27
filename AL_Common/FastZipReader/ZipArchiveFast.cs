@@ -388,10 +388,6 @@ public sealed class ZipArchiveFast : IDisposable
         bool useEntryNameEncodingCodePath,
         bool isThreadedArchive)
     {
-#if !NETFRAMEWORK
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-#endif
-
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
         _isThreadedArchive = isThreadedArchive;

@@ -254,20 +254,7 @@ public sealed class ConfigData
     internal float FMsListFontSizeInPoints
     {
         get => _fmsListFontSizeInPoints;
-        set
-        {
-            float val = value;
-
-            // @NET5: Enable this when we want to start converting old default font size to new
-#if false
-            if (Version == 1 && Math.Abs(val - 8.25f) < 0.001)
-            {
-                val = 9.0f;
-            }
-#endif
-
-            _fmsListFontSizeInPoints = val.ClampToFMsDGVFontSizeMinMax();
-        }
+        set => _fmsListFontSizeInPoints = value.ClampToFMsDGVFontSizeMinMax();
     }
 
     internal bool EnableArticles = true;

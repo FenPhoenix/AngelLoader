@@ -9,17 +9,6 @@ NOTE(Core notes):
  For FMData.ini this will be more complicated because we rewrite it a lot (whenever values change on the UI) so
  if we want to keep multiple backups (and we probably should) then we want to avoid blowing out our backup cache
  every time we write
-
--@NET5: Process output/error reading, code pages rear their ugly heads again
- From the .NET 7 Process doc:
-"In the .NET Framework, the Process class by default uses Console encodings, which are typically code page
-encodings, for the input, output, and error streams. For example code, on systems whose culture is English
-(United States), code page 437 is the default encoding for the Console class. However, .NET Core may make
-only a limited subset of these encodings available. If this is the case, it uses Encoding.UTF8 as the default
-encoding."
-
-We're reading output from ffprobe.exe and 7z.exe. We're only pulling out ascii strings, so we're fine with all
-the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
 */
 using System;
 using System.Collections.Generic;

@@ -1559,7 +1559,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         ShowPathError(s, BackupPathInvalid_Settings(s.Text, GameExeTextBoxes));
     }
 
-    // @NET5: Do it on this side of the boundary now because we'll want to use the built-in Vista dialog that comes with .NET 5
     private static string SanitizePathForDialog(string path)
     {
         if (!path.IsWhiteSpace() && !Directory.Exists(path))

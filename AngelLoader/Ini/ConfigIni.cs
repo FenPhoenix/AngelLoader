@@ -1243,11 +1243,6 @@ internal static partial class Ini
     {
         using var sw = new StreamWriter(fileName, false, Encoding.UTF8);
 
-        // @NET5: Write current config version header (keep it off for testing old-to-new)
-#if false
-        sw.Append(ConfigVersionHeader).AppendLine(AppConfigVersion.ToString());
-#endif
-
         /*
         Doing like 'sw.Append("Value").Append('=').AppendLine(config.Value)' makes us smaller because the "Value"
         string can be deduplicated with the one in the reader dictionary, whereas adding a '=' directly inline
