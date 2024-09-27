@@ -42,7 +42,6 @@ internal static class FMAudio
     // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
     // them to WAV files during installation."
 
-    // @MT_TASK: Test this manual convert too
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
         using var dsw = new DisableScreenshotWatchers();
@@ -156,12 +155,12 @@ internal static class FMAudio
     }
 
     /*
-    @MT_TASK(ConvertToWAVs): Parallel.ForEach-ing this gives a 4x speedup. We need to do that for the final.
-    But, that means we should put the audio conversion for all FMs at the end of the entire install process,
-    so that the parallel loop here doesn't fight for resources with the already-going parallel loop for the
-    install.
     @MT_TASK(ConvertToWAVs): Aggressive threading can be much slower on SATA SSD, at least in some cases.
     Need to test on NVMe... Maybe we should just leave this single-threaded?
+
+    We could put the audio conversion for all FMs at the end of the entire install process, so that the parallel
+    loop here doesn't fight for resources with the already-going parallel loop for the install.
+    This would complicate things for the SATA case though.
     */
     private static ConvertAudioError ConvertToWAVs(
         ValidAudioConvertibleFM fm,
@@ -181,10 +180,6 @@ internal static class FMAudio
                                  ErrorText.Un + "convert audio files.";
 
                 Log(message, stackTrace: true);
-                // @MT_TASK(Audio): We're not putting up a dialog for this case anymore.
-                // If we wanted to add it back, we'd have to do it at the callsite now.
-                // But maybe we shouldn't bother, since we're not throwing errors at any of the other error
-                // cases...
                 return ConvertAudioError.FFmpegNotFound;
             }
 
