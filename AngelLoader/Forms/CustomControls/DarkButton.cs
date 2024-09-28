@@ -25,7 +25,7 @@ public class DarkButton : Button, IDarkable
 
     private DarkButtonStyle _style = DarkButtonStyle.Normal;
 
-    private DarkControlState _buttonState = DarkControlState.Normal;
+    private protected DarkControlState _buttonState = DarkControlState.Normal;
 
     private bool _spacePressed;
 
@@ -223,8 +223,6 @@ public class DarkButton : Button, IDarkable
     {
         base.OnMouseMove(e);
 
-        if (!_darkModeEnabled) return;
-
         if (_spacePressed) return;
 
         SetButtonState(e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location)
@@ -235,8 +233,6 @@ public class DarkButton : Button, IDarkable
     protected override void OnMouseDown(MouseEventArgs e)
     {
         base.OnMouseDown(e);
-
-        if (!_darkModeEnabled) return;
 
         if (e.Button != MouseButtons.Left) return;
 
@@ -249,8 +245,6 @@ public class DarkButton : Button, IDarkable
     {
         base.OnMouseUp(e);
 
-        if (!_darkModeEnabled) return;
-
         if (e.Button != MouseButtons.Left) return;
 
         if (_spacePressed) return;
@@ -262,8 +256,6 @@ public class DarkButton : Button, IDarkable
     {
         base.OnMouseLeave(e);
 
-        if (!_darkModeEnabled) return;
-
         if (_spacePressed) return;
 
         SetButtonState(DarkControlState.Normal);
@@ -272,8 +264,6 @@ public class DarkButton : Button, IDarkable
     protected override void OnMouseCaptureChanged(EventArgs e)
     {
         base.OnMouseCaptureChanged(e);
-
-        if (!_darkModeEnabled) return;
 
         if (_spacePressed) return;
 
@@ -296,8 +286,6 @@ public class DarkButton : Button, IDarkable
     {
         base.OnLostFocus(e);
 
-        if (!_darkModeEnabled) return;
-
         _spacePressed = false;
 
         SetButtonState(!ClientRectangle.Contains(this.ClientCursorPos())
@@ -309,8 +297,6 @@ public class DarkButton : Button, IDarkable
     {
         base.OnKeyDown(e);
 
-        if (!_darkModeEnabled) return;
-
         if (e.KeyCode == Keys.Space)
         {
             _spacePressed = true;
@@ -321,8 +307,6 @@ public class DarkButton : Button, IDarkable
     protected override void OnKeyUp(KeyEventArgs e)
     {
         base.OnKeyUp(e);
-
-        if (!_darkModeEnabled) return;
 
         if (e.KeyCode == Keys.Space)
         {
