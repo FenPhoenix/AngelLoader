@@ -1639,6 +1639,15 @@ internal static partial class FMInstallAndPlay
             InstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
             GameIndex = gameIndex;
         }
+
+        public override string ToString() =>
+            "FM id: " + FM.GetId() + $"{NL}" +
+            "Archive path: " + ArchivePath + $"{NL}" +
+            "Installed base path: " + InstBasePath + $"{NL}" +
+            "Installed path: " + InstalledPath + $"{NL}" +
+            "Game index: " + GameIndex + $"{NL}" +
+            "ViewItemIndex: " + ViewItemIndex.ToStrInv() + $"{NL}" +
+            "Install started: " + InstallStarted;
     }
 
     private sealed class Buffers
@@ -1829,11 +1838,13 @@ internal static partial class FMInstallAndPlay
 
                     if (rollbackErrorResults.Count > 0)
                     {
-                        // @MT_TASK: We probably want a custom dialog that lists the errors and still has a view log button too
+                        Log($"--- Rollback errors ---{NL}" +
+                            GetResultErrorsLogText(rollbackErrorResults) +
+                            "--- End Rollback errors ---");
+
                         Core.Dialogs.ShowError(
-                            // @MT_TASK: Localize this
-                            "The following FMs could not be rolled back:",
-                            LText.AlertMessages.Error,
+                            LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail_Multi,
+                            LText.AlertMessages.Alert,
                             icon: MBoxIcon.Warning);
                     }
 
@@ -1863,11 +1874,13 @@ internal static partial class FMInstallAndPlay
 
                 if (errorResults.Count > 0)
                 {
-                    // @MT_TASK: We probably want a custom dialog that lists the errors and still has a view log button too
+                    Log($"--- Install errors ---{NL}" +
+                        GetResultErrorsLogText(errorResults) +
+                        "--- End Install errors ---");
+
                     Core.Dialogs.ShowError(
-                        // @MT_TASK: Localize this
-                        "The following FMs could not be installed:",
-                        LText.AlertMessages.Error,
+                        LText.AlertMessages.OneOrMoreFMsFailedToInstall,
+                        LText.AlertMessages.Alert,
                         icon: MBoxIcon.Warning);
                 }
 
@@ -1887,6 +1900,31 @@ internal static partial class FMInstallAndPlay
                 _installCts.Dispose();
             }
         });
+
+        static string GetResultErrorsLogText(List<FMInstallResult> results)
+        {
+            string logText = "";
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                FMInstallResult result = results[i];
+
+                if (!logText.IsEmpty())
+                {
+                    logText += $"{NL}---{NL}";
+                }
+
+                logText += $"{NL}" + "Archive type: " + result.ArchiveType + $"{NL}" +
+                           "Result type: " + result.ResultType + $"{NL}" +
+                           "Exception: " + (result.Exception?.ToString() ?? "none") + $"{NL}" +
+                           "Error message: " + (result.ErrorMessage.IsEmpty() ? "none" : $"{NL}" + result.ErrorMessage) + $"{NL}" +
+                           "FMData:" + $"{NL}" + result.FMData + $"{NL}";
+            }
+
+            logText += $"{NL}";
+
+            return logText;
+        }
 
         void ReportProgress_Install(ProgressReport_Install report)
         {
@@ -2006,7 +2044,7 @@ internal static partial class FMInstallAndPlay
                     fmData,
                     InstallResultType.RollbackFailed,
                     type,
-                    LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" + fmInstalledPath);
+                    $"Failed to delete the following directory:{NL}{NL}" + fmInstalledPath);
             }
             // This is going to get set based on this anyway at the next load from disk, might as well do it now
             fmData.FM.Installed = Directory.Exists(fmInstalledPath);

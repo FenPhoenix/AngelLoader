@@ -226,7 +226,7 @@ internal sealed class LText_Class
         [FenGenComment(
             "During the FM install process, either the user canceled the install or the install failed, and during the attempt to remove the leftover",
             "FM installed folder, an error occurred.")]
-        internal readonly string InstallRollback_FMInstallFolderDeleteFail = "The following folder could not be removed:";
+        internal readonly string InstallRollback_FMInstallFolderDeleteFail_Multi = "One or more FM folders could not be removed. See the log file for details.";
         [FenGenBlankLine]
         internal readonly string AudioConversion_GameIsRunning = "Game is running; unable to convert audio files. Please exit the game and then try again.";
         internal readonly string AudioConversion_SomeSelectedFilesDoNotSupportConversion = "Some of the selected FMs don't support audio conversion. Audio can only be converted for installed FMs that are for Thief 1, Thief 2, or System Shock 2. If you continue, any FMs whose audio cannot be converted will be skipped.";
@@ -265,6 +265,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
         [FenGenBlankLine]
+        internal readonly string OneOrMoreFMsFailedToInstall = "One or more FMs could not be installed. See the log file for details.";
         // @MT_TASK: Find all unused stuff in here and use it where it's supposed to be used
         // Some of the stuff may be unused because we removed the during-operation dialogs and we now need to put
         // it in the after-operation dialog(s)
