@@ -2185,6 +2185,7 @@ internal static partial class FMInstallAndPlay
         );
     }
 
+    // @MT_TASK(per-entry threading): Percentage bars can briefly go backwards sometimes - make sure we only report if > prev
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
         IProgress<ProgressReport_Install> progress,
         FMData fmData)
