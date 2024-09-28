@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
 namespace AL_Common.FastZipReader;
 
@@ -181,22 +182,22 @@ internal readonly ref struct Zip64ExtraField
         int arrayIndex = 0;
         if (readUncompressedSize)
         {
-            uncompressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            uncompressedSize = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readCompressedSize)
         {
-            compressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            compressedSize = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readLocalHeaderOffset)
         {
-            localHeaderOffset = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            localHeaderOffset = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readStartDiskNumber)
         {
-            startDiskNumber = ZipHelpers.ReadUInt32(extraField.Data, dataSize, arrayIndex);
+            startDiskNumber = ReadUInt32(extraField.Data, dataSize, arrayIndex);
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
@@ -308,18 +309,18 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(Stream stream, long streamLength, ZipContext context)
+    internal static bool TrySkipBlock(Stream stream, long streamLength, BinaryBuffer binaryReadBuffer)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
         // @MT_TASK: Zip context (threaded mode) used field: BinaryReadBuffer
-        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant) return false;
+        if (BinaryRead.ReadUInt32(stream, binaryReadBuffer) != SignatureConstant) return false;
         if (stream.Length < stream.Position + offsetToFilenameLength) return false;
 
         stream.Seek(offsetToFilenameLength, SeekOrigin.Current);
 
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort filenameLength = BinaryRead.ReadUInt16(stream, binaryReadBuffer);
+        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, binaryReadBuffer);
 
         if (streamLength < stream.Position + filenameLength + extraFieldLength)
         {
@@ -402,10 +403,10 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 
         stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
 
-        bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
-        bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
-        bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == ZipHelpers.Mask32Bit;
-        bool diskNumberStartInZip64 = diskNumberStartSmall == ZipHelpers.Mask16Bit;
+        bool uncompressedSizeInZip64 = uncompressedSizeSmall == Mask32Bit;
+        bool compressedSizeInZip64 = compressedSizeSmall == Mask32Bit;
+        bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == Mask32Bit;
+        bool diskNumberStartInZip64 = diskNumberStartSmall == Mask16Bit;
 
         long endExtraFields = stream.Position + extraFieldLength;
 

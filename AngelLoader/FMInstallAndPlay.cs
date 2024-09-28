@@ -2238,16 +2238,13 @@ internal static partial class FMInstallAndPlay
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
-                using ZipArchiveFast archive = new(
-                    stream: fs,
-                    allowUnsupportedEntries: true,
-                    isThreadedArchive: true);
+                using ZipArchiveFast_Threaded archive = new(stream: fs);
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
                 while (cq.TryDequeue(out ZipArchiveFastEntry entry))
                 {
-                    DoZipExtractLoop(
+                    DoZipExtractLoop_AggressiveThreading(
                         fmInstalledPath: fmInstalledPath,
                         archive: archive,
                         entry: entry,
@@ -2340,6 +2337,51 @@ internal static partial class FMInstallAndPlay
     private static void DoZipExtractLoop(
         string fmInstalledPath,
         ZipArchiveFast archive,
+        ZipArchiveFastEntry entry,
+        IProgress<ProgressReport_Install> progress,
+        ProgressReport_Install report,
+        int entryNumber,
+        int entriesCount,
+        FMData fmData,
+        byte[] tempBuffer,
+        CancellationToken ct)
+    {
+        string fileName = entry.FullName;
+
+        if (fileName.IsEmpty() || fileName[^1].IsDirSep()) return;
+
+        string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+        if (fileName.Rel_ContainsDirSep())
+        {
+            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+            ct.ThrowIfCancellationRequested();
+        }
+
+        archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, tempBuffer);
+
+        ct.ThrowIfCancellationRequested();
+
+        File_UnSetReadOnly(extractedName);
+
+        ct.ThrowIfCancellationRequested();
+
+        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+
+        report.ViewItemIndex = fmData.ViewItemIndex;
+        report.Text = fmData.FM.Archive;
+        report.Percent = percent;
+        progress.Report(report);
+
+        ct.ThrowIfCancellationRequested();
+    }
+
+    // @MT_TASK: Dedupe these again afterwards...
+    private static void DoZipExtractLoop_AggressiveThreading(
+        string fmInstalledPath,
+        ZipArchiveFast_Threaded archive,
         ZipArchiveFastEntry entry,
         IProgress<ProgressReport_Install> progress,
         ProgressReport_Install report,
