@@ -98,7 +98,8 @@ public sealed class DarkRadioButtonCustom : DarkButton
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
-        var rect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+
+        Rectangle rect = new(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
 
         Pen pen;
         if (_darkModeEnabled)
@@ -111,11 +112,17 @@ public sealed class DarkRadioButtonCustom : DarkButton
         }
         else
         {
-            pen = Checked
-                ? DarkColors.SettingsButtonHighlightBorder_LightPen
-                : _buttonState == DarkControlState.Hover
+            if (Checked)
+            {
+                pen = DarkColors.SettingsButtonHighlightBorder_LightPen;
+                e.Graphics.DrawRectangle(pen, Rectangle.Inflate(rect, -1, -1));
+            }
+            else
+            {
+                pen = _buttonState == DarkControlState.Hover
                     ? DarkColors.SettingsButtonHighlightBorder_LightPen
                     : SystemPens.ControlDarkDark;
+            }
         }
 
         e.Graphics.DrawRectangle(pen, rect);
