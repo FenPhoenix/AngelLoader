@@ -1941,7 +1941,8 @@ internal static partial class FMInstallAndPlay
                     line1: report.Text,
                     line2: LText.ProgressBox.InstallingFM,
                     percent: report.Percent,
-                    progressType: ProgressType.Determinate);
+                    progressType: ProgressType.Determinate,
+                    forwardOnly: true);
                 reportThrottleSW.Restart();
             }
         }
@@ -2185,7 +2186,6 @@ internal static partial class FMInstallAndPlay
         );
     }
 
-    // @MT_TASK(per-entry threading): Percentage bars can briefly go backwards sometimes - make sure we only report if > prev
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
         IProgress<ProgressReport_Install> progress,
         FMData fmData)
@@ -2193,8 +2193,6 @@ internal static partial class FMInstallAndPlay
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
         {
-            var report = new ProgressReport_Install();
-
             string fmDataArchivePath = fmData.ArchivePath;
 
             Directory.CreateDirectory(fmInstalledPath);
@@ -2231,6 +2229,8 @@ internal static partial class FMInstallAndPlay
 
             Parallel.For(0, threadCount, po, _ =>
             {
+                var report = new ProgressReport_Install();
+
                 byte[] tempBuffer = new byte[StreamCopyBufferSize];
                 byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 

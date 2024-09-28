@@ -272,9 +272,18 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         string? line1,
         string? line2,
         int? percent,
-        ProgressType? progressType)
+        ProgressType? progressType,
+        bool forwardOnly)
     {
         DGV_ProgressItem.ProgressItemData item = ItemsDGV.ProgressItems[index];
+
+        // Absolutely disgusting hack, this code SHOULD NOT be UI-side, it should be caller-side!
+        // But putting it caller-side in this particular situation is like impossible or annoying or something
+        // so let's just do this crappy thing for now.
+        if (forwardOnly && percent < item.Percent)
+        {
+            return;
+        }
 
         bool refreshRequired = false;
 
