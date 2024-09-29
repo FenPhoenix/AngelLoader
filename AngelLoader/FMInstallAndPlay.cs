@@ -1794,6 +1794,12 @@ internal static partial class FMInstallAndPlay
                                             We could just get rid of the archive sub-stream dispose because it's
                                             a no-op, but no, because that's just relying on sheer dumb idiot luck.
                                             Argh.
+
+                                            The thing is, if it doesn't get disposed, then it's fine because of
+                                            the above, but if it DOES get disposed and a thread is still running
+                                            (don't think that's possible, but?), then that's really bad, because
+                                            then the sub-stream will be in a "nulled superstream" and disposed
+                                            state when it may still be being read.
                                             */
                                             zipCtxPool)
                                         : InstallFMZip(
