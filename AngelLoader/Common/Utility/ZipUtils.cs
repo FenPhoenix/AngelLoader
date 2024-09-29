@@ -189,20 +189,4 @@ public static partial class Utils
             SetLastWriteTime_Fast(fileName, (DateTime)lastModifiedTime);
         }
     }
-
-    internal static void ExtractToFile_Fast(
-        this ZipArchiveFast archive,
-        ZipArchiveFastEntry entry,
-        string fileName,
-        bool overwrite,
-        byte[] tempBuffer)
-    {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = archive.OpenEntry(entry))
-        {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
-        }
-        File.SetLastWriteTime(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
-    }
 }
