@@ -203,6 +203,6 @@ public static partial class Utils
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
         }
-        SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
+        File.SetLastWriteTime(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
     }
 }
