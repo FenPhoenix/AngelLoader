@@ -204,6 +204,9 @@ internal static class FMAudio
 
                     int threadCount = GetThreadCount(wavFiles.Length);
 
+                    // @MT_TASK: Parallel.For requires -1 or >0 or it throws - put this safeguard in all places
+                    if (threadCount == 0) return ConvertAudioError.None;
+
                     ParallelOptions po = new()
                     {
                         CancellationToken = ct,
@@ -289,6 +292,8 @@ internal static class FMAudio
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
                     int threadCount = GetThreadCount(files.Length);
+
+                    if (threadCount == 0) return ConvertAudioError.None;
 
                     ParallelOptions po = new()
                     {

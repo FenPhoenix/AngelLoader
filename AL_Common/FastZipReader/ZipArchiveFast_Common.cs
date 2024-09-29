@@ -76,11 +76,38 @@ public sealed class ZipContext : IDisposable
 
 public sealed class ZipContext_Threaded : IDisposable
 {
-    internal readonly SubReadStream ArchiveSubReadStream = new();
+    internal readonly Stream ArchiveStream;
+    internal readonly long ArchiveStreamLength;
 
-    internal readonly BinaryBuffer BinaryReadBuffer = new();
+    internal readonly SubReadStream ArchiveSubReadStream;
 
-    public void Dispose() => ArchiveSubReadStream.Dispose();
+    internal readonly BinaryBuffer BinaryReadBuffer;
+
+    // @MT_TASK: More allocs for now by putting it here, but when we pool the contexts that will go away
+    internal readonly byte[] TempBuffer;
+
+    public ZipContext_Threaded(Stream archiveStream)
+    {
+        ArchiveStream = archiveStream;
+        ArchiveStreamLength = archiveStream.Length;
+
+        ArchiveSubReadStream = new SubReadStream();
+        ArchiveSubReadStream.SetSuperStream(ArchiveStream);
+
+        BinaryReadBuffer = new BinaryBuffer();
+
+        TempBuffer = new byte[StreamCopyBufferSize];
+    }
+
+    // @MT_TASK: Eventually this should just be "de-init" and there should be an "init"
+    // For when we take and return from the object pool
+    public void Dispose()
+    {
+        ArchiveStream.Dispose();
+        ArchiveSubReadStream.SetSuperStream(null);
+
+        ArchiveSubReadStream.Dispose();
+    }
 }
 
 internal static class ZipArchiveFast_Common
