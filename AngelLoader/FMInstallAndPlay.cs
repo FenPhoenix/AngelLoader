@@ -1763,6 +1763,8 @@ internal static partial class FMInstallAndPlay
                         MaxDegreeOfParallelism = threadCount,
                     };
 
+                    using ZipContext_Threaded_Pool zipCtxPool = new();
+
                     Parallel.For(0, threadCount, po, _ =>
                     {
                         Buffers buffer = new();
@@ -1784,7 +1786,16 @@ internal static partial class FMInstallAndPlay
                                     ? Config.UseAggressiveIOThreading
                                         ? InstallFMZip_ThreadedPerEntry(
                                             progress,
-                                            fmData)
+                                            fmData,
+                                            /*
+                                            @MT_TASK: "Disposed in the outer scope" argh piece of literal garbage
+                                            Of course it's disposed in the outer scope, that's the point of a pool!
+                                            Deal with this later... argh...
+                                            We could just get rid of the archive sub-stream dispose because it's
+                                            a no-op, but no, because that's just relying on sheer dumb idiot luck.
+                                            Argh.
+                                            */
+                                            zipCtxPool)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
@@ -2188,7 +2199,8 @@ internal static partial class FMInstallAndPlay
 
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
         IProgress<ProgressReport_Install> progress,
-        FMData fmData)
+        FMData fmData,
+        ZipContext_Threaded_Pool zipCtxPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
@@ -2237,8 +2249,6 @@ internal static partial class FMInstallAndPlay
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
-                using ZipContext_Threaded zipCtx = new(fs);
-
                 po.CancellationToken.ThrowIfCancellationRequested();
 
                 while (cq.TryDequeue(out ZipArchiveFastEntry entry))
@@ -2261,11 +2271,19 @@ internal static partial class FMInstallAndPlay
                         ct.ThrowIfCancellationRequested();
                     }
 
-                    ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                        entry,
-                        zipCtx,
-                        extractedName,
-                        overwrite: true);
+                    ZipContext_Threaded zipCtx = zipCtxPool.Rent(fs);
+                    try
+                    {
+                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                            entry,
+                            zipCtx,
+                            extractedName,
+                            overwrite: true);
+                    }
+                    finally
+                    {
+                        zipCtxPool.Return(zipCtx);
+                    }
 
                     ct.ThrowIfCancellationRequested();
 

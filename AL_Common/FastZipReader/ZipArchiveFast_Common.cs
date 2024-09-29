@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.Deflate64Managed;
@@ -74,36 +76,74 @@ public sealed class ZipContext : IDisposable
     public void Dispose() => ArchiveSubReadStream.Dispose();
 }
 
+public sealed class ZipContext_Threaded_Pool : IDisposable
+{
+    private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
+
+    public ZipContext_Threaded Rent(Stream stream)
+    {
+        if (_contexts.TryTake(out ZipContext_Threaded item))
+        {
+            item.Set(stream);
+            return item;
+        }
+        else
+        {
+            return new ZipContext_Threaded(stream);
+        }
+    }
+
+    public void Return(ZipContext_Threaded item)
+    {
+        item.Unset();
+        _contexts.Add(item);
+    }
+
+    public void Dispose()
+    {
+        foreach (ZipContext_Threaded zipContextThreaded in _contexts)
+        {
+            zipContextThreaded.Dispose();
+        }
+    }
+}
+
 public sealed class ZipContext_Threaded : IDisposable
 {
-    internal readonly Stream ArchiveStream;
-    internal readonly long ArchiveStreamLength;
+    internal Stream ArchiveStream = null!;
+    internal long ArchiveStreamLength;
 
     internal readonly SubReadStream ArchiveSubReadStream;
 
-    internal readonly BinaryBuffer BinaryReadBuffer;
+    internal readonly BinaryBuffer BinaryReadBuffer = new();
 
     // @MT_TASK: More allocs for now by putting it here, but when we pool the contexts that will go away
-    internal readonly byte[] TempBuffer;
+    internal readonly byte[] TempBuffer = new byte[StreamCopyBufferSize];
 
     public ZipContext_Threaded(Stream archiveStream)
     {
+        ArchiveSubReadStream = new SubReadStream();
+        Set(archiveStream);
+    }
+
+    [MemberNotNull(nameof(ArchiveStream))]
+    public void Set(Stream archiveStream)
+    {
         ArchiveStream = archiveStream;
         ArchiveStreamLength = archiveStream.Length;
-
-        ArchiveSubReadStream = new SubReadStream();
         ArchiveSubReadStream.SetSuperStream(ArchiveStream);
+    }
 
-        BinaryReadBuffer = new BinaryBuffer();
-
-        TempBuffer = new byte[StreamCopyBufferSize];
+    public void Unset()
+    {
+        ArchiveSubReadStream.SetSuperStream(null);
     }
 
     // @MT_TASK: Eventually this should just be "de-init" and there should be an "init"
     // For when we take and return from the object pool
     public void Dispose()
     {
-        ArchiveStream.Dispose();
+        ArchiveStream = null!;
         ArchiveSubReadStream.SetSuperStream(null);
 
         ArchiveSubReadStream.Dispose();
