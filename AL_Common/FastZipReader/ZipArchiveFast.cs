@@ -278,7 +278,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// <returns></returns>
     public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName)
     {
-        using FileStreamCustom fs = FileStreamCustom.CreateRead(fileName, new byte[FileStreamBufferSize]);
+        using FileStreamReadFast fs = FileStreamReadFast.Create(fileName, new byte[FileStreamBufferSize]);
         using ZipArchiveFast archive = new(
             stream: fs,
             allowUnsupportedEntries: true,

@@ -2245,7 +2245,7 @@ internal static partial class FMInstallAndPlay
 
                 byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
 
-                using var fs = FileStreamCustom.CreateRead(fmDataArchivePath, fileStreamBuffer);
+                using var fs = FileStreamReadFast.Create(fmDataArchivePath, fileStreamBuffer);
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 

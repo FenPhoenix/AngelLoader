@@ -1130,7 +1130,7 @@ public sealed partial class Scanner : IDisposable
         try
         {
             ret = new ZipArchiveFast(
-                FileStreamCustom.CreateRead(path, zipContext.FileStreamBuffer),
+                FileStreamReadFast.Create(path, zipContext.FileStreamBuffer),
                 zipContext,
                 allowUnsupportedEntries: false);
 
@@ -1268,7 +1268,7 @@ public sealed partial class Scanner : IDisposable
 
         if (_fmFormat == FMFormat.Rar)
         {
-            _rarStream = FileStreamCustom.CreateRead(fm.Path, DiskFileStreamBuffer);
+            _rarStream = FileStreamReadFast.Create(fm.Path, DiskFileStreamBuffer);
             _rarArchive = RarArchive.Open(_rarStream);
             rarEntries = _rarArchive.Entries;
             // Load the lazy-loaded list so it doesn't throw later
@@ -1279,7 +1279,7 @@ public sealed partial class Scanner : IDisposable
                 _fmFormat = FMFormat.RarSolid;
                 _rarArchive.Dispose();
                 _rarStream.Dispose();
-                _rarStream = FileStreamCustom.CreateRead(fm.Path, DiskFileStreamBuffer);
+                _rarStream = FileStreamReadFast.Create(fm.Path, DiskFileStreamBuffer);
             }
         }
 
@@ -1324,7 +1324,7 @@ public sealed partial class Scanner : IDisposable
                 times in DateTime format and not have to parse possible localized text dates out of the output
                 stream.
                 */
-                using (FileStreamCustom fs = FileStreamCustom.CreateRead(fm.Path, DiskFileStreamBuffer))
+                using (FileStreamReadFast fs = FileStreamReadFast.Create(fm.Path, DiskFileStreamBuffer))
                 {
                     sevenZipSize = (ulong)fs.Length;
                     int entriesCount;
@@ -3697,7 +3697,7 @@ public sealed partial class Scanner : IDisposable
                 {
                     FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
                     FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
-                    _ => FileStreamCustom.CreateRead(readmeFileOnDisk, DiskFileStreamBuffer),
+                    _ => FileStreamReadFast.Create(readmeFileOnDisk, DiskFileStreamBuffer),
                 };
 
                 int rtfHeaderBytesLength = RTFHeaderBytes.Length;
@@ -5190,7 +5190,7 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
                 FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => FileStreamCustom.CreateRead(misFileOnDisk, DiskFileStreamBuffer),
+                _ => FileStreamReadFast.Create(misFileOnDisk, DiskFileStreamBuffer),
             };
 
             for (int i = 0; i < _ctx._locations.Length; i++)
@@ -5375,7 +5375,7 @@ public sealed partial class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
-            using FileStreamCustom fs = FileStreamCustom.CreateRead(misFileOnDisk, DiskFileStreamBuffer);
+            using FileStreamReadFast fs = FileStreamReadFast.Create(misFileOnDisk, DiskFileStreamBuffer);
 
             uint tocOffset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
 
@@ -5456,7 +5456,7 @@ public sealed partial class Scanner : IDisposable
             {
                 FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
                 FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => FileStreamCustom.CreateRead(misFileOnDisk, DiskFileStreamBuffer),
+                _ => FileStreamReadFast.Create(misFileOnDisk, DiskFileStreamBuffer),
             };
             if (StreamContainsIdentString(
                     stream,
@@ -5837,7 +5837,7 @@ public sealed partial class Scanner : IDisposable
         }
         else
         {
-            using FileStreamCustom stream = FileStreamCustom.CreateRead(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
+            using FileStreamReadFast stream = FileStreamReadFast.Create(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
             Encoding encoding = DetectEncoding(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
@@ -5865,7 +5865,7 @@ public sealed partial class Scanner : IDisposable
         {
             FMFormat.Zip => _archive.OpenEntry(_archive.Entries[item.Index]),
             FMFormat.Rar => _rarArchive.Entries[item.Index].OpenEntryStream(),
-            _ => FileStreamCustom.CreateRead(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer),
+            _ => FileStreamReadFast.Create(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer),
         };
 
         // Stupid micro-optimization: Don't call Dispose() method on stream twice

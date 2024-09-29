@@ -650,7 +650,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
                 List<string> archiveNonExcludedFullFileNames = new();
-                using (FileStreamCustom fs = File_OpenReadFast(fmArchivePath))
+                using (FileStreamReadFast fs = File_OpenReadFast(fmArchivePath))
                 {
                     SevenZipArchive extractor = new(fs);
                     entriesCount = extractor.GetEntryCountOnly();
@@ -807,7 +807,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
 
-                using (FileStreamCustom fs = File_OpenReadFast(fmArchivePath))
+                using (FileStreamReadFast fs = File_OpenReadFast(fmArchivePath))
                 {
                     int entriesCount;
                     using (var archive = RarArchive.Open(fs))

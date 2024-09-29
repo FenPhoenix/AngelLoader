@@ -65,14 +65,14 @@ public static partial class Common
         return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path, bufferSize), new StreamReaderCustom());
     }
 
-    public static FileStreamCustom File_OpenReadFast(string path)
+    public static FileStreamReadFast File_OpenReadFast(string path)
     {
-        return new FileStreamCustom(path, FileShare.Read);
+        return new FileStreamReadFast(path, FileShare.Read);
     }
 
-    public static FileStreamCustom File_OpenReadFast(string path, int bufferSize)
+    public static FileStreamReadFast File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStreamCustom(path, FileShare.Read, bufferSize);
+        return new FileStreamReadFast(path, FileShare.Read, bufferSize);
     }
 
     #endregion

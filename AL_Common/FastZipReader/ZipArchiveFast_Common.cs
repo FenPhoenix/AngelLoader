@@ -80,16 +80,16 @@ public sealed class ZipContext_Threaded_Pool : IDisposable
 {
     private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
 
-    public ZipContext_Threaded Rent(FileStreamCustom stream, long streamLength)
+    public ZipContext_Threaded Rent(FileStreamReadFast archiveStream, long archiveStreamLength)
     {
         if (_contexts.TryTake(out ZipContext_Threaded item))
         {
-            item.Set(stream, streamLength);
+            item.Set(archiveStream, archiveStreamLength);
             return item;
         }
         else
         {
-            return new ZipContext_Threaded(stream, streamLength);
+            return new ZipContext_Threaded(archiveStream, archiveStreamLength);
         }
     }
 
@@ -123,13 +123,13 @@ public sealed class ZipContext_Threaded : IDisposable
     // That's actually fine in this case because Dispose() is a no-op on our sub-stream, but meh...
     // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
     // won't have any problems in here.
-    public ZipContext_Threaded(FileStreamCustom archiveStream, long archiveStreamLength)
+    public ZipContext_Threaded(FileStreamReadFast archiveStream, long archiveStreamLength)
     {
         ArchiveSubReadStream = new SubReadStream();
         Set(archiveStream, archiveStreamLength);
     }
 
-    public void Set(FileStreamCustom archiveStream, long archiveStreamLength)
+    public void Set(FileStreamReadFast archiveStream, long archiveStreamLength)
     {
         ArchiveStream = archiveStream;
         ArchiveStreamLength = archiveStreamLength;

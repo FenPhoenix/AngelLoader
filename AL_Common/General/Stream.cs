@@ -8,9 +8,9 @@ public static partial class Common
     #region Classes
 
     /// <summary>
-    /// A file stream with performance/allocation improvements.
+    /// A read-mode file stream with performance/allocation improvements.
     /// </summary>
-    public sealed class FileStreamCustom : FileStream
+    public sealed class FileStreamReadFast : FileStream
     {
         private static bool _fieldStreamBufferFieldFound;
         private static FieldInfo? _fieldStreamBufferFieldInfo;
@@ -29,7 +29,7 @@ public static partial class Common
         }
 
         // Init reflection stuff in static ctor for thread safety
-        static FileStreamCustom()
+        static FileStreamReadFast()
         {
             try
             {
@@ -53,25 +53,25 @@ public static partial class Common
             }
         }
 
-        public FileStreamCustom(string path,
+        public FileStreamReadFast(string path,
             FileShare share,
             int bufferSize)
             : base(path, FileMode.Open, FileAccess.Read, share, bufferSize)
         {
         }
 
-        public FileStreamCustom(string path,
+        public FileStreamReadFast(string path,
             FileShare share)
             : base(path, FileMode.Open, FileAccess.Read, share)
         {
         }
 
-        public static FileStreamCustom CreateRead(string path, byte[] buffer)
+        public static FileStreamReadFast Create(string path, byte[] buffer)
         {
-            FileStreamCustom fs =
+            FileStreamReadFast fs =
                 _fieldStreamBufferFieldFound
-                    ? new FileStreamCustom(path, FileShare.Read, buffer.Length)
-                    : new FileStreamCustom(path, FileShare.Read);
+                    ? new FileStreamReadFast(path, FileShare.Read, buffer.Length)
+                    : new FileStreamReadFast(path, FileShare.Read);
 
             if (_fieldStreamBufferFieldFound)
             {
