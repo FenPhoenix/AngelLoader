@@ -150,7 +150,7 @@ public static partial class Utils
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
         }
-        File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
+        SetLastWriteTime_Fast(fileName, entry.LastWriteTime.DateTime);
     }
 
     internal static void ExtractToFile_Fast(
@@ -167,7 +167,7 @@ public static partial class Utils
         }
         if (entry.LastModifiedTime != null)
         {
-            File.SetLastWriteTime(fileName, (DateTime)entry.LastModifiedTime);
+            SetLastWriteTime_Fast(fileName, (DateTime)entry.LastModifiedTime);
         }
     }
 
@@ -186,7 +186,7 @@ public static partial class Utils
         DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
         if (lastModifiedTime != null)
         {
-            File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+            SetLastWriteTime_Fast(fileName, (DateTime)lastModifiedTime);
         }
     }
 
@@ -203,6 +203,6 @@ public static partial class Utils
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
         }
-        File.SetLastWriteTime(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
+        SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
     }
 }

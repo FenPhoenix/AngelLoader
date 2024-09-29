@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using static System.StringComparison;
 
@@ -515,6 +516,24 @@ public static partial class Common
     }
 
     #endregion
+
+    /// <summary>
+    /// Doesn't create an entire FileStream just to access the handle.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="lastWriteTime"></param>
+    public static unsafe void SetLastWriteTime_Fast(string path, DateTime lastWriteTime)
+    {
+        DateTime lastWriteTimeUtc = lastWriteTime.ToUniversalTime();
+
+        using AL_SafeFileHandle handle = AL_SafeFileHandle.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite, FileOptions.None);
+
+        Win32Native.FILE_TIME fileTime = new(lastWriteTimeUtc.ToFileTimeUtc());
+        if (!Win32Native.SetFileTime(handle, null, null, &fileTime))
+        {
+            __Error.WinIOError(Marshal.GetLastWin32Error(), path);
+        }
+    }
 
     #endregion
 }

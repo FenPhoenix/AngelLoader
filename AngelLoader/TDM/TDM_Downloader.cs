@@ -3,7 +3,6 @@
 
 #if ENABLE_ONLINE
 using System.Net.Http;
-using static AL_Common.Common;
 #endif
 using System;
 using System.Collections.Generic;

@@ -588,7 +588,7 @@ internal static class Utility
         DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
         if (lastModifiedTime != null)
         {
-            File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+            SetLastWriteTime_Fast(fileName, (DateTime)lastModifiedTime);
         }
     }
 
