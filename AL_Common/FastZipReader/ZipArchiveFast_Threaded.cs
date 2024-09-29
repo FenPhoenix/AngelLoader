@@ -120,7 +120,7 @@ public sealed class ZipArchiveFast_Threaded : IDisposable
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
         }
-        File.SetLastWriteTime(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
+        SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
     }
 
     private void ThrowIfDisposed()
