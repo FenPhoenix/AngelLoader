@@ -67,12 +67,12 @@ public static partial class Common
 
     public static FileStreamCustom File_OpenReadFast(string path)
     {
-        return new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        return new FileStreamCustom(path, FileShare.Read);
     }
 
     public static FileStreamCustom File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
+        return new FileStreamCustom(path, FileShare.Read, bufferSize);
     }
 
     #endregion

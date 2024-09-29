@@ -2271,7 +2271,7 @@ internal static partial class FMInstallAndPlay
                         ct.ThrowIfCancellationRequested();
                     }
 
-                    ZipContext_Threaded zipCtx = zipCtxPool.Rent(fs);
+                    ZipContext_Threaded zipCtx = zipCtxPool.Rent(fs, fs.Length);
                     try
                     {
                         ZipArchiveFast_Threaded.ExtractToFile_Fast(

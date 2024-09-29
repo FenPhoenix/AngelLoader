@@ -80,16 +80,16 @@ public sealed class ZipContext_Threaded_Pool : IDisposable
 {
     private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
 
-    public ZipContext_Threaded Rent(Stream stream)
+    public ZipContext_Threaded Rent(FileStreamCustom stream, long streamLength)
     {
         if (_contexts.TryTake(out ZipContext_Threaded item))
         {
-            item.Set(stream);
+            item.Set(stream, streamLength);
             return item;
         }
         else
         {
-            return new ZipContext_Threaded(stream);
+            return new ZipContext_Threaded(stream, streamLength);
         }
     }
 
@@ -117,20 +117,22 @@ public sealed class ZipContext_Threaded : IDisposable
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
-    // @MT_TASK: More allocs for now by putting it here, but when we pool the contexts that will go away
     internal readonly byte[] TempBuffer = new byte[StreamCopyBufferSize];
 
-    public ZipContext_Threaded(Stream archiveStream)
+    // Don't do anything in any of these that could throw, because then the sub-stream may not be disposed...
+    // That's actually fine in this case because Dispose() is a no-op on our sub-stream, but meh...
+    // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
+    // won't have any problems in here.
+    public ZipContext_Threaded(FileStreamCustom archiveStream, long archiveStreamLength)
     {
         ArchiveSubReadStream = new SubReadStream();
-        Set(archiveStream);
+        Set(archiveStream, archiveStreamLength);
     }
 
-    [MemberNotNull(nameof(ArchiveStream))]
-    public void Set(Stream archiveStream)
+    public void Set(FileStreamCustom archiveStream, long archiveStreamLength)
     {
         ArchiveStream = archiveStream;
-        ArchiveStreamLength = archiveStream.Length;
+        ArchiveStreamLength = archiveStreamLength;
         ArchiveSubReadStream.SetSuperStream(ArchiveStream);
     }
 
@@ -139,8 +141,6 @@ public sealed class ZipContext_Threaded : IDisposable
         ArchiveSubReadStream.SetSuperStream(null);
     }
 
-    // @MT_TASK: Eventually this should just be "de-init" and there should be an "init"
-    // For when we take and return from the object pool
     public void Dispose()
     {
         ArchiveStream = null!;

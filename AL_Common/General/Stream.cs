@@ -53,22 +53,16 @@ public static partial class Common
             }
         }
 
-        public FileStreamCustom(
-            string path,
-            FileMode mode,
-            FileAccess access,
+        public FileStreamCustom(string path,
             FileShare share,
             int bufferSize)
-            : base(path, mode, access, share, bufferSize)
+            : base(path, FileMode.Open, FileAccess.Read, share, bufferSize)
         {
         }
 
-        public FileStreamCustom(
-            string path,
-            FileMode mode,
-            FileAccess access,
+        public FileStreamCustom(string path,
             FileShare share)
-            : base(path, mode, access, share)
+            : base(path, FileMode.Open, FileAccess.Read, share)
         {
         }
 
@@ -76,8 +70,8 @@ public static partial class Common
         {
             FileStreamCustom fs =
                 _fieldStreamBufferFieldFound
-                    ? new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer.Length)
-                    : new FileStreamCustom(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                    ? new FileStreamCustom(path, FileShare.Read, buffer.Length)
+                    : new FileStreamCustom(path, FileShare.Read);
 
             if (_fieldStreamBufferFieldFound)
             {
