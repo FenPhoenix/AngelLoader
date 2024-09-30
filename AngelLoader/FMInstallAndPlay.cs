@@ -32,10 +32,7 @@ namespace AngelLoader;
 internal static partial class FMInstallAndPlay
 {
 #if TIMING_TEST
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-    // ReSharper disable RedundantNameQualifier
-    private static readonly System.Diagnostics.Stopwatch _timingTestStopWatch = new();
+    private static readonly Stopwatch _timingTestStopWatch = new();
 
     private static void StartTiming()
     {
@@ -45,11 +42,8 @@ internal static partial class FMInstallAndPlay
     private static void StopTimingAndPrintResult()
     {
         _timingTestStopWatch.Stop();
-        System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
+        Trace.WriteLine(_timingTestStopWatch.Elapsed);
     }
-    // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
 #endif
 
     #region Private fields
@@ -1701,8 +1695,7 @@ internal static partial class FMInstallAndPlay
             if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
         }
 
-        var reportThrottleSW = new Stopwatch();
-        reportThrottleSW.Start();
+        var reportThrottleSW = Stopwatch.StartNew();
 
         var progress = new Progress<ProgressReport_Install>(ReportProgress_Install);
 
@@ -1753,7 +1746,9 @@ internal static partial class FMInstallAndPlay
                     int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
 
                     // @MT_TASK: Remove for final release
+#if TIMING_TEST
                     Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
+#endif
 
                     ConcurrentQueue<FMData> cq = new(fmDataList);
 
@@ -2089,14 +2084,7 @@ internal static partial class FMInstallAndPlay
                     progressType: ProgressType.Indeterminate);
 
 #if TIMING_TEST
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-                // ReSharper disable RedundantNameQualifier
-                var audioConvertSW = new System.Diagnostics.Stopwatch();
-                // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
-                audioConvertSW.Start();
+                var audioConvertSW = Stopwatch.StartNew();
 #endif
 
                 // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -2133,13 +2121,7 @@ internal static partial class FMInstallAndPlay
 
 #if TIMING_TEST
                 audioConvertSW.Stop();
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-                // ReSharper disable RedundantNameQualifier
-                System.Diagnostics.Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
-                // ReSharper restore RedundantNameQualifier
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
+                Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
 #endif
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2203,8 +2185,9 @@ internal static partial class FMInstallAndPlay
 
             _installCts.Token.ThrowIfCancellationRequested();
 
-            var sw0 = new Stopwatch();
-            sw0.Start();
+#if TIMING_TEST
+            var sw0 = Stopwatch.StartNew();
+#endif
 
             // @MT_TASK: We get MORE entry allocs here than the per-archive version, because we don't reuse the lists
             ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
@@ -2213,15 +2196,19 @@ internal static partial class FMInstallAndPlay
 
             int entriesCount = entries.Count;
 
+#if TIMING_TEST
             sw0.Stop();
             Trace.WriteLine("sw0: " + sw0.Elapsed);
+#endif
 
             ConcurrentQueue<ZipArchiveFastEntry> cq = new(entries);
 
             int threadCount = GetThreadCountForParallelOperation(entriesCount);
 
             // @MT_TASK: Remove for final release
+#if TIMING_TEST
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
+#endif
 
             ParallelOptions po = new()
             {
@@ -2229,8 +2216,9 @@ internal static partial class FMInstallAndPlay
                 MaxDegreeOfParallelism = threadCount,
             };
 
-            var sw = new Stopwatch();
-            sw.Start();
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
 
             Parallel.For(0, threadCount, po, _ =>
             {
@@ -2295,11 +2283,13 @@ internal static partial class FMInstallAndPlay
                 }
             });
 
+#if TIMING_TEST
             sw.Stop();
             Trace.WriteLine($"Zip extract threaded:{NL}" +
                             "Thread count: " + threadCount + $"{NL}" +
                             "Initial read: " + sw0.Elapsed + $"{NL}" +
                             "Full archive threaded extract: " + sw.Elapsed);
+#endif
 
             return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
         }
