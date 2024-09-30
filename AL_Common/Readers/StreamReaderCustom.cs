@@ -236,7 +236,7 @@ public sealed class StreamReaderCustom
         get
         {
             if (_stream == null!)
-                ThrowHelper.ReaderClosed();
+                ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
             return _charPos >= _charLen && ReadBuffer() == 0;
         }
     }
@@ -248,7 +248,7 @@ public sealed class StreamReaderCustom
     public int Peek()
     {
         if (_stream == null!)
-            ThrowHelper.ReaderClosed();
+            ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
         return _charPos == _charLen && (_isBlocked || ReadBuffer() == 0) ? -1 : (int)_charBuffer[_charPos];
     }
 
@@ -258,7 +258,7 @@ public sealed class StreamReaderCustom
     public int Read()
     {
         if (_stream == null!)
-            ThrowHelper.ReaderClosed();
+            ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
         if (_charPos == _charLen && ReadBuffer() == 0)
             return -1;
         int num = (int)_charBuffer[_charPos];
@@ -281,13 +281,13 @@ public sealed class StreamReaderCustom
     public int Read([In, Out] char[] buffer, int index, int count)
     {
         if (buffer == null)
-            throw new ArgumentNullException(nameof(buffer), ("ArgumentNull_Buffer"));
+            throw new ArgumentNullException(nameof(buffer), SR.ArgumentNull_Buffer);
         if (index < 0 || count < 0)
-            throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), ("ArgumentOutOfRange_NeedNonNegNum"));
+            throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
         if (buffer.Length - index < count)
-            throw new ArgumentException(("Argument_InvalidOffLen"));
+            throw new ArgumentException(SR.Argument_InvalidOffLen);
         if (_stream == null!)
-            ThrowHelper.ReaderClosed();
+            ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
         int num1 = 0;
         bool readToUserBuffer = false;
         while (count > 0)
@@ -327,7 +327,7 @@ public sealed class StreamReaderCustom
     {
         if (_stream == null!)
         {
-            ThrowHelper.ReaderClosed();
+            ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
         }
 
         _readToEndSB.EnsureCapacity(_charLen - _charPos);
@@ -560,7 +560,7 @@ public sealed class StreamReaderCustom
     {
         if (_stream == null!)
         {
-            ThrowHelper.ReaderClosed();
+            ThrowHelper.ObjectDisposed(SR.ObjectDisposed_StreamReaderCustomClosed);
         }
         if (_charPos == _charLen && ReadBuffer() == 0)
         {

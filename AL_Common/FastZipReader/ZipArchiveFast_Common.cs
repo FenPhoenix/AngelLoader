@@ -242,11 +242,11 @@ internal static class ZipArchiveFast_Common
     {
         if (unchecked((uint)startIndex) >= unchecked((uint)valueLength))
         {
-            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
+            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), SR.ArgumentOutOfRange_IndexMustBeLess);
         }
         if (startIndex > valueLength - sizeof(int))
         {
-            ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
+            ThrowHelper.ArgumentException(SR.Arg_ArrayPlusOffTooSmall);
         }
 
         return unchecked((uint)Unsafe.ReadUnaligned<int>(ref value[startIndex]));
@@ -256,11 +256,11 @@ internal static class ZipArchiveFast_Common
     {
         if (unchecked((uint)startIndex) >= unchecked((uint)valueLength))
         {
-            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), "ArgumentOutOfRange_Index");
+            ThrowHelper.ArgumentOutOfRange(nameof(startIndex), SR.ArgumentOutOfRange_IndexMustBeLess);
         }
         if (startIndex > valueLength - sizeof(long))
         {
-            ThrowHelper.ArgumentException("Arg_ArrayPlusOffTooSmall");
+            ThrowHelper.ArgumentException(SR.Arg_ArrayPlusOffTooSmall);
         }
 
         return Unsafe.ReadUnaligned<long>(ref value[startIndex]);
