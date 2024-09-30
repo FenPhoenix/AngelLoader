@@ -1750,22 +1750,19 @@ internal static partial class FMInstallAndPlay
                     Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
 #endif
 
-                    ConcurrentQueue<FMData> cq = new(fmDataList);
-
-                    ParallelOptions po = new()
+                    if (!TryGetParallelForData(threadCount, fmDataList, _installCts.Token, out var pd))
                     {
-                        CancellationToken = _installCts.Token,
-                        MaxDegreeOfParallelism = threadCount,
-                    };
+                        return false;
+                    }
 
                     ZipContext_Threaded_Pool zipCtxPool = new();
 
-                    Parallel.For(0, threadCount, po, _ =>
+                    Parallel.For(0, threadCount, pd.PO, _ =>
                     {
                         Buffers buffer = new();
                         ZipContext zipCtx = new();
 
-                        while (cq.TryDequeue(out FMData fmData))
+                        while (pd.CQ.TryDequeue(out FMData fmData))
                         {
                             fmData.InstallStarted = true;
 
@@ -1808,7 +1805,7 @@ internal static partial class FMInstallAndPlay
 
                             results.Add(fmInstallResult);
 
-                            po.CancellationToken.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                             // @MT_TASK: Set this before post-install work because it gets checked!
                             // This will again cause the UI to update the installed status if it's refreshed.
@@ -1819,7 +1816,7 @@ internal static partial class FMInstallAndPlay
                             DoPostInstallWork(
                                 fmData,
                                 buffer,
-                                po.CancellationToken,
+                                pd.PO.CancellationToken,
                                 ref fmsFinishedCount,
                                 ctx,
                                 archivePaths,
@@ -1982,22 +1979,20 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            ConcurrentQueue<FMData> cq = new(filteredList);
-
             int threadCount = GetThreadCountForParallelOperation(filteredList.Count);
 
-            ParallelOptions po = new()
+            if (!TryGetParallelForData(threadCount, filteredList, CancellationToken.None, out var pd))
             {
-                MaxDegreeOfParallelism = threadCount,
-            };
+                return new List<FMInstallResult>(0);
+            }
 
 #if TIMING_TEST
             var sw = Stopwatch.StartNew();
 #endif
 
-            Parallel.For(0, threadCount, po, _ =>
+            Parallel.For(0, threadCount, pd.PO, _ =>
             {
-                while (cq.TryDequeue(out FMData fmData))
+                while (pd.CQ.TryDequeue(out FMData fmData))
                 {
                     Core.View.MultiItemProgress_SetItemData(
                         index: fmData.ViewItemIndex,
@@ -2202,8 +2197,6 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine("sw0: " + sw0.Elapsed);
 #endif
 
-            ConcurrentQueue<ZipArchiveFastEntry> cq = new(entries);
-
             int threadCount = GetThreadCountForParallelOperation(entriesCount);
 
             // @MT_TASK: Remove for final release
@@ -2211,17 +2204,16 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
 #endif
 
-            ParallelOptions po = new()
+            if (!TryGetParallelForData(threadCount, entries, _installCts.Token, out var pd))
             {
-                CancellationToken = _installCts.Token,
-                MaxDegreeOfParallelism = threadCount,
-            };
+                return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+            }
 
 #if TIMING_TEST
             var sw = Stopwatch.StartNew();
 #endif
 
-            Parallel.For(0, threadCount, po, _ =>
+            Parallel.For(0, threadCount, pd.PO, _ =>
             {
                 var report = new ProgressReport_Install();
 
@@ -2229,13 +2221,12 @@ internal static partial class FMInstallAndPlay
 
                 using var fs = FileStreamReadFast.Create(fmDataArchivePath, fileStreamBuffer);
 
-                po.CancellationToken.ThrowIfCancellationRequested();
+                pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                while (cq.TryDequeue(out ZipArchiveFastEntry entry))
+                while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
                 {
                     // @MT_TASK: See if we can re-dedupe these loops again when we're done (even just partially)
-                    int entryNumber = entriesCount - cq.Count;
-                    CancellationToken ct = po.CancellationToken;
+                    int entryNumber = entriesCount - pd.CQ.Count;
 
                     string fileName = entry.FullName;
 
@@ -2248,7 +2239,7 @@ internal static partial class FMInstallAndPlay
                         Directory.CreateDirectory(Path.Combine(fmInstalledPath,
                             fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
 
-                        ct.ThrowIfCancellationRequested();
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
 
                     ZipContext_Threaded zipCtx = zipCtxPool.Rent(fs, fs.Length);
@@ -2265,11 +2256,11 @@ internal static partial class FMInstallAndPlay
                         zipCtxPool.Return(zipCtx);
                     }
 
-                    ct.ThrowIfCancellationRequested();
+                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                     File_UnSetReadOnly(extractedName);
 
-                    ct.ThrowIfCancellationRequested();
+                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                     int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
 
@@ -2278,7 +2269,7 @@ internal static partial class FMInstallAndPlay
                     report.Percent = percent;
                     progress.Report(report);
 
-                    ct.ThrowIfCancellationRequested();
+                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
                 }
             });
 

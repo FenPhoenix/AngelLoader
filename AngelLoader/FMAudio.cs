@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -204,40 +203,34 @@ internal static class FMAudio
 
                     int threadCount = GetThreadCount(wavFiles.Length);
 
-                    // @MT_TASK: Parallel.For requires -1 or >0 or it throws - put this safeguard in all places
-                    if (threadCount == 0) return ConvertAudioError.None;
-
-                    ParallelOptions po = new()
+                    if (!TryGetParallelForData(threadCount, wavFiles, ct, out var pd))
                     {
-                        CancellationToken = ct,
-                        MaxDegreeOfParallelism = threadCount,
-                    };
+                        return ConvertAudioError.None;
+                    }
 
-                    ConcurrentQueue<string> cq = new(wavFiles);
-
-                    Parallel.For(0, threadCount, po, _ =>
+                    Parallel.For(0, threadCount, pd.PO, _ =>
                     {
                         BinaryBuffer buffer = new();
 
-                        while (cq.TryDequeue(out string f))
+                        while (pd.CQ.TryDequeue(out string f))
                         {
                             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                             if (!f.EndsWithI(".wav")) continue;
 
                             File_UnSetReadOnly(f);
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                             int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                             // Header wasn't wav, so skip this one
                             if (bits == -1) continue;
 
                             if (bits == 0) bits = GetBitDepthSlow(f);
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                             if (bits is >= 1 and <= 16) continue;
 
@@ -246,7 +239,7 @@ internal static class FMAudio
                             File.Delete(f);
                             File.Move(tempFile, f);
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
                     });
                 }
@@ -293,26 +286,21 @@ internal static class FMAudio
 
                     int threadCount = GetThreadCount(files.Length);
 
-                    if (threadCount == 0) return ConvertAudioError.None;
-
-                    ParallelOptions po = new()
+                    if (!TryGetParallelForData(threadCount, files, ct, out var pd))
                     {
-                        CancellationToken = ct,
-                        MaxDegreeOfParallelism = threadCount,
-                    };
+                        return ConvertAudioError.None;
+                    }
 
-                    ConcurrentQueue<string> cq = new(files);
-
-                    Parallel.For(0, threadCount, po, _ =>
+                    Parallel.For(0, threadCount, pd.PO, _ =>
                     {
-                        while (cq.TryDequeue(out string f))
+                        while (pd.CQ.TryDequeue(out string f))
                         {
                             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                             if (!f.EndsWithI(ext)) continue;
 
                             File_UnSetReadOnly(f);
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                             try
                             {
@@ -333,7 +321,7 @@ internal static class FMAudio
                                 Log(ErrorText.Ex + "deleting file " + f, ex);
                             }
 
-                            ct.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
                     });
                 }

@@ -360,19 +360,17 @@ public sealed partial class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
-        ConcurrentQueue<FMToScan> cq = new(fms);
+        if (!TryGetParallelForData(threadCount, fms, cancellationToken, out var pd))
+        {
+            throw new ArgumentOutOfRangeException(nameof(ParallelOptions.MaxDegreeOfParallelism));
+        }
+
         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
         ReadOnlyDataContext ctx = new();
         try
         {
-            ParallelOptions po = new()
-            {
-                CancellationToken = cancellationToken,
-                MaxDegreeOfParallelism = threadCount,
-            };
-
-            _ = Parallel.For(0, threadCount, po, _ =>
+            _ = Parallel.For(0, threadCount, pd.PO, _ =>
             {
                 using var scanner = new Scanner(
                     sevenZipWorkingPath: sevenZipWorkingPath,
@@ -382,11 +380,11 @@ public sealed partial class Scanner : IDisposable
                     tdmContext: tdmContext);
 
                 returnLists.Add(scanner.Scan(
-                    cq,
+                    pd.CQ,
                     tempPath: tempPath,
                     scanOptions: scanOptions,
                     progress: progress,
-                    cancellationToken: cancellationToken));
+                    cancellationToken: pd.PO.CancellationToken));
             });
         }
         catch (OperationCanceledException)
