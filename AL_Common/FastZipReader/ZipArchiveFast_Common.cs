@@ -110,8 +110,6 @@ public sealed class ZipContext_Threaded
 
     internal readonly byte[] TempBuffer = new byte[StreamCopyBufferSize];
 
-    // Don't do anything in any of these that could throw, because then the sub-stream may not be disposed...
-    // That's actually fine in this case because Dispose() is a no-op on our sub-stream, but meh...
     // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
     // won't have any problems in here.
     public ZipContext_Threaded(FileStreamReadFast archiveStream, long archiveStreamLength)
