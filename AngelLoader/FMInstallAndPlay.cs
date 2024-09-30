@@ -1763,7 +1763,7 @@ internal static partial class FMInstallAndPlay
                         MaxDegreeOfParallelism = threadCount,
                     };
 
-                    using ZipContext_Threaded_Pool zipCtxPool = new();
+                    ZipContext_Threaded_Pool zipCtxPool = new();
 
                     Parallel.For(0, threadCount, po, _ =>
                     {
@@ -1787,20 +1787,6 @@ internal static partial class FMInstallAndPlay
                                         ? InstallFMZip_ThreadedPerEntry(
                                             progress,
                                             fmData,
-                                            /*
-                                            @MT_TASK: "Disposed in the outer scope" argh piece of literal garbage
-                                            Of course it's disposed in the outer scope, that's the point of a pool!
-                                            Deal with this later... argh...
-                                            We could just get rid of the archive sub-stream dispose because it's
-                                            a no-op, but no, because that's just relying on sheer dumb idiot luck.
-                                            Argh.
-
-                                            The thing is, if it doesn't get disposed, then it's fine because of
-                                            the above, but if it DOES get disposed and a thread is still running
-                                            (don't think that's possible, but?), then that's really bad, because
-                                            then the sub-stream will be in a "nulled superstream" and disposed
-                                            state when it may still be being read.
-                                            */
                                             zipCtxPool)
                                         : InstallFMZip(
                                             progress,
@@ -2220,6 +2206,7 @@ internal static partial class FMInstallAndPlay
             var sw0 = new Stopwatch();
             sw0.Start();
 
+            // @MT_TASK: We get MORE entry allocs here than the per-archive version, because we don't reuse the lists
             ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
 
             _installCts.Token.ThrowIfCancellationRequested();

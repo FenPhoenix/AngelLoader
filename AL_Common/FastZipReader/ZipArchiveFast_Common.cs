@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.Deflate64Managed;
@@ -76,7 +75,7 @@ public sealed class ZipContext : IDisposable
     public void Dispose() => ArchiveSubReadStream.Dispose();
 }
 
-public sealed class ZipContext_Threaded_Pool : IDisposable
+public sealed class ZipContext_Threaded_Pool
 {
     private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
 
@@ -98,17 +97,9 @@ public sealed class ZipContext_Threaded_Pool : IDisposable
         item.Unset();
         _contexts.Add(item);
     }
-
-    public void Dispose()
-    {
-        foreach (ZipContext_Threaded zipContextThreaded in _contexts)
-        {
-            zipContextThreaded.Dispose();
-        }
-    }
 }
 
-public sealed class ZipContext_Threaded : IDisposable
+public sealed class ZipContext_Threaded
 {
     internal Stream ArchiveStream = null!;
     internal long ArchiveStreamLength;
@@ -141,13 +132,8 @@ public sealed class ZipContext_Threaded : IDisposable
         ArchiveSubReadStream.SetSuperStream(null);
     }
 
-    public void Dispose()
-    {
-        ArchiveStream = null!;
-        ArchiveSubReadStream.SetSuperStream(null);
-
-        ArchiveSubReadStream.Dispose();
-    }
+    // We're not IDisposable because of "disposal outside of captured closure" nonsense.
+    // We hold a SubReadStream but we don't need to dispose it because disposal is a no-op on that one.
 }
 
 internal static class ZipArchiveFast_Common
