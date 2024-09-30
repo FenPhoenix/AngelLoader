@@ -53,7 +53,7 @@ public sealed class ZipCompressionMethodException(string message) : Exception(me
 
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
-public sealed class ZipContext : IDisposable
+public sealed class ZipContext
 {
     internal readonly ListFast<ZipArchiveFastEntry> Entries = new(0);
 
@@ -72,7 +72,7 @@ public sealed class ZipContext : IDisposable
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
-    public void Dispose() => ArchiveSubReadStream.Dispose();
+    // Keep it simple and don't dispose sub read stream as disposal is a no-op for it
 }
 
 public sealed class ZipContext_Threaded_Pool
@@ -133,7 +133,7 @@ public sealed class ZipContext_Threaded
     }
 
     // We're not IDisposable because of "disposal outside of captured closure" nonsense.
-    // We hold a SubReadStream but we don't need to dispose it because disposal is a no-op on that one.
+    // We hold the sub read stream but we don't need to dispose it because disposal is a no-op on that one.
 }
 
 internal static class ZipArchiveFast_Common

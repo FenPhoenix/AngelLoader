@@ -5884,7 +5884,6 @@ public sealed partial class Scanner : IDisposable
     {
         // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         _archive?.Dispose();
-        _zipContext?.Dispose();
         _rarArchive?.Dispose();
         _rarStream?.Dispose();
         // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract

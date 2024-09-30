@@ -34,8 +34,6 @@ public sealed class ZipArchiveFast : IDisposable
 
     private readonly ZipContext _context;
 
-    private readonly bool _disposeContext;
-
     private readonly bool _allowUnsupportedEntries;
 
     // Differentiate between "null encoding because the user used a ctor that doesn't take one" vs. "null encoding
@@ -89,7 +87,6 @@ public sealed class ZipArchiveFast : IDisposable
         this(
             stream: stream,
             context: new ZipContext(),
-            disposeContext: true,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: entryNameEncoding,
             useEntryNameEncodingCodePath: true)
@@ -122,7 +119,6 @@ public sealed class ZipArchiveFast : IDisposable
         this(
             stream: stream,
             context: context,
-            disposeContext: false,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: entryNameEncoding,
             useEntryNameEncodingCodePath: true)
@@ -148,7 +144,6 @@ public sealed class ZipArchiveFast : IDisposable
         this(
             stream: stream,
             context: new ZipContext(),
-            disposeContext: true,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: null,
             useEntryNameEncodingCodePath: false)
@@ -177,7 +172,6 @@ public sealed class ZipArchiveFast : IDisposable
         this(
             stream: stream,
             context: context,
-            disposeContext: false,
             allowUnsupportedEntries: allowUnsupportedEntries,
             entryNameEncoding: null,
             useEntryNameEncodingCodePath: false)
@@ -188,14 +182,11 @@ public sealed class ZipArchiveFast : IDisposable
     private ZipArchiveFast(
         Stream stream,
         ZipContext context,
-        bool disposeContext,
         bool allowUnsupportedEntries,
         Encoding? entryNameEncoding,
         bool useEntryNameEncodingCodePath)
     {
         _allowUnsupportedEntries = allowUnsupportedEntries;
-
-        _disposeContext = disposeContext;
 
         if (stream == null) throw new ArgumentNullException(nameof(stream));
 
@@ -510,9 +501,6 @@ public sealed class ZipArchiveFast : IDisposable
             // @MT_TASK: Zip context (threaded mode) used field: ArchiveSubReadStream (Dispose)
             _context.ArchiveSubReadStream.SetSuperStream(null);
             _backingStream?.Dispose();
-
-            // @MT_TASK: Zip context (threaded mode) dispose - make sure this doesn't cause problems either
-            if (_disposeContext) _context.Dispose();
 
             _isDisposed = true;
         }
