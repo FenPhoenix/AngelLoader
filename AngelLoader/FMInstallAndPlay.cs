@@ -2230,8 +2230,6 @@ internal static partial class FMInstallAndPlay
 
                 po.CancellationToken.ThrowIfCancellationRequested();
 
-                po.CancellationToken.ThrowIfCancellationRequested();
-
                 while (cq.TryDequeue(out ZipArchiveFastEntry entry))
                 {
                     // @MT_TASK: See if we can re-dedupe these loops again when we're done (even just partially)
