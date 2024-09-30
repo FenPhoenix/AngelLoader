@@ -2190,6 +2190,7 @@ internal static partial class FMInstallAndPlay
 #endif
 
             // @MT_TASK: We get MORE entry allocs here than the per-archive version, because we don't reuse the lists
+            // But reusing the lists is tricky because they're referenced externally
             ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
 
             _installCts.Token.ThrowIfCancellationRequested();
@@ -2319,7 +2320,6 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
-            // @MT_TASK: Use fast zip reader for this too, since we're using it for the multithreaded version now
             using ZipArchiveFast archive =
                 GetReadModeZipArchiveCharEnc_Fast(
                     fmData.ArchivePath,

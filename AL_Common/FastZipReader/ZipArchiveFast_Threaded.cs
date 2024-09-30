@@ -23,7 +23,6 @@ public static class ZipArchiveFast_Threaded
 
         // _storedOffsetOfCompressedData will never be null, since we know IsOpenable is true
 
-        // @MT_TASK: Zip context (threaded mode) used field: ArchiveSubReadStream
         context.ArchiveSubReadStream.Set((long)entry.StoredOffsetOfCompressedData!, entry.CompressedLength);
 
         return GetDataDecompressor(entry, context.ArchiveSubReadStream);
