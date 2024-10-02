@@ -1,4 +1,4 @@
-﻿// @MT_TASK: Remove for final release
+﻿// @MT_TASK: Comment this out for final release
 //#define TIMING_TEST
 
 using System;

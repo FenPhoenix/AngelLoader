@@ -1745,7 +1745,6 @@ internal static partial class FMInstallAndPlay
 
                     int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
 
-                    // @MT_TASK: Remove for final release
 #if TIMING_TEST
                     Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
 #endif
@@ -1796,7 +1795,6 @@ internal static partial class FMInstallAndPlay
                                             progress,
                                             fmData);
 
-                            // @MT_TASK: Rolling back needs re-architecting for multithreading
                             if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                             {
                                 FMInstallResult result = RollBackSingleFM(fmData);

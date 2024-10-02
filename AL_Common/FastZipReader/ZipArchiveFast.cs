@@ -362,9 +362,6 @@ public sealed class ZipArchiveFast : IDisposable
                 #endregion
             }
 
-            // @MT_TASK: Zip context (threaded mode): Entries are a reference to context.Entries
-            // If we were to reuse one context, we'd have to make sure we don't modify that context's entries list
-            // while the threaded archives are using it (because it's the same as the shared one)
             return _context.Entries;
         }
     }
