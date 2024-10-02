@@ -126,30 +126,6 @@ public readonly ref struct ZipContextRentScope
     }
 }
 
-public sealed class ZipContext_Threaded_Pool
-{
-    private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
-
-    public ZipContext_Threaded Rent(FileStreamReadFast archiveStream, long archiveStreamLength)
-    {
-        if (_contexts.TryTake(out ZipContext_Threaded item))
-        {
-            item.Set(archiveStream, archiveStreamLength);
-            return item;
-        }
-        else
-        {
-            return new ZipContext_Threaded(archiveStream, archiveStreamLength);
-        }
-    }
-
-    public void Return(ZipContext_Threaded item)
-    {
-        item.Unset();
-        _contexts.Add(item);
-    }
-}
-
 public sealed class ZipContext_Threaded
 {
     internal Stream ArchiveStream = null!;
@@ -183,6 +159,30 @@ public sealed class ZipContext_Threaded
 
     // We're not IDisposable because of "disposal outside of captured closure" nonsense.
     // We hold the sub read stream but we don't need to dispose it because disposal is a no-op on that one.
+}
+
+public sealed class ZipContext_Threaded_Pool
+{
+    private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
+
+    public ZipContext_Threaded Rent(FileStreamReadFast archiveStream, long archiveStreamLength)
+    {
+        if (_contexts.TryTake(out ZipContext_Threaded item))
+        {
+            item.Set(archiveStream, archiveStreamLength);
+            return item;
+        }
+        else
+        {
+            return new ZipContext_Threaded(archiveStream, archiveStreamLength);
+        }
+    }
+
+    public void Return(ZipContext_Threaded item)
+    {
+        item.Unset();
+        _contexts.Add(item);
+    }
 }
 
 internal static class ZipArchiveFast_Common
