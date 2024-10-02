@@ -16,6 +16,62 @@ namespace AL_Common;
 public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
     private string? _path;
+    internal string? Path => _path;
+    private bool _lengthCanBeCached; // file has been opened for reading and not shared for writing.
+
+    internal bool IsNoBuffering => (GetFileOptions() & NoBuffering) != 0;
+
+    internal unsafe FileOptions GetFileOptions()
+    {
+        FileOptions fileOptions = _fileOptions;
+        if (fileOptions != (FileOptions)(-1))
+        {
+            return fileOptions;
+        }
+
+        Interop.NtDll.CreateOptions options;
+        int ntStatus = Interop.NtDll.NtQueryInformationFile(
+            FileHandle: this,
+            IoStatusBlock: out _,
+            FileInformation: &options,
+            Length: sizeof(uint),
+            FileInformationClass: Interop.NtDll.FileModeInformation);
+
+        if (ntStatus != Interop.StatusOptions.STATUS_SUCCESS)
+        {
+            int error = (int)Interop.NtDll.RtlNtStatusToDosError(ntStatus);
+            throw Win32Marshal.GetExceptionForWin32Error(error);
+        }
+
+        FileOptions result = FileOptions.None;
+
+        if ((options & (Interop.NtDll.CreateOptions.FILE_SYNCHRONOUS_IO_ALERT | Interop.NtDll.CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT)) == 0)
+        {
+            result |= FileOptions.Asynchronous;
+        }
+        if ((options & Interop.NtDll.CreateOptions.FILE_WRITE_THROUGH) != 0)
+        {
+            result |= FileOptions.WriteThrough;
+        }
+        if ((options & Interop.NtDll.CreateOptions.FILE_RANDOM_ACCESS) != 0)
+        {
+            result |= FileOptions.RandomAccess;
+        }
+        if ((options & Interop.NtDll.CreateOptions.FILE_SEQUENTIAL_ONLY) != 0)
+        {
+            result |= FileOptions.SequentialScan;
+        }
+        if ((options & Interop.NtDll.CreateOptions.FILE_DELETE_ON_CLOSE) != 0)
+        {
+            result |= FileOptions.DeleteOnClose;
+        }
+        if ((options & Interop.NtDll.CreateOptions.FILE_NO_INTERMEDIATE_BUFFERING) != 0)
+        {
+            result |= NoBuffering;
+        }
+
+        return _fileOptions = result;
+    }
 
     /// <summary>
     /// Creates a <see cref="T:AL_SafeFileHandle" /> around a file handle.
@@ -114,6 +170,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
         fileHandle._path = fullPath;
         fileHandle._fileOptions = options;
+        fileHandle._lengthCanBeCached = (share & FileShare.Write) == 0 && (access & FileAccess.Write) == 0;
         return fileHandle;
     }
 
@@ -353,6 +410,66 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsDirectorySeparator(char c)
     {
-        return c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar;
+        return c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar;
+    }
+
+    internal long GetFileLength()
+    {
+        if (!_lengthCanBeCached)
+        {
+            return GetFileLengthCore();
+        }
+
+        // On Windows, when the file is locked for writes we can cache file length
+        // in memory and avoid subsequent native calls which are expensive.
+        if (_length < 0)
+        {
+            _length = GetFileLengthCore();
+        }
+
+        return _length;
+
+        unsafe long GetFileLengthCore()
+        {
+            Interop.Kernel32.FILE_STANDARD_INFO info;
+
+            if (Interop.Kernel32.GetFileInformationByHandleEx(this, Interop.Kernel32.FileStandardInfo, &info, (uint)sizeof(Interop.Kernel32.FILE_STANDARD_INFO)))
+            {
+                return info.EndOfFile;
+            }
+
+            // In theory when GetFileInformationByHandleEx fails, then
+            // a) IsDevice can modify last error (not true today, but can be in the future),
+            // b) DeviceIoControl can succeed (last error set to ERROR_SUCCESS) but return fewer bytes than requested.
+            // The error is stored and in such cases exception for the first failure is going to be thrown.
+            int lastError = Marshal.GetLastWin32Error();
+
+            if (Path is null || !PathInternal.IsDevice(Path))
+            {
+                throw Win32Marshal.GetExceptionForWin32Error(lastError, Path);
+            }
+
+            Interop.Kernel32.STORAGE_READ_CAPACITY storageReadCapacity;
+            bool success = Interop.Kernel32.DeviceIoControl(
+                this,
+                dwIoControlCode: Interop.Kernel32.IOCTL_STORAGE_READ_CAPACITY,
+                lpInBuffer: null,
+                nInBufferSize: 0,
+                lpOutBuffer: &storageReadCapacity,
+                nOutBufferSize: (uint)sizeof(Interop.Kernel32.STORAGE_READ_CAPACITY),
+                out uint bytesReturned,
+                IntPtr.Zero);
+
+            if (!success)
+            {
+                throw Win32Marshal.GetExceptionForLastWin32Error(Path);
+            }
+            else if (bytesReturned != sizeof(Interop.Kernel32.STORAGE_READ_CAPACITY))
+            {
+                throw Win32Marshal.GetExceptionForWin32Error(lastError, Path);
+            }
+
+            return storageReadCapacity.DiskLength;
+        }
     }
 }
