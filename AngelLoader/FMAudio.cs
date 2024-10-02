@@ -336,6 +336,21 @@ internal static class FMAudio
 
         #region Local functions
 
+        /*
+        @MT_TASK: Some files have a "JUNK" chunk before the "fmt " chunk, which we don't handle here.
+        When encountering this chunk we fall back to the slow method. We could handle this in here for a speedup.
+
+        Spec of the "JUNK" chunk:
+        https://www.daubnet.com/en/file-format-riff
+
+        Name   | Size       | Description
+        ------------------------------------------------------------
+        ID     | 4 byte     | four ASCII character identifier 'JUNK'
+        Size   | 4 byte     | size of Data
+        Data   | Size bytes | nothing
+        unused | 1 byte     | present if Size is odd 
+        ------------------------------------------------------------
+        */
         static int GetBitDepthFast(string file, Span<byte> buffer)
         {
             // In case we read past the end of the file or can't open the file or whatever. We're trying
