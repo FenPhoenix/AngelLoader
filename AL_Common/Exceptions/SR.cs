@@ -54,6 +54,7 @@ public static class SR
     public static readonly string UnauthorizedAccess_IODenied_Path = "Access to the path '{0}' is denied.";
     public static readonly string IO_AlreadyExists_Name = "Cannot create \"{0}\" because a file or directory with the same name already exists.";
     public static readonly string PathTooLong = "The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.";
+    public static readonly string PathTooLong_Path = "The path '{0}' is too long, or a component of the specified path is too long.";
     public static readonly string DriveNotFound_Drive = "Could not find the drive '{0}'. The drive might not be ready or might not be mapped.";
     public static readonly string IO_SharingViolation_NoFileName = "The process cannot access the file because it is being used by another process.";
     public static readonly string IO_SharingViolation_File = "The process cannot access the file '{0}' because it is being used by another process.";
@@ -61,9 +62,13 @@ public static class SR
     public static readonly string Arg_ArrayPlusOffTooSmall = "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
     public static readonly string ArgumentOutOfRange_IndexMustBeLess = "Index was out of range. Must be non-negative and less than the size of the collection.";
     public static readonly string ObjectDisposed_StreamReaderCustomClosed = "Cannot read from a closed stream reader.";
+    public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+    public static readonly string Arg_InvalidHandle = "Invalid handle.";
+    public static readonly string ObjectDisposed_FileClosed = "Cannot access a closed file.";
+    public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
-    public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
-    public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+    public static readonly string Argument_InvalidOffLen =
+ "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
 #endif
 }

@@ -444,7 +444,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             // The error is stored and in such cases exception for the first failure is going to be thrown.
             int lastError = Marshal.GetLastWin32Error();
 
-            if (Path is null || !PathInternal.IsDevice(Path))
+            if (Path is null || !IsDevice(Path.AsSpan()))
             {
                 throw Win32Marshal.GetExceptionForWin32Error(lastError, Path);
             }

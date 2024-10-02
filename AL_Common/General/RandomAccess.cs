@@ -15,28 +15,28 @@ public static class RandomAccess
     {
         if (handle is null)
         {
-            ThrowHelper.ThrowArgumentNullException(ExceptionArgument.handle);
+            ThrowHelper.ArgumentNullException("handle");
         }
         else if (handle.IsInvalid)
         {
-            ThrowHelper.ThrowArgumentException_InvalidHandle(nameof(handle));
+            ThrowHelper.ArgumentException(SR.Arg_InvalidHandle, nameof(handle));
         }
         else if (!handle.CanSeek)
         {
             // CanSeek calls IsClosed, we don't want to call it twice for valid handles
             if (handle.IsClosed)
             {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
+                ThrowHelper.ObjectDisposed(SR.ObjectDisposed_FileClosed);
             }
 
             if (!allowUnseekableHandles)
             {
-                ThrowHelper.ThrowNotSupportedException_UnseekableStream();
+                ThrowHelper.NotSupported(SR.NotSupported_UnseekableStream);
             }
         }
         else if (fileOffset < 0)
         {
-            ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(fileOffset));
+            ThrowHelper.ArgumentOutOfRange(nameof(fileOffset), SR.ArgumentOutOfRange_NeedNonNegNum);
         }
     }
 
@@ -88,6 +88,22 @@ public static class RandomAccess
                 _ => throw Win32Marshal.GetExceptionForWin32Error(errorCode, handle.Path),
             };
         }
+    }
+
+    /// <summary>
+    /// Gets the length of the file in bytes.
+    /// </summary>
+    /// <param name="handle">The file handle.</param>
+    /// <returns>A long value representing the length of the file in bytes.</returns>
+    /// <exception cref="T:System.ArgumentNullException"><paramref name="handle" /> is <see langword="null" />.</exception>
+    /// <exception cref="T:System.ArgumentException"><paramref name="handle" /> is invalid.</exception>
+    /// <exception cref="T:System.ObjectDisposedException">The file is closed.</exception>
+    /// <exception cref="T:System.NotSupportedException">The file does not support seeking (pipe or socket).</exception>
+    public static long GetLength(AL_SafeFileHandle handle)
+    {
+        ValidateInput(handle, fileOffset: 0);
+
+        return handle.GetFileLength();
     }
 
     private static NativeOverlapped GetNativeOverlappedForSyncHandle(AL_SafeFileHandle handle, long fileOffset)

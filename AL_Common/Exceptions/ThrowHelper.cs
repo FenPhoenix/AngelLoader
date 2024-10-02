@@ -12,6 +12,9 @@ public static class ThrowHelper
     [DoesNotReturn]
     public static void ArgumentException(string message, string paramName) => throw new ArgumentException(message, paramName);
     [DoesNotReturn]
+    internal static void ArgumentNullException(string argument) => throw new ArgumentNullException(argument);
+
+    [DoesNotReturn]
     public static void ArgumentOutOfRange(string paramName, string message) => throw new ArgumentOutOfRangeException(paramName, message);
     [DoesNotReturn]
     public static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
