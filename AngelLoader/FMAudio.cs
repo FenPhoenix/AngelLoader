@@ -205,6 +205,13 @@ internal static class FMAudio
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
+                        /*
+                        36 bytes encompasses the beginning of a wav file (RIFF/WAVE/fmt ) and up to the end of
+                        the "wBitsPerSample" field in the case where there's no chunk in between WAVE and fmt.
+                        It's also long enough that we can read the JUNK header out of the same buffer we initially
+                        used, and then after skipping the JUNK chunk we can reuse the buffer to read the forward-
+                        displaced fmt chunk in that case.
+                        */
                         Span<byte> buffer = stackalloc byte[36];
 
                         while (pd.CQ.TryDequeue(out string f))
