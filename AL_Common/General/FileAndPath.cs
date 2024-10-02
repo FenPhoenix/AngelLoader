@@ -526,7 +526,7 @@ public static partial class Common
 
         using AL_SafeFileHandle handle = AL_SafeFileHandle.Open(path, FileMode.Open, FileAccess.Write, FileShare.ReadWrite, FileOptions.None);
 
-        Win32Native.FILE_TIME fileTime = new(lastWriteTimeUtc.ToFileTimeUtc());
+        FILE_TIME fileTime = new(lastWriteTimeUtc.ToFileTimeUtc());
         if (!Win32Native.SetFileTime(handle, null, null, &fileTime))
         {
             __Error.WinIOError(Marshal.GetLastWin32Error(), path);

@@ -6,6 +6,21 @@ using System.Runtime.Versioning;
 
 namespace AL_Common;
 
+[StructLayout(LayoutKind.Sequential)]
+public struct FILE_TIME
+{
+    public FILE_TIME(long fileTime)
+    {
+        ftTimeLow = (uint)fileTime;
+        ftTimeHigh = (uint)(fileTime >> 32);
+    }
+
+    public readonly long ToTicks() => ((long)ftTimeHigh << 32) + ftTimeLow;
+
+    internal uint ftTimeLow;
+    internal uint ftTimeHigh;
+}
+
 internal static class Win32Native
 {
     internal const int ERROR_FILE_NOT_FOUND = 0x2;
@@ -62,24 +77,6 @@ internal static class Win32Native
     // Security Quality of Service flags
     internal const int SECURITY_ANONYMOUS = ((int)SECURITY_IMPERSONATION_LEVEL.Anonymous << 16);
     internal const int SECURITY_SQOS_PRESENT = 0x00100000;
-
-    [StructLayout(LayoutKind.Sequential)]
-    internal struct FILE_TIME
-    {
-        public FILE_TIME(long fileTime)
-        {
-            ftTimeLow = (uint)fileTime;
-            ftTimeHigh = (uint)(fileTime >> 32);
-        }
-
-        public long ToTicks()
-        {
-            return ((long)ftTimeHigh << 32) + ftTimeLow;
-        }
-
-        internal uint ftTimeLow;
-        internal uint ftTimeHigh;
-    }
 
     [DllImport(KERNEL32, SetLastError = true)]
     [ResourceExposure(ResourceScope.None)]

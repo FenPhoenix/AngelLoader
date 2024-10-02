@@ -24,16 +24,6 @@ public static class FastIO_Native
 
     #region Classes / structs / enums
 
-    // Reimplementing this internal struct for output parity with DirectoryInfo.Get*
-    [StructLayout(LayoutKind.Sequential)]
-    public struct FILE_TIME
-    {
-        internal uint ftTimeLow;
-        internal uint ftTimeHigh;
-
-        public readonly long ToTicks() => ((long)ftTimeHigh << 32) + ftTimeLow;
-    }
-
     public readonly ref struct FileFinder
     {
         private const int FindExInfoBasic = 1;
