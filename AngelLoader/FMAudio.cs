@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
@@ -21,10 +22,6 @@ internal static class FMAudio
     // Lots of exceptions possible here... we need to decide which to actually bother the user about...
     // Maybe do similar to scanner, write all errors to log and then tell user there were errors during the
     // conversion.
-
-    private static readonly byte[] _riff = "RIFF"u8.ToArray();
-    private static readonly byte[] _wave = "WAVE"u8.ToArray();
-    private static readonly byte[] _fmt = "fmt "u8.ToArray();
 
     private static CancellationTokenSource _conversionCts = new();
     private static void CancelToken() => _conversionCts.CancelIfNotDisposed();
@@ -206,7 +203,7 @@ internal static class FMAudio
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
-                        Span<byte> buffer = stackalloc byte[4];
+                        Span<byte> buffer = stackalloc byte[36];
 
                         while (pd.CQ.TryDequeue(out string f))
                         {
@@ -336,21 +333,6 @@ internal static class FMAudio
 
         #region Local functions
 
-        /*
-        @MT_TASK: Some files have a "JUNK" chunk before the "fmt " chunk, which we don't handle here.
-        When encountering this chunk we fall back to the slow method. We could handle this in here for a speedup.
-
-        Spec of the "JUNK" chunk:
-        https://www.daubnet.com/en/file-format-riff
-
-        Name   | Size       | Description
-        ------------------------------------------------------------
-        ID     | 4 byte     | four ASCII character identifier 'JUNK'
-        Size   | 4 byte     | size of Data
-        Data   | Size bytes | nothing
-        unused | 1 byte     | present if Size is odd 
-        ------------------------------------------------------------
-        */
         static int GetBitDepthFast(string file, Span<byte> buffer)
         {
             // In case we read past the end of the file or can't open the file or whatever. We're trying
@@ -358,6 +340,11 @@ internal static class FMAudio
             // it in a minute.
             try
             {
+                const uint RIFF = 0x46464952; // "RIFF"
+                const uint WAVE = 0x45564157; // "WAVE"
+                const uint JUNK = 0x4B4E554A; // "JUNK"
+                const uint fmt_ = 0x20746D66; // "fmt "
+
                 using AL_SafeFileHandle fileHandle = AL_SafeFileHandle.Open(
                     file,
                     FileMode.Open,
@@ -365,25 +352,54 @@ internal static class FMAudio
                     FileShare.Read,
                     FileOptions.None);
                 long fileLength = RandomAccess.GetLength(fileHandle);
-                if (fileLength < 36) return -1;
+                if (fileLength < buffer.Length) return -1;
 
-                // @MT_TASK: We should have the buffer be 36 bytes and read the whole thing in at once.
-                // Should we pad it to 64? Research this!
-                // Note if we handle "JUNK" then we won't be able to read it all in one go, because the existence
-                // and length of that chunk is unknowable in advance. We'll need to go back and re-read if we
-                // find that chunk, which should still be way faster than the ffprobe slow path.
-                _ = RandomAccess.Read(fileHandle, buffer, 0);
-                if (!buffer.StartsWith(_riff)) return -1;
+                int bytesRead = RandomAccess.Read(fileHandle, buffer, 0);
+                if (bytesRead < buffer.Length) return -1;
 
-                _ = RandomAccess.Read(fileHandle, buffer, 8);
-                if (!buffer.StartsWith(_wave)) return 0;
+                if (Unsafe.ReadUnaligned<uint>(ref buffer[0]) != RIFF) return -1;
 
-                _ = RandomAccess.Read(fileHandle, buffer, 12);
-                if (!buffer.StartsWith(_fmt)) return 0;
+                if (Unsafe.ReadUnaligned<uint>(ref buffer[8]) != WAVE) return 0;
 
-                _ = RandomAccess.Read(fileHandle, buffer, 34);
-                ushort bits = (ushort)(buffer[0] | buffer[1] << 8);
-                return bits;
+                uint afterWaveHeader = Unsafe.ReadUnaligned<uint>(ref buffer[12]);
+
+                /*
+                Spec of the "JUNK" chunk:
+                https://www.daubnet.com/en/file-format-riff
+
+                Name   | Size       | Description
+                ------------------------------------------------------------
+                ID     | 4 byte     | four ASCII character identifier 'JUNK'
+                Size   | 4 byte     | size of Data
+                Data   | Size bytes | nothing
+                unused | 1 byte     | present if Size is odd 
+                ------------------------------------------------------------
+
+                Maybe it's possible for multiple JUNK chunks to exist in a row (not sure), and there's apparently
+                a PAD chunk that can exist too, but whatever, if we see those, we'll just fall back for now...
+                */
+                if (afterWaveHeader == JUNK)
+                {
+                    uint junkSize = Unsafe.ReadUnaligned<uint>(ref buffer[16]);
+                    if (junkSize % 2 != 0) junkSize++;
+                    if (fileLength < 20 + junkSize + 4 + 20) return 0;
+                    bytesRead = RandomAccess.Read(fileHandle, buffer, 20 + junkSize);
+                    if (bytesRead < buffer.Length) return 0;
+                    uint expectedFmtHeader = Unsafe.ReadUnaligned<uint>(ref buffer[0]);
+                    if (expectedFmtHeader != fmt_) return 0;
+
+                    ushort bits = Unsafe.ReadUnaligned<ushort>(ref buffer[22]);
+                    return bits;
+                }
+                else if (afterWaveHeader == fmt_)
+                {
+                    ushort bits = Unsafe.ReadUnaligned<ushort>(ref buffer[34]);
+                    return bits;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             catch
             {
