@@ -1,4 +1,6 @@
-﻿using System;
+﻿// @MT_TASK: Test identicality for wav bits detection between previous and current versions before release
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
