@@ -6,8 +6,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     #region Clamping
 
     /// <summary>
@@ -97,8 +95,6 @@ public static partial class Common
     {
         return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
-
-    #endregion
 
     #endregion
 }

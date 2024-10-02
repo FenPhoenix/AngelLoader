@@ -9,8 +9,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     /// <summary>
     /// Uses <see cref="StringComparison.Ordinal"/>.
     /// </summary>
@@ -412,8 +410,6 @@ public static partial class Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CharAppearsExactlyOnce(this string value, char character) => value.CountCharsUpToAmount(character, 2) == 1;
-
-    #endregion
 
     #endregion
 }

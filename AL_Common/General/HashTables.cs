@@ -5,8 +5,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Classes
-
     private static readonly PathComparer _pathComparer = new();
     public sealed class PathComparer : StringComparer
     {
@@ -75,6 +73,4 @@ public static partial class Common
         public DictionaryI(IDictionary<string, TValue> collection) : base(collection, StringComparer.OrdinalIgnoreCase) { }
 #endif
     }
-
-    #endregion
 }

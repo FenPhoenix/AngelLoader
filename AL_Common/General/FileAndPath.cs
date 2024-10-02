@@ -10,8 +10,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     #region Forward/backslash conversion
 
     public static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
@@ -534,6 +532,4 @@ public static partial class Common
             __Error.WinIOError(Marshal.GetLastWin32Error(), path);
         }
     }
-
-    #endregion
 }
