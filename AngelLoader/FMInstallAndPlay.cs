@@ -2088,7 +2088,6 @@ internal static partial class FMInstallAndPlay
                 FMAudio.ConvertAsPartOfInstall(
                     validAudioConvertibleFM,
                     AudioConvert.MP3ToWAV,
-                    buffer.FileStreamBuffer,
                     cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2098,7 +2097,6 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.OGGToWAV,
-                        buffer.FileStreamBuffer,
                         cancellationToken);
                 }
 
@@ -2109,7 +2107,6 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.WAVToWAV16,
-                        buffer.FileStreamBuffer,
                         cancellationToken);
                 }
 

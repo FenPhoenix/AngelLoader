@@ -80,8 +80,6 @@ internal static class FMAudio
                 cancelAction: single ? null : CancelToken
             );
 
-            byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
-
             await Task.Run(() =>
             {
                 for (int i = 0; i < validFMs.Count; i++)
@@ -93,7 +91,7 @@ internal static class FMAudio
                         percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
                     );
 
-                    ConvertToWAVs(fm, convertType, fileStreamBuffer, CancellationToken.None);
+                    ConvertToWAVs(fm, convertType, CancellationToken.None);
 
                     if (!single && _conversionCts.IsCancellationRequested) return;
                 }
@@ -147,10 +145,9 @@ internal static class FMAudio
     internal static ConvertAudioError ConvertAsPartOfInstall(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
-        byte[] fileStreamBuffer,
         CancellationToken ct)
     {
-        return ConvertToWAVs(fm, type, fileStreamBuffer, ct);
+        return ConvertToWAVs(fm, type, ct);
     }
 
     /*
@@ -164,7 +161,6 @@ internal static class FMAudio
     private static ConvertAudioError ConvertToWAVs(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
-        byte[] fileStreamBuffer,
         CancellationToken ct)
     {
         if (type == AudioConvert.WAVToWAV16)
@@ -210,7 +206,7 @@ internal static class FMAudio
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
-                        BinaryBuffer buffer = new();
+                        Span<byte> buffer = stackalloc byte[4];
 
                         while (pd.CQ.TryDequeue(out string f))
                         {
@@ -221,7 +217,7 @@ internal static class FMAudio
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                            int bits = GetBitDepthFast(f, buffer, fileStreamBuffer);
+                            int bits = GetBitDepthFast(f, buffer);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -340,29 +336,33 @@ internal static class FMAudio
 
         #region Local functions
 
-        static int GetBitDepthFast(string file, BinaryBuffer buffer, byte[] fileStreamBuffer)
+        static int GetBitDepthFast(string file, Span<byte> buffer)
         {
             // In case we read past the end of the file or can't open the file or whatever. We're trying
             // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
             // it in a minute.
             try
             {
-                using FileStreamReadFast fs = FileStreamReadFast.Create(file, fileStreamBuffer);
+                using AL_SafeFileHandle fileHandle = AL_SafeFileHandle.Open(
+                    file,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.Read,
+                    FileOptions.None);
+                long fileLength = RandomAccess.GetLength(fileHandle);
+                if (fileLength < 36) return -1;
 
-                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                if (!buffer.Buffer.StartsWith(_riff)) return -1;
+                _ = RandomAccess.Read(fileHandle, buffer, 0);
+                if (!buffer.StartsWith(_riff)) return -1;
 
-                fs.Seek(4, SeekOrigin.Current);
+                _ = RandomAccess.Read(fileHandle, buffer, 8);
+                if (!buffer.StartsWith(_wave)) return 0;
 
-                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                if (!buffer.Buffer.StartsWith(_wave)) return 0;
+                _ = RandomAccess.Read(fileHandle, buffer, 12);
+                if (!buffer.StartsWith(_fmt)) return 0;
 
-                _ = fs.ReadAll(buffer.Buffer.Cleared(), 0, 4);
-                if (!buffer.Buffer.StartsWith(_fmt)) return 0;
-
-                fs.Seek(18, SeekOrigin.Current);
-
-                ushort bits = BinaryRead.ReadUInt16(fs, buffer);
+                _ = RandomAccess.Read(fileHandle, buffer, 34);
+                ushort bits = (ushort)(buffer[0] | buffer[1] << 8);
                 return bits;
             }
             catch

@@ -96,7 +96,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     internal bool CanSeek => !IsClosed && GetFileType() == FileTypes.FILE_TYPE_DISK;
 
-    internal static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+    public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
     {
         // Don't pop up a dialog for reading from an empty floppy drive
         int oldMode = Win32Native.SetErrorMode(Win32Native.SEM_FAILCRITICALERRORS);
