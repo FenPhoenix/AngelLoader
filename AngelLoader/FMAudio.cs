@@ -367,6 +367,11 @@ internal static class FMAudio
                 long fileLength = RandomAccess.GetLength(fileHandle);
                 if (fileLength < 36) return -1;
 
+                // @MT_TASK: We should have the buffer be 36 bytes and read the whole thing in at once.
+                // Should we pad it to 64? Research this!
+                // Note if we handle "JUNK" then we won't be able to read it all in one go, because the existence
+                // and length of that chunk is unknowable in advance. We'll need to go back and re-read if we
+                // find that chunk, which should still be way faster than the ffprobe slow path.
                 _ = RandomAccess.Read(fileHandle, buffer, 0);
                 if (!buffer.StartsWith(_riff)) return -1;
 
