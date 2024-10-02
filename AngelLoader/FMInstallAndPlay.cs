@@ -1755,12 +1755,12 @@ internal static partial class FMInstallAndPlay
                         return false;
                     }
 
-                    ZipContext_Threaded_Pool zipCtxPool = new();
+                    ZipContext_Pool zipCtxPool = new();
+                    ZipContext_Threaded_Pool zipCtxThreadedPool = new();
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
                         Buffers buffer = new();
-                        ZipContext zipCtx = new();
 
                         while (pd.CQ.TryDequeue(out FMData fmData))
                         {
@@ -1779,13 +1779,14 @@ internal static partial class FMInstallAndPlay
                                         ? InstallFMZip_ThreadedPerEntry(
                                             progress,
                                             fmData,
-                                            zipCtxPool)
+                                            zipCtxPool,
+                                            zipCtxThreadedPool)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
                                             buffer.ExtractTempBuffer,
                                             buffer.FileStreamBuffer,
-                                            zipCtx)
+                                            zipCtxPool)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
                                             progress,
@@ -2169,11 +2170,14 @@ internal static partial class FMInstallAndPlay
     private static FMInstallResult InstallFMZip_ThreadedPerEntry(
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
-        ZipContext_Threaded_Pool zipCtxPool)
+        ZipContext_Pool zipCtxPool,
+        ZipContext_Threaded_Pool zipCtxThreadedPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
         {
+            using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
+
             string fmDataArchivePath = fmData.ArchivePath;
 
             Directory.CreateDirectory(fmInstalledPath);
@@ -2184,9 +2188,7 @@ internal static partial class FMInstallAndPlay
             var sw0 = Stopwatch.StartNew();
 #endif
 
-            // @MT_TASK: We get MORE entry allocs here than the per-archive version, because we don't reuse the lists
-            // But reusing the lists is tricky because they're referenced externally
-            ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath);
+            ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath, zipCtxRentScope.ZipCtx);
 
             _installCts.Token.ThrowIfCancellationRequested();
 
@@ -2199,7 +2201,6 @@ internal static partial class FMInstallAndPlay
 
             int threadCount = GetThreadCountForParallelOperation(entriesCount);
 
-            // @MT_TASK: Remove for final release
 #if TIMING_TEST
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
 #endif
@@ -2242,18 +2243,18 @@ internal static partial class FMInstallAndPlay
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
 
-                    ZipContext_Threaded zipCtx = zipCtxPool.Rent(fs, fs.Length);
+                    ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
                     try
                     {
                         ZipArchiveFast_Threaded.ExtractToFile_Fast(
                             entry,
-                            zipCtx,
+                            zipCtxThreaded,
                             extractedName,
                             overwrite: true);
                     }
                     finally
                     {
-                        zipCtxPool.Return(zipCtx);
+                        zipCtxThreadedPool.Return(zipCtxThreaded);
                     }
 
                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
@@ -2301,7 +2302,7 @@ internal static partial class FMInstallAndPlay
         FMData fmData,
         byte[] tempBuffer,
         byte[] fileStreamBuffer,
-        ZipContext ctx)
+        ZipContext_Pool zipCtxPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
@@ -2311,11 +2312,13 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
+            using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
+
             using ZipArchiveFast archive =
                 GetReadModeZipArchiveCharEnc_Fast(
                     fmData.ArchivePath,
                     fileStreamBuffer,
-                    ctx);
+                    zipCtxRentScope.ZipCtx);
 
             ListFast<ZipArchiveFastEntry> entries = archive.Entries;
             int entriesCount = entries.Count;

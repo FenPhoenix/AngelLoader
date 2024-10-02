@@ -265,12 +265,14 @@ public sealed class ZipArchiveFast : IDisposable
     /// Returns a list of entries that have been prepared for use in a per-entry threaded scenario.
     /// </summary>
     /// <param name="fileName"></param>
+    /// <param name="zipCtx"></param>
     /// <returns></returns>
-    public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName)
+    public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName, ZipContext zipCtx)
     {
         using FileStreamReadFast fs = FileStreamReadFast.Create(fileName, new byte[FileStreamBufferSize]);
         using ZipArchiveFast archive = new(
             stream: fs,
+            context: zipCtx,
             allowUnsupportedEntries: true,
             entryNameEncoding: GetOEMCodePageOrFallback(Encoding.UTF8));
 

@@ -72,7 +72,58 @@ public sealed class ZipContext
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
+    public void Set()
+    {
+        ArchiveSubReadStream.SetSuperStream(null);
+    }
+
+    public void Unset()
+    {
+        ArchiveSubReadStream.SetSuperStream(null);
+    }
+
     // Keep it simple and don't dispose sub read stream as disposal is a no-op for it
+}
+
+public sealed class ZipContext_Pool
+{
+    private readonly ConcurrentBag<ZipContext> _contexts = new();
+
+    public ZipContext Rent()
+    {
+        if (_contexts.TryTake(out ZipContext item))
+        {
+            item.Set();
+            return item;
+        }
+        else
+        {
+            return new ZipContext();
+        }
+    }
+
+    public void Return(ZipContext item)
+    {
+        item.Unset();
+        _contexts.Add(item);
+    }
+}
+
+public readonly ref struct ZipContextRentScope
+{
+    private readonly ZipContext_Pool _zipCtxPool;
+    public readonly ZipContext ZipCtx;
+
+    public ZipContextRentScope(ZipContext_Pool zipCtxPool)
+    {
+        _zipCtxPool = zipCtxPool;
+        ZipCtx = zipCtxPool.Rent();
+    }
+
+    public void Dispose()
+    {
+        _zipCtxPool.Return(ZipCtx);
+    }
 }
 
 public sealed class ZipContext_Threaded_Pool
