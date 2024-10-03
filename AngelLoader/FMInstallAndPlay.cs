@@ -1756,8 +1756,7 @@ internal static partial class FMInstallAndPlay
 
                     ZipContext_Pool zipCtxPool = new();
                     ZipContext_Threaded_Pool zipCtxThreadedPool = new();
-                    FixedLengthByteArrayPool fileStreamBufferPool = new(FileStreamBufferSize);
-                    FixedLengthByteArrayPool streamCopyBufferPool = new(StreamCopyBufferSize);
+                    IOBufferPools ioBufferPools = new();
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
@@ -1782,18 +1781,17 @@ internal static partial class FMInstallAndPlay
                                             fmData,
                                             zipCtxPool,
                                             zipCtxThreadedPool,
-                                            fileStreamBufferPool)
+                                            ioBufferPools)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
-                                            streamCopyBufferPool,
-                                            fileStreamBufferPool,
+                                            ioBufferPools,
                                             zipCtxPool)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
                                             progress,
                                             fmData,
-                                            streamCopyBufferPool)
+                                            ioBufferPools)
                                         : InstallFMSevenZip(
                                             progress,
                                             fmData);
@@ -1817,8 +1815,7 @@ internal static partial class FMInstallAndPlay
 
                             DoPostInstallWork(
                                 fmData,
-                                streamCopyBufferPool,
-                                fileStreamBufferPool,
+                                ioBufferPools,
                                 pd.PO.CancellationToken,
                                 ref fmsFinishedCount,
                                 ctx,
@@ -2052,8 +2049,7 @@ internal static partial class FMInstallAndPlay
 
     private static void DoPostInstallWork(
         FMData fmData,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool,
+        IOBufferPools ioBufferPools,
         CancellationToken cancellationToken,
         ref int fmsFinishedCount,
         DarkLoaderBackupContext ctx,
@@ -2143,8 +2139,7 @@ internal static partial class FMInstallAndPlay
                 ctx,
                 fmData.FM,
                 archivePaths,
-                streamCopyBufferPool,
-                fileStreamBufferPool,
+                ioBufferPools,
                 cancellationToken);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -2172,7 +2167,7 @@ internal static partial class FMInstallAndPlay
         FMData fmData,
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
-        FixedLengthByteArrayPool fileStreamBufferPool)
+        IOBufferPools ioBufferPools)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
@@ -2189,7 +2184,11 @@ internal static partial class FMInstallAndPlay
             var sw0 = Stopwatch.StartNew();
 #endif
 
-            ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath, zipCtxRentScope.ZipCtx, fileStreamBufferPool);
+            ListFast<ZipArchiveFastEntry> entries =
+                ZipArchiveFast.GetThreadableEntries(
+                    fmDataArchivePath,
+                    zipCtxRentScope.ZipCtx,
+                    ioBufferPools.FileStream);
 
             _installCts.Token.ThrowIfCancellationRequested();
 
@@ -2219,12 +2218,12 @@ internal static partial class FMInstallAndPlay
             {
                 var report = new ProgressReport_Install();
 
-                byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
-                byte[] fileStreamWriteBuffer = fileStreamBufferPool.Rent();
+                byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
+                byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
 
                 try
                 {
-                    using var fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamBuffer);
+                    using var fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
 
                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -2280,8 +2279,8 @@ internal static partial class FMInstallAndPlay
                 }
                 finally
                 {
-                    fileStreamBufferPool.Return(fileStreamWriteBuffer);
-                    fileStreamBufferPool.Return(fileStreamBuffer);
+                    ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                    ioBufferPools.FileStream.Return(fileStreamReadBuffer);
                 }
             });
 
@@ -2311,8 +2310,7 @@ internal static partial class FMInstallAndPlay
     InstallFMZip(
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool,
+        IOBufferPools ioBufferPools,
         ZipContext_Pool zipCtxPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
@@ -2325,15 +2323,15 @@ internal static partial class FMInstallAndPlay
 
             using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
 
-            byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
-            byte[] fileStreamWriteBuffer = fileStreamBufferPool.Rent();
-            byte[] tempBuffer = streamCopyBufferPool.Rent();
+            byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
+            byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
+            byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
             try
             {
                 using ZipArchiveFast archive =
                     GetReadModeZipArchiveCharEnc_Fast(
                         fmData.ArchivePath,
-                        fileStreamBuffer,
+                        fileStreamReadBuffer,
                         zipCtxRentScope.ZipCtx);
 
                 ListFast<ZipArchiveFastEntry> entries = archive.Entries;
@@ -2351,16 +2349,16 @@ internal static partial class FMInstallAndPlay
                         entryNumber: i,
                         entriesCount: entriesCount,
                         fmData: fmData,
-                        destBuffer: fileStreamWriteBuffer,
-                        tempBuffer: tempBuffer,
+                        fileStreamWriteBuffer: fileStreamWriteBuffer,
+                        streamCopyBuffer: streamCopyBuffer,
                         ct: _installCts.Token);
                 }
             }
             finally
             {
-                streamCopyBufferPool.Return(tempBuffer);
-                fileStreamBufferPool.Return(fileStreamWriteBuffer);
-                fileStreamBufferPool.Return(fileStreamBuffer);
+                ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+                ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                ioBufferPools.FileStream.Return(fileStreamReadBuffer);
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -2386,8 +2384,8 @@ internal static partial class FMInstallAndPlay
         int entryNumber,
         int entriesCount,
         FMData fmData,
-        byte[] destBuffer,
-        byte[] tempBuffer,
+        byte[] fileStreamWriteBuffer,
+        byte[] streamCopyBuffer,
         CancellationToken ct)
     {
         string fileName = entry.FullName;
@@ -2404,7 +2402,7 @@ internal static partial class FMInstallAndPlay
             ct.ThrowIfCancellationRequested();
         }
 
-        archive.ExtractToFile_Fast(entry, destBuffer, extractedName, overwrite: true, tempBuffer);
+        archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, fileStreamWriteBuffer, streamCopyBuffer);
 
         ct.ThrowIfCancellationRequested();
 
@@ -2426,11 +2424,11 @@ internal static partial class FMInstallAndPlay
     InstallFMRar(
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
-        FixedLengthByteArrayPool streamCopyBufferPool)
+        IOBufferPools ioBufferPools)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
-        byte[] tempBuffer = streamCopyBufferPool.Rent();
+        byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
         try
         {
             var report = new ProgressReport_Install();
@@ -2464,7 +2462,7 @@ internal static partial class FMInstallAndPlay
                             fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
                     }
 
-                    reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+                    reader.ExtractToFile_Fast(extractedName, overwrite: true, ioBufferPools);
 
                     File_UnSetReadOnly(extractedName);
 
@@ -2498,7 +2496,7 @@ internal static partial class FMInstallAndPlay
         }
         finally
         {
-            streamCopyBufferPool.Return(tempBuffer);
+            ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
         }
     }
 

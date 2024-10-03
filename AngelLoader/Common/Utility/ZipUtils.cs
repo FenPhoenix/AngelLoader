@@ -142,11 +142,10 @@ public static partial class Utils
         this ZipArchiveEntry entry,
         string fileName,
         bool overwrite,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool)
+        IOBufferPools ioBufferPools)
     {
-        byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
-        byte[] streamCopyBuffer = streamCopyBufferPool.Rent();
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
             using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
@@ -158,8 +157,8 @@ public static partial class Utils
         }
         finally
         {
-            streamCopyBufferPool.Return(streamCopyBuffer);
-            fileStreamBufferPool.Return(fileStreamBuffer);
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
 
@@ -167,17 +166,26 @@ public static partial class Utils
         this RarArchiveEntry entry,
         string fileName,
         bool overwrite,
-        byte[] tempBuffer)
+        IOBufferPools ioBufferPools)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
-        using (Stream source = entry.OpenEntryStream())
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+        try
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = entry.OpenEntryStream())
+            {
+                StreamCopyNoAlloc(source, destination, streamCopyBuffer);
+            }
+            if (entry.LastModifiedTime != null)
+            {
+                SetLastWriteTime_Fast(fileName, (DateTime)entry.LastModifiedTime);
+            }
         }
-        if (entry.LastModifiedTime != null)
+        finally
         {
-            SetLastWriteTime_Fast(fileName, (DateTime)entry.LastModifiedTime);
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
 
@@ -185,18 +193,27 @@ public static partial class Utils
         this RarReader reader,
         string fileName,
         bool overwrite,
-        byte[] tempBuffer)
+        IOBufferPools ioBufferPools)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
-        using (Stream source = reader.OpenEntryStream())
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+        try
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = reader.OpenEntryStream())
+            {
+                StreamCopyNoAlloc(source, destination, streamCopyBuffer);
+            }
+            DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
+            if (lastModifiedTime != null)
+            {
+                SetLastWriteTime_Fast(fileName, (DateTime)lastModifiedTime);
+            }
         }
-        DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
-        if (lastModifiedTime != null)
+        finally
         {
-            SetLastWriteTime_Fast(fileName, (DateTime)lastModifiedTime);
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
 }

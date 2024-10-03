@@ -255,8 +255,7 @@ internal static partial class FMInstallAndPlay
         DarkLoaderBackupContext ctx,
         FanMission fm,
         List<string> archivePaths,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool,
+        IOBufferPools ioBufferPools,
         CancellationToken ct)
     {
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
@@ -279,7 +278,7 @@ internal static partial class FMInstallAndPlay
         string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
         string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
+        byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
         try
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamReadBuffer);
@@ -305,7 +304,7 @@ internal static partial class FMInstallAndPlay
                             continue;
                         }
                         Directory.CreateDirectory(savesFullPath);
-                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, ioBufferPools);
                     }
                     else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                     {
@@ -314,7 +313,7 @@ internal static partial class FMInstallAndPlay
                             continue;
                         }
                         Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, ioBufferPools);
                     }
 
                     if (ct.IsCancellationRequested) return;
@@ -345,7 +344,7 @@ internal static partial class FMInstallAndPlay
                                 continue;
                             }
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, ioBufferPools);
                         }
 
                         if (ct.IsCancellationRequested) return;
@@ -420,7 +419,7 @@ internal static partial class FMInstallAndPlay
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                         }
-                        entry.ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                        entry.ExtractToFile_Fast(finalFileName, overwrite: true, ioBufferPools);
 
                         if (ct.IsCancellationRequested) return;
                     }
@@ -429,7 +428,7 @@ internal static partial class FMInstallAndPlay
         }
         finally
         {
-            fileStreamBufferPool.Return(fileStreamReadBuffer);
+            ioBufferPools.FileStream.Return(fileStreamReadBuffer);
         }
 
         if (!restoreSavesAndScreensOnly)

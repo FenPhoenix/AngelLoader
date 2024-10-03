@@ -94,6 +94,12 @@ public static partial class Common
         public void Return(byte[] item) => _items.Add(item);
     }
 
+    public sealed class IOBufferPools
+    {
+        public readonly FixedLengthByteArrayPool StreamCopy = new(StreamCopyBufferSize);
+        public readonly FixedLengthByteArrayPool FileStream = new(FileStreamBufferSize);
+    }
+
     #endregion
 
     #region Methods

@@ -138,22 +138,21 @@ internal static class FMCache
                      (fmArchivePath.EndsWithI(".pk4") || fmArchivePath.EndsWithI(".zip"))) ||
                     fm.Archive.ExtIsZip())
                 {
-                    FixedLengthByteArrayPool streamCopyBufferPool = new(StreamCopyBufferSize);
-                    FixedLengthByteArrayPool fileStreamBufferPool = new(FileStreamBufferSize);
+                    IOBufferPools ioBufferPools = new();
 
-                    Extract_Zip(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, streamCopyBufferPool, fileStreamBufferPool);
+                    Extract_Zip(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, ioBufferPools);
 
                     if (fm.Game != Game.TDM)
                     {
                         if (HtmlReadmeExists(readmes, fmCachePath))
                         {
-                            ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, streamCopyBufferPool, fileStreamBufferPool);
+                            ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, ioBufferPools);
                         }
                     }
                 }
                 else if (fm.Archive.ExtIsRar())
                 {
-                    byte[] rarExtractTempBuffer = new byte[StreamCopyBufferSize];
+                    IOBufferPools ioBufferPools = new();
 
                     RarArchive? archive = null;
                     try
@@ -167,22 +166,22 @@ internal static class FMCache
                             using var fs = File_OpenReadFast(fmArchivePath);
                             using (var reader = RarReader.Open(fs))
                             {
-                                await Extract_RarSolid(reader, fmCachePath, readmes, rarExtractTempBuffer, entriesCount);
+                                await Extract_RarSolid(reader, fmCachePath, readmes, ioBufferPools, entriesCount);
                             }
 
                             if (HtmlReadmeExists(readmes, fmCachePath))
                             {
-                                await ExtractHtmlRefFiles_RarSolid(fmArchivePath, fmCachePath);
+                                await ExtractHtmlRefFiles_RarSolid(fmArchivePath, fmCachePath, ioBufferPools);
                             }
                         }
                         else
                         {
-                            Extract_Rar(archive, fmCachePath, readmes, rarExtractTempBuffer);
+                            Extract_Rar(archive, fmCachePath, readmes, ioBufferPools);
                             archive.Dispose();
 
                             if (HtmlReadmeExists(readmes, fmCachePath))
                             {
-                                ExtractHtmlRefFiles_Rar(fmArchivePath, fmCachePath, rarExtractTempBuffer);
+                                ExtractHtmlRefFiles_Rar(fmArchivePath, fmCachePath, ioBufferPools);
                             }
                         }
                     }
@@ -276,10 +275,9 @@ internal static class FMCache
         string fmCachePath,
         List<string> readmes,
         bool isTDM,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool)
+        IOBufferPools ioBufferPools)
     {
-        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
+        byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
         try
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
@@ -338,7 +336,7 @@ internal static class FMCache
                     // ignore, message already logged
                     continue;
                 }
-                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, ioBufferPools);
                 File_UnSetReadOnly(fileNameFull);
                 readmes.Add(fn);
             }
@@ -349,7 +347,7 @@ internal static class FMCache
         }
         finally
         {
-            fileStreamBufferPool.Return(fileStreamReadBuffer);
+            ioBufferPools.FileStream.Return(fileStreamReadBuffer);
         }
     }
 
@@ -444,7 +442,11 @@ internal static class FMCache
         });
     }
 
-    private static void Extract_Rar(RarArchive archive, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer)
+    private static void Extract_Rar(
+        RarArchive archive,
+        string fmCachePath,
+        List<string> readmes,
+        IOBufferPools ioBufferPools)
     {
         try
         {
@@ -490,7 +492,7 @@ internal static class FMCache
                     // ignore, message already logged
                     continue;
                 }
-                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, ioBufferPools);
                 File_UnSetReadOnly(fileNameFull);
                 readmes.Add(fn);
             }
@@ -501,7 +503,12 @@ internal static class FMCache
         }
     }
 
-    private static async Task Extract_RarSolid(RarReader reader, string fmCachePath, List<string> readmes, byte[] rarExtractTempBuffer, int entriesCount)
+    private static async Task Extract_RarSolid(
+        RarReader reader,
+        string fmCachePath,
+        List<string> readmes,
+        IOBufferPools ioBufferPools,
+        int entriesCount)
     {
         InitProgressBoxForSolidExtract();
 
@@ -558,7 +565,7 @@ internal static class FMCache
                         // ignore, message already logged
                         continue;
                     }
-                    reader.ExtractToFile_Fast(fileNameFull, overwrite: true, rarExtractTempBuffer);
+                    reader.ExtractToFile_Fast(fileNameFull, overwrite: true, ioBufferPools);
                     File_UnSetReadOnly(fileNameFull);
                     readmes.Add(fn);
                 }
@@ -579,12 +586,11 @@ internal static class FMCache
     private static void ExtractHtmlRefFiles_Zip(
         string fmArchivePath,
         string fmCachePath,
-        FixedLengthByteArrayPool streamCopyBufferPool,
-        FixedLengthByteArrayPool fileStreamBufferPool)
+        IOBufferPools ioBufferPools)
     {
         List<NameAndIndex> htmlRefFiles = new();
 
-        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
+        byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
         try
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
@@ -644,14 +650,14 @@ internal static class FMCache
                     }
                     string? path = Path.GetDirectoryName(f.Name);
                     if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                    entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                    entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, ioBufferPools);
                     File_UnSetReadOnly(finalFileName);
                 }
             }
         }
         finally
         {
-            fileStreamBufferPool.Return(fileStreamReadBuffer);
+            ioBufferPools.FileStream.Return(fileStreamReadBuffer);
         }
     }
 
@@ -748,7 +754,10 @@ internal static class FMCache
         }
     }
 
-    private static void ExtractHtmlRefFiles_Rar(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer)
+    private static void ExtractHtmlRefFiles_Rar(
+        string fmArchivePath,
+        string fmCachePath,
+        IOBufferPools ioBufferPools)
     {
         List<NameAndIndex> htmlRefFiles = new();
 
@@ -809,13 +818,16 @@ internal static class FMCache
                 }
                 string? path = Path.GetDirectoryName(f.Name);
                 if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+                entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, ioBufferPools);
                 File_UnSetReadOnly(finalFileName);
             }
         }
     }
 
-    private static async Task ExtractHtmlRefFiles_RarSolid(string fmArchivePath, string fmCachePath)
+    private static async Task ExtractHtmlRefFiles_RarSolid(
+        string fmArchivePath,
+        string fmCachePath,
+        IOBufferPools ioBufferPools)
     {
         await Task.Run(() =>
         {
@@ -853,8 +865,6 @@ internal static class FMCache
                         message1: LText.ProgressBox.CachingHTMLReferencedFiles,
                         percent: 0);
 
-                    byte[] tempBuffer = new byte[StreamCopyBufferSize];
-
                     using (RarReader reader = RarReader.Open(fs))
                     {
                         int i = -1;
@@ -888,7 +898,7 @@ internal static class FMCache
                                         fullName.Substring(0, fullName.Rel_LastIndexOfDirSep())));
                                 }
 
-                                reader.ExtractToFile_Fast(extractedName, overwrite: true, tempBuffer);
+                                reader.ExtractToFile_Fast(extractedName, overwrite: true, ioBufferPools);
                                 File_UnSetReadOnly(extractedName);
                             }
 

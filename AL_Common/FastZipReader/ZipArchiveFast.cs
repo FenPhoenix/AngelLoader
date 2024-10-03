@@ -477,15 +477,15 @@ public sealed class ZipArchiveFast : IDisposable
 
     public void ExtractToFile_Fast(
         ZipArchiveFastEntry entry,
-        byte[] destBuffer,
         string fileName,
         bool overwrite,
-        byte[] tempBuffer)
+        byte[] fileStreamWriteBuffer,
+        byte[] streamCopyBuffer)
     {
-        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, destBuffer))
+        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamWriteBuffer))
         using (Stream source = OpenEntry(entry))
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            StreamCopyNoAlloc(source, destination, streamCopyBuffer);
         }
         SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
     }
