@@ -8,6 +8,7 @@ using static AL_Common.LanguageSupport;
 
 namespace FMScanner;
 
+// IMPORTANT: No lazy-loading allowed in here. Everything should be immediate-initialized for thread safety.
 public sealed class ReadOnlyDataContext
 {
     internal readonly Scanner.TitlesStrNaturalNumericSort TitlesStrNaturalNumericSort = new();
@@ -21,8 +22,7 @@ public sealed class ReadOnlyDataContext
         return ret;
     }
 
-    private byte[]? _romanNumeralToDecimalTable;
-    internal byte[] RomanNumeralToDecimalTable => _romanNumeralToDecimalTable ??= InitRomanToDecimalTable();
+    internal readonly byte[] RomanNumeralToDecimalTable = InitRomanToDecimalTable();
 
     internal readonly Scanner.AsciiCharWithNonAsciiEquivalent[] _nonAsciiCharsWithAsciiEquivalents =
     {
