@@ -66,16 +66,8 @@ internal static class Win32Native
     // From WinBase.h
     internal const int SEM_FAILCRITICALERRORS = 1;
 
-    internal enum SECURITY_IMPERSONATION_LEVEL
-    {
-        Anonymous = 0,
-        Identification = 1,
-        Impersonation = 2,
-        Delegation = 3,
-    }
-
     // Security Quality of Service flags
-    internal const int SECURITY_ANONYMOUS = ((int)SECURITY_IMPERSONATION_LEVEL.Anonymous << 16);
+    internal const int SECURITY_ANONYMOUS = 0;
     internal const int SECURITY_SQOS_PRESENT = 0x00100000;
 
     [DllImport(KERNEL32, SetLastError = true)]

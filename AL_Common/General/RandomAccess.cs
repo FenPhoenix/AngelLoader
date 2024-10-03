@@ -60,7 +60,7 @@ public static class RandomAccess
         return ReadAtOffset(handle, buffer, fileOffset);
     }
 
-    internal static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
+    private static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
     {
         //if (handle.IsAsync)
         //{
@@ -117,7 +117,7 @@ public static class RandomAccess
         return result;
     }
 
-    internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
+    private static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
     {
         int errorCode = Marshal.GetLastWin32Error();
 
@@ -146,7 +146,7 @@ public static class RandomAccess
         return errorCode;
     }
 
-    internal static bool IsEndOfFile(int errorCode, AL_SafeFileHandle handle, long fileOffset)
+    private static bool IsEndOfFile(int errorCode, AL_SafeFileHandle handle, long fileOffset)
     {
         switch (errorCode)
         {

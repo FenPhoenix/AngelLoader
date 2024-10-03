@@ -43,7 +43,9 @@ internal static class Win32Marshal
                     string.IsNullOrEmpty(path) ? SR.UnauthorizedAccess_IODenied_NoPathName : string.Format(SR.UnauthorizedAccess_IODenied_Path, path));
             case Interop.Errors.ERROR_ALREADY_EXISTS:
                 if (string.IsNullOrEmpty(path))
+                {
                     goto default;
+                }
                 return new IOException(string.Format(SR.IO_AlreadyExists_Name, path), MakeHRFromErrorCode(errorCode));
             case Interop.Errors.ERROR_FILENAME_EXCED_RANGE:
                 return new PathTooLongException(
@@ -54,7 +56,9 @@ internal static class Win32Marshal
                     MakeHRFromErrorCode(errorCode));
             case Interop.Errors.ERROR_FILE_EXISTS:
                 if (string.IsNullOrEmpty(path))
+                {
                     goto default;
+                }
                 return new IOException(string.Format(SR.IO_FileExists_Name, path), MakeHRFromErrorCode(errorCode));
             case Interop.Errors.ERROR_OPERATION_ABORTED:
                 return new OperationCanceledException();
@@ -89,27 +93,14 @@ internal static class Win32Marshal
     /// <summary>
     /// If not already an HRESULT, returns an HRESULT for the specified Win32 error code.
     /// </summary>
-    internal static int MakeHRFromErrorCode(int errorCode)
+    private static int MakeHRFromErrorCode(int errorCode)
     {
         // Don't convert it if it is already an HRESULT
         if ((0xFFFF0000 & errorCode) != 0)
-            return errorCode;
-
-        return unchecked(((int)0x80070000) | errorCode);
-    }
-
-    /// <summary>
-    /// Returns a Win32 error code for the specified HRESULT if it came from FACILITY_WIN32
-    /// If not, returns the HRESULT unchanged
-    /// </summary>
-    internal static int TryMakeWin32ErrorCodeFromHR(int hr)
-    {
-        if ((0xFFFF0000 & hr) == 0x80070000)
         {
-            // Win32 error, Win32Marshal.GetExceptionForWin32Error expects the Win32 format
-            hr &= 0x0000FFFF;
+            return errorCode;
         }
 
-        return hr;
+        return unchecked(((int)0x80070000) | errorCode);
     }
 }

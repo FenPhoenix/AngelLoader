@@ -195,21 +195,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         internal BOOL bInheritHandle;
     }
 
-    /// <summary>
-    /// Blittable version of Windows BOOL type. It is convenient in situations where
-    /// manual marshalling is required, or to avoid overhead of regular bool marshalling.
-    /// </summary>
-    /// <remarks>
-    /// Some Windows APIs return arbitrary integer values although the return type is defined
-    /// as BOOL. It is best to never compare BOOL to TRUE. Always use bResult != BOOL.FALSE
-    /// or bResult == BOOL.FALSE .
-    /// </remarks>
-    private enum BOOL : int
-    {
-        FALSE = 0,
-        TRUE = 1,
-    }
-
     private static class GenericOperations
     {
         internal const int GENERIC_READ = unchecked((int)0x80000000);
@@ -223,6 +208,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool CloseHandle(IntPtr handle);
 
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     private static class FileTypes
     {
         internal const int FILE_TYPE_UNKNOWN = 0x0000;
@@ -368,7 +354,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// </summary>
     private static bool IsValidDriveChar(char value)
     {
-        return (uint)((value | 0x20) - 'a') <= (uint)('z' - 'a');
+        return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
     }
 
     /// <summary>

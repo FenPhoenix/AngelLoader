@@ -52,7 +52,7 @@ internal static class __Error
         {
             if (!isInvalidPath)
             {
-                new FileIOPermission(FileIOPermissionAccess.PathDiscovery, new string[] { path }).Demand();
+                new FileIOPermission(FileIOPermissionAccess.PathDiscovery, new[] { path }).Demand();
                 safeToReturn = true;
             }
         }
@@ -82,13 +82,16 @@ internal static class __Error
     }
 
     // After calling GetLastWin32Error(), it clears the last error field, so you must save the
-    // HResult and pass it to this method.  This method will determine the appropriate 
+    // HResult and pass it to this method.  This method will determine the appropriate
     // exception to throw dependent on your error, and depending on the error, insert a string
     // into the message gotten from the ResourceManager.
     internal static void WinIOError(int errorCode, string maybeFullPath)
     {
         // This doesn't have to be perfect, but is a perf optimization.
-        bool isInvalidPath = errorCode == Win32Native.ERROR_INVALID_NAME || errorCode == Win32Native.ERROR_BAD_PATHNAME;
+        bool isInvalidPath = errorCode
+            is Win32Native.ERROR_INVALID_NAME
+            or Win32Native.ERROR_BAD_PATHNAME;
+
         string str = GetDisplayablePath(maybeFullPath, isInvalidPath);
 
         switch (errorCode)
@@ -177,9 +180,14 @@ internal static class __Error
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, BestFitMapping = false)]
     [SecurityCritical]
-    private static extern int FormatMessage(int dwFlags, IntPtr lpSource,
-        int dwMessageId, int dwLanguageId, StringBuilder lpBuffer,
-        int nSize, IntPtr va_list_arguments);
+    private static extern int FormatMessage(
+        int dwFlags,
+        IntPtr lpSource,
+        int dwMessageId,
+        int dwLanguageId,
+        StringBuilder lpBuffer,
+        int nSize,
+        IntPtr va_list_arguments);
 
     // Gets an error message for a Win32 error code.
     [SecurityCritical]
