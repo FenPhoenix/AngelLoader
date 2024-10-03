@@ -1644,15 +1644,6 @@ internal static partial class FMInstallAndPlay
             "Install started: " + InstallStarted;
     }
 
-    private sealed class Buffers
-    {
-        private byte[]? _extractBuffer;
-        private byte[]? _fileStreamBuffer;
-
-        internal byte[] ExtractTempBuffer => _extractBuffer ??= new byte[StreamCopyBufferSize];
-        internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
-    }
-
     internal static async Task<bool> Install(params FanMission[] fms)
     {
         using var dsw = new DisableScreenshotWatchers();
@@ -1760,8 +1751,6 @@ internal static partial class FMInstallAndPlay
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
-                        Buffers buffer = new();
-
                         while (pd.CQ.TryDequeue(out FMData fmData))
                         {
                             fmData.InstallStarted = true;
