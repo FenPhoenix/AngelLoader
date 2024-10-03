@@ -32,8 +32,8 @@ internal static class FMAudio
 
     // @PERF_TODO: ffmpeg can do multiple files in one run. Switch to that, and see if ffprobe can do it too.
 
-    // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play
-    // such. Converting all >16bit wavs to 16 bit fixes this.
+    // OpenAL doesn't play nice with anything over 16 bits, blasting out white noise when it tries to play such.
+    // Converting all >16bit wavs to 16 bit fixes this.
 
     // From the FMSel manual:
     // "The game _can_ play OGG files but it can under some circumstance cause short hiccups, on less powerful
@@ -344,9 +344,6 @@ internal static class FMAudio
 
         static int GetBitDepthFast(string file, Span<byte> buffer)
         {
-            // In case we read past the end of the file or can't open the file or whatever. We're trying
-            // to be fast, so don't check explicitly. If there's a more serious IO problem, we'll catch
-            // it in a minute.
             try
             {
                 const uint RIFF = 0x46464952; // "RIFF"
@@ -416,9 +413,6 @@ internal static class FMAudio
             }
         }
 
-        // @PERF_TODO: I could maybe speed this up by having the process not be recreated all the time?
-        // I suspect it may be just the fact that it's a separate program that's constantly being started
-        // and stopped. If that's the case, MEH. :\
         static int GetBitDepthSlow(string file)
         {
             int ret = 0;
