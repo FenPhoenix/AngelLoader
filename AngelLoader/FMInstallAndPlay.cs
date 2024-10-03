@@ -2045,15 +2045,22 @@ internal static partial class FMInstallAndPlay
         List<string> archivePaths,
         int fmDataListCount)
     {
+        byte[] fmSelInfFileStreamBuffer = ioBufferPools.FileStream.Rent();
         try
         {
-            using var sw = new StreamWriter(Path.Combine(fmData.InstalledPath, Paths.FMSelInf));
+            string fileName = Path.Combine(fmData.InstalledPath, Paths.FMSelInf);
+            using FileStreamFast fs = FileStreamFast.CreateWrite(fileName, overwrite: true, fmSelInfFileStreamBuffer);
+            using var sw = new StreamWriter(fs);
             sw.WriteLine("Name=" + fmData.FM.InstalledDir);
             sw.WriteLine("Archive=" + fmData.FM.Archive);
         }
         catch (Exception ex)
         {
             Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmData.InstalledPath, ex);
+        }
+        finally
+        {
+            ioBufferPools.FileStream.Return(fmSelInfFileStreamBuffer);
         }
 
         // Only Dark engine games need audio conversion
