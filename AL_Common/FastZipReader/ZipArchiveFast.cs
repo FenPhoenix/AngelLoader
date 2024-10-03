@@ -266,17 +266,26 @@ public sealed class ZipArchiveFast : IDisposable
     /// </summary>
     /// <param name="fileName"></param>
     /// <param name="zipCtx"></param>
+    /// <param name="bufferPool"></param>
     /// <returns></returns>
-    public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName, ZipContext zipCtx)
+    public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName, ZipContext zipCtx, FixedLengthByteArrayPool bufferPool)
     {
-        using FileStreamFast fs = FileStreamFast.CreateRead(fileName, new byte[FileStreamBufferSize]);
-        using ZipArchiveFast archive = new(
-            stream: fs,
-            context: zipCtx,
-            allowUnsupportedEntries: true,
-            entryNameEncoding: GetOEMCodePageOrFallback(Encoding.UTF8));
+        byte[] buffer = bufferPool.Rent();
+        try
+        {
+            using FileStreamFast fs = FileStreamFast.CreateRead(fileName, buffer);
+            using ZipArchiveFast archive = new(
+                stream: fs,
+                context: zipCtx,
+                allowUnsupportedEntries: true,
+                entryNameEncoding: GetOEMCodePageOrFallback(Encoding.UTF8));
 
-        return archive.Entries;
+            return archive.Entries;
+        }
+        finally
+        {
+            bufferPool.Return(buffer);
+        }
     }
 
     private bool _entriesInitialized;

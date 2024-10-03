@@ -2186,7 +2186,7 @@ internal static partial class FMInstallAndPlay
             var sw0 = Stopwatch.StartNew();
 #endif
 
-            ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath, zipCtxRentScope.ZipCtx);
+            ListFast<ZipArchiveFastEntry> entries = ZipArchiveFast.GetThreadableEntries(fmDataArchivePath, zipCtxRentScope.ZipCtx, fileStreamBufferPool);
 
             _installCts.Token.ThrowIfCancellationRequested();
 
