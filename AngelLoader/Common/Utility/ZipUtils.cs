@@ -142,15 +142,25 @@ public static partial class Utils
         this ZipArchiveEntry entry,
         string fileName,
         bool overwrite,
-        byte[] tempBuffer)
+        FixedLengthByteArrayPool streamCopyBufferPool,
+        FixedLengthByteArrayPool fileStreamBufferPool)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
-        using (Stream source = entry.Open())
+        byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
+        byte[] streamCopyBuffer = streamCopyBufferPool.Rent();
+        try
         {
-            StreamCopyNoAlloc(source, destination, tempBuffer);
+            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = entry.Open())
+            {
+                StreamCopyNoAlloc(source, destination, streamCopyBuffer);
+            }
+            SetLastWriteTime_Fast(fileName, entry.LastWriteTime.DateTime);
         }
-        SetLastWriteTime_Fast(fileName, entry.LastWriteTime.DateTime);
+        finally
+        {
+            streamCopyBufferPool.Return(streamCopyBuffer);
+            fileStreamBufferPool.Return(fileStreamBuffer);
+        }
     }
 
     internal static void ExtractToFile_Fast(

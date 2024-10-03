@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress;
 using SharpCompress.Archives.Rar;
@@ -138,16 +139,16 @@ internal static class FMCache
                      (fmArchivePath.EndsWithI(".pk4") || fmArchivePath.EndsWithI(".zip"))) ||
                     fm.Archive.ExtIsZip())
                 {
-                    byte[] zipExtractTempBuffer = new byte[StreamCopyBufferSize];
-                    byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
+                    FixedLengthByteArrayPool streamCopyBufferPool = new(StreamCopyBufferSize);
+                    FixedLengthByteArrayPool fileStreamBufferPool = new(FileStreamBufferSize);
 
-                    Extract_Zip(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, zipExtractTempBuffer, fileStreamBuffer);
+                    Extract_Zip(fmArchivePath, fmCachePath, readmes, fm.Game == Game.TDM, streamCopyBufferPool, fileStreamBufferPool);
 
                     if (fm.Game != Game.TDM)
                     {
                         if (HtmlReadmeExists(readmes, fmCachePath))
                         {
-                            ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, zipExtractTempBuffer, fileStreamBuffer);
+                            ExtractHtmlRefFiles_Zip(fmArchivePath, fmCachePath, streamCopyBufferPool, fileStreamBufferPool);
                         }
                     }
                 }
@@ -271,11 +272,18 @@ internal static class FMCache
     // We need to block the UI thread one way or another, to prevent starting a zillion parallel tasks that
     // could interfere with each other, especially as they include disk access. Zip extraction, being fast,
     // just blocks by not being async, while the async 7-zip extraction blocks by putting up a progress box.
-    private static void Extract_Zip(string fmArchivePath, string fmCachePath, List<string> readmes, bool isTDM, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void Extract_Zip(
+        string fmArchivePath,
+        string fmCachePath,
+        List<string> readmes,
+        bool isTDM,
+        FixedLengthByteArrayPool streamCopyBufferPool,
+        FixedLengthByteArrayPool fileStreamBufferPool)
     {
+        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
         try
         {
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
 
             for (int i = 0; i < archive.Entries.Count; i++)
             {
@@ -331,7 +339,7 @@ internal static class FMCache
                     // ignore, message already logged
                     continue;
                 }
-                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, zipExtractTempBuffer);
+                entry.ExtractToFile_Fast(fileNameFull, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
                 File_UnSetReadOnly(fileNameFull);
                 readmes.Add(fn);
             }
@@ -339,6 +347,10 @@ internal static class FMCache
         catch (Exception ex)
         {
             Log(ErrorText.Ex + "in zip extract to cache", ex);
+        }
+        finally
+        {
+            fileStreamBufferPool.Return(fileStreamReadBuffer);
         }
     }
 
@@ -565,70 +577,82 @@ internal static class FMCache
 
     // An html file might have other files it references, so do a recursive search through the archive to find
     // them all, and extract only the required files to the cache. That way we keep the disk footprint way down.
-    private static void ExtractHtmlRefFiles_Zip(string fmArchivePath, string fmCachePath, byte[] zipExtractTempBuffer, byte[] fileStreamBuffer)
+    private static void ExtractHtmlRefFiles_Zip(
+        string fmArchivePath,
+        string fmCachePath,
+        FixedLengthByteArrayPool streamCopyBufferPool,
+        FixedLengthByteArrayPool fileStreamBufferPool)
     {
         List<NameAndIndex> htmlRefFiles = new();
 
-        using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
-
-        var entries = archive.Entries;
-
-        foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
+        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
+        try
         {
-            if (!f.ExtIsHtml()) continue;
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
 
-            string html = File.ReadAllText(f);
+            var entries = archive.Entries;
 
-            for (int i = 0; i < entries.Count; i++)
+            foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
-                ZipArchiveEntry e = entries[i];
-                AddHtmlRefFile(name: e.Name, fullName: e.FullName, i, html, htmlRefFiles);
+                if (!f.ExtIsHtml()) continue;
+
+                string html = File.ReadAllText(f);
+
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    ZipArchiveEntry e = entries[i];
+                    AddHtmlRefFile(name: e.Name, fullName: e.FullName, i, html, htmlRefFiles);
+                }
+            }
+
+            if (htmlRefFiles.Count > 0)
+            {
+                for (int ri = 0; ri < htmlRefFiles.Count; ri++)
+                {
+                    NameAndIndex f = htmlRefFiles[ri];
+                    ZipArchiveEntry re = entries[f.Index];
+
+                    if (RefFileExcluded(f.Name, re.Length)) continue;
+
+                    string content;
+                    using (var es = re.Open())
+                    {
+                        using var sr = new StreamReader(es);
+                        content = sr.ReadToEnd();
+                    }
+
+                    for (int ei = 0; ei < entries.Count; ei++)
+                    {
+                        ZipArchiveEntry e = entries[ei];
+                        AddHtmlRefFile(name: e.Name, fullName: e.FullName, ei, content, htmlRefFiles);
+                    }
+                }
+            }
+
+            if (htmlRefFiles.Count > 0)
+            {
+                foreach (NameAndIndex f in htmlRefFiles)
+                {
+                    string finalFileName;
+                    try
+                    {
+                        finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                    }
+                    catch
+                    {
+                        // ignore, message already logged
+                        continue;
+                    }
+                    string? path = Path.GetDirectoryName(f.Name);
+                    if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
+                    entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
+                    File_UnSetReadOnly(finalFileName);
+                }
             }
         }
-
-        if (htmlRefFiles.Count > 0)
+        finally
         {
-            for (int ri = 0; ri < htmlRefFiles.Count; ri++)
-            {
-                NameAndIndex f = htmlRefFiles[ri];
-                ZipArchiveEntry re = entries[f.Index];
-
-                if (RefFileExcluded(f.Name, re.Length)) continue;
-
-                string content;
-                using (var es = re.Open())
-                {
-                    using var sr = new StreamReader(es);
-                    content = sr.ReadToEnd();
-                }
-
-                for (int ei = 0; ei < entries.Count; ei++)
-                {
-                    ZipArchiveEntry e = entries[ei];
-                    AddHtmlRefFile(name: e.Name, fullName: e.FullName, ei, content, htmlRefFiles);
-                }
-            }
-        }
-
-        if (htmlRefFiles.Count > 0)
-        {
-            foreach (NameAndIndex f in htmlRefFiles)
-            {
-                string finalFileName;
-                try
-                {
-                    finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
-                }
-                catch
-                {
-                    // ignore, message already logged
-                    continue;
-                }
-                string? path = Path.GetDirectoryName(f.Name);
-                if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
-                entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
-                File_UnSetReadOnly(finalFileName);
-            }
+            fileStreamBufferPool.Return(fileStreamReadBuffer);
         }
     }
 

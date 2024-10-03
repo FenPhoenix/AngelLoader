@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -255,8 +256,8 @@ internal static partial class FMInstallAndPlay
         DarkLoaderBackupContext ctx,
         FanMission fm,
         List<string> archivePaths,
-        byte[] zipExtractTempBuffer,
-        byte[] fileStreamBuffer,
+        FixedLengthByteArrayPool streamCopyBufferPool,
+        FixedLengthByteArrayPool fileStreamBufferPool,
         CancellationToken ct)
     {
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
@@ -279,8 +280,10 @@ internal static partial class FMInstallAndPlay
         string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
         string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
-        using (ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamBuffer))
+        byte[] fileStreamReadBuffer = fileStreamBufferPool.Rent();
+        try
         {
+            using ZipArchive archive = GetReadModeZipArchiveCharEnc(backupFile.Name, fileStreamReadBuffer);
             if (ct.IsCancellationRequested) return;
 
             var entries = archive.Entries;
@@ -303,7 +306,7 @@ internal static partial class FMInstallAndPlay
                             continue;
                         }
                         Directory.CreateDirectory(savesFullPath);
-                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
                     }
                     else if (fm.Game == Game.SS2 && (_ss2SaveDirsInZipRegex.IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                     {
@@ -312,7 +315,7 @@ internal static partial class FMInstallAndPlay
                             continue;
                         }
                         Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, zipExtractTempBuffer);
+                        entry.ExtractToFile_Fast(finalFilePath, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
                     }
 
                     if (ct.IsCancellationRequested) return;
@@ -343,7 +346,7 @@ internal static partial class FMInstallAndPlay
                                 continue;
                             }
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, fn.Substring(0, fn.Rel_LastIndexOfDirSep())));
-                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+                            entry.ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
                         }
 
                         if (ct.IsCancellationRequested) return;
@@ -418,12 +421,16 @@ internal static partial class FMInstallAndPlay
                         {
                             Directory.CreateDirectory(Path.Combine(fmInstalledPath, efn.Substring(0, efn.Rel_LastIndexOfDirSep())));
                         }
-                        entry.ExtractToFile_Fast(finalFileName, overwrite: true, zipExtractTempBuffer);
+                        entry.ExtractToFile_Fast(finalFileName, overwrite: true, streamCopyBufferPool, fileStreamBufferPool);
 
                         if (ct.IsCancellationRequested) return;
                     }
                 }
             }
+        }
+        finally
+        {
+            fileStreamBufferPool.Return(fileStreamReadBuffer);
         }
 
         if (!restoreSavesAndScreensOnly)

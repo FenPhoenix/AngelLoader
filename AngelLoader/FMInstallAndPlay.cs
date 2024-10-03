@@ -1817,7 +1817,8 @@ internal static partial class FMInstallAndPlay
 
                             DoPostInstallWork(
                                 fmData,
-                                buffer,
+                                streamCopyBufferPool,
+                                fileStreamBufferPool,
                                 pd.PO.CancellationToken,
                                 ref fmsFinishedCount,
                                 ctx,
@@ -2051,7 +2052,8 @@ internal static partial class FMInstallAndPlay
 
     private static void DoPostInstallWork(
         FMData fmData,
-        Buffers buffer,
+        FixedLengthByteArrayPool streamCopyBufferPool,
+        FixedLengthByteArrayPool fileStreamBufferPool,
         CancellationToken cancellationToken,
         ref int fmsFinishedCount,
         DarkLoaderBackupContext ctx,
@@ -2141,8 +2143,8 @@ internal static partial class FMInstallAndPlay
                 ctx,
                 fmData.FM,
                 archivePaths,
-                buffer.ExtractTempBuffer,
-                buffer.FileStreamBuffer,
+                streamCopyBufferPool,
+                fileStreamBufferPool,
                 cancellationToken);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
