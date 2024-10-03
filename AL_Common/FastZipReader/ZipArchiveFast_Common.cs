@@ -139,13 +139,13 @@ public sealed class ZipContext_Threaded
 
     // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
     // won't have any problems in here.
-    public ZipContext_Threaded(FileStreamReadFast archiveStream, long archiveStreamLength)
+    public ZipContext_Threaded(FileStreamFast archiveStream, long archiveStreamLength)
     {
         ArchiveSubReadStream = new SubReadStream();
         Set(archiveStream, archiveStreamLength);
     }
 
-    public void Set(FileStreamReadFast archiveStream, long archiveStreamLength)
+    public void Set(FileStreamFast archiveStream, long archiveStreamLength)
     {
         ArchiveStream = archiveStream;
         ArchiveStreamLength = archiveStreamLength;
@@ -165,7 +165,7 @@ public sealed class ZipContext_Threaded_Pool
 {
     private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
 
-    public ZipContext_Threaded Rent(FileStreamReadFast archiveStream, long archiveStreamLength)
+    public ZipContext_Threaded Rent(FileStreamFast archiveStream, long archiveStreamLength)
     {
         if (_contexts.TryTake(out ZipContext_Threaded item))
         {

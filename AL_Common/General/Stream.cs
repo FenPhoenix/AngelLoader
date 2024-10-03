@@ -8,19 +8,24 @@ public static partial class Common
     #region Classes
 
     /// <summary>
-    /// A read-mode file stream with performance/allocation improvements.
+    /// A file stream with performance/allocation improvements.
     /// </summary>
-    public sealed class FileStreamReadFast : FileStream
+    public sealed class FileStreamFast : FileStream
     {
         private static bool _fieldStreamBufferFieldFound;
         private static FieldInfo? _fieldStreamBufferFieldInfo;
 
+        private readonly bool _writeMode;
         private long _length = -1;
         public override long Length
         {
             get
             {
-                if (_length == -1)
+                if (_writeMode)
+                {
+                    return base.Length;
+                }
+                else if (_length == -1)
                 {
                     _length = base.Length;
                 }
@@ -29,7 +34,7 @@ public static partial class Common
         }
 
         // Init reflection stuff in static ctor for thread safety
-        static FileStreamReadFast()
+        static FileStreamFast()
         {
             try
             {
@@ -53,26 +58,57 @@ public static partial class Common
             }
         }
 
-        public FileStreamReadFast(string path,
+        public FileStreamFast(
+            string path,
+            FileMode mode,
+            FileAccess access,
             FileShare share,
+            bool writeMode,
             int bufferSize)
-            : base(path, FileMode.Open, FileAccess.Read, share, bufferSize)
+            : base(path, mode, access, share, bufferSize)
         {
+            _writeMode = writeMode;
         }
 
-        public FileStreamReadFast(string path,
-            FileShare share)
-            : base(path, FileMode.Open, FileAccess.Read, share)
+        public FileStreamFast(
+            string path,
+            FileMode mode,
+            FileAccess access,
+            FileShare share,
+            bool writeMode)
+            : base(path, mode, access, share)
         {
+            _writeMode = writeMode;
         }
 
-        public static FileStreamReadFast Create(string path, byte[] buffer)
+        public static FileStreamFast CreateRead(string path, byte[] buffer)
         {
-            FileStreamReadFast fs =
+            FileStreamFast fs =
                 _fieldStreamBufferFieldFound
-                    ? new FileStreamReadFast(path, FileShare.Read, buffer.Length)
-                    : new FileStreamReadFast(path, FileShare.Read);
+                    ? new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false, buffer.Length)
+                    : new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false);
 
+            SetBuffer(fs, buffer);
+
+            return fs;
+        }
+
+        public static FileStreamFast CreateWrite(string path, bool overwrite, byte[] buffer)
+        {
+            FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+
+            FileStreamFast fs =
+                _fieldStreamBufferFieldFound
+                    ? new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true, buffer.Length)
+                    : new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true);
+
+            SetBuffer(fs, buffer);
+
+            return fs;
+        }
+
+        private static void SetBuffer(FileStreamFast fs, byte[] buffer)
+        {
             if (_fieldStreamBufferFieldFound)
             {
                 try
@@ -85,8 +121,6 @@ public static partial class Common
                     _fieldStreamBufferFieldInfo = null;
                 }
             }
-
-            return fs;
         }
     }
 

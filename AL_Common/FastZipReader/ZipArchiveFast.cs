@@ -269,7 +269,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// <returns></returns>
     public static ListFast<ZipArchiveFastEntry> GetThreadableEntries(string fileName, ZipContext zipCtx)
     {
-        using FileStreamReadFast fs = FileStreamReadFast.Create(fileName, new byte[FileStreamBufferSize]);
+        using FileStreamFast fs = FileStreamFast.CreateRead(fileName, new byte[FileStreamBufferSize]);
         using ZipArchiveFast archive = new(
             stream: fs,
             context: zipCtx,
@@ -468,12 +468,12 @@ public sealed class ZipArchiveFast : IDisposable
 
     public void ExtractToFile_Fast(
         ZipArchiveFastEntry entry,
+        byte[] destBuffer,
         string fileName,
         bool overwrite,
         byte[] tempBuffer)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, destBuffer))
         using (Stream source = OpenEntry(entry))
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);

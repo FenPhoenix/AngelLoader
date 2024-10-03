@@ -31,11 +31,11 @@ public static class ZipArchiveFast_Threaded
     public static void ExtractToFile_Fast(
         ZipArchiveFastEntry entry,
         ZipContext_Threaded context,
+        byte[] destBuffer,
         string fileName,
         bool overwrite)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, destBuffer))
         using (Stream source = OpenEntry(entry, context))
         {
             StreamCopyNoAlloc(source, destination, context.TempBuffer);

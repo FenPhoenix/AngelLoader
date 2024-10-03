@@ -581,7 +581,7 @@ internal static class Utility
         bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
         {
             reader.WriteEntryTo(destination);
         }

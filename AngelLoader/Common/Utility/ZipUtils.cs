@@ -18,7 +18,7 @@ public static partial class Utils
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
-        return new ZipArchive(FileStreamReadFast.Create(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
+        return new ZipArchive(FileStreamFast.CreateRead(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
     internal static ZipArchiveFast GetReadModeZipArchiveCharEnc_Fast(
@@ -29,7 +29,7 @@ public static partial class Utils
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
         return new ZipArchiveFast(
-            stream: FileStreamReadFast.Create(fileName, buffer),
+            stream: FileStreamFast.CreateRead(fileName, buffer),
             context: ctx,
             allowUnsupportedEntries: true,
             entryNameEncoding: enc);
@@ -110,7 +110,7 @@ public static partial class Utils
             CancellationToken cancellationToken)
         {
             FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-            using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+            using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
             using (Stream source = entry.Open())
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -145,7 +145,7 @@ public static partial class Utils
         byte[] tempBuffer)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
         using (Stream source = entry.Open())
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
@@ -160,7 +160,7 @@ public static partial class Utils
         byte[] tempBuffer)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
         using (Stream source = entry.OpenEntryStream())
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
@@ -178,7 +178,7 @@ public static partial class Utils
         byte[] tempBuffer)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
         using (Stream source = reader.OpenEntryStream())
         {
             StreamCopyNoAlloc(source, destination, tempBuffer);
