@@ -51,6 +51,18 @@ internal enum CompressionMethodValues : ushort
 
 public sealed class ZipCompressionMethodException(string message) : Exception(message);
 
+public sealed class FixedLengthByteArrayPool
+{
+    private readonly int _length;
+    private readonly ConcurrentBag<byte[]> _items = new();
+
+    public FixedLengthByteArrayPool(int length) => _length = length;
+
+    public byte[] Rent() => _items.TryTake(out byte[] item) ? item : new byte[_length];
+
+    public void Return(byte[] item) => _items.Add(item);
+}
+
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
 public sealed class ZipContext

@@ -1648,11 +1648,9 @@ internal static partial class FMInstallAndPlay
     {
         private byte[]? _extractBuffer;
         private byte[]? _fileStreamBuffer;
-        private byte[]? _fileStreamWriteBuffer;
 
         internal byte[] ExtractTempBuffer => _extractBuffer ??= new byte[StreamCopyBufferSize];
         internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
-        internal byte[] FileStreamWriteBuffer => _fileStreamWriteBuffer ??= new byte[FileStreamBufferSize];
     }
 
     internal static async Task<bool> Install(params FanMission[] fms)
@@ -1758,6 +1756,7 @@ internal static partial class FMInstallAndPlay
 
                     ZipContext_Pool zipCtxPool = new();
                     ZipContext_Threaded_Pool zipCtxThreadedPool = new();
+                    FixedLengthByteArrayPool fileStreamBufferPool = new(FileStreamBufferSize);
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
@@ -1781,13 +1780,13 @@ internal static partial class FMInstallAndPlay
                                             progress,
                                             fmData,
                                             zipCtxPool,
-                                            zipCtxThreadedPool)
+                                            zipCtxThreadedPool,
+                                            fileStreamBufferPool)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
                                             buffer.ExtractTempBuffer,
-                                            buffer.FileStreamBuffer,
-                                            buffer.FileStreamWriteBuffer,
+                                            fileStreamBufferPool,
                                             zipCtxPool)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
@@ -2169,7 +2168,8 @@ internal static partial class FMInstallAndPlay
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         ZipContext_Pool zipCtxPool,
-        ZipContext_Threaded_Pool zipCtxThreadedPool)
+        ZipContext_Threaded_Pool zipCtxThreadedPool,
+        FixedLengthByteArrayPool fileStreamBufferPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
@@ -2216,61 +2216,69 @@ internal static partial class FMInstallAndPlay
             {
                 var report = new ProgressReport_Install();
 
-                byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
-                byte[] fileWriteStreamBuffer = new byte[FileStreamBufferSize];
+                byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
+                byte[] fileStreamWriteBuffer = fileStreamBufferPool.Rent();
 
-                using var fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamBuffer);
-
-                pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
+                try
                 {
-                    // @MT_TASK: See if we can re-dedupe these loops again when we're done (even just partially)
-                    int entryNumber = entriesCount - pd.CQ.Count;
+                    using var fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamBuffer);
 
-                    string fileName = entry.FullName;
+                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                    if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
-
-                    string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                    if (fileName.Rel_ContainsDirSep())
+                    while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
                     {
-                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                        // @MT_TASK: See if we can re-dedupe these loops again when we're done (even just partially)
+                        int entryNumber = entriesCount - pd.CQ.Count;
+
+                        string fileName = entry.FullName;
+
+                        if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
+
+                        string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+                        if (fileName.Rel_ContainsDirSep())
+                        {
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        }
+
+                        ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
+                        try
+                        {
+                            ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                                entry,
+                                zipCtxThreaded,
+                                fileStreamWriteBuffer,
+                                extractedName,
+                                overwrite: true);
+                        }
+                        finally
+                        {
+                            zipCtxThreadedPool.Return(zipCtxThreaded);
+                        }
+
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                        File_UnSetReadOnly(extractedName);
+
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+
+                        report.ViewItemIndex = fmData.ViewItemIndex;
+                        report.Text = fmData.FM.Archive;
+                        report.Percent = percent;
+                        progress.Report(report);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
-
-                    ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
-                    try
-                    {
-                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                            entry,
-                            zipCtxThreaded,
-                            fileWriteStreamBuffer,
-                            extractedName,
-                            overwrite: true);
-                    }
-                    finally
-                    {
-                        zipCtxThreadedPool.Return(zipCtxThreaded);
-                    }
-
-                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                    File_UnSetReadOnly(extractedName);
-
-                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                    int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
-
-                    report.ViewItemIndex = fmData.ViewItemIndex;
-                    report.Text = fmData.FM.Archive;
-                    report.Percent = percent;
-                    progress.Report(report);
-
-                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                }
+                finally
+                {
+                    fileStreamBufferPool.Return(fileStreamWriteBuffer);
+                    fileStreamBufferPool.Return(fileStreamBuffer);
                 }
             });
 
@@ -2301,8 +2309,7 @@ internal static partial class FMInstallAndPlay
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         byte[] tempBuffer,
-        byte[] fileStreamBuffer,
-        byte[] fileStreamWriterBuffer,
+        FixedLengthByteArrayPool fileStreamBufferPool,
         ZipContext_Pool zipCtxPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
@@ -2315,30 +2322,41 @@ internal static partial class FMInstallAndPlay
 
             using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
 
-            using ZipArchiveFast archive =
-                GetReadModeZipArchiveCharEnc_Fast(
-                    fmData.ArchivePath,
-                    fileStreamBuffer,
-                    zipCtxRentScope.ZipCtx);
-
-            ListFast<ZipArchiveFastEntry> entries = archive.Entries;
-            int entriesCount = entries.Count;
-            for (int i = 0; i < entriesCount; i++)
+            byte[] fileStreamBuffer = fileStreamBufferPool.Rent();
+            byte[] fileStreamWriteBuffer = fileStreamBufferPool.Rent();
+            try
             {
-                ZipArchiveFastEntry entry = entries[i];
 
-                DoZipExtractLoop(
-                    fmInstalledPath: fmInstalledPath,
-                    archive: archive,
-                    entry: entry,
-                    progress: progress,
-                    report: report,
-                    entryNumber: i,
-                    entriesCount: entriesCount,
-                    fmData: fmData,
-                    destBuffer: fileStreamWriterBuffer,
-                    tempBuffer: tempBuffer,
-                    ct: _installCts.Token);
+                using ZipArchiveFast archive =
+                    GetReadModeZipArchiveCharEnc_Fast(
+                        fmData.ArchivePath,
+                        fileStreamBuffer,
+                        zipCtxRentScope.ZipCtx);
+
+                ListFast<ZipArchiveFastEntry> entries = archive.Entries;
+                int entriesCount = entries.Count;
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    ZipArchiveFastEntry entry = entries[i];
+
+                    DoZipExtractLoop(
+                        fmInstalledPath: fmInstalledPath,
+                        archive: archive,
+                        entry: entry,
+                        progress: progress,
+                        report: report,
+                        entryNumber: i,
+                        entriesCount: entriesCount,
+                        fmData: fmData,
+                        destBuffer: fileStreamWriteBuffer,
+                        tempBuffer: tempBuffer,
+                        ct: _installCts.Token);
+                }
+            }
+            finally
+            {
+                fileStreamBufferPool.Return(fileStreamWriteBuffer);
+                fileStreamBufferPool.Return(fileStreamBuffer);
             }
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
