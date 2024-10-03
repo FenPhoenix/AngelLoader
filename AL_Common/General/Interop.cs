@@ -9,10 +9,135 @@ using System.Threading;
 
 namespace AL_Common;
 
-internal static partial class Interop
+internal static class Interop
 {
-    internal static partial class Kernel32
+    internal static class Kernel32
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern unsafe bool GetFileInformationByHandleEx(AL_SafeFileHandle hFile, int FileInformationClass, void* lpFileInformation, uint dwBufferSize);
+
+        // From FILE_INFO_BY_HANDLE_CLASS
+        // Use for GetFileInformationByHandleEx
+        internal const int FileStandardInfo = 1;
+
+        internal struct FILE_STANDARD_INFO
+        {
+            internal long AllocationSize;
+            internal long EndOfFile;
+            internal uint NumberOfLinks;
+            internal BOOL DeletePending;
+            internal BOOL Directory;
+        }
+
+        // https://learn.microsoft.com/windows/win32/api/winioctl/ni-winioctl-fsctl_get_reparse_point
+        internal const int FSCTL_GET_REPARSE_POINT = 0x000900a8;
+
+        // https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddstor/ni-ntddstor-ioctl_storage_read_capacity
+        internal const int IOCTL_STORAGE_READ_CAPACITY = 0x002D5140;
+
+        [DllImport("kernel32.dll", EntryPoint = "DeviceIoControl", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern unsafe bool DeviceIoControl(
+            SafeHandle hDevice,
+            uint dwIoControlCode,
+            void* lpInBuffer,
+            uint nInBufferSize,
+            void* lpOutBuffer,
+            uint nOutBufferSize,
+            out uint lpBytesReturned,
+            IntPtr lpOverlapped);
+
+        // https://learn.microsoft.com/windows/win32/devio/storage-read-capacity
+        [StructLayout(LayoutKind.Sequential)]
+        internal unsafe struct STORAGE_READ_CAPACITY
+        {
+            internal uint Version;
+            internal uint Size;
+            internal uint BlockLength;
+            internal long NumberOfBlocks;
+            internal long DiskLength;
+        }
+
+        private const int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
+        private const int FORMAT_MESSAGE_FROM_HMODULE = 0x00000800;
+        private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
+        private const int FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
+        private const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
+        private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
+
+        [DllImport("kernel32.dll", EntryPoint = "FormatMessageW", SetLastError = true)]
+        private static extern unsafe int FormatMessage(
+            int dwFlags,
+            IntPtr lpSource,
+            uint dwMessageId,
+            int dwLanguageId,
+            void* lpBuffer,
+            int nSize,
+            IntPtr arguments);
+
+        /// <summary>
+        ///     Returns a string message for the specified Win32 error code.
+        /// </summary>
+        internal static string GetMessage(int errorCode) =>
+            GetMessage(errorCode, IntPtr.Zero);
+
+        internal static unsafe string GetMessage(int errorCode, IntPtr moduleHandle)
+        {
+            int flags = FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM |
+                        FORMAT_MESSAGE_ARGUMENT_ARRAY;
+            if (moduleHandle != IntPtr.Zero)
+            {
+                flags |= FORMAT_MESSAGE_FROM_HMODULE;
+            }
+
+            // First try to format the message into the stack based buffer.  Most error messages willl fit.
+            Span<char> stackBuffer = stackalloc char[256]; // arbitrary stack limit
+            fixed (char* bufferPtr = stackBuffer)
+            {
+                int length = FormatMessage(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr,
+                    stackBuffer.Length, IntPtr.Zero);
+                if (length > 0)
+                {
+                    return GetAndTrimString(stackBuffer.Slice(0, length));
+                }
+            }
+
+            // We got back an error.  If the error indicated that there wasn't enough room to store
+            // the error message, then call FormatMessage again, but this time rather than passing in
+            // a buffer, have the method allocate one, which we then need to free.
+            if (Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER)
+            {
+                IntPtr nativeMsgPtr = default;
+                try
+                {
+                    int length = FormatMessage(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle,
+                        unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, IntPtr.Zero);
+                    if (length > 0)
+                    {
+                        return GetAndTrimString(new ReadOnlySpan<char>((char*)nativeMsgPtr, length));
+                    }
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(nativeMsgPtr);
+                }
+            }
+
+            // Couldn't get a message, so manufacture one.
+            return $"Unknown error (0x{errorCode:x})";
+        }
+
+        private static string GetAndTrimString(ReadOnlySpan<char> buffer)
+        {
+            int length = buffer.Length;
+            while (length > 0 && buffer[length - 1] <= 32)
+            {
+                length--; // trim off spaces and non-printable ASCII chars at the end of the resource
+            }
+            return buffer.Slice(0, length).ToString();
+        }
+
         [DllImport("kernel32.dll", SetLastError = true)]
         internal static extern unsafe int ReadFile(
             SafeHandle handle,
@@ -31,7 +156,7 @@ internal static partial class Interop
     }
 
     // As defined in winerror.h and https://learn.microsoft.com/windows/win32/debug/system-error-codes
-    internal static partial class Errors
+    internal static class Errors
     {
         internal const int ERROR_SUCCESS = 0x0;
         internal const int ERROR_INVALID_FUNCTION = 0x1;
@@ -154,7 +279,7 @@ internal static partial class Interop
         internal const int ERROR_EVT_PUBLISHER_DISABLED = 0x3ABD;
     }
 
-    internal static partial class NtDll
+    internal static class NtDll
     {
         [DllImport("ntdll.dll")]
         internal static extern unsafe int NtQueryInformationFile(
@@ -167,17 +292,7 @@ internal static partial class Interop
         internal const uint FileModeInformation = 16;
 
         internal const int STATUS_INVALID_HANDLE = unchecked((int)0xC0000008);
-    }
 
-    internal static partial class Kernel32
-    {
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern unsafe bool GetFileInformationByHandleEx(AL_SafeFileHandle hFile, int FileInformationClass, void* lpFileInformation, uint dwBufferSize);
-    }
-
-    internal static partial class NtDll
-    {
         // https://msdn.microsoft.com/en-us/library/windows/hardware/ff550671.aspx
         [StructLayout(LayoutKind.Sequential)]
         public struct IO_STATUS_BLOCK
@@ -212,10 +327,7 @@ internal static partial class Interop
                 public IntPtr Pointer;
             }
         }
-    }
 
-    internal static partial class NtDll
-    {
         // https://msdn.microsoft.com/en-us/library/bb432380.aspx
         // https://msdn.microsoft.com/en-us/library/windows/hardware/ff566424.aspx
         [DllImport("ntdll.dll")]
@@ -813,6 +925,33 @@ internal static partial class Interop
             /// </summary>
             FILE_GENERIC_EXECUTE = 0x20000000 // GENERIC_EXECUTE
         }
+
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680600(v=vs.85).aspx
+        [DllImport("ntdll.dll")]
+        public static extern uint RtlNtStatusToDosError(int Status);
+    }
+
+    internal static class StatusOptions
+    {
+        // See the NT_SUCCESS macro in the Windows SDK, and
+        // https://learn.microsoft.com/windows-hardware/drivers/kernel/using-ntstatus-values
+        internal static bool NT_SUCCESS(uint ntStatus) => (int)ntStatus >= 0;
+
+        // Error codes from ntstatus.h
+        internal const uint STATUS_SUCCESS = 0x00000000;
+        internal const uint STATUS_SOME_NOT_MAPPED = 0x00000107;
+        internal const uint STATUS_NO_MORE_FILES = 0x80000006;
+        internal const uint STATUS_INVALID_PARAMETER = 0xC000000D;
+        internal const uint STATUS_FILE_NOT_FOUND = 0xC000000F;
+        internal const uint STATUS_NO_MEMORY = 0xC0000017;
+        internal const uint STATUS_ACCESS_DENIED = 0xC0000022;
+        internal const uint STATUS_OBJECT_NAME_NOT_FOUND = 0xC0000034;
+        internal const uint STATUS_QUOTA_EXCEEDED = 0xC0000044;
+        internal const uint STATUS_ACCOUNT_RESTRICTION = 0xC000006E;
+        internal const uint STATUS_NONE_MAPPED = 0xC0000073;
+        internal const uint STATUS_INSUFFICIENT_RESOURCES = 0xC000009A;
+        internal const uint STATUS_DISK_FULL = 0xC000007F;
+        internal const uint STATUS_FILE_TOO_LARGE = 0xC0000904;
     }
 
     /// <summary>
@@ -978,10 +1117,7 @@ internal static partial class Interop
         /// </summary>
         Dynamic = 0x01
     }
-}
 
-internal static partial class Interop
-{
     // https://msdn.microsoft.com/en-us/library/windows/desktop/aa380518.aspx
     // https://msdn.microsoft.com/en-us/library/windows/hardware/ff564879.aspx
     [StructLayout(LayoutKind.Sequential)]
@@ -998,45 +1134,6 @@ internal static partial class Interop
         internal ushort MaximumLength;
 
         internal IntPtr Buffer;
-    }
-
-    internal static class StatusOptions
-    {
-        // See the NT_SUCCESS macro in the Windows SDK, and
-        // https://learn.microsoft.com/windows-hardware/drivers/kernel/using-ntstatus-values
-        internal static bool NT_SUCCESS(uint ntStatus) => (int)ntStatus >= 0;
-
-        // Error codes from ntstatus.h
-        internal const uint STATUS_SUCCESS = 0x00000000;
-        internal const uint STATUS_SOME_NOT_MAPPED = 0x00000107;
-        internal const uint STATUS_NO_MORE_FILES = 0x80000006;
-        internal const uint STATUS_INVALID_PARAMETER = 0xC000000D;
-        internal const uint STATUS_FILE_NOT_FOUND = 0xC000000F;
-        internal const uint STATUS_NO_MEMORY = 0xC0000017;
-        internal const uint STATUS_ACCESS_DENIED = 0xC0000022;
-        internal const uint STATUS_OBJECT_NAME_NOT_FOUND = 0xC0000034;
-        internal const uint STATUS_QUOTA_EXCEEDED = 0xC0000044;
-        internal const uint STATUS_ACCOUNT_RESTRICTION = 0xC000006E;
-        internal const uint STATUS_NONE_MAPPED = 0xC0000073;
-        internal const uint STATUS_INSUFFICIENT_RESOURCES = 0xC000009A;
-        internal const uint STATUS_DISK_FULL = 0xC000007F;
-        internal const uint STATUS_FILE_TOO_LARGE = 0xC0000904;
-    }
-
-    internal static partial class Kernel32
-    {
-        // From FILE_INFO_BY_HANDLE_CLASS
-        // Use for GetFileInformationByHandleEx
-        internal const int FileStandardInfo = 1;
-
-        internal struct FILE_STANDARD_INFO
-        {
-            internal long AllocationSize;
-            internal long EndOfFile;
-            internal uint NumberOfLinks;
-            internal BOOL DeletePending;
-            internal BOOL Directory;
-        }
     }
 }
 
@@ -1068,134 +1165,4 @@ internal enum BOOLEAN : byte
 {
     FALSE = 0,
     TRUE = 1,
-}
-
-internal static partial class Interop
-{
-    internal static partial class NtDll
-    {
-        // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680600(v=vs.85).aspx
-        [DllImport("ntdll.dll")]
-        public static extern uint RtlNtStatusToDosError(int Status);
-    }
-
-    internal static partial class Kernel32
-    {
-        // https://learn.microsoft.com/windows/win32/api/winioctl/ni-winioctl-fsctl_get_reparse_point
-        internal const int FSCTL_GET_REPARSE_POINT = 0x000900a8;
-
-        // https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddstor/ni-ntddstor-ioctl_storage_read_capacity
-        internal const int IOCTL_STORAGE_READ_CAPACITY = 0x002D5140;
-
-        [DllImport("kernel32.dll", EntryPoint = "DeviceIoControl", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern unsafe bool DeviceIoControl(
-            SafeHandle hDevice,
-            uint dwIoControlCode,
-            void* lpInBuffer,
-            uint nInBufferSize,
-            void* lpOutBuffer,
-            uint nOutBufferSize,
-            out uint lpBytesReturned,
-            IntPtr lpOverlapped);
-    }
-
-    internal static partial class Kernel32
-    {
-        // https://learn.microsoft.com/windows/win32/devio/storage-read-capacity
-        [StructLayout(LayoutKind.Sequential)]
-        internal unsafe struct STORAGE_READ_CAPACITY
-        {
-            internal uint Version;
-            internal uint Size;
-            internal uint BlockLength;
-            internal long NumberOfBlocks;
-            internal long DiskLength;
-        }
-    }
-}
-
-internal static partial class Interop
-{
-    internal static partial class Kernel32
-    {
-        private const int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
-        private const int FORMAT_MESSAGE_FROM_HMODULE = 0x00000800;
-        private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
-        private const int FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
-        private const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
-        private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
-
-        [DllImport("kernel32.dll", EntryPoint = "FormatMessageW", SetLastError = true)]
-        private static extern unsafe int FormatMessage(
-            int dwFlags,
-            IntPtr lpSource,
-            uint dwMessageId,
-            int dwLanguageId,
-            void* lpBuffer,
-            int nSize,
-            IntPtr arguments);
-
-        /// <summary>
-        ///     Returns a string message for the specified Win32 error code.
-        /// </summary>
-        internal static string GetMessage(int errorCode) =>
-            GetMessage(errorCode, IntPtr.Zero);
-
-        internal static unsafe string GetMessage(int errorCode, IntPtr moduleHandle)
-        {
-            int flags = FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM |
-                        FORMAT_MESSAGE_ARGUMENT_ARRAY;
-            if (moduleHandle != IntPtr.Zero)
-            {
-                flags |= FORMAT_MESSAGE_FROM_HMODULE;
-            }
-
-            // First try to format the message into the stack based buffer.  Most error messages willl fit.
-            Span<char> stackBuffer = stackalloc char[256]; // arbitrary stack limit
-            fixed (char* bufferPtr = stackBuffer)
-            {
-                int length = FormatMessage(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr,
-                    stackBuffer.Length, IntPtr.Zero);
-                if (length > 0)
-                {
-                    return GetAndTrimString(stackBuffer.Slice(0, length));
-                }
-            }
-
-            // We got back an error.  If the error indicated that there wasn't enough room to store
-            // the error message, then call FormatMessage again, but this time rather than passing in
-            // a buffer, have the method allocate one, which we then need to free.
-            if (Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER)
-            {
-                IntPtr nativeMsgPtr = default;
-                try
-                {
-                    int length = FormatMessage(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle,
-                        unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, IntPtr.Zero);
-                    if (length > 0)
-                    {
-                        return GetAndTrimString(new ReadOnlySpan<char>((char*)nativeMsgPtr, length));
-                    }
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(nativeMsgPtr);
-                }
-            }
-
-            // Couldn't get a message, so manufacture one.
-            return $"Unknown error (0x{errorCode:x})";
-        }
-
-        private static string GetAndTrimString(ReadOnlySpan<char> buffer)
-        {
-            int length = buffer.Length;
-            while (length > 0 && buffer[length - 1] <= 32)
-            {
-                length--; // trim off spaces and non-printable ASCII chars at the end of the resource
-            }
-            return buffer.Slice(0, length).ToString();
-        }
-    }
 }
