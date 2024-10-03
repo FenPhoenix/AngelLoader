@@ -5,7 +5,6 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
-using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress;
 using SharpCompress.Archives.Rar;

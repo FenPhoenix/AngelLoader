@@ -82,6 +82,18 @@ public static partial class Common
 
     public const RegexOptions IgnoreCaseInvariant = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
+    public sealed class FixedLengthByteArrayPool
+    {
+        private readonly int _length;
+        private readonly ConcurrentBag<byte[]> _items = new();
+
+        public FixedLengthByteArrayPool(int length) => _length = length;
+
+        public byte[] Rent() => _items.TryTake(out byte[] item) ? item : new byte[_length];
+
+        public void Return(byte[] item) => _items.Add(item);
+    }
+
     #endregion
 
     #region Methods

@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
