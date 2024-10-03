@@ -73,6 +73,9 @@ public static partial class Utils
                     "Extracting Zip entry would have resulted in a file outside the specified destination directory.");
             }
 
+            // @MT_TASK: We're not doing this create-dir-on-empty-dir-entry thing on all our normal extraction paths.
+            // That's a bug, so we need to fix it! We should also check for this error condition too, and test all.
+            // Do we need to do this for RAR too?
             if (Path.GetFileName(fullPath).Length == 0)
             {
                 if (entry.Length > 0)
