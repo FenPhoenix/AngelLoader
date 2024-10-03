@@ -25,11 +25,14 @@ public static partial class Common
                 {
                     return base.Length;
                 }
-                else if (_length == -1)
+                else
                 {
-                    _length = base.Length;
+                    if (_length == -1)
+                    {
+                        _length = base.Length;
+                    }
+                    return _length;
                 }
-                return _length;
             }
         }
 
