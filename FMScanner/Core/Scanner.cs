@@ -2455,7 +2455,7 @@ public sealed partial class Scanner : IDisposable
 
                 if (lineT.IsWhiteSpace()) continue;
 
-                if (LineContainsMonthName(lineT, _ctx._monthNames))
+                if (LineContainsMonthName(lineT, _ctx.MonthNames))
                 {
                     if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
                     {
@@ -2493,7 +2493,7 @@ public sealed partial class Scanner : IDisposable
             string dateStringTemp = _ctx.PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(_ctx.CA_Period);
             if (DateTime.TryParseExact(
                     dateStringTemp,
-                    _ctx._dateFormatsEuropean,
+                    _ctx.DateFormatsEuropean,
                     DateTimeFormatInfo.InvariantInfo,
                     DateTimeStyles.None,
                     out DateTime eurDateResult))
@@ -2549,7 +2549,7 @@ public sealed partial class Scanner : IDisposable
         bool success = false;
         bool canBeAmbiguous = false;
         DateTime? result = null!;
-        foreach (var item in _ctx._dateFormats)
+        foreach (var item in _ctx.DateFormats)
         {
             success = DateTime.TryParseExact(
                 dateString,
@@ -4102,7 +4102,7 @@ public sealed partial class Scanner : IDisposable
 
         value = value.Trim(_ctx.CA_Asterisk);
 
-        foreach (AsciiCharWithNonAsciiEquivalent item in _ctx._nonAsciiCharsWithAsciiEquivalents)
+        foreach (AsciiCharWithNonAsciiEquivalent item in _ctx.NonAsciiCharsWithAsciiEquivalents)
         {
             value = value.Replace(item.Original, item.Ascii);
         }
@@ -5191,13 +5191,13 @@ public sealed partial class Scanner : IDisposable
                 _ => FileStreamFast.CreateRead(misFileOnDisk, DiskFileStreamBuffer),
             };
 
-            for (int i = 0; i < _ctx._locations.Length; i++)
+            for (int i = 0; i < _ctx.Locations.Length; i++)
             {
                 if (
 #if FMScanner_FullCode
                     !_scanOptions.ScanNewDarkRequired &&
 #endif
-                    (_ctx._locations[i] == _newDarkLoc1 || _ctx._locations[i] == _newDarkLoc2))
+                    (_ctx.Locations[i] == _newDarkLoc1 || _ctx.Locations[i] == _newDarkLoc2))
                 {
                     break;
                 }
@@ -5207,20 +5207,20 @@ public sealed partial class Scanner : IDisposable
                 if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
                 {
                     buffer = _zipOffsetBuffers[i];
-                    int length = _ctx._zipOffsets[i];
+                    int length = _ctx.ZipOffsets[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
                 }
                 else
                 {
                     buffer = _gameDetectStringBuffer;
-                    misStream.Position = _ctx._locations[i];
+                    misStream.Position = _ctx.Locations[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
                     if (bytesRead < _gameDetectStringBufferLength) break;
                 }
 
-                if ((_ctx._locations[i] == _ss2MapParamNewDarkLoc ||
-                     _ctx._locations[i] == _ss2MapParamOldDarkLoc) &&
+                if ((_ctx.Locations[i] == _ss2MapParamNewDarkLoc ||
+                     _ctx.Locations[i] == _ss2MapParamOldDarkLoc) &&
                     EndsWithMAPPARAM(buffer))
                 {
                     /*
@@ -5243,14 +5243,14 @@ public sealed partial class Scanner : IDisposable
                     return Game.SS2;
 #endif
                 }
-                else if ((_ctx._locations[i] == _oldDarkT2Loc ||
-                          _ctx._locations[i] == _newDarkLoc1 ||
-                          _ctx._locations[i] == _newDarkLoc2) &&
+                else if ((_ctx.Locations[i] == _oldDarkT2Loc ||
+                          _ctx.Locations[i] == _newDarkLoc1 ||
+                          _ctx.Locations[i] == _newDarkLoc2) &&
                          EndsWithSKYOBJVAR(buffer))
                 {
                     // Zip reading is going to check the NewDark locations the other way round, but fortunately
                     // they're interchangeable in meaning so we don't have to do anything
-                    if (_ctx._locations[i] == _newDarkLoc1 || _ctx._locations[i] == _newDarkLoc2)
+                    if (_ctx.Locations[i] == _newDarkLoc1 || _ctx.Locations[i] == _newDarkLoc2)
                     {
 #if FMScanner_FullCode
                         ret.NewDarkRequired = true;
@@ -5258,7 +5258,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                         break;
                     }
-                    else if (_ctx._locations[i] == _oldDarkT2Loc)
+                    else if (_ctx.Locations[i] == _oldDarkT2Loc)
                     {
                         foundAtOldDarkThief2Location = true;
                         break;

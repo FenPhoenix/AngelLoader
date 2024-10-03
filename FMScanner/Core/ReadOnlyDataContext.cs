@@ -24,7 +24,7 @@ public sealed class ReadOnlyDataContext
 
     internal readonly byte[] RomanNumeralToDecimalTable = InitRomanToDecimalTable();
 
-    internal readonly Scanner.AsciiCharWithNonAsciiEquivalent[] _nonAsciiCharsWithAsciiEquivalents =
+    internal readonly Scanner.AsciiCharWithNonAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
     {
         new('\x2003', ' '),
         new('\x2002', ' '),
@@ -299,7 +299,7 @@ public sealed class ReadOnlyDataContext
     #region Dates
 
     internal readonly string[]
-    _dateFormatsEuropean =
+    DateFormatsEuropean =
     {
         "d.M.yyyy",
         "dd.M.yyyy",
@@ -321,7 +321,7 @@ public sealed class ReadOnlyDataContext
     yyyy - The year as a four-digit number.
     */
     internal readonly (string Format, bool CanBeAmbiguous)[]
-    _dateFormats =
+    DateFormats =
     {
         ("MMM d yy", false),
         ("MMM dd yy", false),
@@ -372,7 +372,7 @@ public sealed class ReadOnlyDataContext
     };
 
     internal readonly string[]
-    _monthNames =
+    MonthNames =
     {
         // January and February are matched by German "Januar" / "Februar"
         "March",
@@ -453,7 +453,7 @@ public sealed class ReadOnlyDataContext
     */
     internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
 
-    internal readonly int[] _locations =
+    internal readonly int[] Locations =
     {
         Scanner._ss2MapParamNewDarkLoc,
         Scanner._oldDarkT2Loc,
@@ -462,7 +462,7 @@ public sealed class ReadOnlyDataContext
         Scanner._newDarkLoc2,
     };
 
-    internal readonly int[] _zipOffsets =
+    internal readonly int[] ZipOffsets =
     {
         Scanner._ss2NewDarkOffset,
         Scanner._t2OldDarkOffset,
