@@ -30,12 +30,12 @@ public static class ZipArchiveFast_Threaded
 
     public static void ExtractToFile_Fast(
         ZipArchiveFastEntry entry,
-        ZipContext_Threaded context,
-        byte[] destBuffer,
         string fileName,
-        bool overwrite)
+        bool overwrite,
+        ZipContext_Threaded context,
+        byte[] fileStreamWriteBuffer)
     {
-        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, destBuffer))
+        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamWriteBuffer))
         using (Stream source = OpenEntry(entry, context))
         {
             StreamCopyNoAlloc(source, destination, context.TempBuffer);

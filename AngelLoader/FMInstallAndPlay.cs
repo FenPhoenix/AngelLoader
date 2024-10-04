@@ -2246,11 +2246,11 @@ internal static partial class FMInstallAndPlay
                             }
 
                             ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                                entry,
-                                zipCtxThreadedRentScope.Ctx,
-                                fileStreamWriteBuffer,
-                                extractedName,
-                                overwrite: true);
+                                entry: entry,
+                                fileName: extractedName,
+                                overwrite: true,
+                                context: zipCtxThreadedRentScope.Ctx,
+                                fileStreamWriteBuffer: fileStreamWriteBuffer);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -2402,21 +2402,16 @@ internal static partial class FMInstallAndPlay
                 ct.ThrowIfCancellationRequested();
             }
 
-            archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, fileStreamWriteBuffer,
-                streamCopyBuffer);
+            archive.ExtractToFile_Fast(
+                entry: entry,
+                fileName: extractedName,
+                overwrite: true,
+                fileStreamWriteBuffer: fileStreamWriteBuffer,
+                streamCopyBuffer: streamCopyBuffer);
 
             ct.ThrowIfCancellationRequested();
 
             File_UnSetReadOnly(extractedName);
-
-            ct.ThrowIfCancellationRequested();
-
-            int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
-
-            report.ViewItemIndex = fmData.ViewItemIndex;
-            report.Text = fmData.FM.Archive;
-            report.Percent = percent;
-            progress.Report(report);
 
             ct.ThrowIfCancellationRequested();
         }
@@ -2426,6 +2421,15 @@ internal static partial class FMInstallAndPlay
 
             ct.ThrowIfCancellationRequested();
         }
+
+        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+
+        report.ViewItemIndex = fmData.ViewItemIndex;
+        report.Text = fmData.FM.Archive;
+        report.Percent = percent;
+        progress.Report(report);
+
+        ct.ThrowIfCancellationRequested();
     }
 
     private static FMInstallResult
