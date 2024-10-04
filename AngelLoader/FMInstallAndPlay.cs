@@ -2226,51 +2226,31 @@ internal static partial class FMInstallAndPlay
 
                     while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
                     {
-                        // @MT_TASK: See if we can re-dedupe these loops again when we're done (even just partially)
                         int entryNumber = entriesCount - pd.CQ.Count;
 
-                        string fileName = entry.FullName;
-
-                        if (fileName.IsEmpty()) continue;
-
-                        string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                        if (!fileName.EndsWithDirSep())
+                        if (ZipEntryNeedsExtract(
+                                entry,
+                                fmInstalledPath,
+                                pd.PO.CancellationToken,
+                                out string extractedName))
                         {
-                            if (fileName.Rel_ContainsDirSep())
-                            {
-                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                    fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-
-                                pd.PO.CancellationToken.ThrowIfCancellationRequested();
-                            }
-
                             ZipArchiveFast_Threaded.ExtractToFile_Fast(
                                 entry: entry,
                                 fileName: extractedName,
                                 overwrite: true,
+                                unSetReadOnly: true,
                                 context: zipCtxThreadedRentScope.Ctx,
                                 fileStreamWriteBuffer: fileStreamWriteBuffer);
-
-                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                            File_UnSetReadOnly(extractedName);
-
-                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
-                        }
-                        else
-                        {
-                            Directory.CreateDirectory(extractedName);
-
-                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
 
-                        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                        report.ViewItemIndex = fmData.ViewItemIndex;
-                        report.Text = fmData.FM.Archive;
-                        report.Percent = percent;
-                        progress.Report(report);
+                        ReportZipProgress(
+                            progress: progress,
+                            report: report,
+                            fmData: fmData,
+                            entryNumber: entryNumber,
+                            entriesCount: entriesCount);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
@@ -2338,18 +2318,31 @@ internal static partial class FMInstallAndPlay
                 {
                     ZipArchiveFastEntry entry = entries[i];
 
-                    DoZipExtractLoop(
-                        fmInstalledPath: fmInstalledPath,
-                        archive: archive,
-                        entry: entry,
+                    if (ZipEntryNeedsExtract(
+                            entry,
+                            fmInstalledPath,
+                            _installCts.Token,
+                            out string extractedName))
+                    {
+                        archive.ExtractToFile_Fast(
+                            entry: entry,
+                            fileName: extractedName,
+                            overwrite: true,
+                            unSetReadOnly: true,
+                            fileStreamWriteBuffer: fileStreamWriteBuffer,
+                            streamCopyBuffer: streamCopyBuffer);
+                    }
+
+                    _installCts.Token.ThrowIfCancellationRequested();
+
+                    ReportZipProgress(
                         progress: progress,
                         report: report,
-                        entryNumber: i,
-                        entriesCount: entriesCount,
                         fmData: fmData,
-                        fileStreamWriteBuffer: fileStreamWriteBuffer,
-                        streamCopyBuffer: streamCopyBuffer,
-                        ct: _installCts.Token);
+                        entryNumber: i,
+                        entriesCount: entriesCount);
+
+                    _installCts.Token.ThrowIfCancellationRequested();
                 }
             }
             finally
@@ -2373,24 +2366,21 @@ internal static partial class FMInstallAndPlay
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
-    private static void DoZipExtractLoop(
-        string fmInstalledPath,
-        ZipArchiveFast archive,
+    private static bool ZipEntryNeedsExtract(
         ZipArchiveFastEntry entry,
-        IProgress<ProgressReport_Install> progress,
-        ProgressReport_Install report,
-        int entryNumber,
-        int entriesCount,
-        FMData fmData,
-        byte[] fileStreamWriteBuffer,
-        byte[] streamCopyBuffer,
-        CancellationToken ct)
+        string fmInstalledPath,
+        CancellationToken ct,
+        out string extractedName)
     {
         string fileName = entry.FullName;
 
-        if (fileName.IsEmpty()) return;
+        if (fileName.IsEmpty())
+        {
+            extractedName = "";
+            return false;
+        }
 
-        string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+        extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
         if (!fileName.EndsWithDirSep())
         {
@@ -2401,35 +2391,28 @@ internal static partial class FMInstallAndPlay
 
                 ct.ThrowIfCancellationRequested();
             }
-
-            archive.ExtractToFile_Fast(
-                entry: entry,
-                fileName: extractedName,
-                overwrite: true,
-                fileStreamWriteBuffer: fileStreamWriteBuffer,
-                streamCopyBuffer: streamCopyBuffer);
-
-            ct.ThrowIfCancellationRequested();
-
-            File_UnSetReadOnly(extractedName);
-
-            ct.ThrowIfCancellationRequested();
+            return true;
         }
         else
         {
             Directory.CreateDirectory(extractedName);
-
-            ct.ThrowIfCancellationRequested();
+            return false;
         }
+    }
 
+    private static void ReportZipProgress(
+        IProgress<ProgressReport_Install> progress,
+        ProgressReport_Install report,
+        FMData fmData,
+        int entryNumber,
+        int entriesCount)
+    {
         int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
 
         report.ViewItemIndex = fmData.ViewItemIndex;
         report.Text = fmData.FM.Archive;
         report.Percent = percent;
         progress.Report(report);
-
-        ct.ThrowIfCancellationRequested();
     }
 
     private static FMInstallResult

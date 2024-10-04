@@ -32,6 +32,7 @@ public static class ZipArchiveFast_Threaded
         ZipArchiveFastEntry entry,
         string fileName,
         bool overwrite,
+        bool unSetReadOnly,
         ZipContext_Threaded context,
         byte[] fileStreamWriteBuffer)
     {
@@ -40,6 +41,12 @@ public static class ZipArchiveFast_Threaded
         {
             StreamCopyNoAlloc(source, destination, context.TempBuffer);
         }
+
         SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
+
+        if (unSetReadOnly)
+        {
+            File_UnSetReadOnly(fileName);
+        }
     }
 }

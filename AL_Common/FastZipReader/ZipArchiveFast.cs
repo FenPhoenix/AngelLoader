@@ -479,6 +479,7 @@ public sealed class ZipArchiveFast : IDisposable
         ZipArchiveFastEntry entry,
         string fileName,
         bool overwrite,
+        bool unSetReadOnly,
         byte[] fileStreamWriteBuffer,
         byte[] streamCopyBuffer)
     {
@@ -487,7 +488,13 @@ public sealed class ZipArchiveFast : IDisposable
         {
             StreamCopyNoAlloc(source, destination, streamCopyBuffer);
         }
+
         SetLastWriteTime_Fast(fileName, ZipHelpers.ZipTimeToDateTime(entry.LastWriteTime));
+
+        if (unSetReadOnly)
+        {
+            File_UnSetReadOnly(fileName);
+        }
     }
 
     private void ThrowIfDisposed()
