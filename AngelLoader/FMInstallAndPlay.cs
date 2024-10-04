@@ -2217,10 +2217,10 @@ internal static partial class FMInstallAndPlay
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
                 byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
 
+                using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
                 try
                 {
-                    using var fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
-
                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                     while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
@@ -2242,20 +2242,12 @@ internal static partial class FMInstallAndPlay
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
 
-                        ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
-                        try
-                        {
-                            ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                                entry,
-                                zipCtxThreaded,
-                                fileStreamWriteBuffer,
-                                extractedName,
-                                overwrite: true);
-                        }
-                        finally
-                        {
-                            zipCtxThreadedPool.Return(zipCtxThreaded);
-                        }
+                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                            entry,
+                            zipCtxThreaded,
+                            fileStreamWriteBuffer,
+                            extractedName,
+                            overwrite: true);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -2275,6 +2267,7 @@ internal static partial class FMInstallAndPlay
                 }
                 finally
                 {
+                    zipCtxThreadedPool.Return(zipCtxThreaded);
                     ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
                     ioBufferPools.FileStream.Return(fileStreamReadBuffer);
                 }
