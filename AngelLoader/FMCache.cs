@@ -23,7 +23,7 @@ namespace AngelLoader;
 We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can view the
 log.
 
-@MT_TASK: Do we actually need to extract empty folders here, since by definition we're always extracting a file?
+NOTE: Don't bother extracting empty folder entries here, because by definition we only want files (readmes)
 */
 
 internal static class FMCache
@@ -300,7 +300,12 @@ internal static class FMCache
                 }
                 else
                 {
-                    if (!fn.IsValidReadme() || entry.Length == 0) continue;
+                    if (!fn.IsValidReadme() ||
+                        entry.Length == 0 ||
+                        entry.FullName.EndsWithDirSep())
+                    {
+                        continue;
+                    }
 
                     int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
                     if (dirSeps == 1)
@@ -375,9 +380,15 @@ internal static class FMCache
                     {
                         SevenZipArchiveEntry entry = entries[i];
 
-                        if (entry.IsAnti) continue;
-
                         string fn = entry.FileName;
+
+                        if (entry.IsAnti ||
+                            entry.IsDirectory ||
+                            fn.EndsWithDirSep())
+                        {
+                            continue;
+                        }
+
                         int dirSeps;
                         if (fn.IsValidReadme() && entry.UncompressedSize > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
@@ -457,7 +468,13 @@ internal static class FMCache
                 string fn = entry.Key;
                 string? t3ReadmeDir = null;
 
-                if (!fn.IsValidReadme() || entry.Size == 0) continue;
+                if (!fn.IsValidReadme() ||
+                    entry.Size == 0 ||
+                    entry.IsDirectory ||
+                    fn.EndsWithDirSep())
+                {
+                    continue;
+                }
 
                 int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
                 if (dirSeps == 1)
@@ -530,7 +547,13 @@ internal static class FMCache
 
                     Core.View.SetProgressPercent(GetPercentFromValue_Int(i, entriesCount));
 
-                    if (!fn.IsValidReadme() || entry.Size == 0) continue;
+                    if (!fn.IsValidReadme() ||
+                        entry.Size == 0 ||
+                        entry.IsDirectory ||
+                        fn.EndsWithDirSep())
+                    {
+                        continue;
+                    }
 
                     int dirSeps = fn.Rel_CountDirSepsUpToAmount(2);
                     if (dirSeps == 1)
@@ -690,7 +713,9 @@ internal static class FMCache
                     for (int i = 0; i < entriesCount; i++)
                     {
                         SevenZipArchiveEntry entry = entries[i];
-                        if (!HtmlRefExcludes.Any(entry.FileName.EndsWithI))
+                        if (!entry.IsDirectory &&
+                            !entry.FileName.EndsWithDirSep() &&
+                            !HtmlRefExcludes.Any(entry.FileName.EndsWithI))
                         {
                             archiveFileNamesNameOnly.Add(entry.FileName.GetFileNameFast());
                             archiveNonExcludedFullFileNames.Add(entry.FileName);
@@ -776,7 +801,10 @@ internal static class FMCache
             for (int i = 0; i < entries.Length; i++)
             {
                 RarArchiveEntry e = entries[i];
-                AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, i, html, htmlRefFiles);
+                if (!e.IsDirectory)
+                {
+                    AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, i, html, htmlRefFiles);
+                }
             }
         }
 
@@ -799,7 +827,10 @@ internal static class FMCache
                 for (int ei = 0; ei < entries.Length; ei++)
                 {
                     RarArchiveEntry e = entries[ei];
-                    AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, ei, content, htmlRefFiles);
+                    if (!e.IsDirectory)
+                    {
+                        AddHtmlRefFile(name: e.Key.GetDirNameFast(), fullName: e.Key, ei, content, htmlRefFiles);
+                    }
                 }
             }
         }
@@ -853,7 +884,11 @@ internal static class FMCache
                         entriesCount = entries.Count;
                         for (int i = 0; i < entriesCount; i++)
                         {
-                            archiveFileNamesNameOnly.Add(entries[i].Key.GetFileNameFast());
+                            RarArchiveEntry entry = entries[i];
+                            if (!entry.IsDirectory)
+                            {
+                                archiveFileNamesNameOnly.Add(entry.Key.GetFileNameFast());
+                            }
                         }
                         fs.Position = 0;
                     }
@@ -1010,8 +1045,12 @@ internal static class FMCache
         to other formats like CSS and who knows what else, and we don't want to write parsers for every format
         under the sun.
         */
-        if (!name.IsEmpty() && name.Contains('.') && !HtmlRefExcludes.Any(name.EndsWithI) &&
-            content.ContainsI(name) && htmlRefFiles.TrueForAll(x => x.Index != i))
+        if (!name.IsEmpty() &&
+            !name.EndsWithDirSep() &&
+            name.Contains('.') &&
+            !HtmlRefExcludes.Any(name.EndsWithI) &&
+            content.ContainsI(name) &&
+            htmlRefFiles.TrueForAll(x => x.Index != i))
         {
             htmlRefFiles.Add(new NameAndIndex(fullName, i));
         }
