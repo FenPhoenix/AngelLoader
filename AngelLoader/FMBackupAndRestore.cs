@@ -28,6 +28,8 @@ for writing. Even if you put it after the using block, it throws. So always set 
 
 @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
+
+@MT_TASK: Test diff backup now that we extract empty dirs... we may end up considering them "deleted" during the diff
 */
 
 internal static partial class FMInstallAndPlay

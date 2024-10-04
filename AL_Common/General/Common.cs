@@ -214,6 +214,8 @@ public static partial class Common
     /// <param name="fileName"></param>
     /// <param name="result"></param>
     /// <returns></returns>
+    // @MT_TASK(TryGetExtractedNameOrFailIfMalicious):
+    // We're only using this in RestoreFM(). Do we want to restore empty dirs...?
     public static bool TryGetExtractedNameOrFailIfMalicious(string path, string fileName, out string result)
     {
         // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't worry about it.

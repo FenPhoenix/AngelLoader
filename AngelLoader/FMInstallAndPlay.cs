@@ -2231,30 +2231,39 @@ internal static partial class FMInstallAndPlay
 
                         string fileName = entry.FullName;
 
-                        if (fileName.IsEmpty() || fileName[^1].IsDirSep()) continue;
+                        if (fileName.IsEmpty()) continue;
 
                         string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
-                        if (fileName.Rel_ContainsDirSep())
+                        if (!fileName.EndsWithDirSep())
                         {
-                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                            if (fileName.Rel_ContainsDirSep())
+                            {
+                                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                    fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+                                pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                            }
+
+                            ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                                entry,
+                                zipCtxThreadedRentScope.Ctx,
+                                fileStreamWriteBuffer,
+                                extractedName,
+                                overwrite: true);
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                            File_UnSetReadOnly(extractedName);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
+                        else
+                        {
+                            Directory.CreateDirectory(extractedName);
 
-                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                            entry,
-                            zipCtxThreadedRentScope.Ctx,
-                            fileStreamWriteBuffer,
-                            extractedName,
-                            overwrite: true);
-
-                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                        File_UnSetReadOnly(extractedName);
-
-                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        }
 
                         int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
 
@@ -2379,34 +2388,44 @@ internal static partial class FMInstallAndPlay
     {
         string fileName = entry.FullName;
 
-        if (fileName.IsEmpty() || fileName[^1].IsDirSep()) return;
+        if (fileName.IsEmpty()) return;
 
         string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
-        if (fileName.Rel_ContainsDirSep())
+        if (!fileName.EndsWithDirSep())
         {
-            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+            if (fileName.Rel_ContainsDirSep())
+            {
+                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                    fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+                ct.ThrowIfCancellationRequested();
+            }
+
+            archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, fileStreamWriteBuffer,
+                streamCopyBuffer);
+
+            ct.ThrowIfCancellationRequested();
+
+            File_UnSetReadOnly(extractedName);
+
+            ct.ThrowIfCancellationRequested();
+
+            int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+
+            report.ViewItemIndex = fmData.ViewItemIndex;
+            report.Text = fmData.FM.Archive;
+            report.Percent = percent;
+            progress.Report(report);
 
             ct.ThrowIfCancellationRequested();
         }
+        else
+        {
+            Directory.CreateDirectory(extractedName);
 
-        archive.ExtractToFile_Fast(entry, extractedName, overwrite: true, fileStreamWriteBuffer, streamCopyBuffer);
-
-        ct.ThrowIfCancellationRequested();
-
-        File_UnSetReadOnly(extractedName);
-
-        ct.ThrowIfCancellationRequested();
-
-        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
-
-        report.ViewItemIndex = fmData.ViewItemIndex;
-        report.Text = fmData.FM.Archive;
-        report.Percent = percent;
-        progress.Report(report);
-
-        ct.ThrowIfCancellationRequested();
+            ct.ThrowIfCancellationRequested();
+        }
     }
 
     private static FMInstallResult
@@ -2441,19 +2460,27 @@ internal static partial class FMInstallAndPlay
                 RarReaderEntry entry = reader.Entry;
                 string fileName = entry.Key;
 
-                if (!entry.IsDirectory && !fileName.IsEmpty() && !fileName[^1].IsDirSep())
+                // @MT_TASK: Test this code again now that it has the empty dir extract
+                if (!fileName.IsEmpty())
                 {
                     string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
-                    if (fileName.Rel_ContainsDirSep())
+                    if (entry.IsDirectory)
                     {
-                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                        Directory.CreateDirectory(extractedName);
                     }
+                    else
+                    {
+                        if (fileName.Rel_ContainsDirSep())
+                        {
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                        }
 
-                    reader.ExtractToFile_Fast(extractedName, overwrite: true, ioBufferPools);
+                        reader.ExtractToFile_Fast(extractedName, overwrite: true, ioBufferPools);
 
-                    File_UnSetReadOnly(extractedName);
+                        File_UnSetReadOnly(extractedName);
+                    }
 
                     _installCts.Token.ThrowIfCancellationRequested();
                 }

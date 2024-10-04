@@ -22,6 +22,8 @@ namespace AngelLoader;
 @BetterErrors(FMCache)
 We should probably rethrow after logging so we can put up one dialog if any exceptions and then they can view the
 log.
+
+@MT_TASK: Do we actually need to extract empty folders here, since by definition we're always extracting a file?
 */
 
 internal static class FMCache
