@@ -209,8 +209,10 @@ internal static class DetectDriveTypes
 
             foreach (ManagementBaseObject partition in partitions)
             {
+                if (partition["DeviceID"] is not string partitionDeviceID) continue;
+
                 using ManagementObjectSearcher queryResults2 = new(
-                    "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + (string)partition["DeviceID"] +
+                    "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID +
                     "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition");
                 ManagementObjectCollection drives = queryResults2.Get();
 
