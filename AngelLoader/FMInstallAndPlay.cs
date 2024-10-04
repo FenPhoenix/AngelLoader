@@ -2447,7 +2447,6 @@ internal static partial class FMInstallAndPlay
                 RarReaderEntry entry = reader.Entry;
                 string fileName = entry.Key;
 
-                // @MT_TASK: Test this code again now that it has the empty dir extract
                 if (!fileName.IsEmpty())
                 {
                     string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
