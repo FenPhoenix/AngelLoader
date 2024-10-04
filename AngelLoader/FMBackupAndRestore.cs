@@ -29,7 +29,13 @@ for writing. Even if you put it after the using block, it throws. So always set 
 @DIRSEP: Anything of the form "Substring(somePath.Length).Trim('\\', '/') is fine
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
 
-@MT_TASK: Test diff backup now that we extract empty dirs... we may end up considering them "deleted" during the diff
+NOTE(Backup/restore): Note about empty directories
+It seems we already explicitly ignore empty directory entries in GetFMDiff(), which means empty dirs are never
+backed up - nor deleted empty dirs marked as deleted - in any case. So, we could just leave this alone and we'd
+have the same behavior as before. To be completely correct, we should count empty dirs in the diff, but then any
+FM that contained empty dirs and was installed with a previous AL version would get those dirs marked as deleted
+in its backup, and then they'd always end up deleted on subsequent installs. To prevent this, we should stick to
+ignoring empty dirs for now.
 */
 
 internal static partial class FMInstallAndPlay
@@ -731,7 +737,8 @@ internal static partial class FMInstallAndPlay
 
                 if (IsIgnoredFile(efn) ||
                     // IsDirectory has been unreliable in the past, so check manually here too
-                    entry.IsDirectory || efn.EndsWithDirSep() ||
+                    entry.IsDirectory ||
+                    efn.EndsWithDirSep() ||
                     IsSaveOrScreenshot(efn, fm.Game))
                 {
                     continue;
@@ -814,7 +821,8 @@ internal static partial class FMInstallAndPlay
 
                 if (IsIgnoredFile(efn) ||
                     // IsDirectory has been unreliable in the past, so check manually here too
-                    entry.IsDirectory || efn.EndsWithDirSep() ||
+                    entry.IsDirectory ||
+                    efn.EndsWithDirSep() ||
                     IsSaveOrScreenshot(efn, fm.Game))
                 {
                     continue;
