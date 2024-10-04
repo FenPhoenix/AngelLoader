@@ -81,8 +81,6 @@ public static partial class Utils
                         "Zip entry name ends in directory separator character but contains data.");
                 }
                 Directory.CreateDirectory(fullPath);
-
-                cancellationToken.ThrowIfCancellationRequested();
             }
             else
             {
@@ -91,9 +89,9 @@ public static partial class Utils
                 cancellationToken.ThrowIfCancellationRequested();
 
                 Internal_ExtractToFile_Fast(entry, fullPath, false, tempBuffer, cancellationToken);
-
-                cancellationToken.ThrowIfCancellationRequested();
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             percents.SubPercent = GetPercentFromValue_Int(i + 1, entryCount);
             percents.MainPercent = 50 + (percents.SubPercent / 2);

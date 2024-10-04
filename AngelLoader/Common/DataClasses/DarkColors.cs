@@ -15,7 +15,6 @@ public static class DarkColors
 
     public static readonly Color SettingsButtonHighlight_Light = Color.FromArgb(229, 241, 251);
     public static readonly Color SettingsButtonHighlightBorder_Light = Color.FromArgb(0, 120, 215);
-    public static readonly Color SettingsButtonBorder_Light = Color.FromArgb(173, 173, 173);
 
     public static readonly Color GLMLRed_Light = Color.Red;
     public static readonly Color GLMLRed_Dark = Color.FromArgb(222, 73, 64);
@@ -91,7 +90,6 @@ public static class DarkColors
     #region Pens
 
     public static readonly Pen SettingsButtonHighlightBorder_LightPen = new Pen(SettingsButtonHighlightBorder_Light);
-    public static readonly Pen SettingsButtonBorder_LightPen = new Pen(SettingsButtonBorder_Light);
 
     public static readonly Pen Fen_DarkBackgroundPen = new Pen(Fen_DarkBackground);
     public static readonly Pen Fen_DarkForegroundPen = new Pen(Fen_DarkForeground);
@@ -169,7 +167,6 @@ public static class DarkColors
     public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
     //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
-    public static readonly SolidBrush DGV_PinnedBackgroundLightBrush = new SolidBrush(DGV_PinnedBackgroundLight);
     public static readonly SolidBrush DGV_PinnedBackgroundDarkBrush = new SolidBrush(DGV_PinnedBackgroundDark);
 
     #endregion
