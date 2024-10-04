@@ -2183,7 +2183,7 @@ internal static partial class FMInstallAndPlay
             ListFast<ZipArchiveFastEntry> entries =
                 ZipArchiveFast.GetThreadableEntries(
                     fmDataArchivePath,
-                    zipCtxRentScope.ZipCtx,
+                    zipCtxRentScope.Ctx,
                     ioBufferPools.FileStream);
 
             _installCts.Token.ThrowIfCancellationRequested();
@@ -2217,10 +2217,11 @@ internal static partial class FMInstallAndPlay
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
                 byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
 
-                using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
-                ZipContext_Threaded zipCtxThreaded = zipCtxThreadedPool.Rent(fs, fs.Length);
                 try
                 {
+                    using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                    using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
+
                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                     while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
@@ -2244,7 +2245,7 @@ internal static partial class FMInstallAndPlay
 
                         ZipArchiveFast_Threaded.ExtractToFile_Fast(
                             entry,
-                            zipCtxThreaded,
+                            zipCtxThreadedRentScope.Ctx,
                             fileStreamWriteBuffer,
                             extractedName,
                             overwrite: true);
@@ -2267,7 +2268,6 @@ internal static partial class FMInstallAndPlay
                 }
                 finally
                 {
-                    zipCtxThreadedPool.Return(zipCtxThreaded);
                     ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
                     ioBufferPools.FileStream.Return(fileStreamReadBuffer);
                 }
@@ -2321,7 +2321,7 @@ internal static partial class FMInstallAndPlay
                     GetReadModeZipArchiveCharEnc_Fast(
                         fmData.ArchivePath,
                         fileStreamReadBuffer,
-                        zipCtxRentScope.ZipCtx);
+                        zipCtxRentScope.Ctx);
 
                 ListFast<ZipArchiveFastEntry> entries = archive.Entries;
                 int entriesCount = entries.Count;

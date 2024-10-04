@@ -111,18 +111,18 @@ public sealed class ZipContext_Pool
 
 public readonly ref struct ZipContextRentScope
 {
-    private readonly ZipContext_Pool _zipCtxPool;
-    public readonly ZipContext ZipCtx;
+    private readonly ZipContext_Pool _pool;
+    public readonly ZipContext Ctx;
 
-    public ZipContextRentScope(ZipContext_Pool zipCtxPool)
+    public ZipContextRentScope(ZipContext_Pool pool)
     {
-        _zipCtxPool = zipCtxPool;
-        ZipCtx = zipCtxPool.Rent();
+        _pool = pool;
+        Ctx = pool.Rent();
     }
 
     public void Dispose()
     {
-        _zipCtxPool.Return(ZipCtx);
+        _pool.Return(Ctx);
     }
 }
 
@@ -182,6 +182,23 @@ public sealed class ZipContext_Threaded_Pool
     {
         item.Unset();
         _contexts.Add(item);
+    }
+}
+
+public readonly ref struct ZipContextThreadedRentScope
+{
+    private readonly ZipContext_Threaded_Pool _pool;
+    public readonly ZipContext_Threaded Ctx;
+
+    public ZipContextThreadedRentScope(ZipContext_Threaded_Pool pool, FileStreamFast fs, long fsLength)
+    {
+        _pool = pool;
+        Ctx = pool.Rent(fs, fsLength);
+    }
+
+    public void Dispose()
+    {
+        _pool.Return(Ctx);
     }
 }
 
