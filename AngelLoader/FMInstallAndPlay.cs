@@ -1625,6 +1625,9 @@ internal static partial class FMInstallAndPlay
         internal int ViewItemIndex;
         internal bool InstallStarted;
 
+        internal bool Uninstall_MarkFMAsUnavailable;
+        internal bool Uninstall_SkipUninstallingThisFM;
+
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
             FM = fm;
@@ -2705,6 +2708,54 @@ internal static partial class FMInstallAndPlay
 
             bool skipUninstallWithNoArchiveWarning = false;
 
+            #region Pre-check for missing archive and ask the user what to do
+
+            for (int i = 0; i < fmDataList.Count; i++)
+            {
+                FMData fmData = fmDataList[i];
+
+                if (fmData.ArchivePath.IsEmpty())
+                {
+                    // Match previous behavior: any not-really-installed FM gets rejected silently first.
+                    // Put it inside the empty-archive check so as to minimize the number of times we hit the
+                    // disk sequentially (since we'll be parallelizing below).
+                    if (!await FMInstalledDirExists(fmData))
+                    {
+                        fmData.FM.Installed = false;
+                        fmData.Uninstall_SkipUninstallingThisFM = true;
+                        continue;
+                    }
+
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                    if (doEndTasks && !skipUninstallWithNoArchiveWarning)
+                    {
+                        (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                            message: fmData.FM.GetId() + $"{NL}{NL}" +
+                                     LText.AlertMessages.Uninstall_ArchiveNotFound,
+                            title: LText.AlertMessages.Warning,
+                            icon: MBoxIcon.Warning,
+                            yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
+                            no: LText.Global.Skip,
+                            cancel: LText.Global.Cancel,
+                            defaultButton: MBoxButton.No);
+
+                        if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
+                        if (result == MBoxButton.No)
+                        {
+                            fmData.Uninstall_SkipUninstallingThisFM = true;
+                            continue;
+                        }
+
+                        if (!single) skipUninstallWithNoArchiveWarning = true;
+                    }
+                    fmData.Uninstall_MarkFMAsUnavailable = true;
+                    atLeastOneFMMarkedUnavailable = true;
+                }
+            }
+
+            #endregion
+
             byte[]? fileStreamBuffer = null;
 
             DarkLoaderBackupContext ctx = new();
@@ -2715,45 +2766,17 @@ internal static partial class FMInstallAndPlay
 
                 FMData fmData = fmDataList[i];
 
+                if (fmData.Uninstall_SkipUninstallingThisFM) continue;
+
                 FanMission fm = fmData.FM;
 
-                #region Check for already uninstalled
-
-                bool fmDirExists = await Task.Run(() => Directory.Exists(fmData.InstalledPath));
-                if (!fmDirExists)
+                if (!await FMInstalledDirExists(fmData))
                 {
                     fm.Installed = false;
                     continue;
                 }
 
-                #endregion
-
                 if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                bool markFMAsUnavailable = false;
-
-                if (fmData.ArchivePath.IsEmpty())
-                {
-                    if (doEndTasks && !skipUninstallWithNoArchiveWarning)
-                    {
-                        // @MT_TASK(Uninstall archive not found): Dialog in multithreading area
-                        (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                            message: LText.AlertMessages.Uninstall_ArchiveNotFound,
-                            title: LText.AlertMessages.Warning,
-                            icon: MBoxIcon.Warning,
-                            yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
-                            no: LText.Global.Skip,
-                            cancel: LText.Global.Cancel,
-                            defaultButton: MBoxButton.No);
-
-                        if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
-                        if (result == MBoxButton.No) continue;
-
-                        if (!single) skipUninstallWithNoArchiveWarning = true;
-                    }
-                    markFMAsUnavailable = true;
-                    atLeastOneFMMarkedUnavailable = true;
-                }
 
                 /*
                 If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
@@ -2797,7 +2820,7 @@ internal static partial class FMInstallAndPlay
                 }
 
                 fm.Installed = false;
-                if (markFMAsUnavailable) fm.MarkedUnavailable = true;
+                if (fmData.Uninstall_MarkFMAsUnavailable) fm.MarkedUnavailable = true;
 
                 if (!single)
                 {
@@ -2824,6 +2847,8 @@ internal static partial class FMInstallAndPlay
         }
 
         return (true, atLeastOneFMMarkedUnavailable);
+
+        static Task<bool> FMInstalledDirExists(FMData fmData) => Task.Run(() => Directory.Exists(fmData.InstalledPath));
     }
 
     internal static Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
