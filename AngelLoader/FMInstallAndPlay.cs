@@ -2717,11 +2717,9 @@ internal static partial class FMInstallAndPlay
 
                 FanMission fm = fmData.FM;
 
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(fmData.GameIndex), fm.InstalledDir);
-
                 #region Check for already uninstalled
 
-                bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
+                bool fmDirExists = await Task.Run(() => Directory.Exists(fmData.InstalledPath));
                 if (!fmDirExists)
                 {
                     fm.Installed = false;
@@ -2779,7 +2777,7 @@ internal static partial class FMInstallAndPlay
                     await BackupFM(
                         ctx,
                         fm,
-                        fmInstalledPath,
+                        fmData.InstalledPath,
                         fmData.ArchivePath,
                         archivePaths,
                         fileStreamBuffer ??= new byte[FileStreamBufferSize]);
@@ -2789,7 +2787,7 @@ internal static partial class FMInstallAndPlay
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 // Make option to open the folder in Explorer and delete it manually?
-                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
+                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmData.InstalledPath)))
                 {
                     fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
                     // @MT_TASK(Uninstall error): Dialog in multithreading area
