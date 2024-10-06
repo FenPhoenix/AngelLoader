@@ -962,25 +962,7 @@ internal static class ControlUtils
     that this is the help page for AutoPopDelay and NOT InitialDelay means you're expecting any line vaguely
     saying "maximum" and then a number will be the maximum value for the property the page is about. But nope.
     */
-    internal static void TrySetMaxDelay(this ToolTip toolTip)
-    {
-        // However, let's be careful just in case.
-        try
-        {
-            toolTip.AutoPopDelay = 32767;
-        }
-        catch
-        {
-            try
-            {
-                toolTip.AutoPopDelay = 5000;
-            }
-            catch
-            {
-                // oh well...
-            }
-        }
-    }
+    internal static void SetMaxDelay(this ToolTip toolTip) => toolTip.AutoPopDelay = 32767;
 
     #region Cursor
 

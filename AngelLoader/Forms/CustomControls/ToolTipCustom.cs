@@ -5,7 +5,7 @@ namespace AngelLoader.Forms.CustomControls;
 
 public sealed class ToolTipCustom : ToolTip
 {
-    public ToolTipCustom() => this.TrySetMaxDelay();
+    public ToolTipCustom() => this.SetMaxDelay();
 
-    public ToolTipCustom(IContainer cont) : base(cont) => this.TrySetMaxDelay();
+    public ToolTipCustom(IContainer cont) : base(cont) => this.SetMaxDelay();
 }
