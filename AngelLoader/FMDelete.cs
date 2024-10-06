@@ -284,10 +284,19 @@ internal static class FMDelete
                         i2++;
                     }
                 }
+                /*
+                @MT_TASK(FMDelete Uninstall() call):
+                This just calls Uninstall() with a list like normal, so we don't really have to change anything
+                on this side. However, if we decide to use the multi-item progress box in Uninstall(), then we
+                need to account for that here, either by using it ourselves or by just remembering which one to
+                hide after Uninstall().
+                */
                 (bool success, bool uninstMarkedAnFMUnavailable) =
                     await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
                 if (!success)
                 {
+                    // @MT_TASK(FMDelete Uninstall() call): Actually, we shouldn't need this hide progress box call at all, right?
+                    // Uninstall() already hides it in its finally block... Was this just a paranoid just-in-case?
                     Core.View.HideProgressBox();
                     await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
                     return;

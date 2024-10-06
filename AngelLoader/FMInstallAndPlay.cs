@@ -2738,6 +2738,7 @@ internal static partial class FMInstallAndPlay
                 {
                     if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                     {
+                        // @MT_TASK(Uninstall archive not found): Dialog in multithreading area
                         (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                             message: LText.AlertMessages.Uninstall_ArchiveNotFound,
                             title: LText.AlertMessages.Warning,
@@ -2791,6 +2792,7 @@ internal static partial class FMInstallAndPlay
                 if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
                 {
                     fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
+                    // @MT_TASK(Uninstall error): Dialog in multithreading area
                     Core.Dialogs.ShowError(
                         LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
                         "FM: " + fm.GetId());
