@@ -1903,7 +1903,7 @@ internal static partial class FMInstallAndPlay
                         "--- End Install errors ---");
 
                     Core.Dialogs.ShowError(
-                        LText.AlertMessages.OneOrMoreFMsFailedToInstall,
+                        LText.AlertMessages.Install_OneOrMoreFMsFailedToInstall,
                         LText.AlertMessages.Alert,
                         icon: MBoxIcon.Warning);
                 }
@@ -1938,11 +1938,13 @@ internal static partial class FMInstallAndPlay
                     logText += $"{NL}---{NL}";
                 }
 
-                logText += $"{NL}" + "Archive type: " + result.ArchiveType + $"{NL}" +
-                           "Result type: " + result.ResultType + $"{NL}" +
-                           "Exception: " + (result.Exception?.ToString() ?? "none") + $"{NL}" +
-                           "Error message: " + (result.ErrorMessage.IsEmpty() ? "none" : $"{NL}" + result.ErrorMessage) + $"{NL}" +
-                           "FMData:" + $"{NL}" + result.FMData + $"{NL}";
+                logText +=
+                    $"{NL}" +
+                    "Archive type: " + result.ArchiveType + $"{NL}" +
+                    "Result type: " + result.ResultType + $"{NL}" +
+                    "Exception: " + (result.Exception?.ToString() ?? "none") + $"{NL}" +
+                    "Error message: " + (result.ErrorMessage.IsEmpty() ? "none" : $"{NL}" + result.ErrorMessage) + $"{NL}" +
+                    "FMData:" + $"{NL}" + result.FMData + $"{NL}";
             }
 
             logText += $"{NL}";
@@ -2796,7 +2798,7 @@ internal static partial class FMInstallAndPlay
 
                 #endregion
 
-                ConcurrentBag<FMInstallResult> results = new();
+                ConcurrentBag<FMUninstallResult> errors = new();
 
 #if TIMING_TEST
                 StartTiming();
@@ -2871,10 +2873,7 @@ internal static partial class FMInstallAndPlay
                                 if (result.ResultType != UninstallResultType.UninstallSucceeded)
                                 {
                                     fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
-                                    // @MT_TASK(Uninstall error): Use list-of-results and post-dialog like Install
-                                    Core.Dialogs.ShowError(
-                                        LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
-                                        "FM: " + fm.GetId());
+                                    errors.Add(result);
                                 }
                             }
 
@@ -2899,6 +2898,19 @@ internal static partial class FMInstallAndPlay
                     return (false, atLeastOneFMMarkedUnavailable);
                 }
 
+                List<FMUninstallResult> errorResults = errors.ToList();
+                if (errorResults.Count > 0)
+                {
+                    Log($"--- Uninstall errors ---{NL}" +
+                        GetResultErrorsLogText(errorResults) +
+                        "--- End Uninstall errors ---");
+
+                    Core.Dialogs.ShowError(
+                        LText.AlertMessages.Uninstall_OneOrMoreFMsFailedToUninstall,
+                        LText.AlertMessages.Alert,
+                        icon: MBoxIcon.Warning);
+                }
+
                 return (true, atLeastOneFMMarkedUnavailable);
             });
         }
@@ -2917,6 +2929,32 @@ internal static partial class FMInstallAndPlay
             }
 
             _uninstallCts.Dispose();
+        }
+
+        static string GetResultErrorsLogText(List<FMUninstallResult> results)
+        {
+            string logText = "";
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                FMUninstallResult result = results[i];
+
+                if (!logText.IsEmpty())
+                {
+                    logText += $"{NL}---{NL}";
+                }
+
+                logText +=
+                    $"{NL}" +
+                    "Result type: " + result.ResultType + $"{NL}" +
+                    "Exception: " + (result.Exception?.ToString() ?? "none") + $"{NL}" +
+                    "Error message: " + (result.ErrorMessage.IsEmpty() ? "none" : $"{NL}" + result.ErrorMessage) + $"{NL}" +
+                    "FMData:" + $"{NL}" + result.FMData + $"{NL}";
+            }
+
+            logText += $"{NL}";
+
+            return logText;
         }
     }
 

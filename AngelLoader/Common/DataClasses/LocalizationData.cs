@@ -214,6 +214,7 @@ internal sealed class LText_Class
         internal readonly string SelectFM_DarkMod_GameIsRunning = "The Dark Mod is running. Unable to select this FM.";
         internal readonly string SelectFM_DarkMod_UnableToSelect = "This FM couldn't be selected. Unable to write to currentfm.txt.";
         internal readonly string OneOrMoreGamesAreRunning = "One or more supported games are running. Please exit them first.";
+        internal readonly string Install_OneOrMoreFMsFailedToInstall = "One or more FMs could not be installed. See the log file for details.";
         [FenGenBlankLine]
         internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
         internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
@@ -222,7 +223,7 @@ internal sealed class LText_Class
         internal readonly string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
         internal readonly string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
         internal readonly string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";
-        internal readonly string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
+        internal readonly string Uninstall_OneOrMoreFMsFailedToUninstall = "One or more FMs could not be uninstalled. See the log file for details.";
         [FenGenComment(
             "During the FM install process, either the user canceled the install or the install failed, and during the attempt to remove the leftover",
             "FM installed folder, an error occurred.")]
@@ -264,8 +265,6 @@ internal sealed class LText_Class
         internal readonly string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
         [FenGenBlankLine]
         internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
-        [FenGenBlankLine]
-        internal readonly string OneOrMoreFMsFailedToInstall = "One or more FMs could not be installed. See the log file for details.";
         // @MT_TASK: Find all unused stuff in here and use it where it's supposed to be used
         // Some of the stuff may be unused because we removed the during-operation dialogs and we now need to put
         // it in the after-operation dialog(s)
