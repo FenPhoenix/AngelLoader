@@ -1995,7 +1995,7 @@ internal static partial class FMInstallAndPlay
 
         static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList)
         {
-            List<FMInstallResult> ret = new();
+            ConcurrentBag<FMInstallResult> results = new();
 
             List<FMData> filteredList = new();
 
@@ -2031,7 +2031,7 @@ internal static partial class FMInstallAndPlay
                     FMInstallResult result = RemoveFMFromDisk(fmData);
                     if (result.ResultType == InstallResultType.RollbackFailed)
                     {
-                        ret.Add(result);
+                        results.Add(result);
                     }
 
                     // @MT_TASK: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
@@ -2048,7 +2048,7 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine("Rollback: " + sw.Elapsed);
 #endif
 
-            return ret;
+            return results.ToList();
         }
 
         static FMInstallResult RemoveFMFromDisk(FMData fmData)
