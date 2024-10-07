@@ -2769,6 +2769,7 @@ internal static partial class FMInstallAndPlay
 
                         if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                         {
+                            // @MT_TASK: Assign view indexes skipping skip-uninstall FMs, so we can hide them from the progress box items list
                             (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                                 message: fmData.FM.GetId() + $"{NL}{NL}" +
                                          LText.AlertMessages.Uninstall_ArchiveNotFound,
@@ -2817,60 +2818,64 @@ internal static partial class FMInstallAndPlay
                         {
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
+                            // @MT_TASK: This "continue" is allowed because we will have set view indexes to skip these
+                            // So we won't have wrong indexes nor show dummy items on the UI or anything.
                             if (fmData.Uninstall_SkipUninstallingThisFM) continue;
 
                             FanMission fm = fmData.FM;
 
-                            if (!Directory.Exists(fmData.InstalledPath))
-                            {
-                                fm.Installed = false;
-                                continue;
-                            }
+                            bool dirExists = Directory.Exists(fmData.InstalledPath);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                            /*
-                            If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
-                            This file will be included in the search when restoring, and the newest will be taken as
-                            usual.
-
-                            fm.Archive can be blank at this point when all of the following conditions are true:
-                            -fm is installed
-                            -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
-                            -fm was not in the database on startup
-                            -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
-                             folders if that option is enabled)
-
-                            It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
-                            don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
-                            archive folder on initial setup, and hasn't imported from NDL by this point.
-                            */
-
-                            if (doBackup)
+                            if (dirExists)
                             {
-                                // @MT_TASK: Pool this
-                                byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
-                                BackupFM(
-                                    ctx,
-                                    fm,
-                                    fmData.InstalledPath,
-                                    fmData.ArchivePath,
-                                    archivePaths,
-                                    fileStreamBuffer);
-                            }
+                                if (doBackup)
+                                {
+                                    /*
+                                    If fm.Archive is blank, then fm.InstalledDir will be used for the backup file
+                                    name instead. This file will be included in the search when restoring, and the
+                                    newest will be taken as usual.
 
-                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                                    fm.Archive can be blank at this point when all of the following conditions
+                                    are true:
+                                    -fm is installed
+                                    -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank
+                                     or invalid)
+                                    -fm was not in the database on startup
+                                    -the folder where the FM's archive is located is not in Config.FMArchivePaths
+                                     (or its subfolders if that option is enabled)
 
-                            // TODO: Give the user the option to retry or something, if it's cause they have a file open
-                            // Make option to open the folder in Explorer and delete it manually?
-                            FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
-                            if (result.ResultType != UninstallResultType.UninstallSucceeded)
-                            {
-                                fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
-                                // @MT_TASK(Uninstall error): Use list-of-results and post-dialog like Install
-                                Core.Dialogs.ShowError(
-                                    LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
-                                    "FM: " + fm.GetId());
+                                    It's not particularly likely, but it could happen if the user had NDL-installed
+                                    FMs (which don't have fmsel.inf), started AngelLoader for the first time, didn't
+                                    specify the right archive folder on initial setup, and hasn't imported from NDL
+                                    by this point.
+                                    */
+
+                                    // @MT_TASK: Pool this
+                                    byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
+                                    BackupFM(
+                                        ctx,
+                                        fm,
+                                        fmData.InstalledPath,
+                                        fmData.ArchivePath,
+                                        archivePaths,
+                                        fileStreamBuffer);
+
+                                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                                }
+
+                                // TODO: Give the user the option to retry or something, if it's cause they have a file open
+                                // Make option to open the folder in Explorer and delete it manually?
+                                FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
+                                if (result.ResultType != UninstallResultType.UninstallSucceeded)
+                                {
+                                    fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
+                                    // @MT_TASK(Uninstall error): Use list-of-results and post-dialog like Install
+                                    Core.Dialogs.ShowError(
+                                        LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
+                                        "FM: " + fm.GetId());
+                                }
                             }
 
                             fm.Installed = false;
