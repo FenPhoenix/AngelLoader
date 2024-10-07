@@ -2933,6 +2933,7 @@ internal static partial class FMInstallAndPlay
             try
             {
                 Directory.Delete(path, recursive: true);
+                Log("Delete of '" + path + "' succeeded after removing readonly attributes.");
                 return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
             }
             catch (Exception retryDeleteEx)
