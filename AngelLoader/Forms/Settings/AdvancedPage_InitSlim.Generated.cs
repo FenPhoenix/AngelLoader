@@ -11,15 +11,15 @@ sealed partial class AdvancedPage
         this.IOThreadingGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.CustomModePanel = new System.Windows.Forms.Panel();
         this.CustomThreadingModeAggressiveRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-        this.CustomThreadingModeNormalRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.CustomThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.CustomThreadingModeNormalRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+        this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
+        this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.NvmeSsdThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.SataSsdThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.AutoThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.HddThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.NvmeSsdThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
         this.SataSsdThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.CustomModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.AutoModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -80,26 +80,52 @@ sealed partial class AdvancedPage
         this.CustomModePanel.Controls.Add(this.CustomThreadsLabel);
         this.CustomModePanel.Location = new System.Drawing.Point(8, 384);
         this.CustomModePanel.Size = new System.Drawing.Size(408, 104);
-        this.CustomModePanel.TabIndex = 1;
+        this.CustomModePanel.TabIndex = 14;
         // 
         // CustomThreadingModeAggressiveRadioButton
         // 
         this.CustomThreadingModeAggressiveRadioButton.AutoSize = true;
         this.CustomThreadingModeAggressiveRadioButton.Location = new System.Drawing.Point(24, 80);
-        this.CustomThreadingModeAggressiveRadioButton.TabIndex = 0;
+        this.CustomThreadingModeAggressiveRadioButton.TabIndex = 4;
         this.CustomThreadingModeAggressiveRadioButton.TabStop = true;
-        // 
-        // CustomThreadingModeNormalRadioButton
-        // 
-        this.CustomThreadingModeNormalRadioButton.AutoSize = true;
-        this.CustomThreadingModeNormalRadioButton.Location = new System.Drawing.Point(24, 64);
-        this.CustomThreadingModeNormalRadioButton.TabIndex = 0;
-        this.CustomThreadingModeNormalRadioButton.TabStop = true;
         // 
         // CustomThreadingModeLabel
         // 
         this.CustomThreadingModeLabel.AutoSize = true;
         this.CustomThreadingModeLabel.Location = new System.Drawing.Point(24, 48);
+        // 
+        // CustomThreadingModeNormalRadioButton
+        // 
+        this.CustomThreadingModeNormalRadioButton.AutoSize = true;
+        this.CustomThreadingModeNormalRadioButton.Location = new System.Drawing.Point(24, 64);
+        this.CustomThreadingModeNormalRadioButton.TabIndex = 3;
+        this.CustomThreadingModeNormalRadioButton.TabStop = true;
+        // 
+        // CustomThreadsNumericUpDown
+        // 
+        this.CustomThreadsNumericUpDown.Location = new System.Drawing.Point(24, 16);
+        this.CustomThreadsNumericUpDown.Maximum = new decimal(new int[] {
+        2147483647,
+        0,
+        0,
+        0});
+        this.CustomThreadsNumericUpDown.Minimum = new decimal(new int[] {
+        1,
+        0,
+        0,
+        0});
+        this.CustomThreadsNumericUpDown.Size = new System.Drawing.Size(104, 20);
+        this.CustomThreadsNumericUpDown.TabIndex = 1;
+        this.CustomThreadsNumericUpDown.Value = new decimal(new int[] {
+        1,
+        0,
+        0,
+        0});
+        // 
+        // CustomThreadsLabel
+        // 
+        this.CustomThreadsLabel.AutoSize = true;
+        this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 0);
         // 
         // NvmeSsdThreadingModeLabel
         // 
@@ -121,36 +147,10 @@ sealed partial class AdvancedPage
         this.HddThreadingModeLabel.AutoSize = true;
         this.HddThreadingModeLabel.Location = new System.Drawing.Point(32, 160);
         // 
-        // CustomThreadsLabel
-        // 
-        this.CustomThreadsLabel.AutoSize = true;
-        this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 0);
-        // 
         // NvmeSsdThreadsLabel
         // 
         this.NvmeSsdThreadsLabel.AutoSize = true;
         this.NvmeSsdThreadsLabel.Location = new System.Drawing.Point(32, 304);
-        // 
-        // CustomThreadsNumericUpDown
-        // 
-        this.CustomThreadsNumericUpDown.Location = new System.Drawing.Point(24, 16);
-        this.CustomThreadsNumericUpDown.Maximum = new decimal(new int[] {
-        2147483647,
-        0,
-        0,
-        0});
-        this.CustomThreadsNumericUpDown.Minimum = new decimal(new int[] {
-        1,
-        0,
-        0,
-        0});
-        this.CustomThreadsNumericUpDown.Size = new System.Drawing.Size(104, 20);
-        this.CustomThreadsNumericUpDown.TabIndex = 2;
-        this.CustomThreadsNumericUpDown.Value = new decimal(new int[] {
-        1,
-        0,
-        0,
-        0});
         // 
         // SataSsdThreadsLabel
         // 
@@ -161,7 +161,7 @@ sealed partial class AdvancedPage
         // 
         this.CustomModeRadioButton.AutoSize = true;
         this.CustomModeRadioButton.Location = new System.Drawing.Point(16, 360);
-        this.CustomModeRadioButton.TabIndex = 1;
+        this.CustomModeRadioButton.TabIndex = 13;
         this.CustomModeRadioButton.TabStop = true;
         // 
         // AutoModeLabel
@@ -191,21 +191,21 @@ sealed partial class AdvancedPage
         // 
         this.NvmeSsdModeRadioButton.AutoSize = true;
         this.NvmeSsdModeRadioButton.Location = new System.Drawing.Point(16, 280);
-        this.NvmeSsdModeRadioButton.TabIndex = 0;
+        this.NvmeSsdModeRadioButton.TabIndex = 10;
         this.NvmeSsdModeRadioButton.TabStop = true;
         // 
         // HddModeRadioButton
         // 
         this.HddModeRadioButton.AutoSize = true;
         this.HddModeRadioButton.Location = new System.Drawing.Point(16, 120);
-        this.HddModeRadioButton.TabIndex = 0;
+        this.HddModeRadioButton.TabIndex = 4;
         this.HddModeRadioButton.TabStop = true;
         // 
         // SataSsdModeRadioButton
         // 
         this.SataSsdModeRadioButton.AutoSize = true;
         this.SataSsdModeRadioButton.Location = new System.Drawing.Point(16, 200);
-        this.SataSsdModeRadioButton.TabIndex = 0;
+        this.SataSsdModeRadioButton.TabIndex = 7;
         this.SataSsdModeRadioButton.TabStop = true;
         // 
         // AdvancedPage

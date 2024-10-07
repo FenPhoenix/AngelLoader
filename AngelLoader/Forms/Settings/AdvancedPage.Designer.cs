@@ -35,15 +35,15 @@ sealed partial class AdvancedPage
             this.IOThreadingGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.CustomModePanel = new System.Windows.Forms.Panel();
             this.CustomThreadingModeAggressiveRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.CustomThreadingModeNormalRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.CustomThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.CustomThreadingModeNormalRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
+            this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NvmeSsdThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.SataSsdThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.AutoThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.HddThreadingModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.NvmeSsdThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.SataSsdThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.CustomModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.AutoModeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -109,7 +109,7 @@ sealed partial class AdvancedPage
             this.CustomModePanel.Location = new System.Drawing.Point(8, 384);
             this.CustomModePanel.Name = "CustomModePanel";
             this.CustomModePanel.Size = new System.Drawing.Size(408, 104);
-            this.CustomModePanel.TabIndex = 1;
+            this.CustomModePanel.TabIndex = 14;
             // 
             // CustomThreadingModeAggressiveRadioButton
             // 
@@ -117,19 +117,9 @@ sealed partial class AdvancedPage
             this.CustomThreadingModeAggressiveRadioButton.Location = new System.Drawing.Point(24, 80);
             this.CustomThreadingModeAggressiveRadioButton.Name = "CustomThreadingModeAggressiveRadioButton";
             this.CustomThreadingModeAggressiveRadioButton.Size = new System.Drawing.Size(77, 17);
-            this.CustomThreadingModeAggressiveRadioButton.TabIndex = 0;
+            this.CustomThreadingModeAggressiveRadioButton.TabIndex = 4;
             this.CustomThreadingModeAggressiveRadioButton.TabStop = true;
             this.CustomThreadingModeAggressiveRadioButton.Text = "Aggressive";
-            // 
-            // CustomThreadingModeNormalRadioButton
-            // 
-            this.CustomThreadingModeNormalRadioButton.AutoSize = true;
-            this.CustomThreadingModeNormalRadioButton.Location = new System.Drawing.Point(24, 64);
-            this.CustomThreadingModeNormalRadioButton.Name = "CustomThreadingModeNormalRadioButton";
-            this.CustomThreadingModeNormalRadioButton.Size = new System.Drawing.Size(58, 17);
-            this.CustomThreadingModeNormalRadioButton.TabIndex = 0;
-            this.CustomThreadingModeNormalRadioButton.TabStop = true;
-            this.CustomThreadingModeNormalRadioButton.Text = "Normal";
             // 
             // CustomThreadingModeLabel
             // 
@@ -137,62 +127,18 @@ sealed partial class AdvancedPage
             this.CustomThreadingModeLabel.Location = new System.Drawing.Point(24, 48);
             this.CustomThreadingModeLabel.Name = "CustomThreadingModeLabel";
             this.CustomThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
-            this.CustomThreadingModeLabel.TabIndex = 1;
+            this.CustomThreadingModeLabel.TabIndex = 2;
             this.CustomThreadingModeLabel.Text = "Threading mode:";
             // 
-            // NvmeSsdThreadingModeLabel
+            // CustomThreadingModeNormalRadioButton
             // 
-            this.NvmeSsdThreadingModeLabel.AutoSize = true;
-            this.NvmeSsdThreadingModeLabel.Location = new System.Drawing.Point(32, 320);
-            this.NvmeSsdThreadingModeLabel.Name = "NvmeSsdThreadingModeLabel";
-            this.NvmeSsdThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
-            this.NvmeSsdThreadingModeLabel.TabIndex = 1;
-            this.NvmeSsdThreadingModeLabel.Text = "Threading mode:";
-            // 
-            // SataSsdThreadingModeLabel
-            // 
-            this.SataSsdThreadingModeLabel.AutoSize = true;
-            this.SataSsdThreadingModeLabel.Location = new System.Drawing.Point(32, 240);
-            this.SataSsdThreadingModeLabel.Name = "SataSsdThreadingModeLabel";
-            this.SataSsdThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
-            this.SataSsdThreadingModeLabel.TabIndex = 1;
-            this.SataSsdThreadingModeLabel.Text = "Threading mode:";
-            // 
-            // AutoThreadingModeLabel
-            // 
-            this.AutoThreadingModeLabel.AutoSize = true;
-            this.AutoThreadingModeLabel.Location = new System.Drawing.Point(24, 80);
-            this.AutoThreadingModeLabel.Name = "AutoThreadingModeLabel";
-            this.AutoThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
-            this.AutoThreadingModeLabel.TabIndex = 1;
-            this.AutoThreadingModeLabel.Text = "Threading mode:";
-            // 
-            // HddThreadingModeLabel
-            // 
-            this.HddThreadingModeLabel.AutoSize = true;
-            this.HddThreadingModeLabel.Location = new System.Drawing.Point(32, 160);
-            this.HddThreadingModeLabel.Name = "HddThreadingModeLabel";
-            this.HddThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
-            this.HddThreadingModeLabel.TabIndex = 1;
-            this.HddThreadingModeLabel.Text = "Threading mode:";
-            // 
-            // CustomThreadsLabel
-            // 
-            this.CustomThreadsLabel.AutoSize = true;
-            this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 0);
-            this.CustomThreadsLabel.Name = "CustomThreadsLabel";
-            this.CustomThreadsLabel.Size = new System.Drawing.Size(49, 13);
-            this.CustomThreadsLabel.TabIndex = 1;
-            this.CustomThreadsLabel.Text = "Threads:";
-            // 
-            // NvmeSsdThreadsLabel
-            // 
-            this.NvmeSsdThreadsLabel.AutoSize = true;
-            this.NvmeSsdThreadsLabel.Location = new System.Drawing.Point(32, 304);
-            this.NvmeSsdThreadsLabel.Name = "NvmeSsdThreadsLabel";
-            this.NvmeSsdThreadsLabel.Size = new System.Drawing.Size(49, 13);
-            this.NvmeSsdThreadsLabel.TabIndex = 1;
-            this.NvmeSsdThreadsLabel.Text = "Threads:";
+            this.CustomThreadingModeNormalRadioButton.AutoSize = true;
+            this.CustomThreadingModeNormalRadioButton.Location = new System.Drawing.Point(24, 64);
+            this.CustomThreadingModeNormalRadioButton.Name = "CustomThreadingModeNormalRadioButton";
+            this.CustomThreadingModeNormalRadioButton.Size = new System.Drawing.Size(58, 17);
+            this.CustomThreadingModeNormalRadioButton.TabIndex = 3;
+            this.CustomThreadingModeNormalRadioButton.TabStop = true;
+            this.CustomThreadingModeNormalRadioButton.Text = "Normal";
             // 
             // CustomThreadsNumericUpDown
             // 
@@ -209,12 +155,66 @@ sealed partial class AdvancedPage
             0});
             this.CustomThreadsNumericUpDown.Name = "CustomThreadsNumericUpDown";
             this.CustomThreadsNumericUpDown.Size = new System.Drawing.Size(104, 20);
-            this.CustomThreadsNumericUpDown.TabIndex = 2;
+            this.CustomThreadsNumericUpDown.TabIndex = 1;
             this.CustomThreadsNumericUpDown.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
+            // 
+            // CustomThreadsLabel
+            // 
+            this.CustomThreadsLabel.AutoSize = true;
+            this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 0);
+            this.CustomThreadsLabel.Name = "CustomThreadsLabel";
+            this.CustomThreadsLabel.Size = new System.Drawing.Size(49, 13);
+            this.CustomThreadsLabel.TabIndex = 0;
+            this.CustomThreadsLabel.Text = "Threads:";
+            // 
+            // NvmeSsdThreadingModeLabel
+            // 
+            this.NvmeSsdThreadingModeLabel.AutoSize = true;
+            this.NvmeSsdThreadingModeLabel.Location = new System.Drawing.Point(32, 320);
+            this.NvmeSsdThreadingModeLabel.Name = "NvmeSsdThreadingModeLabel";
+            this.NvmeSsdThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
+            this.NvmeSsdThreadingModeLabel.TabIndex = 12;
+            this.NvmeSsdThreadingModeLabel.Text = "Threading mode:";
+            // 
+            // SataSsdThreadingModeLabel
+            // 
+            this.SataSsdThreadingModeLabel.AutoSize = true;
+            this.SataSsdThreadingModeLabel.Location = new System.Drawing.Point(32, 240);
+            this.SataSsdThreadingModeLabel.Name = "SataSsdThreadingModeLabel";
+            this.SataSsdThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
+            this.SataSsdThreadingModeLabel.TabIndex = 9;
+            this.SataSsdThreadingModeLabel.Text = "Threading mode:";
+            // 
+            // AutoThreadingModeLabel
+            // 
+            this.AutoThreadingModeLabel.AutoSize = true;
+            this.AutoThreadingModeLabel.Location = new System.Drawing.Point(24, 80);
+            this.AutoThreadingModeLabel.Name = "AutoThreadingModeLabel";
+            this.AutoThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
+            this.AutoThreadingModeLabel.TabIndex = 3;
+            this.AutoThreadingModeLabel.Text = "Threading mode:";
+            // 
+            // HddThreadingModeLabel
+            // 
+            this.HddThreadingModeLabel.AutoSize = true;
+            this.HddThreadingModeLabel.Location = new System.Drawing.Point(32, 160);
+            this.HddThreadingModeLabel.Name = "HddThreadingModeLabel";
+            this.HddThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
+            this.HddThreadingModeLabel.TabIndex = 6;
+            this.HddThreadingModeLabel.Text = "Threading mode:";
+            // 
+            // NvmeSsdThreadsLabel
+            // 
+            this.NvmeSsdThreadsLabel.AutoSize = true;
+            this.NvmeSsdThreadsLabel.Location = new System.Drawing.Point(32, 304);
+            this.NvmeSsdThreadsLabel.Name = "NvmeSsdThreadsLabel";
+            this.NvmeSsdThreadsLabel.Size = new System.Drawing.Size(49, 13);
+            this.NvmeSsdThreadsLabel.TabIndex = 11;
+            this.NvmeSsdThreadsLabel.Text = "Threads:";
             // 
             // SataSsdThreadsLabel
             // 
@@ -222,7 +222,7 @@ sealed partial class AdvancedPage
             this.SataSsdThreadsLabel.Location = new System.Drawing.Point(32, 224);
             this.SataSsdThreadsLabel.Name = "SataSsdThreadsLabel";
             this.SataSsdThreadsLabel.Size = new System.Drawing.Size(49, 13);
-            this.SataSsdThreadsLabel.TabIndex = 1;
+            this.SataSsdThreadsLabel.TabIndex = 8;
             this.SataSsdThreadsLabel.Text = "Threads:";
             // 
             // CustomModeRadioButton
@@ -231,7 +231,7 @@ sealed partial class AdvancedPage
             this.CustomModeRadioButton.Location = new System.Drawing.Point(16, 360);
             this.CustomModeRadioButton.Name = "CustomModeRadioButton";
             this.CustomModeRadioButton.Size = new System.Drawing.Size(60, 17);
-            this.CustomModeRadioButton.TabIndex = 1;
+            this.CustomModeRadioButton.TabIndex = 13;
             this.CustomModeRadioButton.TabStop = true;
             this.CustomModeRadioButton.Text = "Custom";
             // 
@@ -250,7 +250,7 @@ sealed partial class AdvancedPage
             this.AutoThreadsLabel.Location = new System.Drawing.Point(24, 64);
             this.AutoThreadsLabel.Name = "AutoThreadsLabel";
             this.AutoThreadsLabel.Size = new System.Drawing.Size(49, 13);
-            this.AutoThreadsLabel.TabIndex = 1;
+            this.AutoThreadsLabel.TabIndex = 2;
             this.AutoThreadsLabel.Text = "Threads:";
             // 
             // HddThreadsLabel
@@ -259,7 +259,7 @@ sealed partial class AdvancedPage
             this.HddThreadsLabel.Location = new System.Drawing.Point(32, 144);
             this.HddThreadsLabel.Name = "HddThreadsLabel";
             this.HddThreadsLabel.Size = new System.Drawing.Size(49, 13);
-            this.HddThreadsLabel.TabIndex = 1;
+            this.HddThreadsLabel.TabIndex = 5;
             this.HddThreadsLabel.Text = "Threads:";
             // 
             // AutoModeRadioButton
@@ -279,7 +279,7 @@ sealed partial class AdvancedPage
             this.NvmeSsdModeRadioButton.Location = new System.Drawing.Point(16, 280);
             this.NvmeSsdModeRadioButton.Name = "NvmeSsdModeRadioButton";
             this.NvmeSsdModeRadioButton.Size = new System.Drawing.Size(80, 17);
-            this.NvmeSsdModeRadioButton.TabIndex = 0;
+            this.NvmeSsdModeRadioButton.TabIndex = 10;
             this.NvmeSsdModeRadioButton.TabStop = true;
             this.NvmeSsdModeRadioButton.Text = "NVMe SSD";
             // 
@@ -289,7 +289,7 @@ sealed partial class AdvancedPage
             this.HddModeRadioButton.Location = new System.Drawing.Point(16, 120);
             this.HddModeRadioButton.Name = "HddModeRadioButton";
             this.HddModeRadioButton.Size = new System.Drawing.Size(49, 17);
-            this.HddModeRadioButton.TabIndex = 0;
+            this.HddModeRadioButton.TabIndex = 4;
             this.HddModeRadioButton.TabStop = true;
             this.HddModeRadioButton.Text = "HDD";
             // 
@@ -299,7 +299,7 @@ sealed partial class AdvancedPage
             this.SataSsdModeRadioButton.Location = new System.Drawing.Point(16, 200);
             this.SataSsdModeRadioButton.Name = "SataSsdModeRadioButton";
             this.SataSsdModeRadioButton.Size = new System.Drawing.Size(78, 17);
-            this.SataSsdModeRadioButton.TabIndex = 0;
+            this.SataSsdModeRadioButton.TabIndex = 7;
             this.SataSsdModeRadioButton.TabStop = true;
             this.SataSsdModeRadioButton.Text = "SATA SSD";
             // 
