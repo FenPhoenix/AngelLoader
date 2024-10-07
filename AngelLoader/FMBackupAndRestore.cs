@@ -116,7 +116,7 @@ internal static partial class FMInstallAndPlay
 
     #region Public methods
 
-    private static Task BackupFM(
+    private static void BackupFM(
         DarkLoaderBackupContext ctx,
         FanMission fm,
         string fmInstalledPath,
@@ -131,132 +131,129 @@ internal static partial class FMInstallAndPlay
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-            return VoidTask;
+            return;
         }
 
-        return Task.Run(() =>
+        if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
+
+        string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
+        string savesDir = fm.Game == Game.Thief3 ? _t3SavesDir : _darkSavesDir;
+        string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
+        string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _darkNetSavesDir);
+        // Screenshots directory name is the same for T1/T2/T3/SS2
+        string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _screensDir);
+        string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _ss2CurrentDir);
+
+        // @MT_TASK(BackupFM): Conflict possibility with backup archive name
+        // If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
+        string bakFile = Path.Combine(Config.FMsBackupPath,
+            (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
+            Paths.FMBackupSuffix);
+
+        if (backupSavesAndScreensOnly)
         {
-            if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
+            var savesAndScreensFiles = new List<string>();
 
-            string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
-            string savesDir = fm.Game == Game.Thief3 ? _t3SavesDir : _darkSavesDir;
-            string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
-            string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _darkNetSavesDir);
-            // Screenshots directory name is the same for T1/T2/T3/SS2
-            string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _screensDir);
-            string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _ss2CurrentDir);
-
-            // @MT_TASK(BackupFM): Conflict possibility with backup archive name
-            // If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
-            string bakFile = Path.Combine(Config.FMsBackupPath,
-                (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
-                Paths.FMBackupSuffix);
-
-            if (backupSavesAndScreensOnly)
+            if (Directory.Exists(savesPath))
             {
-                var savesAndScreensFiles = new List<string>();
+                savesAndScreensFiles.AddRange(Directory.GetFiles(savesPath, "*", SearchOption.AllDirectories));
+            }
+            if (Directory.Exists(netSavesPath))
+            {
+                savesAndScreensFiles.AddRange(Directory.GetFiles(netSavesPath, "*", SearchOption.AllDirectories));
+            }
+            if (Directory.Exists(screensPath))
+            {
+                savesAndScreensFiles.AddRange(Directory.GetFiles(screensPath, "*", SearchOption.AllDirectories));
+            }
+            if (fm.Game == Game.SS2)
+            {
+                savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
 
-                if (Directory.Exists(savesPath))
-                {
-                    savesAndScreensFiles.AddRange(Directory.GetFiles(savesPath, "*", SearchOption.AllDirectories));
-                }
-                if (Directory.Exists(netSavesPath))
-                {
-                    savesAndScreensFiles.AddRange(Directory.GetFiles(netSavesPath, "*", SearchOption.AllDirectories));
-                }
-                if (Directory.Exists(screensPath))
-                {
-                    savesAndScreensFiles.AddRange(Directory.GetFiles(screensPath, "*", SearchOption.AllDirectories));
-                }
-                if (fm.Game == Game.SS2)
-                {
-                    savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
+                List<string> ss2SaveDirs = FastIO.GetDirsTopOnly(
+                    Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
 
-                    List<string> ss2SaveDirs = FastIO.GetDirsTopOnly(
-                        Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
-
-                    foreach (string dir in ss2SaveDirs)
+                foreach (string dir in ss2SaveDirs)
+                {
+                    if (_ss2SaveDirsOnDiskRegex.IsMatch(dir))
                     {
-                        if (_ss2SaveDirsOnDiskRegex.IsMatch(dir))
-                        {
-                            savesAndScreensFiles.AddRange(Directory.GetFiles(dir, "*", SearchOption.AllDirectories));
-                        }
+                        savesAndScreensFiles.AddRange(Directory.GetFiles(dir, "*", SearchOption.AllDirectories));
                     }
                 }
+            }
 
-                if (savesAndScreensFiles.Count == 0) return;
+            if (savesAndScreensFiles.Count == 0) return;
 
-                using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                    ZipArchiveMode.Create, leaveOpen: false);
+            using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                ZipArchiveMode.Create, leaveOpen: false);
 
-                foreach (string f in savesAndScreensFiles)
+            foreach (string f in savesAndScreensFiles)
+            {
+                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+                AddEntry(archive, f, fn, fileStreamBuffer);
+            }
+
+            MoveDarkLoaderBackup(ctx, fm, archivePaths);
+            return;
+        }
+
+        HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
+
+        (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
+            GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer);
+
+        // If >90% of files are different, re-run and use only size difference
+        // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
+        // timestamps, when it puts the right ones at all
+        if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
+        {
+            (changedList, addedList, fullList) =
+                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer, useOnlySize: true);
+        }
+
+        try
+        {
+            using (var archive = new ZipArchive(
+                       new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                       ZipArchiveMode.Create,
+                       leaveOpen: false))
+            {
+                foreach (string f in installedFMFiles)
                 {
                     string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-                    AddEntry(archive, f, fn, fileStreamBuffer);
+                    if (IsSaveOrScreenshot(fn, fm.Game) ||
+                        (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
+                         (changedList.Contains(fn) || addedList.Contains(fn))))
+                    {
+                        AddEntry(archive, f, fn, fileStreamBuffer);
+                    }
                 }
 
-                MoveDarkLoaderBackup(ctx, fm, archivePaths);
-                return;
-            }
-
-            HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
-
-            (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
-                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer);
-
-            // If >90% of files are different, re-run and use only size difference
-            // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
-            // timestamps, when it puts the right ones at all
-            if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
-            {
-                (changedList, addedList, fullList) =
-                    GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer, useOnlySize: true);
-            }
-
-            try
-            {
-                using (var archive = new ZipArchive(
-                           new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                           ZipArchiveMode.Create,
-                           leaveOpen: false))
+                string fmSelInfString = "";
+                foreach (string f in fullList)
                 {
-                    foreach (string f in installedFMFiles)
+                    if (!installedFMFiles.Contains(Path.Combine(fmInstalledPath, f)))
                     {
-                        string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-                        if (IsSaveOrScreenshot(fn, fm.Game) ||
-                            (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
-                             (changedList.Contains(fn) || addedList.Contains(fn))))
-                        {
-                            AddEntry(archive, f, fn, fileStreamBuffer);
-                        }
-                    }
-
-                    string fmSelInfString = "";
-                    foreach (string f in fullList)
-                    {
-                        if (!installedFMFiles.Contains(Path.Combine(fmInstalledPath, f)))
-                        {
-                            // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
-                            fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
-                        }
-                    }
-
-                    if (!fmSelInfString.IsEmpty())
-                    {
-                        ZipArchiveEntry entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
-                        using var eo = entry.Open();
-                        using var sw = new StreamWriter(eo, Encoding.UTF8);
-                        sw.Write(fmSelInfString);
+                        // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
+                        fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
                     }
                 }
 
-                MoveDarkLoaderBackup(ctx, fm, archivePaths);
+                if (!fmSelInfString.IsEmpty())
+                {
+                    ZipArchiveEntry entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
+                    using var eo = entry.Open();
+                    using var sw = new StreamWriter(eo, Encoding.UTF8);
+                    sw.Write(fmSelInfString);
+                }
             }
-            catch (Exception ex)
-            {
-                fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
-            }
-        });
+
+            MoveDarkLoaderBackup(ctx, fm, archivePaths);
+        }
+        catch (Exception ex)
+        {
+            fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
+        }
     }
 
     private static void RestoreFM(

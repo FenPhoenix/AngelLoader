@@ -2722,157 +2722,187 @@ internal static partial class FMInstallAndPlay
         bool atLeastOneFMMarkedUnavailable = false;
         try
         {
-            _uninstallCts = _uninstallCts.Recreate();
-
-            if (single)
+            return await Task.Run(() =>
             {
-                Core.View.SetProgressBoxState_Single(
-                    visible: true,
-                    message1: LText.ProgressBox.UninstallingFM,
-                    progressType: ProgressType.Indeterminate
-                );
-            }
-            else
-            {
-                Core.View.SetProgressBoxState_Single(
-                    visible: true,
-                    message1: LText.ProgressBox.UninstallingFMs,
-                    progressType: ProgressType.Determinate,
-                    cancelMessage: LText.Global.Stop,
-                    cancelAction: CancelUninstallToken
-                );
-            }
+                _uninstallCts = _uninstallCts.Recreate();
 
-            bool skipUninstallWithNoArchiveWarning = false;
-
-            #region Pre-check for missing archive and ask the user what to do
-
-            for (int i = 0; i < fmDataList.Count; i++)
-            {
-                FMData fmData = fmDataList[i];
-
-                if (fmData.ArchivePath.IsEmpty())
+                if (single)
                 {
-                    // Match previous behavior: any not-really-installed FM gets rejected silently first.
-                    // Put it inside the empty-archive check so as to minimize the number of times we hit the
-                    // disk sequentially (since we'll be parallelizing below).
-                    if (!await FMInstalledDirExists(fmData))
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFM,
+                        progressType: ProgressType.Indeterminate
+                    );
+                }
+                else
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFMs,
+                        progressType: ProgressType.Determinate,
+                        cancelMessage: LText.Global.Stop,
+                        cancelAction: CancelUninstallToken
+                    );
+                }
+
+                bool skipUninstallWithNoArchiveWarning = false;
+
+                #region Pre-check for missing archive and ask the user what to do
+
+                for (int i = 0; i < fmDataList.Count; i++)
+                {
+                    FMData fmData = fmDataList[i];
+
+                    if (fmData.ArchivePath.IsEmpty())
                     {
-                        fmData.FM.Installed = false;
-                        fmData.Uninstall_SkipUninstallingThisFM = true;
-                        continue;
-                    }
-
-                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                    if (doEndTasks && !skipUninstallWithNoArchiveWarning)
-                    {
-                        (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                            message: fmData.FM.GetId() + $"{NL}{NL}" +
-                                     LText.AlertMessages.Uninstall_ArchiveNotFound,
-                            title: LText.AlertMessages.Warning,
-                            icon: MBoxIcon.Warning,
-                            yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
-                            no: LText.Global.Skip,
-                            cancel: LText.Global.Cancel,
-                            defaultButton: MBoxButton.No);
-
-                        if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
-                        if (result == MBoxButton.No)
+                        // Match previous behavior: any not-really-installed FM gets rejected silently first.
+                        // Put it inside the empty-archive check so as to minimize the number of times we hit the
+                        // disk sequentially (since we'll be parallelizing below).
+                        if (!Directory.Exists(fmData.InstalledPath))
                         {
+                            fmData.FM.Installed = false;
                             fmData.Uninstall_SkipUninstallingThisFM = true;
                             continue;
                         }
 
-                        if (!single) skipUninstallWithNoArchiveWarning = true;
+                        if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                        if (doEndTasks && !skipUninstallWithNoArchiveWarning)
+                        {
+                            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                                message: fmData.FM.GetId() + $"{NL}{NL}" +
+                                         LText.AlertMessages.Uninstall_ArchiveNotFound,
+                                title: LText.AlertMessages.Warning,
+                                icon: MBoxIcon.Warning,
+                                yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
+                                no: LText.Global.Skip,
+                                cancel: LText.Global.Cancel,
+                                defaultButton: MBoxButton.No);
+
+                            if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
+                            if (result == MBoxButton.No)
+                            {
+                                fmData.Uninstall_SkipUninstallingThisFM = true;
+                                continue;
+                            }
+
+                            if (!single) skipUninstallWithNoArchiveWarning = true;
+                        }
+                        fmData.Uninstall_MarkFMAsUnavailable = true;
+                        atLeastOneFMMarkedUnavailable = true;
                     }
-                    fmData.Uninstall_MarkFMAsUnavailable = true;
-                    atLeastOneFMMarkedUnavailable = true;
                 }
-            }
 
-            #endregion
+                #endregion
 
-            byte[]? fileStreamBuffer = null;
+                ConcurrentBag<FMInstallResult> results = new();
 
-            DarkLoaderBackupContext ctx = new();
+#if TIMING_TEST
+                StartTiming();
+#endif
+                int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
 
-            for (int i = 0; i < fmDataList.Count; i++)
-            {
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                FMData fmData = fmDataList[i];
-
-                if (fmData.Uninstall_SkipUninstallingThisFM) continue;
-
-                FanMission fm = fmData.FM;
-
-                if (!await FMInstalledDirExists(fmData))
+                if (!TryGetParallelForData(threadCount, fmDataList, _uninstallCts.Token, out var pd))
                 {
-                    fm.Installed = false;
-                    continue;
+                    return (false, atLeastOneFMMarkedUnavailable);
                 }
 
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                /*
-                If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
-                This file will be included in the search when restoring, and the newest will be taken as
-                usual.
-
-                fm.Archive can be blank at this point when all of the following conditions are true:
-                -fm is installed
-                -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
-                -fm was not in the database on startup
-                -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
-                 folders if that option is enabled)
-
-                It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
-                don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
-                archive folder on initial setup, and hasn't imported from NDL by this point.
-                */
-
-                if (doBackup)
+                try
                 {
-                    await BackupFM(
-                        ctx,
-                        fm,
-                        fmData.InstalledPath,
-                        fmData.ArchivePath,
-                        archivePaths,
-                        fileStreamBuffer ??= new byte[FileStreamBufferSize]);
+                    DarkLoaderBackupContext ctx = new();
+
+                    Parallel.For(0, threadCount, pd.PO, _ =>
+                    {
+                        while (pd.CQ.TryDequeue(out FMData fmData))
+                        {
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                            if (fmData.Uninstall_SkipUninstallingThisFM) continue;
+
+                            FanMission fm = fmData.FM;
+
+                            if (!Directory.Exists(fmData.InstalledPath))
+                            {
+                                fm.Installed = false;
+                                continue;
+                            }
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                            /*
+                            If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
+                            This file will be included in the search when restoring, and the newest will be taken as
+                            usual.
+
+                            fm.Archive can be blank at this point when all of the following conditions are true:
+                            -fm is installed
+                            -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
+                            -fm was not in the database on startup
+                            -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
+                             folders if that option is enabled)
+
+                            It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
+                            don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
+                            archive folder on initial setup, and hasn't imported from NDL by this point.
+                            */
+
+                            if (doBackup)
+                            {
+                                // @MT_TASK: Pool this
+                                byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
+                                BackupFM(
+                                    ctx,
+                                    fm,
+                                    fmData.InstalledPath,
+                                    fmData.ArchivePath,
+                                    archivePaths,
+                                    fileStreamBuffer);
+                            }
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                            // TODO: Give the user the option to retry or something, if it's cause they have a file open
+                            // Make option to open the folder in Explorer and delete it manually?
+                            FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
+                            if (result.ResultType != UninstallResultType.UninstallSucceeded)
+                            {
+                                fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
+                                // @MT_TASK(Uninstall error): Use list-of-results and post-dialog like Install
+                                Core.Dialogs.ShowError(
+                                    LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
+                                    "FM: " + fm.GetId());
+                            }
+
+                            fm.Installed = false;
+                            if (fmData.Uninstall_MarkFMAsUnavailable) fm.MarkedUnavailable = true;
+
+                            // @MT_TASK: Use multi-item progress box for uninstall (and remove single path)
+                            if (!single)
+                            {
+                                //Core.View.SetProgressBoxState_Single(
+                                //    message2: fm.GetId(),
+                                //    percent: GetPercentFromValue_Int(i + 1, fmDataList.Count)
+                                //);
+                            }
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        }
+                    });
                 }
-
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                // TODO: Give the user the option to retry or something, if it's cause they have a file open
-                // Make option to open the folder in Explorer and delete it manually?
-                FMUninstallResult result = await Task.Run(() => DeleteFMInstalledDirectory(fmData.InstalledPath, fmData));
-                if (result.ResultType != UninstallResultType.UninstallSucceeded)
+                catch (OperationCanceledException)
                 {
-                    fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
-                    // @MT_TASK(Uninstall error): Dialog in multithreading area
-                    Core.Dialogs.ShowError(
-                        LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
-                        "FM: " + fm.GetId());
+                    return (false, atLeastOneFMMarkedUnavailable);
                 }
 
-                fm.Installed = false;
-                if (fmData.Uninstall_MarkFMAsUnavailable) fm.MarkedUnavailable = true;
-
-                if (!single)
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        message2: fm.GetId(),
-                        percent: GetPercentFromValue_Int(i + 1, fmDataList.Count)
-                    );
-                }
-
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-            }
+                return (true, atLeastOneFMMarkedUnavailable);
+            });
         }
         finally
         {
+#if TIMING_TEST
+            StopTimingAndPrintResult();
+#endif
+
             Ini.WriteFullFMDataIni();
             if (doEndTasks)
             {
@@ -2883,10 +2913,6 @@ internal static partial class FMInstallAndPlay
 
             _uninstallCts.Dispose();
         }
-
-        return (true, atLeastOneFMMarkedUnavailable);
-
-        static Task<bool> FMInstalledDirExists(FMData fmData) => Task.Run(() => Directory.Exists(fmData.InstalledPath));
     }
 
     internal static Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
