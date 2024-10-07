@@ -56,6 +56,12 @@ internal static partial class FMInstallAndPlay
         RollbackFailed,
     }
 
+    private enum UninstallResultType
+    {
+        UninstallSucceeded,
+        UninstallFailed,
+    }
+
     private enum ArchiveType
     {
         Zip,
@@ -92,6 +98,37 @@ internal static partial class FMInstallAndPlay
             FMData = fmData;
             ResultType = resultType;
             ArchiveType = archiveType;
+            ErrorMessage = errorMessage;
+            Exception = exception;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct FMUninstallResult
+    {
+        internal readonly FMData FMData;
+        internal readonly UninstallResultType ResultType;
+        internal readonly string ErrorMessage;
+        internal readonly Exception? Exception;
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = "";
+        }
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = errorMessage;
+        }
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage, Exception? exception)
+        {
+            FMData = fmData;
+            ResultType = resultType;
             ErrorMessage = errorMessage;
             Exception = exception;
         }
@@ -2017,7 +2054,7 @@ internal static partial class FMInstallAndPlay
         static FMInstallResult RemoveFMFromDisk(FMData fmData)
         {
             string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-            if (!DeleteFMInstalledDirectory(fmInstalledPath))
+            if (DeleteFMInstalledDirectory(fmInstalledPath, fmData).ResultType != UninstallResultType.UninstallSucceeded)
             {
                 // Don't log it here because the deleter method will already have logged it
 
@@ -2810,7 +2847,8 @@ internal static partial class FMInstallAndPlay
 
                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                 // Make option to open the folder in Explorer and delete it manually?
-                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmData.InstalledPath)))
+                FMUninstallResult result = await Task.Run(() => DeleteFMInstalledDirectory(fmData.InstalledPath, fmData));
+                if (result.ResultType != UninstallResultType.UninstallSucceeded)
                 {
                     fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
                     // @MT_TASK(Uninstall error): Dialog in multithreading area
@@ -2866,46 +2904,44 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static bool DeleteFMInstalledDirectory(string path)
+    private static FMUninstallResult DeleteFMInstalledDirectory(string path, FMData fmData)
     {
-        if (!Directory.Exists(path)) return true;
-
-        bool triedReadOnlyRemove = false;
-
-        // Failsafe cause this is nasty
-        for (int i = 0; i < 2; i++)
+        if (!Directory.Exists(path))
         {
+            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+        }
+
+        try
+        {
+            Directory.Delete(path, recursive: true);
+            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+        }
+        catch (Exception mainEx)
+        {
+            Log(ErrorText.FTDel + "FM path '" + path + "', attempting to remove readonly attributes and trying again...", mainEx);
+            try
+            {
+                // FMs installed by us will not have any readonly attributes set, so we work on the assumption
+                // that this is the rarer case and only do this extra work if we need to.
+                DirAndFileTree_UnSetReadOnly(path, throwException: true);
+            }
+            catch (Exception removeReadOnlyAttributesEx)
+            {
+                Log(ErrorText.FT + "remove readonly attributes.", removeReadOnlyAttributesEx);
+            }
+
             try
             {
                 Directory.Delete(path, recursive: true);
-                return true;
+                return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
             }
-            catch (Exception ex1)
+            catch (Exception retryDeleteEx)
             {
-                Log(ErrorText.FTDel + "FM path '" + path + "', attempting to remove readonly attributes and trying again...", ex1);
-                try
-                {
-                    if (triedReadOnlyRemove)
-                    {
-                        Log(ErrorText.FTDel + "FM path '" + path + "' twice, giving up...");
-                        return false;
-                    }
-
-                    // FMs installed by us will not have any readonly attributes set, so we work on the
-                    // assumption that this is the rarer case and only do this extra work if we need to.
-                    DirAndFileTree_UnSetReadOnly(path, throwException: true);
-
-                    triedReadOnlyRemove = true;
-                }
-                catch (Exception ex2)
-                {
-                    Log(ErrorText.FT + "remove readonly attributes, giving up...", ex2);
-                    return false;
-                }
+                string msg = ErrorText.FTDel + "FM path '" + path + "' twice, giving up...";
+                Log(msg, retryDeleteEx);
+                return new FMUninstallResult(fmData, UninstallResultType.UninstallFailed, msg, retryDeleteEx);
             }
         }
-
-        return false;
     }
 
     #endregion
