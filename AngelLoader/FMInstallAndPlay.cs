@@ -2812,6 +2812,7 @@ internal static partial class FMInstallAndPlay
 
                 try
                 {
+                    FixedLengthByteArrayPool fileBufferPool = new(FileStreamBufferSize);
                     DarkLoaderBackupContext ctx = new();
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
@@ -2854,15 +2855,13 @@ internal static partial class FMInstallAndPlay
                                     by this point.
                                     */
 
-                                    // @MT_TASK: Pool this
-                                    byte[] fileStreamBuffer = new byte[FileStreamBufferSize];
                                     BackupFM(
                                         ctx,
                                         fm,
                                         fmData.InstalledPath,
                                         fmData.ArchivePath,
                                         archivePaths,
-                                        fileStreamBuffer);
+                                        fileBufferPool);
 
                                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
                                 }

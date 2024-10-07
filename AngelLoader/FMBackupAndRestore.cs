@@ -7,14 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
-using static AngelLoader.Misc;
 using static AngelLoader.Utils;
 
 namespace AngelLoader;
@@ -122,8 +120,10 @@ internal static partial class FMInstallAndPlay
         string fmInstalledPath,
         string fmArchivePath,
         List<string> archivePaths,
-        byte[] fileStreamBuffer)
+        FixedLengthByteArrayPool fileBufferPool)
     {
+        using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
+
         bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
@@ -190,7 +190,7 @@ internal static partial class FMInstallAndPlay
             foreach (string f in savesAndScreensFiles)
             {
                 string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-                AddEntry(archive, f, fn, fileStreamBuffer);
+                AddEntry(archive, f, fn, fileStreamBufferScope.Array);
             }
 
             MoveDarkLoaderBackup(ctx, fm, archivePaths);
@@ -200,7 +200,7 @@ internal static partial class FMInstallAndPlay
         HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
         (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
-            GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer);
+            GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBufferScope.Array);
 
         // If >90% of files are different, re-run and use only size difference
         // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -208,7 +208,7 @@ internal static partial class FMInstallAndPlay
         if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
         {
             (changedList, addedList, fullList) =
-                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBuffer, useOnlySize: true);
+                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBufferScope.Array, useOnlySize: true);
         }
 
         try
@@ -225,7 +225,7 @@ internal static partial class FMInstallAndPlay
                         (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
                          (changedList.Contains(fn) || addedList.Contains(fn))))
                     {
-                        AddEntry(archive, f, fn, fileStreamBuffer);
+                        AddEntry(archive, f, fn, fileStreamBufferScope.Array);
                     }
                 }
 
