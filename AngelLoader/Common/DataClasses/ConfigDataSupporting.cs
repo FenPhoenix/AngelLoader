@@ -214,6 +214,21 @@ public enum CheckForUpdates
     False,
 }
 
+public enum IOThreadingLevel
+{
+    Auto,
+    HDD,
+    SATA_SSD,
+    NVMe_SSD,
+    Custom,
+}
+
+public enum IOThreadingMode
+{
+    Normal,
+    Aggressive,
+}
+
 public enum AL_DriveType
 {
     Other,

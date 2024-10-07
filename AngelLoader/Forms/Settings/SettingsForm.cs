@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -50,6 +51,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
+
+    private AL_DriveType _allDrivesType;
 
     #endregion
 
@@ -162,6 +165,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         _inTheme = config.VisualTheme;
         _inFollowSystemTheme = config.FollowSystemTheme;
+
+        _allDrivesType = config.AllDrivesType;
 
         #endregion
 
@@ -661,18 +666,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            if (config.AutoSetMaxIOThreads)
-            {
-                AdvancedPage.IOThreadsAutoRadioButton.Checked = true;
-            }
-            else
-            {
-                AdvancedPage.IOThreadsManualRadioButton.Checked = true;
-            }
-            SetIOThreadsState();
-
-            AdvancedPage.IOThreadsManualNumericUpDown.Value = Config.MaxIOThreads;
-
             /*
             @MT_TASK(I/O Threading Settings UI): Finalize these: should we call it "parallel zip extraction"?
             That's all it is right now, but we can foresee there may be other opportunities for NVMe-only I/O
@@ -689,7 +682,41 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             We should probably just do the non-fancy option.
             */
 
-            AdvancedPage.AggressiveIOThreadingCheckBox.Checked = config.AggressiveIOThreading;
+            switch (config.IOThreadingLevel)
+            {
+                case IOThreadingLevel.HDD:
+                    AdvancedPage.HddModeRadioButton.Checked = true;
+                    break;
+                case IOThreadingLevel.SATA_SSD:
+                    AdvancedPage.SataSsdModeRadioButton.Checked = true;
+                    break;
+                case IOThreadingLevel.NVMe_SSD:
+                    AdvancedPage.NvmeSsdModeRadioButton.Checked = true;
+                    break;
+                case IOThreadingLevel.Custom:
+                    AdvancedPage.CustomModeRadioButton.Checked = true;
+                    break;
+                case IOThreadingLevel.Auto:
+                default:
+                    AdvancedPage.AutoModeRadioButton.Checked = true;
+                    break;
+            }
+            SetIOThreadsState();
+
+            if (config.IOThreadingLevel != IOThreadingLevel.Auto)
+            {
+                AutoDetectIOThreadingLevel();
+            }
+
+            AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
+            if (config.CustomIOThreadingMode == IOThreadingMode.Aggressive)
+            {
+                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Checked = true;
+            }
+            else
+            {
+                AdvancedPage.CustomThreadingModeNormalRadioButton.Checked = true;
+            }
 
             #endregion
         }
@@ -786,8 +813,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            AdvancedPage.IOThreadsAutoRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.IOThreadsManualRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.HddModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.SataSsdModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.NvmeSsdModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
 
             #endregion
         }
@@ -1060,18 +1090,38 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 #region Advanced page
 
                 AdvancedRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
-                AdvancedPage.IOThreadsGroupBox.Text = LText.SettingsWindow.Advanced_DiskThreads;
-                AdvancedPage.IOThreadsAutoRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Auto;
-                AdvancedPage.IOThreadsManualRadioButton.Text = LText.SettingsWindow.Advanced_DiskThreads_Manual;
 
-                // @MT_TASK(I/O Threading Settings UI): Localize these
-                AdvancedPage.AggressiveIOThreadingCheckBox.Text = "Aggressive I/O threading";
-                // @MT_TASK: If we want to keep this message, implement the manual layout like in the Paths page
-                // @MT_TASK: The option needs to be clearer. "Performance" means what, from the user's perspective?
-                // What it means is it may increase single zip extract performance, specifically. We should convey
-                // that.
-                AdvancedPage.AggressiveIOThreadingHelpLabel.Text =
-                    "If you have an NVMe SSD, this option may increase performance. If you have a SATA SSD or other drive type, it will probably degrade performance.";
+                AdvancedPage.IOThreadingGroupBox.Text = LText.SettingsWindow.Advanced_IO_Threading;
+
+                AdvancedPage.AutoModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Auto;
+                UpdateAutoIOThreadingInfo(_allDrivesType);
+
+                AdvancedPage.HddModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_HDD;
+                AdvancedPage.HddThreadsLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_Threads + " " + (1.ToStrCur());
+                AdvancedPage.HddThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Normal;
+
+                AdvancedPage.SataSsdModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD;
+                AdvancedPage.SataSsdThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads +
+                                                        " " + (CoreCount.ToStrCur());
+                AdvancedPage.SataSsdThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Normal;
+
+                AdvancedPage.NvmeSsdModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD;
+                AdvancedPage.NvmeSsdThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads +
+                                                        " " + (CoreCount.ToStrCur());
+                AdvancedPage.NvmeSsdThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
+
+                AdvancedPage.CustomModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Custom;
+                AdvancedPage.CustomThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
+                AdvancedPage.CustomThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
+                AdvancedPage.CustomThreadingModeNormalRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
+                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
 
                 #endregion
             }
@@ -1406,9 +1456,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            OutConfig.AutoSetMaxIOThreads = AdvancedPage.IOThreadsAutoRadioButton.Checked;
-            OutConfig.MaxIOThreads = (int)AdvancedPage.IOThreadsManualNumericUpDown.Value;
-            OutConfig.AggressiveIOThreading = AdvancedPage.AggressiveIOThreadingCheckBox.Checked;
+            OutConfig.IOThreadingLevel =
+                AdvancedPage.HddModeRadioButton.Checked ? IOThreadingLevel.HDD :
+                AdvancedPage.SataSsdModeRadioButton.Checked ? IOThreadingLevel.SATA_SSD :
+                AdvancedPage.NvmeSsdModeRadioButton.Checked ? IOThreadingLevel.NVMe_SSD :
+                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingLevel.Custom :
+                IOThreadingLevel.Auto;
+
+            OutConfig.CustomIOThreads = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
+
+            OutConfig.CustomIOThreadingMode =
+                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Checked
+                    ? IOThreadingMode.Aggressive
+                    : IOThreadingMode.Normal;
+
+            // @MT_TASK: We're not currently setting out-config all-drives-type to our stored one
+            // Because we're re-doing the autodetect on OK click anyway.
+            // We need to do this if we're in startup mode, but if we wanted to get fancy we could refrain from
+            // doing it in non-startup mode and pass our stored value back, since we'll have detected in here
+            // anyway...
 
             #endregion
         }
@@ -1973,11 +2039,81 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void IOThreadsRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
         SetIOThreadsState();
+        if (sender == AdvancedPage.AutoModeRadioButton &&
+            AdvancedPage.AutoModeRadioButton.Checked)
+        {
+            AutoDetectIOThreadingLevel();
+        }
     }
 
     private void SetIOThreadsState()
     {
-        AdvancedPage.IOThreadsManualNumericUpDown.Enabled = AdvancedPage.IOThreadsManualRadioButton.Checked;
+        AdvancedPage.CustomModePanel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+    }
+
+    /*
+    @MT_TASK: We need to call this when any relevant path fields change too...
+    @MT_TASK: We could set a flag saying to run the autodetect when the Advanced page is next opened.
+    @MT_TASK: We also need to keep the autodetect code running on OK click, for when we open on startup.
+    
+    @MT_TASK: This is called on window open in some cases and causes a potentially large window open delay.
+    We should make it a task, and just cancel it on window close or whatever.
+    This would require us to add that timeout functionality to it, which we need to do anyway.
+    */
+    private void AutoDetectIOThreadingLevel()
+    {
+        if (_state.IsStartup()) return;
+
+        // @MT_TASK: Remove for final - making sure of no duplicate runs
+        Trace.WriteLine("Autodetecting I/O threading level");
+
+        // @MT_TASK: Duplicate logic, but we're storing this data on the UI instead of a config object so we can't reuse the other one
+        // @MT_TASK: We probably want "all drives" to include the backup path drive too
+        List<string> paths = new(OutConfig.FMArchivePaths.Count + SupportedGameCount);
+
+        foreach (string archivePath in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
+        {
+            paths.Add(archivePath);
+        }
+        foreach (DarkTextBox textBox in GameExeTextBoxes)
+        {
+            paths.Add(textBox.Text);
+        }
+
+        _allDrivesType = DetectDriveTypes.GetAllDrivesType(paths);
+
+        UpdateAutoIOThreadingInfo(_allDrivesType);
+    }
+
+    private void UpdateAutoIOThreadingInfo(AL_DriveType driveType)
+    {
+        switch (driveType)
+        {
+            case AL_DriveType.SATA_SSD:
+                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD;
+                AdvancedPage.AutoThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Normal;
+                AdvancedPage.AutoThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads + " " +
+                                                     (CoreCount.ToStrCur());
+                break;
+            case AL_DriveType.NVMe_SSD:
+                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD;
+                AdvancedPage.AutoThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
+                AdvancedPage.AutoThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads + " " +
+                                                     (CoreCount.ToStrCur());
+                break;
+            default:
+                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_HDD;
+                AdvancedPage.AutoThreadingModeLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode + " " +
+                    LText.SettingsWindow.Advanced_IO_Threading_Normal;
+                AdvancedPage.AutoThreadsLabel.Text =
+                    LText.SettingsWindow.Advanced_IO_Threading_Threads + " " + (1.ToStrCur());
+                break;
+        }
     }
 
     #endregion

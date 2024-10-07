@@ -438,28 +438,32 @@ public sealed class ConfigData
 
     // @MT_TASK: Finalize names
 
-    internal bool AutoSetMaxIOThreads = true;
+    internal IOThreadingLevel IOThreadingLevel = IOThreadingLevel.Auto;
 
-    private int _maxIOThreads = CoreCount;
-    internal int MaxIOThreads
+    private int _customIOThreads = CoreCount;
+    internal int CustomIOThreads
     {
-        get => _maxIOThreads;
-        set => _maxIOThreads = value.ClampToMin(1);
+        get => _customIOThreads;
+        set => _customIOThreads = value.ClampToMin(1);
     }
 
     // Session-only; don't write out
     internal AL_DriveType AllDrivesType;
 
-    internal bool AggressiveIOThreading;
+    internal IOThreadingMode CustomIOThreadingMode;
 
     /// <summary>
-    /// Returns <see langword="true"/> if either the user has set <see cref="AggressiveIOThreading"/> to <see langword="true"/>,
+    /// Returns <see langword="true"/> if either the user has set <see cref="CustomIOThreadingMode"/> to <see langword="true"/>,
     /// or if we're in auto mode and have determined it to be an appropriate setting.
     /// </summary>
-    internal bool UseAggressiveIOThreading =>
-        AutoSetMaxIOThreads
-            ? AllDrivesType == AL_DriveType.NVMe_SSD
-            : AggressiveIOThreading;
+    internal bool UseAggressiveIOThreading => IOThreadingLevel switch
+    {
+        IOThreadingLevel.Custom => CustomIOThreadingMode == IOThreadingMode.Aggressive,
+        IOThreadingLevel.HDD => false,
+        IOThreadingLevel.SATA_SSD => false,
+        IOThreadingLevel.NVMe_SSD => true,
+        _ => AllDrivesType == AL_DriveType.NVMe_SSD,
+    };
 
     // @MT_TASK: End finalize names
 

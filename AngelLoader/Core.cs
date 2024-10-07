@@ -545,7 +545,8 @@ internal static class Core
             startup ||
             archivePathsChanged ||
             gamePathsChanged ||
-            Config.AutoSetMaxIOThreads != outConfig.AutoSetMaxIOThreads;
+            (Config.IOThreadingLevel != IOThreadingLevel.Auto &&
+             outConfig.IOThreadingLevel == IOThreadingLevel.Auto);
 
         #endregion
 
@@ -696,9 +697,9 @@ internal static class Core
 
         #region Advanced page
 
-        Config.AutoSetMaxIOThreads = outConfig.AutoSetMaxIOThreads;
-        Config.MaxIOThreads = outConfig.MaxIOThreads;
-        Config.AggressiveIOThreading = outConfig.AggressiveIOThreading;
+        Config.IOThreadingLevel = outConfig.IOThreadingLevel;
+        Config.CustomIOThreads = outConfig.CustomIOThreads;
+        Config.CustomIOThreadingMode = outConfig.CustomIOThreadingMode;
 
         #endregion
 
@@ -1037,7 +1038,7 @@ internal static class Core
     private static void SetDriveTypes(bool showWaitCursorOnMainView, ConfigData sourceConfig)
     {
         ConfigData destConfig = Config;
-        if (sourceConfig.AutoSetMaxIOThreads)
+        if (sourceConfig.IOThreadingLevel == IOThreadingLevel.Auto)
         {
             // @MT_TASK: Remove for final release
             Trace.WriteLine(nameof(SetDriveTypes) + ": Auto path");
@@ -1047,15 +1048,12 @@ internal static class Core
                 {
                     View.SetWaitCursor(true);
                 }
+                List<string> paths = GetIOThreadingRelevantPaths(sourceConfig);
 
-                // @MT_TASK: We probably want "all drives" to include the backup path drive too
-                List<string> paths = new(sourceConfig.FMArchivePaths.Count + SupportedGameCount);
-                paths.AddRange_Small(sourceConfig.FMArchivePaths);
-                paths.AddRange_Small(sourceConfig.GameExes);
                 // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
                 // @MT_TASK: We could run this in a thread in the Settings window and wait on it before exit
                 // Or after exit if we pass back the task or whatever, if we wanted to be fancy
-                destConfig.AllDrivesType = DetectDriveTypes.AllDrivesAreSolidState(paths);
+                destConfig.AllDrivesType = DetectDriveTypes.GetAllDrivesType(paths);
             }
             finally
             {
@@ -1071,6 +1069,15 @@ internal static class Core
             Trace.WriteLine(nameof(SetDriveTypes) + ": Manual path");
             destConfig.AllDrivesType = default;
         }
+    }
+
+    private static List<string> GetIOThreadingRelevantPaths(ConfigData config)
+    {
+        // @MT_TASK: We probably want "all drives" to include the backup path drive too
+        List<string> ret = new(config.FMArchivePaths.Count + SupportedGameCount);
+        ret.AddRange_Small(config.FMArchivePaths);
+        ret.AddRange_Small(config.GameExes);
+        return ret;
     }
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)

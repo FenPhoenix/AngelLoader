@@ -874,22 +874,30 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_AutoSetMaxIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_IOThreadingLevel_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.AutoSetMaxIOThreads = valTrimmed.EqualsTrue();
-    }
-
-    private static void Config_MaxIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
-    {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        FieldInfo? field = typeof(IOThreadingLevel).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
         {
-            config.MaxIOThreads = result;
+            config.IOThreadingLevel = (IOThreadingLevel)field.GetValue(null);
         }
     }
 
-    private static void Config_AggressiveIOThreading_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_CustomIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.AggressiveIOThreading = valTrimmed.EqualsTrue();
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.CustomIOThreads = result;
+        }
+    }
+
+    private static void Config_CustomIOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
+        if (field != null)
+        {
+            config.CustomIOThreadingMode = (IOThreadingMode)field.GetValue(null);
+        }
     }
 
     #endregion
@@ -1096,9 +1104,9 @@ internal static partial class Ini
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
 
-        { "AutoSetMaxIOThreads", new Config_DelegatePointerWrapper(&Config_AutoSetMaxIOThreads_Set) },
-        { "MaxIOThreads", new Config_DelegatePointerWrapper(&Config_MaxIOThreads_Set) },
-        { "AggressiveIOThreading", new Config_DelegatePointerWrapper(&Config_AggressiveIOThreading_Set) },
+        { "IOThreadingLevel", new Config_DelegatePointerWrapper(&Config_IOThreadingLevel_Set) },
+        { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
+        { "CustomIOThreadingMode", new Config_DelegatePointerWrapper(&Config_CustomIOThreadingMode_Set) },
 
         #region Backward compatibility
 
@@ -1503,8 +1511,8 @@ internal static partial class Ini
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
 
-        sw.Append("AutoSetMaxIOThreads=").AppendLine(config.AutoSetMaxIOThreads);
-        sw.Append("MaxIOThreads=").AppendLine(config.MaxIOThreads);
-        sw.Append("AggressiveIOThreading=").AppendLine(config.AggressiveIOThreading);
+        sw.Append("IOThreadingLevel=").AppendLine(config.IOThreadingLevel);
+        sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
+        sw.Append("CustomIOThreadingMode=").AppendLine(config.CustomIOThreadingMode);
     }
 }

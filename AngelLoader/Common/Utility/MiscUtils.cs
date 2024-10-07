@@ -302,12 +302,17 @@ public static partial class Utils
 
     internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount)
     {
-        int threads =
-            Config.AutoSetMaxIOThreads
-                ? Config.AllDrivesType != AL_DriveType.Other
-                    ? CoreCount
-                    : 1
-                : Config.MaxIOThreads;
+        int threads = Config.IOThreadingLevel switch
+        {
+            IOThreadingLevel.Custom => Config.CustomIOThreads,
+            IOThreadingLevel.HDD => 1,
+            IOThreadingLevel.SATA_SSD => CoreCount,
+            IOThreadingLevel.NVMe_SSD => CoreCount,
+            _ => Config.AllDrivesType != AL_DriveType.Other
+                ? CoreCount
+                : 1,
+        };
+
         return Math.Min(threads, maxWorkItemsCount);
     }
 

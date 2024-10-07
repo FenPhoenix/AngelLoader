@@ -919,9 +919,16 @@ internal sealed class LText_Class
         internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
         [FenGenBlankLine]
         internal readonly string Advanced_TabText = "Advanced";
-        internal readonly string Advanced_DiskThreads = "Threads for disk access";
-        internal readonly string Advanced_DiskThreads_Auto = "Auto";
-        internal readonly string Advanced_DiskThreads_Manual = "Manual";
+        internal readonly string Advanced_IO_Threading = "I/O threading";
+        internal readonly string Advanced_IO_Threading_Auto = "Auto";
+        internal readonly string Advanced_IO_Threading_HDD = "HDD";
+        internal readonly string Advanced_IO_Threading_SATA_SSD = "SATA SSD";
+        internal readonly string Advanced_IO_Threading_NVMe_SSD = "NVMe SSD";
+        internal readonly string Advanced_IO_Threading_Custom = "Custom";
+        internal readonly string Advanced_IO_Threading_Threads = "Threads:";
+        internal readonly string Advanced_IO_Threading_ThreadingMode = "Threading mode:";
+        internal readonly string Advanced_IO_Threading_Normal = "Normal";
+        internal readonly string Advanced_IO_Threading_Aggressive = "Aggressive";
     }
 
     internal sealed class DateFilterBox_Class

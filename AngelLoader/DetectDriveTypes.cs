@@ -66,15 +66,15 @@ internal static class DetectDriveTypes
         }
     }
 
-    internal static async Task<AL_DriveType> AllDrivesAreSolidStateAsync(List<string> paths)
+    internal static async Task<AL_DriveType> GetAllDrivesTypeAsync(List<string> paths)
     {
-        return await Task.Run(() => AllDrivesAreSolidState(paths));
+        return await Task.Run(() => GetAllDrivesType(paths));
     }
 
     // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
     // This can return Unspecified for all if you've messed around with Disk Management (I guess?!)
     // That's okay in that case, we'll just fall back to HDD 1-threaded version...
-    internal static AL_DriveType AllDrivesAreSolidState(List<string> paths)
+    internal static AL_DriveType GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -197,7 +197,15 @@ internal static class DetectDriveTypes
         return physDisks;
     }
 
-    // @MT_TASK: Timeouts can be passed to MOS ctors only, and details are slightly complicated ("return immediately" / "semi-threaded" blah blah)
+    /*
+    @MT_TASK: Timeouts can be passed to MOS ctors only, and details are slightly complicated ("return immediately" / "semi-threaded" blah blah)
+    We need to have a global timeout, which means we might need to just have a TimeSpan that we pass through to
+    each call and then subtract however long it took from it, to make sure we don't exceed our max total...
+    That sounds horrendous, but what else can we do? Hopefully we can figure something else out I guess?
+    Or like the inverse, just have a global stopwatch, pass say 1 second to each call, and check total elapsed
+    time after each call.
+    We can forget about Thread.Abort() - aside from being risky, it's not supported on modern .NET anyway.
+    */
     private static AL_DriveType GetDriveType(string driveLetter, List<PhysicalDisk> physDisks)
     {
         try
