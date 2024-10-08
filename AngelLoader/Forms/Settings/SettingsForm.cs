@@ -702,11 +702,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     break;
             }
             SetIOThreadsState();
-
-            if (config.IOThreadingLevel != IOThreadingLevel.Auto)
-            {
-                AutoDetectIOThreadingLevel();
-            }
+            AutoDetectIOThreadingLevel();
 
             AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
             if (config.CustomIOThreadingMode == IOThreadingMode.Aggressive)
@@ -1572,6 +1568,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         var exePathTextBox = (DarkTextBox)sender;
         ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
         ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
+        // @MT_TASK: Add backup path checking here too - and try to dedupe all this logic...
+        if (GameExeTextBoxes.Contains(sender))
+        {
+            AutoDetectIOThreadingLevel();
+        }
     }
 
     private void ExePathBrowseButtons_Click(object sender, EventArgs e)
@@ -1722,12 +1723,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
 
         CheckForErrors();
+        AutoDetectIOThreadingLevel();
     }
 
     private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
     {
         PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
         CheckForErrors();
+        AutoDetectIOThreadingLevel();
     }
 
     #endregion
@@ -2087,6 +2090,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void UpdateAutoIOThreadingInfo(AL_DriveType driveType)
     {
+        if (_state.IsStartup()) return;
+
         switch (driveType)
         {
             case AL_DriveType.SATA_SSD:

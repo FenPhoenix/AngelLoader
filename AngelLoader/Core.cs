@@ -1050,9 +1050,6 @@ internal static class Core
                 }
                 List<string> paths = GetIOThreadingRelevantPaths(sourceConfig);
 
-                // @MT_TASK: Runs on UI thread and blocks it for too long (potentially)
-                // @MT_TASK: We could run this in a thread in the Settings window and wait on it before exit
-                // Or after exit if we pass back the task or whatever, if we wanted to be fancy
                 destConfig.AllDrivesType = DetectDriveTypes.GetAllDrivesType(paths);
             }
             finally
