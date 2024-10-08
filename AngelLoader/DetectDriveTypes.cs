@@ -16,9 +16,6 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
-    // This can return Unspecified for all if you've messed around with Disk Management (I guess?!)
-    // That's okay in that case, we'll just fall back to HDD 1-threaded version...
     internal static AL_DriveType GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST

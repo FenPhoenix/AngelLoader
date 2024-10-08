@@ -1466,11 +1466,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     ? IOThreadingMode.Aggressive
                     : IOThreadingMode.Normal;
 
-            // @MT_TASK: We're not currently setting out-config all-drives-type to our stored one
-            // Because we're re-doing the autodetect on OK click anyway.
-            // We need to do this if we're in startup mode, but if we wanted to get fancy we could refrain from
-            // doing it in non-startup mode and pass our stored value back, since we'll have detected in here
-            // anyway...
+            OutConfig.AllDrivesType = _allDrivesType;
 
             #endregion
         }
@@ -2054,15 +2050,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         AdvancedPage.CustomModePanel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
     }
 
-    /*
-    @MT_TASK: We need to call this when any relevant path fields change too...
-    @MT_TASK: We could set a flag saying to run the autodetect when the Advanced page is next opened.
-    @MT_TASK: We also need to keep the autodetect code running on OK click, for when we open on startup.
-    
-    @MT_TASK: This is called on window open in some cases and causes a potentially large window open delay.
-    We should make it a task, and just cancel it on window close or whatever.
-    This would require us to add that timeout functionality to it, which we need to do anyway.
-    */
     private void AutoDetectIOThreadingLevel()
     {
         if (_state.IsStartup()) return;
