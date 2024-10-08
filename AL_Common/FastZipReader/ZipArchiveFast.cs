@@ -48,6 +48,7 @@ public sealed class ZipArchiveFast : IDisposable
         private set
         {   /*
             @MT_TASK: .NET modern has a different check here:
+            // @MT_TASK: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
             if (value != null &&
                 (value.Equals(Encoding.BigEndianUnicode) ||
                  value.Equals(Encoding.Unicode))) { }

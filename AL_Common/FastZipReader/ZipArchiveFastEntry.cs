@@ -74,6 +74,7 @@ public sealed class ZipArchiveFastEntry
         StoredOffsetOfCompressedData = null;
 
         // @MT_TASK: Test identicality in filenames for all FM zips between ZipArchive and ZipArchiveFast
+        // @MT_TASK: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
         Encoding finalEncoding;
         if (!useEntryNameEncodingCodePath)
         {
