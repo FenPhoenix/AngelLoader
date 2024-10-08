@@ -192,7 +192,7 @@ sealed partial class AdvancedPage
             // AutoThreadingModeLabel
             // 
             this.AutoThreadingModeLabel.AutoSize = true;
-            this.AutoThreadingModeLabel.Location = new System.Drawing.Point(24, 80);
+            this.AutoThreadingModeLabel.Location = new System.Drawing.Point(32, 80);
             this.AutoThreadingModeLabel.Name = "AutoThreadingModeLabel";
             this.AutoThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
             this.AutoThreadingModeLabel.TabIndex = 3;
@@ -238,7 +238,7 @@ sealed partial class AdvancedPage
             // AutoModeLabel
             // 
             this.AutoModeLabel.AutoSize = true;
-            this.AutoModeLabel.Location = new System.Drawing.Point(24, 48);
+            this.AutoModeLabel.Location = new System.Drawing.Point(32, 48);
             this.AutoModeLabel.Name = "AutoModeLabel";
             this.AutoModeLabel.Size = new System.Drawing.Size(40, 13);
             this.AutoModeLabel.TabIndex = 1;
@@ -247,7 +247,7 @@ sealed partial class AdvancedPage
             // AutoThreadsLabel
             // 
             this.AutoThreadsLabel.AutoSize = true;
-            this.AutoThreadsLabel.Location = new System.Drawing.Point(24, 64);
+            this.AutoThreadsLabel.Location = new System.Drawing.Point(32, 64);
             this.AutoThreadsLabel.Name = "AutoThreadsLabel";
             this.AutoThreadsLabel.Size = new System.Drawing.Size(49, 13);
             this.AutoThreadsLabel.TabIndex = 2;
