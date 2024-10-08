@@ -1,107 +1,32 @@
 ﻿// @MT_TASK: Comment this out for final release
 //#define TIMING_TEST
-//#define INTERVAL_TIMING_TEST
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management;
-using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using AL_Common;
+using AL_Common.DeviceIoControlLib.Objects.Storage;
+using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
-using JetBrains.Annotations;
+using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    [PublicAPI]
-    private enum MediaType : ushort
-    {
-        Unspecified = 0,
-        HDD = 3,
-        SSD = 4,
-        // "Storage Class Memory": https://www.techtarget.com/searchstorage/definition/storage-class-memory
-        // Consumer PCs presumably wouldn't have this, but it would have the same performance characteristics as
-        // a consumer-level SSD or better, so we can allow it if we want.
-        SCM = 5,
-    }
-
-    [PublicAPI]
-    private enum BusType : ushort
-    {
-        Unknown = 0,
-        SCSI = 1,
-        ATAPI = 2,
-        ATA = 3,
-        _1394 = 4,
-        SSA = 5,
-        FibreChannel = 6,
-        USB = 7,
-        RAID = 8,
-        iSCSI = 9,
-        SAS = 10,
-        SATA = 11,
-        SD = 12,
-        MMC = 13,
-        MAX = 14,
-        FileBackedVirtual = 15,
-        StorageSpaces = 16,
-        NVMe = 17,
-        MicrosoftReserved = 18,
-    }
-
-    private sealed class PhysicalDisk
-    {
-        internal readonly string DeviceId;
-        internal readonly MediaType MediaType;
-        internal readonly BusType BusType;
-
-        public PhysicalDisk(string deviceId, MediaType mediaType, BusType busType)
-        {
-            DeviceId = deviceId;
-            MediaType = mediaType;
-            BusType = busType;
-        }
-    }
-
-    internal static async Task<AL_DriveType> GetAllDrivesTypeAsync(List<string> paths)
-    {
-        return await Task.Run(() => GetAllDrivesType(paths, CancellationToken.None));
-    }
-
-    internal static async Task<AL_DriveType> GetAllDrivesTypeAsync(List<string> paths, CancellationToken ct)
-    {
-        return await Task.Run(() => GetAllDrivesType(paths, ct), ct);
-    }
-
-    internal static AL_DriveType GetAllDrivesType(List<string> paths)
-    {
-        return GetAllDrivesType(paths, CancellationToken.None);
-    }
-
     // @MT_TASK: We should put a time limit on this in case something weird happens and it goes forever or an objectionably long time
     // This can return Unspecified for all if you've messed around with Disk Management (I guess?!)
     // That's okay in that case, we'll just fall back to HDD 1-threaded version...
-    internal static AL_DriveType GetAllDrivesType(List<string> paths, CancellationToken ct)
+    internal static AL_DriveType GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
         try
         {
-            /*
-            Some of these WMI things are Windows 8+ ("MSFT_PhysicalDisk" for instance).
-            Let's just always return false for Windows 7. Win7 is old enough that hardly anyone should be using
-            it, and if they do, well then they get a single-threaded scan by default. If they want threaded,
-            they'll have to set it manually.
-            */
-            if (!Utils.WinVersionIs8OrAbove()) return AL_DriveType.Other;
-
-            ct.ThrowIfCancellationRequested();
+            // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
 
             List<string> letters = new(paths.Count);
 
@@ -110,8 +35,6 @@ internal static class DetectDriveTypes
                 if (paths[i].IsWhiteSpace()) continue;
 
                 string letter = Path.GetPathRoot(paths[i]).TrimEnd(Common.CA_BS_FS);
-
-                ct.ThrowIfCancellationRequested();
 
                 if (letter.IsEmpty())
                 {
@@ -129,21 +52,35 @@ internal static class DetectDriveTypes
 
             if (letters.Count == 0) return AL_DriveType.Other;
 
-            List<PhysicalDisk> physDisks = GetPhysicalDisks(ct);
+            List<AL_DriveType> driveTypes = new(letters.Count);
 
-            ct.ThrowIfCancellationRequested();
+            /*
+            Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
+            drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
+            Now that's more like it.
 
-            AL_DriveType[] driveTypes = new AL_DriveType[letters.Count];
+            @MT_TASK: Now that this is effectively instant, we should just do it in all the places we need to and don't worry about it.
+            Keep the thread on startup cause it's already there I guess, but don't worry about it anywhere else.
+            Just do it synchronously.
+            */
 
-            for (int i = 0; i < letters.Count; i++)
+            foreach (string letter in letters)
             {
-                string letter = letters[i];
+                string dummyFileName = @"\\.\" + letter;
 
-                AL_DriveType driveType = GetDriveType(letter, physDisks, ct);
-#if TIMING_TEST
-                System.Diagnostics.Trace.WriteLine(letter + " " + driveType);
-#endif
-                if (driveType == AL_DriveType.Other)
+                using SafeFileHandle safeHandle = CreateFileW(
+                    lpFileName: dummyFileName,
+                    dwDesiredAccess: FileAccess.ReadWrite,
+                    dwShareMode: FileShare.ReadWrite,
+                    lpSecurityAttributes: IntPtr.Zero,
+                    dwCreationDisposition: FileMode.Open,
+                    dwFlagsAndAttributes: FileAttributes.Normal,
+                    hTemplateFile: IntPtr.Zero);
+
+                StorageDeviceWrapper device = new(safeHandle);
+
+                DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
+                if (seekPenaltyDescriptor.IncursSeekPenalty)
                 {
 #if TIMING_TEST
                     System.Diagnostics.Trace.WriteLine("All drives are considered: " + AL_DriveType.Other);
@@ -151,7 +88,21 @@ internal static class DetectDriveTypes
                     return AL_DriveType.Other;
                 }
 
-                driveTypes[i] = driveType;
+                STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
+
+                AL_DriveType driveType = deviceProperty.BusType switch
+                {
+                    STORAGE_BUS_TYPE.BusTypeNvme => AL_DriveType.NVMe_SSD,
+                    STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
+                    /*
+                    @MT_TASK(Bus types):
+                    We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for exotic
+                    bus types. We could also decide to fall back to "NVMe SSD" level after rejecting ones that
+                    look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD" level.
+                    */
+                    _ => AL_DriveType.SATA_SSD,
+                };
+                driveTypes.Add(driveType);
             }
 
             AL_DriveType ret =
@@ -178,249 +129,13 @@ internal static class DetectDriveTypes
 #endif
     }
 
-    private static List<PhysicalDisk> GetPhysicalDisks(CancellationToken ct)
-    {
-#if INTERVAL_TIMING_TEST
-        var sw = StartInterval();
-#endif
-
-        using ManagementObjectSearcher physicalSearcher = new(
-            scope: @"\\.\root\microsoft\windows\storage",
-            queryString: "SELECT DeviceId, MediaType, BusType FROM MSFT_PhysicalDisk",
-            options: GetEnumerationOptions());
-
-#if INTERVAL_TIMING_TEST
-        ReportInterval(sw, "phys after new");
-#endif
-        ct.ThrowIfCancellationRequested();
-
-        ManagementObjectCollection physResults = physicalSearcher.Get();
-
-#if INTERVAL_TIMING_TEST
-        ReportInterval(sw, "phys after get");
-#endif
-        ct.ThrowIfCancellationRequested();
-
-        List<PhysicalDisk> physDisks = new(physResults.Count);
-        foreach (ManagementBaseObject physQueryObj in physResults)
-        {
-            string deviceId = "";
-            MediaType mediaType = default;
-            BusType busType = default;
-
-            object? deviceIdObj = physQueryObj["DeviceId"];
-            if (deviceIdObj is string deviceIdValue)
-            {
-                deviceId = deviceIdValue;
-            }
-
-#if INTERVAL_TIMING_TEST
-            ReportInterval(sw, "phys first cancel check in loop");
-#endif
-            ct.ThrowIfCancellationRequested();
-
-            object? mediaTypeObj = physQueryObj["MediaType"];
-            if (mediaTypeObj is ushort mediaTypeValue)
-            {
-                mediaType = (MediaType)mediaTypeValue;
-            }
-
-#if INTERVAL_TIMING_TEST
-            ReportInterval(sw);
-#endif
-            ct.ThrowIfCancellationRequested();
-
-            object? busTypeObj = physQueryObj["BusType"];
-            if (busTypeObj is ushort busTypeValue)
-            {
-                busType = (BusType)busTypeValue;
-            }
-
-#if INTERVAL_TIMING_TEST
-            ReportInterval(sw);
-#endif
-            ct.ThrowIfCancellationRequested();
-
-            physDisks.Add(new PhysicalDisk(deviceId, mediaType, busType));
-        }
-
-        return physDisks;
-    }
-
-    /*
-    @MT_TASK: Timeouts can be passed to MOS ctors only, and details are slightly complicated ("return immediately" / "semi-threaded" blah blah)
-    We need to have a global timeout, which means we might need to just have a TimeSpan that we pass through to
-    each call and then subtract however long it took from it, to make sure we don't exceed our max total...
-    That sounds horrendous, but what else can we do? Hopefully we can figure something else out I guess?
-    Or like the inverse, just have a global stopwatch, pass say 1 second to each call, and check total elapsed
-    time after each call.
-    We can forget about Thread.Abort() - aside from being risky, it's not supported on modern .NET anyway.
-    */
-    private static AL_DriveType GetDriveType(string driveLetter, List<PhysicalDisk> physDisks, CancellationToken ct)
-    {
-#if INTERVAL_TIMING_TEST
-        var sw = StartInterval();
-#endif
-
-        try
-        {
-            using ManagementObjectSearcher queryResults = new(
-                scope: null,
-                queryString:
-                "ASSOCIATORS OF {Win32_LogicalDisk.DeviceID='" + driveLetter +
-                "'} WHERE AssocClass = Win32_LogicalDiskToPartition",
-                options: GetEnumerationOptions()
-            );
-
-#if INTERVAL_TIMING_TEST
-            ReportInterval(sw);
-#endif
-            ct.ThrowIfCancellationRequested();
-
-            ManagementObjectCollection partitions = queryResults.Get();
-
-#if INTERVAL_TIMING_TEST
-            ReportInterval(sw);
-#endif
-            ct.ThrowIfCancellationRequested();
-
-            foreach (ManagementBaseObject partition in partitions)
-            {
-                if (partition["DeviceID"] is not string partitionDeviceID) continue;
-
-#if INTERVAL_TIMING_TEST
-                ReportInterval(sw);
-#endif
-                ct.ThrowIfCancellationRequested();
-
-                using ManagementObjectSearcher queryResults2 = new(
-                    scope: null,
-                    queryString:
-                    "ASSOCIATORS OF {Win32_DiskPartition.DeviceID='" + partitionDeviceID +
-                    "'} WHERE AssocClass = Win32_DiskDriveToDiskPartition",
-                    options: GetEnumerationOptions());
-
-#if INTERVAL_TIMING_TEST
-                ReportInterval(sw);
-#endif
-                ct.ThrowIfCancellationRequested();
-
-                ManagementObjectCollection drives = queryResults2.Get();
-
-#if INTERVAL_TIMING_TEST
-                ReportInterval(sw);
-#endif
-                ct.ThrowIfCancellationRequested();
-
-#if TIMING_TEST
-                var sw = System.Diagnostics.Stopwatch.StartNew();
-#endif
-
-                AL_DriveType returnDriveType = AL_DriveType.Other;
-
-                foreach (ManagementBaseObject drive in drives)
-                {
-                    string deviceId = drive["DeviceID"].ToString();
-
-#if INTERVAL_TIMING_TEST
-                    ReportInterval(sw);
-#endif
-                    ct.ThrowIfCancellationRequested();
-
-                    string idStr = deviceId.Substring(@"\\.\PHYSICALDRIVE".Length);
-                    AL_DriveType thisDriveType = GetDriveTypeForId(physDisks, idStr);
-
-#if INTERVAL_TIMING_TEST
-                    ReportInterval(sw);
-#endif
-                    ct.ThrowIfCancellationRequested();
-
-                    // RAID drives are reported as however many drives there are in the RAID, with each one having
-                    // its respective type. So quit once we've found spinning rust or something unknown, for perf.
-                    if (thisDriveType == AL_DriveType.Other)
-                    {
-                        return AL_DriveType.Other;
-                    }
-                    else if (thisDriveType == AL_DriveType.NVMe_SSD)
-                    {
-                        // Don't override SATA with NVMe; the lowest speed drive in the array is what we should
-                        // report the whole drive as.
-                        if (returnDriveType == AL_DriveType.Other)
-                        {
-                            returnDriveType = AL_DriveType.NVMe_SSD;
-                        }
-                    }
-                    else
-                    {
-                        returnDriveType = thisDriveType;
-                    }
-                }
-
-#if TIMING_TEST
-                sw.Stop();
-                System.Diagnostics.Trace.WriteLine("LOOP TIME: " + sw.Elapsed);
-#endif
-
-                return returnDriveType;
-            }
-
-            return AL_DriveType.Other;
-        }
-        catch
-        {
-            return AL_DriveType.Other;
-        }
-
-        // @MT_TASK: If physDisks list can be made to be an async enumerable or something... or at least overlapped until this point and then waited on
-        static AL_DriveType GetDriveTypeForId(List<PhysicalDisk> physDisks, string id)
-        {
-            foreach (PhysicalDisk physDisk in physDisks)
-            {
-                if (physDisk.DeviceId == id)
-                {
-                    return IsSolidState(physDisk.MediaType)
-                        ? physDisk.BusType == BusType.NVMe
-                            ? AL_DriveType.NVMe_SSD
-                            : physDisk.BusType == BusType.SATA
-                                ? AL_DriveType.SATA_SSD
-                                : AL_DriveType.Other
-                        : AL_DriveType.Other;
-                }
-            }
-
-            return AL_DriveType.Other;
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsSolidState(MediaType mediaType) => mediaType is MediaType.SSD or MediaType.SCM;
-
-    private static EnumerationOptions GetEnumerationOptions()
-    {
-        return new EnumerationOptions
-        {
-            // Setting this to true or false moves the time expenditure around, but doesn't seem to actually
-            // allow for any more granularity between chunks of time taken...
-            ReturnImmediately = true,
-        };
-    }
-
-#if INTERVAL_TIMING_TEST
-
-    private static System.Diagnostics.Stopwatch StartInterval() => System.Diagnostics.Stopwatch.StartNew();
-
-    private static void ReportInterval(System.Diagnostics.Stopwatch sw, string? extra = null)
-    {
-        sw.Stop();
-        if (extra != null)
-        {
-            System.Diagnostics.Trace.WriteLine("Interval (" + extra + "): " + sw.Elapsed);
-        }
-        else
-        {
-            System.Diagnostics.Trace.WriteLine("Interval: " + sw.Elapsed);
-        }
-        sw.Restart();
-    }
-#endif
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern SafeFileHandle CreateFileW(
+        string lpFileName,
+        [MarshalAs(UnmanagedType.U4)] FileAccess dwDesiredAccess,
+        [MarshalAs(UnmanagedType.U4)] FileShare dwShareMode,
+        IntPtr lpSecurityAttributes,
+        [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
+        [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
+        IntPtr hTemplateFile);
 }

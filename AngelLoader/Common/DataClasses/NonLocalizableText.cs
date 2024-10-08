@@ -87,6 +87,7 @@ internal static partial class NonLocalizableText
         ("EasyHook", "https://github.com/EasyHook/EasyHook"),
 #endif
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
+        ("DeviceIoControlLib", "https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 
