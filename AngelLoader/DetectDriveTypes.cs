@@ -67,7 +67,13 @@ internal static class DetectDriveTypes
 
                 using SafeFileHandle safeHandle = CreateFileW(
                     lpFileName: dummyFileName,
-                    dwDesiredAccess: FileAccess.ReadWrite,
+                    /*
+                    IMPORTANT(Drive type detect non-administrator bullet dodge):
+                    Access ***MUST*** be set to 0! If we set any other access at all, then the operation will
+                    require administrator privileges. The ONLY way we can run on non-admin is to set 0 here!
+                    Extremely well played, Microsoft... you really had me for a minute there...
+                    */
+                    dwDesiredAccess: 0,
                     dwShareMode: FileShare.ReadWrite,
                     lpSecurityAttributes: IntPtr.Zero,
                     dwCreationDisposition: FileMode.Open,
