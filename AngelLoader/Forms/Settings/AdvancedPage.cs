@@ -4,9 +4,7 @@ using AL_Common;
 namespace AngelLoader.Forms;
 public sealed partial class AdvancedPage : UserControl, Interfaces.ISettingsPage
 {
-    // @MT_TASK: In addition to "Auto", do we want like a "Max" option, or even just a "Max" button by the threads field?
-    // @MT_TASK: Should we display on the UI the number of threads Auto has detected?
-    // @MT_TASK: Make the threading levels be displayed better - key-values tab aligned, drive type images, etc?
+    // @MT_TASK: Do we want like a "reset to max" button by the custom threads box?
     public AdvancedPage()
     {
 #if DEBUG

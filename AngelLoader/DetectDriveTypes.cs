@@ -55,10 +55,6 @@ internal static class DetectDriveTypes
             Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
             drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
             Now that's more like it.
-
-            @MT_TASK: Now that this is effectively instant, we should just do it in all the places we need to and don't worry about it.
-            Keep the thread on startup cause it's already there I guess, but don't worry about it anywhere else.
-            Just do it synchronously.
             */
 
             foreach (string letter in letters)

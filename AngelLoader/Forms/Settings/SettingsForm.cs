@@ -699,22 +699,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            /*
-            @MT_TASK(I/O Threading Settings UI): Finalize these: should we call it "parallel zip extraction"?
-            That's all it is right now, but we can foresee there may be other opportunities for NVMe-only I/O
-            threading in the future, so maybe we should leave it less specific?
-
-            @MT_TASK: Maybe we should just have "Auto", "HDD", "SATA SSD", "NVMe SSD", and then "Custom"
-            Where "Custom" lets you set the thread count and the parallel zip extract checkbox. "Auto" should
-            detect that setting too, it should see if all paths are on NVMe, and only then enable it.
-            
-            To be really fancy, we could even set the value per-archive where it looks to see where an archive
-            will be extracted from and to, and then turn it on or off per-archive. However, that would preclude
-            the parallel-per-archive extract, so may or may not end up slower in the end.
-
-            We should probably just do the non-fancy option.
-            */
-
             switch (config.IOThreadingLevel)
             {
                 case IOThreadingLevel.HDD:
