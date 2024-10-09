@@ -108,13 +108,14 @@ internal static class DetectDriveTypes
 
                     driveType = deviceProperty.BusType switch
                     {
-                        STORAGE_BUS_TYPE.BusTypeNvme => AL_DriveType.NVMe_SSD,
+                        STORAGE_BUS_TYPE.BusTypeNvme or STORAGE_BUS_TYPE.BusTypeSCM => AL_DriveType.NVMe_SSD,
                         STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
                         /*
                         @MT_TASK(Bus types):
                         We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for exotic
                         bus types. We could also decide to fall back to "NVMe SSD" level after rejecting ones that
-                        look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD" level.
+                        look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD"
+                        level.
                         */
                         _ => AL_DriveType.SATA_SSD,
                     };
