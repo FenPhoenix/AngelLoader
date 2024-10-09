@@ -458,13 +458,6 @@ public sealed class ConfigData
         return ret;
     }
 
-    internal List<string> GetAudioConversionRelevantPaths()
-    {
-        List<string> ret = new(SupportedGameCount);
-        ret.AddRange_Small(_fmInstallPaths);
-        return ret;
-    }
-
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic

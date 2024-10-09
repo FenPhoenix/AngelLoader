@@ -79,7 +79,7 @@ internal static class FMAudio
                 cancelAction: single ? null : CancelToken
             );
 
-            ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetAudioConversionRelevantPaths());
+            ThreadingData threadingData = GetLowestCommonThreadingData(GetAudioConversionRelevantPaths(validFMs));
 
             await Task.Run(() =>
             {
@@ -138,6 +138,28 @@ internal static class FMAudio
             }
 
             return true;
+        }
+
+        // @MT_TASK(GetAudioConversionRelevantPaths): Test this
+        static List<string> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
+        {
+            List<string> ret = new(SupportedGameCount);
+
+            bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
+            for (int i = 0; i < fms.Count; i++)
+            {
+                fmInstalledDirsRequired[(int)fms[i].GameIndex] = true;
+            }
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (fmInstalledDirsRequired[i])
+                {
+                    ret.Add(Config.GetFMInstallPath((GameIndex)i));
+                }
+            }
+
+            return ret;
         }
 
         #endregion
