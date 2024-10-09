@@ -79,6 +79,8 @@ internal static class FMAudio
                 cancelAction: single ? null : CancelToken
             );
 
+            ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetAudioConversionRelevantPaths());
+
             await Task.Run(() =>
             {
                 for (int i = 0; i < validFMs.Count; i++)
@@ -90,7 +92,7 @@ internal static class FMAudio
                         percent: single ? null : GetPercentFromValue_Int(i + 1, validFMs.Count)
                     );
 
-                    ConvertToWAVs(fm, convertType, CancellationToken.None);
+                    ConvertToWAVs(fm, convertType, threadingData, CancellationToken.None);
 
                     if (!single && _conversionCts.IsCancellationRequested) return;
                 }
@@ -141,12 +143,17 @@ internal static class FMAudio
         #endregion
     }
 
+    // @MT_TASK(Audio convert/threading):
+    // We pass install-relevant here, but we really want audio-convert-relevant
+    // But getting the other would require another drive detect call the way we have it set up currently.
+    // Let's address this at some point.
     internal static ConvertAudioError ConvertAsPartOfInstall(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
+        ThreadingData threadingData,
         CancellationToken ct)
     {
-        return ConvertToWAVs(fm, type, ct);
+        return ConvertToWAVs(fm, type, threadingData, ct);
     }
 
     /*
@@ -160,6 +167,7 @@ internal static class FMAudio
     private static ConvertAudioError ConvertToWAVs(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
+        ThreadingData threadingData,
         CancellationToken ct)
     {
         if (type == AudioConvert.WAVToWAV16)
@@ -196,7 +204,7 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    int threadCount = GetThreadCount(wavFiles.Length);
+                    int threadCount = GetThreadCount(wavFiles.Length, threadingData);
 
                     if (!TryGetParallelForData(threadCount, wavFiles, ct, out var pd))
                     {
@@ -286,7 +294,7 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    int threadCount = GetThreadCount(files.Length);
+                    int threadCount = GetThreadCount(files.Length, threadingData);
 
                     if (!TryGetParallelForData(threadCount, files, ct, out var pd))
                     {
@@ -456,9 +464,9 @@ internal static class FMAudio
                 : new[] { sndPath };
         }
 
-        static int GetThreadCount(int maxWorkItemsCount) =>
-            Config.UseAggressiveIOThreading
-                ? GetThreadCountForParallelOperation(maxWorkItemsCount)
+        static int GetThreadCount(int maxWorkItemsCount, ThreadingData threadingData) =>
+            threadingData.Mode == IOThreadingMode.Aggressive
+                ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData)
                 : 1;
 
         #endregion

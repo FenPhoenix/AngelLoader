@@ -419,4 +419,16 @@ public static partial class Misc
             DriveType = driveType;
         }
     }
+
+    internal sealed class ThreadingData
+    {
+        internal readonly int Threads;
+        internal readonly IOThreadingMode Mode;
+
+        public ThreadingData(int threads, IOThreadingMode mode)
+        {
+            Threads = threads;
+            Mode = mode;
+        }
+    }
 }

@@ -98,11 +98,11 @@ internal static class Paths
     // Probably can be considered practically impossible... But check if doing cross-platform?
     // -Keep Path.Combine() so we at least throw and exit if that happens though
     // -Also keep this immediately-loaded for the above reason
-    private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
+    internal static readonly string BaseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
     #region Help
 
-    internal static readonly string HelpTemp = PathCombineFast_NoChecks(_baseTemp, "Help");
+    internal static readonly string HelpTemp = PathCombineFast_NoChecks(BaseTemp, "Help");
 
     internal static readonly string HelpRedirectFilePath = PathCombineFast_NoChecks(HelpTemp, "redir.html");
 
@@ -110,17 +110,17 @@ internal static class Paths
 
     #region Scan
 
-    internal static readonly string FMScannerTemp = PathCombineFast_NoChecks(_baseTemp, "FMScan");
+    internal static readonly string FMScannerTemp = PathCombineFast_NoChecks(BaseTemp, "FMScan");
 
-    internal static readonly string SevenZipListTemp = PathCombineFast_NoChecks(_baseTemp, "7zl");
+    internal static readonly string SevenZipListTemp = PathCombineFast_NoChecks(BaseTemp, "7zl");
 
     #endregion
 
-    internal static readonly string FMCacheTemp = PathCombineFast_NoChecks(_baseTemp, "FMCache");
+    internal static readonly string FMCacheTemp = PathCombineFast_NoChecks(BaseTemp, "FMCache");
 
     #region Stub
 
-    internal static readonly string StubCommTemp = PathCombineFast_NoChecks(_baseTemp, "Stub");
+    internal static readonly string StubCommTemp = PathCombineFast_NoChecks(BaseTemp, "Stub");
 
     /// <summary>
     /// Tells the stub dll what to do.
@@ -129,11 +129,11 @@ internal static class Paths
 
     #endregion
 
-    internal static readonly string UpdateTemp = PathCombineFast_NoChecks(_baseTemp, "Update");
+    internal static readonly string UpdateTemp = PathCombineFast_NoChecks(BaseTemp, "Update");
 
-    internal static readonly string UpdateBakTemp = PathCombineFast_NoChecks(_baseTemp, "UpdateBak");
+    internal static readonly string UpdateBakTemp = PathCombineFast_NoChecks(BaseTemp, "UpdateBak");
 
-    internal static readonly string UpdateAppDownloadTemp = PathCombineFast_NoChecks(_baseTemp, "UpdateDL");
+    internal static readonly string UpdateAppDownloadTemp = PathCombineFast_NoChecks(BaseTemp, "UpdateDL");
 
     internal static void CreateOrClearTempPath(TempPath pathType)
     {

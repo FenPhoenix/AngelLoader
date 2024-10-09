@@ -183,8 +183,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         _inTheme = config.VisualTheme;
         _inFollowSystemTheme = config.FollowSystemTheme;
 
-        _allDrivesType = config.AllDrivesType;
-
         #endregion
 
         OutConfig = new ConfigData();
@@ -1511,8 +1509,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     ? IOThreadingMode.Aggressive
                     : IOThreadingMode.Normal;
 
-            OutConfig.AllDrivesType = _allDrivesType;
-
             #endregion
         }
 
@@ -2114,8 +2110,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             paths.Add(textBox.Text);
         }
-
-        _allDrivesType = DetectDriveTypes.GetAllDrivesType(paths);
 
         UpdateAutoIOThreadingInfo(_allDrivesType);
     }

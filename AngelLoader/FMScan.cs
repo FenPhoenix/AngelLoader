@@ -17,6 +17,7 @@ using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
 using Game = AngelLoader.GameSupport.Game;
 using ScannerGame = FMScanner.Game;
 
@@ -152,6 +153,8 @@ internal static class FMScan
             // Shove the whole thing into a thread, otherwise the progress box will be half-blocked still somehow
             bool result = await Task.Run(async () =>
             {
+                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetScanRelevantPaths());
+
                 try
                 {
                     #region Init
@@ -197,12 +200,12 @@ internal static class FMScan
                                 cachePath: fm.NeedsReadmesCachedDuringScan()
                                     ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                     : "",
-                                isTDM: fm.Game == Game.TDM,
+                                // TDM is folder-only
+                                isTDM: false,
                                 displayName: fm.Archive,
                                 isArchive: true,
                                 originalIndex: fms.Count
                             ));
-                            if (fm.Game == Game.TDM) tdmDataRequired = true;
                         }
                         else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                         {
@@ -268,7 +271,7 @@ internal static class FMScan
                             Paths.SevenZipExe,
                             fullScanOptions: GetDefaultScanOptions(),
                             tdmContext: tdmContext,
-                            threadCount: Utils.GetThreadCountForParallelOperation(fms.Count),
+                            threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData),
                             fms: fms,
                             tempPath: Paths.FMScannerTemp,
                             scanOptions: scanOptions,

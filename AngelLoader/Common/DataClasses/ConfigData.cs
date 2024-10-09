@@ -447,23 +447,41 @@ public sealed class ConfigData
         set => _customIOThreads = value.ClampToMin(1);
     }
 
-    // Session-only; don't write out
-    internal AL_DriveType AllDrivesType;
-
     internal IOThreadingMode CustomIOThreadingMode;
 
-    /// <summary>
-    /// Returns <see langword="true"/> if either the user has set <see cref="CustomIOThreadingMode"/> to <see langword="true"/>,
-    /// or if we're in auto mode and have determined it to be an appropriate setting.
-    /// </summary>
-    internal bool UseAggressiveIOThreading => IOThreadingLevel switch
+    internal List<string> GetInstallRelevantPaths()
     {
-        IOThreadingLevel.Custom => CustomIOThreadingMode == IOThreadingMode.Aggressive,
-        IOThreadingLevel.HDD => false,
-        IOThreadingLevel.SATA_SSD => false,
-        IOThreadingLevel.NVMe_SSD => true,
-        _ => AllDrivesType == AL_DriveType.NVMe_SSD,
-    };
+        List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 1);
+        ret.AddRange_Small(FMArchivePaths);
+        ret.AddRange_Small(GameExes);
+        ret.Add(FMsBackupPath);
+        return ret;
+    }
+
+    internal List<string> GetAudioConversionRelevantPaths()
+    {
+        List<string> ret = new(SupportedGameCount);
+        ret.AddRange_Small(GameExes);
+        return ret;
+    }
+
+    /*
+    @MT_TASK(GetScanRelevantPaths): We might not need all of these
+    -We only need temp if we have 7z or RAR (both can be solid; RAR is only possibly solid but we have to assume
+     all RARs are solid)
+    -We only need GameExes if we have folder-only FMs
+    -We only need FM archive paths if we have archive FMs
+     -We can further remove exact items from either of these if no FMs are located on a particular path
+    */
+    internal List<string> GetScanRelevantPaths()
+    {
+        List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 1);
+        ret.AddRange_Small(FMArchivePaths);
+        ret.AddRange_Small(GameExes);
+        ret.Add(Paths.BaseTemp);
+        return ret;
+    }
+
 
     // @MT_TASK: End finalize names
 

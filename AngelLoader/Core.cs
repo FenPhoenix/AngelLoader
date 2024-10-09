@@ -160,8 +160,6 @@ internal static class Core
                             }
                         }
                     }
-
-                    SetDriveTypes(showWaitCursorOnMainView: false, sourceConfig: Config);
                 }
                 else
                 {
@@ -580,7 +578,7 @@ internal static class Core
         // config object yet.
         if (diskTypeNeedsUpdate)
         {
-            SetDriveTypes(showWaitCursorOnMainView: !startup, sourceConfig: outConfig);
+            // @MT_TASK: Keeping this here until we know we don't need it
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
@@ -1029,48 +1027,6 @@ internal static class Core
         }
 
         return (error, enableTDMWatchers, camModIniLines);
-    }
-
-    private static void SetDriveTypes(bool showWaitCursorOnMainView, ConfigData sourceConfig)
-    {
-        ConfigData destConfig = Config;
-        if (sourceConfig.IOThreadingLevel == IOThreadingLevel.Auto)
-        {
-            // @MT_TASK: Remove for final release
-            Trace.WriteLine(nameof(SetDriveTypes) + ": Auto path");
-            try
-            {
-                if (showWaitCursorOnMainView)
-                {
-                    View.SetWaitCursor(true);
-                }
-                List<string> paths = GetIOThreadingRelevantPaths(sourceConfig);
-
-                destConfig.AllDrivesType = DetectDriveTypes.GetAllDrivesType(paths);
-            }
-            finally
-            {
-                if (showWaitCursorOnMainView)
-                {
-                    View.SetWaitCursor(false);
-                }
-            }
-        }
-        else
-        {
-            // @MT_TASK: Remove for final release
-            Trace.WriteLine(nameof(SetDriveTypes) + ": Manual path");
-            destConfig.AllDrivesType = default;
-        }
-    }
-
-    private static List<string> GetIOThreadingRelevantPaths(ConfigData config)
-    {
-        // @MT_TASK: We probably want "all drives" to include the backup path drive too
-        List<string> ret = new(config.FMArchivePaths.Count + SupportedGameCount);
-        ret.AddRange_Small(config.FMArchivePaths);
-        ret.AddRange_Small(config.GameExes);
-        return ret;
     }
 
     internal static void SortFMsViewList(Column column, SortDirection sortDirection)

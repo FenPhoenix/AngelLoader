@@ -300,22 +300,6 @@ public static partial class Utils
         _ => Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort,
     };
 
-    internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount)
-    {
-        int threads = Config.IOThreadingLevel switch
-        {
-            IOThreadingLevel.Custom => Config.CustomIOThreads,
-            IOThreadingLevel.HDD => 1,
-            IOThreadingLevel.SATA_SSD => CoreCount,
-            IOThreadingLevel.NVMe_SSD => CoreCount,
-            _ => Config.AllDrivesType != AL_DriveType.Other
-                ? CoreCount
-                : 1,
-        };
-
-        return Math.Min(threads, maxWorkItemsCount);
-    }
-
 #if DateAccTest
     internal static string DateAccuracy_Serialize(DateAccuracy da) => da switch
     {

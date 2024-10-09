@@ -1770,11 +1770,12 @@ internal static partial class FMInstallAndPlay
                 StartTiming();
 #endif
 
+                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetInstallRelevantPaths());
                 try
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
+                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, threadingData);
 
 #if TIMING_TEST
                     Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
@@ -1804,13 +1805,14 @@ internal static partial class FMInstallAndPlay
                                     toes like I thought they would. But test with the NVME and do a more thorough
                                     diff test.
                                     */
-                                    ? Config.UseAggressiveIOThreading
+                                    ? threadingData.Mode == IOThreadingMode.Aggressive
                                         ? InstallFMZip_ThreadedPerEntry(
                                             progress,
                                             fmData,
                                             zipCtxPool,
                                             zipCtxThreadedPool,
-                                            ioBufferPools)
+                                            ioBufferPools,
+                                            threadingData)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
@@ -1849,7 +1851,8 @@ internal static partial class FMInstallAndPlay
                                 ref fmsFinishedCount,
                                 ctx,
                                 archivePaths,
-                                fmDataList.Count);
+                                fmDataList.Count,
+                                threadingData);
                         }
                     });
                 }
@@ -1858,7 +1861,7 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
-                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList);
+                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadingData);
 
                     if (rollbackErrorResults.Count > 0)
                     {
@@ -1995,7 +1998,7 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList)
+        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, ThreadingData threadingData)
         {
             ConcurrentBag<FMInstallResult> results = new();
 
@@ -2010,7 +2013,7 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            int threadCount = GetThreadCountForParallelOperation(filteredList.Count);
+            int threadCount = GetThreadCountForParallelOperation(filteredList.Count, threadingData);
 
             if (!TryGetParallelForData(threadCount, filteredList, CancellationToken.None, out var pd))
             {
@@ -2085,7 +2088,8 @@ internal static partial class FMInstallAndPlay
         ref int fmsFinishedCount,
         DarkLoaderBackupContext ctx,
         List<string> archivePaths,
-        int fmDataListCount)
+        int fmDataListCount,
+        ThreadingData threadingData)
     {
         byte[] fmSelInfFileStreamBuffer = ioBufferPools.FileStream.Rent();
         try
@@ -2127,6 +2131,7 @@ internal static partial class FMInstallAndPlay
                 FMAudio.ConvertAsPartOfInstall(
                     validAudioConvertibleFM,
                     AudioConvert.MP3ToWAV,
+                    threadingData,
                     cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2136,6 +2141,7 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.OGGToWAV,
+                        threadingData,
                         cancellationToken);
                 }
 
@@ -2146,6 +2152,7 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.WAVToWAV16,
+                        threadingData,
                         cancellationToken);
                 }
 
@@ -2205,7 +2212,8 @@ internal static partial class FMInstallAndPlay
         FMData fmData,
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
-        IOBufferPools ioBufferPools)
+        IOBufferPools ioBufferPools,
+        ThreadingData threadingData)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
@@ -2237,7 +2245,7 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine("sw0: " + sw0.Elapsed);
 #endif
 
-            int threadCount = GetThreadCountForParallelOperation(entriesCount);
+            int threadCount = GetThreadCountForParallelOperation(entriesCount, threadingData);
 
 #if TIMING_TEST
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
@@ -2800,10 +2808,12 @@ internal static partial class FMInstallAndPlay
 
                 ConcurrentBag<FMUninstallResult> errors = new();
 
+                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetInstallRelevantPaths());
+
 #if TIMING_TEST
                 StartTiming();
 #endif
-                int threadCount = GetThreadCountForParallelOperation(fmDataList.Count);
+                int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, threadingData);
 
                 if (!TryGetParallelForData(threadCount, fmDataList, _uninstallCts.Token, out var pd))
                 {
