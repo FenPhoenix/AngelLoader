@@ -465,25 +465,6 @@ public sealed class ConfigData
         return ret;
     }
 
-    /*
-    @MT_TASK(GetScanRelevantPaths): We might not need all of these
-    -We only need temp + readme cache if we have 7z or RAR (both can be solid; RAR is only possibly solid but we
-     have to assume all RARs are solid)
-    -We only need FM install paths if we have folder-only FMs
-    -We only need FM archive paths if we have archive FMs
-     -We can further remove exact items from either of these if no FMs are located on a particular path
-    */
-    internal List<string> GetScanRelevantPaths()
-    {
-        List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 2);
-        ret.AddRange_Small(FMArchivePaths);
-        ret.AddRange_Small(_fmInstallPaths);
-        ret.Add(Paths.BaseTemp);
-        // Readme cache location, for solid archives
-        ret.Add(Paths.FMsCache);
-        return ret;
-    }
-
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic

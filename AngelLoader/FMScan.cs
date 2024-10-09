@@ -13,6 +13,7 @@ using AL_Common;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using FMScanner;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -26,10 +27,7 @@ namespace AngelLoader;
 internal static class FMScan
 {
 #if TIMING_TEST
-#pragma warning disable IDE0001
-#pragma warning disable IDE0002
-    // ReSharper disable RedundantNameQualifier
-    private static readonly System.Diagnostics.Stopwatch _timingTestStopWatch = new();
+    private static readonly Stopwatch _timingTestStopWatch = new();
 
     private static void StartTiming()
     {
@@ -40,11 +38,8 @@ internal static class FMScan
     {
         _timingTestStopWatch.Stop();
         // ReSharper disable RedundantNameQualifier
-        System.Diagnostics.Trace.WriteLine(_timingTestStopWatch.Elapsed);
+        Trace.WriteLine(_timingTestStopWatch.Elapsed);
     }
-#pragma warning restore IDE0002
-#pragma warning restore IDE0001
-    // ReSharper restore RedundantNameQualifier
 #endif
 
     private static CancellationTokenSource _scanCts = new();
@@ -153,8 +148,6 @@ internal static class FMScan
             // Shove the whole thing into a thread, otherwise the progress box will be half-blocked still somehow
             bool result = await Task.Run(async () =>
             {
-                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetScanRelevantPaths());
-
                 try
                 {
                     #region Init
@@ -179,6 +172,10 @@ internal static class FMScan
 
                     bool tdmDataRequired = false;
 
+                    bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
+                    bool atLeastOneSolidArchiveInSet = false;
+                    HashSetI usedArchivePaths = new();
+
                     for (int i = 0; i < fmsToScan.Count; i++)
                     {
                         FanMission fm = fmsToScan[i];
@@ -190,14 +187,19 @@ internal static class FMScan
                         if (_scanCts.IsCancellationRequested) return false;
 
                         if (!fm.Archive.IsEmpty() &&
-                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths)).IsEmpty())
+                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archivePath)).IsEmpty())
                         {
+                            if (!archivePath.IsEmpty())
+                            {
+                                usedArchivePaths.Add(archivePath);
+                            }
+                            bool needsReadmesCachedDuringScan = fm.NeedsReadmesCachedDuringScan();
                             fmsToScanFiltered.Add(fm);
                             fms.Add(new FMToScan
                             (
                                 path: fmArchivePath,
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
-                                cachePath: fm.NeedsReadmesCachedDuringScan()
+                                cachePath: needsReadmesCachedDuringScan
                                     ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                     : "",
                                 // TDM is folder-only
@@ -206,6 +208,10 @@ internal static class FMScan
                                 isArchive: true,
                                 originalIndex: fms.Count
                             ));
+                            if (needsReadmesCachedDuringScan)
+                            {
+                                atLeastOneSolidArchiveInSet = true;
+                            }
                         }
                         else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                         {
@@ -223,6 +229,7 @@ internal static class FMScan
                                     originalIndex: fms.Count
                                 ));
                                 if (fm.Game == Game.TDM) tdmDataRequired = true;
+                                fmInstalledDirsRequired[(int)gameIndex] = true;
                             }
                         }
 
@@ -265,6 +272,10 @@ internal static class FMScan
                             LText.ProgressBox.ReportScanningBetweenNumAndTotal +
                             fmsTotalCount.ToString(NumberFormatInfo.CurrentInfo) +
                             LText.ProgressBox.ReportScanningLast;
+
+                        ThreadingData threadingData = GetLowestCommonThreadingData(
+                            GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
+                        );
 
                         fmDataList = Scanner.ScanThreaded(
                             Paths.SevenZipPath,
@@ -546,7 +557,7 @@ internal static class FMScan
             }
 
             int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
-            int percent = Common.GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
+            int percent = GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
 
             /*
             @MT_TASK: Necessary if we have multiple threads to allow UI time to catch up.
@@ -576,13 +587,42 @@ internal static class FMScan
         static void CleanupAfterCancel()
         {
 #if TIMING_TEST
-#pragma warning disable IDE0002
-            // ReSharper disable RedundantNameQualifier
-            System.Diagnostics.Trace.WriteLine("Canceled");
-#pragma warning restore IDE0002
+            Trace.WriteLine("Canceled");
 #endif
             Paths.CreateOrClearTempPath(TempPaths.FMScanner);
             Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+        }
+
+        static List<string> GetScanRelevantPaths(
+            HashSetI usedArchivePaths,
+            bool[] fmInstalledDirsRequired,
+            bool atLeastOneSolidArchiveInSet)
+        {
+            List<string> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
+            ret.AddRange(usedArchivePaths);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (fmInstalledDirsRequired[i])
+                {
+                    ret.Add(Config.GetFMInstallPath((GameIndex)i));
+                }
+            }
+            if (atLeastOneSolidArchiveInSet)
+            {
+                ret.Add(Paths.BaseTemp);
+                ret.Add(Paths.FMsCache);
+            }
+
+#if TIMING_TEST
+            Trace.WriteLine("--------- " + nameof(GetScanRelevantPaths) + "():");
+            foreach (string item in ret)
+            {
+                Trace.WriteLine(item);
+            }
+            Trace.WriteLine("---------");
+#endif
+
+            return ret;
         }
 
         #endregion
