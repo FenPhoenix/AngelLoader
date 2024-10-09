@@ -146,7 +146,6 @@ internal static class DetectDriveTypes
 #endif
 
         return ret;
-
     }
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
