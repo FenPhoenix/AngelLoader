@@ -160,6 +160,8 @@ internal static class Core
                             }
                         }
                     }
+
+                    SetDriveTypes(showWaitCursorOnMainView: false, sourceConfig: Config);
                 }
                 else
                 {
@@ -192,11 +194,6 @@ internal static class Core
         splashScreen.Show(Config.VisualTheme);
 
         _configReadARE.WaitOne();
-
-        Task setDriveTypesTask = Task.Run(static () =>
-        {
-            SetDriveTypes(showWaitCursorOnMainView: false, sourceConfig: Config);
-        });
 
         if (doUpdateCleanup)
         {
@@ -365,7 +362,6 @@ internal static class Core
             View = ViewEnv.GetView();
 
             findFMsTask.Wait();
-            setDriveTypesTask.Wait();
 
 #if RT_HeavyTests
 #pragma warning disable IDE0002
@@ -396,7 +392,6 @@ internal static class Core
         }
         else
         {
-            setDriveTypesTask.Wait();
             splashScreen.Hide();
             (bool accepted, bool askForImport) = await OpenSettings(settingsWindowState);
             if (accepted)
