@@ -482,7 +482,6 @@ public sealed class ConfigData
         return ret;
     }
 
-
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic
