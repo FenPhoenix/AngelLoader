@@ -11,6 +11,7 @@ using AL_Common.DeviceIoControlLib.Objects.Storage;
 using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
 using Microsoft.Win32.SafeHandles;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -24,51 +25,61 @@ internal static class DetectDriveTypes
     We should keep a list of drive types alongside all of our paths in the config object, so that different
     operations can decide which paths they care about.
     */
-    internal static AL_DriveType GetAllDrivesType(List<string> paths)
+    internal static List<DriveLetterAndType> GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
-        try
+
+        // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
+
+        List<string> letters = new(paths.Count);
+
+        for (int i = 0; i < paths.Count; i++)
         {
-            // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
+            if (paths[i].IsWhiteSpace()) continue;
 
-            List<string> letters = new(paths.Count);
-
-            for (int i = 0; i < paths.Count; i++)
+            try
             {
-                if (paths[i].IsWhiteSpace()) continue;
+                string? letter = Path.GetPathRoot(paths[i])?.TrimEnd(Common.CA_BS_FS);
 
-                string letter = Path.GetPathRoot(paths[i]).TrimEnd(Common.CA_BS_FS);
-
-                if (letter.IsEmpty())
+                if (!letter.IsEmpty() && letter.Length is 2 && letter[0].IsAsciiAlpha() && letter[1] == ':')
                 {
-                    return AL_DriveType.Other;
+                    letters.Add(letter);
                 }
-                if (letter.Length is not 2 || !letter[0].IsAsciiAlpha())
-                {
-                    return AL_DriveType.Other;
-                }
-
-                letters.Add(letter);
             }
-
-            letters = letters.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-
-            if (letters.Count == 0) return AL_DriveType.Other;
-
-            List<AL_DriveType> driveTypes = new(letters.Count);
-
-            /*
-            Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
-            drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
-            Now that's more like it.
-            */
-
-            foreach (string letter in letters)
+            catch
             {
-                string dummyFileName = @"\\.\" + letter;
+                // ignore and don't add
+            }
+        }
 
+        List<DriveLetterAndType> ret = new(letters.Count);
+
+        letters = letters.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+
+        if (letters.Count == 0)
+        {
+#if TIMING_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine(sw.Elapsed);
+#endif
+            return ret;
+        }
+
+        /*
+        Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
+        drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
+        Now that's more like it.
+        */
+
+        foreach (string letter in letters)
+        {
+            string dummyFileName = @"\\.\" + letter;
+
+            AL_DriveType driveType;
+            try
+            {
                 using SafeFileHandle safeHandle = CreateFileW(
                     lpFileName: dummyFileName,
                     /*
@@ -89,51 +100,41 @@ internal static class DetectDriveTypes
                 DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
                 if (seekPenaltyDescriptor.IncursSeekPenalty)
                 {
-#if TIMING_TEST
-                    System.Diagnostics.Trace.WriteLine("All drives are considered: " + AL_DriveType.Other);
-#endif
-                    return AL_DriveType.Other;
+                    driveType = AL_DriveType.Other;
                 }
-
-                STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
-
-                AL_DriveType driveType = deviceProperty.BusType switch
+                else
                 {
-                    STORAGE_BUS_TYPE.BusTypeNvme => AL_DriveType.NVMe_SSD,
-                    STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
-                    /*
-                    @MT_TASK(Bus types):
-                    We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for exotic
-                    bus types. We could also decide to fall back to "NVMe SSD" level after rejecting ones that
-                    look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD" level.
-                    */
-                    _ => AL_DriveType.SATA_SSD,
-                };
-                driveTypes.Add(driveType);
+                    STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
+
+                    driveType = deviceProperty.BusType switch
+                    {
+                        STORAGE_BUS_TYPE.BusTypeNvme => AL_DriveType.NVMe_SSD,
+                        STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
+                        /*
+                        @MT_TASK(Bus types):
+                        We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for exotic
+                        bus types. We could also decide to fall back to "NVMe SSD" level after rejecting ones that
+                        look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD" level.
+                        */
+                        _ => AL_DriveType.SATA_SSD,
+                    };
+                }
+            }
+            catch
+            {
+                driveType = AL_DriveType.Other;
             }
 
-            AL_DriveType ret =
-                driveTypes.All(static x => x == AL_DriveType.NVMe_SSD) ? AL_DriveType.NVMe_SSD :
-                driveTypes.All(static x => x == AL_DriveType.SATA_SSD) ? AL_DriveType.SATA_SSD :
-                AL_DriveType.Other;
+            ret.Add(new DriveLetterAndType(letter, driveType));
+        }
 
 #if TIMING_TEST
-            System.Diagnostics.Trace.WriteLine("All drives are considered: " + ret);
+        sw.Stop();
+        System.Diagnostics.Trace.WriteLine(sw.Elapsed);
 #endif
 
-            return ret;
-        }
-        catch
-        {
-            return AL_DriveType.Other;
-        }
-#if TIMING_TEST
-        finally
-        {
-            sw.Stop();
-            System.Diagnostics.Trace.WriteLine(sw.Elapsed);
-        }
-#endif
+        return ret;
+
     }
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
