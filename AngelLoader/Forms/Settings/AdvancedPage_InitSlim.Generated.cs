@@ -29,6 +29,14 @@ sealed partial class AdvancedPage
         this.NvmeSsdModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.HddModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.SataSsdModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+        this.AutoThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.AutoThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.HddThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.SataSsdThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.NvmeSsdThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.HddThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.SataSsdThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+        this.NvmeSsdThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.PagePanel.SuspendLayout();
         this.IOThreadingGroupBox.SuspendLayout();
         this.CustomModePanel.SuspendLayout();
@@ -49,15 +57,23 @@ sealed partial class AdvancedPage
         this.IOThreadingGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.IOThreadingGroupBox.Controls.Add(this.CustomModePanel);
+        this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadingModeValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadingModeLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadingModeValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadingModeLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.AutoThreadingModeValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.AutoThreadingModeLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.HddThreadingModeValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.HddThreadingModeLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadsValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadsLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadsValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadsLabel);
         this.IOThreadingGroupBox.Controls.Add(this.CustomModeRadioButton);
         this.IOThreadingGroupBox.Controls.Add(this.AutoModeLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.AutoThreadsValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.AutoThreadsLabel);
+        this.IOThreadingGroupBox.Controls.Add(this.HddThreadsValueLabel);
         this.IOThreadingGroupBox.Controls.Add(this.HddThreadsLabel);
         this.IOThreadingGroupBox.Controls.Add(this.AutoModeRadioButton);
         this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdModeRadioButton);
@@ -207,6 +223,46 @@ sealed partial class AdvancedPage
         this.SataSsdModeRadioButton.Location = new System.Drawing.Point(16, 200);
         this.SataSsdModeRadioButton.TabIndex = 7;
         this.SataSsdModeRadioButton.TabStop = true;
+        // 
+        // AutoThreadsValueLabel
+        // 
+        this.AutoThreadsValueLabel.AutoSize = true;
+        this.AutoThreadsValueLabel.Location = new System.Drawing.Point(120, 64);
+        // 
+        // AutoThreadingModeValueLabel
+        // 
+        this.AutoThreadingModeValueLabel.AutoSize = true;
+        this.AutoThreadingModeValueLabel.Location = new System.Drawing.Point(120, 80);
+        // 
+        // HddThreadsValueLabel
+        // 
+        this.HddThreadsValueLabel.AutoSize = true;
+        this.HddThreadsValueLabel.Location = new System.Drawing.Point(120, 144);
+        // 
+        // SataSsdThreadsValueLabel
+        // 
+        this.SataSsdThreadsValueLabel.AutoSize = true;
+        this.SataSsdThreadsValueLabel.Location = new System.Drawing.Point(120, 224);
+        // 
+        // NvmeSsdThreadsValueLabel
+        // 
+        this.NvmeSsdThreadsValueLabel.AutoSize = true;
+        this.NvmeSsdThreadsValueLabel.Location = new System.Drawing.Point(120, 304);
+        // 
+        // HddThreadingModeValueLabel
+        // 
+        this.HddThreadingModeValueLabel.AutoSize = true;
+        this.HddThreadingModeValueLabel.Location = new System.Drawing.Point(120, 160);
+        // 
+        // SataSsdThreadingModeValueLabel
+        // 
+        this.SataSsdThreadingModeValueLabel.AutoSize = true;
+        this.SataSsdThreadingModeValueLabel.Location = new System.Drawing.Point(120, 240);
+        // 
+        // NvmeSsdThreadingModeValueLabel
+        // 
+        this.NvmeSsdThreadingModeValueLabel.AutoSize = true;
+        this.NvmeSsdThreadingModeValueLabel.Location = new System.Drawing.Point(120, 320);
         // 
         // AdvancedPage
         // 

@@ -53,6 +53,14 @@ sealed partial class AdvancedPage
             this.NvmeSsdModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.HddModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.SataSsdModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
+            this.AutoThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.AutoThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.HddThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SataSsdThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.NvmeSsdThreadsValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.HddThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SataSsdThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.NvmeSsdThreadingModeValueLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.PagePanel.SuspendLayout();
             this.IOThreadingGroupBox.SuspendLayout();
             this.CustomModePanel.SuspendLayout();
@@ -75,15 +83,23 @@ sealed partial class AdvancedPage
             this.IOThreadingGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.IOThreadingGroupBox.Controls.Add(this.CustomModePanel);
+            this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadingModeValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadingModeLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadingModeValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadingModeLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.AutoThreadingModeValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.AutoThreadingModeLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.HddThreadingModeValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.HddThreadingModeLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadsValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdThreadsLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadsValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.SataSsdThreadsLabel);
             this.IOThreadingGroupBox.Controls.Add(this.CustomModeRadioButton);
             this.IOThreadingGroupBox.Controls.Add(this.AutoModeLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.AutoThreadsValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.AutoThreadsLabel);
+            this.IOThreadingGroupBox.Controls.Add(this.HddThreadsValueLabel);
             this.IOThreadingGroupBox.Controls.Add(this.HddThreadsLabel);
             this.IOThreadingGroupBox.Controls.Add(this.AutoModeRadioButton);
             this.IOThreadingGroupBox.Controls.Add(this.NvmeSsdModeRadioButton);
@@ -303,6 +319,78 @@ sealed partial class AdvancedPage
             this.SataSsdModeRadioButton.TabStop = true;
             this.SataSsdModeRadioButton.Text = "SATA SSD";
             // 
+            // AutoThreadsValueLabel
+            // 
+            this.AutoThreadsValueLabel.AutoSize = true;
+            this.AutoThreadsValueLabel.Location = new System.Drawing.Point(120, 64);
+            this.AutoThreadsValueLabel.Name = "AutoThreadsValueLabel";
+            this.AutoThreadsValueLabel.Size = new System.Drawing.Size(48, 13);
+            this.AutoThreadsValueLabel.TabIndex = 2;
+            this.AutoThreadsValueLabel.Text = "[threads]";
+            // 
+            // AutoThreadingModeValueLabel
+            // 
+            this.AutoThreadingModeValueLabel.AutoSize = true;
+            this.AutoThreadingModeValueLabel.Location = new System.Drawing.Point(120, 80);
+            this.AutoThreadingModeValueLabel.Name = "AutoThreadingModeValueLabel";
+            this.AutoThreadingModeValueLabel.Size = new System.Drawing.Size(86, 13);
+            this.AutoThreadingModeValueLabel.TabIndex = 3;
+            this.AutoThreadingModeValueLabel.Text = "[threading mode]";
+            // 
+            // HddThreadsValueLabel
+            // 
+            this.HddThreadsValueLabel.AutoSize = true;
+            this.HddThreadsValueLabel.Location = new System.Drawing.Point(120, 144);
+            this.HddThreadsValueLabel.Name = "HddThreadsValueLabel";
+            this.HddThreadsValueLabel.Size = new System.Drawing.Size(13, 13);
+            this.HddThreadsValueLabel.TabIndex = 5;
+            this.HddThreadsValueLabel.Text = "1";
+            // 
+            // SataSsdThreadsValueLabel
+            // 
+            this.SataSsdThreadsValueLabel.AutoSize = true;
+            this.SataSsdThreadsValueLabel.Location = new System.Drawing.Point(120, 224);
+            this.SataSsdThreadsValueLabel.Name = "SataSsdThreadsValueLabel";
+            this.SataSsdThreadsValueLabel.Size = new System.Drawing.Size(19, 13);
+            this.SataSsdThreadsValueLabel.TabIndex = 8;
+            this.SataSsdThreadsValueLabel.Text = "12";
+            // 
+            // NvmeSsdThreadsValueLabel
+            // 
+            this.NvmeSsdThreadsValueLabel.AutoSize = true;
+            this.NvmeSsdThreadsValueLabel.Location = new System.Drawing.Point(120, 304);
+            this.NvmeSsdThreadsValueLabel.Name = "NvmeSsdThreadsValueLabel";
+            this.NvmeSsdThreadsValueLabel.Size = new System.Drawing.Size(19, 13);
+            this.NvmeSsdThreadsValueLabel.TabIndex = 11;
+            this.NvmeSsdThreadsValueLabel.Text = "12";
+            // 
+            // HddThreadingModeValueLabel
+            // 
+            this.HddThreadingModeValueLabel.AutoSize = true;
+            this.HddThreadingModeValueLabel.Location = new System.Drawing.Point(120, 160);
+            this.HddThreadingModeValueLabel.Name = "HddThreadingModeValueLabel";
+            this.HddThreadingModeValueLabel.Size = new System.Drawing.Size(40, 13);
+            this.HddThreadingModeValueLabel.TabIndex = 6;
+            this.HddThreadingModeValueLabel.Text = "Normal";
+            // 
+            // SataSsdThreadingModeValueLabel
+            // 
+            this.SataSsdThreadingModeValueLabel.AutoSize = true;
+            this.SataSsdThreadingModeValueLabel.Location = new System.Drawing.Point(120, 240);
+            this.SataSsdThreadingModeValueLabel.Name = "SataSsdThreadingModeValueLabel";
+            this.SataSsdThreadingModeValueLabel.Size = new System.Drawing.Size(40, 13);
+            this.SataSsdThreadingModeValueLabel.TabIndex = 9;
+            this.SataSsdThreadingModeValueLabel.Text = "Normal";
+            // 
+            // NvmeSsdThreadingModeValueLabel
+            // 
+            this.NvmeSsdThreadingModeValueLabel.AutoSize = true;
+            this.NvmeSsdThreadingModeValueLabel.Location = new System.Drawing.Point(120, 320);
+            this.NvmeSsdThreadingModeValueLabel.Name = "NvmeSsdThreadingModeValueLabel";
+            this.NvmeSsdThreadingModeValueLabel.Size = new System.Drawing.Size(59, 13);
+            this.NvmeSsdThreadingModeValueLabel.TabIndex = 12;
+            this.NvmeSsdThreadingModeValueLabel.Text = "Aggressive";
+            // 
             // AdvancedPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -345,4 +433,12 @@ sealed partial class AdvancedPage
     internal System.Windows.Forms.Panel CustomModePanel;
     internal CustomControls.DarkRadioButton CustomThreadingModeAggressiveRadioButton;
     internal CustomControls.DarkRadioButton CustomThreadingModeNormalRadioButton;
+    internal CustomControls.DarkLabel NvmeSsdThreadingModeValueLabel;
+    internal CustomControls.DarkLabel SataSsdThreadingModeValueLabel;
+    internal CustomControls.DarkLabel AutoThreadingModeValueLabel;
+    internal CustomControls.DarkLabel HddThreadingModeValueLabel;
+    internal CustomControls.DarkLabel NvmeSsdThreadsValueLabel;
+    internal CustomControls.DarkLabel SataSsdThreadsValueLabel;
+    internal CustomControls.DarkLabel AutoThreadsValueLabel;
+    internal CustomControls.DarkLabel HddThreadsValueLabel;
 }
