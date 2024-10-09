@@ -27,7 +27,7 @@ public sealed class ConfigData
 
         _disabledMods = new string[SupportedGameCount];
 
-        GameExes = new string[SupportedGameCount];
+        _gameExes = new string[SupportedGameCount];
         _gamePaths = new string[SupportedGameCount];
         _fmInstallPaths = new string[SupportedGameCount];
 
@@ -45,7 +45,7 @@ public sealed class ConfigData
             // We want them empty strings, not null, for safety
             _disabledMods[i] = "";
 
-            GameExes[i] = "";
+            _gameExes[i] = "";
             _gamePaths[i] = "";
             _fmInstallPaths[i] = "";
 
@@ -146,11 +146,11 @@ public sealed class ConfigData
 
     #region Game exes
 
-    internal readonly string[] GameExes;
+    private readonly string[] _gameExes;
 
-    internal string GetGameExe(GameIndex index) => GameExes[(uint)index];
+    internal string GetGameExe(GameIndex index) => _gameExes[(uint)index];
 
-    internal void SetGameExe(GameIndex index, string value) => GameExes[(uint)index] = value;
+    internal void SetGameExe(GameIndex index, string value) => _gameExes[(uint)index] = value;
 
     #endregion
 
@@ -453,7 +453,7 @@ public sealed class ConfigData
     {
         List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 1);
         ret.AddRange_Small(FMArchivePaths);
-        ret.AddRange_Small(GameExes);
+        ret.AddRange_Small(_fmInstallPaths);
         ret.Add(FMsBackupPath);
         return ret;
     }
@@ -461,7 +461,7 @@ public sealed class ConfigData
     internal List<string> GetAudioConversionRelevantPaths()
     {
         List<string> ret = new(SupportedGameCount);
-        ret.AddRange_Small(GameExes);
+        ret.AddRange_Small(_fmInstallPaths);
         return ret;
     }
 
@@ -469,7 +469,7 @@ public sealed class ConfigData
     @MT_TASK(GetScanRelevantPaths): We might not need all of these
     -We only need temp if we have 7z or RAR (both can be solid; RAR is only possibly solid but we have to assume
      all RARs are solid)
-    -We only need GameExes if we have folder-only FMs
+    -We only need FM install paths if we have folder-only FMs
     -We only need FM archive paths if we have archive FMs
      -We can further remove exact items from either of these if no FMs are located on a particular path
     */
@@ -477,7 +477,7 @@ public sealed class ConfigData
     {
         List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 1);
         ret.AddRange_Small(FMArchivePaths);
-        ret.AddRange_Small(GameExes);
+        ret.AddRange_Small(_fmInstallPaths);
         ret.Add(Paths.BaseTemp);
         return ret;
     }
