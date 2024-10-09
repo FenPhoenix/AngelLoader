@@ -217,9 +217,6 @@ public enum CheckForUpdates
 public enum IOThreadingLevel
 {
     Auto,
-    HDD,
-    SATA_SSD,
-    NVMe_SSD,
     Custom,
 }
 

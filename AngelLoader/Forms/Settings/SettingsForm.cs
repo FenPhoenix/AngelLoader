@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -21,7 +20,6 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 using AngelLoader.Forms.WinFormsNative.Dialogs;
-using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Forms.Interfaces;
@@ -53,8 +51,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
 
-    private AL_DriveType _allDrivesType;
-
     #endregion
 
     private VisualTheme _selfTheme;
@@ -78,22 +74,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly DarkLabel[] GameWebSearchUrlLabels;
     private readonly DarkTextBox[] GameWebSearchUrlTextBoxes;
     private readonly DarkButton[] GameWebSearchUrlResetButtons;
-
-    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
-    private enum ThreadingLevel
-    {
-        Auto,
-        HDD,
-        SATA_SSD,
-        NVMe_SSD,
-    }
-
-    private readonly (
-        DarkLabel ThreadsKeyLabel,
-        DarkLabel ThreadsValueLabel,
-        DarkLabel ThreadingModeKeyLabel,
-        DarkLabel ThreadingModeValueLabel)[]
-        ThreadingLevelLabels;
 
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
     // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
@@ -264,22 +244,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OtherPage.T3WebSearchUrlResetButton,
             OtherPage.SS2WebSearchUrlResetButton,
             OtherPage.TDMWebSearchUrlResetButton,
-        };
-
-        // ReSharper disable once RedundantExplicitArraySize
-        ThreadingLevelLabels = new (DarkLabel, DarkLabel, DarkLabel, DarkLabel)[4]
-        {
-            new(AdvancedPage.AutoThreadsLabel, AdvancedPage.AutoThreadsValueLabel,
-                AdvancedPage.AutoThreadingModeLabel, AdvancedPage.AutoThreadingModeValueLabel),
-
-            new(AdvancedPage.HddThreadsLabel, AdvancedPage.HddThreadsValueLabel,
-                AdvancedPage.HddThreadingModeLabel, AdvancedPage.HddThreadingModeValueLabel),
-
-            new(AdvancedPage.SataSsdThreadsLabel, AdvancedPage.SataSsdThreadsValueLabel,
-                AdvancedPage.SataSsdThreadingModeLabel, AdvancedPage.SataSsdThreadingModeValueLabel),
-
-            new(AdvancedPage.NvmeSsdThreadsLabel, AdvancedPage.NvmeSsdThreadsValueLabel,
-                AdvancedPage.NvmeSsdThreadingModeLabel, AdvancedPage.NvmeSsdThreadingModeValueLabel),
         };
 
         // @GENGAMES (Settings): We've traded one form of jank for another
@@ -699,15 +663,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             switch (config.IOThreadingLevel)
             {
-                case IOThreadingLevel.HDD:
-                    AdvancedPage.HddModeRadioButton.Checked = true;
-                    break;
-                case IOThreadingLevel.SATA_SSD:
-                    AdvancedPage.SataSsdModeRadioButton.Checked = true;
-                    break;
-                case IOThreadingLevel.NVMe_SSD:
-                    AdvancedPage.NvmeSsdModeRadioButton.Checked = true;
-                    break;
                 case IOThreadingLevel.Custom:
                     AdvancedPage.CustomModeRadioButton.Checked = true;
                     break;
@@ -717,7 +672,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     break;
             }
             SetIOThreadsState();
-            AutoDetectIOThreadingLevel();
 
             AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
             if (config.CustomIOThreadingMode == IOThreadingMode.Aggressive)
@@ -825,9 +779,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             #region Advanced page
 
             AdvancedPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.HddModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.SataSsdModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.NvmeSsdModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
             AdvancedPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
 
             #endregion
@@ -1107,43 +1058,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 #region Auto
 
                 AdvancedPage.AutoModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Auto;
-                UpdateAutoIOThreadingInfo(_allDrivesType);
-
-                #endregion
-
-                #region HDD
-
-                AdvancedPage.HddModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_HDD;
-
-                AdvancedPage.HddThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.HddThreadsValueLabel.Text = 1.ToStrCur();
-
-                AdvancedPage.HddThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.HddThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
-
-                #endregion
-
-                #region SATA SSD
-
-                AdvancedPage.SataSsdModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD;
-
-                AdvancedPage.SataSsdThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.SataSsdThreadsValueLabel.Text = CoreCount.ToStrCur();
-
-                AdvancedPage.SataSsdThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.SataSsdThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
-
-                #endregion
-
-                #region NVMe SSD
-
-                AdvancedPage.NvmeSsdModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD;
-
-                AdvancedPage.NvmeSsdThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.NvmeSsdThreadsValueLabel.Text = CoreCount.ToStrCur();
-
-                AdvancedPage.NvmeSsdThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.NvmeSsdThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
 
                 #endregion
 
@@ -1156,11 +1070,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 AdvancedPage.CustomThreadingModeAggressiveRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
 
                 #endregion
-
-                for (int i = 1; i < ThreadingLevelLabels.Length; i++)
-                {
-                    LayoutThreadingLevelValues((ThreadingLevel)i);
-                }
 
                 #endregion
             }
@@ -1496,9 +1405,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             #region Advanced page
 
             OutConfig.IOThreadingLevel =
-                AdvancedPage.HddModeRadioButton.Checked ? IOThreadingLevel.HDD :
-                AdvancedPage.SataSsdModeRadioButton.Checked ? IOThreadingLevel.SATA_SSD :
-                AdvancedPage.NvmeSsdModeRadioButton.Checked ? IOThreadingLevel.NVMe_SSD :
                 AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingLevel.Custom :
                 IOThreadingLevel.Auto;
 
@@ -1605,11 +1511,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         var exePathTextBox = (DarkTextBox)sender;
         ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
         ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
-        // @MT_TASK: Add backup path checking here too - and try to dedupe all this logic...
-        if (GameExeTextBoxes.Contains(sender))
-        {
-            AutoDetectIOThreadingLevel();
-        }
     }
 
     private void ExePathBrowseButtons_Click(object sender, EventArgs e)
@@ -1760,14 +1661,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
 
         CheckForErrors();
-        AutoDetectIOThreadingLevel();
     }
 
     private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
     {
         PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
         CheckForErrors();
-        AutoDetectIOThreadingLevel();
     }
 
     #endregion
@@ -2079,95 +1978,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void IOThreadsRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
         SetIOThreadsState();
-        if (sender == AdvancedPage.AutoModeRadioButton &&
-            AdvancedPage.AutoModeRadioButton.Checked)
-        {
-            AutoDetectIOThreadingLevel();
-        }
     }
 
     private void SetIOThreadsState()
     {
         AdvancedPage.CustomModePanel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
-    }
-
-    private void AutoDetectIOThreadingLevel()
-    {
-        if (_state.IsStartup()) return;
-
-        // @MT_TASK: Remove for final - making sure of no duplicate runs
-        Trace.WriteLine("Autodetecting I/O threading level");
-
-        // @MT_TASK: Duplicate logic, but we're storing this data on the UI instead of a config object so we can't reuse the other one
-        // @MT_TASK: We probably want "all drives" to include the backup path drive too
-        List<string> paths = new(OutConfig.FMArchivePaths.Count + SupportedGameCount);
-
-        foreach (string archivePath in PathsPage.FMArchivePathsListBox.ItemsAsStrings)
-        {
-            paths.Add(archivePath);
-        }
-        foreach (DarkTextBox textBox in GameExeTextBoxes)
-        {
-            paths.Add(textBox.Text);
-        }
-
-        UpdateAutoIOThreadingInfo(_allDrivesType);
-    }
-
-    private void UpdateAutoIOThreadingInfo(AL_DriveType driveType)
-    {
-        if (_state.IsStartup()) return;
-
-        switch (driveType)
-        {
-            case AL_DriveType.SATA_SSD:
-                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD;
-
-                AdvancedPage.AutoThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.AutoThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
-
-                AdvancedPage.AutoThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.AutoThreadsValueLabel.Text = CoreCount.ToStrCur();
-                break;
-            case AL_DriveType.NVMe_SSD:
-                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD;
-
-                AdvancedPage.AutoThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.AutoThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
-
-                AdvancedPage.AutoThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.AutoThreadsValueLabel.Text = CoreCount.ToStrCur();
-                break;
-            default:
-                AdvancedPage.AutoModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_HDD;
-
-                AdvancedPage.AutoThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.AutoThreadingModeValueLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
-
-                AdvancedPage.AutoThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.AutoThreadsValueLabel.Text = 1.ToStrCur();
-                break;
-        }
-
-        LayoutThreadingLevelValues(ThreadingLevel.Auto);
-    }
-
-    private void LayoutThreadingLevelValues(ThreadingLevel level)
-    {
-        const int bump = 8;
-
-        var item = ThreadingLevelLabels[(int)level];
-
-        int rightSide = Math.Max(item.ThreadsKeyLabel.Right, item.ThreadingModeKeyLabel.Right);
-
-        item.ThreadsValueLabel.Location = item.ThreadsValueLabel.Location with
-        {
-            X = rightSide + bump,
-        };
-        item.ThreadingModeValueLabel.Location = item.ThreadingModeValueLabel.Location with
-        {
-            X = rightSide + bump,
-        };
     }
 
     #endregion
