@@ -540,6 +540,7 @@ internal static class Core
             startup ||
             archivePathsChanged ||
             gamePathsChanged ||
+            // @MT_TASK: Add backup path check here too
             (Config.IOThreadingLevel != IOThreadingLevel.Auto &&
              outConfig.IOThreadingLevel == IOThreadingLevel.Auto);
 
