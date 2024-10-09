@@ -78,22 +78,29 @@ internal static class DetectDriveTypes
             string dummyFileName = @"\\.\" + letter;
 
             AL_DriveType driveType;
+            SafeFileHandle? safeHandle = null;
             try
             {
-                using SafeFileHandle safeHandle = CreateFileW(
-                    lpFileName: dummyFileName,
-                    /*
-                    IMPORTANT(Drive type detect non-administrator bullet dodge):
-                    Access ***MUST*** be set to 0! If we set any other access at all, then the operation will
-                    require administrator privileges. The ONLY way we can run on non-admin is to set 0 here!
-                    Extremely well played, Microsoft... you really had me for a minute there...
-                    */
-                    dwDesiredAccess: 0,
-                    dwShareMode: FileShare.ReadWrite,
-                    lpSecurityAttributes: IntPtr.Zero,
-                    dwCreationDisposition: FileMode.Open,
-                    dwFlagsAndAttributes: FileAttributes.Normal,
-                    hTemplateFile: IntPtr.Zero);
+                // I can't really test to see if this is even needed in this situation, but let's just use it
+                // for safety. We REALLY don't want some prompt window popping up when we're running this; users
+                // won't know wtf's going on.
+                using (DisableMediaInsertionPrompt.Create())
+                {
+                    safeHandle = CreateFileW(
+                        lpFileName: dummyFileName,
+                        /*
+                        IMPORTANT(Drive type detect non-administrator bullet dodge):
+                        Access ***MUST*** be set to 0! If we set any other access at all, then the operation will
+                        require administrator privileges. The ONLY way we can run on non-admin is to set 0 here!
+                        Extremely well played, Microsoft... you really had me for a minute there...
+                        */
+                        dwDesiredAccess: 0,
+                        dwShareMode: FileShare.ReadWrite,
+                        lpSecurityAttributes: IntPtr.Zero,
+                        dwCreationDisposition: FileMode.Open,
+                        dwFlagsAndAttributes: FileAttributes.Normal,
+                        hTemplateFile: IntPtr.Zero);
+                }
 
                 StorageDeviceWrapper device = new(safeHandle);
 
@@ -124,6 +131,10 @@ internal static class DetectDriveTypes
             catch
             {
                 driveType = AL_DriveType.Other;
+            }
+            finally
+            {
+                safeHandle?.Dispose();
             }
 
             ret.Add(new DriveLetterAndType(letter, driveType));
