@@ -2878,8 +2878,33 @@ internal static partial class FMInstallAndPlay
 
                 if (doBackup)
                 {
-                    // @MT_TASK: Detect duplicate BakFiles in FMData list here
-                    // @MT_TASK: Absolute cheapest solution: Any dupes and we just force threads to 1
+                    /*
+                    Absolute cheapest solution: any dupes and we just force threads to 1.
+                    The only two ways we can have dupes are either if we have outright duplicate archive names,
+                    or we have archive names that are identical except for their extension. Both cases are pretty
+                    unlikely. So even though this is a crappy as hell solution, it's an acceptable band-aid for
+                    an edge case.
+                    @MT_TASK: Test this
+                    */
+                    HashSetI bakPaths = new(fmDataList.Count);
+                    for (int i = 0; i < FMDataIniList.Count; i++)
+                    {
+                        FMData fmData = fmDataList[i];
+                        string bakFile = fmData.BakFile;
+                        if (!bakPaths.Add(bakFile))
+                        {
+                            threadCount = 1;
+#if TIMING_TEST
+                            Trace.WriteLine(
+                                "--- Uninstall: Found duplicate FM archive; using 1 thread." + $"{NL}" +
+                                "--- FM info:" + $"{NL}" +
+                                "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
+                                "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
+                                "    Duplicate bak file was: " + bakFile);
+#endif
+                            break;
+                        }
+                    }
                 }
 
                 try
