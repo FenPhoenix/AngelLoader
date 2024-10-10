@@ -2931,6 +2931,13 @@ internal static partial class FMInstallAndPlay
                                             UninstallResultType.BackupFailed,
                                             LText.AlertMessages.Uninstall_Backup_Error,
                                             ex));
+                                        /*
+                                        @MT_TASK: We leave FMs installed now if we can't back them up, for safety. But:
+                                        That might also annoy users because now they can't uninstall (even though
+                                        we're trying to do right by them by protecting their saves etc).
+                                        We should maybe have a "force uninstall, your data will not be backed up"
+                                        kind of thing?
+                                        */
                                         continue;
                                     }
                                     finally
