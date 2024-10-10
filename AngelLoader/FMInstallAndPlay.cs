@@ -2887,7 +2887,7 @@ internal static partial class FMInstallAndPlay
                     @MT_TASK: Test this
                     */
                     HashSetI bakPaths = new(fmDataList.Count);
-                    for (int i = 0; i < FMDataIniList.Count; i++)
+                    for (int i = 0; i < fmDataList.Count; i++)
                     {
                         FMData fmData = fmDataList[i];
                         string bakFile = fmData.BakFile;
