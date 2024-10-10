@@ -174,7 +174,7 @@ internal static class FMScan
 
                     bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
                     bool atLeastOneSolidArchiveInSet = false;
-                    HashSetI usedArchivePaths = new();
+                    HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
 
                     for (int i = 0; i < fmsToScan.Count; i++)
                     {

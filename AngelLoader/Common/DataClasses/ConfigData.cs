@@ -449,15 +449,6 @@ public sealed class ConfigData
 
     internal IOThreadingMode CustomIOThreadingMode;
 
-    internal List<string> GetInstallRelevantPaths()
-    {
-        List<string> ret = new(FMArchivePaths.Count + SupportedGameCount + 1);
-        ret.AddRange_Small(FMArchivePaths);
-        ret.AddRange_Small(_fmInstallPaths);
-        ret.Add(FMsBackupPath);
-        return ret;
-    }
-
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic

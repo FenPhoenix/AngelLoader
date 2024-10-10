@@ -1517,17 +1517,21 @@ internal static partial class FMInstallAndPlay
     #region Install/Uninstall
 
     [MustUseReturnValue]
-    private static (bool Success, List<string> ArchivePaths)
-    DoPreChecks(FanMission[] fms, List<FMData> fmDataList, bool install)
+    private static bool DoPreChecks(
+        FanMission[] fms,
+        List<FMData> fmDataList,
+        bool install,
+        out List<string> archivePaths,
+        out ThreadingData threadingData)
     {
-        var fail = (false, new List<string>());
-
         bool single = fms.Length == 1;
 
         bool[] gamesChecked = new bool[SupportedGameCount];
 
-        List<string> archivePaths = FMArchives.GetFMArchivePaths();
+        archivePaths = FMArchives.GetFMArchivePaths();
+        threadingData = ThreadingData.Empty;
 
+        HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
         for (int i = 0; i < fms.Length; i++)
         {
             FanMission fm = fms[i];
@@ -1538,16 +1542,20 @@ internal static partial class FMInstallAndPlay
             {
                 fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
                 Core.Dialogs.ShowError(fm.GetId() + $"{NL}" + ErrorText.FMGameU);
-                return fail;
+                return false;
             }
 
             int intGameIndex = (int)gameIndex;
 
-            if (Canceled(install)) return fail;
+            if (Canceled(install)) return false;
 
-            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
+            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archivePath);
+            if (!archivePath.IsEmpty())
+            {
+                usedArchivePaths.Add(archivePath);
+            }
 
-            if (Canceled(install)) return fail;
+            if (Canceled(install)) return false;
 
             string gameExe = Config.GetGameExe(gameIndex);
             string gameName = GetLocalizedGameName(gameIndex);
@@ -1564,7 +1572,7 @@ internal static partial class FMInstallAndPlay
                     Core.Dialogs.ShowError(fm.GetId() + $"{NL}" +
                                            LText.AlertMessages.Install_ArchiveNotFound);
 
-                    return fail;
+                    return false;
                 }
                 else if (fmArchivePathIsEmpty || fmIsMarkedUnavailable)
                 {
@@ -1591,10 +1599,10 @@ internal static partial class FMInstallAndPlay
                                                fm.GetId() + $"{NL}" +
                                                LText.AlertMessages.Install_ExecutableNotFound);
 
-                        return fail;
+                        return false;
                     }
 
-                    if (Canceled(install)) return fail;
+                    if (Canceled(install)) return false;
 
                     if (!Directory.Exists(instBasePath))
                     {
@@ -1604,7 +1612,7 @@ internal static partial class FMInstallAndPlay
                                                fm.GetId() + $"{NL}" +
                                                LText.AlertMessages.Install_FMInstallPathNotFound);
 
-                        return fail;
+                        return false;
                     }
                 }
 
@@ -1621,10 +1629,10 @@ internal static partial class FMInstallAndPlay
                         icon: MBoxIcon.Warning
                     );
 
-                    return fail;
+                    return false;
                 }
 
-                if (Canceled(install)) return fail;
+                if (Canceled(install)) return false;
 
                 if (GameIsRunning(gameExe))
                 {
@@ -1636,18 +1644,49 @@ internal static partial class FMInstallAndPlay
                                 : LText.AlertMessages.Uninstall_GameIsRunning),
                         LText.AlertMessages.Alert);
 
-                    return fail;
+                    return false;
                 }
 
-                if (Canceled(install)) return fail;
+                if (Canceled(install)) return false;
 
                 gamesChecked[intGameIndex] = true;
             }
         }
 
-        return (true, archivePaths);
+        threadingData = GetLowestCommonThreadingData(
+            GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked)
+        );
+
+        return true;
 
         static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
+
+        static List<string> GetInstallUninstallRelevantPaths(
+            HashSetI usedArchivePaths,
+            bool[] fmInstalledDirsRequired)
+        {
+            List<string> ret = new(Config.FMArchivePaths.Count + SupportedGameCount + 1);
+            ret.AddRange(usedArchivePaths);
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                if (fmInstalledDirsRequired[i])
+                {
+                    ret.Add(Config.GetFMInstallPath((GameIndex)i));
+                }
+            }
+            ret.Add(Config.FMsBackupPath);
+
+#if TIMING_TEST
+            Trace.WriteLine("--------- " + nameof(GetInstallUninstallRelevantPaths) + "():");
+            foreach (string item in ret)
+            {
+                Trace.WriteLine(item);
+            }
+            Trace.WriteLine("---------");
+#endif
+
+            return ret;
+        }
     }
 
     #region Install
@@ -1741,9 +1780,16 @@ internal static partial class FMInstallAndPlay
         {
             try
             {
-                (bool success, List<string> archivePaths) = DoPreChecks(fms, fmDataList, install: true);
+                if (!DoPreChecks(
+                        fms,
+                        fmDataList,
+                        install: true,
+                        out List<string> archivePaths,
+                        out ThreadingData threadingData))
+                {
+                    return false;
+                }
 
-                if (!success) return false;
                 if (fmDataList.Count == 0) return false;
 
                 (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
@@ -1770,7 +1816,6 @@ internal static partial class FMInstallAndPlay
                 StartTiming();
 #endif
 
-                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetInstallRelevantPaths());
                 try
                 {
                     DarkLoaderBackupContext ctx = new();
@@ -2663,13 +2708,20 @@ internal static partial class FMInstallAndPlay
         #region Checks
 
         List<string> archivePaths;
+        ThreadingData threadingData;
         try
         {
             Core.View.SetWaitCursor(true);
 
-            (bool success, archivePaths) = DoPreChecks(fms, fmDataList, install: false);
-
-            if (!success) return fail;
+            if (!DoPreChecks(
+                    fms,
+                    fmDataList,
+                    install: false,
+                    out archivePaths,
+                    out threadingData))
+            {
+                return fail;
+            }
         }
         finally
         {
@@ -2807,8 +2859,6 @@ internal static partial class FMInstallAndPlay
                 #endregion
 
                 ConcurrentBag<FMUninstallResult> errors = new();
-
-                ThreadingData threadingData = GetLowestCommonThreadingData(Config.GetInstallRelevantPaths());
 
 #if TIMING_TEST
                 StartTiming();

@@ -425,6 +425,8 @@ public static partial class Misc
         internal readonly int Threads;
         internal readonly IOThreadingMode Mode;
 
+        public static readonly ThreadingData Empty = new(1, default);
+
         public ThreadingData(int threads, IOThreadingMode mode)
         {
             Threads = threads;
