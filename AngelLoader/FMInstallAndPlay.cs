@@ -60,6 +60,7 @@ internal static partial class FMInstallAndPlay
     {
         UninstallSucceeded,
         UninstallFailed,
+        BackupFailed,
     }
 
     private enum ArchiveType
@@ -2913,13 +2914,29 @@ internal static partial class FMInstallAndPlay
                                     by this point.
                                     */
 
-                                    BackupFM(
-                                        ctx,
-                                        fmData,
-                                        archivePaths,
-                                        fileBufferPool);
-
-                                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                                    // @MT_TASK: Test all the error cases
+                                    try
+                                    {
+                                        BackupFM(
+                                            ctx,
+                                            fmData,
+                                            archivePaths,
+                                            fileBufferPool);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        fmData.FM.LogInfo(ErrorText.ExTry + "back up FM", ex);
+                                        errors.Add(new FMUninstallResult(
+                                            fmData,
+                                            UninstallResultType.BackupFailed,
+                                            LText.AlertMessages.Uninstall_Backup_Error,
+                                            ex));
+                                        continue;
+                                    }
+                                    finally
+                                    {
+                                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                                    }
                                 }
 
                                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
@@ -2960,14 +2977,34 @@ internal static partial class FMInstallAndPlay
                         GetResultErrorsLogText(errorResults) +
                         "--- End Uninstall errors ---");
 
+                    string msg = "";
+                    if (errorResults.Any(static x => x.ResultType == UninstallResultType.UninstallFailed))
+                    {
+                        msg += LText.AlertMessages.Uninstall_OneOrMoreFMsFailedToUninstall;
+                    }
+                    if (errorResults.Any(static x => x.ResultType == UninstallResultType.BackupFailed))
+                    {
+                        if (!msg.IsEmpty()) msg += $"{NL}{NL}";
+                        msg += LText.AlertMessages.Uninstall_OneOrMoreFMsCouldNotBeBackedUp;
+                    }
+
                     Core.Dialogs.ShowError(
-                        LText.AlertMessages.Uninstall_OneOrMoreFMsFailedToUninstall,
+                        msg,
                         LText.AlertMessages.Alert,
                         icon: MBoxIcon.Warning);
                 }
 
                 return (true, atLeastOneFMMarkedUnavailable);
             });
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.Ex + " during uninstall.", ex);
+            Core.Dialogs.ShowError(
+                LText.AlertMessages.Uninstall_Error,
+                LText.AlertMessages.Alert,
+                icon: MBoxIcon.Warning);
+            return (false, false);
         }
         finally
         {

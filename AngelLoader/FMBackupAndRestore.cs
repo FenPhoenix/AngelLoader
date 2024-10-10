@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using AL_Common;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -121,8 +122,6 @@ internal static partial class FMInstallAndPlay
     {
         FanMission fm = fmData.FM;
 
-        using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
-
         bool backupSavesAndScreensOnly = fmData.ArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
@@ -147,6 +146,8 @@ internal static partial class FMInstallAndPlay
         string bakFile = Path.Combine(Config.FMsBackupPath,
             (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
             Paths.FMBackupSuffix);
+
+        using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
 
         if (backupSavesAndScreensOnly)
         {
@@ -251,6 +252,7 @@ internal static partial class FMInstallAndPlay
         catch (Exception ex)
         {
             fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
+            throw;
         }
 
         return;
@@ -270,11 +272,29 @@ internal static partial class FMInstallAndPlay
         */
         static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
         {
-            BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
-            if (dlBackup.Found)
+            try
             {
-                Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
-                File.Move(dlBackup.Name, Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
+                BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
+                if (dlBackup.Found)
+                {
+                    Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
+                    string originalDest = Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast());
+                    string finalDest = originalDest;
+                    int i = 1;
+                    while (File.Exists(finalDest) && i < int.MaxValue)
+                    {
+                        finalDest = originalDest.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalDest);
+                        i++;
+                    }
+                    File.Move(dlBackup.Name, finalDest);
+                }
+            }
+            catch (Exception ex)
+            {
+                fm.LogInfo(
+                    ErrorText.Ex + "trying to move DarkLoader backup to " + ctx.DarkLoaderOriginalBackupPath,
+                    ex);
+                throw;
             }
         }
 
