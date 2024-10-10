@@ -2879,6 +2879,7 @@ internal static partial class FMInstallAndPlay
                 if (doBackup)
                 {
                     // @MT_TASK: Detect duplicate BakFiles in FMData list here
+                    // @MT_TASK: Absolute cheapest solution: Any dupes and we just force threads to 1
                 }
 
                 try
