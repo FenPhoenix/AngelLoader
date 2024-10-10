@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AL_Common;
 using AL_Common.DeviceIoControlLib.Objects.Storage;
 using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
 using Microsoft.Win32.SafeHandles;
-using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
@@ -25,7 +25,7 @@ internal static class DetectDriveTypes
     We should keep a list of drive types alongside all of our paths in the config object, so that different
     operations can decide which paths they care about.
     */
-    internal static List<DriveLetterAndType> GetAllDrivesType(List<string> paths)
+    internal static List<AL_DriveType> GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -33,7 +33,7 @@ internal static class DetectDriveTypes
 
         // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
 
-        List<string> letters = new(paths.Count);
+        List<string> roots = new(paths.Count);
 
         for (int i = 0; i < paths.Count; i++)
         {
@@ -41,11 +41,10 @@ internal static class DetectDriveTypes
 
             try
             {
-                string? letter = Path.GetPathRoot(paths[i])?.TrimEnd(Common.CA_BS_FS);
-
-                if (!letter.IsEmpty() && letter.Length is 2 && letter[0].IsAsciiAlpha() && letter[1] == ':')
+                string? root = Path.GetPathRoot(paths[i])?.TrimEnd(Common.CA_BS_FS);
+                if (!root.IsEmpty())
                 {
-                    letters.Add(letter);
+                    roots.Add(root);
                 }
             }
             catch
@@ -54,11 +53,11 @@ internal static class DetectDriveTypes
             }
         }
 
-        List<DriveLetterAndType> ret = new(letters.Count);
+        List<AL_DriveType> ret = new(roots.Count);
 
-        letters = letters.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        roots = roots.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
-        if (letters.Count == 0)
+        if (roots.Count == 0)
         {
 #if TIMING_TEST
             sw.Stop();
@@ -73,71 +72,74 @@ internal static class DetectDriveTypes
         Now that's more like it.
         */
 
-        foreach (string letter in letters)
+        foreach (string root in roots)
         {
-            string dummyFileName = @"\\.\" + letter;
-
             AL_DriveType driveType;
-            SafeFileHandle? safeHandle = null;
-            try
-            {
-                // I can't really test to see if this is even needed in this situation, but let's just use it
-                // for safety. We REALLY don't want some prompt window popping up when we're running this; users
-                // won't know wtf's going on.
-                using (DisableMediaInsertionPrompt.Create())
-                {
-                    safeHandle = CreateFileW(
-                        lpFileName: dummyFileName,
-                        /*
-                        IMPORTANT(Drive type detect non-administrator bullet dodge):
-                        Access ***MUST*** be set to 0! If we set any other access at all, then the operation will
-                        require administrator privileges. The ONLY way we can run on non-admin is to set 0 here!
-                        Extremely well played, Microsoft... you really had me for a minute there...
-                        */
-                        dwDesiredAccess: 0,
-                        dwShareMode: FileShare.ReadWrite,
-                        lpSecurityAttributes: IntPtr.Zero,
-                        dwCreationDisposition: FileMode.Open,
-                        dwFlagsAndAttributes: FileAttributes.Normal,
-                        hTemplateFile: IntPtr.Zero);
-                }
 
-                StorageDeviceWrapper device = new(safeHandle);
-
-                DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
-                if (seekPenaltyDescriptor.IncursSeekPenalty)
-                {
-                    driveType = AL_DriveType.Other;
-                }
-                else
-                {
-                    STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
-
-                    driveType = deviceProperty.BusType switch
-                    {
-                        STORAGE_BUS_TYPE.BusTypeNvme or STORAGE_BUS_TYPE.BusTypeSCM => AL_DriveType.NVMe_SSD,
-                        STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
-                        /*
-                        @MT_TASK(Bus types):
-                        We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for exotic
-                        bus types. We could also decide to fall back to "NVMe SSD" level after rejecting ones that
-                        look iffy like SAS, SCSI, etc. SCM is almost certainly going to benefit from "NVMe SSD"
-                        level.
-                        */
-                        _ => AL_DriveType.SATA_SSD,
-                    };
-                }
-            }
-            catch
+            // We've got a network drive or something else, and we don't know what it is.
+            if (!RootIsLetter(root))
             {
                 driveType = AL_DriveType.Other;
             }
-            finally
+            else
             {
-                safeHandle?.Dispose();
+                SafeFileHandle? safeHandle = null;
+                try
+                {
+                    // I can't really test to see if this is even needed in this situation, but let's just use it
+                    // for safety. We REALLY don't want some prompt window popping up when we're running this;
+                    // users won't know wtf's going on.
+                    using (DisableMediaInsertionPrompt.Create())
+                    {
+                        string dummyFileName = @"\\.\" + root;
+                        safeHandle = CreateFileW(
+                            lpFileName: dummyFileName,
+                            /*
+                            IMPORTANT(Drive type detect non-administrator bullet dodge):
+                            Access ***MUST*** be set to 0! If we set any other access at all, then the operation
+                            will require administrator privileges. The ONLY way we can run on non-admin is to set
+                            0 here!
+                            */
+                            dwDesiredAccess: 0,
+                            dwShareMode: FileShare.ReadWrite,
+                            lpSecurityAttributes: IntPtr.Zero,
+                            dwCreationDisposition: FileMode.Open,
+                            dwFlagsAndAttributes: FileAttributes.Normal,
+                            hTemplateFile: IntPtr.Zero);
+                    }
+
+                    StorageDeviceWrapper device = new(safeHandle);
+
+                    DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
+                    if (seekPenaltyDescriptor.IncursSeekPenalty)
+                    {
+                        driveType = AL_DriveType.Other;
+                    }
+                    else
+                    {
+                        STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
+
+                        driveType = deviceProperty.BusType switch
+                        {
+                            STORAGE_BUS_TYPE.BusTypeNvme or STORAGE_BUS_TYPE.BusTypeSCM => AL_DriveType.NVMe_SSD,
+                            STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
+                            // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
+                            // exotic bus types.
+                            _ => AL_DriveType.SATA_SSD,
+                        };
+                    }
+                }
+                catch
+                {
+                    driveType = AL_DriveType.Other;
+                }
+                finally
+                {
+                    safeHandle?.Dispose();
+                }
             }
 
-            ret.Add(new DriveLetterAndType(letter, driveType));
+            ret.Add(driveType);
         }
 
 #if TIMING_TEST
@@ -146,6 +148,12 @@ internal static class DetectDriveTypes
 #endif
 
         return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool RootIsLetter(string root)
+    {
+        return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
     }
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]

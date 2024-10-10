@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -27,13 +26,13 @@ public static partial class Utils
         }
         else
         {
-            List<DriveLetterAndType> types = DetectDriveTypes.GetAllDrivesType(paths);
+            List<AL_DriveType> types = DetectDriveTypes.GetAllDrivesType(paths);
 
-            if (types.Any(static x => x.DriveType == AL_DriveType.Other))
+            if (types.Any(static x => x == AL_DriveType.Other))
             {
                 threadingData = new ThreadingData(1, IOThreadingMode.Normal);
             }
-            else if (types.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
+            else if (types.All(static x => x == AL_DriveType.NVMe_SSD))
             {
                 threadingData = new ThreadingData(CoreCount, IOThreadingMode.Aggressive);
             }
@@ -44,9 +43,7 @@ public static partial class Utils
         }
 
 #if TESTING
-        System.Diagnostics.Trace.WriteLine(nameof(GetLowestCommonThreadingData) + ": " +
-                                           threadingData.Threads.ToStrInv() + ", " +
-                                           threadingData.Mode);
+        System.Diagnostics.Trace.WriteLine(nameof(GetLowestCommonThreadingData) + ": " + threadingData);
 #endif
 
         return threadingData;

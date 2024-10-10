@@ -408,18 +408,6 @@ public static partial class Misc
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
-    internal sealed class DriveLetterAndType
-    {
-        internal readonly string Letter;
-        internal readonly AL_DriveType DriveType;
-
-        public DriveLetterAndType(string letter, AL_DriveType driveType)
-        {
-            Letter = letter;
-            DriveType = driveType;
-        }
-    }
-
     internal sealed class ThreadingData
     {
         internal readonly int Threads;
@@ -432,5 +420,8 @@ public static partial class Misc
             Threads = threads.ClampToMin(1);
             Mode = mode;
         }
+
+        public override string ToString() =>
+            "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Mode) + ": " + Mode + " }";
     }
 }
