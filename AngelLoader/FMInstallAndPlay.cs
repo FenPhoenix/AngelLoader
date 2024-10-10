@@ -1705,6 +1705,11 @@ internal static partial class FMInstallAndPlay
         internal bool Uninstall_MarkFMAsUnavailable;
         internal bool Uninstall_SkipUninstallingThisFM;
 
+        private string? _bakFile;
+        internal string BakFile => _bakFile ??= Path.Combine(Config.FMsBackupPath,
+            (!FM.Archive.IsEmpty() ? FM.Archive.RemoveExtension() : FM.InstalledDir) +
+            Paths.FMBackupSuffix);
+
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
             FM = fm;
@@ -2869,6 +2874,11 @@ internal static partial class FMInstallAndPlay
                 if (!TryGetParallelForData(threadCount, fmDataList, _uninstallCts.Token, out var pd))
                 {
                     return (false, atLeastOneFMMarkedUnavailable);
+                }
+
+                if (doBackup)
+                {
+                    // @MT_TASK: Detect duplicate BakFiles in FMData list here
                 }
 
                 try

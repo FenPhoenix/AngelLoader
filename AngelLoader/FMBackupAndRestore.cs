@@ -144,13 +144,8 @@ internal static partial class FMInstallAndPlay
         /*
         @MT_TASK(BackupFM): Conflict possibility with backup archive name
         If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
-        @MT_TASK(BackupFM) Conflict #1 proposed solution:
-        Run the code from the top of the method to here in a loop and build a list of bakFiles. Then see if there
-        any duplicates, and act on that in whatever way we decide to.
         */
-        string bakFile = Path.Combine(Config.FMsBackupPath,
-            (!fm.Archive.IsEmpty() ? fm.Archive.RemoveExtension() : fm.InstalledDir) +
-            Paths.FMBackupSuffix);
+        string bakFile = fmData.BakFile;
 
         using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
 
