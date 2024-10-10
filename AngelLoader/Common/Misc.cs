@@ -429,7 +429,7 @@ public static partial class Misc
 
         public ThreadingData(int threads, IOThreadingMode mode)
         {
-            Threads = threads;
+            Threads = threads.ClampToMin(1);
             Mode = mode;
         }
     }
