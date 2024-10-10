@@ -17,14 +17,6 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    /*
-    @MT_TASK: Different paths are "relevant" depending on what operation we're doing. We need to account for this.
-    For example, we want to consider the backup path for install/uninstall, but it should be ignored for scans -
-    otherwise if the backup path is on an HDD, the scan will then fall back to single-threaded even though it
-    doesn't even touch the backup path.
-    We should keep a list of drive types alongside all of our paths in the config object, so that different
-    operations can decide which paths they care about.
-    */
     internal static List<AL_DriveType> GetAllDrivesType(List<string> paths)
     {
 #if TIMING_TEST

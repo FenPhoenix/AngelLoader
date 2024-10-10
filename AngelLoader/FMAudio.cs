@@ -165,10 +165,11 @@ internal static class FMAudio
         #endregion
     }
 
-    // @MT_TASK(Audio convert/threading):
-    // We pass install-relevant here, but we really want audio-convert-relevant
-    // But getting the other would require another drive detect call the way we have it set up currently.
-    // Let's address this at some point.
+    /*
+    @MT_TASK(Audio convert/threading):
+    We pass install-relevant here, but we really want audio-convert-relevant.
+    But we would need per-FM relevant paths, so we'd need to store a drive type value in the FMData class I guess.
+    */
     internal static ConvertAudioError ConvertAsPartOfInstall(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
