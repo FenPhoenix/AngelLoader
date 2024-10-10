@@ -38,7 +38,8 @@ ignoring empty dirs for now.
 
 internal static partial class FMInstallAndPlay
 {
-    #region Private fields
+    #region Fields
+
     // fmsel source code says:
     // "not necessary, it's only an internal temp file for thief (it gets created each time a savegame is loaded
     // or a mission is started)"
@@ -75,7 +76,7 @@ internal static partial class FMInstallAndPlay
 
     #endregion
 
-    #region Private classes
+    #region Classes
 
     private sealed class BackupFile
     {
@@ -111,8 +112,6 @@ internal static partial class FMInstallAndPlay
     }
 
     #endregion
-
-    #region Public methods
 
     private static void BackupFM(
         DarkLoaderBackupContext ctx,
@@ -254,6 +253,304 @@ internal static partial class FMInstallAndPlay
         {
             fm.LogInfo(ErrorText.Ex + "in zip archive create and/or write", ex);
         }
+
+        return;
+
+        #region Local functions
+
+        /*
+        Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
+        -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
+        -User uninstalls FM and chooses "don't back up"
+        -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
+        don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
+        which is not at all what the user expects given we tell them that existing backups haven't been changed.
+
+        @MT_TASK(MoveDarkLoaderBackup): Possible conflict here - can we be trying to move the same DL bak file for multiple FMs?
+        Don't know for sure, we need to check if it's possible
+        */
+        static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
+        {
+            BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
+            if (dlBackup.Found)
+            {
+                Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
+                File.Move(dlBackup.Name, Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
+            }
+        }
+
+        static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName, byte[] buffer)
+        {
+            // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
+            ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
+            entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
+            using var fs = File_OpenReadFast(fileNameOnDisk);
+            using var eo = entry.Open();
+            StreamCopyNoAlloc(fs, eo, buffer);
+        }
+
+        static bool IsSaveOrScreenshot(string path, Game game) =>
+            path.PathStartsWithI(_screensDirS) ||
+            (game == Game.Thief3 &&
+             path.PathStartsWithI(_t3SavesDirS)) ||
+            (game == Game.SS2 &&
+             (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
+            (game != Game.Thief3 &&
+             (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
+
+        static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
+        GetFMDiff(
+            FanMission fm,
+            HashSetPathI installedFMFiles,
+            string fmInstalledPath,
+            string fmArchivePath,
+            byte[] fileStreamBuffer,
+            bool useOnlySize = false)
+        {
+            var changedList = new HashSetPathI();
+            var addedList = new HashSetPathI();
+            var fullList = new HashSetPathI();
+
+            if (fmArchivePath.ExtIsZip())
+            {
+                using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+
+                var entries = archive.Entries;
+
+                int entriesCount = entries.Count;
+
+                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    ZipArchiveEntry entry = entries[i];
+                    string efn = entry.FullName.ToBackSlashes();
+
+                    entriesFullNamesHash.Add(efn);
+
+                    if (IsIgnoredFile(efn) ||
+                        efn.EndsWithDirSep() ||
+                        IsSaveOrScreenshot(efn, fm.Game))
+                    {
+                        continue;
+                    }
+
+                    fullList.Add(efn);
+
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                    if (installedFMFiles.Contains(fileInInstalledDir))
+                    {
+                        try
+                        {
+                            var fi = new FileInfo(fileInInstalledDir);
+
+                            if (useOnlySize)
+                            {
+                                if (fi.Length != entry.Length)
+                                {
+                                    changedList.Add(efn);
+                                }
+                                continue;
+                            }
+
+                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                            DateTime eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
+                            // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
+                            if ((fiDT == eDT ||
+                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                fi.Length == entry.Length)
+                            {
+                                continue;
+                            }
+
+                            changedList.Add(efn);
+                        }
+                        catch (Exception ex)
+                        {
+                            fm.LogInfo(ErrorText.ExInLWT + "(zip)", ex);
+                        }
+                    }
+                }
+
+                foreach (string f in installedFMFiles)
+                {
+                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+
+                    if (IsIgnoredFile(fn) ||
+                        IsSaveOrScreenshot(fn, fm.Game))
+                    {
+                        continue;
+                    }
+
+                    if (!entriesFullNamesHash.Contains(fn))
+                    {
+                        addedList.Add(fn);
+                    }
+                }
+            }
+            else if (fmArchivePath.ExtIsRar())
+            {
+                using var fs = File_OpenReadFast(fmArchivePath);
+                using var archive = RarArchive.Open(fmArchivePath);
+
+                ICollection<RarArchiveEntry> entries = archive.Entries;
+                int entriesCount = entries.Count;
+
+                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+
+                foreach (RarArchiveEntry entry in entries)
+                {
+                    string efn = entry.Key.ToBackSlashes();
+
+                    entriesFullNamesHash.Add(efn);
+
+                    if (IsIgnoredFile(efn) ||
+                        // IsDirectory has been unreliable in the past, so check manually here too
+                        entry.IsDirectory ||
+                        efn.EndsWithDirSep() ||
+                        IsSaveOrScreenshot(efn, fm.Game))
+                    {
+                        continue;
+                    }
+
+                    fullList.Add(efn);
+
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                    if (installedFMFiles.Contains(fileInInstalledDir))
+                    {
+                        try
+                        {
+                            var fi = new FileInfo(fileInInstalledDir);
+
+                            if (useOnlySize)
+                            {
+                                if (fi.Length != entry.Size)
+                                {
+                                    changedList.Add(efn);
+                                }
+                                continue;
+                            }
+                            if (entry.LastModifiedTime != null)
+                            {
+                                DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
+                                DateTime eDT = ((DateTime)entry.LastModifiedTime).ToUniversalTime();
+                                // I think RAR can sometimes use the DOS datetime, so to be safe let's do the 2 second tolerance
+                                if ((fiDT == eDT ||
+                                     (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
+                                     (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
+                                    fi.Length == entry.Size)
+                                {
+                                    continue;
+                                }
+                                changedList.Add(efn);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
+                        }
+                    }
+                }
+
+                foreach (string f in installedFMFiles)
+                {
+                    string fnTemp = Path.GetFileName(f);
+                    if (IsIgnoredFile(fnTemp))
+                    {
+                        continue;
+                    }
+
+                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+
+                    if (!entriesFullNamesHash.Contains(fn))
+                    {
+                        addedList.Add(fn);
+                    }
+                }
+            }
+            else
+            {
+                using var fs = File_OpenReadFast(fmArchivePath);
+                var archive = new SevenZipArchive(fs);
+
+                ListFast<SevenZipArchiveEntry> entries = archive.Entries;
+                int entriesCount = entries.Count;
+
+                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    SevenZipArchiveEntry entry = entries[i];
+
+                    if (entry.IsAnti) continue;
+
+                    string efn = entry.FileName.ToBackSlashes();
+
+                    entriesFullNamesHash.Add(efn);
+
+                    if (IsIgnoredFile(efn) ||
+                        // IsDirectory has been unreliable in the past, so check manually here too
+                        entry.IsDirectory ||
+                        efn.EndsWithDirSep() ||
+                        IsSaveOrScreenshot(efn, fm.Game))
+                    {
+                        continue;
+                    }
+
+                    fullList.Add(efn);
+
+                    string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
+                    if (installedFMFiles.Contains(fileInInstalledDir))
+                    {
+                        try
+                        {
+                            var fi = new FileInfo(fileInInstalledDir);
+
+                            if (useOnlySize)
+                            {
+                                if (fi.Length != entry.UncompressedSize)
+                                {
+                                    changedList.Add(efn);
+                                }
+                                continue;
+                            }
+
+                            if ((entry.LastModifiedTime != null &&
+                                fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime()) ||
+                                fi.Length != entry.UncompressedSize)
+                            {
+                                changedList.Add(efn);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
+                        }
+                    }
+                }
+
+                foreach (string f in installedFMFiles)
+                {
+                    string fnTemp = Path.GetFileName(f);
+                    if (IsIgnoredFile(fnTemp))
+                    {
+                        continue;
+                    }
+
+                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+
+                    if (!entriesFullNamesHash.Contains(fn))
+                    {
+                        addedList.Add(fn);
+                    }
+                }
+            }
+
+            return (changedList, addedList, fullList);
+        }
+
+        #endregion
     }
 
     private static void RestoreFM(
@@ -456,9 +753,7 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    #endregion
-
-    #region Private methods
+    #region Helpers
 
     private static BackupFile GetBackupFile(
     DarkLoaderBackupContext ctx,
@@ -588,294 +883,8 @@ internal static partial class FMInstallAndPlay
         return ret;
     }
 
-    /*
-    Do this after backup, NOT after restore! Otherwise, we could end up with the following scenario:
-    -User installs FM, we restore DarkLoader backup, we move DarkLoader backup to Original folder
-    -User uninstalls FM and chooses "don't back up"
-    -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
-    don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
-    which is not at all what the user expects given we tell them that existing backups haven't been changed.
-
-    @MT_TASK(MoveDarkLoaderBackup): Possible conflict here - can we be trying to move the same DL bak file for multiple FMs?
-    Don't know for sure, we need to check if it's possible
-    */
-    private static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
-    {
-        BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
-        if (dlBackup.Found)
-        {
-            Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
-            File.Move(dlBackup.Name, Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast()));
-        }
-    }
-
-    private static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName, byte[] buffer)
-    {
-        // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
-        ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
-        entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-        using var fs = File_OpenReadFast(fileNameOnDisk);
-        using var eo = entry.Open();
-        StreamCopyNoAlloc(fs, eo, buffer);
-    }
-
-    private static bool IsSaveOrScreenshot(string path, Game game) =>
-        path.PathStartsWithI(_screensDirS) ||
-        (game == Game.Thief3 &&
-         path.PathStartsWithI(_t3SavesDirS)) ||
-        (game == Game.SS2 &&
-         (_ss2SaveDirsInZipRegex.IsMatch(path) || path.PathStartsWithI(_ss2CurrentDirS))) ||
-        (game != Game.Thief3 &&
-         (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
-
-    private static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
-    GetFMDiff(FanMission fm, HashSetPathI installedFMFiles, string fmInstalledPath, string fmArchivePath, byte[] fileStreamBuffer, bool useOnlySize = false)
-    {
-        var changedList = new HashSetPathI();
-        var addedList = new HashSetPathI();
-        var fullList = new HashSetPathI();
-
-        if (fmArchivePath.ExtIsZip())
-        {
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
-
-            var entries = archive.Entries;
-
-            int entriesCount = entries.Count;
-
-            var entriesFullNamesHash = new HashSetPathI(entriesCount);
-
-            for (int i = 0; i < entriesCount; i++)
-            {
-                ZipArchiveEntry entry = entries[i];
-                string efn = entry.FullName.ToBackSlashes();
-
-                entriesFullNamesHash.Add(efn);
-
-                if (IsIgnoredFile(efn) ||
-                    efn.EndsWithDirSep() ||
-                    IsSaveOrScreenshot(efn, fm.Game))
-                {
-                    continue;
-                }
-
-                fullList.Add(efn);
-
-                string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                if (installedFMFiles.Contains(fileInInstalledDir))
-                {
-                    try
-                    {
-                        var fi = new FileInfo(fileInInstalledDir);
-
-                        if (useOnlySize)
-                        {
-                            if (fi.Length != entry.Length)
-                            {
-                                changedList.Add(efn);
-                            }
-                            continue;
-                        }
-
-                        DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
-                        DateTime eDT = entry.LastWriteTime.ToUniversalTime().DateTime;
-                        // Zip format timestamps have a resolution of 2 seconds, so consider anything +/- 2s as the same
-                        if ((fiDT == eDT ||
-                             (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
-                             (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
-                            fi.Length == entry.Length)
-                        {
-                            continue;
-                        }
-
-                        changedList.Add(efn);
-                    }
-                    catch (Exception ex)
-                    {
-                        fm.LogInfo(ErrorText.ExInLWT + "(zip)", ex);
-                    }
-                }
-            }
-
-            foreach (string f in installedFMFiles)
-            {
-                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-
-                if (IsIgnoredFile(fn) ||
-                    IsSaveOrScreenshot(fn, fm.Game))
-                {
-                    continue;
-                }
-
-                if (!entriesFullNamesHash.Contains(fn))
-                {
-                    addedList.Add(fn);
-                }
-            }
-        }
-        else if (fmArchivePath.ExtIsRar())
-        {
-            using var fs = File_OpenReadFast(fmArchivePath);
-            using var archive = RarArchive.Open(fmArchivePath);
-
-            ICollection<RarArchiveEntry> entries = archive.Entries;
-            int entriesCount = entries.Count;
-
-            var entriesFullNamesHash = new HashSetPathI(entriesCount);
-
-            foreach (RarArchiveEntry entry in entries)
-            {
-                string efn = entry.Key.ToBackSlashes();
-
-                entriesFullNamesHash.Add(efn);
-
-                if (IsIgnoredFile(efn) ||
-                    // IsDirectory has been unreliable in the past, so check manually here too
-                    entry.IsDirectory ||
-                    efn.EndsWithDirSep() ||
-                    IsSaveOrScreenshot(efn, fm.Game))
-                {
-                    continue;
-                }
-
-                fullList.Add(efn);
-
-                string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                if (installedFMFiles.Contains(fileInInstalledDir))
-                {
-                    try
-                    {
-                        var fi = new FileInfo(fileInInstalledDir);
-
-                        if (useOnlySize)
-                        {
-                            if (fi.Length != entry.Size)
-                            {
-                                changedList.Add(efn);
-                            }
-                            continue;
-                        }
-                        if (entry.LastModifiedTime != null)
-                        {
-                            DateTime fiDT = fi.LastWriteTime.ToUniversalTime();
-                            DateTime eDT = ((DateTime)entry.LastModifiedTime).ToUniversalTime();
-                            // I think RAR can sometimes use the DOS datetime, so to be safe let's do the 2 second tolerance
-                            if ((fiDT == eDT ||
-                                 (DateTime.Compare(fiDT, eDT) < 0 && (eDT - fiDT).TotalSeconds < 3) ||
-                                 (DateTime.Compare(fiDT, eDT) > 0 && (fiDT - eDT).TotalSeconds < 3)) &&
-                                fi.Length == entry.Size)
-                            {
-                                continue;
-                            }
-                            changedList.Add(efn);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
-                    }
-                }
-            }
-
-            foreach (string f in installedFMFiles)
-            {
-                string fnTemp = Path.GetFileName(f);
-                if (IsIgnoredFile(fnTemp))
-                {
-                    continue;
-                }
-
-                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-
-                if (!entriesFullNamesHash.Contains(fn))
-                {
-                    addedList.Add(fn);
-                }
-            }
-        }
-        else
-        {
-            using var fs = File_OpenReadFast(fmArchivePath);
-            var archive = new SevenZipArchive(fs);
-
-            ListFast<SevenZipArchiveEntry> entries = archive.Entries;
-            int entriesCount = entries.Count;
-
-            var entriesFullNamesHash = new HashSetPathI(entriesCount);
-
-            for (int i = 0; i < entriesCount; i++)
-            {
-                SevenZipArchiveEntry entry = entries[i];
-
-                if (entry.IsAnti) continue;
-
-                string efn = entry.FileName.ToBackSlashes();
-
-                entriesFullNamesHash.Add(efn);
-
-                if (IsIgnoredFile(efn) ||
-                    // IsDirectory has been unreliable in the past, so check manually here too
-                    entry.IsDirectory ||
-                    efn.EndsWithDirSep() ||
-                    IsSaveOrScreenshot(efn, fm.Game))
-                {
-                    continue;
-                }
-
-                fullList.Add(efn);
-
-                string fileInInstalledDir = Path.Combine(fmInstalledPath, efn);
-                if (installedFMFiles.Contains(fileInInstalledDir))
-                {
-                    try
-                    {
-                        var fi = new FileInfo(fileInInstalledDir);
-
-                        if (useOnlySize)
-                        {
-                            if (fi.Length != entry.UncompressedSize)
-                            {
-                                changedList.Add(efn);
-                            }
-                            continue;
-                        }
-
-                        if ((entry.LastModifiedTime != null &&
-                            fi.LastWriteTime.ToUniversalTime() != ((DateTime)entry.LastModifiedTime).ToUniversalTime()) ||
-                            fi.Length != entry.UncompressedSize)
-                        {
-                            changedList.Add(efn);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        fm.LogInfo(ErrorText.ExInLWT + "(7z)", ex);
-                    }
-                }
-            }
-
-            foreach (string f in installedFMFiles)
-            {
-                string fnTemp = Path.GetFileName(f);
-                if (IsIgnoredFile(fnTemp))
-                {
-                    continue;
-                }
-
-                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
-
-                if (!entriesFullNamesHash.Contains(fn))
-                {
-                    addedList.Add(fn);
-                }
-            }
-        }
-
-        return (changedList, addedList, fullList);
-    }
 
     #endregion
 }
