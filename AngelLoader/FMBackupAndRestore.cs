@@ -115,19 +115,19 @@ internal static partial class FMInstallAndPlay
 
     private static void BackupFM(
         DarkLoaderBackupContext ctx,
-        FanMission fm,
-        string fmInstalledPath,
-        string fmArchivePath,
+        FMData fmData,
         List<string> archivePaths,
         FixedLengthByteArrayPool fileBufferPool)
     {
+        FanMission fm = fmData.FM;
+
         using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
 
-        bool backupSavesAndScreensOnly = fmArchivePath.IsEmpty() ||
+        bool backupSavesAndScreensOnly = fmData.ArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
-        if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+        if (!GameIsKnownAndSupported(fm.Game))
         {
             fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
             return;
@@ -135,13 +135,12 @@ internal static partial class FMInstallAndPlay
 
         if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
-        string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
         string savesDir = fm.Game == Game.Thief3 ? _t3SavesDir : _darkSavesDir;
-        string savesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, savesDir);
-        string netSavesPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _darkNetSavesDir);
+        string savesPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, savesDir);
+        string netSavesPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _darkNetSavesDir);
         // Screenshots directory name is the same for T1/T2/T3/SS2
-        string screensPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _screensDir);
-        string ss2CurrentPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir, _ss2CurrentDir);
+        string screensPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _screensDir);
+        string ss2CurrentPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _ss2CurrentDir);
 
         // @MT_TASK(BackupFM): Conflict possibility with backup archive name
         // If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
@@ -170,7 +169,7 @@ internal static partial class FMInstallAndPlay
                 savesAndScreensFiles.AddRange(Directory.GetFiles(ss2CurrentPath, "*", SearchOption.AllDirectories));
 
                 List<string> ss2SaveDirs = FastIO.GetDirsTopOnly(
-                    Path.Combine(thisFMInstallsBasePath, fm.InstalledDir), "save_*");
+                    Path.Combine(fmData.InstBasePath, fm.InstalledDir), "save_*");
 
                 foreach (string dir in ss2SaveDirs)
                 {
@@ -188,7 +187,7 @@ internal static partial class FMInstallAndPlay
 
             foreach (string f in savesAndScreensFiles)
             {
-                string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+                string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
                 AddEntry(archive, f, fn, fileStreamBufferScope.Array);
             }
 
@@ -196,10 +195,10 @@ internal static partial class FMInstallAndPlay
             return;
         }
 
-        HashSetPathI installedFMFiles = Directory.GetFiles(fmInstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
+        HashSetPathI installedFMFiles = Directory.GetFiles(fmData.InstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
         (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
-            GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBufferScope.Array);
+            GetFMDiff(fm, installedFMFiles, fmData.InstalledPath, fmData.ArchivePath, fileStreamBufferScope.Array);
 
         // If >90% of files are different, re-run and use only size difference
         // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -207,7 +206,7 @@ internal static partial class FMInstallAndPlay
         if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
         {
             (changedList, addedList, fullList) =
-                GetFMDiff(fm, installedFMFiles, fmInstalledPath, fmArchivePath, fileStreamBufferScope.Array, useOnlySize: true);
+                GetFMDiff(fm, installedFMFiles, fmData.InstalledPath, fmData.ArchivePath, fileStreamBufferScope.Array, useOnlySize: true);
         }
 
         try
@@ -219,7 +218,7 @@ internal static partial class FMInstallAndPlay
             {
                 foreach (string f in installedFMFiles)
                 {
-                    string fn = f.Substring(fmInstalledPath.Length).Trim(CA_BS_FS);
+                    string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
                     if (IsSaveOrScreenshot(fn, fm.Game) ||
                         (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
                          (changedList.Contains(fn) || addedList.Contains(fn))))
@@ -231,7 +230,7 @@ internal static partial class FMInstallAndPlay
                 string fmSelInfString = "";
                 foreach (string f in fullList)
                 {
-                    if (!installedFMFiles.Contains(Path.Combine(fmInstalledPath, f)))
+                    if (!installedFMFiles.Contains(Path.Combine(fmData.InstalledPath, f)))
                     {
                         // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
                         fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";

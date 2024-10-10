@@ -2885,8 +2885,6 @@ internal static partial class FMInstallAndPlay
                             // So we won't have wrong indexes nor show dummy items on the UI or anything.
                             if (fmData.Uninstall_SkipUninstallingThisFM) continue;
 
-                            FanMission fm = fmData.FM;
-
                             bool dirExists = Directory.Exists(fmData.InstalledPath);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
@@ -2917,9 +2915,7 @@ internal static partial class FMInstallAndPlay
 
                                     BackupFM(
                                         ctx,
-                                        fm,
-                                        fmData.InstalledPath,
-                                        fmData.ArchivePath,
+                                        fmData,
                                         archivePaths,
                                         fileBufferPool);
 
@@ -2931,13 +2927,13 @@ internal static partial class FMInstallAndPlay
                                 FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
                                 if (result.ResultType != UninstallResultType.UninstallSucceeded)
                                 {
-                                    fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
+                                    fmData.FM.LogInfo(ErrorText.Un + "delete FM installed directory.");
                                     errors.Add(result);
                                 }
                             }
 
-                            fm.Installed = false;
-                            if (fmData.Uninstall_MarkFMAsUnavailable) fm.MarkedUnavailable = true;
+                            fmData.FM.Installed = false;
+                            if (fmData.Uninstall_MarkFMAsUnavailable) fmData.FM.MarkedUnavailable = true;
 
                             // @MT_TASK: Use multi-item progress box for uninstall (and remove single path)
                             if (!single)
