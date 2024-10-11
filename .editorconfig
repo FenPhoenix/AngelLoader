@@ -12,7 +12,7 @@ dotnet_diagnostic.IDE0037.severity = none
 # we couldn't grep for allocating statements anymore, so it's stupid to want to use range indexers for substrings,
 # yeesh!
 # But we can turn this off and rely on ReSharper which DOES have presence of mind enough to separate out the
-# warnings for slices and substrings).
+# warnings for slices and substrings.
 dotnet_diagnostic.IDE0057.severity = none
 
 dotnet_style_prefer_collection_expression = false:suggestion

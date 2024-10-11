@@ -2719,7 +2719,6 @@ internal static partial class FMInstallAndPlay
         // Do checks first before progress box so it's not just annoyingly there while in confirmation dialogs
         #region Checks
 
-        List<string> archivePaths;
         ThreadingData threadingData;
         try
         {
@@ -2729,7 +2728,7 @@ internal static partial class FMInstallAndPlay
                     fms,
                     fmDataList,
                     install: false,
-                    out archivePaths,
+                    out _,
                     out threadingData))
             {
                 return fail;
