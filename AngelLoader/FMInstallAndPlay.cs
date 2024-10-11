@@ -1660,8 +1660,11 @@ internal static partial class FMInstallAndPlay
                 GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked)
             );
         }
-        catch
+        catch (Exception ex)
         {
+            Log(ex: ex);
+            Core.Dialogs.ShowError("Exception occurred in " + nameof(FMInstallAndPlay) + "." + nameof(DoPreChecks) + "(). See log for details.");
+
             archivePaths = new List<string>();
             threadingData = ThreadingData.Empty;
             return false;
