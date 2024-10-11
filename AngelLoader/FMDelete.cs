@@ -296,10 +296,13 @@ internal static class FMDelete
                 }
                 catch
                 {
-                    // Just in case, if stupid Uninstall() throws because it's underprotected, make sure we hide
-                    // the box...
+                    // Uninstall() shouldn't be throwing now, but just in case...
                     Core.View.HideProgressBox();
-                    throw;
+                    // We don't know if any FMs were marked unavailable so let's be conservative and say that
+                    // some were, and do the more forceful refresh or whatever else. Probably better than under-
+                    // refreshing? Probably?
+                    await FMInstallAndPlay.DoUninstallEndTasks(true);
+                    return;
                 }
                 refreshRequired = true;
             }

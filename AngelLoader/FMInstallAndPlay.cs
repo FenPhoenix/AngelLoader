@@ -1525,138 +1525,147 @@ internal static partial class FMInstallAndPlay
         out List<string> archivePaths,
         out ThreadingData threadingData)
     {
-        bool single = fms.Length == 1;
-
-        bool[] gamesChecked = new bool[SupportedGameCount];
-
-        archivePaths = FMArchives.GetFMArchivePaths();
-        threadingData = ThreadingData.Empty;
-
-        HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
-        for (int i = 0; i < fms.Length; i++)
+        try
         {
-            FanMission fm = fms[i];
+            bool single = fms.Length == 1;
 
-            AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
+            bool[] gamesChecked = new bool[SupportedGameCount];
 
-            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+            archivePaths = FMArchives.GetFMArchivePaths();
+            threadingData = ThreadingData.Empty;
+
+            HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
+            for (int i = 0; i < fms.Length; i++)
             {
-                fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-                Core.Dialogs.ShowError(fm.GetId() + $"{NL}" + ErrorText.FMGameU);
-                return false;
-            }
+                FanMission fm = fms[i];
 
-            int intGameIndex = (int)gameIndex;
+                AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
 
-            if (Canceled(install)) return false;
-
-            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archivePath);
-            if (!archivePath.IsEmpty())
-            {
-                usedArchivePaths.Add(archivePath);
-            }
-
-            if (Canceled(install)) return false;
-
-            string gameExe = Config.GetGameExe(gameIndex);
-            string gameName = GetLocalizedGameName(gameIndex);
-            string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-            if (install)
-            {
-                bool fmArchivePathIsEmpty = fmArchivePath.IsEmpty();
-                bool fmIsMarkedUnavailable = fm.MarkedUnavailable;
-
-                if (fmArchivePathIsEmpty && !fmIsMarkedUnavailable)
+                if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                 {
-                    fm.LogInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
-                    Core.Dialogs.ShowError(fm.GetId() + $"{NL}" +
-                                           LText.AlertMessages.Install_ArchiveNotFound);
-
+                    fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
+                    Core.Dialogs.ShowError(fm.GetId() + $"{NL}" + ErrorText.FMGameU);
                     return false;
                 }
-                else if (fmArchivePathIsEmpty || fmIsMarkedUnavailable)
+
+                int intGameIndex = (int)gameIndex;
+
+                if (Canceled(install)) return false;
+
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archivePath);
+                if (!archivePath.IsEmpty())
                 {
-                    continue;
+                    usedArchivePaths.Add(archivePath);
                 }
-            }
 
-            fmDataList.Add(new FMData
-            (
-                fm,
-                fmArchivePath,
-                instBasePath,
-                gameIndex
-            ));
+                if (Canceled(install)) return false;
 
-            if (!gamesChecked[intGameIndex])
-            {
+                string gameExe = Config.GetGameExe(gameIndex);
+                string gameName = GetLocalizedGameName(gameIndex);
+                string instBasePath = Config.GetFMInstallPath(gameIndex);
+
                 if (install)
                 {
-                    if (!File.Exists(gameExe))
+                    bool fmArchivePathIsEmpty = fmArchivePath.IsEmpty();
+                    bool fmIsMarkedUnavailable = fm.MarkedUnavailable;
+
+                    if (fmArchivePathIsEmpty && !fmIsMarkedUnavailable)
                     {
-                        fm.LogInfo($"Game executable not found.{NL}Game executable: " + gameExe);
-                        Core.Dialogs.ShowError(gameName + $":{NL}" +
-                                               fm.GetId() + $"{NL}" +
-                                               LText.AlertMessages.Install_ExecutableNotFound);
+                        fm.LogInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
+                        Core.Dialogs.ShowError(fm.GetId() + $"{NL}" +
+                                               LText.AlertMessages.Install_ArchiveNotFound);
+
+                        return false;
+                    }
+                    else if (fmArchivePathIsEmpty || fmIsMarkedUnavailable)
+                    {
+                        continue;
+                    }
+                }
+
+                fmDataList.Add(new FMData
+                (
+                    fm,
+                    fmArchivePath,
+                    instBasePath,
+                    gameIndex
+                ));
+
+                if (!gamesChecked[intGameIndex])
+                {
+                    if (install)
+                    {
+                        if (!File.Exists(gameExe))
+                        {
+                            fm.LogInfo($"Game executable not found.{NL}Game executable: " + gameExe);
+                            Core.Dialogs.ShowError(gameName + $":{NL}" +
+                                                   fm.GetId() + $"{NL}" +
+                                                   LText.AlertMessages.Install_ExecutableNotFound);
+
+                            return false;
+                        }
+
+                        if (Canceled(install)) return false;
+
+                        if (!Directory.Exists(instBasePath))
+                        {
+                            fm.LogInfo("FM install path not found.");
+
+                            Core.Dialogs.ShowError(gameName + $":{NL}" +
+                                                   fm.GetId() + $"{NL}" +
+                                                   LText.AlertMessages.Install_FMInstallPathNotFound);
+
+                            return false;
+                        }
+                    }
+
+                    if (!DirectoryHasWritePermission(instBasePath))
+                    {
+                        Log(gameName + $": No write permission for installed FMs directory.{NL}" +
+                            "Installed FMs directory: " + instBasePath);
+
+                        Core.Dialogs.ShowError(
+                            GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
+                            LText.AlertMessages.NoWriteAccessToInstalledFMsDir + $"{NL}{NL}" +
+                            LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
+                            instBasePath,
+                            icon: MBoxIcon.Warning
+                        );
 
                         return false;
                     }
 
                     if (Canceled(install)) return false;
 
-                    if (!Directory.Exists(instBasePath))
+                    if (GameIsRunning(gameExe))
                     {
-                        fm.LogInfo("FM install path not found.");
-
-                        Core.Dialogs.ShowError(gameName + $":{NL}" +
-                                               fm.GetId() + $"{NL}" +
-                                               LText.AlertMessages.Install_FMInstallPathNotFound);
+                        Core.Dialogs.ShowAlert(
+                            !single
+                                ? LText.AlertMessages.OneOrMoreGamesAreRunning
+                                : gameName + $":{NL}" + (install
+                                    ? LText.AlertMessages.Install_GameIsRunning
+                                    : LText.AlertMessages.Uninstall_GameIsRunning),
+                            LText.AlertMessages.Alert);
 
                         return false;
                     }
+
+                    if (Canceled(install)) return false;
+
+                    gamesChecked[intGameIndex] = true;
                 }
-
-                if (!DirectoryHasWritePermission(instBasePath))
-                {
-                    Log(gameName + $": No write permission for installed FMs directory.{NL}" +
-                        "Installed FMs directory: " + instBasePath);
-
-                    Core.Dialogs.ShowError(
-                        GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
-                        LText.AlertMessages.NoWriteAccessToInstalledFMsDir + $"{NL}{NL}" +
-                        LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
-                        instBasePath,
-                        icon: MBoxIcon.Warning
-                    );
-
-                    return false;
-                }
-
-                if (Canceled(install)) return false;
-
-                if (GameIsRunning(gameExe))
-                {
-                    Core.Dialogs.ShowAlert(
-                        !single
-                            ? LText.AlertMessages.OneOrMoreGamesAreRunning
-                            : gameName + $":{NL}" + (install
-                                ? LText.AlertMessages.Install_GameIsRunning
-                                : LText.AlertMessages.Uninstall_GameIsRunning),
-                        LText.AlertMessages.Alert);
-
-                    return false;
-                }
-
-                if (Canceled(install)) return false;
-
-                gamesChecked[intGameIndex] = true;
             }
-        }
 
-        threadingData = GetLowestCommonThreadingData(
-            GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked)
-        );
+            threadingData = GetLowestCommonThreadingData(
+                GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked)
+            );
+        }
+        catch
+        {
+            archivePaths = new List<string>();
+            threadingData = ThreadingData.Empty;
+            return false;
+        }
 
         return true;
 
@@ -3066,7 +3075,7 @@ internal static partial class FMInstallAndPlay
                 LText.AlertMessages.Uninstall_Error,
                 LText.AlertMessages.Alert,
                 icon: MBoxIcon.Warning);
-            return (false, false);
+            return (false, atLeastOneFMMarkedUnavailable);
         }
         finally
         {
