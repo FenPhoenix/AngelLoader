@@ -203,21 +203,7 @@ internal static class FMDelete
 
         var unavailableFMs = new List<FanMission>(fms.Count);
 
-        void MoveUnavailableFMsFromMainListToUnavailableList()
-        {
-            for (int i = 0; i < fms.Count; i++)
-            {
-                FanMission fm = fms[i];
-                if (fm.MarkedUnavailable)
-                {
-                    unavailableFMs.Add(fm);
-                    fms.RemoveAt(i);
-                    i--;
-                }
-            }
-        }
-
-        MoveUnavailableFMsFromMainListToUnavailableList();
+        MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 
         if (fms.Count == 0)
         {
@@ -314,7 +300,7 @@ internal static class FMDelete
 
             // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
             // of them unavailable if they didn't have an archive after being uninstalled.
-            MoveUnavailableFMsFromMainListToUnavailableList();
+            MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 
             if (fms.Count == 0 && !deleteFromDB)
             {
@@ -421,6 +407,22 @@ internal static class FMDelete
                 // Just always do this because trying to determine the right "lighter" thing to do is
                 // COMPLEXITY HELL. This always does what we want, idgaf if it involves a reload from disk.
                 await DeleteFromDBRefresh();
+            }
+        }
+
+        return;
+
+        static void MoveUnavailableFMsFromMainListToUnavailableList(List<FanMission> fms, List<FanMission> unavailableFMs)
+        {
+            for (int i = 0; i < fms.Count; i++)
+            {
+                FanMission fm = fms[i];
+                if (fm.MarkedUnavailable)
+                {
+                    unavailableFMs.Add(fm);
+                    fms.RemoveAt(i);
+                    i--;
+                }
             }
         }
     }
