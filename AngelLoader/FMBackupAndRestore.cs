@@ -802,6 +802,77 @@ internal static partial class FMInstallAndPlay
                 if (ct.IsCancellationRequested) return;
             }
         }
+
+        return;
+
+        #region Local functions
+
+        static BackupFile GetBackupFile(
+            DarkLoaderBackupContext ctx,
+            FMData fmData,
+            List<string> archivePaths)
+        {
+            BackupFile ret = GetDarkLoaderBackupFile(ctx, fmData);
+
+            FanMission fm = fmData.FM;
+
+            if (ret.Name.IsEmpty())
+            {
+                string fmArchiveNoExt = fmData.FMArchiveNoExtension;
+                // This is as much as we can cache unfortunately. Every FM's name will be different each call
+                // so we can't cache the combined config path and FM name with backup extension. But at least
+                // we can cache just the FM name with backup extension, so it's better than nothing.
+                string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
+                string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
+                var bakFiles = new List<FileInfo>();
+
+                void AddBakFilesFrom(string path)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        string fNoExt = i == 0 ? fmArchivePlusBackupExt : fmInstalledDirPlusBackupExt;
+                        string bakFile = Path.Combine(path, fNoExt);
+                        if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
+                    }
+                }
+
+                // Our backup path, separate to avoid creating any more ambiguity
+                AddBakFilesFrom(Config.FMsBackupPath);
+
+                // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
+                ret.Name = bakFiles.Count == 1
+                    ? bakFiles[0].FullName
+                    : bakFiles.Count > 1
+                        ? bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName
+                        : "";
+
+                bakFiles.Clear();
+
+                // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
+                // (for automatic use of FMSel/NDL saves)
+                if (ret.Name.IsEmpty())
+                {
+                    foreach (string path in archivePaths)
+                    {
+                        AddBakFilesFrom(path);
+                    }
+
+                    if (bakFiles.Count == 0)
+                    {
+                        ret.Set(false, "", false);
+                        return ret;
+                    }
+
+                    // Use the newest of all files found in all archive dirs
+                    ret.Name = bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName;
+                }
+            }
+
+            ret.Found = true;
+            return ret;
+        }
+
+        #endregion
     }
 
     #region Helpers
@@ -861,71 +932,6 @@ internal static partial class FMInstallAndPlay
 
             return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
         }
-    }
-
-    private static BackupFile GetBackupFile(
-    DarkLoaderBackupContext ctx,
-    FMData fmData,
-    List<string> archivePaths)
-    {
-        BackupFile ret = GetDarkLoaderBackupFile(ctx, fmData);
-
-        FanMission fm = fmData.FM;
-
-        if (ret.Name.IsEmpty())
-        {
-            string fmArchiveNoExt = fmData.FMArchiveNoExtension;
-            // This is as much as we can cache unfortunately. Every FM's name will be different each call
-            // so we can't cache the combined config path and FM name with backup extension. But at least
-            // we can cache just the FM name with backup extension, so it's better than nothing.
-            string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
-            string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
-            var bakFiles = new List<FileInfo>();
-
-            void AddBakFilesFrom(string path)
-            {
-                for (int i = 0; i < 2; i++)
-                {
-                    string fNoExt = i == 0 ? fmArchivePlusBackupExt : fmInstalledDirPlusBackupExt;
-                    string bakFile = Path.Combine(path, fNoExt);
-                    if (File.Exists(bakFile)) bakFiles.Add(new FileInfo(bakFile));
-                }
-            }
-
-            // Our backup path, separate to avoid creating any more ambiguity
-            AddBakFilesFrom(Config.FMsBackupPath);
-
-            // If ArchiveName.bak and InstalledName.bak files both exist, use the newest of the two
-            ret.Name = bakFiles.Count == 1
-                ? bakFiles[0].FullName
-                : bakFiles.Count > 1
-                    ? bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName
-                    : "";
-
-            bakFiles.Clear();
-
-            // Use file from our bak dir if it exists, otherwise use the newest file from all archive dirs
-            // (for automatic use of FMSel/NDL saves)
-            if (ret.Name.IsEmpty())
-            {
-                foreach (string path in archivePaths)
-                {
-                    AddBakFilesFrom(path);
-                }
-
-                if (bakFiles.Count == 0)
-                {
-                    ret.Set(false, "", false);
-                    return ret;
-                }
-
-                // Use the newest of all files found in all archive dirs
-                ret.Name = bakFiles.OrderByDescending(static x => x.LastWriteTime).ToList()[0].FullName;
-            }
-        }
-
-        ret.Found = true;
-        return ret;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
