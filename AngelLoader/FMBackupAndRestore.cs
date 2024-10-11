@@ -799,6 +799,12 @@ internal static partial class FMInstallAndPlay
 
     #region Helpers
 
+    /*
+    @MT_TASK(GetBackupFile() thread safety):
+    For Restore, we're only ever reading the archive we get back from this, but the potential problem is that if
+    it's the DarkLoader file we get back, that one could get moved out from under us if we're not absolutely sure
+    it's unique (ie. no other thread will move it).
+    */
     private static BackupFile GetBackupFile(
     DarkLoaderBackupContext ctx,
     FanMission fm,
@@ -809,12 +815,14 @@ internal static partial class FMInstallAndPlay
 
         // TODO: Do I need both or is the use of the non-trimmed version a mistake?
         string fmArchiveNoExt = fm.Archive.RemoveExtension();
-        string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
 
         #region DarkLoader
 
         if (Directory.Exists(ctx.DarkLoaderBackupPath))
         {
+            // TODO: Do I need both or is the use of the non-trimmed version a mistake?
+            string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
+
             // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
             // Rather than just using File.Exists()?!
             FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
