@@ -185,23 +185,32 @@ internal static partial class FMInstallAndPlay
 
             if (savesAndScreensFiles.Count == 0) return;
 
-            using var archive = new ZipArchive(new FileStream(bakFile, FileMode.Create, FileAccess.Write),
-                ZipArchiveMode.Create, leaveOpen: false);
-
-            foreach (string f in savesAndScreensFiles)
+            using (var archive = new ZipArchive(
+                       new FileStream(
+                           bakFile,
+                           FileMode.Create,
+                           FileAccess.Write),
+                       ZipArchiveMode.Create,
+                       leaveOpen: false))
             {
-                string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
-                AddEntry(archive, f, fn, fileStreamBufferScope.Array);
+                foreach (string f in savesAndScreensFiles)
+                {
+                    string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
+                    AddEntry(archive, f, fn, fileStreamBufferScope.Array);
+                }
             }
 
-            MoveDarkLoaderBackup(ctx, fm, archivePaths);
+            MoveDarkLoaderBackup(ctx, fmData);
             return;
         }
 
         HashSetPathI installedFMFiles = Directory.GetFiles(fmData.InstalledPath, "*", SearchOption.AllDirectories).ToHashSetPathI();
 
         (HashSetPathI changedList, HashSetPathI addedList, HashSetPathI fullList) =
-            GetFMDiff(fm, installedFMFiles, fmData.InstalledPath, fmData.ArchivePath, fileStreamBufferScope.Array);
+            GetDiffBetweenFMInstalledDirAndFMArchive(
+                installedFMFiles,
+                fmData,
+                fileStreamBufferScope.Array);
 
         // If >90% of files are different, re-run and use only size difference
         // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -209,13 +218,20 @@ internal static partial class FMInstallAndPlay
         if (changedList.Count > 0 && ((double)changedList.Count / fullList.Count) > 0.9)
         {
             (changedList, addedList, fullList) =
-                GetFMDiff(fm, installedFMFiles, fmData.InstalledPath, fmData.ArchivePath, fileStreamBufferScope.Array, useOnlySize: true);
+                GetDiffBetweenFMInstalledDirAndFMArchive(
+                    installedFMFiles,
+                    fmData,
+                    fileStreamBufferScope.Array,
+                    useOnlySize: true);
         }
 
         try
         {
             using (var archive = new ZipArchive(
-                       new FileStream(bakFile, FileMode.Create, FileAccess.Write),
+                       new FileStream(
+                           bakFile,
+                           FileMode.Create,
+                           FileAccess.Write),
                        ZipArchiveMode.Create,
                        leaveOpen: false))
             {
@@ -249,7 +265,7 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            MoveDarkLoaderBackup(ctx, fm, archivePaths);
+            MoveDarkLoaderBackup(ctx, fmData);
         }
         catch (Exception ex)
         {
@@ -272,7 +288,7 @@ internal static partial class FMInstallAndPlay
         @MT_TASK(MoveDarkLoaderBackup): Possible conflict here - can we be trying to move the same DL bak file for multiple FMs?
         Don't know for sure, we need to check if it's possible
         */
-        static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FanMission fm, List<string> archivePaths)
+        static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FMData fmData)
         {
             try
             {
@@ -298,7 +314,7 @@ internal static partial class FMInstallAndPlay
                 */
                 lock (_darkLoaderMoveLock)
                 {
-                    BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
+                    BackupFile dlBackup = GetDarkLoaderBackupFile(ctx, fmData);
                     if (dlBackup.Found)
                     {
                         Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
@@ -316,7 +332,7 @@ internal static partial class FMInstallAndPlay
             }
             catch (Exception ex)
             {
-                fm.LogInfo(
+                fmData.FM.LogInfo(
                     ErrorText.Ex + "trying to move DarkLoader backup to " + ctx.DarkLoaderOriginalBackupPath,
                     ex);
                 throw;
@@ -343,17 +359,19 @@ internal static partial class FMInstallAndPlay
              (path.PathStartsWithI(_darkSavesDirS) || path.PathStartsWithI(_darkNetSavesDirS)));
 
         static (HashSetPathI ChangedList, HashSetPathI, HashSetPathI FullList)
-        GetFMDiff(
-            FanMission fm,
+        GetDiffBetweenFMInstalledDirAndFMArchive(
             HashSetPathI installedFMFiles,
-            string fmInstalledPath,
-            string fmArchivePath,
+            FMData fmData,
             byte[] fileStreamBuffer,
             bool useOnlySize = false)
         {
             var changedList = new HashSetPathI();
             var addedList = new HashSetPathI();
             var fullList = new HashSetPathI();
+
+            FanMission fm = fmData.FM;
+            string fmArchivePath = fmData.ArchivePath;
+            string fmInstalledPath = fmData.InstalledPath;
 
             if (fmArchivePath.ExtIsZip())
             {
@@ -599,11 +617,13 @@ internal static partial class FMInstallAndPlay
 
     private static void RestoreFM(
         DarkLoaderBackupContext ctx,
-        FanMission fm,
+        FMData fmData,
         List<string> archivePaths,
         IOBufferPools ioBufferPools,
         CancellationToken ct)
     {
+        FanMission fm = fmData.FM;
+
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
             fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
@@ -614,7 +634,7 @@ internal static partial class FMInstallAndPlay
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
         bool fmIsT3 = fm.Game == Game.Thief3;
 
-        BackupFile backupFile = GetBackupFile(ctx, fm, archivePaths);
+        BackupFile backupFile = GetBackupFile(ctx, fmData, archivePaths);
         if (!backupFile.Found) return;
 
         if (ct.IsCancellationRequested) return;
@@ -799,29 +819,14 @@ internal static partial class FMInstallAndPlay
 
     #region Helpers
 
-    /*
-    @MT_TASK(GetBackupFile() thread safety):
-    For Restore, we're only ever reading (not writing) the archive we get back from this, but the potential
-    problem is that if it's the DarkLoader file we get back, that one could get moved out from under us if we're
-    not absolutely sure it's unique (ie. no other thread will move it).
-    */
-    private static BackupFile GetBackupFile(
-    DarkLoaderBackupContext ctx,
-    FanMission fm,
-    List<string> archivePaths,
-    bool findDarkLoaderOnly = false)
+    // @MT_TASK: Test this newly split DL/non-DL GetBackupFile() thing, just to make sure it still works correctly
+    private static BackupFile GetDarkLoaderBackupFile(DarkLoaderBackupContext ctx, FMData fmData)
     {
         var ret = new BackupFile();
 
-        // TODO: Do I need both or is the use of the non-trimmed version a mistake?
-        string fmArchiveNoExt = fm.Archive.RemoveExtension();
-
-        #region DarkLoader
-
         if (Directory.Exists(ctx.DarkLoaderBackupPath))
         {
-            // TODO: Do I need both or is the use of the non-trimmed version a mistake?
-            string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
+            string fmArchiveNoExtTrimmed = fmData.ArchiveNoExtensionWhitespaceTrimmed;
 
             // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
             // Rather than just using File.Exists()?!
@@ -839,24 +844,50 @@ internal static partial class FMInstallAndPlay
                 if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
                 {
                     ret.Set(true, f, true);
-                    if (findDarkLoaderOnly) return ret;
-                    break;
+                    return ret;
                 }
             }
         }
 
-        #endregion
+        ret.Set(false, "", false);
+        return ret;
 
-        if (findDarkLoaderOnly)
+        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
         {
-            ret.Set(false, "", false);
-            return ret;
-        }
+            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
+            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
+            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
+            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
 
-        #region AngelLoader / FMSel / NewDarkLoader
+            for (int i = 0; i < fullPaths.Count; i++)
+            {
+                string fullPath = fullPaths[i];
+
+                string fileNameOnly = fullPath.GetFileNameFast();
+
+                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+
+                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
+
+                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
+            }
+
+            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
+        }
+    }
+
+    private static BackupFile GetBackupFile(
+    DarkLoaderBackupContext ctx,
+    FMData fmData,
+    List<string> archivePaths)
+    {
+        BackupFile ret = GetDarkLoaderBackupFile(ctx, fmData);
+
+        FanMission fm = fmData.FM;
 
         if (ret.Name.IsEmpty())
         {
+            string fmArchiveNoExt = fmData.FMArchiveNoExtension;
             // This is as much as we can cache unfortunately. Every FM's name will be different each call
             // so we can't cache the combined config path and FM name with backup extension. But at least
             // we can cache just the FM name with backup extension, so it's better than nothing.
@@ -906,33 +937,8 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        #endregion
-
         ret.Found = true;
         return ret;
-
-        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
-        {
-            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
-            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
-            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
-
-            for (int i = 0; i < fullPaths.Count; i++)
-            {
-                string fullPath = fullPaths[i];
-
-                string fileNameOnly = fullPath.GetFileNameFast();
-
-                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-
-                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
-
-                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
-            }
-
-            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
-        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

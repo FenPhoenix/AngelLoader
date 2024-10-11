@@ -1705,10 +1705,16 @@ internal static partial class FMInstallAndPlay
         internal bool Uninstall_MarkFMAsUnavailable;
         internal bool Uninstall_SkipUninstallingThisFM;
 
+        private string? _fmArchiveNoExtension;
+        internal string FMArchiveNoExtension => _fmArchiveNoExtension ??= FM.Archive.RemoveExtension();
+
         private string? _bakFile;
         internal string BakFile => _bakFile ??= Path.Combine(Config.FMsBackupPath,
-            (!FM.Archive.IsEmpty() ? FM.Archive.RemoveExtension() : FM.InstalledDir) +
+            (!FM.Archive.IsEmpty() ? FMArchiveNoExtension : FM.InstalledDir) +
             Paths.FMBackupSuffix);
+
+        private string? _archiveNoExtensionWhitespaceTrimmed;
+        internal string ArchiveNoExtensionWhitespaceTrimmed => _archiveNoExtensionWhitespaceTrimmed ??= FMArchiveNoExtension.Trim();
 
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
@@ -2233,7 +2239,7 @@ internal static partial class FMInstallAndPlay
         {
             RestoreFM(
                 ctx,
-                fmData.FM,
+                fmData,
                 archivePaths,
                 ioBufferPools,
                 cancellationToken);
@@ -2886,12 +2892,13 @@ internal static partial class FMInstallAndPlay
                     an edge case.
                     @MT_TASK: Test this
                     */
-                    HashSetI bakPaths = new(fmDataList.Count);
+                    HashSetI archivesNoExtensionWhitespaceTrimmed_Hash = new(fmDataList.Count);
+                    HashSetI bakFiles_Hash = new(fmDataList.Count);
                     for (int i = 0; i < fmDataList.Count; i++)
                     {
                         FMData fmData = fmDataList[i];
-                        string bakFile = fmData.BakFile;
-                        if (!bakPaths.Add(bakFile))
+
+                        if (!archivesNoExtensionWhitespaceTrimmed_Hash.Add(fmData.ArchiveNoExtensionWhitespaceTrimmed))
                         {
                             threadCount = 1;
 #if TIMING_TEST
@@ -2900,7 +2907,20 @@ internal static partial class FMInstallAndPlay
                                 "--- FM info:" + $"{NL}" +
                                 "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
                                 "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
-                                "    Duplicate bak file was: " + bakFile);
+                                "    Duplicate archive name was: " + fmData.ArchiveNoExtensionWhitespaceTrimmed);
+#endif
+                            break;
+                        }
+                        if (!bakFiles_Hash.Add(fmData.BakFile))
+                        {
+                            threadCount = 1;
+#if TIMING_TEST
+                            Trace.WriteLine(
+                                "--- Uninstall: Found duplicate backup file name; using 1 thread." + $"{NL}" +
+                                "--- FM info:" + $"{NL}" +
+                                "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
+                                "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
+                                "    Duplicate backup file name was: " + fmData.BakFile);
 #endif
                             break;
                         }
@@ -2973,6 +2993,7 @@ internal static partial class FMInstallAndPlay
                                         we're trying to do right by them by protecting their saves etc).
                                         We should maybe have a "force uninstall, your data will not be backed up"
                                         kind of thing?
+                                        @MT_TASK: Leaving FM installed will also mess up FMDelete!
                                         */
                                         continue;
                                     }
