@@ -277,19 +277,29 @@ internal static class FMDelete
                 need to account for that here, both by using it ourselves and by remembering which one to hide
                 after Uninstall().
                 */
-                (bool success, bool uninstMarkedAnFMUnavailable) =
-                    await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
-                if (!success)
+                try
                 {
-                    /*
-                    Uninstall() does hide it in the finally block BUT only if it's running end tasks!
-                    We've told it not to here, so that's why we have to hide it ourselves.
-                    This is to do with keeping one progress box up for the whole operation without closing and
-                    reopening flicker I guess.
-                    */
+                    (bool success, bool uninstMarkedAnFMUnavailable) =
+                        await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
+                    if (!success)
+                    {
+                        /*
+                        Uninstall() does hide it in the finally block BUT only if it's running end tasks!
+                        We've told it not to here, so that's why we have to hide it ourselves.
+                        This is to do with keeping one progress box up for the whole operation without closing and
+                        reopening flicker I guess.
+                        */
+                        Core.View.HideProgressBox();
+                        await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Just in case, if stupid Uninstall() throws because it's underprotected, make sure we hide
+                    // the box...
                     Core.View.HideProgressBox();
-                    await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
-                    return;
+                    throw;
                 }
                 refreshRequired = true;
             }
