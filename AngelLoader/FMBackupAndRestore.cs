@@ -119,7 +119,6 @@ internal static partial class FMInstallAndPlay
     private static void BackupFM(
         DarkLoaderBackupContext ctx,
         FMData fmData,
-        List<string> archivePaths,
         FixedLengthByteArrayPool fileBufferPool)
     {
         FanMission fm = fmData.FM;
@@ -127,12 +126,6 @@ internal static partial class FMInstallAndPlay
         bool backupSavesAndScreensOnly = fmData.ArchivePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
-
-        if (!GameIsKnownAndSupported(fm.Game))
-        {
-            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-            return;
-        }
 
         if (backupSavesAndScreensOnly && fm.InstalledDir.IsEmpty()) return;
 
@@ -624,12 +617,6 @@ internal static partial class FMInstallAndPlay
     {
         FanMission fm = fmData.FM;
 
-        if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
-        {
-            fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-            return;
-        }
-
         bool restoreSavesAndScreensOnly = Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves);
         bool fmIsT3 = fm.Game == Game.Thief3;
@@ -641,7 +628,7 @@ internal static partial class FMInstallAndPlay
 
         var fileExcludes = new HashSetPathI();
 
-        string thisFMInstallsBasePath = Config.GetFMInstallPath(gameIndex);
+        string thisFMInstallsBasePath = Config.GetFMInstallPath(fmData.GameIndex);
         string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
 
         byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();

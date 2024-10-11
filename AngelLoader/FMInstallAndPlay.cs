@@ -2976,7 +2976,6 @@ internal static partial class FMInstallAndPlay
                                         BackupFM(
                                             ctx,
                                             fmData,
-                                            archivePaths,
                                             fileBufferPool);
                                     }
                                     catch (Exception ex)
