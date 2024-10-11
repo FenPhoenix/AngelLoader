@@ -41,6 +41,8 @@ internal static partial class FMInstallAndPlay
 {
     #region Fields
 
+    private static readonly object _darkLoaderMoveLock = new();
+
     // fmsel source code says:
     // "not necessary, it's only an internal temp file for thief (it gets created each time a savegame is loaded
     // or a mission is started)"
@@ -274,19 +276,42 @@ internal static partial class FMInstallAndPlay
         {
             try
             {
-                BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
-                if (dlBackup.Found)
+                /*
+                @MT_TASK: Cheap solution #2 - just lock around the DarkLoader bak file move
+                @MT_TASK(DarkLoader move lock): Test this!
+                This part of the backup will take minimal time, so forcing it serial shouldn't have much impact,
+                especially since it'll only be done if there's a DarkLoader bak file to begin with, and then it
+                won't be done again because that DL bak will have been moved.
+                But, we should test it in the worst case still (a ton of FMs all with DL bak files to be moved).
+
+                @MT_TASK(DarkLoader move lock): We want GetBackupFile() to be outside the lock ideally.
+                Because then we won't take the lock at all if there's no bak file to move. And we know we're
+                serial if there were any duplicate FM archives, so that shouldn't be a problem either, except
+                that GetBackupFile() does like:
+
+                string fmArchiveNoExt = fm.Archive.RemoveExtension();
+                string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
+
+                My head's not in a space to figure out if the trimming of the name introduces the possibility of
+                a file being moved out from under us now, but we need to check into that before knowing if it's
+                safe to move the GetBackupFile() call above the lock.
+                */
+                lock (_darkLoaderMoveLock)
                 {
-                    Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
-                    string originalDest = Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast());
-                    string finalDest = originalDest;
-                    int i = 1;
-                    while (File.Exists(finalDest) && i < int.MaxValue)
+                    BackupFile dlBackup = GetBackupFile(ctx, fm, archivePaths, findDarkLoaderOnly: true);
+                    if (dlBackup.Found)
                     {
-                        finalDest = originalDest.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalDest);
-                        i++;
+                        Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
+                        string originalDest = Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast());
+                        string finalDest = originalDest;
+                        int i = 1;
+                        while (File.Exists(finalDest) && i < int.MaxValue)
+                        {
+                            finalDest = originalDest.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalDest);
+                            i++;
+                        }
+                        File.Move(dlBackup.Name, finalDest);
                     }
-                    File.Move(dlBackup.Name, finalDest);
                 }
             }
             catch (Exception ex)
@@ -780,29 +805,6 @@ internal static partial class FMInstallAndPlay
     List<string> archivePaths,
     bool findDarkLoaderOnly = false)
     {
-        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
-        {
-            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
-            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
-            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
-
-            for (int i = 0; i < fullPaths.Count; i++)
-            {
-                string fullPath = fullPaths[i];
-
-                string fileNameOnly = fullPath.GetFileNameFast();
-
-                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-
-                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
-
-                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
-            }
-
-            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
-        }
-
         var ret = new BackupFile();
 
         // TODO: Do I need both or is the use of the non-trimmed version a mistake?
@@ -900,6 +902,29 @@ internal static partial class FMInstallAndPlay
 
         ret.Found = true;
         return ret;
+
+        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
+        {
+            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
+            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
+            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
+            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
+
+            for (int i = 0; i < fullPaths.Count; i++)
+            {
+                string fullPath = fullPaths[i];
+
+                string fileNameOnly = fullPath.GetFileNameFast();
+
+                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
+
+                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
+
+                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
+            }
+
+            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
