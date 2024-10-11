@@ -801,9 +801,9 @@ internal static partial class FMInstallAndPlay
 
     /*
     @MT_TASK(GetBackupFile() thread safety):
-    For Restore, we're only ever reading the archive we get back from this, but the potential problem is that if
-    it's the DarkLoader file we get back, that one could get moved out from under us if we're not absolutely sure
-    it's unique (ie. no other thread will move it).
+    For Restore, we're only ever reading (not writing) the archive we get back from this, but the potential
+    problem is that if it's the DarkLoader file we get back, that one could get moved out from under us if we're
+    not absolutely sure it's unique (ie. no other thread will move it).
     */
     private static BackupFile GetBackupFile(
     DarkLoaderBackupContext ctx,
