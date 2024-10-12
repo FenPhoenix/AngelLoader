@@ -102,6 +102,22 @@ internal static class DetectDriveTypes
 
                     StorageDeviceWrapper device = new(safeHandle);
 
+                    /*
+                    @MT_TASK: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
+                    If it fails, we fall back to Other which is probably fine. But, we could also say if this
+                    fails then we should continue on below and get the bus type, from which we may be able to
+                    make a more intelligent decision.
+
+                    It's possible to get the nominal rotation rate, but this requires admin privileges. The docs
+                    make it sound like it doesn't:
+
+                    https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddscsi/ni-ntddscsi-ioctl_ata_pass_through
+                    "Applications do not require administrative privileges to send a pass-through request to a
+                    device, but they must have read/write access to the device."
+
+                    But of course, having read/write access to the device itself requires admin privileges, so
+                    the fact that something beyond it doesn't is completely useless. Oh well.
+                    */
                     DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
                     if (seekPenaltyDescriptor.IncursSeekPenalty)
                     {
