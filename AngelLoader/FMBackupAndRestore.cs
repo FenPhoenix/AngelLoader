@@ -41,8 +41,6 @@ internal static partial class FMInstallAndPlay
 {
     #region Fields
 
-    private static readonly object _darkLoaderMoveLock = new();
-
     // fmsel source code says:
     // "not necessary, it's only an internal temp file for thief (it gets created each time a savegame is loaded
     // or a mission is started)"
@@ -136,10 +134,6 @@ internal static partial class FMInstallAndPlay
         string screensPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _screensDir);
         string ss2CurrentPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _ss2CurrentDir);
 
-        /*
-        @MT_TASK(BackupFM): Conflict possibility with backup archive name
-        If one FM's archive is my_mission.zip and another is my_mission.7z, both will end up the same
-        */
         string bakFile = fmData.BakFile;
 
         using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
@@ -277,50 +271,25 @@ internal static partial class FMInstallAndPlay
         -Next time user goes to install, we DON'T find the DarkLoader backup (because we moved it) and we also
         don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
         which is not at all what the user expects given we tell them that existing backups haven't been changed.
-
-        @MT_TASK(MoveDarkLoaderBackup): Possible conflict here - can we be trying to move the same DL bak file for multiple FMs?
-        Don't know for sure, we need to check if it's possible
         */
+        // @MT_TASK(MoveDarkLoaderBackup): Test this!
         static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FMData fmData)
         {
             try
             {
-                /*
-                @MT_TASK: Cheap solution #2 - just lock around the DarkLoader bak file move
-                @MT_TASK(DarkLoader move lock): Test this!
-                This part of the backup will take minimal time, so forcing it serial shouldn't have much impact,
-                especially since it'll only be done if there's a DarkLoader bak file to begin with, and then it
-                won't be done again because that DL bak will have been moved.
-                But, we should test it in the worst case still (a ton of FMs all with DL bak files to be moved).
-
-                @MT_TASK(DarkLoader move lock): We want GetBackupFile() to be outside the lock ideally.
-                Because then we won't take the lock at all if there's no bak file to move. And we know we're
-                serial if there were any duplicate FM archives, so that shouldn't be a problem either, except
-                that GetBackupFile() does like:
-
-                string fmArchiveNoExt = fm.Archive.RemoveExtension();
-                string fmArchiveNoExtTrimmed = fmArchiveNoExt.Trim();
-
-                My head's not in a space to figure out if the trimming of the name introduces the possibility of
-                a file being moved out from under us now, but we need to check into that before knowing if it's
-                safe to move the GetBackupFile() call above the lock.
-                */
-                lock (_darkLoaderMoveLock)
+                BackupFile dlBackup = GetDarkLoaderBackupFile(ctx, fmData.ArchiveNoExtensionWhitespaceTrimmed);
+                if (dlBackup.Found)
                 {
-                    BackupFile dlBackup = GetDarkLoaderBackupFile(ctx, fmData);
-                    if (dlBackup.Found)
+                    Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
+                    string originalDest = Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast());
+                    string finalDest = originalDest;
+                    int i = 1;
+                    while (File.Exists(finalDest) && i < int.MaxValue)
                     {
-                        Directory.CreateDirectory(ctx.DarkLoaderOriginalBackupPath);
-                        string originalDest = Path.Combine(ctx.DarkLoaderOriginalBackupPath, dlBackup.Name.GetFileNameFast());
-                        string finalDest = originalDest;
-                        int i = 1;
-                        while (File.Exists(finalDest) && i < int.MaxValue)
-                        {
-                            finalDest = originalDest.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalDest);
-                            i++;
-                        }
-                        File.Move(dlBackup.Name, finalDest);
+                        finalDest = originalDest.RemoveExtension() + "(" + i.ToStrInv() + ")" + Path.GetExtension(originalDest);
+                        i++;
                     }
+                    File.Move(dlBackup.Name, finalDest);
                 }
             }
             catch (Exception ex)
@@ -812,7 +781,7 @@ internal static partial class FMInstallAndPlay
             FMData fmData,
             List<string> archivePaths)
         {
-            BackupFile ret = GetDarkLoaderBackupFile(ctx, fmData);
+            BackupFile ret = GetDarkLoaderBackupFile(ctx, fmData.ArchiveNoExtensionWhitespaceTrimmed);
 
             FanMission fm = fmData.FM;
 
@@ -878,16 +847,23 @@ internal static partial class FMInstallAndPlay
     #region Helpers
 
     // @MT_TASK: Test this newly split DL/non-DL GetBackupFile() thing, just to make sure it still works correctly
-    private static BackupFile GetDarkLoaderBackupFile(DarkLoaderBackupContext ctx, FMData fmData)
+    private static BackupFile GetDarkLoaderBackupFile(DarkLoaderBackupContext ctx, string fmArchiveNoExtTrimmed)
     {
         var ret = new BackupFile();
 
         if (Directory.Exists(ctx.DarkLoaderBackupPath))
         {
-            string fmArchiveNoExtTrimmed = fmData.ArchiveNoExtensionWhitespaceTrimmed;
-
-            // TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
-            // Rather than just using File.Exists()?!
+            /*
+            TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
+            Rather than just using File.Exists()?!
+            
+            @MT_TASK: Can FullPath and FullPathMinusSaveSuffix ever be the same?
+            I think no because I think FullPathMinusSaveSuffix is only populated for file names that actually
+            have the save suffix, but test.
+            Also this may be an opportunity to get rid of this stupid loop and hard-to-follow logic and just
+            switch to a file-exists check, unless there's some reason we can't that I'm just missing or
+            forgetting.
+            */
             FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
             for (int i = 0; i < dlArchives.FullPaths.Count; i++)
             {

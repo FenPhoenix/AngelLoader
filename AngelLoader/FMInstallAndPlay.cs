@@ -1720,13 +1720,66 @@ internal static partial class FMInstallAndPlay
         private string? _fmArchiveNoExtension;
         internal string FMArchiveNoExtension => _fmArchiveNoExtension ??= FM.Archive.RemoveExtension();
 
+        private string? _archiveNoExtensionWhitespaceTrimmed;
+        internal string ArchiveNoExtensionWhitespaceTrimmed => _archiveNoExtensionWhitespaceTrimmed ??= FMArchiveNoExtension.Trim();
+
         private string? _bakFile;
         internal string BakFile => _bakFile ??= Path.Combine(Config.FMsBackupPath,
             (!FM.Archive.IsEmpty() ? FMArchiveNoExtension : FM.InstalledDir) +
             Paths.FMBackupSuffix);
 
-        private string? _archiveNoExtensionWhitespaceTrimmed;
-        internal string ArchiveNoExtensionWhitespaceTrimmed => _archiveNoExtensionWhitespaceTrimmed ??= FMArchiveNoExtension.Trim();
+        internal static bool ThreadSafe(List<FMData> fmDataList)
+        {
+            /*
+            Absolute cheapest solution: any dupes and we just force threads to 1.
+            The only two ways we can have dupes are either if we have outright duplicate archive names,
+            or we have archive names that are identical except for their extension. Both cases are pretty
+            unlikely. So even though this is a crappy as hell solution, it's an acceptable band-aid for
+            an edge case.
+            @MT_TASK: Test this
+            */
+            HashSetI tempHash = new(fmDataList.Count);
+
+            for (int i = 0; i < fmDataList.Count; i++)
+            {
+                FMData fmData = fmDataList[i];
+
+                if (!tempHash.Add(fmData.ArchiveNoExtensionWhitespaceTrimmed))
+                {
+#if TIMING_TEST
+                    Trace.WriteLine(
+                        "--- Uninstall: Found duplicate FM archive; using 1 thread." + $"{NL}" +
+                        "--- FM info:" + $"{NL}" +
+                        "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
+                        "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
+                        "    Duplicate archive name was: " + fmData.ArchiveNoExtensionWhitespaceTrimmed);
+#endif
+                    return false;
+                }
+            }
+
+            tempHash.Clear();
+
+            for (int i = 0; i < fmDataList.Count; i++)
+            {
+                FMData fmData = fmDataList[i];
+
+                if (!tempHash.Add(fmData.BakFile))
+                {
+#if TIMING_TEST
+                    Trace.WriteLine(
+                        "--- Uninstall: Found duplicate backup file name; using 1 thread." + $"{NL}" +
+                        "--- FM info:" + $"{NL}" +
+                        "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
+                        "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
+                        "    Duplicate backup file name was: " + fmData.BakFile);
+#endif
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
@@ -2893,53 +2946,16 @@ internal static partial class FMInstallAndPlay
                     return (false, atLeastOneFMMarkedUnavailable);
                 }
 
-                if (doBackup)
-                {
-                    /*
-                    Absolute cheapest solution: any dupes and we just force threads to 1.
-                    The only two ways we can have dupes are either if we have outright duplicate archive names,
-                    or we have archive names that are identical except for their extension. Both cases are pretty
-                    unlikely. So even though this is a crappy as hell solution, it's an acceptable band-aid for
-                    an edge case.
-                    @MT_TASK: Test this
-                    */
-                    HashSetI archivesNoExtensionWhitespaceTrimmed_Hash = new(fmDataList.Count);
-                    HashSetI bakFiles_Hash = new(fmDataList.Count);
-                    for (int i = 0; i < fmDataList.Count; i++)
-                    {
-                        FMData fmData = fmDataList[i];
-
-                        if (!archivesNoExtensionWhitespaceTrimmed_Hash.Add(fmData.ArchiveNoExtensionWhitespaceTrimmed))
-                        {
-                            threadCount = 1;
-#if TIMING_TEST
-                            Trace.WriteLine(
-                                "--- Uninstall: Found duplicate FM archive; using 1 thread." + $"{NL}" +
-                                "--- FM info:" + $"{NL}" +
-                                "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
-                                "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
-                                "    Duplicate archive name was: " + fmData.ArchiveNoExtensionWhitespaceTrimmed);
-#endif
-                            break;
-                        }
-                        if (!bakFiles_Hash.Add(fmData.BakFile))
-                        {
-                            threadCount = 1;
-#if TIMING_TEST
-                            Trace.WriteLine(
-                                "--- Uninstall: Found duplicate backup file name; using 1 thread." + $"{NL}" +
-                                "--- FM info:" + $"{NL}" +
-                                "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
-                                "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
-                                "    Duplicate backup file name was: " + fmData.BakFile);
-#endif
-                            break;
-                        }
-                    }
-                }
-
                 try
                 {
+                    if (doBackup)
+                    {
+                        if (!FMData.ThreadSafe(fmDataList))
+                        {
+                            threadCount = 1;
+                        }
+                    }
+
                     FixedLengthByteArrayPool fileBufferPool = new(FileStreamBufferSize);
                     DarkLoaderBackupContext ctx = new();
 
