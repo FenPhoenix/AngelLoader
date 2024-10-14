@@ -2950,6 +2950,8 @@ internal static partial class FMInstallAndPlay
                 {
                     if (doBackup)
                     {
+                        // @MT_TASK: Check and alert if backup path isn't set/doesn't exist...
+
                         if (!FMData.ThreadSafe(fmDataList))
                         {
                             threadCount = 1;

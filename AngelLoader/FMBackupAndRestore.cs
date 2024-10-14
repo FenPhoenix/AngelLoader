@@ -85,11 +85,11 @@ internal static partial class FMInstallAndPlay
         internal string Name;
         internal bool DarkLoader;
 
-        internal BackupFile()
+        internal BackupFile(bool found, string name, bool darkLoader)
         {
-            Found = false;
-            Name = "";
-            DarkLoader = false;
+            Found = found;
+            Name = name;
+            DarkLoader = darkLoader;
         }
 
         internal void Set(bool found, string name, bool darkLoader)
@@ -97,18 +97,6 @@ internal static partial class FMInstallAndPlay
             Found = found;
             Name = name;
             DarkLoader = darkLoader;
-        }
-    }
-
-    private sealed class FileNameBoth
-    {
-        internal readonly List<string> FullPaths;
-        internal readonly List<string> FileNamesMinusSavesSuffix;
-
-        internal FileNameBoth(List<string> fullPaths, List<string> fileNamesMinusSavesSuffix)
-        {
-            FullPaths = fullPaths;
-            FileNamesMinusSavesSuffix = fileNamesMinusSavesSuffix;
         }
     }
 
@@ -849,65 +837,12 @@ internal static partial class FMInstallAndPlay
     // @MT_TASK: Test this newly split DL/non-DL GetBackupFile() thing, just to make sure it still works correctly
     private static BackupFile GetDarkLoaderBackupFile(DarkLoaderBackupContext ctx, string fmArchiveNoExtTrimmed)
     {
-        var ret = new BackupFile();
-
-        if (Directory.Exists(ctx.DarkLoaderBackupPath))
-        {
-            /*
-            TODO(DarkLoader backups): Is there a reason I'm getting all files on disk and looping through?
-            Rather than just using File.Exists()?!
-            
-            @MT_TASK: Can FullPath and FullPathMinusSaveSuffix ever be the same?
-            I think no because I think FullPathMinusSaveSuffix is only populated for file names that actually
-            have the save suffix, but test.
-            Also this may be an opportunity to get rid of this stupid loop and hard-to-follow logic and just
-            switch to a file-exists check, unless there's some reason we can't that I'm just missing or
-            forgetting.
-            */
-            FileNameBoth dlArchives = GetDarkLoaderArchiveFiles(ctx);
-            for (int i = 0; i < dlArchives.FullPaths.Count; i++)
-            {
-                string f = dlArchives.FullPaths[i];
-
-                string an = dlArchives.FileNamesMinusSavesSuffix[i];
-                if (an.IsEmpty()) continue;
-
-                // Account for the fact that DarkLoader trims archive names for save backup zips
-                // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either
-                // way, so whatever.
-                if (!an.IsEmpty() && an.PathEqualsI(fmArchiveNoExtTrimmed))
-                {
-                    ret.Set(true, f, true);
-                    return ret;
-                }
-            }
-        }
-
-        ret.Set(false, "", false);
-        return ret;
-
-        static FileNameBoth GetDarkLoaderArchiveFiles(DarkLoaderBackupContext ctx)
-        {
-            // @MEM/@PERF_TODO: Why tf are we doing this get-all-files loop?!
-            // Can't we just say "if file exists(archive without ext + "_saves.zip")"?!
-            List<string> fullPaths = FastIO.GetFilesTopOnly(ctx.DarkLoaderBackupPath, "*.zip");
-            var fileNamesMinusSavesSuffix = new List<string>(fullPaths.Count);
-
-            for (int i = 0; i < fullPaths.Count; i++)
-            {
-                string fullPath = fullPaths[i];
-
-                string fileNameOnly = fullPath.GetFileNameFast();
-
-                int index = fileNameOnly.LastIndexOf("_saves.zip", StringComparison.OrdinalIgnoreCase);
-
-                string fileNameWithTrimmedSavesSuffix = index > -1 ? fileNameOnly.Substring(0, index).Trim() : "";
-
-                fileNamesMinusSavesSuffix.Add(fileNameWithTrimmedSavesSuffix);
-            }
-
-            return new FileNameBoth(fullPaths, fileNamesMinusSavesSuffix);
-        }
+        // Account for the fact that DarkLoader trims archive names for save backup zips
+        // Note: I guess it doesn't?! The code heavily implies it does. Still, it works either way, so whatever.
+        string dlSavesBakFileName = Path.Combine(ctx.DarkLoaderBackupPath, fmArchiveNoExtTrimmed + "_saves.zip");
+        return File.Exists(dlSavesBakFileName)
+            ? new BackupFile(true, dlSavesBakFileName, true)
+            : new BackupFile(false, "", false);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
