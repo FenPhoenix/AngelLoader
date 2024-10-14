@@ -87,7 +87,8 @@ internal static class FMDelete
                 icon: MBoxIcon.Warning,
                 yes: LText.FMDeletion.DeleteFromDB_OKMessage,
                 no: LText.Global.Cancel,
-                yesIsDangerous: true);
+                yesIsDangerous: true,
+                defaultButton: MBoxButton.No);
         if (result == MBoxButton.No) return VoidTask;
 
         DeleteFMsFromDB_Internal(fmsToDelete);
@@ -231,7 +232,8 @@ internal static class FMDelete
             yesIsDangerous: true,
             checkBoxText: single
                 ? LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Single
-                : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple);
+                : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple,
+            defaultButton: MBoxButton.No);
 
         if (result == MBoxButton.No) return;
 
@@ -254,7 +256,8 @@ internal static class FMDelete
                 icon: MBoxIcon.Warning,
                 yes: LText.AlertMessages.Uninstall,
                 no: deleteFromDB ? null : LText.AlertMessages.LeaveInstalled,
-                cancel: LText.Global.Cancel
+                cancel: LText.Global.Cancel,
+                defaultButton: MBoxButton.Cancel
             );
 
             if (result == MBoxButton.Cancel) return;
