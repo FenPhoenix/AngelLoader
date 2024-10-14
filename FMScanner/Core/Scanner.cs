@@ -347,6 +347,7 @@ public sealed partial class Scanner : IDisposable
 
     #endregion
 
+    // @MT_TASK: Test with sets that include installed-folder scans in parallel set
     public static List<ScannedFMDataAndError>
     ScanThreaded(
         string sevenZipWorkingPath,
