@@ -2932,6 +2932,18 @@ internal static partial class FMInstallAndPlay
                     }
                 }
 
+                // @MT_TASK: Can we just remove FMs from the list instead of marking them?
+                // Remember to check if list length == 0 and return without doing anything if so
+                for (int i = 0, viewItemIndex = 0; i < fmDataList.Count; i++)
+                {
+                    FMData fmData = fmDataList[i];
+                    if (!fmData.Uninstall_SkipUninstallingThisFM)
+                    {
+                        fmData.ViewItemIndex = viewItemIndex;
+                        viewItemIndex++;
+                    }
+                }
+
                 #endregion
 
                 ConcurrentBag<FMUninstallResult> errors = new();
