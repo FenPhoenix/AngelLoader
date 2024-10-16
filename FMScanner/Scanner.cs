@@ -39,16 +39,58 @@ using static System.StringComparison;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
+using static FMScanner.ReadOnlyDataContext;
 
 namespace FMScanner;
 
-public sealed partial class Scanner : IDisposable
+public sealed class Scanner : IDisposable
 {
 #if DEBUG
     private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
 
     #region Private fields
+
+    #region Buffers
+
+    private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
+
+    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
+
+    private ListFast<char>? _utf32CharBuffer;
+    private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
+
+    private readonly BinaryBuffer _binaryReadBuffer = new();
+
+    #region Game detection
+
+    private const int _gameTypeBufferSize = 81_920;
+
+    private byte[]? _gameTypeBuffer_ChunkPlusRopeyArrow;
+    private byte[] GameTypeBuffer_ChunkPlusRopeyArrow => _gameTypeBuffer_ChunkPlusRopeyArrow ??= new byte[_gameTypeBufferSize + _ctx.RopeyArrow.Length];
+
+    private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
+    private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
+
+    private readonly byte[][] _zipOffsetBuffers =
+    {
+        new byte[SS2_NewDark_MAPPARAM_Offset],
+        new byte[T2_OldDark_SKYOBJVAR_Offset],
+        new byte[SS2_OldDark_MAPPARAM_Offset],
+        new byte[NewDark_SKYOBJVAR_Offset1],
+        new byte[NewDark_SKYOBJVAR_Offset2],
+    };
+
+    // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
+    // complicating things any further than they already are.
+    private const int _gameDetectStringBufferLength = 9;
+    private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
+
+    // ReSharper restore IdentifierTypo
+
+    #endregion
+
+    #endregion
 
     private readonly ReadOnlyDataContext _ctx;
 
@@ -348,6 +390,7 @@ public sealed partial class Scanner : IDisposable
     #endregion
 
     // @MT_TASK: Test with sets that include installed-folder scans in parallel set
+    [PublicAPI]
     public static List<ScannedFMDataAndError>
     ScanThreaded(
         string sevenZipWorkingPath,
@@ -3425,12 +3468,12 @@ public sealed partial class Scanner : IDisposable
                 .Replace(@"\n", "\r\n")
                 .Replace(@"\""", "\"");
 
-            if (fmIni.Descr[0] == '\"' && fmIni.Descr[fmIni.Descr.Length - 1] == '\"' &&
+            if (fmIni.Descr[0] == '\"' && fmIni.Descr[^1] == '\"' &&
                 CountChars(fmIni.Descr, '\"') == 2)
             {
                 fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
             }
-            if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[fmIni.Descr.Length - 1] == RightDoubleQuote &&
+            if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[^1] == RightDoubleQuote &&
                 CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
             {
                 fmIni.Descr = fmIni.Descr.Trim(_ctx.CA_UnicodeQuotes);
@@ -5192,13 +5235,14 @@ public sealed partial class Scanner : IDisposable
                 _ => FileStreamFast.CreateRead(misFileOnDisk, DiskFileStreamBuffer),
             };
 
-            for (int i = 0; i < _ctx.Locations.Length; i++)
+            for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
                 if (
 #if FMScanner_FullCode
                     !_scanOptions.ScanNewDarkRequired &&
 #endif
-                    (_ctx.Locations[i] == _newDarkLoc1 || _ctx.Locations[i] == _newDarkLoc2))
+                    (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
+                     _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2))
                 {
                     break;
                 }
@@ -5208,20 +5252,20 @@ public sealed partial class Scanner : IDisposable
                 if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
                 {
                     buffer = _zipOffsetBuffers[i];
-                    int length = _ctx.ZipOffsets[i];
+                    int length = _ctx.GameDetect_KeyPhraseZipOffsets[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
                 }
                 else
                 {
                     buffer = _gameDetectStringBuffer;
-                    misStream.Position = _ctx.Locations[i];
+                    misStream.Position = _ctx.GameDetect_KeyPhraseLocations[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
                     if (bytesRead < _gameDetectStringBufferLength) break;
                 }
 
-                if ((_ctx.Locations[i] == _ss2MapParamNewDarkLoc ||
-                     _ctx.Locations[i] == _ss2MapParamOldDarkLoc) &&
+                if ((_ctx.GameDetect_KeyPhraseLocations[i] == SS2_NewDark_MAPPARAM_Location ||
+                     _ctx.GameDetect_KeyPhraseLocations[i] == SS2_OldDark_MAPPARAM_Location) &&
                     EndsWithMAPPARAM(buffer))
                 {
                     /*
@@ -5244,14 +5288,15 @@ public sealed partial class Scanner : IDisposable
                     return Game.SS2;
 #endif
                 }
-                else if ((_ctx.Locations[i] == _oldDarkT2Loc ||
-                          _ctx.Locations[i] == _newDarkLoc1 ||
-                          _ctx.Locations[i] == _newDarkLoc2) &&
+                else if ((_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location ||
+                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
+                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2) &&
                          EndsWithSKYOBJVAR(buffer))
                 {
                     // Zip reading is going to check the NewDark locations the other way round, but fortunately
                     // they're interchangeable in meaning so we don't have to do anything
-                    if (_ctx.Locations[i] == _newDarkLoc1 || _ctx.Locations[i] == _newDarkLoc2)
+                    if (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
+                        _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2)
                     {
 #if FMScanner_FullCode
                         ret.NewDarkRequired = true;
@@ -5259,7 +5304,7 @@ public sealed partial class Scanner : IDisposable
 #endif
                         break;
                     }
-                    else if (_ctx.Locations[i] == _oldDarkT2Loc)
+                    else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location)
                     {
                         foundAtOldDarkThief2Location = true;
                         break;
@@ -5282,7 +5327,7 @@ public sealed partial class Scanner : IDisposable
         {
 #if FMScanner_FullCode
             return (
-                _scanOptions.ScanNewDarkRequired ? (bool?)false : null,
+                _scanOptions.ScanNewDarkRequired ? false : null,
                 _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
 #else
             return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
@@ -5383,11 +5428,11 @@ public sealed partial class Scanner : IDisposable
             uint invCount = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
             for (int i = 0; i < invCount; i++)
             {
-                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, 12);
+                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
+                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
+
                 uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
                 int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-
-                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)

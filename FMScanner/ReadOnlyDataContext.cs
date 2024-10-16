@@ -1,7 +1,10 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
 
+using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
@@ -11,36 +14,20 @@ namespace FMScanner;
 // IMPORTANT: No lazy-loading allowed in here. Everything should be immediate-initialized for thread safety.
 public sealed class ReadOnlyDataContext
 {
-    internal readonly Scanner.TitlesStrNaturalNumericSort TitlesStrNaturalNumericSort = new();
-
-    private static byte[] InitRomanToDecimalTable()
+    [StructLayout(LayoutKind.Auto)]
+    internal readonly struct AsciiCharWithNonAsciiEquivalent(char original, char ascii)
     {
-        byte[] ret = new byte['X' + 1];
-        ret['I'] = 1;
-        ret['V'] = 5;
-        ret['X'] = 10;
-        return ret;
+        internal readonly char Original = original;
+        internal readonly char Ascii = ascii;
     }
 
-    internal readonly byte[] RomanNumeralToDecimalTable = InitRomanToDecimalTable();
+    internal readonly string[] FMFiles_TitlesStrLocations;
 
-    internal readonly Scanner.AsciiCharWithNonAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
-    {
-        new('\x2003', ' '),
-        new('\x2002', ' '),
-        new('\x2005', ' '),
-        new('\xA0', ' '),
-        new('\x2014', '-'),
-        new('\x2013', '-'),
-        new('\x2018', '\''),
-        new('\x2019', '\''),
-        new('\x201C', '"'),
-        new('\x201D', '"'),
-    };
+    internal readonly string[] Languages_FS_Lang_FS;
+    internal readonly string[] Languages_FS_Lang_Language_FS;
+    internal readonly string[] LanguagesC;
 
-    #region Non-const FM Files
-
-    internal readonly string[] FMFiles_TitlesStrLocations = new string[24];
+    internal readonly byte[] RomanNumeralToDecimalTable;
 
     // Used for SS2 fingerprinting for the game type scan fallback
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -71,15 +58,79 @@ public sealed class ReadOnlyDataContext
         "station.mis",
     };
 
-    #endregion
+    public ReadOnlyDataContext()
+    {
+        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
+        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
+        LanguagesC = new string[SupportedLanguageCount];
 
-    #region Preallocated arrays
+        #region FMFiles_TitlesStrLocations
+
+        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
+        FMFiles_TitlesStrLocations = new string[(SupportedLanguageCount * 2) + 2];
+
+        // Do not change search order: strings/english, strings, strings/[any other language]
+        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
+        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
+        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
+        FMFiles_TitlesStrLocations[3] = "strings/title.str";
+
+        for (int i = 1; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
+        }
+
+        #endregion
+
+        #region Languages
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            Languages_FS_Lang_FS[i] = "/" + lang + "/";
+            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
+
+            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
+            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
+        }
+
+        #endregion
+
+        #region Roman numeral table
+
+        RomanNumeralToDecimalTable = new byte['X' + 1];
+        RomanNumeralToDecimalTable['I'] = 1;
+        RomanNumeralToDecimalTable['V'] = 5;
+        RomanNumeralToDecimalTable['X'] = 10;
+
+        #endregion
+    }
+
+    internal readonly TitlesStrNaturalNumericSortComparer TitlesStrNaturalNumericSort = new();
+
+    internal readonly AsciiCharWithNonAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
+    {
+        new('\x2003', ' '),
+        new('\x2002', ' '),
+        new('\x2005', ' '),
+        new('\xA0', ' '),
+        new('\x2014', '-'),
+        new('\x2013', '-'),
+        new('\x2018', '\''),
+        new('\x2019', '\''),
+        new('\x201C', '"'),
+        new('\x201D', '"'),
+    };
+
+    #region Misc preallocated char and string arrays
 
     // Perf, for passing to params[]-taking methods so we don't allocate all the time
     internal readonly char[] CA_Period = { '.' };
     internal readonly char[] CA_Asterisk = { '*' };
     internal readonly char[] CA_AsteriskHyphen = { '*', '-' };
-    internal readonly char[] CA_UnicodeQuotes = { Scanner.LeftDoubleQuote, Scanner.RightDoubleQuote };
+    internal readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     internal readonly char[] CA_DateSeparators = { ' ', '-', '/' };
     internal readonly char[] CA_Parens = { '(', ')' };
     internal readonly string[] SA_Linebreaks = { "\r\n", "\r", "\n" };
@@ -88,6 +139,8 @@ public sealed class ReadOnlyDataContext
     internal readonly string[] SA_AllFiles = { "*" };
     internal readonly string[] SA_AllBinFiles = { "*.bin" };
     internal readonly string[] SA_AllSubFiles = { "*.sub" };
+
+    #endregion
 
     #region Field detect strings
 
@@ -222,8 +275,6 @@ public sealed class ReadOnlyDataContext
 
     #endregion
 
-    #endregion
-
     #region Extension and file pattern arrays
 
     /*
@@ -245,56 +296,6 @@ public sealed class ReadOnlyDataContext
     internal readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
 
     #endregion
-
-    #region Languages
-
-    internal readonly string[] Languages_FS_Lang_FS;
-    internal readonly string[] Languages_FS_Lang_Language_FS;
-    internal readonly string[] LanguagesC;
-
-    #endregion
-
-    public ReadOnlyDataContext()
-    {
-        #region Array construction
-
-        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
-        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
-        LanguagesC = new string[SupportedLanguageCount];
-
-        #region FMFiles_TitlesStrLocations
-
-        // Do not change search order: strings/english, strings, strings/[any other language]
-        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
-        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
-        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
-        FMFiles_TitlesStrLocations[3] = "strings/title.str";
-
-        for (int i = 1; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
-        }
-
-        #endregion
-
-        #region Languages
-
-        for (int i = 0; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            Languages_FS_Lang_FS[i] = "/" + lang + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
-
-            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
-            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
-        }
-
-        #endregion
-
-        #endregion
-    }
 
     #region Dates
 
@@ -441,6 +442,19 @@ public sealed class ReadOnlyDataContext
 
     // ReSharper disable IdentifierTypo
 
+    internal const int SS2_NewDark_MAPPARAM_Location = 696;
+    internal const int T2_OldDark_SKYOBJVAR_Location = 772;
+    internal const int SS2_OldDark_MAPPARAM_Location = 916;
+    // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
+    internal const int NewDark_SKYOBJVAR_Location1 = 7217;
+    internal const int NewDark_SKYOBJVAR_Location2 = 3093;
+
+    internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
+    internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
+    internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
+    internal const int NewDark_SKYOBJVAR_Offset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
+    internal const int NewDark_SKYOBJVAR_Offset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
+
     internal readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
 
     /*
@@ -453,22 +467,22 @@ public sealed class ReadOnlyDataContext
     */
     internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
 
-    internal readonly int[] Locations =
+    internal readonly int[] GameDetect_KeyPhraseLocations =
     {
-        Scanner._ss2MapParamNewDarkLoc,
-        Scanner._oldDarkT2Loc,
-        Scanner._ss2MapParamOldDarkLoc,
-        Scanner._newDarkLoc1,
-        Scanner._newDarkLoc2,
+        SS2_NewDark_MAPPARAM_Location,
+        T2_OldDark_SKYOBJVAR_Location,
+        SS2_OldDark_MAPPARAM_Location,
+        NewDark_SKYOBJVAR_Location1,
+        NewDark_SKYOBJVAR_Location2,
     };
 
-    internal readonly int[] ZipOffsets =
+    internal readonly int[] GameDetect_KeyPhraseZipOffsets =
     {
-        Scanner._ss2NewDarkOffset,
-        Scanner._t2OldDarkOffset,
-        Scanner._ss2OldDarkOffset,
-        Scanner._newDarkOffset1,
-        Scanner._newDarkOffset2,
+        SS2_NewDark_MAPPARAM_Offset,
+        T2_OldDark_SKYOBJVAR_Offset,
+        SS2_OldDark_MAPPARAM_Offset,
+        NewDark_SKYOBJVAR_Offset1,
+        NewDark_SKYOBJVAR_Offset2,
     };
 
     // ReSharper restore IdentifierTypo
@@ -1005,6 +1019,154 @@ public sealed class ReadOnlyDataContext
             0x75, 0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x65, 0x20, 0x46, 0x6F, 0x6E, 0x64, 0x69, 0x8A, 0x72, 0x65,
         },
     };
+
+    #endregion
+
+    internal const char LeftDoubleQuote = '\u201C';
+    internal const char RightDoubleQuote = '\u201D';
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    internal static class FMDirs
+    {
+        // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
+        // the chance of error.
+
+        // We only need BooksS
+        internal const string Fam = "fam";
+        // We only need IntrfaceS
+        internal const string Mesh = "mesh";
+        internal const string Motions = "motions";
+        internal const string Movies = "movies";
+        internal const string Cutscenes = "cutscenes"; // SS2 only
+        internal const string Obj = "obj";
+        internal const string Scripts = "scripts";
+        internal const string Snd = "snd";
+        internal const string Snd2 = "snd2"; // SS2 only
+        // We only need StringsS
+        internal const string Subtitles = "subtitles";
+
+        internal const string BooksS = "books/";
+        internal const string FamS = Fam + "/";
+        internal const string IntrfaceS = "intrface/";
+        internal const int IntrfaceSLen = 9; // workaround for .NET 4.7.2 not inlining const string lengths
+        internal const string MeshS = Mesh + "/";
+        internal const string MotionsS = Motions + "/";
+        internal const string MoviesS = Movies + "/";
+        internal const string CutscenesS = Cutscenes + "/"; // SS2 only
+        internal const string ObjS = Obj + "/";
+        internal const string ScriptsS = Scripts + "/";
+        internal const string SndS = Snd + "/";
+        internal const string Snd2S = Snd2 + "/"; // SS2 only
+        internal const string StringsS = "strings/";
+        internal const string SubtitlesS = Subtitles + "/";
+
+        internal const string T3FMExtras1S = "Fan Mission Extras/";
+        internal const string T3FMExtras2S = "FanMissionExtras/";
+
+        internal const string T3DetectS = "Content/T3/Maps/";
+        internal const int T3DetectSLen = 16; // workaround for .NET 4.7.2 not inlining const string lengths
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "CommentTypo")]
+    internal static class FMFiles
+    {
+        internal const string SS2Fingerprint1 = "/usemsg.str";
+        internal const string SS2Fingerprint2 = "/savename.str";
+        internal const string SS2Fingerprint3 = "/objlooks.str";
+        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
+
+        internal const string IntrfaceEnglishNewGameStr = "intrface/english/newgame.str";
+        internal const string IntrfaceNewGameStr = "intrface/newgame.str";
+        internal const string SNewGameStr = "/newgame.str";
+
+        internal const string StringsMissFlag = "strings/missflag.str";
+        internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
+        internal const string SMissFlag = "/missflag.str";
+
+        // Telliamed's fminfo.xml file, used in a grand total of three missions
+        internal const string FMInfoXml = "fminfo.xml";
+
+        // fm.ini, a NewDark (or just FMSel?) file
+        internal const string FMIni = "fm.ini";
+
+        // System Shock 2 file
+        internal const string ModIni = "mod.ini";
+
+        // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
+        internal const string EntryGmp = "Entry.gmp";
+
+        internal const string TDM_DarkModTxt = "darkmod.txt";
+        internal const string TDM_ReadmeTxt = "readme.txt";
+        internal const string TDM_MapSequence = "tdm_mapsequence.txt";
+    }
+
+    #region Comparer classes
+
+    /// <summary>
+    /// Specialized (therefore fast) sort for titles.str lines only. Anything else is likely to throw an
+    /// IndexOutOfRangeException.
+    /// </summary>
+    internal sealed class TitlesStrNaturalNumericSortComparer : IComparer<string>
+    {
+        public int Compare(string x, string y)
+        {
+            if (x == y) return 0;
+            if (x.IsEmpty()) return -1;
+            if (y.IsEmpty()) return 1;
+
+            // int32 max digits minus 1 (to avoid having to check for overflow)
+            const int maxDigits = 9;
+
+            int xIndex1 = x.IndexOf('_');
+            int xIndex2 = x.IndexOf(':', xIndex1);
+
+            int xNum = 0;
+            int xEnd = Math.Min(xIndex2, xIndex1 + maxDigits);
+            for (int i = xIndex1 + 1; i < xEnd; i++)
+            {
+                char c = x[i];
+                if (c.IsAsciiNumeric())
+                {
+                    xNum *= 10;
+                    xNum += c - '0';
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            int yIndex1 = y.IndexOf('_');
+            int yIndex2 = y.IndexOf(':', yIndex1);
+
+            int yNum = 0;
+            int yEnd = Math.Min(yIndex2, yIndex1 + maxDigits);
+            for (int i = yIndex1 + 1; i < yEnd; i++)
+            {
+                char c = y[i];
+                if (c.IsAsciiNumeric())
+                {
+                    yNum *= 10;
+                    yNum += c - '0';
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+
+            return xNum - yNum;
+        }
+    }
+
+    internal sealed class FMScanOriginalIndexComparer : IComparer<ScannedFMDataAndError>
+    {
+        public int Compare(ScannedFMDataAndError x, ScannedFMDataAndError y)
+        {
+            return x.OriginalIndex.CompareTo(y.OriginalIndex);
+        }
+    }
 
     #endregion
 }
