@@ -5429,10 +5429,11 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < invCount; i++)
             {
                 int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
-                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
-
                 uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
                 int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+
+                // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
+                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
@@ -5835,7 +5836,8 @@ public sealed class Scanner : IDisposable
     }
 
     private void ReadAllLinesDetectEncoding(
-        NameAndIndex item, List<string> lines,
+        NameAndIndex item,
+        List<string> lines,
         DetectEncodingType type = DetectEncodingType.Standard)
     {
         lines.Clear();
