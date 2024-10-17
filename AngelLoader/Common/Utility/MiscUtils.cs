@@ -156,48 +156,6 @@ public static partial class Utils
         return false;
     }
 
-    internal static bool WinVersionIs7OrAbove()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(6, 1);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    internal static bool WinVersionIs8OrAbove()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(6, 2);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    internal static bool WinVersionSupportsDarkMode()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(10, 0, 17763);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
     internal static string AutodetectDarkLoaderFile(string fileName)

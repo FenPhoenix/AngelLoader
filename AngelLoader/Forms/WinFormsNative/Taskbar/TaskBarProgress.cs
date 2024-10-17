@@ -26,7 +26,7 @@ internal static class TaskBarProgress
     [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
     private static readonly ITaskbarList3 _instance = (ITaskbarList3)new TaskbarInstance();
 
-    private static readonly bool _taskbarSupported = Utils.WinVersionIs7OrAbove();
+    private static readonly bool _taskbarSupported = WinVersion.Is7OrAbove;
 
     internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
     {

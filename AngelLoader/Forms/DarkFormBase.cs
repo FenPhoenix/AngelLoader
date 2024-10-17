@@ -74,7 +74,7 @@ public
         Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
-        if (Utils.WinVersionSupportsDarkMode())
+        if (WinVersion.SupportsDarkMode)
         {
             // Set title bar theme
             int value = theme == VisualTheme.Dark ? 1 : 0;
