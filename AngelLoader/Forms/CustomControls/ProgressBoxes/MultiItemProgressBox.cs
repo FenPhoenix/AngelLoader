@@ -13,6 +13,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls;
 
 // @MT_TASK: Make this resizable somehow? Maybe even make it a window?
+// @MT_TASK: Add percent setting back in regardless of if we add the progress bar back or not, because we want taskbar progress
 public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
