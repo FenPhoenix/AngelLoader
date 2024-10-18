@@ -2,6 +2,5 @@
 	<PropertyGroup>
 		<SolutionTargetFramework>net8.0-windows</SolutionTargetFramework>
 		<SmartNewColumnInsert></SmartNewColumnInsert>
-		<!--<CompressUdeDataArrays>CompressUdeDataArrays</CompressUdeDataArrays>-->
 	</PropertyGroup>
 </Project>

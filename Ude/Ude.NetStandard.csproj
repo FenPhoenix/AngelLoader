@@ -20,12 +20,6 @@
 
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-windows|x64'">
-    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-windows|x64'">
-    <DefineConstants>$(DefineConstants);$(CompressUdeDataArrays)</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="SpanExtensions.Net" Version="1.4.1" />
   </ItemGroup>
