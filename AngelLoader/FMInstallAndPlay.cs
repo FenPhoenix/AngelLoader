@@ -2766,7 +2766,15 @@ internal static partial class FMInstallAndPlay
 
     #region Uninstall
 
-    // @MT_TASK(Uninstall): Multithread this (remember that FM deletion code calls this too!)
+    /*
+    @MT_TASK(Uninstall): Multithread this (remember that FM deletion code calls this too!)
+    @MT_TASK(Uninstall): We may actually want to revert this to single threaded, for operation-stop safety:
+    If the user clicks "Stop", we may be in the middle of several delete operations and they're all going to
+    finish before the operation stops. Whereas if we're single-threaded, we'll stop immediately after the current
+    FM. This delayed-cancel behavior is fine for cancel-semantics (revertible) operations, but stop-semantics
+    (non-revertible) operations don't play as well with it. This would also be a convenient excuse to sidestep
+    the entire set of difficulties we're having with multithreading this thing. Shame to lose performance, but eh...
+    */
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
