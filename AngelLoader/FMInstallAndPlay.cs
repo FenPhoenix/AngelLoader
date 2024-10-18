@@ -2893,7 +2893,7 @@ internal static partial class FMInstallAndPlay
 
                         if (doEndTasks && !skipUninstallWithNoArchiveWarning)
                         {
-                            // @MT_TASK: Assign view indexes skipping skip-uninstall FMs, so we can hide them from the progress box items list
+                            // @MT_TASK: Test this code path for "no" result
                             (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
                                 message: fmData.FM.GetId() + $"{NL}{NL}" +
                                          LText.AlertMessages.Uninstall_ArchiveNotFound,
