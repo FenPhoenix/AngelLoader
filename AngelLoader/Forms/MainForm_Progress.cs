@@ -210,6 +210,7 @@ public sealed partial class MainForm
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         string? mainProgressMessage = null,
+        int? percent = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
@@ -219,6 +220,7 @@ public sealed partial class MainForm
             visible: true,
             mainMessage1: message1,
             mainProgressMessage: mainProgressMessage,
+            percent: percent,
             cancelButtonMessage: cancelMessage ?? MultiItemProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
@@ -227,6 +229,7 @@ public sealed partial class MainForm
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         string? mainProgressMessage = null,
+        int? percent = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
@@ -236,6 +239,7 @@ public sealed partial class MainForm
             visible: null,
             mainMessage1: message1,
             mainProgressMessage: mainProgressMessage,
+            percent: percent,
             cancelButtonMessage: cancelMessage,
             cancelAction: cancelAction);
     });

@@ -129,6 +129,12 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         messageItem.Width = -1;
     }
 
+    private void SetPercent(int percent)
+    {
+        percent = percent.Clamp(0, 100);
+        _owner.SetTaskBarValue(percent, 100);
+    }
+
     private int GetRequiredWidth()
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];
@@ -196,6 +202,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     /// <param name="visible"></param>
     /// <param name="mainMessage1"></param>
     /// <param name="mainProgressMessage"></param>
+    /// <param name="percent"></param>
     /// <param name="cancelButtonMessage"></param>
     /// <param name="cancelAction">Pass <see cref="T:NullAction"/> to hide the cancel button.</param>
     internal void SetState(
@@ -203,6 +210,7 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         bool? visible,
         string? mainMessage1,
         string? mainProgressMessage,
+        int? percent,
         string? cancelButtonMessage,
         Action? cancelAction)
     {
@@ -215,6 +223,10 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         {
             SetLabelText(MessageItemType.MainProgress, mainProgressMessage);
             AutoSizeWidth();
+        }
+        if (percent != null)
+        {
+            SetPercent((int)percent);
         }
         if (cancelButtonMessage != null)
         {

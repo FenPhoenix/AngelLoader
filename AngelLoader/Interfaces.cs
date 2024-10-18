@@ -183,6 +183,7 @@ public interface IView : ISettingsChangeableView
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         string? mainProgressMessage = null,
+        int? percent = null,
         string? cancelMessage = null,
         Action? cancelAction = null);
 
@@ -190,6 +191,7 @@ public interface IView : ISettingsChangeableView
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
         string? mainProgressMessage = null,
+        int? percent = null,
         string? cancelMessage = null,
         Action? cancelAction = null);
 

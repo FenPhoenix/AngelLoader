@@ -1982,6 +1982,9 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
+
+                    Core.View.MultiItemProgress_SetState(percent: 0);
+
                     List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadingData);
 
                     if (rollbackErrorResults.Count > 0)
@@ -2323,8 +2326,11 @@ internal static partial class FMInstallAndPlay
             percent: 100,
             progressType: ProgressType.Determinate);
 
+        // @MT_TASK: Percent for one FM should go up in sync with the one FM's progress, not binary as it is now
+        // We could pick back up the trying to set percent based on all completed FMs' state again.
         Core.View.MultiItemProgress_SetState(
-            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
+            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur(),
+            percent: GetPercentFromValue_Int(fmsFinishedCount, fmDataListCount)
         );
     }
 
