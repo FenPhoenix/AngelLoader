@@ -276,9 +276,8 @@ internal static class FMDelete
                 /*
                 @MT_TASK(FMDelete Uninstall() call):
                 This just calls Uninstall() with a list like normal, so we don't really have to change anything
-                on this side. However, if we decide to use the multi-item progress box in Uninstall(), then we
-                need to account for that here, both by using it ourselves and by remembering which one to hide
-                after Uninstall().
+                on this side. However, we need to use the multi-item progress box here to keep it consistent and
+                also to hide the right one (if we hid the single progress box, we'd get into a softlock state).
                 */
                 try
                 {

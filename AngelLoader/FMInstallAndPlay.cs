@@ -1870,7 +1870,6 @@ internal static partial class FMInstallAndPlay
                 if (fmDataList.Count == 0) return false;
 
                 (string Line1, string Line2)[] fmInstallInitialItems = new (string Line1, string Line2)[fmDataList.Count];
-
                 for (int i = 0; i < fmDataList.Count; i++)
                 {
                     fmDataList[i].ViewItemIndex = i;
@@ -1883,7 +1882,7 @@ internal static partial class FMInstallAndPlay
                 Core.View.MultiItemProgress_SetState(
                     initialRowTexts: fmInstallInitialItems,
                     message1: fmDataList.Count == 1 ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                    mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count,
+                    mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count.ToStrCur(),
                     cancelMessage: LText.Global.Cancel,
                     cancelAction: CancelInstallToken);
 
@@ -2325,7 +2324,7 @@ internal static partial class FMInstallAndPlay
             progressType: ProgressType.Determinate);
 
         Core.View.MultiItemProgress_SetState(
-            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount
+            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
         );
     }
 
@@ -2864,24 +2863,11 @@ internal static partial class FMInstallAndPlay
             {
                 _uninstallCts = _uninstallCts.Recreate();
 
-                if (single)
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        visible: true,
-                        message1: LText.ProgressBox.UninstallingFM,
-                        progressType: ProgressType.Indeterminate
-                    );
-                }
-                else
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        visible: true,
-                        message1: LText.ProgressBox.UninstallingFMs,
-                        progressType: ProgressType.Determinate,
-                        cancelMessage: LText.Global.Stop,
-                        cancelAction: CancelUninstallToken
-                    );
-                }
+                Core.View.MultiItemProgress_Show(
+                    message1: LText.ProgressBox.UninstallingFMs,
+                    cancelMessage: LText.Global.Stop,
+                    cancelAction: CancelUninstallToken
+                );
 
                 bool skipUninstallWithNoArchiveWarning = false;
 
@@ -2932,8 +2918,12 @@ internal static partial class FMInstallAndPlay
                     }
                 }
 
+                #endregion
+
                 // @MT_TASK: Can we just remove FMs from the list instead of marking them?
                 // Remember to check if list length == 0 and return without doing anything if so
+
+                List<(string Line1, string Line2)> fmItemsList = new(fmDataList.Count);
                 for (int i = 0, viewItemIndex = 0; i < fmDataList.Count; i++)
                 {
                     FMData fmData = fmDataList[i];
@@ -2941,10 +2931,17 @@ internal static partial class FMInstallAndPlay
                     {
                         fmData.ViewItemIndex = viewItemIndex;
                         viewItemIndex++;
+                        fmItemsList.Add((fmData.FM.InstalledDir, LText.ProgressBox.Queued));
                     }
                 }
 
-                #endregion
+                int fmsFinishedCount = 0;
+
+                Core.View.MultiItemProgress_SetState(
+                    // @MT_TASK: Array alloc we can remove some way or another later if we feel like it
+                    initialRowTexts: fmItemsList.ToArray(),
+                    mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmItemsList.Count.ToStrCur()
+                );
 
                 ConcurrentBag<FMUninstallResult> errors = new();
 
@@ -2991,6 +2988,12 @@ internal static partial class FMInstallAndPlay
                             {
                                 if (doBackup)
                                 {
+                                    Core.View.MultiItemProgress_SetItemData(
+                                        index: fmData.ViewItemIndex,
+                                        line1: fmData.FM.InstalledDir,
+                                        line2: LText.ProgressBox.PerformingBackup,
+                                        progressType: ProgressType.Indeterminate);
+
                                     /*
                                     If fm.Archive is blank, then fm.InstalledDir will be used for the backup file
                                     name instead. This file will be included in the search when restoring, and the
@@ -3034,6 +3037,8 @@ internal static partial class FMInstallAndPlay
                                         We should maybe have a "force uninstall, your data will not be backed up"
                                         kind of thing?
                                         @MT_TASK: Leaving FM installed will also mess up FMDelete!
+
+                                        @MT_TASK: Need to set item to error state here?
                                         */
                                         continue;
                                     }
@@ -3042,6 +3047,12 @@ internal static partial class FMInstallAndPlay
                                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                                     }
                                 }
+
+                                Core.View.MultiItemProgress_SetItemData(
+                                    index: fmData.ViewItemIndex,
+                                    line1: fmData.FM.InstalledDir,
+                                    line2: LText.ProgressBox.UninstallingFM,
+                                    progressType: ProgressType.Indeterminate);
 
                                 // TODO: Give the user the option to retry or something, if it's cause they have a file open
                                 // Make option to open the folder in Explorer and delete it manually?
@@ -3056,14 +3067,18 @@ internal static partial class FMInstallAndPlay
                             fmData.FM.Installed = false;
                             if (fmData.Uninstall_MarkFMAsUnavailable) fmData.FM.MarkedUnavailable = true;
 
-                            // @MT_TASK: Use multi-item progress box for uninstall (and remove single path)
-                            if (!single)
-                            {
-                                //Core.View.SetProgressBoxState_Single(
-                                //    message2: fm.GetId(),
-                                //    percent: GetPercentFromValue_Int(i + 1, fmDataList.Count)
-                                //);
-                            }
+                            Interlocked.Increment(ref fmsFinishedCount);
+
+                            Core.View.MultiItemProgress_SetState(
+                                mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmItemsList.Count.ToStrCur()
+                            );
+
+                            Core.View.MultiItemProgress_SetItemData(
+                                index: fmData.ViewItemIndex,
+                                line1: fmData.FM.InstalledDir,
+                                line2: LText.ProgressBox.UninstallComplete,
+                                percent: 100,
+                                progressType: ProgressType.Determinate);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
                         }
@@ -3119,7 +3134,7 @@ internal static partial class FMInstallAndPlay
             Ini.WriteFullFMDataIni();
             if (doEndTasks)
             {
-                Core.View.HideProgressBox();
+                Core.View.MultiItemProgress_Hide();
 
                 await DoUninstallEndTasks(atLeastOneFMMarkedUnavailable);
             }

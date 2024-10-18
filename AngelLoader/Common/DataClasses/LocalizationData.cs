@@ -748,12 +748,14 @@ internal sealed class LText_Class
         [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
         internal readonly string InstallFailed = "Install failed.";
-        [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
+        [FenGenComment("For example, we could be backing up (or restoring) saves and screenshots for this FM")]
+        internal readonly string PerformingBackup = "Performing backup...";
         internal readonly string RestoringBackup = "Restoring backup...";
         internal readonly string InstallComplete = "Install complete.";
         [FenGenBlankLine]
         internal readonly string UninstallingFM = "Uninstalling FM...";
         internal readonly string UninstallingFMs = "Uninstalling FMs...";
+        internal readonly string UninstallComplete = "Uninstall complete.";
         [FenGenBlankLine]
         internal readonly string ConvertingAudioFiles = "Converting audio files...";
         [FenGenBlankLine]
