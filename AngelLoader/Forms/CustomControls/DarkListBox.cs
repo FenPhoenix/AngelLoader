@@ -10,6 +10,7 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls;
 
 // BUG: DarkListBox: DPI (possible) can mess up auto-column-size
+// @NET5(DarkListBox .NET 9 dark mode breakage): Disabled background color is classic mode color in .NET 9
 public class DarkListBox : ListView, IDarkable, IUpdateRegion
 {
     private bool _ctrlDown;
