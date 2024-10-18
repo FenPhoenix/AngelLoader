@@ -3036,7 +3036,7 @@ internal static partial class FMInstallAndPlay
                                             fmData,
                                             fileBufferPool);
                                     }
-                                    catch (Exception ex)
+                                    catch (Exception ex) when (ex is not OperationCanceledException)
                                     {
                                         fmData.FM.LogInfo(ErrorText.ExTry + "back up FM", ex);
                                         errors.Add(new FMUninstallResult(
