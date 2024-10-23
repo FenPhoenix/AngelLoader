@@ -352,6 +352,8 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 
     internal new void Hide()
     {
+        if (!Visible) return;
+
         ItemsDGV.IndeterminateProgressBarsRefCount = 0;
 
         _owner.SetTaskBarState(TaskbarStates.NoProgress);

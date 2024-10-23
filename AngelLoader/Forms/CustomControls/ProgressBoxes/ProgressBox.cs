@@ -227,11 +227,13 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
     #region Internal methods
 
-    internal void HideThis()
+    internal new void Hide()
     {
+        if (!Visible) return;
+
         _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
-        Hide();
+        base.Hide();
 
         SetLabelText(MessageItemType.MainMessage1, "");
         SetLabelText(MessageItemType.MainMessage2, "");
@@ -407,7 +409,7 @@ public sealed partial class ProgressBox : UserControl, IDarkable
             }
             else
             {
-                HideThis();
+                Hide();
             }
         }
     }

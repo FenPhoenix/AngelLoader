@@ -196,7 +196,7 @@ public sealed partial class MainForm
 
     #endregion
 
-    public void HideProgressBox() => Invoke(() => ProgressBox?.HideThis());
+    public void HideProgressBox() => Invoke(() => ProgressBox?.Hide());
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
 
