@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 
@@ -375,7 +375,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
                 {
                     _menuItemsDict[encItem.Field] = encItem;
                     Encoding enc = Encoding.GetEncoding(encItem.Field);
-                    encItem.Text = enc.EncodingName + " (" + enc.CodePage.ToString(NumberFormatInfo.CurrentInfo) + ")";
+                    encItem.Text = enc.EncodingName + " (" + enc.CodePage.ToStrCur() + ")";
                     encItem.CheckOnClick = true;
                 }
                 encItem.CheckedChanged += MenuItems_CheckedChanged;

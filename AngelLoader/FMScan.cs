@@ -270,7 +270,7 @@ internal static class FMScan
 #endif
                         reportCachedString =
                             LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                            fmsTotalCount.ToString(NumberFormatInfo.CurrentInfo) +
+                            fmsTotalCount.ToStrCur() +
                             LText.ProgressBox.ReportScanningLast;
 
                         ThreadingData threadingData = GetLowestCommonThreadingData(
@@ -572,7 +572,7 @@ internal static class FMScan
                     message1:
                     scanMessage ??
                     LText.ProgressBox.ReportScanningFirst +
-                    fmNumber.ToString(NumberFormatInfo.CurrentInfo) +
+                    fmNumber.ToStrCur() +
                     reportCachedString,
                     message2:
                     pr.FMName,

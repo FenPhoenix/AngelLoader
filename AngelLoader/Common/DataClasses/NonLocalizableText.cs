@@ -101,7 +101,7 @@ internal static partial class NonLocalizableText
                 _percentStrings = new string[101];
                 for (int i = 0; i < 101; i++)
                 {
-                    _percentStrings[i] = i.ToString(NumberFormatInfo.CurrentInfo) + "%";
+                    _percentStrings[i] = i.ToStrCur() + "%";
                 }
             }
             return _percentStrings;

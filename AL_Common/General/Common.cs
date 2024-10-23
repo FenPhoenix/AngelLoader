@@ -166,20 +166,20 @@ public static partial class Common
     public static string ToStrInv(this byte value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this int value) => value.ToString(CultureInfo.CurrentCulture);
+    public static string ToStrCur(this int value) => value.ToString(NumberFormatInfo.CurrentInfo);
 
     /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this double value) => value.ToString(CultureInfo.CurrentCulture);
+    public static string ToStrCur(this double value) => value.ToString(NumberFormatInfo.CurrentInfo);
 
     public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 

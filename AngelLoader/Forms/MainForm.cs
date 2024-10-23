@@ -4322,7 +4322,8 @@ public sealed partial class MainForm : DarkFormBase,
                 // Manual hours display to avoid hours being reset back to 0 when days increments to 1
                 TimeSpan playTime = fm.PlayTime;
                 string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
-                e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep + playTime.ToString(@"mm\" + sep + "ss");
+                e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep +
+                          playTime.ToString(@"mm\" + sep + "ss", DateTimeFormatInfo.CurrentInfo);
                 break;
             }
 
