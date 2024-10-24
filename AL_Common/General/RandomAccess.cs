@@ -62,11 +62,6 @@ public static class RandomAccess
 
     private static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
     {
-        //if (handle.IsAsync)
-        //{
-        //    return ReadSyncUsingAsyncHandle(handle, buffer, fileOffset);
-        //}
-
         NativeOverlapped overlapped = GetNativeOverlappedForSyncHandle(handle, fileOffset);
         fixed (byte* pinned = &MemoryMarshal.GetReference(buffer))
         {
@@ -106,8 +101,6 @@ public static class RandomAccess
 
     private static NativeOverlapped GetNativeOverlappedForSyncHandle(AL_SafeFileHandle handle, long fileOffset)
     {
-        //Debug.Assert(!handle.IsAsync);
-
         NativeOverlapped result = default;
         if (handle.CanSeek)
         {

@@ -83,8 +83,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         SetHandle(preexistingHandle);
     }
 
-    //internal string? Path => _path;
-
     internal const FileOptions NoBuffering = (FileOptions)0x20000000;
     private long _length = -1; // negative means that hasn't been fetched.
     private volatile FileOptions _fileOptions = (FileOptions)(-1);
@@ -214,7 +212,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <summary>
     /// WARNING: This method does not implicitly handle long paths. Use CreateFile.
     /// </summary>
-    //[LibraryImport(Libraries.Kernel32, EntryPoint = "CreateFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [DllImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern unsafe AL_SafeFileHandle CreateFilePrivate(
         string lpFileName,

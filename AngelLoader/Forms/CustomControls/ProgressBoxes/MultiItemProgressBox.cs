@@ -139,8 +139,6 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
     {
         MessageItem messageItemMain1 = MessageItems[(int)MessageItemType.MainMessage1];
         MessageItem messageItemProgress = MessageItems[(int)MessageItemType.MainProgress];
-        //MessageItem messageItemMain2 = MessageItems[(int)MessageItemType.MainMessage2];
-        //MessageItem messageItemSub = MessageItems[(int)MessageItemType.SubMessage];
 
         if (messageItemMain1.Width == -1)
         {
@@ -152,17 +150,6 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             messageItemProgress.Width = TextRenderer.MeasureText(messageItemProgress.Text, messageItemProgress.Label.Font).Width;
         }
 
-        //if (messageItemMain2.Width == -1)
-        //{
-        //    messageItemMain2.Width = TextRenderer.MeasureText(messageItemMain2.Text, messageItemMain2.Label.Font).Width;
-        //}
-
-        //if (messageItemSub.Width == -1)
-        //{
-        //    messageItemSub.Width = TextRenderer.MeasureText(messageItemSub.Text, messageItemSub.Label.Font).Width;
-        //}
-
-        //int requiredWidth = MathMax3(messageItemMain1.Width, messageItemMain2.Width, messageItemSub.Width);
         int requiredWidth = Math.Max(messageItemMain1.Width, messageItemProgress.Width);
         return requiredWidth;
     }

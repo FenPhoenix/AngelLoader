@@ -2970,7 +2970,9 @@ internal static partial class FMInstallAndPlay
                     FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
                     if (result.ResultType != UninstallResultType.UninstallSucceeded)
                     {
-                        fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
+                        fm.LogInfo(ErrorText.Un + "delete FM installed directory." + $"{NL}" +
+                                   "Error message: " + result.ErrorMessage + $"{NL}" +
+                                   "Result type: " + result.ResultType, ex: result.Exception);
                         Core.Dialogs.ShowError(
                             LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
                             "FM: " + fm.GetId());
