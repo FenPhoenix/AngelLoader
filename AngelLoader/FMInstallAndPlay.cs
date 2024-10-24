@@ -1728,59 +1728,6 @@ internal static partial class FMInstallAndPlay
             (!FM.Archive.IsEmpty() ? FMArchiveNoExtension : FM.InstalledDir) +
             Paths.FMBackupSuffix);
 
-        internal static bool ThreadSafe(List<FMData> fmDataList)
-        {
-            /*
-            Absolute cheapest solution: any dupes and we just force threads to 1.
-            The only two ways we can have dupes are either if we have outright duplicate archive names,
-            or we have archive names that are identical except for their extension. Both cases are pretty
-            unlikely. So even though this is a crappy as hell solution, it's an acceptable band-aid for
-            an edge case.
-            @MT_TASK: Test this
-            */
-            HashSetI tempHash = new(fmDataList.Count);
-
-            for (int i = 0; i < fmDataList.Count; i++)
-            {
-                FMData fmData = fmDataList[i];
-
-                if (!tempHash.Add(fmData.ArchiveNoExtensionWhitespaceTrimmed))
-                {
-#if TIMING_TEST
-                    Trace.WriteLine(
-                        "--- Uninstall: Found duplicate FM archive; using 1 thread." + $"{NL}" +
-                        "--- FM info:" + $"{NL}" +
-                        "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
-                        "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
-                        "    Duplicate archive name was: " + fmData.ArchiveNoExtensionWhitespaceTrimmed);
-#endif
-                    return false;
-                }
-            }
-
-            tempHash.Clear();
-
-            for (int i = 0; i < fmDataList.Count; i++)
-            {
-                FMData fmData = fmDataList[i];
-
-                if (!tempHash.Add(fmData.BakFile))
-                {
-#if TIMING_TEST
-                    Trace.WriteLine(
-                        "--- Uninstall: Found duplicate backup file name; using 1 thread." + $"{NL}" +
-                        "--- FM info:" + $"{NL}" +
-                        "    fm." + nameof(fmData.FM.Archive) + ": " + fmData.FM.Archive + $"{NL}" +
-                        "    fm." + nameof(fmData.FM.InstalledDir) + ": " + fmData.FM.InstalledDir + $"{NL}" +
-                        "    Duplicate backup file name was: " + fmData.BakFile);
-#endif
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
         {
             FM = fm;
@@ -2773,13 +2720,11 @@ internal static partial class FMInstallAndPlay
     #region Uninstall
 
     /*
-    @MT_TASK(Uninstall): Multithread this (remember that FM deletion code calls this too!)
-    @MT_TASK(Uninstall): We may actually want to revert this to single threaded, for operation-stop safety:
     If the user clicks "Stop", we may be in the middle of several delete operations and they're all going to
     finish before the operation stops. Whereas if we're single-threaded, we'll stop immediately after the current
     FM. This delayed-cancel behavior is fine for cancel-semantics (revertible) operations, but stop-semantics
-    (non-revertible) operations don't play as well with it. This would also be a convenient excuse to sidestep
-    the entire set of difficulties we're having with multithreading this thing. Shame to lose performance, but eh...
+    (non-revertible) operations don't play as well with it. This is also a convenient excuse to sidestep the
+    entire set of difficulties we were having with multithreading this thing. Shame to lose performance, but eh...
     @MT_TASK: Bring this up to date with the multithreaded version in terms of other things I did
     */
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
@@ -2994,22 +2939,26 @@ internal static partial class FMInstallAndPlay
                         catch (Exception ex)
                         {
                             fmData.FM.LogInfo(ErrorText.ExTry + "back up FM", ex);
-                            // @MT_TASK: Handle error in some way here, taking into account the below notes
-                            //errors.Add(new FMUninstallResult(
-                            //    fmData,
-                            //    UninstallResultType.BackupFailed,
-                            //    LText.AlertMessages.Uninstall_Backup_Error,
-                            //    ex));
-                            /*
-                            @MT_TASK: We leave FMs installed now if we can't back them up, for safety. But:
-                            That might also annoy users because now they can't uninstall (even though
-                            we're trying to do right by them by protecting their saves etc).
-                            We should maybe have a "force uninstall, your data will not be backed up"
-                            kind of thing?
-                            @MT_TASK: Leaving FM installed will also mess up FMDelete!
-                            */
-                            continue;
+                            (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                                message:
+                                fm.InstalledDir + $"{NL}{NL}" +
+                                LText.AlertMessages.Uninstall_BackupError,
+                                LText.AlertMessages.Alert,
+                                icon: MBoxIcon.Warning,
+                                yes: LText.AlertMessages.Uninstall_BackupError_KeepInstalled,
+                                no: LText.AlertMessages.Uninstall_BackupError_UninstallWithoutBackup,
+                                cancel: LText.Global.Cancel,
+                                noIsDangerous: true,
+                                defaultButton: MBoxButton.Yes);
 
+                            if (buttonPressed == MBoxButton.Yes)
+                            {
+                                continue;
+                            }
+                            else if (buttonPressed == MBoxButton.Cancel)
+                            {
+                                return (false, atLeastOneFMMarkedUnavailable);
+                            }
                         }
                     }
 

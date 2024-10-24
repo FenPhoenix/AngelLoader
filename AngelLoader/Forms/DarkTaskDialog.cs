@@ -32,6 +32,8 @@ public partial class DarkTaskDialog : DarkFormBase
         string? noText = null,
         string? cancelText = null,
         bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
         string? checkBoxText = null,
         bool? checkBoxChecked = null,
         MBoxButton defaultButton = MBoxButton.Cancel)
@@ -82,6 +84,20 @@ public partial class DarkTaskDialog : DarkFormBase
             YesButton.TextImageRelation = TextImageRelation.ImageBeforeText;
             YesButton.ImageAlign = ContentAlignment.MiddleCenter;
             YesButton.Image = Images.RedExclCircle;
+        }
+
+        if (noIsDangerous && _noButtonVisible)
+        {
+            NoButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            NoButton.ImageAlign = ContentAlignment.MiddleCenter;
+            NoButton.Image = Images.RedExclCircle;
+        }
+
+        if (cancelIsDangerous && _cancelButtonVisible)
+        {
+            Cancel_Button.TextImageRelation = TextImageRelation.ImageBeforeText;
+            Cancel_Button.ImageAlign = ContentAlignment.MiddleCenter;
+            Cancel_Button.Image = Images.RedExclCircle;
         }
 
         if (yesText != null) YesButton.Text = yesText;

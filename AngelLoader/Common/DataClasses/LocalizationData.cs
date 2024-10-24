@@ -227,7 +227,9 @@ internal sealed class LText_Class
         internal readonly string Uninstall_OneOrMoreFMsFailedToUninstall = "One or more FMs could not be uninstalled. See the log file for details.";
         internal readonly string Uninstall_OneOrMoreFMsCouldNotBeBackedUp = "One or more FMs could not be backed up. These FMs will remain installed. See the log file for details.";
         internal readonly string Uninstall_Error = "One or more errors occurred during the uninstall process. See the log file for details.";
-        internal readonly string Uninstall_Backup_Error = "The FM backup process could not be completed. The FM remains installed.";
+        internal readonly string Uninstall_BackupError = "The FM backup failed. If you choose to uninstall the FM anyway, you will lose any saves, screenshots, and modified data that would normally have been backed up.";
+        internal readonly string Uninstall_BackupError_KeepInstalled = "Keep installed";
+        internal readonly string Uninstall_BackupError_UninstallWithoutBackup = "Uninstall without backup";
         [FenGenComment(
             "During the FM install process, either the user canceled the install or the install failed, and during the attempt to remove the leftover",
             "FM installed folder, an error occurred.")]

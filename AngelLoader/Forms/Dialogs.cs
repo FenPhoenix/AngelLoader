@@ -51,6 +51,8 @@ internal sealed class Dialogs : IDialogs
     /// <param name="no"></param>
     /// <param name="cancel"></param>
     /// <param name="yesIsDangerous"></param>
+    /// <param name="noIsDangerous"></param>
+    /// <param name="cancelIsDangerous"></param>
     /// <param name="checkBoxText"></param>
     /// <param name="defaultButton"></param>
     /// <returns></returns>
@@ -63,6 +65,8 @@ internal sealed class Dialogs : IDialogs
         string? no,
         string? cancel = null,
         bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
         string? checkBoxText = null,
         MBoxButton defaultButton = MBoxButton.Yes) =>
         ((MBoxButton, bool))InvokeIfViewExists(() =>
@@ -75,6 +79,8 @@ internal sealed class Dialogs : IDialogs
                 noText: no,
                 cancelText: cancel,
                 yesIsDangerous: yesIsDangerous,
+                noIsDangerous: noIsDangerous,
+                cancelIsDangerous: cancelIsDangerous,
                 checkBoxText: checkBoxText,
                 defaultButton: defaultButton);
 
