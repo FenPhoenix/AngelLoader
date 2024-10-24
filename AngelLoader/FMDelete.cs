@@ -273,12 +273,6 @@ internal static class FMDelete
                         i2++;
                     }
                 }
-                /*
-                @MT_TASK(FMDelete Uninstall() call):
-                This just calls Uninstall() with a list like normal, so we don't really have to change anything
-                on this side. However, we need to use the multi-item progress box here to keep it consistent and
-                also to hide the right one (if we hid the single progress box, we'd get into a softlock state).
-                */
                 try
                 {
                     (bool success, bool uninstMarkedAnFMUnavailable) =
@@ -288,8 +282,8 @@ internal static class FMDelete
                         /*
                         Uninstall() does hide it in the finally block BUT only if it's running end tasks!
                         We've told it not to here, so that's why we have to hide it ourselves.
-                        This is to do with keeping one progress box up for the whole operation without closing and
-                        reopening flicker I guess.
+                        This is to do with keeping one progress box up for the whole operation without closing
+                        and reopening flicker I guess.
                         */
                         Core.View.HideProgressBox();
                         await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);

@@ -2971,7 +2971,6 @@ internal static partial class FMInstallAndPlay
                     if (result.ResultType != UninstallResultType.UninstallSucceeded)
                     {
                         fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
-                        // @MT_TASK(Uninstall error): Dialog in multithreading area
                         Core.Dialogs.ShowError(
                             LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
                             "FM: " + fm.GetId());
