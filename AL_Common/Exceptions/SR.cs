@@ -66,6 +66,7 @@ public static class SR
     public static readonly string Arg_InvalidHandle = "Invalid handle.";
     public static readonly string ObjectDisposed_FileClosed = "Cannot access a closed file.";
     public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
+    public static readonly string EntryNameEncodingNotSupported = "Entry name encoding not supported.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
     public static readonly string Argument_InvalidOffLen =

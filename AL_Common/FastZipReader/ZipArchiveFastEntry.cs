@@ -30,7 +30,8 @@ public sealed class ZipArchiveFastEntry
     /// The last write time of the entry as stored in the Zip archive. To convert to a DateTime object, use
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
-    // @MT_TASK: Test identicality of LastWriteTime with ZipArchive vs ZipArchiveFast
+    // .NET Framework: LastWriteTimes for full set tested identical between ZipArchive and ZipArchiveFast
+    // @MT_TASK/@NET5: Test identicality of LastWriteTime with ZipArchive vs ZipArchiveFast with .NET modern
     public uint LastWriteTime;
 
     /// <summary>
@@ -73,7 +74,8 @@ public sealed class ZipArchiveFastEntry
         // but entryname/extra length could be different in LH
         StoredOffsetOfCompressedData = null;
 
-        // @MT_TASK: Test identicality in filenames for all FM zips between ZipArchive and ZipArchiveFast
+        // .NET Framework: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
+        // @MT_TASK/@NET5: Test filename identicality for .NET modern
         // @MT_TASK: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
         Encoding finalEncoding;
         if (!useEntryNameEncodingCodePath)

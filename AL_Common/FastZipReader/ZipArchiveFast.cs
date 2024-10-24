@@ -187,6 +187,18 @@ public sealed class ZipArchiveFast : IDisposable
         Encoding? entryNameEncoding,
         bool useEntryNameEncodingCodePath)
     {
+        // Matching Framework
+        // @NET5: Match this to .NET modern behavior
+        if (useEntryNameEncodingCodePath &&
+            entryNameEncoding != null &&
+            (entryNameEncoding.Equals(Encoding.BigEndianUnicode) ||
+             entryNameEncoding.Equals(Encoding.Unicode) ||
+             entryNameEncoding.Equals(Encoding.UTF32) ||
+             entryNameEncoding.Equals(Encoding.UTF7)))
+        {
+            throw new ArgumentException(SR.EntryNameEncodingNotSupported, nameof(entryNameEncoding));
+        }
+
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
         if (stream == null) throw new ArgumentNullException(nameof(stream));
