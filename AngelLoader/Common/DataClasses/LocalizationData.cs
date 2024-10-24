@@ -223,6 +223,7 @@ internal sealed class LText_Class
         internal readonly string Uninstall_BackupSavesAndScreenshots = "Back up saves and screenshots?";
         internal readonly string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
         internal readonly string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";
+        internal readonly string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
         internal readonly string Uninstall_OneOrMoreFMsFailedToUninstall = "One or more FMs could not be uninstalled. See the log file for details.";
         internal readonly string Uninstall_OneOrMoreFMsCouldNotBeBackedUp = "One or more FMs could not be backed up. These FMs will remain installed. See the log file for details.";
         internal readonly string Uninstall_Error = "One or more errors occurred during the uninstall process. See the log file for details.";

@@ -105,7 +105,7 @@ internal static partial class FMInstallAndPlay
     private static void BackupFM(
         DarkLoaderBackupContext ctx,
         FMData fmData,
-        FixedLengthByteArrayPool fileBufferPool)
+        byte[] fileStreamBuffer)
     {
         FanMission fm = fmData.FM;
 
@@ -123,8 +123,6 @@ internal static partial class FMInstallAndPlay
         string ss2CurrentPath = Path.Combine(fmData.InstBasePath, fm.InstalledDir, _ss2CurrentDir);
 
         string bakFile = fmData.BakFile;
-
-        using FixedLengthByteArrayRentScope fileStreamBufferScope = new(fileBufferPool);
 
         if (backupSavesAndScreensOnly)
         {
@@ -171,7 +169,7 @@ internal static partial class FMInstallAndPlay
                 foreach (string f in savesAndScreensFiles)
                 {
                     string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
-                    AddEntry(archive, f, fn, fileStreamBufferScope.Array);
+                    AddEntry(archive, f, fn, fileStreamBuffer);
                 }
             }
 
@@ -185,7 +183,7 @@ internal static partial class FMInstallAndPlay
             GetDiffBetweenFMInstalledDirAndFMArchive(
                 installedFMFiles,
                 fmData,
-                fileStreamBufferScope.Array);
+                fileStreamBuffer);
 
         // If >90% of files are different, re-run and use only size difference
         // They could have been extracted with NDL which uses SevenZipSharp and that one puts different
@@ -196,7 +194,7 @@ internal static partial class FMInstallAndPlay
                 GetDiffBetweenFMInstalledDirAndFMArchive(
                     installedFMFiles,
                     fmData,
-                    fileStreamBufferScope.Array,
+                    fileStreamBuffer,
                     useOnlySize: true);
         }
 
@@ -217,7 +215,7 @@ internal static partial class FMInstallAndPlay
                         (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
                          (changedList.Contains(fn) || addedList.Contains(fn))))
                     {
-                        AddEntry(archive, f, fn, fileStreamBufferScope.Array);
+                        AddEntry(archive, f, fn, fileStreamBuffer);
                     }
                 }
 
