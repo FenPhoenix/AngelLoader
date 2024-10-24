@@ -533,15 +533,6 @@ internal static class Core
         bool fuzzySearchChanged =
             !startup && Config.EnableFuzzySearch != outConfig.EnableFuzzySearch;
 
-        // Used even on startup
-        bool diskTypeNeedsUpdate =
-            startup ||
-            archivePathsChanged ||
-            gamePathsChanged ||
-            // @MT_TASK: Add backup path check here too
-            (Config.IOThreadingLevel != IOThreadingLevel.Auto &&
-             outConfig.IOThreadingLevel == IOThreadingLevel.Auto);
-
         #endregion
 
         #region Set config data
@@ -571,14 +562,6 @@ internal static class Core
             if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTDMWatchers;
 
             Config.SetUseSteamSwitch(gameIndex, outConfig.GetUseSteamSwitch(gameIndex));
-        }
-
-        // This one must come before startup early exit, because it needs to run again even on startup in case
-        // the paths changed. But we need to use the out-config value because it hasn't been copied to the main
-        // config object yet.
-        if (diskTypeNeedsUpdate)
-        {
-            // @MT_TASK: Keeping this here until we know we don't need it
         }
 
         ThrowDialogIfSneakyOptionsIniNotFound(setGameDataErrors);
