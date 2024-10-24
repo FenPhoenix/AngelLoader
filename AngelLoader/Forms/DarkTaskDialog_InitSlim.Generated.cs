@@ -9,10 +9,11 @@ partial class DarkTaskDialog
     {
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.VerificationCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.ViewLogButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
         this.NoButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.YesButton = new AngelLoader.Forms.CustomControls.DarkButton();
+        this.VerificationCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.MessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
         this.BottomFLP.SuspendLayout();
@@ -29,6 +30,7 @@ partial class DarkTaskDialog
         this.BottomFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.BottomFLP.BackColor = System.Drawing.SystemColors.Control;
+        this.BottomFLP.Controls.Add(this.ViewLogButton);
         this.BottomFLP.Controls.Add(this.Cancel_Button);
         this.BottomFLP.Controls.Add(this.NoButton);
         this.BottomFLP.Controls.Add(this.YesButton);
@@ -39,14 +41,15 @@ partial class DarkTaskDialog
         this.BottomFLP.Size = new System.Drawing.Size(532, 42);
         this.BottomFLP.TabIndex = 1;
         // 
-        // VerificationCheckBox
+        // ViewLogButton
         // 
-        this.VerificationCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-        this.VerificationCheckBox.AutoSize = true;
-        this.VerificationCheckBox.Location = new System.Drawing.Point(13, 184);
-        this.VerificationCheckBox.Margin = new System.Windows.Forms.Padding(5, 13, 5, 3);
-        this.VerificationCheckBox.Size = new System.Drawing.Size(57, 17);
-        this.VerificationCheckBox.TabIndex = 3;
+        this.ViewLogButton.AutoSize = true;
+        this.ViewLogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+        this.ViewLogButton.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+        this.ViewLogButton.MinimumSize = new System.Drawing.Size(76, 23);
+        this.ViewLogButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
+        this.ViewLogButton.TabIndex = 3;
+        this.ViewLogButton.Click += new System.EventHandler(this.ViewLogButton_Click);
         // 
         // Cancel_Button
         // 
@@ -74,6 +77,15 @@ partial class DarkTaskDialog
         this.YesButton.MinimumSize = new System.Drawing.Size(76, 23);
         this.YesButton.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
         this.YesButton.TabIndex = 0;
+        // 
+        // VerificationCheckBox
+        // 
+        this.VerificationCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+        this.VerificationCheckBox.AutoSize = true;
+        this.VerificationCheckBox.Location = new System.Drawing.Point(13, 184);
+        this.VerificationCheckBox.Margin = new System.Windows.Forms.Padding(5, 13, 5, 3);
+        this.VerificationCheckBox.Size = new System.Drawing.Size(57, 17);
+        this.VerificationCheckBox.TabIndex = 3;
         // 
         // MessageLabel
         // 

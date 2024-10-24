@@ -2941,15 +2941,16 @@ internal static partial class FMInstallAndPlay
                             fmData.FM.LogInfo(ErrorText.ExTry + "back up FM", ex);
                             (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
                                 message:
-                                fm.InstalledDir + $"{NL}{NL}" +
+                                fm.InstalledDir + $":{NL}{NL}" +
                                 LText.AlertMessages.Uninstall_BackupError,
-                                LText.AlertMessages.Alert,
+                                title: LText.AlertMessages.Alert,
                                 icon: MBoxIcon.Warning,
                                 yes: LText.AlertMessages.Uninstall_BackupError_KeepInstalled,
                                 no: LText.AlertMessages.Uninstall_BackupError_UninstallWithoutBackup,
                                 cancel: LText.Global.Cancel,
                                 noIsDangerous: true,
-                                defaultButton: MBoxButton.Yes);
+                                defaultButton: MBoxButton.Yes,
+                                viewLogButtonVisible: true);
 
                             if (buttonPressed == MBoxButton.Yes)
                             {

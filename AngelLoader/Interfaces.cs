@@ -64,7 +64,8 @@ public interface IDialogs
         bool noIsDangerous = false,
         bool cancelIsDangerous = false,
         string? checkBoxText = null,
-        MBoxButton defaultButton = MBoxButton.Yes);
+        MBoxButton defaultButton = MBoxButton.Yes,
+        bool viewLogButtonVisible = false);
     void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
     void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
     void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);

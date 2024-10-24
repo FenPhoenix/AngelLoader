@@ -36,7 +36,8 @@ public partial class DarkTaskDialog : DarkFormBase
         bool cancelIsDangerous = false,
         string? checkBoxText = null,
         bool? checkBoxChecked = null,
-        MBoxButton defaultButton = MBoxButton.Cancel)
+        MBoxButton defaultButton = MBoxButton.Cancel,
+        bool viewLogButtonVisible = false)
     {
         // All numbers are just matching the original Win32 task dialog as closely as possible. Don't worry
         // about them.
@@ -110,6 +111,7 @@ public partial class DarkTaskDialog : DarkFormBase
         Cancel_Button.Visible = _cancelButtonVisible;
         VerificationCheckBox.Visible = checkBoxVisible;
         VerificationCheckBox.Checked = checkBoxChecked == true;
+        ViewLogButton.Visible = viewLogButtonVisible;
 
         if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
@@ -228,4 +230,6 @@ public partial class DarkTaskDialog : DarkFormBase
             VerificationCheckBox.BackColor = SystemColors.Control;
         }
     }
+
+    private void ViewLogButton_Click(object sender, EventArgs e) => Core.OpenLogFile();
 }
