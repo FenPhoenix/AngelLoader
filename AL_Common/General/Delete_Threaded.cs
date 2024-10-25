@@ -187,6 +187,18 @@ public static class Delete_Threaded
             }
         }
 
+        /*
+        @MT_TASK(GetDirectoriesToDeleteRecursive parallelization):
+        This step is a read step only, so we could separate this out and run this for every FM in parallel
+        beforehand (before the backup) (any threading mode), then run the delete step afterward with this data
+        and parallelize that too (aggressive threading only?).
+        Actually, we're getting all files for the backup, so we could even just reuse that list (if we're doing
+        the backup that is) and only get directories here (don't get files, will save a ton of time).
+        Although that might add too much complexity.
+
+        Note that we CAN'T parallelize this per-file, because FindFirstFile/FindNextFile are inherently serial
+        and there's no other (sane, supported) way to get files.
+        */
         private static void GetDirectoriesToDeleteRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel, DeleteInfo deleteInfo, string? filePath = null)
         {
             int errorCode;
