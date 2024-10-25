@@ -39,10 +39,10 @@ internal static partial class FMInstallAndPlay
         _timingTestStopWatch.Restart();
     }
 
-    private static void StopTimingAndPrintResult()
+    private static void StopTimingAndPrintResult(string msg)
     {
         _timingTestStopWatch.Stop();
-        Trace.WriteLine(_timingTestStopWatch.Elapsed);
+        Trace.WriteLine(msg + ": " + _timingTestStopWatch.Elapsed);
     }
 #endif
 
@@ -1989,7 +1989,7 @@ internal static partial class FMInstallAndPlay
             finally
             {
 #if TIMING_TEST
-                StopTimingAndPrintResult();
+                StopTimingAndPrintResult(nameof(InstallInternal));
 #endif
 
                 Ini.WriteFullFMDataIni();
@@ -2895,6 +2895,10 @@ internal static partial class FMInstallAndPlay
 
                 DarkLoaderBackupContext ctx = new();
 
+#if TIMING_TEST
+                var totalDeleteSW = Stopwatch.StartNew();
+#endif
+
                 for (int i = 0; i < fmDataList.Count; i++)
                 {
                     if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
@@ -2992,6 +2996,11 @@ internal static partial class FMInstallAndPlay
                     if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
                 }
 
+#if TIMING_TEST
+                totalDeleteSW.Stop();
+                Trace.WriteLine("Total delete time: " + totalDeleteSW.Elapsed);
+#endif
+
                 return (true, atLeastOneFMMarkedUnavailable);
             });
         }
@@ -3006,9 +3015,6 @@ internal static partial class FMInstallAndPlay
         }
         finally
         {
-#if TIMING_TEST
-            StopTimingAndPrintResult();
-#endif
             Ini.WriteFullFMDataIni();
             if (doEndTasks)
             {
@@ -3045,10 +3051,21 @@ internal static partial class FMInstallAndPlay
 
         try
         {
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
 #if false
             Directory.Delete(path, recursive: true);
 #else
-            Delete_Threaded.Delete(path, recursive: true);
+            var threadingData = GetLowestCommonThreadingData(new List<string> { path });
+            Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
+
+#endif
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine("**** " + nameof(DeleteFMInstalledDirectory) + " Delete: " + sw.Elapsed);
 #endif
             return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
         }

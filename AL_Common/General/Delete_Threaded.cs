@@ -2,22 +2,27 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
 using static AL_Common.FastIO_Native;
 
 namespace AL_Common;
 
+// @MT_TASK: On 71 set, we get 13 vs. 9 seconds framework/threaded. Test on NVME, presumably we'll get better scaling there.
+
 public static class Delete_Threaded
 {
-    public static void Delete(string path, bool recursive)
+    public static void Delete(string path, bool recursive, int threadCount)
     {
         string fullPath = Path.GetFullPath(path);
-        FileSystem.RemoveDirectory(fullPath, recursive);
+        FileSystem.RemoveDirectory(fullPath, recursive, threadCount);
     }
 
     private static class FileSystem
@@ -25,14 +30,14 @@ public static class Delete_Threaded
         private static readonly string DirectorySeparatorCharAsString = Path.DirectorySeparatorChar.ToString();
 
         // \\
-        internal const int UncPrefixLength = 2;
+        private const int UncPrefixLength = 2;
         // \\?\UNC\, \\.\UNC\
-        internal const int UncExtendedPrefixLength = 8;
+        private const int UncExtendedPrefixLength = 8;
 
         /// <summary>
         /// Returns true if the path uses any of the DOS device path syntaxes. ("\\.\", "\\?\", or "\??\")
         /// </summary>
-        internal static bool IsDevice(ReadOnlySpan<char> path)
+        private static bool IsDevice(ReadOnlySpan<char> path)
         {
             // If the path begins with any two separators is will be recognized and normalized and prepped with
             // "\??\" for internal usage correctly. "\??\" is recognized and handled, "/??/" is not.
@@ -50,7 +55,7 @@ public static class Delete_Threaded
         /// <summary>
         /// Returns true if the path is a device UNC (\\?\UNC\, \\.\UNC\)
         /// </summary>
-        internal static bool IsDeviceUNC(ReadOnlySpan<char> path)
+        private static bool IsDeviceUNC(ReadOnlySpan<char> path)
         {
             return path.Length >= UncExtendedPrefixLength
                    && IsDevice(path)
@@ -63,7 +68,7 @@ public static class Delete_Threaded
         /// <summary>
         /// Gets the length of the root of the path (drive, share, etc.).
         /// </summary>
-        internal static int GetRootLength(ReadOnlySpan<char> path)
+        private static int GetRootLength(ReadOnlySpan<char> path)
         {
             int pathLength = path.Length;
             int i = 0;
@@ -120,14 +125,13 @@ public static class Delete_Threaded
             return i;
         }
 
-        internal static bool IsRoot(ReadOnlySpan<char> path)
-            => path.Length == GetRootLength(path);
+        private static bool IsRoot(ReadOnlySpan<char> path) => path.Length == GetRootLength(path);
 
         /// <summary>
         /// True if the given character is a directory separator.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsDirectorySeparator(char c)
+        private static bool IsDirectorySeparator(char c)
         {
             return c == Path.DirectorySeparatorChar || c == Path.AltDirectorySeparatorChar;
         }
@@ -135,19 +139,19 @@ public static class Delete_Threaded
         /// <summary>
         /// Returns true if the path ends in a directory separator.
         /// </summary>
-        internal static bool EndsInDirectorySeparator([NotNullWhen(true)] string? path) =>
+        private static bool EndsInDirectorySeparator([NotNullWhen(true)] string? path) =>
             !path.IsEmpty() && IsDirectorySeparator(path[^1]);
 
         /// <summary>
         /// Trims one trailing directory separator beyond the root of the path.
         /// </summary>
         [return: NotNullIfNotNull(nameof(path))]
-        internal static string? TrimEndingDirectorySeparator(string? path) =>
+        private static string? TrimEndingDirectorySeparator(string? path) =>
             EndsInDirectorySeparator(path) && !IsRoot(path.AsSpan()) ?
                 path!.Substring(0, path.Length - 1) :
                 path;
 
-        public static void RemoveDirectory(string fullPath, bool recursive)
+        public static void RemoveDirectory(string fullPath, bool recursive, int threadCount)
         {
             if (!recursive)
             {
@@ -170,14 +174,17 @@ public static class Delete_Threaded
             // We want extended syntax so we can delete "extended" subdirectories and files
             // (most notably ones with trailing whitespace or periods)
             fullPath = AL_SafeFileHandle.EnsureExtendedPrefix(fullPath);
-            RemoveDirectoryRecursive(fullPath, ref findData, topLevel: true);
+            RemoveDirectoryRecursive(fullPath, ref findData, topLevel: true, threadCount);
         }
 
-        private static void RemoveDirectoryRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel)
+        private static void RemoveDirectoryRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel, int threadCount)
         {
             DeleteInfo deleteInfo = new();
             GetDirectoriesToDeleteRecursive(fullPath, ref findData, topLevel, deleteInfo);
-            RemoveDirectoryRecursive(fullPath, deleteInfo, topLevel);
+            if (!RemoveDirectoryRecursive(fullPath, deleteInfo, topLevel, threadCount))
+            {
+                Directory.Delete(fullPath, recursive: true);
+            }
         }
 
         private static void GetDirectoriesToDeleteRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel, DeleteInfo deleteInfo, string? filePath = null)
@@ -255,22 +262,37 @@ public static class Delete_Threaded
             }
         }
 
-        private static void RemoveDirectoryRecursive(string fullPath, DeleteInfo deleteInfo, bool topLevel)
+        private static bool RemoveDirectoryRecursive(string fullPath, DeleteInfo deleteInfo, bool topLevel, int threadCount)
         {
-            int errorCode;
-            Exception? exception = null;
-            foreach (string fileName in deleteInfo.Files)
-            {
-                if (!Interop.Kernel32.DeleteFile(fileName) && exception == null)
-                {
-                    errorCode = Marshal.GetLastWin32Error();
+            threadCount = Math.Min(threadCount, deleteInfo.Files.Count);
 
-                    // We don't care if something else deleted the file first
-                    if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND)
-                    {
-                        exception = Win32Marshal.GetExceptionForWin32Error(errorCode, fileName);
-                    }
+            int errorCode;
+            // Stupid, but keeps the static analyzer's trap shut about "captured in closure" and blah blah blah
+            ConcurrentStack<Exception> exceptions = new();
+
+            if (deleteInfo.Files.Count > 0)
+            {
+                if (!Common.TryGetParallelForData(threadCount, deleteInfo.Files, CancellationToken.None, out var filesPD))
+                {
+                    return false;
                 }
+
+                Parallel.For(0, threadCount, filesPD.PO, i =>
+                {
+                    while (filesPD.CQ.TryDequeue(out string fileName))
+                    {
+                        if (!Interop.Kernel32.DeleteFile(fileName) && !exceptions.TryPeek(out _))
+                        {
+                            errorCode = Marshal.GetLastWin32Error();
+
+                            // We don't care if something else deleted the file first
+                            if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND)
+                            {
+                                exceptions.Push(Win32Marshal.GetExceptionForWin32Error(errorCode, fileName));
+                            }
+                        }
+                    }
+                });
             }
 
             foreach (ReparsePointEntry reparsePointEntry in deleteInfo.ReparsePoints)
@@ -281,24 +303,24 @@ public static class Delete_Threaded
                 {
                     // Mount point. Unmount using full path plus a trailing '\'.
                     // (Note: This doesn't remove the underlying directory)
-                    if (!Interop.Kernel32.DeleteVolumeMountPoint(reparsePointEntry.VolumeMountPoint) && exception == null)
+                    if (!Interop.Kernel32.DeleteVolumeMountPoint(reparsePointEntry.VolumeMountPoint) && !exceptions.TryPeek(out _))
                     {
                         errorCode = Marshal.GetLastWin32Error();
                         if (errorCode != Interop.Errors.ERROR_SUCCESS &&
                             errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
                         {
-                            exception = Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName);
+                            exceptions.Push(Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName));
                         }
                     }
                 }
 
                 // Note that RemoveDirectory on a symbolic link will remove the link itself.
-                if (!Interop.Kernel32.RemoveDirectory(reparsePointEntry.Directory) && exception == null)
+                if (!Interop.Kernel32.RemoveDirectory(reparsePointEntry.Directory) && !exceptions.TryPeek(out _))
                 {
                     errorCode = Marshal.GetLastWin32Error();
                     if (errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
                     {
-                        exception = Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName);
+                        exceptions.Push(Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName));
                     }
                 }
             }
@@ -311,12 +333,14 @@ public static class Delete_Threaded
                 RemoveDirectoryInternal(directoryEntry.Directory, topLevel: topLevel, allowDirectoryNotEmpty: true);
             }
 
-            if (exception != null)
+            if (exceptions.TryPeek(out Exception exception))
                 throw exception;
 
             errorCode = Marshal.GetLastWin32Error();
             if (errorCode != Interop.Errors.ERROR_SUCCESS && errorCode != Interop.Errors.ERROR_NO_MORE_FILES)
                 throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
+
+            return true;
         }
 
         private static bool IsNameSurrogateReparsePoint(ref WIN32_FIND_DATAW data)
