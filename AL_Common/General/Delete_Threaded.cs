@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -174,6 +175,13 @@ public static class Delete_Threaded
 
         private static void RemoveDirectoryRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel)
         {
+            DeleteInfo deleteInfo = new();
+            GetDirectoriesToDeleteRecursive(fullPath, ref findData, topLevel, deleteInfo);
+            RemoveDirectoryRecursive(fullPath, deleteInfo, topLevel);
+        }
+
+        private static void GetDirectoriesToDeleteRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel, DeleteInfo deleteInfo, string? filePath = null)
+        {
             int errorCode;
             Exception? exception = null;
 
@@ -188,16 +196,7 @@ public static class Delete_Threaded
                     {
                         // File
                         string fileName = findData.cFileName;
-                        if (!Interop.Kernel32.DeleteFile(Path.Combine(fullPath, fileName)) && exception == null)
-                        {
-                            errorCode = Marshal.GetLastWin32Error();
-
-                            // We don't care if something else deleted the file first
-                            if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND)
-                            {
-                                exception = Win32Marshal.GetExceptionForWin32Error(errorCode, fileName);
-                            }
-                        }
+                        deleteInfo.Files.Add(Path.Combine(fullPath, fileName));
                     }
                     else
                     {
@@ -212,10 +211,12 @@ public static class Delete_Threaded
                             // Not a reparse point, or the reparse point isn't a name surrogate, recurse.
                             try
                             {
-                                RemoveDirectoryRecursive(
+                                GetDirectoriesToDeleteRecursive(
                                     Path.Combine(fullPath, fileName),
                                     findData: ref findData,
-                                    topLevel: false);
+                                    topLevel: false,
+                                    deleteInfo,
+                                    filePath: filePath);
                             }
                             catch (Exception e)
                             {
@@ -224,33 +225,21 @@ public static class Delete_Threaded
                         }
                         else
                         {
+                            string? mountPoint = null;
+
                             // Name surrogate reparse point, don't recurse, simply remove the directory.
                             // If a mount point, we have to delete the mount point first.
                             if (findData.dwReserved0 == Interop.Kernel32.IOReparseOptions.IO_REPARSE_TAG_MOUNT_POINT)
                             {
                                 // Mount point. Unmount using full path plus a trailing '\'.
                                 // (Note: This doesn't remove the underlying directory)
-                                string mountPoint = Path.Combine(fullPath, fileName, DirectorySeparatorCharAsString);
-                                if (!Interop.Kernel32.DeleteVolumeMountPoint(mountPoint) && exception == null)
-                                {
-                                    errorCode = Marshal.GetLastWin32Error();
-                                    if (errorCode != Interop.Errors.ERROR_SUCCESS &&
-                                        errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
-                                    {
-                                        exception = Win32Marshal.GetExceptionForWin32Error(errorCode, fileName);
-                                    }
-                                }
+                                mountPoint = Path.Combine(fullPath, fileName, DirectorySeparatorCharAsString);
                             }
 
+                            string directory = Path.Combine(fullPath, fileName);
+
                             // Note that RemoveDirectory on a symbolic link will remove the link itself.
-                            if (!Interop.Kernel32.RemoveDirectory(Path.Combine(fullPath, fileName)) && exception == null)
-                            {
-                                errorCode = Marshal.GetLastWin32Error();
-                                if (errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
-                                {
-                                    exception = Win32Marshal.GetExceptionForWin32Error(errorCode, fileName);
-                                }
-                            }
+                            deleteInfo.ReparsePoints.Add(new ReparsePointEntry(directory, fileName, mountPoint));
                         }
                     }
                 } while (Interop.Kernel32.FindNextFile(handle, ref findData));
@@ -261,12 +250,73 @@ public static class Delete_Threaded
                 errorCode = Marshal.GetLastWin32Error();
                 if (errorCode != Interop.Errors.ERROR_SUCCESS && errorCode != Interop.Errors.ERROR_NO_MORE_FILES)
                     throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
+
+                deleteInfo.Directories.Add(new DirectoryEntry(fullPath, filePath ?? ""));
+            }
+        }
+
+        private static void RemoveDirectoryRecursive(string fullPath, DeleteInfo deleteInfo, bool topLevel)
+        {
+            int errorCode;
+            Exception? exception = null;
+            foreach (string fileName in deleteInfo.Files)
+            {
+                if (!Interop.Kernel32.DeleteFile(fileName) && exception == null)
+                {
+                    errorCode = Marshal.GetLastWin32Error();
+
+                    // We don't care if something else deleted the file first
+                    if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND)
+                    {
+                        exception = Win32Marshal.GetExceptionForWin32Error(errorCode, fileName);
+                    }
+                }
             }
 
-            // As we successfully removed all of the files we shouldn't care about the directory itself
-            // not being empty. As file deletion is just a marker to remove the file when all handles
-            // are closed we could still have undeleted contents.
-            RemoveDirectoryInternal(fullPath, topLevel: topLevel, allowDirectoryNotEmpty: true);
+            foreach (ReparsePointEntry reparsePointEntry in deleteInfo.ReparsePoints)
+            {
+                // Name surrogate reparse point, don't recurse, simply remove the directory.
+                // If a mount point, we have to delete the mount point first.
+                if (reparsePointEntry.VolumeMountPoint != null)
+                {
+                    // Mount point. Unmount using full path plus a trailing '\'.
+                    // (Note: This doesn't remove the underlying directory)
+                    if (!Interop.Kernel32.DeleteVolumeMountPoint(reparsePointEntry.VolumeMountPoint) && exception == null)
+                    {
+                        errorCode = Marshal.GetLastWin32Error();
+                        if (errorCode != Interop.Errors.ERROR_SUCCESS &&
+                            errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
+                        {
+                            exception = Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName);
+                        }
+                    }
+                }
+
+                // Note that RemoveDirectory on a symbolic link will remove the link itself.
+                if (!Interop.Kernel32.RemoveDirectory(reparsePointEntry.Directory) && exception == null)
+                {
+                    errorCode = Marshal.GetLastWin32Error();
+                    if (errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
+                    {
+                        exception = Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName);
+                    }
+                }
+            }
+
+            foreach (DirectoryEntry directoryEntry in deleteInfo.Directories)
+            {
+                // As we successfully removed all of the files we shouldn't care about the directory itself
+                // not being empty. As file deletion is just a marker to remove the file when all handles
+                // are closed we could still have undeleted contents.
+                RemoveDirectoryInternal(directoryEntry.Directory, topLevel: topLevel, allowDirectoryNotEmpty: true);
+            }
+
+            if (exception != null)
+                throw exception;
+
+            errorCode = Marshal.GetLastWin32Error();
+            if (errorCode != Interop.Errors.ERROR_SUCCESS && errorCode != Interop.Errors.ERROR_NO_MORE_FILES)
+                throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
         }
 
         private static bool IsNameSurrogateReparsePoint(ref WIN32_FIND_DATAW data)
@@ -328,6 +378,39 @@ public static class Delete_Threaded
                 throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
             }
         }
+    }
+
+    private sealed class DirectoryEntry
+    {
+        internal readonly string Directory;
+        internal readonly string DirName;
+
+        public DirectoryEntry(string directory, string dirName)
+        {
+            Directory = directory;
+            DirName = dirName;
+        }
+    }
+
+    private sealed class ReparsePointEntry
+    {
+        internal readonly string Directory;
+        internal readonly string DirName;
+        internal readonly string? VolumeMountPoint;
+
+        internal ReparsePointEntry(string directory, string dirName, string? volumeMountPoint)
+        {
+            Directory = directory;
+            DirName = dirName;
+            VolumeMountPoint = volumeMountPoint;
+        }
+    }
+
+    private sealed class DeleteInfo
+    {
+        internal readonly List<string> Files = new();
+        internal readonly List<DirectoryEntry> Directories = new();
+        internal readonly List<ReparsePointEntry> ReparsePoints = new();
     }
 
     internal sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid

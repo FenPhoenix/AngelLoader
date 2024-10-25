@@ -3045,7 +3045,11 @@ internal static partial class FMInstallAndPlay
 
         try
         {
+#if false
             Directory.Delete(path, recursive: true);
+#else
+            Delete_Threaded.Delete(path, recursive: true);
+#endif
             return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
         }
         catch (Exception mainEx)
