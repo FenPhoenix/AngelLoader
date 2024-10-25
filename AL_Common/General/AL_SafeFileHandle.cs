@@ -254,7 +254,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// normalized and has retained the final characters. (Typically from one of the *Info classes)
     /// </summary>
     [return: NotNullIfNotNull(nameof(path))]
-    private static string? EnsureExtendedPrefixIfNeeded(string? path)
+    internal static string? EnsureExtendedPrefixIfNeeded(string? path)
     {
         if (path != null && (path.Length >= Common.MAX_PATH || EndsWithPeriodOrSpace(path)))
         {
@@ -273,7 +273,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <summary>
     /// Adds the extended path prefix (\\?\) if not relative or already a device path.
     /// </summary>
-    private static string EnsureExtendedPrefix(string path)
+    internal static string EnsureExtendedPrefix(string path)
     {
         // Putting the extended prefix on the path changes the processing of the path. It won't get normalized, which
         // means adding to relative paths will prevent them from getting the appropriate current directory inserted.
@@ -337,13 +337,13 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             && IsValidDriveChar(path[0]));
     }
 
-    private const char VolumeSeparatorChar = ':';
-    private const int DevicePrefixLength = 4;
+    internal const char VolumeSeparatorChar = ':';
+    internal const int DevicePrefixLength = 4;
 
     /// <summary>
     /// Returns true if the given character is a valid drive letter
     /// </summary>
-    private static bool IsValidDriveChar(char value)
+    internal static bool IsValidDriveChar(char value)
     {
         return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
     }
@@ -353,7 +353,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// path matches exactly (cannot use alternate directory separators) Windows will skip normalization
     /// and path length checks.
     /// </summary>
-    private static bool IsExtended(ReadOnlySpan<char> path)
+    internal static bool IsExtended(ReadOnlySpan<char> path)
     {
         // While paths like "//?/C:/" will work, they're treated the same as "\\.\" paths.
         // Skipping of normalization will *only* occur if back slashes ('\') are used.
