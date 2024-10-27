@@ -171,11 +171,11 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         {
             Process[] processes = Process.GetProcesses();
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             Process? returnProcess = null;
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 foreach (Process proc in processes)
                 {
                     try
