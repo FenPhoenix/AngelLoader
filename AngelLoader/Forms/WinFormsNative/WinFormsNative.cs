@@ -8,8 +8,6 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-// ReSharper disable ArrangeTrailingCommaInMultilineLists
-
 namespace AngelLoader.Forms.WinFormsNative;
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -144,7 +142,7 @@ internal static class Native
         SIID_HELP = 23,
         SIID_WARNING = 78,
         SIID_INFO = 79,
-        SIID_ERROR = 80
+        SIID_ERROR = 80,
     }
 
     internal const uint SHGSI_ICON = 0x000000100;
@@ -534,7 +532,7 @@ internal static class Native
         SIF_POS = 0x0004,
         //SIF_DISABLENOSCROLL = 0x0008,
         SIF_TRACKPOS = 0x0010,
-        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS,
     }
 
     [DllImport("user32.dll")]

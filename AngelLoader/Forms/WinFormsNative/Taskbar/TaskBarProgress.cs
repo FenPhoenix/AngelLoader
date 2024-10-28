@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-// ReSharper disable ArrangeTrailingCommaInMultilineLists
 
 namespace AngelLoader.Forms.WinFormsNative.Taskbar;
 
