@@ -92,10 +92,10 @@ internal static class Utils
             alIsRunning = false;
             Process[] processes = Process.GetProcesses();
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
+
                 foreach (Process proc in processes)
                 {
                     try
