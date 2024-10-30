@@ -129,7 +129,17 @@ internal static class DetectDriveTypes
 
                         driveType = deviceProperty.BusType switch
                         {
-                            STORAGE_BUS_TYPE.BusTypeNvme or STORAGE_BUS_TYPE.BusTypeSCM => AL_DriveType.NVMe_SSD,
+                            STORAGE_BUS_TYPE.BusTypeNvme
+                                or STORAGE_BUS_TYPE.BusTypeSCM
+                                /*
+                                @MT_TASK: The question of RAID
+                                We could have SATA RAID or NVMe RAID, and we don't know which... we also don't
+                                know if it's striped or mirrored. Striped SATA RAID is probably fast enough for
+                                aggressive threading, but mirrored RAID is the same speed as non-RAID. So we're
+                                in a bit of a conundrum here.
+                                */
+                                //or STORAGE_BUS_TYPE.BusTypeRAID
+                                => AL_DriveType.NVMe_SSD,
                             STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
                             // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
                             // exotic bus types.
