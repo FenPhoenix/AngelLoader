@@ -2320,6 +2320,54 @@ public sealed class Scanner : IDisposable
 
     private DateTime? GetReleaseDate()
     {
+        MisFileDateTime misFileDateTime = new(false, null);
+
+        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
+
+        if (parsedDateTime.IsAmbiguous)
+        {
+            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
+
+            for (int i = 0; i < _readmeFiles.Count; i++)
+            {
+                ReadmeInternal readme = _readmeFiles[i];
+                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
+
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+
+            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
+            if (misFileDateTime.Succeeded)
+            {
+                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
+
+                if (misFileLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+        }
+
+        if (parsedDateTime.Date != null) return parsedDateTime.Date;
+
+        for (int i = 0; i < _readmeFiles.Count; i++)
+        {
+            ReadmeInternal readme = _readmeFiles[i];
+            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
+            {
+                return readme.LastModifiedDate;
+            }
+        }
+
+        return misFileDateTime.Succeeded
+            ? misFileDateTime.Date.Value
+            : GetMisFileDate(this, _usedMisFiles).Date;
+
         ParsedDateTime GetReadmeParsedDateTime()
         {
             DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
@@ -2430,54 +2478,6 @@ public sealed class Scanner : IDisposable
 
             return null;
         }
-
-        MisFileDateTime misFileDateTime = new(false, null);
-
-        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
-
-        if (parsedDateTime.IsAmbiguous)
-        {
-            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
-
-            for (int i = 0; i < _readmeFiles.Count; i++)
-            {
-                ReadmeInternal readme = _readmeFiles[i];
-                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
-
-                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-
-            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
-            if (misFileDateTime.Succeeded)
-            {
-                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
-
-                if (misFileLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-        }
-
-        if (parsedDateTime.Date != null) return parsedDateTime.Date;
-
-        for (int i = 0; i < _readmeFiles.Count; i++)
-        {
-            ReadmeInternal readme = _readmeFiles[i];
-            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
-            {
-                return readme.LastModifiedDate;
-            }
-        }
-
-        return misFileDateTime.Succeeded
-            ? misFileDateTime.Date.Value
-            : GetMisFileDate(this, _usedMisFiles).Date;
     }
 
     private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
@@ -4802,16 +4802,6 @@ public sealed class Scanner : IDisposable
 
     private string GetAuthorFromCopyrightMessage()
     {
-        static string AuthorCopyrightRegexesMatch(string line, Regex[] authorMissionCopyrightRegexes)
-        {
-            foreach (Regex regex in authorMissionCopyrightRegexes)
-            {
-                Match match = regex.Match(line);
-                if (match.Success) return match.Groups["Author"].Value;
-            }
-            return "";
-        }
-
         string author = "";
 
         bool foundAuthor = false;
@@ -4864,6 +4854,16 @@ public sealed class Scanner : IDisposable
         }
 
         return author.IsWhiteSpace() ? "" : CleanupCopyrightAuthor(author);
+
+        static string AuthorCopyrightRegexesMatch(string line, Regex[] authorMissionCopyrightRegexes)
+        {
+            foreach (Regex regex in authorMissionCopyrightRegexes)
+            {
+                Match match = regex.Match(line);
+                if (match.Success) return match.Groups["Author"].Value;
+            }
+            return "";
+        }
     }
 
     private string CleanupCopyrightAuthor(string author)

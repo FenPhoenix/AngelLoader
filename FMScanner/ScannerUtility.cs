@@ -607,16 +607,6 @@ internal static class Utility
         var sb = new StringBuilder(glml.Length);
         var subSB = new StringBuilder(16);
 
-        static bool SBEquals(StringBuilder sb, string value)
-        {
-            if (sb.Length != value.Length) return false;
-            for (int i = 0; i < sb.Length; i++)
-            {
-                if (sb[i] != value[i]) return false;
-            }
-            return true;
-        }
-
         const char unicodeUnknownChar = '\u25A1';
 
         GLMLTagType tagType = GLMLTagType.None;
@@ -753,6 +743,16 @@ internal static class Utility
         }
 
         return sb.ToString();
+
+        static bool SBEquals(StringBuilder sb, string value)
+        {
+            if (sb.Length != value.Length) return false;
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (sb[i] != value[i]) return false;
+            }
+            return true;
+        }
     }
 
     #endregion

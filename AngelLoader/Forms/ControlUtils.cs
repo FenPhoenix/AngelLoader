@@ -362,15 +362,6 @@ internal static class ControlUtils
     {
         get
         {
-            static bool SetFalse()
-            {
-                _toolTipRecreateHandleMethod = null;
-                _toolTipNativeWindowControlField = null;
-                _toolTipNativeWindowClass = null;
-                _toolTipsReflectable = false;
-                return false;
-            }
-
             if (_toolTipsReflectable == null)
             {
                 using var testToolTip = new ToolTip();
@@ -496,8 +487,8 @@ internal static class ControlUtils
                 }
                 finally
                 {
-                    // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very
-                    // least, but in theory it could be, so dispose it if so!
+                    // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very least,
+                    // but in theory it could be, so dispose it if so!
                     if (tsNativeWindow is IDisposable tsNativeWindowDisposable)
                     {
                         tsNativeWindowDisposable.Dispose();
@@ -508,6 +499,15 @@ internal static class ControlUtils
             }
 
             return _toolTipsReflectable == true;
+
+            static bool SetFalse()
+            {
+                _toolTipRecreateHandleMethod = null;
+                _toolTipNativeWindowControlField = null;
+                _toolTipNativeWindowClass = null;
+                _toolTipsReflectable = false;
+                return false;
+            }
         }
     }
 

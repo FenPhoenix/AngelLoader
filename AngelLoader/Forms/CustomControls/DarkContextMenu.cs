@@ -80,6 +80,10 @@ public sealed class DarkContextMenu : ContextMenuStrip
 
     internal void RefreshDarkModeState()
     {
+        SetMenuTheme(this);
+
+        return;
+
         void SetMenuTheme(ToolStripDropDown menu)
         {
             if (_darkModeEnabled)
@@ -111,7 +115,5 @@ public sealed class DarkContextMenu : ContextMenuStrip
                 }
             }
         }
-
-        SetMenuTheme(this);
     }
 }

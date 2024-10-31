@@ -26,7 +26,7 @@ public static partial class GameSupport
         // Known/supported games
         // IMPORTANT: Prefixes are used in Config.ini, so they must remain the same for compatibility.
         // Don't change the existing values, only add new ones!
-        // Obviously the steam ids must remain the same as well.
+        // Obviously the Steam ids must remain the same as well.
 
         [FenGenGame(
             prefix: "T1",

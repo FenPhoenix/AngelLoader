@@ -3011,22 +3011,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Don't run this a zillion gatrillion times during init
         if (EventsDisabled > 0 || !Visible) return;
 
-        void ShowLeft()
-        {
-            FilterBarScrollLeftButton.Location = FilterBarFLP.Location with { Y = FilterBarFLP.Location.Y + 1 };
-            FilterBarScrollLeftButton.Show();
-        }
-
-        void ShowRight()
-        {
-            // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
-            // the first time
-            FilterBarScrollRightButton.Location = new Point(
-                RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
-                FilterBarFLP.Location.Y + 1);
-            FilterBarScrollRightButton.Show();
-        }
-
         HScrollProperties hs = FilterBarFLP.HorizontalScroll;
         if (!hs.Visible)
         {
@@ -3070,6 +3054,24 @@ public sealed partial class MainForm : DarkFormBase,
         {
             ShowLeft();
             ShowRight();
+        }
+
+        return;
+
+        void ShowLeft()
+        {
+            FilterBarScrollLeftButton.Location = FilterBarFLP.Location with { Y = FilterBarFLP.Location.Y + 1 };
+            FilterBarScrollLeftButton.Show();
+        }
+
+        void ShowRight()
+        {
+            // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
+            // the first time
+            FilterBarScrollRightButton.Location = new Point(
+                RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
+                FilterBarFLP.Location.Y + 1);
+            FilterBarScrollRightButton.Show();
         }
     }
 
@@ -4683,22 +4685,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void SetPlayOriginalGameControlsState()
     {
-        static bool AnyControlVisible()
-        {
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                // Check the backing data states rather than the controls' Visible properties, because those
-                // will be false if they're _physically_ not shown, even if the _logical_ state is set to
-                // "Visible = true"
-                if (!Config.GetGameExe((GameIndex)i).IsEmpty())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         // We hide the separate-buttons flow layout panel when empty, because although its _interior_ has
         // zero width when empty, it has outside margin spacing that we want to get rid of when we're not
         // showing it.
@@ -4721,6 +4707,24 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             EverythingPanel.ResumeDrawing();
+        }
+
+        return;
+
+        static bool AnyControlVisible()
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                // Check the backing data states rather than the controls' Visible properties, because those
+                // will be false if they're _physically_ not shown, even if the _logical_ state is set to
+                // "Visible = true"
+                if (!Config.GetGameExe((GameIndex)i).IsEmpty())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

@@ -407,7 +407,7 @@ internal static partial class FMInstallAndPlay
         everything would be fine again.
         I could solve it if there was a way to detect if we were being launched through Steam. I don't
         know if there is, but then I could just specify a Steam=True line in the stub file, and then
-        if we're being launched through steam we read and act on it as usual, but if we're not, then
+        if we're being launched through Steam we read and act on it as usual, but if we're not, then
         we just delete it and ignore.
         I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
         works and one that doesn't, so I can test both paths.
