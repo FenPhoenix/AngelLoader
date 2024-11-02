@@ -2506,6 +2506,12 @@ internal static partial class FMInstallAndPlay
 
         extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
+        /*
+        @MT_TASK: Theoretical race condition with directory creation in per-entry threaded path
+        We haven't had a problem yet and it may be that Windows handles concurrent calls fine in practice, but we
+        should probably explicitly handle it ourselves just in case...
+        */
+
         if (!fileName.EndsWithDirSep())
         {
             if (fileName.Rel_ContainsDirSep())
