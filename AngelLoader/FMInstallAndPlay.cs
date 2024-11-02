@@ -2510,6 +2510,12 @@ internal static partial class FMInstallAndPlay
         @MT_TASK: Theoretical race condition with directory creation in per-entry threaded path
         We haven't had a problem yet and it may be that Windows handles concurrent calls fine in practice, but we
         should probably explicitly handle it ourselves just in case...
+        
+        Or we could just pre-run the directory creation on the per-entry threaded path. That would remove some
+        of the parallelism, but not very much (~110ms cold for TROTB2's ~7000 dirs). But we could reduce that
+        even further with some kind of algorithm to only pass the longest path to Directory.Create() so it
+        creates the whole dir hierarchy in one go and then never gets called on any shorter path with the same
+        dirs in it.
         */
 
         if (!fileName.EndsWithDirSep())
