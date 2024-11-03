@@ -2316,7 +2316,7 @@ internal static partial class FMInstallAndPlay
             // file extraction. Normally we'd create each entry's directory tree on extract, which could easily
             // contain some or all of the same folders as other entries.
             List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
-                ZipThreadedPerEntry_PreRun(entries, fmInstalledPath);
+                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath);
 
             int entriesCount = entriesToExtract.Count;
 
@@ -2405,58 +2405,6 @@ internal static partial class FMInstallAndPlay
                 LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                 ex);
         }
-
-        static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
-        ZipThreadedPerEntry_PreRun(ListFast<ZipArchiveFastEntry> entries, string fmInstalledPath)
-        {
-#if TIMING_TEST
-            var sw = Stopwatch.StartNew();
-#endif
-
-            List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
-            List<string> dirEntries = new(entries.Count);
-
-            foreach (ZipArchiveFastEntry entry in entries)
-            {
-                string fileName = entry.FullName;
-
-                if (fileName.IsEmpty()) continue;
-
-                string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                if (fileName.EndsWithDirSep())
-                {
-                    dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
-                }
-                else
-                {
-                    if (fileName.Rel_ContainsDirSep())
-                    {
-                        string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
-                        dirEntries.Add(dir);
-                    }
-
-                    ret.Add((entry, extractedName));
-                }
-            }
-
-            // This still results in some amount of duplicate disk hitting, but far, far less than before where
-            // we'd do it for every single entry that wasn't in the base dir.
-            // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
-            IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
-
-            foreach (string dir in dirEntriesDistinct)
-            {
-                Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
-            }
-
-#if TIMING_TEST
-            sw.Stop();
-            Trace.WriteLine(nameof(ZipThreadedPerEntry_PreRun) + ": " + sw.Elapsed);
-#endif
-
-            return ret;
-        }
     }
 
     private static FMInstallResult
@@ -2487,26 +2435,25 @@ internal static partial class FMInstallAndPlay
                         fileStreamReadBuffer,
                         zipCtxRentScope.Ctx);
 
-                ListFast<ZipArchiveFastEntry> entries = archive.Entries;
-                int entriesCount = entries.Count;
+                /*
+                We don't need to pre-run this on this codepath, but it doesn't hurt anything and reduces code
+                duplication, plus we get the benefit of the large reduction in Directory.CreateDirectory() calls.
+                */
+                List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
+                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath);
+
+                int entriesCount = entriesToExtract.Count;
                 for (int i = 0; i < entriesCount; i++)
                 {
-                    ZipArchiveFastEntry entry = entries[i];
+                    (ZipArchiveFastEntry Entry, string ExtractedName) entry = entriesToExtract[i];
 
-                    if (ZipEntryNeedsExtract(
-                            entry,
-                            fmInstalledPath,
-                            _installCts.Token,
-                            out string extractedName))
-                    {
-                        archive.ExtractToFile_Fast(
-                            entry: entry,
-                            fileName: extractedName,
-                            overwrite: true,
-                            unSetReadOnly: true,
-                            fileStreamWriteBuffer: fileStreamWriteBuffer,
-                            streamCopyBuffer: streamCopyBuffer);
-                    }
+                    archive.ExtractToFile_Fast(
+                        entry: entry.Entry,
+                        fileName: entry.ExtractedName,
+                        overwrite: true,
+                        unSetReadOnly: true,
+                        fileStreamWriteBuffer: fileStreamWriteBuffer,
+                        streamCopyBuffer: streamCopyBuffer);
 
                     _installCts.Token.ThrowIfCancellationRequested();
 
@@ -2539,40 +2486,58 @@ internal static partial class FMInstallAndPlay
         }
 
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+    }
 
-        static bool ZipEntryNeedsExtract(
-            ZipArchiveFastEntry entry,
-            string fmInstalledPath,
-            CancellationToken ct,
-            out string extractedName)
+    private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
+    Zip_CreateDirsAndGetExtractableEntries(ListFast<ZipArchiveFastEntry> entries, string fmInstalledPath)
+    {
+#if TIMING_TEST
+        var sw = Stopwatch.StartNew();
+#endif
+
+        List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
+        List<string> dirEntries = new(entries.Count);
+
+        foreach (ZipArchiveFastEntry entry in entries)
         {
             string fileName = entry.FullName;
 
-            if (fileName.IsEmpty())
-            {
-                extractedName = "";
-                return false;
-            }
+            if (fileName.IsEmpty()) continue;
 
-            extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+            string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
             if (fileName.EndsWithDirSep())
             {
-                Directory.CreateDirectory(extractedName);
-                return false;
+                dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
             }
             else
             {
                 if (fileName.Rel_ContainsDirSep())
                 {
-                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-
-                    ct.ThrowIfCancellationRequested();
+                    string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
+                    dirEntries.Add(dir);
                 }
-                return true;
+
+                ret.Add((entry, extractedName));
             }
         }
+
+        // This still results in some amount of duplicate disk hitting, but far, far less than before where
+        // we'd do it for every single entry that wasn't in the base dir.
+        // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
+        IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string dir in dirEntriesDistinct)
+        {
+            Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
+        }
+
+#if TIMING_TEST
+        sw.Stop();
+        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries) + ": " + sw.Elapsed);
+#endif
+
+        return ret;
     }
 
     private static void ReportZipProgress(
