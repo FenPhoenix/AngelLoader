@@ -2312,7 +2312,13 @@ internal static partial class FMInstallAndPlay
 
             _installCts.Token.ThrowIfCancellationRequested();
 
-            int entriesCount = entries.Count;
+            // Create the entire directory tree beforehand, to avoid the possibility of race conditions during
+            // file extraction. Normally we'd create each entry's directory tree on extract, which could easily
+            // contain some or all of the same folders as other entries.
+            List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
+                ZipThreadedPerEntry_PreRun(entries, fmInstalledPath);
+
+            int entriesCount = entriesToExtract.Count;
 
 #if TIMING_TEST
             sw0.Stop();
@@ -2325,7 +2331,7 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
 #endif
 
-            if (!TryGetParallelForData(threadCount, entries, _installCts.Token, out var pd))
+            if (!TryGetParallelForData(threadCount, entriesToExtract, _installCts.Token, out var pd))
             {
                 return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
             }
@@ -2348,24 +2354,17 @@ internal static partial class FMInstallAndPlay
 
                     pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                    while (pd.CQ.TryDequeue(out ZipArchiveFastEntry entry))
+                    while (pd.CQ.TryDequeue(out (ZipArchiveFastEntry Entry, string ExtractedName) entry))
                     {
                         int entryNumber = entriesCount - pd.CQ.Count;
 
-                        if (ZipEntryNeedsExtract(
-                                entry,
-                                fmInstalledPath,
-                                pd.PO.CancellationToken,
-                                out string extractedName))
-                        {
-                            ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                                entry: entry,
-                                fileName: extractedName,
+                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                                entry: entry.Entry,
+                                fileName: entry.ExtractedName,
                                 overwrite: true,
                                 unSetReadOnly: true,
                                 context: zipCtxThreadedRentScope.Ctx,
                                 fileStreamWriteBuffer: fileStreamWriteBuffer);
-                        }
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -2405,6 +2404,58 @@ internal static partial class FMInstallAndPlay
                 ArchiveType.Zip,
                 LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                 ex);
+        }
+
+        static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
+        ZipThreadedPerEntry_PreRun(ListFast<ZipArchiveFastEntry> entries, string fmInstalledPath)
+        {
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
+            List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
+            List<string> dirEntries = new(entries.Count);
+
+            foreach (ZipArchiveFastEntry entry in entries)
+            {
+                string fileName = entry.FullName;
+
+                if (fileName.IsEmpty()) continue;
+
+                string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+                if (fileName.EndsWithDirSep())
+                {
+                    dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
+                }
+                else
+                {
+                    if (fileName.Rel_ContainsDirSep())
+                    {
+                        string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
+                        dirEntries.Add(dir);
+                    }
+
+                    ret.Add((entry, extractedName));
+                }
+            }
+
+            // This still results in some amount of duplicate disk hitting, but far, far less than before where
+            // we'd do it for every single entry that wasn't in the base dir.
+            // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
+            IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (string dir in dirEntriesDistinct)
+            {
+                Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
+            }
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine(nameof(ZipThreadedPerEntry_PreRun) + ": " + sw.Elapsed);
+#endif
+
+            return ret;
         }
     }
 
@@ -2488,51 +2539,39 @@ internal static partial class FMInstallAndPlay
         }
 
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
-    }
 
-    private static bool ZipEntryNeedsExtract(
-        ZipArchiveFastEntry entry,
-        string fmInstalledPath,
-        CancellationToken ct,
-        out string extractedName)
-    {
-        string fileName = entry.FullName;
-
-        if (fileName.IsEmpty())
+        static bool ZipEntryNeedsExtract(
+            ZipArchiveFastEntry entry,
+            string fmInstalledPath,
+            CancellationToken ct,
+            out string extractedName)
         {
-            extractedName = "";
-            return false;
-        }
+            string fileName = entry.FullName;
 
-        extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-        /*
-        @MT_TASK: Theoretical race condition with directory creation in per-entry threaded path
-        We haven't had a problem yet and it may be that Windows handles concurrent calls fine in practice, but we
-        should probably explicitly handle it ourselves just in case...
-        
-        Or we could just pre-run the directory creation on the per-entry threaded path. That would remove some
-        of the parallelism, but not very much (~110ms cold for TROTB2's ~7000 dirs). But we could reduce that
-        even further with some kind of algorithm to only pass the longest path to Directory.Create() so it
-        creates the whole dir hierarchy in one go and then never gets called on any shorter path with the same
-        dirs in it.
-        */
-
-        if (fileName.EndsWithDirSep())
-        {
-            Directory.CreateDirectory(extractedName);
-            return false;
-        }
-        else
-        {
-            if (fileName.Rel_ContainsDirSep())
+            if (fileName.IsEmpty())
             {
-                Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                    fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-
-                ct.ThrowIfCancellationRequested();
+                extractedName = "";
+                return false;
             }
-            return true;
+
+            extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+            if (fileName.EndsWithDirSep())
+            {
+                Directory.CreateDirectory(extractedName);
+                return false;
+            }
+            else
+            {
+                if (fileName.Rel_ContainsDirSep())
+                {
+                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+
+                    ct.ThrowIfCancellationRequested();
+                }
+                return true;
+            }
         }
     }
 
