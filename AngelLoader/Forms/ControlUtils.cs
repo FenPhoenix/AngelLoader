@@ -15,6 +15,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
+using Microsoft.Win32;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -961,14 +962,47 @@ internal static class ControlUtils
     the maximum display time is 32767 milliseconds. But it doesn't say that anywhere on the page, and the fact
     that this is the help page for AutoPopDelay and NOT InitialDelay means you're expecting any line vaguely
     saying "maximum" and then a number will be the maximum value for the property the page is about. But nope.
-
-    @MT_TASK(Attention - Win11 tooltip behavior change):
-    Apparently Windows 11 either outright changed, or added the option for, tooltips to display indefinitely when
-    AutoPopDelay is left at default. I can't find clear info on whether it's a global change or an opt-in one.
-    But if WinForms Framework 4.7.2 Windows 11 tooltips are indefinite by default, then we should only set this
-    max value if Windows version is <11.
     */
-    internal static void SetMaxDelay(this ToolTip toolTip) => toolTip.AutoPopDelay = 32767;
+    internal static void SetMaxDelay(this ToolTip toolTip)
+    {
+        if (!OSSupportsPersistentTooltips())
+        {
+            toolTip.AutoPopDelay = 32767;
+        }
+
+        return;
+
+        /*
+        @MT_TASK(Attention - Win11 tooltip behavior change):
+        Apparently Windows 11 tooltips are now persistent if AutoPopDelay has not been changed. However, "persistent"
+        means not even mouse movement will make them disappear, according to this issue: https://github.com/dotnet/winforms/issues/12374
+
+        So, we could leave this in and get that behavior, or we could set 32767 and get the previous behavior:
+        long enough to read it, but also disappears when the mouse moves like any sane person would want it.
+
+        Info source: https://learn.microsoft.com/en-us/dotnet/framework/whats-new/whats-new-in-accessibility#winforms481
+        "ToolTip now follows WCAG2.1 guidelines to be persistent, dismissable, and hoverable on Windows 11.
+        Changes to tooltip behavior are limited to Windows 11 systems that have .NET Framework 4.8.1 installed,
+        and only apply to applications where a timeout was not set for the tooltip. Tooltips that are persisting
+        can be dismissed with either the Esc key or the Ctrl key or by navigating to a control with another
+        tooltip set."
+        */
+        static bool OSSupportsPersistentTooltips()
+        {
+            try
+            {
+                using var ndpKey = RegistryKey
+                    .OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                    .OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\");
+                return ndpKey?.GetValue("Release") is >= 533320 && WinVersion.Is11OrAbove;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+    }
 
     #region Cursor
 
