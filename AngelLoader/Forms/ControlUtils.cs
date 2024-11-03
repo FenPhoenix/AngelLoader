@@ -961,6 +961,12 @@ internal static class ControlUtils
     the maximum display time is 32767 milliseconds. But it doesn't say that anywhere on the page, and the fact
     that this is the help page for AutoPopDelay and NOT InitialDelay means you're expecting any line vaguely
     saying "maximum" and then a number will be the maximum value for the property the page is about. But nope.
+
+    @MT_TASK(Attention - Win11 tooltip behavior change):
+    Apparently Windows 11 either outright changed, or added the option for, tooltips to display indefinitely when
+    AutoPopDelay is left at default. I can't find clear info on whether it's a global change or an opt-in one.
+    But if WinForms Framework 4.7.2 Windows 11 tooltips are indefinite by default, then we should only set this
+    max value if Windows version is <11.
     */
     internal static void SetMaxDelay(this ToolTip toolTip) => toolTip.AutoPopDelay = 32767;
 
