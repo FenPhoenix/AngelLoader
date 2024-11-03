@@ -2518,7 +2518,12 @@ internal static partial class FMInstallAndPlay
         dirs in it.
         */
 
-        if (!fileName.EndsWithDirSep())
+        if (fileName.EndsWithDirSep())
+        {
+            Directory.CreateDirectory(extractedName);
+            return false;
+        }
+        else
         {
             if (fileName.Rel_ContainsDirSep())
             {
@@ -2528,11 +2533,6 @@ internal static partial class FMInstallAndPlay
                 ct.ThrowIfCancellationRequested();
             }
             return true;
-        }
-        else
-        {
-            Directory.CreateDirectory(extractedName);
-            return false;
         }
     }
 
