@@ -1,4 +1,4 @@
-﻿// @MT_TASK: Comment this out for release
+﻿// @MT_TASK: Comment this out for final release
 #define TESTING
 
 using System;
