@@ -757,7 +757,7 @@ public sealed class ReadOnlyDataContext
 
     /*
     Catches stuff like "PD" but also "CoS"
-    Also catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just
+    Also catches stuff like "FM" and also Roman numerals. We could get clever if we wanted, but that would just
     be a perf tweak, as everything works out fine as is in terms of accuracy.
     */
     internal readonly Regex AcronymRegex =

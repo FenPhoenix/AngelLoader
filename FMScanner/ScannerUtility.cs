@@ -99,8 +99,6 @@ internal static class Utility
 
     #region File extensions
 
-    #region Baked-in extension checks (generated)
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsIbt(this string value) => value.EndsWithI_Ascii(".ibt");
 
@@ -127,8 +125,6 @@ internal static class Utility
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsGam(this string value) => value.EndsWithI_Ascii(".gam");
-
-    #endregion
 
     #endregion
 
@@ -415,8 +411,10 @@ internal static class Utility
         return false;
     }
 
+    #region Acronym detection
+
     // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
-    // being interpreted as a roman numeral
+    // being interpreted as a Roman numeral
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
 
@@ -572,6 +570,8 @@ internal static class Utility
 
         return true;
     }
+
+    #endregion
 
     // @RAR: Duplicate because we don't want to put it in Common cause then it has to reference SharpCompress
     // And then we couldn't have SharpCompress reference Common. Meh.
