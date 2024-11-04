@@ -413,29 +413,6 @@ internal static class Utility
 
     #region Acronym detection
 
-    // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
-    // being interpreted as a Roman numeral
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
-
-    private static byte RomanToInteger(ListFast<char> value, byte[] romanNumeralToDecimalTable)
-    {
-        byte number = 0;
-        for (int i = 0; i < value.Count; i++)
-        {
-            byte current = romanNumeralToDecimalTable[value[i]];
-            if (i < value.Count - 1 && current < romanNumeralToDecimalTable[value[i + 1]])
-            {
-                number -= current;
-            }
-            else
-            {
-                number += current;
-            }
-        }
-        return number;
-    }
-
     internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
         ListFast<char>? romanNumeralRun = null;
@@ -470,16 +447,41 @@ internal static class Utility
 
         return;
 
+        // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
+        // being interpreted as a Roman numeral
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
+
         static void AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
         {
             byte number = RomanToInteger(romanNumeralRun, romanNumeralToDecimalTable);
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
             for (int digitIndex = 0; digitIndex < digits; digitIndex++)
             {
-                char thing = (char)((number % 10) + '0');
-                acronymChars.Add(thing);
+                char decimalChar = (char)((number % 10) + '0');
+                acronymChars.Add(decimalChar);
                 number /= 10;
             }
+        }
+
+        static byte RomanToInteger(ListFast<char> romanNumeralRun, byte[] romanNumeralToDecimalTable)
+        {
+            byte number = 0;
+            for (int i = 0; i < romanNumeralRun.Count; i++)
+            {
+                // We're indexing into a sub-byte-length array with a char-length value, but we know we only have
+                // Roman numeral chars in the run, so we won't go out of bounds.
+                byte current = romanNumeralToDecimalTable[romanNumeralRun[i]];
+                if (i < romanNumeralRun.Count - 1 && current < romanNumeralToDecimalTable[romanNumeralRun[i + 1]])
+                {
+                    number -= current;
+                }
+                else
+                {
+                    number += current;
+                }
+            }
+            return number;
         }
     }
 
