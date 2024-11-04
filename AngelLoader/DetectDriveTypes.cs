@@ -166,21 +166,21 @@ internal static class DetectDriveTypes
 #endif
 
         return ret;
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool RootIsLetter(string root)
-    {
-        return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
-    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool RootIsLetter(string root)
+        {
+            return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
+        }
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern SafeFileHandle CreateFileW(
-        string lpFileName,
-        [MarshalAs(UnmanagedType.U4)] FileAccess dwDesiredAccess,
-        [MarshalAs(UnmanagedType.U4)] FileShare dwShareMode,
-        IntPtr lpSecurityAttributes,
-        [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
-        [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
-        IntPtr hTemplateFile);
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern SafeFileHandle CreateFileW(
+            string lpFileName,
+            [MarshalAs(UnmanagedType.U4)] FileAccess dwDesiredAccess,
+            [MarshalAs(UnmanagedType.U4)] FileShare dwShareMode,
+            IntPtr lpSecurityAttributes,
+            [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
+            [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
+            IntPtr hTemplateFile);
+    }
 }

@@ -2837,10 +2837,33 @@ public sealed partial class RtfToTextConverter
         #endregion
 
         return RewindAndSkipGroup();
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        RtfError RewindAndSkipGroup()
+        {
+            CurrentPos--;
+            _ctx.GroupStack.CurrentSkipDest = true;
+            return RtfError.OK;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool IsSeparatorChar(char ch) => ch is '\\' or '{' or '}';
+
+        // Only call this if chars length is > 0 and consists solely of the characters '0' through '9'.
+        // It does no checks at all and will throw if either of these things is false.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int ParseIntFast(ListFast<char> chars)
+        {
+            int result = chars.ItemsArray[0] - '0';
+
+            for (int i = 1; i < chars.Count; i++)
+            {
+                result *= 10;
+                result += chars.ItemsArray[i] - '0';
+            }
+            return result;
+        }
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ListFast<char> GetCharFromCodePage(int codePage, uint codePoint)
@@ -2877,14 +2900,6 @@ public sealed partial class RtfToTextConverter
             SetListFastToUnknownChar(_charGeneralBuffer);
             return _charGeneralBuffer;
         }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError RewindAndSkipGroup()
-    {
-        CurrentPos--;
-        _ctx.GroupStack.CurrentSkipDest = true;
-        return RtfError.OK;
     }
 
     #endregion
@@ -3133,25 +3148,6 @@ public sealed partial class RtfToTextConverter
                 returnCodePoint = _symbolFontTables[(int)symbolFont][returnCodePoint - 0x20];
             }
         }
-    }
-
-    /// <summary>
-    /// Only call this if <paramref name="chars"/>'s length is > 0 and consists solely of the characters '0' through '9'.
-    /// It does no checks at all and will throw if either of these things is false.
-    /// </summary>
-    /// <param name="chars"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int ParseIntFast(ListFast<char> chars)
-    {
-        int result = chars.ItemsArray[0] - '0';
-
-        for (int i = 1; i < chars.Count; i++)
-        {
-            result *= 10;
-            result += chars.ItemsArray[i] - '0';
-        }
-        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

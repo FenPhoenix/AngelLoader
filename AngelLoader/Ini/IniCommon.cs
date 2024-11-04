@@ -207,9 +207,6 @@ internal static partial class Ini
             return true;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static uint RotateLeft(uint value, int offset) => (value << offset) | (value >> (32 - offset));
-
         public unsafe int GetHashCode(string obj)
         {
             // From .NET 7 (but tweaked to stop at '=') - no separate 32/64 paths, and doesn't stop at nulls
@@ -241,16 +238,9 @@ internal static partial class Ini
 
                 return (int)(hash1 + (hash2 * 1566083941));
             }
-        }
-    }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
-    {
-        if (fm != null)
-        {
-            List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
-            list.Add(fm);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static uint RotateLeft(uint value, int offset) => (value << offset) | (value >> (32 - offset));
         }
     }
 
@@ -299,6 +289,16 @@ internal static partial class Ini
             }
         }
         AddFMIfNotNull(fm, fmsList, fmsListTDM);
+
+        return;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
+        {
+            if (fm == null) return;
+            List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
+            list.Add(fm);
+        }
     }
 
     internal static void WriteConfigIni()
