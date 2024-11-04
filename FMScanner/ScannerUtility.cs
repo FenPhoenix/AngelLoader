@@ -418,7 +418,7 @@ internal static class Utility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
 
-    private static byte RomanToInteger(ListFast<byte> value, byte[] romanNumeralToDecimalTable)
+    private static byte RomanToInteger(ListFast<char> value, byte[] romanNumeralToDecimalTable)
     {
         byte number = 0;
         for (int i = 0; i < value.Count; i++)
@@ -438,21 +438,21 @@ internal static class Utility
 
     internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
-        ListFast<byte>? romanNumeralRun = null;
+        ListFast<char>? romanNumeralRun = null;
 
         for (int titleIndex = 0; titleIndex < title.Length; titleIndex++)
         {
             char c = title[titleIndex];
             if (convertRomanToDecimal && CharacterIsSupportedRomanNumeral(c))
             {
-                romanNumeralRun ??= new ListFast<byte>(10);
+                romanNumeralRun ??= new ListFast<char>(10);
                 int romanNumeralIndex;
                 for (romanNumeralIndex = titleIndex; romanNumeralIndex < title.Length; romanNumeralIndex++)
                 {
                     c = title[romanNumeralIndex];
                     if (CharacterIsSupportedRomanNumeral(c))
                     {
-                        romanNumeralRun.Add((byte)c);
+                        romanNumeralRun.Add(c);
                     }
                     else
                     {
@@ -470,14 +470,14 @@ internal static class Utility
 
         return;
 
-        static void AddRomanConvertedChar(ListFast<byte> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
+        static void AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
         {
             byte number = RomanToInteger(romanNumeralRun, romanNumeralToDecimalTable);
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
             for (int digitIndex = 0; digitIndex < digits; digitIndex++)
             {
-                char decimalChar = (char)((number % 10) + '0');
-                acronymChars.Add(decimalChar);
+                char thing = (char)((number % 10) + '0');
+                acronymChars.Add(thing);
                 number /= 10;
             }
         }
