@@ -15,7 +15,7 @@ namespace FMScanner;
 public sealed class ReadOnlyDataContext
 {
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct AsciiCharWithNonAsciiEquivalent(char original, char ascii)
+    internal readonly struct NonAsciiCharWithAsciiEquivalent(char original, char ascii)
     {
         internal readonly char Original = original;
         internal readonly char Ascii = ascii;
@@ -110,7 +110,7 @@ public sealed class ReadOnlyDataContext
 
     internal readonly TitlesStrNaturalNumericSortComparer TitlesStrNaturalNumericSort = new();
 
-    internal readonly AsciiCharWithNonAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
+    internal readonly NonAsciiCharWithAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
     {
         new('\x2003', ' '),
         new('\x2002', ' '),
