@@ -11,10 +11,10 @@ internal static class Paths
     private const string _extractedDir = "ExtractPermanent";
     private const string _accuracyDataDir = "accuracy-data";
 
-    internal const string T1T2ArchivePath = @"F:\FM pack\All";
-    internal const string SS2ArchivePath = @"F:\SS2 FM Pack";
-    internal const string T3ArchivePath = @"F:\FM pack T3";
-    internal const string SevenZipTestPath = @"F:\7z_FMs";
+    internal const string T1T2ArchivePath = @"F:\FM packs\FM pack\All";
+    internal const string SS2ArchivePath = @"F:\FM packs\SS2 FM Pack";
+    internal const string T3ArchivePath = @"F:\FM packs\FM pack T3";
+    internal const string SevenZipTestPath = @"F:\FM packs\7z_FMs";
 
     internal const string LocalTestPath = @"C:\fm-info-test";
 
