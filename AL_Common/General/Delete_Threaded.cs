@@ -16,7 +16,18 @@ using static AL_Common.FastIO_Native;
 
 namespace AL_Common;
 
-// @MT_TASK: On 71 set, we get 13 vs. 9 seconds framework/threaded. Test on NVME, presumably we'll get better scaling there.
+/*
+@MT_TASK(Uninstall perf numbers on 71 set):
+
+SATA:
+13 vs. 9 seconds framework/threaded (~31% reduction)
+
+NVME:
+4.797 vs. 3.170 seconds framework/threaded (~34% reduction)
+
+NVME is slightly better but not by a whole lot.
+However, a ~30% time reduction is still worth having, even if it's less than we would have hoped.
+*/
 
 public static class Delete_Threaded
 {
