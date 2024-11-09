@@ -1,6 +1,6 @@
 ﻿// @MT_TASK: Test identicality for wav bits detection between previous and current versions before release
 
-#define SATA_SINGLE_THREAD
+//#define SATA_SINGLE_THREAD
 
 using System;
 using System.Collections.Generic;
