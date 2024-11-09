@@ -1515,7 +1515,30 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 #endif
 
-        if (ViewBlocked) return;
+        #region Escape key / tags dropdown handling
+
+        if (e.KeyCode == Keys.Escape)
+        {
+            CancelResizables();
+
+            TagsTabPage.HideAndClearAddTagLLDropDown();
+
+            // Easy way to "get out" of the filter if you want to use Home and End again
+            if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
+            {
+                FMsDGV.Focus();
+            }
+        }
+
+        // Fixes tags dropdown remaining open when new FM selected with arrow keys when mouse is over FMs list
+        if (ViewBlocked || TagsTabPage.AddTagLLDropDownVisible()) return;
+
+        if (e.KeyCode == Keys.Escape)
+        {
+            return;
+        }
+
+        #endregion
 
         // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
         // the FMs list
@@ -1756,18 +1779,6 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 await FMDelete.HandleDelete();
                 SetAvailableAndFinishedFMCount();
-            }
-        }
-        else if (e.KeyCode == Keys.Escape)
-        {
-            CancelResizables();
-
-            TagsTabPage.HideAndClearAddTagLLDropDown();
-
-            // Easy way to "get out" of the filter if you want to use Home and End again
-            if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
-            {
-                FMsDGV.Focus();
             }
         }
         else if (e.KeyCode == Keys.F5)
