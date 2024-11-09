@@ -33,7 +33,8 @@ internal static class DetectDriveTypes
 
             try
             {
-                string? root = Path.GetPathRoot(paths[i])?.TrimEnd(Common.CA_BS_FS);
+                string realPath = GetRealDirectory(paths[i]);
+                string? root = Path.GetPathRoot(realPath)?.TrimEnd(Common.CA_BS_FS);
                 if (!root.IsEmpty())
                 {
                     roots.Add(root);
@@ -182,5 +183,40 @@ internal static class DetectDriveTypes
             [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
             [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile);
+
+        // In case the directory is a symlink pointing at some other drive
+        static string GetRealDirectory(string path)
+        {
+            try
+            {
+                // @MT_TASK: Cheap, inefficient check; make this smarter later
+                // By having a path object with a file-or-directory field?
+                if (File.Exists(path))
+                {
+                    string? dir = Path.GetDirectoryName(path);
+                    if (dir.IsEmpty()) return path;
+                    path = dir;
+                }
+
+                // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so just
+                // do a reparse point check first, which is effectively instantaneous.
+                if ((new DirectoryInfo(path).Attributes & FileAttributes.ReparsePoint) == 0)
+                {
+                    return path;
+                }
+
+                FileSystemInfo? fsi = Common.Directory_ResolveLinkTarget(path, returnFinalTarget: true);
+                if (fsi != null)
+                {
+                    path = fsi.FullName;
+                }
+
+                return path;
+            }
+            catch
+            {
+                return path;
+            }
+        }
     }
 }

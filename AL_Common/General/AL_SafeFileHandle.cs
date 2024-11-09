@@ -108,12 +108,12 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     private static unsafe AL_SafeFileHandle CreateFile(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
     {
-        SECURITY_ATTRIBUTES secAttrs = default;
+        Interop.Kernel32.SECURITY_ATTRIBUTES secAttrs = default;
         if ((share & FileShare.Inheritable) != 0)
         {
-            secAttrs = new SECURITY_ATTRIBUTES
+            secAttrs = new Interop.Kernel32.SECURITY_ATTRIBUTES
             {
-                nLength = (uint)sizeof(SECURITY_ATTRIBUTES),
+                nLength = (uint)sizeof(Interop.Kernel32.SECURITY_ATTRIBUTES),
                 bInheritHandle = BOOL.TRUE,
             };
         }
@@ -179,14 +179,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     protected override bool ReleaseHandle() => CloseHandle(handle);
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct SECURITY_ATTRIBUTES
-    {
-        internal uint nLength;
-        internal unsafe void* lpSecurityDescriptor;
-        internal BOOL bInheritHandle;
-    }
-
     private static class GenericOperations
     {
         internal const int GENERIC_READ = unchecked((int)0x80000000);
@@ -217,7 +209,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         string lpFileName,
         int dwDesiredAccess,
         FileShare dwShareMode,
-        SECURITY_ATTRIBUTES* lpSecurityAttributes,
+        Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
         FileMode dwCreationDisposition,
         int dwFlagsAndAttributes,
         IntPtr hTemplateFile);
@@ -226,7 +218,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         string lpFileName,
         int dwDesiredAccess,
         FileShare dwShareMode,
-        SECURITY_ATTRIBUTES* lpSecurityAttributes,
+        Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
         FileMode dwCreationDisposition,
         int dwFlagsAndAttributes,
         IntPtr hTemplateFile)
@@ -267,7 +259,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     }
 
     private const string ExtendedPathPrefix = @"\\?\";
-    private const string UncPathPrefix = @"\\";
+    internal const string UncPathPrefix = @"\\";
     private const string UncExtendedPrefixToInsert = @"?\UNC\";
 
     /// <summary>
@@ -311,7 +303,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// for C: (rooted, but relative). "C:\a" is rooted and not relative (the current directory
     /// will not be used to modify the path).
     /// </remarks>
-    private static bool IsPartiallyQualified(ReadOnlySpan<char> path)
+    internal static bool IsPartiallyQualified(ReadOnlySpan<char> path)
     {
         if (path.Length < 2)
         {
