@@ -1926,7 +1926,7 @@ internal static partial class FMInstallAndPlay
                 }
                 catch (OperationCanceledException)
                 {
-                    // @MT_TASK: We get a brief UI thread block when run from within Visual Studio.
+                    // @MT_TASK_NOTE: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
 
@@ -2229,7 +2229,7 @@ internal static partial class FMInstallAndPlay
 
 #if TIMING_TEST
                 audioConvertSW.Stop();
-                Trace.WriteLine("CA: " + audioConvertSW.Elapsed);
+                Trace.WriteLine("CA: " + audioConvertSW.Elapsed + " (" + fmData.FM.GetId() + ")");
 #endif
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2741,7 +2741,6 @@ internal static partial class FMInstallAndPlay
     FM. This delayed-cancel behavior is fine for cancel-semantics (revertible) operations, but stop-semantics
     (non-revertible) operations don't play as well with it. This is also a convenient excuse to sidestep the
     entire set of difficulties we were having with multithreading this thing. Shame to lose performance, but eh...
-    @MT_TASK: Bring this up to date with the multithreaded version in terms of other things I did
     */
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)

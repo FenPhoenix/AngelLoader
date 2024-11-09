@@ -559,7 +559,7 @@ internal static class FMScan
             int percent = GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
 
             /*
-            @MT_TASK: Necessary if we have multiple threads to allow UI time to catch up.
+            @MT_TASK_NOTE: Necessary if we have multiple threads to allow UI time to catch up.
             Not necessary if we're on one thread, but does no harm either.
             @MT_TASK: Diff test with previous version the 100% behavior, and percent in general
             */

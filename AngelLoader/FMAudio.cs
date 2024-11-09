@@ -1,5 +1,7 @@
 ﻿// @MT_TASK: Test identicality for wav bits detection between previous and current versions before release
 
+#define SATA_SINGLE_THREAD
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -179,14 +181,6 @@ internal static class FMAudio
         return ConvertToWAVs(fm, type, threadingData, ct);
     }
 
-    /*
-    @MT_TASK(ConvertToWAVs): Aggressive threading can be much slower on SATA SSD, at least in some cases.
-    Need to test on NVMe... Maybe we should just leave this single-threaded?
-
-    We could put the audio conversion for all FMs at the end of the entire install process, so that the parallel
-    loop here doesn't fight for resources with the already-going parallel loop for the install.
-    This would complicate things for the SATA case though.
-    */
     private static ConvertAudioError ConvertToWAVs(
         ValidAudioConvertibleFM fm,
         AudioConvert type,
@@ -487,10 +481,25 @@ internal static class FMAudio
                 : new[] { sndPath };
         }
 
+        /*
+        @MT_TASK_NOTE(ConvertToWAVs aggressive threading perf on SATA):
+        In the test set, SATA aggressive threading was slower (occasionally much slower) on some individual FMs,
+        but the total time for the set was still slightly faster than with normal threading. Given that, and the
+        fact that SATA aggressive threading is much faster when only a single FM is in the set, let's just allow
+        aggressive threading for SATA.
+
+        We could put the audio conversion for all FMs at the end of the entire install process, so that the parallel
+        loop here doesn't fight for resources with the already-going parallel loop for the install.
+        This would complicate things for the SATA case though.
+        */
         static int GetThreadCount(int maxWorkItemsCount, ThreadingData threadingData) =>
+#if SATA_SINGLE_THREAD
             threadingData.Mode == IOThreadingMode.Aggressive
                 ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData)
                 : 1;
+#else
+            GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData);
+#endif
 
         #endregion
     }
