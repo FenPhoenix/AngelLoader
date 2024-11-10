@@ -82,7 +82,7 @@ public static partial class Common
 
     public const RegexOptions IgnoreCaseInvariant = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
-    // @MT_TASK: This is rented/returned in tight loops a lot, we should back it out to reduce call count
+    // @MT_TASK_NOTE: This is rented/returned in tight loops a lot, we should back it out to reduce call count
     public sealed class FixedLengthByteArrayPool
     {
         private readonly int _length;

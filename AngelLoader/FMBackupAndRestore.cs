@@ -258,7 +258,6 @@ internal static partial class FMInstallAndPlay
         don't find any new-style backup (because we didn't create one). Therefore we don't restore the backup,
         which is not at all what the user expects given we tell them that existing backups haven't been changed.
         */
-        // @MT_TASK(MoveDarkLoaderBackup): Test this!
         static void MoveDarkLoaderBackup(DarkLoaderBackupContext ctx, FMData fmData)
         {
             try
@@ -832,7 +831,6 @@ internal static partial class FMInstallAndPlay
 
     #region Helpers
 
-    // @MT_TASK: Test this newly split DL/non-DL GetBackupFile() thing, just to make sure it still works correctly
     private static BackupFile GetDarkLoaderBackupFile(DarkLoaderBackupContext ctx, string fmArchiveNoExtTrimmed)
     {
         // Account for the fact that DarkLoader trims archive names for save backup zips
