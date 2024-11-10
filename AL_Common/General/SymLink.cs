@@ -92,8 +92,8 @@ public static partial class Common
         private static extern unsafe SafeFileHandle CreateFilePrivate(
             string lpFileName,
             int dwDesiredAccess,
-        FileShare dwShareMode,
-        Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
+            FileShare dwShareMode,
+            Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
             FileMode dwCreationDisposition,
             int dwFlagsAndAttributes,
             IntPtr hTemplateFile);
