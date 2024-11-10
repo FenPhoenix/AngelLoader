@@ -24,7 +24,7 @@ internal static class Interop
 
         // https://msdn.microsoft.com/library/windows/hardware/ff552012.aspx
         [StructLayout(LayoutKind.Sequential)]
-        internal unsafe struct SymbolicLinkReparseBuffer
+        internal struct SymbolicLinkReparseBuffer
         {
             internal uint ReparseTag;
             internal ushort ReparseDataLength;
@@ -443,18 +443,18 @@ internal static class Interop
 
     internal static bool IsPathUnreachableError(int errorCode) =>
         errorCode is
-            Interop.Errors.ERROR_FILE_NOT_FOUND or
-            Interop.Errors.ERROR_PATH_NOT_FOUND or
-            Interop.Errors.ERROR_NOT_READY or
-            Interop.Errors.ERROR_INVALID_NAME or
-            Interop.Errors.ERROR_BAD_PATHNAME or
-            Interop.Errors.ERROR_BAD_NETPATH or
-            Interop.Errors.ERROR_BAD_NET_NAME or
-            Interop.Errors.ERROR_INVALID_PARAMETER or
-            Interop.Errors.ERROR_NETWORK_UNREACHABLE or
-            Interop.Errors.ERROR_NETWORK_ACCESS_DENIED or
-            Interop.Errors.ERROR_INVALID_HANDLE or     // eg from \\.\CON
-            Interop.Errors.ERROR_FILENAME_EXCED_RANGE; // Path is too long
+            Errors.ERROR_FILE_NOT_FOUND or
+            Errors.ERROR_PATH_NOT_FOUND or
+            Errors.ERROR_NOT_READY or
+            Errors.ERROR_INVALID_NAME or
+            Errors.ERROR_BAD_PATHNAME or
+            Errors.ERROR_BAD_NETPATH or
+            Errors.ERROR_BAD_NET_NAME or
+            Errors.ERROR_INVALID_PARAMETER or
+            Errors.ERROR_NETWORK_UNREACHABLE or
+            Errors.ERROR_NETWORK_ACCESS_DENIED or
+            Errors.ERROR_INVALID_HANDLE or     // eg from \\.\CON
+            Errors.ERROR_FILENAME_EXCED_RANGE; // Path is too long
 
     // As defined in winerror.h and https://learn.microsoft.com/windows/win32/debug/system-error-codes
     internal static class Errors

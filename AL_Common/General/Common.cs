@@ -101,23 +101,6 @@ public static partial class Common
         public readonly FixedLengthByteArrayPool FileStream = new(FileStreamBufferSize);
     }
 
-    public readonly ref struct FixedLengthByteArrayRentScope
-    {
-        private readonly FixedLengthByteArrayPool _pool;
-        public readonly byte[] Array;
-
-        public FixedLengthByteArrayRentScope(FixedLengthByteArrayPool pool)
-        {
-            _pool = pool;
-            Array = pool.Rent();
-        }
-
-        public void Dispose()
-        {
-            _pool.Return(Array);
-        }
-    }
-
     #endregion
 
     #region Methods

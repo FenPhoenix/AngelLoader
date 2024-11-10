@@ -80,9 +80,13 @@ public static partial class Common
                 int errorCode = Marshal.GetLastWin32Error();
                 // File not found doesn't make much sense coming from a directory.
                 if (isDirectory && errorCode == Interop.Errors.ERROR_FILE_NOT_FOUND)
+                {
                     errorCode = Interop.Errors.ERROR_PATH_NOT_FOUND;
+                }
                 if (ignoreAccessDenied && errorCode == Interop.Errors.ERROR_ACCESS_DENIED)
+                {
                     return;
+                }
                 throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
             }
         }
@@ -114,28 +118,24 @@ public static partial class Common
             int dwFlagsAndAttributes,
             IntPtr hTemplateFile);
 
-        internal static unsafe SafeFileHandle CreateFile(
+        private static unsafe SafeFileHandle CreateFile(
             string lpFileName,
             int dwDesiredAccess,
-        FileShare dwShareMode,
-        Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
+            FileShare dwShareMode,
+            Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
             FileMode dwCreationDisposition,
             int dwFlagsAndAttributes,
             IntPtr hTemplateFile)
         {
             lpFileName = AL_SafeFileHandle.EnsureExtendedPrefixIfNeeded(lpFileName);
-            return CreateFilePrivate(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
-        }
-
-        internal static unsafe SafeFileHandle CreateFile(
-            string lpFileName,
-            int dwDesiredAccess,
-            FileShare dwShareMode,
-            FileMode dwCreationDisposition,
-            int dwFlagsAndAttributes)
-        {
-            lpFileName = AL_SafeFileHandle.EnsureExtendedPrefixIfNeeded(lpFileName);
-            return CreateFilePrivate(lpFileName, dwDesiredAccess, dwShareMode, null, dwCreationDisposition, dwFlagsAndAttributes, IntPtr.Zero);
+            return CreateFilePrivate(
+                lpFileName,
+                dwDesiredAccess,
+                dwShareMode,
+                lpSecurityAttributes,
+                dwCreationDisposition,
+                dwFlagsAndAttributes,
+                hTemplateFile);
         }
 
         private static unsafe string? GetFinalLinkTarget(string linkPath, bool isDirectory)
@@ -236,7 +236,7 @@ public static partial class Common
         /// Gets reparse point information associated to <paramref name="linkPath"/>.
         /// </summary>
         /// <returns>The immediate link target, absolute or relative or null if the file is not a supported link.</returns>
-        internal static unsafe string? GetImmediateLinkTarget(string linkPath, bool isDirectory, bool throwOnError, bool returnFullPath)
+        private static unsafe string? GetImmediateLinkTarget(string linkPath, bool isDirectory, bool throwOnError, bool returnFullPath)
         {
             using SafeFileHandle handle = OpenSafeFileHandle(linkPath,
                     Interop.Kernel32.FileOperations.FILE_FLAG_BACKUP_SEMANTICS |
@@ -356,7 +356,7 @@ public static partial class Common
             static string GetTargetPathWithoutNTPrefix(ReadOnlySpan<char> targetPath)
             {
                 Debug.Assert(targetPath.StartsWith(Interop.Kernel32.NTPathPrefix.AsSpan()));
-                return targetPath.Slice(Interop.Kernel32.NTPathPrefix.Length).ToString();
+                return targetPath[Interop.Kernel32.NTPathPrefix.Length..].ToString();
             }
         }
     }
