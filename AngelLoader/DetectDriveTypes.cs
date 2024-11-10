@@ -241,7 +241,7 @@ internal static class DetectDriveTypes
                     {
                         if (!IsReparsePoint(new DirectoryInfo(path.Path)))
                         {
-                            return path;
+                            return new IOPath(realPath, IOPathType.Directory);
                         }
                         path = new IOPath(realPath, IOPathType.Directory);
                     }
