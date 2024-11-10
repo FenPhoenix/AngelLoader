@@ -358,7 +358,6 @@ internal static class Interop
         private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
         private const int FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
         private const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
-        private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
 
         [DllImport("kernel32.dll", EntryPoint = "FormatMessageW", SetLastError = true)]
         private static extern unsafe int FormatMessage(
@@ -400,7 +399,7 @@ internal static class Interop
             // We got back an error.  If the error indicated that there wasn't enough room to store
             // the error message, then call FormatMessage again, but this time rather than passing in
             // a buffer, have the method allocate one, which we then need to free.
-            if (Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER)
+            if (Marshal.GetLastWin32Error() == Errors.ERROR_INSUFFICIENT_BUFFER)
             {
                 IntPtr nativeMsgPtr = default;
                 try
@@ -485,6 +484,8 @@ internal static class Interop
         internal const int ERROR_BAD_NET_NAME = 0x43;
         internal const int ERROR_NETWORK_UNREACHABLE = 0x4CF;
         internal const int ERROR_NETWORK_ACCESS_DENIED = 0x41;
+
+        internal const int ERROR_INSUFFICIENT_BUFFER = 122;
     }
 
     internal static class NtDll

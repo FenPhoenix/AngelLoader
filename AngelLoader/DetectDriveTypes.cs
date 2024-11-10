@@ -3,15 +3,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using AL_Common;
 using AL_Common.DeviceIoControlLib.Objects.Storage;
 using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
 using Microsoft.Win32.SafeHandles;
+using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader;
@@ -34,8 +38,14 @@ internal static class DetectDriveTypes
 
             try
             {
-                IOPath realPath = GetRealDirectory(paths[i]);
-                string? root = Path.GetPathRoot(realPath.Path)?.TrimEnd(Common.CA_BS_FS);
+                IOPath path = paths[i];
+                if (!PathStartsWithLetterAndVolumeSeparator(path.Path))
+                {
+                    continue;
+                }
+
+                IOPath realPath = GetRealDirectory(path);
+                string? root = Path.GetPathRoot(realPath.Path)?.TrimEnd(CA_BS_FS);
                 if (!root.IsEmpty())
                 {
                     roots.Add(root);
@@ -57,7 +67,7 @@ internal static class DetectDriveTypes
             sw.Stop();
             System.Diagnostics.Trace.WriteLine(sw.Elapsed);
 #endif
-            return ret;
+            return RetOrDefault(ret);
         }
 
         /*
@@ -167,7 +177,17 @@ internal static class DetectDriveTypes
         System.Diagnostics.Trace.WriteLine(sw.Elapsed);
 #endif
 
-        return ret;
+        return RetOrDefault(ret);
+
+        // IMPORTANT: Always return at least one item in the list, to prevent All() returning true on an empty list
+        static List<AL_DriveType> RetOrDefault(List<AL_DriveType> ret)
+        {
+            if (ret.Count == 0)
+            {
+                ret.Add(AL_DriveType.Other);
+            }
+            return ret;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool RootIsLetter(string root)
@@ -197,20 +217,45 @@ internal static class DetectDriveTypes
                     path = new IOPath(dir, IOPathType.Directory);
                 }
 
-                // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so
-                // just do a reparse point check first, which is effectively instantaneous.
-                if ((new DirectoryInfo(path.Path).Attributes & FileAttributes.ReparsePoint) == 0)
+                DirectoryInfo di = new(path.Path);
+                if (!di.Exists)
                 {
                     return path;
                 }
 
-                FileSystemInfo? fsi = Common.Directory_ResolveLinkTarget(path.Path, returnFinalTarget: true);
+                string? realPath;
+
+                // Perf: Checking for symbolic link is expensive(double-digit milliseconds for one check), so
+                // just do a reparse point check first, which is effectively instantaneous.
+                if (!IsReparsePoint(di))
+                {
+                    if (TryGetSubstedPath(path.Path, out realPath))
+                    {
+                        return new IOPath(realPath, IOPathType.Directory);
+                    }
+                    return path;
+                }
+                else
+                {
+                    if (TryGetSubstedPath(path.Path, out realPath))
+                    {
+                        if (!IsReparsePoint(new DirectoryInfo(path.Path)))
+                        {
+                            return path;
+                        }
+                        path = new IOPath(realPath, IOPathType.Directory);
+                    }
+                }
+
+                FileSystemInfo? fsi = Directory_ResolveLinkTarget(path.Path, returnFinalTarget: true);
                 if (fsi != null)
                 {
                     path = new IOPath(fsi.FullName, IOPathType.Directory);
                 }
 
                 return path;
+
+                static bool IsReparsePoint(DirectoryInfo di) => (di.Attributes & FileAttributes.ReparsePoint) != 0;
             }
             catch
             {
@@ -218,4 +263,88 @@ internal static class DetectDriveTypes
             }
         }
     }
+
+    private static bool TryGetSubstedPath(string path, [NotNullWhen(true)] out string? realPath)
+    {
+        if (!path.EndsWithDirSep())
+        {
+            path += "\\";
+        }
+
+        realPath = null;
+
+        string? driveLetter;
+        try
+        {
+            driveLetter = Path.GetPathRoot(path)?.TrimEnd(CA_BS_FS);
+            if (driveLetter == null)
+            {
+                return false;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+
+        string? result = CallQueryDosDevice(driveLetter);
+        if (result.IsEmpty())
+        {
+            return false;
+        }
+
+        if (result.StartsWithO(@"\??\"))
+        {
+            string realRoot = result.Substring(4);
+
+            if (!driveLetter.EndsWithDirSep())
+            {
+                driveLetter += "\\";
+            }
+
+            realPath = Path.Combine(realRoot, path.Substring(driveLetter.Length));
+
+            if (!PathStartsWithLetterAndVolumeSeparator(realPath))
+            {
+                realPath = null;
+                return false;
+            }
+
+            return true;
+        }
+
+        realPath = path;
+
+        return false;
+    }
+
+    private static string CallQueryDosDevice(string name)
+    {
+        const int ERROR_INSUFFICIENT_BUFFER = 122;
+
+        StringBuilder buffer = new(MAX_PATH);
+
+        uint dataSize = QueryDosDeviceW(name, buffer, buffer.Capacity);
+        while (dataSize <= 0)
+        {
+            int lastError = Marshal.GetLastWin32Error();
+            if (lastError == ERROR_INSUFFICIENT_BUFFER)
+            {
+                buffer.EnsureCapacity(buffer.Capacity * 2);
+                dataSize = QueryDosDeviceW(name, buffer, buffer.Capacity);
+            }
+            else
+            {
+                throw new Exception($"Error {lastError} calling QueryDosDevice for '{name}' with buffer size {buffer.Length}. {new Win32Exception(lastError).Message}");
+            }
+        }
+
+        return buffer.ToString();
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        static extern uint QueryDosDeviceW(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
+    }
+
+    private static bool PathStartsWithLetterAndVolumeSeparator(string path) =>
+        path.Length >= 2 && path[0].IsAsciiAlpha() && path[1] == Path.VolumeSeparatorChar;
 }
