@@ -23,8 +23,8 @@ internal static partial class Interop
         internal const int ERROR_INVALID_ACCESS = 0xC;
         internal const int ERROR_INVALID_DATA = 0xD;
         internal const int ERROR_OUTOFMEMORY = 0xE;
-        internal const int ERROR_INVALID_DRIVE = 0xF;
 #endif
+        internal const int ERROR_INVALID_DRIVE = 0xF;
         internal const int ERROR_NO_MORE_FILES = 0x12;
         internal const int ERROR_NOT_READY = 0x15;
 #if ENABLE_UNUSED

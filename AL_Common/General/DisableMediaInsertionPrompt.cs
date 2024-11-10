@@ -23,7 +23,7 @@ public struct DisableMediaInsertionPrompt : IDisposable
     public static DisableMediaInsertionPrompt Create()
     {
         DisableMediaInsertionPrompt prompt = default;
-        prompt._disableSuccess = Win32Native.SetErrorMode(Win32Native.SEM_FAILCRITICALERRORS, out prompt._oldMode);
+        prompt._disableSuccess = Interop.Kernel32.SetErrorMode(Interop.Kernel32.SEM_FAILCRITICALERRORS, out prompt._oldMode);
         return prompt;
     }
 
@@ -31,7 +31,7 @@ public struct DisableMediaInsertionPrompt : IDisposable
     {
         if (_disableSuccess)
         {
-            Win32Native.SetErrorMode(_oldMode, out _);
+            Interop.Kernel32.SetErrorMode(_oldMode, out _);
         }
     }
 }

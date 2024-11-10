@@ -89,14 +89,14 @@ internal static class __Error
     {
         // This doesn't have to be perfect, but is a perf optimization.
         bool isInvalidPath = errorCode
-            is Win32Native.ERROR_INVALID_NAME
-            or Win32Native.ERROR_BAD_PATHNAME;
+            is Interop.Errors.ERROR_INVALID_NAME
+            or Interop.Errors.ERROR_BAD_PATHNAME;
 
         string str = GetDisplayablePath(maybeFullPath, isInvalidPath);
 
         switch (errorCode)
         {
-            case Win32Native.ERROR_FILE_NOT_FOUND:
+            case Interop.Errors.ERROR_FILE_NOT_FOUND:
                 if (str.Length == 0)
                 {
                     throw new FileNotFoundException(SR.FileNotFound);
@@ -106,7 +106,7 @@ internal static class __Error
                     throw new FileNotFoundException(string.Format(CultureInfo.CurrentCulture, SR.FileNotFound_FileName, str), str);
                 }
 
-            case Win32Native.ERROR_PATH_NOT_FOUND:
+            case Interop.Errors.ERROR_PATH_NOT_FOUND:
                 if (str.Length == 0)
                 {
                     throw new DirectoryNotFoundException(SR.PathNotFound_NoPathName);
@@ -116,7 +116,7 @@ internal static class __Error
                     throw new DirectoryNotFoundException(string.Format(CultureInfo.CurrentCulture, SR.PathNotFound_Path, str));
                 }
 
-            case Win32Native.ERROR_ACCESS_DENIED:
+            case Interop.Errors.ERROR_ACCESS_DENIED:
                 if (str.Length == 0)
                 {
                     throw new UnauthorizedAccessException(SR.UnauthorizedAccess_IODenied_NoPathName);
@@ -126,23 +126,23 @@ internal static class __Error
                     throw new UnauthorizedAccessException(string.Format(CultureInfo.CurrentCulture, SR.UnauthorizedAccess_IODenied_Path, str));
                 }
 
-            case Win32Native.ERROR_ALREADY_EXISTS:
+            case Interop.Errors.ERROR_ALREADY_EXISTS:
                 if (str.Length == 0)
                 {
                     goto default;
                 }
                 throw new IOException(string.Format(SR.IO_AlreadyExists_Name, str), MakeHRFromErrorCode(errorCode));
 
-            case Win32Native.ERROR_FILENAME_EXCED_RANGE:
+            case Interop.Errors.ERROR_FILENAME_EXCED_RANGE:
                 throw new PathTooLongException(SR.PathTooLong);
 
-            case Win32Native.ERROR_INVALID_DRIVE:
+            case Interop.Errors.ERROR_INVALID_DRIVE:
                 throw new DriveNotFoundException(string.Format(CultureInfo.CurrentCulture, SR.DriveNotFound_Drive, str));
 
-            case Win32Native.ERROR_INVALID_PARAMETER:
+            case Interop.Errors.ERROR_INVALID_PARAMETER:
                 throw new IOException(GetMessage(errorCode), MakeHRFromErrorCode(errorCode));
 
-            case Win32Native.ERROR_SHARING_VIOLATION:
+            case Interop.Errors.ERROR_SHARING_VIOLATION:
                 if (str.Length == 0)
                 {
                     throw new IOException(SR.IO_SharingViolation_NoFileName, MakeHRFromErrorCode(errorCode));
@@ -152,14 +152,14 @@ internal static class __Error
                     throw new IOException(string.Format(SR.IO_SharingViolation_File, str), MakeHRFromErrorCode(errorCode));
                 }
 
-            case Win32Native.ERROR_FILE_EXISTS:
+            case Interop.Errors.ERROR_FILE_EXISTS:
                 if (str.Length == 0)
                 {
                     goto default;
                 }
                 throw new IOException(string.Format(CultureInfo.CurrentCulture, SR.IO_FileExists_Name, str), MakeHRFromErrorCode(errorCode));
 
-            case Win32Native.ERROR_OPERATION_ABORTED:
+            case Interop.Errors.ERROR_OPERATION_ABORTED:
                 throw new OperationCanceledException();
 
             default:

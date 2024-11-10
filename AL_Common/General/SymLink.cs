@@ -295,7 +295,7 @@ public static partial class Common
                         if (targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()))
                         {
                             // We need to prepend the Win32 equivalent of UNC NT prefix.
-                            return Path.Combine(AL_SafeFileHandle.UncPathPrefix, targetPath[PathInternal.UncNTPathPrefix.Length..].ToString());
+                            return Path.Combine(PathInternal.UncPathPrefix, targetPath[PathInternal.UncNTPathPrefix.Length..].ToString());
                         }
 
                         return GetTargetPathWithoutNTPrefix(targetPath);

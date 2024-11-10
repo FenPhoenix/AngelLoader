@@ -72,7 +72,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
         return _fileOptions = result;
 
-        [DllImport("ntdll.dll",EntryPoint = "NtQueryInformationFile")]
+        [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationFile")]
         static extern int NtQueryInformationFile_Private(
             AL_SafeFileHandle FileHandle,
             out Interop.NtDll.IO_STATUS_BLOCK IoStatusBlock,
@@ -146,7 +146,8 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         // make sure we always call CreateFile with SECURITY_ANONYMOUS so that the
         // named pipe server can't impersonate a high privileged client security context
         // (note that this is the effective default on CreateFile2)
-        flagsAndAttributes |= (Win32Native.SECURITY_SQOS_PRESENT | Win32Native.SECURITY_ANONYMOUS);
+        flagsAndAttributes |= Interop.Kernel32.SecurityOptions.SECURITY_SQOS_PRESENT |
+                              Interop.Kernel32.SecurityOptions.SECURITY_ANONYMOUS;
 
         AL_SafeFileHandle fileHandle = CreateFile(fullPath, fAccess, share, &secAttrs, mode, flagsAndAttributes, IntPtr.Zero);
         if (fileHandle.IsInvalid)
@@ -158,10 +159,10 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             // probably be consistent w/ every other directory.
             int errorCode = Marshal.GetLastWin32Error();
 
-            if (errorCode == Win32Native.ERROR_PATH_NOT_FOUND &&
+            if (errorCode == Interop.Errors.ERROR_PATH_NOT_FOUND &&
                 fullPath.Equals(Directory.GetDirectoryRoot(fullPath)))
             {
-                errorCode = Win32Native.ERROR_ACCESS_DENIED;
+                errorCode = Interop.Errors.ERROR_ACCESS_DENIED;
             }
 
             fileHandle.Dispose();
@@ -234,24 +235,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         lpFileName = PathInternal.EnsureExtendedPrefixIfNeeded(lpFileName);
         return CreateFilePrivate(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
     }
-
-    private static bool EndsWithPeriodOrSpace(string? path)
-    {
-        if (path.IsEmpty())
-        {
-            return false;
-        }
-
-        char c = path[^1];
-        return c is ' ' or '.';
-    }
-
-    private const string ExtendedPathPrefix = @"\\?\";
-    internal const string UncPathPrefix = @"\\";
-    private const string UncExtendedPrefixToInsert = @"?\UNC\";
-
-    internal const char VolumeSeparatorChar = ':';
-    internal const int DevicePrefixLength = 4;
 
     internal long GetFileLength()
     {

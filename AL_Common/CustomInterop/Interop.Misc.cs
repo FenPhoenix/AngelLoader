@@ -25,4 +25,26 @@ internal static partial class Interop
             throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
         }
     }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    internal static extern unsafe bool SetFileTime(
+        AL_SafeFileHandle hFile,
+        FILE_TIME* creationTime,
+        FILE_TIME* lastAccessTime,
+        FILE_TIME* lastWriteTime);
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct FILE_TIME
+{
+    public FILE_TIME(long fileTime)
+    {
+        ftTimeLow = (uint)fileTime;
+        ftTimeHigh = (uint)(fileTime >> 32);
+    }
+
+    public readonly long ToTicks() => ((long)ftTimeHigh << 32) + ftTimeLow;
+
+    internal uint ftTimeLow;
+    internal uint ftTimeHigh;
 }
