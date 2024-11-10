@@ -71,25 +71,6 @@ public static partial class Common
                 isDirectory ? new DirectoryInfo(targetPath) : new FileInfo(targetPath);
         }
 
-        private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref Interop.Kernel32.WIN32_FIND_DATA findData)
-        {
-            using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(PathInternal.TrimEndingDirectorySeparator(fullPath), ref findData);
-            if (handle.IsInvalid)
-            {
-                int errorCode = Marshal.GetLastWin32Error();
-                // File not found doesn't make much sense coming from a directory.
-                if (isDirectory && errorCode == Interop.Errors.ERROR_FILE_NOT_FOUND)
-                {
-                    errorCode = Interop.Errors.ERROR_PATH_NOT_FOUND;
-                }
-                if (ignoreAccessDenied && errorCode == Interop.Errors.ERROR_ACCESS_DENIED)
-                {
-                    return;
-                }
-                throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
-            }
-        }
-
         private static unsafe SafeFileHandle OpenSafeFileHandle(string path, int flags)
         {
             SafeFileHandle handle = CreateFile(
@@ -140,7 +121,7 @@ public static partial class Common
         private static unsafe string? GetFinalLinkTarget(string linkPath, bool isDirectory)
         {
             Interop.Kernel32.WIN32_FIND_DATA data = default;
-            GetFindData(linkPath, isDirectory, ignoreAccessDenied: false, ref data);
+            Interop.GetFindData(linkPath, isDirectory, ignoreAccessDenied: false, ref data);
 
             // The file or directory is not a reparse point.
             if ((data.dwFileAttributes & (uint)FileAttributes.ReparsePoint) == 0 ||

@@ -46,7 +46,7 @@ public static class Delete_Threaded
         // FindFirstFile($path) (used by GetFindData) fails with ACCESS_DENIED when user has no ListDirectory rights
         // but FindFirstFile($path/*") (used by RemoveDirectoryRecursive) works fine in such scenario.
         // So we ignore it here and let RemoveDirectoryRecursive throw if FindFirstFile($path/*") fails with ACCESS_DENIED.
-        GetFindData(fullPath, isDirectory: true, ignoreAccessDenied: true, ref findData);
+        Interop.GetFindData(fullPath, isDirectory: true, ignoreAccessDenied: true, ref findData);
         if (IsNameSurrogateReparsePoint(ref findData))
         {
             // Don't recurse
@@ -261,25 +261,6 @@ public static class Delete_Threaded
 
         return ((FileAttributes)data.dwFileAttributes & FileAttributes.ReparsePoint) != 0
                && (data.dwReserved0 & 0x20000000) != 0; // IsReparseTagNameSurrogate
-    }
-
-    private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref Interop.Kernel32.WIN32_FIND_DATA findData)
-    {
-        using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(PathInternal.TrimEndingDirectorySeparator(fullPath), ref findData);
-        if (handle.IsInvalid)
-        {
-            int errorCode = Marshal.GetLastWin32Error();
-            // File not found doesn't make much sense coming from a directory.
-            if (isDirectory && errorCode == Interop.Errors.ERROR_FILE_NOT_FOUND)
-            {
-                errorCode = Interop.Errors.ERROR_PATH_NOT_FOUND;
-            }
-            if (ignoreAccessDenied && errorCode == Interop.Errors.ERROR_ACCESS_DENIED)
-            {
-                return;
-            }
-            throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
-        }
     }
 
     private static void RemoveDirectoryInternal(string fullPath, bool topLevel, bool allowDirectoryNotEmpty = false)
