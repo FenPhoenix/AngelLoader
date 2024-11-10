@@ -186,11 +186,11 @@ internal static class FMScan
                         if (_scanCts.IsCancellationRequested) return false;
 
                         if (!fm.Archive.IsEmpty() &&
-                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archivePath)).IsEmpty())
+                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archiveDirectoryFullPath)).IsEmpty())
                         {
-                            if (!archivePath.IsEmpty())
+                            if (!archiveDirectoryFullPath.IsEmpty())
                             {
-                                usedArchivePaths.Add(archivePath);
+                                usedArchivePaths.Add(archiveDirectoryFullPath);
                             }
                             bool needsReadmesCachedDuringScan = fm.NeedsReadmesCachedDuringScan();
                             fmsToScanFiltered.Add(fm);
@@ -592,31 +592,34 @@ internal static class FMScan
             Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
         }
 
-        static List<string> GetScanRelevantPaths(
+        static List<IOPath> GetScanRelevantPaths(
             HashSetI usedArchivePaths,
             bool[] fmInstalledDirsRequired,
             bool atLeastOneSolidArchiveInSet)
         {
-            List<string> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
-            ret.AddRange(usedArchivePaths);
+            List<IOPath> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
+            foreach (var item in usedArchivePaths)
+            {
+                ret.Add(new IOPath(item, IOPathType.Directory));
+            }
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (fmInstalledDirsRequired[i])
                 {
-                    ret.Add(Config.GetFMInstallPath((GameIndex)i));
+                    ret.Add(new IOPath(Config.GetFMInstallPath((GameIndex)i), IOPathType.Directory));
                 }
             }
             if (atLeastOneSolidArchiveInSet)
             {
-                ret.Add(Paths.BaseTemp);
-                ret.Add(Paths.FMsCache);
+                ret.Add(new IOPath(Paths.BaseTemp, IOPathType.Directory));
+                ret.Add(new IOPath(Paths.FMsCache, IOPathType.Directory));
             }
 
 #if TIMING_TEST
             Trace.WriteLine("--------- " + nameof(GetScanRelevantPaths) + "():");
-            foreach (string item in ret)
+            foreach (IOPath item in ret)
             {
-                Trace.WriteLine(item);
+                Trace.WriteLine(item.Path + ", " + item.Type);
             }
             Trace.WriteLine("---------");
 #endif

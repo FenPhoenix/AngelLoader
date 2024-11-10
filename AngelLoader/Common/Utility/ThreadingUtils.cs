@@ -16,7 +16,7 @@ public static partial class Utils
         return Math.Min(threadingData.Threads, maxWorkItemsCount);
     }
 
-    internal static ThreadingData GetLowestCommonThreadingData(List<string> paths)
+    internal static ThreadingData GetLowestCommonThreadingData(List<IOPath> paths)
     {
         ThreadingData threadingData;
         // @MT_TASK: We can't just have one "Custom" anymore... we have different scenarios: install, audio conv, scan, etc...

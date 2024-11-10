@@ -12,12 +12,13 @@ using AL_Common.DeviceIoControlLib.Objects.Storage;
 using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
 using Microsoft.Win32.SafeHandles;
+using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    internal static List<AL_DriveType> GetAllDrivesType(List<string> paths)
+    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -29,12 +30,12 @@ internal static class DetectDriveTypes
 
         for (int i = 0; i < paths.Count; i++)
         {
-            if (paths[i].IsWhiteSpace()) continue;
+            if (paths[i].Path.IsWhiteSpace()) continue;
 
             try
             {
-                string realPath = GetRealDirectory(paths[i]);
-                string? root = Path.GetPathRoot(realPath)?.TrimEnd(Common.CA_BS_FS);
+                IOPath realPath = GetRealDirectory(paths[i]);
+                string? root = Path.GetPathRoot(realPath.Path)?.TrimEnd(Common.CA_BS_FS);
                 if (!root.IsEmpty())
                 {
                     roots.Add(root);
@@ -185,30 +186,28 @@ internal static class DetectDriveTypes
             IntPtr hTemplateFile);
 
         // In case the directory is a symlink pointing at some other drive
-        static string GetRealDirectory(string path)
+        static IOPath GetRealDirectory(IOPath path)
         {
             try
             {
-                // @MT_TASK: Cheap, inefficient check; make this smarter later
-                // By having a path object with a file-or-directory field?
-                if (File.Exists(path))
+                if (path.Type == IOPathType.File)
                 {
-                    string? dir = Path.GetDirectoryName(path);
+                    string? dir = Path.GetDirectoryName(path.Path);
                     if (dir.IsEmpty()) return path;
-                    path = dir;
+                    path = new IOPath(dir, IOPathType.Directory);
                 }
 
-                // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so just
-                // do a reparse point check first, which is effectively instantaneous.
-                if ((new DirectoryInfo(path).Attributes & FileAttributes.ReparsePoint) == 0)
+                // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so
+                // just do a reparse point check first, which is effectively instantaneous.
+                if ((new DirectoryInfo(path.Path).Attributes & FileAttributes.ReparsePoint) == 0)
                 {
                     return path;
                 }
 
-                FileSystemInfo? fsi = Common.Directory_ResolveLinkTarget(path, returnFinalTarget: true);
+                FileSystemInfo? fsi = Common.Directory_ResolveLinkTarget(path.Path, returnFinalTarget: true);
                 if (fsi != null)
                 {
-                    path = fsi.FullName;
+                    path = new IOPath(fsi.FullName, IOPathType.Directory);
                 }
 
                 return path;

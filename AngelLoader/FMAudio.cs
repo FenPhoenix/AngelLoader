@@ -143,9 +143,9 @@ internal static class FMAudio
         }
 
         // @MT_TASK(GetAudioConversionRelevantPaths): Test this
-        static List<string> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
+        static List<IOPath> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
         {
-            List<string> ret = new(SupportedGameCount);
+            List<IOPath> ret = new(SupportedGameCount);
 
             bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
             for (int i = 0; i < fms.Count; i++)
@@ -157,7 +157,7 @@ internal static class FMAudio
             {
                 if (fmInstalledDirsRequired[i])
                 {
-                    ret.Add(Config.GetFMInstallPath((GameIndex)i));
+                    ret.Add(new IOPath(Config.GetFMInstallPath((GameIndex)i), IOPathType.Directory));
                 }
             }
 

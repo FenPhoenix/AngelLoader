@@ -424,4 +424,22 @@ public static partial class Misc
         public override string ToString() =>
             "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Mode) + ": " + Mode + " }";
     }
+
+    internal enum IOPathType
+    {
+        File,
+        Directory,
+    }
+
+    internal readonly struct IOPath
+    {
+        internal readonly string Path;
+        internal readonly IOPathType Type;
+
+        public IOPath(string path, IOPathType type)
+        {
+            Path = path;
+            Type = type;
+        }
+    }
 }
