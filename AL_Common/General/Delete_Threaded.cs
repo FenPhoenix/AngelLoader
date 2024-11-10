@@ -8,9 +8,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
-using Microsoft.Win32.SafeHandles;
-using static AL_Common.FastIO_Native;
 
 namespace AL_Common;
 
@@ -47,7 +44,7 @@ public static class Delete_Threaded
                 return;
             }
 
-            WIN32_FIND_DATAW findData = default;
+            Interop.Kernel32.WIN32_FIND_DATA findData = default;
             // FindFirstFile($path) (used by GetFindData) fails with ACCESS_DENIED when user has no ListDirectory rights
             // but FindFirstFile($path/*") (used by RemoveDirectoryRecursive) works fine in such scenario.
             // So we ignore it here and let RemoveDirectoryRecursive throw if FindFirstFile($path/*") fails with ACCESS_DENIED.
@@ -61,11 +58,11 @@ public static class Delete_Threaded
 
             // We want extended syntax so we can delete "extended" subdirectories and files
             // (most notably ones with trailing whitespace or periods)
-            fullPath = AL_SafeFileHandle.EnsureExtendedPrefix(fullPath);
+            fullPath = PathInternal.EnsureExtendedPrefix(fullPath);
             RemoveDirectoryRecursive(fullPath, ref findData, topLevel: true, threadCount);
         }
 
-        private static void RemoveDirectoryRecursive(string fullPath, ref WIN32_FIND_DATAW findData, bool topLevel, int threadCount)
+        private static void RemoveDirectoryRecursive(string fullPath, ref Interop.Kernel32.WIN32_FIND_DATA findData, bool topLevel, int threadCount)
         {
             DeleteInfo deleteInfo = new();
             GetDirectoriesToDeleteRecursive(fullPath, ref findData, deleteInfo);
@@ -87,7 +84,7 @@ public static class Delete_Threaded
         Note that we CAN'T parallelize this per-file, because FindFirstFile/FindNextFile are inherently serial
         and there's no other (sane, supported) way to get files.
         */
-        private static void GetDirectoriesToDeleteRecursive(string fullPath, ref WIN32_FIND_DATAW findData, DeleteInfo deleteInfo, string? filePath = null)
+        private static void GetDirectoriesToDeleteRecursive(string fullPath, ref Interop.Kernel32.WIN32_FIND_DATA findData, DeleteInfo deleteInfo, string? filePath = null)
         {
             Exception? exception = null;
 
@@ -252,7 +249,7 @@ public static class Delete_Threaded
             return true;
         }
 
-        private static bool IsNameSurrogateReparsePoint(ref WIN32_FIND_DATAW data)
+        private static bool IsNameSurrogateReparsePoint(ref Interop.Kernel32.WIN32_FIND_DATA data)
         {
             // Name surrogates are reparse points that point to other named entities local to the file system.
             // Reparse points can be used for other types of files, notably OneDrive placeholder files. We
@@ -268,9 +265,9 @@ public static class Delete_Threaded
                    && (data.dwReserved0 & 0x20000000) != 0; // IsReparseTagNameSurrogate
         }
 
-        private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref WIN32_FIND_DATAW findData)
+        private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref Interop.Kernel32.WIN32_FIND_DATA findData)
         {
-            using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(Interop.Kernel32.TrimEndingDirectorySeparator(fullPath), ref findData);
+            using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(PathInternal.TrimEndingDirectorySeparator(fullPath), ref findData);
             if (handle.IsInvalid)
             {
                 int errorCode = Marshal.GetLastWin32Error();
@@ -352,18 +349,5 @@ public static class Delete_Threaded
         internal readonly List<string> Files = new();
         internal readonly List<DirectoryEntry> Directories = new();
         internal readonly List<ReparsePointEntry> ReparsePoints = new();
-    }
-
-    [UsedImplicitly]
-    internal sealed class SafeFindHandle : SafeHandleZeroOrMinusOneIsInvalid
-    {
-        internal SafeFindHandle() : base(true)
-        {
-        }
-
-        protected override bool ReleaseHandle() => FindClose(handle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool FindClose(IntPtr hFindFile);
     }
 }

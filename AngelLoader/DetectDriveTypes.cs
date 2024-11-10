@@ -287,7 +287,7 @@ internal static class DetectDriveTypes
             return false;
         }
 
-        string? result = CallQueryDosDevice(driveLetter);
+        string result = CallQueryDosDevice(driveLetter);
         if (result.IsEmpty())
         {
             return false;

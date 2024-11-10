@@ -3,9 +3,7 @@
 // Modified from .NET 8 or 9 rc1 or whatever the heck
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 using Microsoft.Win32.SafeHandles;
@@ -29,48 +27,58 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             return fileOptions;
         }
 
-        Interop.NtDll.CreateOptions options;
-        int ntStatus = Interop.NtDll.NtQueryInformationFile(
+        const uint FileModeInformation = 16;
+
+        CreateOptions options;
+        int ntStatus = NtQueryInformationFile_Private(
             FileHandle: this,
             IoStatusBlock: out _,
             FileInformation: &options,
             Length: sizeof(uint),
-            FileInformationClass: Interop.NtDll.FileModeInformation);
+            FileInformationClass: FileModeInformation);
 
         if (ntStatus != Interop.StatusOptions.STATUS_SUCCESS)
         {
-            int error = (int)Interop.NtDll.RtlNtStatusToDosError(ntStatus);
+            int error = (int)RtlNtStatusToDosError(ntStatus);
             throw Win32Marshal.GetExceptionForWin32Error(error);
         }
 
         FileOptions result = FileOptions.None;
 
-        if ((options & (Interop.NtDll.CreateOptions.FILE_SYNCHRONOUS_IO_ALERT | Interop.NtDll.CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT)) == 0)
+        if ((options & (CreateOptions.FILE_SYNCHRONOUS_IO_ALERT | CreateOptions.FILE_SYNCHRONOUS_IO_NONALERT)) == 0)
         {
             result |= FileOptions.Asynchronous;
         }
-        if ((options & Interop.NtDll.CreateOptions.FILE_WRITE_THROUGH) != 0)
+        if ((options & CreateOptions.FILE_WRITE_THROUGH) != 0)
         {
             result |= FileOptions.WriteThrough;
         }
-        if ((options & Interop.NtDll.CreateOptions.FILE_RANDOM_ACCESS) != 0)
+        if ((options & CreateOptions.FILE_RANDOM_ACCESS) != 0)
         {
             result |= FileOptions.RandomAccess;
         }
-        if ((options & Interop.NtDll.CreateOptions.FILE_SEQUENTIAL_ONLY) != 0)
+        if ((options & CreateOptions.FILE_SEQUENTIAL_ONLY) != 0)
         {
             result |= FileOptions.SequentialScan;
         }
-        if ((options & Interop.NtDll.CreateOptions.FILE_DELETE_ON_CLOSE) != 0)
+        if ((options & CreateOptions.FILE_DELETE_ON_CLOSE) != 0)
         {
             result |= FileOptions.DeleteOnClose;
         }
-        if ((options & Interop.NtDll.CreateOptions.FILE_NO_INTERMEDIATE_BUFFERING) != 0)
+        if ((options & CreateOptions.FILE_NO_INTERMEDIATE_BUFFERING) != 0)
         {
             result |= NoBuffering;
         }
 
         return _fileOptions = result;
+
+        [DllImport("ntdll.dll",EntryPoint = "NtQueryInformationFile")]
+        static extern int NtQueryInformationFile_Private(
+            AL_SafeFileHandle FileHandle,
+            out Interop.NtDll.IO_STATUS_BLOCK IoStatusBlock,
+            void* FileInformation,
+            uint Length,
+            uint FileInformationClass);
     }
 
     /// <summary>
@@ -114,7 +122,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             secAttrs = new Interop.Kernel32.SECURITY_ATTRIBUTES
             {
                 nLength = (uint)sizeof(Interop.Kernel32.SECURITY_ATTRIBUTES),
-                bInheritHandle = BOOL.TRUE,
+                bInheritHandle = Interop.BOOL.TRUE,
             };
         }
 
@@ -223,7 +231,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         int dwFlagsAndAttributes,
         IntPtr hTemplateFile)
     {
-        lpFileName = EnsureExtendedPrefixIfNeeded(lpFileName);
+        lpFileName = PathInternal.EnsureExtendedPrefixIfNeeded(lpFileName);
         return CreateFilePrivate(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
     }
 
@@ -238,149 +246,12 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         return c is ' ' or '.';
     }
 
-    /// <summary>
-    /// Adds the extended path prefix (\\?\) if not already a device path, IF the path is not relative,
-    /// AND the path is more than 259 characters. (> MAX_PATH + null). This will also insert the extended
-    /// prefix if the path ends with a period or a space. Trailing periods and spaces are normally eaten
-    /// away from paths during normalization, but if we see such a path at this point it should be
-    /// normalized and has retained the final characters. (Typically from one of the *Info classes)
-    /// </summary>
-    [return: NotNullIfNotNull(nameof(path))]
-    internal static string? EnsureExtendedPrefixIfNeeded(string? path)
-    {
-        if (path != null && (path.Length >= Common.MAX_PATH || EndsWithPeriodOrSpace(path)))
-        {
-            return EnsureExtendedPrefix(path);
-        }
-        else
-        {
-            return path;
-        }
-    }
-
     private const string ExtendedPathPrefix = @"\\?\";
     internal const string UncPathPrefix = @"\\";
     private const string UncExtendedPrefixToInsert = @"?\UNC\";
 
-    /// <summary>
-    /// Adds the extended path prefix (\\?\) if not relative or already a device path.
-    /// </summary>
-    internal static string EnsureExtendedPrefix(string path)
-    {
-        // Putting the extended prefix on the path changes the processing of the path. It won't get normalized, which
-        // means adding to relative paths will prevent them from getting the appropriate current directory inserted.
-
-        // If it already has some variant of a device path (\??\, \\?\, \\.\, //./, etc.) we don't need to change it
-        // as it is either correct or we will be changing the behavior. When/if Windows supports long paths implicitly
-        // in the future we wouldn't want normalization to come back and break existing code.
-
-        // In any case, all internal usages should be hitting normalize path (Path.GetFullPath) before they hit this
-        // shimming method. (Or making a change that doesn't impact normalization, such as adding a filename to a
-        // normalized base path.)
-        if (IsPartiallyQualified(path.AsSpan()) || IsDevice(path.AsSpan()))
-        {
-            return path;
-        }
-
-        // Given \\server\share in longpath becomes \\?\UNC\server\share
-        if (path.StartsWith(UncPathPrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            return path.Insert(2, UncExtendedPrefixToInsert);
-        }
-
-        return ExtendedPathPrefix + path;
-    }
-
-    /// <summary>
-    /// Returns true if the path specified is relative to the current drive or working directory.
-    /// Returns false if the path is fixed to a specific drive or UNC path.  This method does no
-    /// validation of the path (URIs will be returned as relative as a result).
-    /// </summary>
-    /// <remarks>
-    /// Handles paths that use the alternate directory separator.  It is a frequent mistake to
-    /// assume that rooted paths (Path.IsPathRooted) are not relative.  This isn't the case.
-    /// "C:a" is drive relative- meaning that it will be resolved against the current directory
-    /// for C: (rooted, but relative). "C:\a" is rooted and not relative (the current directory
-    /// will not be used to modify the path).
-    /// </remarks>
-    internal static bool IsPartiallyQualified(ReadOnlySpan<char> path)
-    {
-        if (path.Length < 2)
-        {
-            // It isn't fixed, it must be relative.  There is no way to specify a fixed
-            // path with one character (or less).
-            return true;
-        }
-
-        if (IsDirectorySeparator(path[0]))
-        {
-            // There is no valid way to specify a relative path with two initial slashes or
-            // \? as ? isn't valid for drive relative paths and \??\ is equivalent to \\?\
-            return !(path[1] == '?' || IsDirectorySeparator(path[1]));
-        }
-
-        // The only way to specify a fixed path that doesn't begin with two slashes
-        // is the drive, colon, slash format- i.e. C:\
-        return !((path.Length >= 3)
-            && (path[1] == VolumeSeparatorChar)
-            && IsDirectorySeparator(path[2])
-            // To match old behavior we'll check the drive character for validity as the path is technically
-            // not qualified if you don't have a valid drive. "=:\" is the "=" file's default data stream.
-            && IsValidDriveChar(path[0]));
-    }
-
     internal const char VolumeSeparatorChar = ':';
     internal const int DevicePrefixLength = 4;
-
-    /// <summary>
-    /// Returns true if the given character is a valid drive letter
-    /// </summary>
-    internal static bool IsValidDriveChar(char value)
-    {
-        return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
-    }
-
-    /// <summary>
-    /// Returns true if the path uses the canonical form of extended syntax ("\\?\" or "\??\"). If the
-    /// path matches exactly (cannot use alternate directory separators) Windows will skip normalization
-    /// and path length checks.
-    /// </summary>
-    internal static bool IsExtended(ReadOnlySpan<char> path)
-    {
-        // While paths like "//?/C:/" will work, they're treated the same as "\\.\" paths.
-        // Skipping of normalization will *only* occur if back slashes ('\') are used.
-        return path.Length >= DevicePrefixLength
-               && path[0] == '\\'
-               && (path[1] == '\\' || path[1] == '?')
-               && path[2] == '?'
-               && path[3] == '\\';
-    }
-
-    /// <summary>
-    /// Returns true if the path uses any of the DOS device path syntaxes. ("\\.\", "\\?\", or "\??\")
-    /// </summary>
-    private static bool IsDevice(ReadOnlySpan<char> path)
-    {
-        // If the path begins with any two separators it will be recognized and normalized and prepped with
-        // "\??\" for internal usage correctly. "\??\" is recognized and handled, "/??/" is not.
-        return IsExtended(path) ||
-               (
-                   path.Length >= DevicePrefixLength
-                   && IsDirectorySeparator(path[0])
-                   && IsDirectorySeparator(path[1])
-                   && (path[2] == '.' || path[2] == '?')
-                   && IsDirectorySeparator(path[3])
-               );
-    }
-
-    /// <summary>
-    /// True if the given character is a directory separator.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsDirectorySeparator(char c)
-    {
-        return c == System.IO.Path.DirectorySeparatorChar || c == System.IO.Path.AltDirectorySeparatorChar;
-    }
 
     internal long GetFileLength()
     {
@@ -402,7 +273,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         {
             Interop.Kernel32.FILE_STANDARD_INFO info;
 
-            if (Interop.Kernel32.GetFileInformationByHandleEx(this, Interop.Kernel32.FileStandardInfo, &info, (uint)sizeof(Interop.Kernel32.FILE_STANDARD_INFO)))
+            if (GetFileInformationByHandleEx_Private(this, Interop.Kernel32.FileStandardInfo, &info, (uint)sizeof(Interop.Kernel32.FILE_STANDARD_INFO)))
             {
                 return info.EndOfFile;
             }
@@ -413,7 +284,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             // The error is stored and in such cases exception for the first failure is going to be thrown.
             int lastError = Marshal.GetLastWin32Error();
 
-            if (Path is null || !IsDevice(Path.AsSpan()))
+            if (Path is null || !PathInternal.IsDevice(Path.AsSpan()))
             {
                 throw Win32Marshal.GetExceptionForWin32Error(lastError, Path);
             }
@@ -439,6 +310,209 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             }
 
             return storageReadCapacity.DiskLength;
+
+            [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", SetLastError = true)]
+            [return: MarshalAs(UnmanagedType.Bool)]
+            static extern bool GetFileInformationByHandleEx_Private(
+                AL_SafeFileHandle hFile,
+                int FileInformationClass,
+                void* lpFileInformation,
+                uint dwBufferSize);
         }
     }
+
+    /// <summary>
+    /// Options for creating/opening files with NtCreateFile.
+    /// </summary>
+    [Flags]
+    [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
+    private enum CreateOptions : uint
+    {
+        /// <summary>
+        /// File being created or opened must be a directory file. Disposition must be FILE_CREATE, FILE_OPEN,
+        /// or FILE_OPEN_IF.
+        /// </summary>
+        /// <remarks>
+        /// Can only be used with FILE_SYNCHRONOUS_IO_ALERT/NONALERT, FILE_WRITE_THROUGH, FILE_OPEN_FOR_BACKUP_INTENT,
+        /// and FILE_OPEN_BY_FILE_ID flags.
+        /// </remarks>
+        FILE_DIRECTORY_FILE = 0x00000001,
+
+        /// <summary>
+        /// Applications that write data to the file must actually transfer the data into
+        /// the file before any requested write operation is considered complete. This flag
+        /// is set automatically if FILE_NO_INTERMEDIATE_BUFFERING is set.
+        /// </summary>
+        FILE_WRITE_THROUGH = 0x00000002,
+
+        /// <summary>
+        /// All accesses to the file are sequential.
+        /// </summary>
+        FILE_SEQUENTIAL_ONLY = 0x00000004,
+
+        /// <summary>
+        /// File cannot be cached in driver buffers. Cannot use with AppendData desired access.
+        /// </summary>
+        FILE_NO_INTERMEDIATE_BUFFERING = 0x00000008,
+
+        /// <summary>
+        /// All operations are performed synchronously. Any wait on behalf of the caller is
+        /// subject to premature termination from alerts.
+        /// </summary>
+        /// <remarks>
+        /// Cannot be used with FILE_SYNCHRONOUS_IO_NONALERT.
+        /// Synchronous DesiredAccess flag is required. I/O system will maintain file position context.
+        /// </remarks>
+        FILE_SYNCHRONOUS_IO_ALERT = 0x00000010,
+
+        /// <summary>
+        /// All operations are performed synchronously. Waits in the system to synchronize I/O queuing
+        /// and completion are not subject to alerts.
+        /// </summary>
+        /// <remarks>
+        /// Cannot be used with FILE_SYNCHRONOUS_IO_ALERT.
+        /// Synchronous DesiredAccess flag is required. I/O system will maintain file position context.
+        /// </remarks>
+        FILE_SYNCHRONOUS_IO_NONALERT = 0x00000020,
+
+        /// <summary>
+        /// File being created or opened must not be a directory file. Can be a data file, device,
+        /// or volume.
+        /// </summary>
+        FILE_NON_DIRECTORY_FILE = 0x00000040,
+
+        /// <summary>
+        /// Create a tree connection for this file in order to open it over the network.
+        /// </summary>
+        /// <remarks>
+        /// Not used by device and intermediate drivers.
+        /// </remarks>
+        FILE_CREATE_TREE_CONNECTION = 0x00000080,
+
+        /// <summary>
+        /// Complete the operation immediately with a success code of STATUS_OPLOCK_BREAK_IN_PROGRESS if
+        /// the target file is oplocked.
+        /// </summary>
+        /// <remarks>
+        /// Not compatible with ReserveOpfilter or OpenRequiringOplock.
+        /// Not used by device and intermediate drivers.
+        /// </remarks>
+        FILE_COMPLETE_IF_OPLOCKED = 0x00000100,
+
+        /// <summary>
+        /// If the extended attributes on an existing file being opened indicate that the caller must
+        /// understand extended attributes to properly interpret the file, fail the request.
+        /// </summary>
+        /// <remarks>
+        /// Not used by device and intermediate drivers.
+        /// </remarks>
+        FILE_NO_EA_KNOWLEDGE = 0x00000200,
+
+        // Behavior undocumented, defined in headers
+        // FILE_OPEN_REMOTE_INSTANCE = 0x00000400,
+
+        /// <summary>
+        /// Accesses to the file can be random, so no sequential read-ahead operations should be performed
+        /// on the file by FSDs or the system.
+        /// </summary>
+        FILE_RANDOM_ACCESS = 0x00000800,
+
+        /// <summary>
+        /// Delete the file when the last handle to it is passed to NtClose. Requires Delete flag in
+        /// DesiredAccess parameter.
+        /// </summary>
+        FILE_DELETE_ON_CLOSE = 0x00001000,
+
+        /// <summary>
+        /// Open the file by reference number or object ID. The file name that is specified by the ObjectAttributes
+        /// name parameter includes the 8 or 16 byte file reference number or ID for the file in the ObjectAttributes
+        /// name field. The device name can optionally be prefixed.
+        /// </summary>
+        /// <remarks>
+        /// NTFS supports both reference numbers and object IDs. 16 byte reference numbers are 8 byte numbers padded
+        /// with zeros. ReFS only supports reference numbers (not object IDs). 8 byte and 16 byte reference numbers
+        /// are not related. Note that as the UNICODE_STRING will contain raw byte data, it may not be a "valid" string.
+        /// Not used by device and intermediate drivers.
+        /// </remarks>
+        /// <example>
+        /// \??\C:\{8 bytes of binary FileID}
+        /// \device\HardDiskVolume1\{16 bytes of binary ObjectID}
+        /// {8 bytes of binary FileID}
+        /// </example>
+        FILE_OPEN_BY_FILE_ID = 0x00002000,
+
+        /// <summary>
+        /// The file is being opened for backup intent. Therefore, the system should check for certain access rights
+        /// and grant the caller the appropriate access to the file before checking the DesiredAccess parameter
+        /// against the file's security descriptor.
+        /// </summary>
+        /// <remarks>
+        /// Not used by device and intermediate drivers.
+        /// </remarks>
+        FILE_OPEN_FOR_BACKUP_INTENT = 0x00004000,
+
+        /// <summary>
+        /// When creating a file, specifies that it should not inherit the compression bit from the parent directory.
+        /// </summary>
+        FILE_NO_COMPRESSION = 0x00008000,
+
+        /// <summary>
+        /// The file is being opened and an opportunistic lock (oplock) on the file is being requested as a single atomic
+        /// operation.
+        /// </summary>
+        /// <remarks>
+        /// The file system checks for oplocks before it performs the create operation and will fail the create with a
+        /// return code of STATUS_CANNOT_BREAK_OPLOCK if the result would be to break an existing oplock.
+        /// Not compatible with CompleteIfOplocked or ReserveOpFilter. Windows 7 and up.
+        /// </remarks>
+        FILE_OPEN_REQUIRING_OPLOCK = 0x00010000,
+
+        /// <summary>
+        /// CreateFile2 uses this flag to prevent opening a file that you don't have access to without specifying
+        /// FILE_SHARE_READ. (Preventing users that can only read a file from denying access to other readers.)
+        /// </summary>
+        /// <remarks>
+        /// Windows 7 and up.
+        /// </remarks>
+        FILE_DISALLOW_EXCLUSIVE = 0x00020000,
+
+        /// <summary>
+        /// The client opening the file or device is session aware and per session access is validated if necessary.
+        /// </summary>
+        /// <remarks>
+        /// Windows 8 and up.
+        /// </remarks>
+        FILE_SESSION_AWARE = 0x00040000,
+
+        /// <summary>
+        /// This flag allows an application to request a filter opportunistic lock (oplock) to prevent other applications
+        /// from getting share violations.
+        /// </summary>
+        /// <remarks>
+        /// Not compatible with CompleteIfOplocked or OpenRequiringOplock.
+        /// If there are already open handles, the create request will fail with STATUS_OPLOCK_NOT_GRANTED.
+        /// </remarks>
+        FILE_RESERVE_OPFILTER = 0x00100000,
+
+        /// <summary>
+        /// Open a file with a reparse point attribute, bypassing the normal reparse point processing.
+        /// </summary>
+        FILE_OPEN_REPARSE_POINT = 0x00200000,
+
+        /// <summary>
+        /// Causes files that are marked with the Offline attribute not to be recalled from remote storage.
+        /// </summary>
+        /// <remarks>
+        /// More details can be found in Remote Storage documentation (see Basic Concepts).
+        /// https://technet.microsoft.com/en-us/library/cc938459.aspx
+        /// </remarks>
+        FILE_OPEN_NO_RECALL = 0x00400000,
+
+        // Behavior undocumented, defined in headers
+        // FILE_OPEN_FOR_FREE_SPACE_QUERY = 0x00800000
+    }
+
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680600(v=vs.85).aspx
+    [DllImport("ntdll.dll")]
+    private static extern uint RtlNtStatusToDosError(int Status);
 }

@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-using static AL_Common.Delete_Threaded;
 
 namespace AL_Common;
 public static partial class Common
@@ -72,9 +71,9 @@ public static partial class Common
                 isDirectory ? new DirectoryInfo(targetPath) : new FileInfo(targetPath);
         }
 
-        private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref FastIO_Native.WIN32_FIND_DATAW findData)
+        private static void GetFindData(string fullPath, bool isDirectory, bool ignoreAccessDenied, ref Interop.Kernel32.WIN32_FIND_DATA findData)
         {
-            using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(Interop.Kernel32.TrimEndingDirectorySeparator(fullPath), ref findData);
+            using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(PathInternal.TrimEndingDirectorySeparator(fullPath), ref findData);
             if (handle.IsInvalid)
             {
                 int errorCode = Marshal.GetLastWin32Error();
@@ -127,7 +126,7 @@ public static partial class Common
             int dwFlagsAndAttributes,
             IntPtr hTemplateFile)
         {
-            lpFileName = AL_SafeFileHandle.EnsureExtendedPrefixIfNeeded(lpFileName);
+            lpFileName = PathInternal.EnsureExtendedPrefixIfNeeded(lpFileName);
             return CreateFilePrivate(
                 lpFileName,
                 dwDesiredAccess,
@@ -140,7 +139,7 @@ public static partial class Common
 
         private static unsafe string? GetFinalLinkTarget(string linkPath, bool isDirectory)
         {
-            FastIO_Native.WIN32_FIND_DATAW data = default;
+            Interop.Kernel32.WIN32_FIND_DATA data = default;
             GetFindData(linkPath, isDirectory, ignoreAccessDenied: false, ref data);
 
             // The file or directory is not a reparse point.
@@ -162,7 +161,7 @@ public static partial class Common
                 // If the handle fails because it is unreachable, is because the link was broken.
                 // We need to fallback to manually traverse the links and return the target of the last resolved link.
                 int error = Marshal.GetLastWin32Error();
-                if (Interop.IsPathUnreachableError(error))
+                if (FileSystem.IsPathUnreachableError(error))
                 {
                     return GetFinalLinkTargetSlow(linkPath, isDirectory);
                 }
@@ -193,11 +192,11 @@ public static partial class Common
                     throw Win32Marshal.GetExceptionForLastWin32Error(linkPath);
                 }
 
-                Debug.Assert(AL_SafeFileHandle.IsExtended(new string(buffer, 0, (int)result).AsSpan()));
+                Debug.Assert(PathInternal.IsExtended(new string(buffer, 0, (int)result).AsSpan()));
                 // GetFinalPathNameByHandle always returns with extended DOS prefix even if the link target was created without one.
                 // While this does not interfere with correct behavior, it might be unexpected.
                 // Hence we trim it if the passed-in path to the link wasn't extended.
-                int start = AL_SafeFileHandle.IsExtended(linkPath.AsSpan()) ? 0 : 4;
+                int start = PathInternal.IsExtended(linkPath.AsSpan()) ? 0 : 4;
                 return new string(buffer, start, (int)result - start);
             }
             finally
@@ -312,10 +311,10 @@ public static partial class Common
                     if (!isRelative)
                     {
                         // Absolute target is in NT format and we need to clean it up before return it to the user.
-                        if (targetPath.StartsWith(Interop.Kernel32.UncNTPathPrefix.AsSpan()))
+                        if (targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()))
                         {
                             // We need to prepend the Win32 equivalent of UNC NT prefix.
-                            return Path.Combine(AL_SafeFileHandle.UncPathPrefix, targetPath[Interop.Kernel32.UncNTPathPrefix.Length..].ToString());
+                            return Path.Combine(AL_SafeFileHandle.UncPathPrefix, targetPath[PathInternal.UncNTPathPrefix.Length..].ToString());
                         }
 
                         return GetTargetPathWithoutNTPrefix(targetPath);
@@ -340,9 +339,9 @@ public static partial class Common
                     Span<char> targetPath = MemoryMarshal.Cast<byte, char>(bufferSpan.Slice(offset, length));
 
                     // Unlike symbolic links, mount point paths cannot be relative.
-                    Debug.Assert(!AL_SafeFileHandle.IsPartiallyQualified(targetPath));
+                    Debug.Assert(!PathInternal.IsPartiallyQualified(targetPath));
                     // Mount points cannot point to a remote location.
-                    Debug.Assert(!targetPath.StartsWith(Interop.Kernel32.UncNTPathPrefix.AsSpan()));
+                    Debug.Assert(!targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()));
                     return GetTargetPathWithoutNTPrefix(targetPath);
                 }
 
@@ -355,8 +354,8 @@ public static partial class Common
 
             static string GetTargetPathWithoutNTPrefix(ReadOnlySpan<char> targetPath)
             {
-                Debug.Assert(targetPath.StartsWith(Interop.Kernel32.NTPathPrefix.AsSpan()));
-                return targetPath[Interop.Kernel32.NTPathPrefix.Length..].ToString();
+                Debug.Assert(targetPath.StartsWith(PathInternal.NTPathPrefix.AsSpan()));
+                return targetPath[PathInternal.NTPathPrefix.Length..].ToString();
             }
         }
     }
