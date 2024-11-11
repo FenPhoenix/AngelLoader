@@ -342,9 +342,10 @@ internal static partial class Misc
     }
 
     /*
-    @NET5: Modern .NETs don't use fully qualified type paths in their designer generated code
-    We need to abstract all type name checks to account for either having the prefix or not, otherwise a lot of
-    bloat will fail to be removed in modern .NET.
+    @NET5: Modern .NETs can potentially elide fully qualified type paths in their designer generated code
+    This might only happen with global usings? Not sure.
+    Anyway, we abstract all type name checks to account for either having the prefix or not, otherwise a lot of
+    bloat would fail to be removed if the types had no qualifiers.
     */
     internal static string RemoveTypeQualifier(this string str, string qualifier)
     {
