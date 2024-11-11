@@ -200,9 +200,45 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     }
 
     private Brush GetItemBackgroundBrush() => _darkModeEnabled ? DarkColors.DarkBackgroundBrush : SystemBrushes.Window;
-    // @MT_TASK: Can we get the general color of the themed progress bar for light mode?
-    // Currently just approximating the green one with Brushes.Green
-    private Brush GetItemProgressBarBrush() => _darkModeEnabled ? DarkColors.BlueHighlightBrush : Brushes.Green;
+
+    private Brush? _lightModeProgressGreenBrush;
+    private Brush GetItemProgressBarBrush()
+    {
+        if (_darkModeEnabled)
+        {
+            return DarkColors.BlueHighlightBrush;
+        }
+        else
+        {
+            if (_lightModeProgressGreenBrush == null)
+            {
+                try
+                {
+                    /*
+                    Of course, you can get use GetThemeColor() to get the progress bar color, and of course, it's
+                    slightly off. Just like that toolbar gray. What's the point of exposing the theme colors if
+                    they're always bloody wrong? Who knows. So do a completely stupid thing here to get the color
+                    that the control displays in the real actual world, rather than the pretend fantasy world
+                    that the officially returned colors are living in.
+                    */
+                    using ProgressBar pb = new();
+                    pb.Size = new Size(32, 32);
+                    pb.Value = 100;
+                    using Bitmap bmp = new(32, 32, PixelFormat.Format32bppPArgb);
+                    pb.DrawToBitmap(bmp, pb.Bounds);
+                    _lightModeProgressGreenBrush = new SolidBrush(bmp.GetPixel(16, 16));
+                }
+                catch
+                {
+                    // If we fail, just use the manually grabbed progress bar color on Windows 11, which is what
+                    // we're expecting to get from the above.
+                    _lightModeProgressGreenBrush = new SolidBrush(Color.FromArgb(6, 176, 37));
+                }
+            }
+
+            return _lightModeProgressGreenBrush;
+        }
+    }
 
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
