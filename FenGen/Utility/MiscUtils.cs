@@ -341,6 +341,33 @@ internal static partial class Misc
         }
     }
 
+    /*
+    @NET5: Modern .NETs don't use fully qualified type paths in their designer generated code
+    We need to abstract all type name checks to account for either having the prefix or not, otherwise a lot of
+    bloat will fail to be removed in modern .NET.
+    */
+    internal static string RemoveTypeQualifier(this string str, string qualifier)
+    {
+        if (!qualifier.EndsWithO(".")) qualifier += ".";
+        return str.StartsWithO(qualifier) ? str.Substring(qualifier.Length) : str;
+    }
+
+    internal static bool TypeEquals(this string str, string qualifier, string typeName)
+    {
+        if (!qualifier.EndsWithO(".")) qualifier += ".";
+        return str == typeName || str == qualifier + typeName;
+    }
+    internal static bool TypeStartsWith(this string str, string qualifier, string typeName)
+    {
+        if (!qualifier.EndsWithO(".")) qualifier += ".";
+        return str.StartsWithO(typeName) || str.StartsWithO(qualifier + typeName);
+    }
+
+    internal static string RemoveThis(this string str)
+    {
+        return str.StartsWithO("this.") ? str.Substring(5) : str;
+    }
+
     #region TryParse Invariant
 
     /// <summary>
