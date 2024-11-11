@@ -594,6 +594,23 @@ internal static class Utility
         }
     }
 
+    /// <summary>
+    /// Removes trailing period unless it's at the end of a single letter (eg. "Robin G.")
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    internal static string RemoveNonSemanticTrailingPeriod(this string value)
+    {
+        if (value.CharAppearsExactlyOnce('.') && value[^1] == '.' &&
+            !((value.Length >= 3 && !char.IsWhiteSpace(value[^2]) && char.IsWhiteSpace(value[^3])) ||
+              (value.Length == 2 && !char.IsWhiteSpace(value[^2]))))
+        {
+            value = value.Substring(0, value.Length - 1);
+        }
+
+        return value;
+    }
+
     #region GLML
 
     private enum GLMLTagType

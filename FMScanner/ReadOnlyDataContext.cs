@@ -133,6 +133,7 @@ public sealed class ReadOnlyDataContext
     internal readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
     internal readonly char[] CA_DateSeparators = { ' ', '-', '/' };
     internal readonly char[] CA_Parens = { '(', ')' };
+    internal readonly char[] CA_AuthorJunkChars = { '!', '@', '#', '$', '%', '^', '&', '*' };
     internal readonly string[] SA_Linebreaks = { "\r\n", "\r", "\n" };
     internal readonly string[] SA_DoubleSpaces = { "  " };
     internal readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };

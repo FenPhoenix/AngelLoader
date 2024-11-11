@@ -4136,15 +4136,7 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        // Remove trailing period unless it's at the end of a single letter (eg. "Robin G.")
-        if (value.CharAppearsExactlyOnce('.') && value[^1] == '.' &&
-            !((value.Length >= 3 && !char.IsWhiteSpace(value[^2]) && char.IsWhiteSpace(value[^3])) ||
-              (value.Length == 2 && !char.IsWhiteSpace(value[^2]))))
-        {
-            value = value.Substring(0, value.Length - 1);
-        }
-
-        value = value.Trim(_ctx.CA_Asterisk);
+        value = value.RemoveNonSemanticTrailingPeriod().Trim(_ctx.CA_Asterisk);
 
         foreach (NonAsciiCharWithAsciiEquivalent item in _ctx.NonAsciiCharsWithAsciiEquivalents)
         {
@@ -4881,19 +4873,10 @@ public sealed class Scanner : IDisposable
 
         if (author.Length >= 2 && author[^2] == ' ')
         {
-            const string junkChars = "!@#$%^&*";
-            char lastChar = author[^1];
-            for (int i = 0; i < junkChars.Length; i++)
-            {
-                if (lastChar == junkChars[i])
-                {
-                    author = author.Substring(0, author.Length - 2);
-                    break;
-                }
-            }
+            author = author.TrimEnd(_ctx.CA_AuthorJunkChars);
         }
 
-        return author.TrimEnd(_ctx.CA_Period).Trim();
+        return author.RemoveNonSemanticTrailingPeriod().Trim();
     }
 
     #endregion
