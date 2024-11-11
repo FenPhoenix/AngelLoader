@@ -11,6 +11,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static FenGen.Misc;
 
 /*
+@MT_TASK/@NET5: Modern .NETs don't use fully qualified type paths in their designer generated code!
+We should abstract all type name checks to account for either having the prefix or not, otherwise a lot of bloat
+will fail to be removed in modern .NET!
+
 @NewUI(FenGen/DesignerGen): This whole thing is WinForms-specific, but:
 It only generates into *.Designer.cs files marked with attributes, so it won't mess with other UI frameworks, and
 if we removed WinForms it would just be a no-op, so let's just leave it as is.
