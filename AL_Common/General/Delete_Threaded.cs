@@ -71,7 +71,7 @@ public static class Delete_Threaded
     }
 
     /*
-    @MT_TASK(GetDirectoriesToDeleteRecursive parallelization):
+    @MT_TASK_NOTE(GetDirectoriesToDeleteRecursive parallelization):
     This step is a read step only, so we could separate this out and run this for every FM in parallel
     beforehand (before the backup) (any threading mode), then run the delete step afterward with this data
     and parallelize that too (aggressive threading only?).

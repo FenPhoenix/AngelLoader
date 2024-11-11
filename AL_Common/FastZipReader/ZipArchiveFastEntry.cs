@@ -76,7 +76,7 @@ public sealed class ZipArchiveFastEntry
 
         // .NET Framework: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
         // @MT_TASK/@NET5: Test filename identicality for .NET modern
-        // @MT_TASK: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
+        // @MT_TASK/@NET5: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
         Encoding finalEncoding;
         if (!useEntryNameEncodingCodePath)
         {
@@ -88,7 +88,7 @@ public sealed class ZipArchiveFastEntry
         }
         else
         {
-            // @MT_TASK: .NET modern replaces "default" with UTF8:
+            // @MT_TASK/@NET5: .NET modern replaces "default" with UTF8:
             // _storedEntryName = (_archive.EntryNameAndCommentEncoding ?? Encoding.UTF8).GetString(_storedEntryNameBytes);
             // Encoding.GetEncoding(0) is the same as Encoding.Default
             finalEncoding = entryNameEncoding ?? Encoding.Default;

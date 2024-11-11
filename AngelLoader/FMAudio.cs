@@ -142,7 +142,6 @@ internal static class FMAudio
             return true;
         }
 
-        // @MT_TASK(GetAudioConversionRelevantPaths): Test this
         static List<IOPath> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
         {
             List<IOPath> ret = new(SupportedGameCount);

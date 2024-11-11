@@ -1911,7 +1911,7 @@ internal static partial class FMInstallAndPlay
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                            // @MT_TASK: Set this before post-install work because it gets checked!
+                            // @MT_TASK_NOTE: Set this before post-install work because it gets checked!
                             // This will again cause the UI to update the installed status if it's refreshed.
                             // If we wanted to prevent that we could get really fancy about it later, but keep
                             // this for now.
