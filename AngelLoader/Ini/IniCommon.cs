@@ -413,11 +413,11 @@ internal static partial class Ini
 
         ColumnData col = config.Columns[(int)columnType];
 #if SMART_NEW_COLUMN_INSERT
-            col.ExplicitlySet = true;
+        col.ExplicitlySet = true;
 #endif
 
         int i = 0;
-        foreach (ReadOnlySpan<char> part in valTrimmed.Split(','))
+        foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.Split(valTrimmed, ','))
         {
             switch (i)
             {
@@ -466,7 +466,7 @@ internal static partial class Ini
 
     private static void ReadFinishedStates(Filter filter, ReadOnlySpan<char> val)
     {
-        foreach (ReadOnlySpan<char> finishedState in val.Split(','))
+        foreach (ReadOnlySpan<char> finishedState in ReadOnlySpanExtensions.Split(val, ','))
         {
             switch (finishedState.Trim())
             {

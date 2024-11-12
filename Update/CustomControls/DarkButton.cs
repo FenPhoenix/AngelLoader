@@ -51,7 +51,7 @@ public sealed class DarkButton : Button, IDarkable
     }
 
 #endif
-
+    // @NET5/@vNext: Remove WFO1000 suppression (in .editorconfig) and properly set the property attributes and so on
     [PublicAPI]
     public new string Text
     {

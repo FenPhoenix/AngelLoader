@@ -18,9 +18,9 @@ public sealed class DataGridViewColumnHeaderCellCustom : DataGridViewColumnHeade
         Rectangle cellBounds,
         int rowIndex,
         DataGridViewElementStates dataGridViewElementState,
-        object value,
-        object formattedValue,
-        string errorText,
+        object? value,
+        object? formattedValue,
+        string? errorText,
         DataGridViewCellStyle cellStyle,
         DataGridViewAdvancedBorderStyle advancedBorderStyle,
         DataGridViewPaintParts paintParts)

@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<SolutionTargetFramework>net8.0-windows</SolutionTargetFramework>
+		<SolutionTargetFramework>net9.0-windows</SolutionTargetFramework>
 		<SmartNewColumnInsert></SmartNewColumnInsert>
 	</PropertyGroup>
 </Project>

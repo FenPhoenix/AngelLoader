@@ -231,8 +231,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
     private (string Category, string Tag)
     SelectedCategoryAndTag()
     {
-        TreeNode selNode = _page.TagsTreeView.SelectedNode;
-        TreeNode parent;
+        TreeNode? selNode = _page.TagsTreeView.SelectedNode;
+        TreeNode? parent;
 
         return selNode == null
             ? ("", "")
