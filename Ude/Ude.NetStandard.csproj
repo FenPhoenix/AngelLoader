@@ -21,7 +21,7 @@
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="SpanExtensions.Net" Version="1.4.1" />
+    <PackageReference Include="SpanExtensions.Net" Version="1.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
