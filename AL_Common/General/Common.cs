@@ -197,7 +197,7 @@ public static partial class Common
 
         if (full.PathStartsWithI(path))
         {
-            return extractedName;
+            return full;
         }
         else
         {
