@@ -161,7 +161,7 @@ internal static partial class FMInstallAndPlay
         {
             Core.View.MultiItemProgress_SetState(
                 message1: LText.ProgressBox.CancelingInstall,
-                mainProgressMessage: "");
+                mainMessage2: "");
         }
     }
 
@@ -1834,7 +1834,7 @@ internal static partial class FMInstallAndPlay
                 Core.View.MultiItemProgress_SetState(
                     initialRowTexts: fmInstallInitialItems,
                     message1: fmDataList.Count == 1 ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                    mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count.ToStrCur(),
+                    mainMessage2: fmsFinishedCount.ToStrCur() + " / " + fmDataList.Count.ToStrCur(),
                     cancelMessage: LText.Global.Cancel,
                     cancelAction: CancelInstallToken);
 
@@ -1934,8 +1934,6 @@ internal static partial class FMInstallAndPlay
                     // @MT_TASK_NOTE: We get a brief UI thread block when run from within Visual Studio.
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
-
-                    Core.View.MultiItemProgress_SetState(percent: 0);
 
                     List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadingData);
 
@@ -2281,7 +2279,7 @@ internal static partial class FMInstallAndPlay
         // @MT_TASK: Currently it says "0 / x" meaning "0 / x finished".
         //           Maybe it should be "0 / x started" and be bumped up by one?
         Core.View.MultiItemProgress_SetState(
-            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
+            mainMessage2: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
         );
     }
 

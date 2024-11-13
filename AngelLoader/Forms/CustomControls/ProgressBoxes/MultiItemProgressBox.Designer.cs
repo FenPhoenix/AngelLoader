@@ -33,39 +33,46 @@ sealed partial class MultiItemProgressBox
     {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.Message1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.MainProgressBar = new AngelLoader.Forms.CustomControls.DarkProgressBar();
+            this.MainPercentLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.MainMessage2Label = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ItemsDGV = new AngelLoader.Forms.CustomControls.DGV_ProgressItem();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.MainProgressLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.MainMessage1Label = new AngelLoader.Forms.CustomControls.DarkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.ItemsDGV)).BeginInit();
             this.SuspendLayout();
             // 
-            // Message1Label
+            // MainProgressBar
             // 
-            this.Message1Label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.MainProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.Message1Label.Location = new System.Drawing.Point(4, 8);
-            this.Message1Label.Name = "Message1Label";
-            this.Message1Label.Size = new System.Drawing.Size(416, 13);
-            this.Message1Label.TabIndex = 0;
-            this.Message1Label.Text = "Message";
-            this.Message1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MainProgressBar.Location = new System.Drawing.Point(8, 56);
+            this.MainProgressBar.Name = "MainProgressBar";
+            this.MainProgressBar.Size = new System.Drawing.Size(406, 23);
+            this.MainProgressBar.TabIndex = 3;
             // 
-            // Cancel_Button
+            // MainPercentLabel
             // 
-            this.Cancel_Button.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.Cancel_Button.AutoSize = true;
-            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.Cancel_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.Cancel_Button.Location = new System.Drawing.Point(168, 48);
-            this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
-            this.Cancel_Button.Name = "Cancel_Button";
-            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
-            this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
-            this.Cancel_Button.TabIndex = 2;
-            this.Cancel_Button.Text = "Cancel";
-            this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
+            this.MainPercentLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainPercentLabel.Location = new System.Drawing.Point(4, 40);
+            this.MainPercentLabel.Name = "MainPercentLabel";
+            this.MainPercentLabel.Size = new System.Drawing.Size(416, 13);
+            this.MainPercentLabel.TabIndex = 2;
+            this.MainPercentLabel.Text = "%";
+            this.MainPercentLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // MainMessage2Label
+            // 
+            this.MainMessage2Label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.MainMessage2Label.Location = new System.Drawing.Point(4, 24);
+            this.MainMessage2Label.Name = "MainMessage2Label";
+            this.MainMessage2Label.Size = new System.Drawing.Size(416, 13);
+            this.MainMessage2Label.TabIndex = 1;
+            this.MainMessage2Label.Text = "Message2";
+            this.MainMessage2Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // ItemsDGV
             // 
@@ -97,7 +104,7 @@ sealed partial class MultiItemProgressBox
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.ItemsDGV.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ItemsDGV.Location = new System.Drawing.Point(8, 80);
+            this.ItemsDGV.Location = new System.Drawing.Point(8, 120);
             this.ItemsDGV.MultiSelect = false;
             this.ItemsDGV.Name = "ItemsDGV";
             this.ItemsDGV.ReadOnly = true;
@@ -105,9 +112,9 @@ sealed partial class MultiItemProgressBox
             this.ItemsDGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.ItemsDGV.RowTemplate.Height = 51;
             this.ItemsDGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.ItemsDGV.Size = new System.Drawing.Size(406, 308);
+            this.ItemsDGV.Size = new System.Drawing.Size(406, 310);
             this.ItemsDGV.StandardTab = true;
-            this.ItemsDGV.TabIndex = 3;
+            this.ItemsDGV.TabIndex = 5;
             this.ItemsDGV.VirtualMode = true;
             // 
             // Column1
@@ -119,28 +126,45 @@ sealed partial class MultiItemProgressBox
             this.Column1.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
-            // MainProgressLabel
+            // Cancel_Button
             // 
-            this.MainProgressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.Cancel_Button.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.Cancel_Button.AutoSize = true;
+            this.Cancel_Button.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.Cancel_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.Cancel_Button.Location = new System.Drawing.Point(168, 88);
+            this.Cancel_Button.MinimumSize = new System.Drawing.Size(88, 23);
+            this.Cancel_Button.Name = "Cancel_Button";
+            this.Cancel_Button.Padding = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.Cancel_Button.Size = new System.Drawing.Size(88, 23);
+            this.Cancel_Button.TabIndex = 4;
+            this.Cancel_Button.Text = "Cancel";
+            this.Cancel_Button.Click += new System.EventHandler(this.Cancel_Button_Click);
+            // 
+            // MainMessage1Label
+            // 
+            this.MainMessage1Label.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.MainProgressLabel.Location = new System.Drawing.Point(4, 24);
-            this.MainProgressLabel.Name = "MainProgressLabel";
-            this.MainProgressLabel.Size = new System.Drawing.Size(416, 13);
-            this.MainProgressLabel.TabIndex = 1;
-            this.MainProgressLabel.Text = "0 / 1";
-            this.MainProgressLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.MainMessage1Label.Location = new System.Drawing.Point(4, 8);
+            this.MainMessage1Label.Name = "MainMessage1Label";
+            this.MainMessage1Label.Size = new System.Drawing.Size(416, 13);
+            this.MainMessage1Label.TabIndex = 0;
+            this.MainMessage1Label.Text = "Message";
+            this.MainMessage1Label.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // MultiItemProgressBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.Controls.Add(this.MainProgressLabel);
+            this.Controls.Add(this.MainProgressBar);
+            this.Controls.Add(this.MainPercentLabel);
+            this.Controls.Add(this.MainMessage2Label);
             this.Controls.Add(this.ItemsDGV);
             this.Controls.Add(this.Cancel_Button);
-            this.Controls.Add(this.Message1Label);
+            this.Controls.Add(this.MainMessage1Label);
             this.Name = "MultiItemProgressBox";
-            this.Size = new System.Drawing.Size(424, 398);
+            this.Size = new System.Drawing.Size(424, 440);
             ((System.ComponentModel.ISupportInitialize)(this.ItemsDGV)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -150,9 +174,11 @@ sealed partial class MultiItemProgressBox
 
     #endregion
 
-    private DarkLabel Message1Label;
+    private DarkLabel MainMessage1Label;
     private DarkButton Cancel_Button;
     private DGV_ProgressItem ItemsDGV;
-    private DarkLabel MainProgressLabel;
+    private DarkLabel MainMessage2Label;
     private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+    private DarkLabel MainPercentLabel;
+    private DarkProgressBar MainProgressBar;
 }

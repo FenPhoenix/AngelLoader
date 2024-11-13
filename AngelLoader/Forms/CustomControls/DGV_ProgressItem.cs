@@ -17,6 +17,8 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     private Bitmap? _progressBitmap_Light;
     private Bitmap? _progressBitmap_Dark;
 
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     private Bitmap ProgressBitmap => _darkModeEnabled
         ? _progressBitmap_Dark ??= CreateProgressBitmap()
         : _progressBitmap_Light ??= CreateProgressBitmap();
@@ -59,6 +61,8 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
     private readonly Timer IndeterminateProgressAnimTimer;
 
     private uint _indeterminateProgressBarsRefCount;
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public uint IndeterminateProgressBarsRefCount
     {
         get => _indeterminateProgressBarsRefCount;

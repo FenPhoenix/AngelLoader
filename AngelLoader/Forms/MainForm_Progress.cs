@@ -209,8 +209,9 @@ public sealed partial class MainForm
     public void MultiItemProgress_Show(
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
-        string? mainProgressMessage = null,
+        string? mainMessage2 = null,
         int? percent = null,
+        ProgressType? progressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
@@ -219,8 +220,9 @@ public sealed partial class MainForm
             initialRowTexts: initialRowTexts,
             visible: true,
             mainMessage1: message1,
-            mainProgressMessage: mainProgressMessage,
-            percent: percent,
+            mainMessage2: mainMessage2,
+            mainPercent: percent,
+            mainProgressBarType: progressType ?? MultiItemProgressBox.DefaultProgressType,
             cancelButtonMessage: cancelMessage ?? MultiItemProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
@@ -228,8 +230,9 @@ public sealed partial class MainForm
     public void MultiItemProgress_SetState(
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
-        string? mainProgressMessage = null,
+        string? mainMessage2 = null,
         int? percent = null,
+        ProgressType? progressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null) => Invoke(() =>
     {
@@ -238,8 +241,9 @@ public sealed partial class MainForm
             initialRowTexts: initialRowTexts,
             visible: null,
             mainMessage1: message1,
-            mainProgressMessage: mainProgressMessage,
-            percent: percent,
+            mainMessage2: mainMessage2,
+            mainPercent: percent,
+            mainProgressBarType: progressType,
             cancelButtonMessage: cancelMessage,
             cancelAction: cancelAction);
     });

@@ -203,19 +203,45 @@ public interface IView : ISettingsChangeableView
 
     #region Multi-item progress box
 
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean explicitly set the defaults.
+    /// </summary>
+    /// <param name="initialRowTexts"></param>
+    /// <param name="message1"></param>
+    /// <param name="mainMessage2"></param>
+    /// <param name="percent"></param>
+    /// <param name="progressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
     void MultiItemProgress_Show(
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
-        string? mainProgressMessage = null,
+        string? mainMessage2 = null,
         int? percent = null,
+        ProgressType? progressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null);
 
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// <para/>
+    /// Null parameters mean no change.
+    /// </summary>
+    /// <param name="initialRowTexts"></param>
+    /// <param name="message1"></param>
+    /// <param name="mainMessage2"></param>
+    /// <param name="percent"></param>
+    /// <param name="progressType"></param>
+    /// <param name="cancelMessage"></param>
+    /// <param name="cancelAction"></param>
     void MultiItemProgress_SetState(
         (string Line1, string Line2)[]? initialRowTexts = null,
         string? message1 = null,
-        string? mainProgressMessage = null,
+        string? mainMessage2 = null,
         int? percent = null,
+        ProgressType? progressType = null,
         string? cancelMessage = null,
         Action? cancelAction = null);
 
