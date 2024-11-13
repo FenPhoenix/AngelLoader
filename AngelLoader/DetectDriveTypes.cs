@@ -67,8 +67,7 @@ internal static class DetectDriveTypes
 
         for (int i = 0; i < paths.Count; i++)
         {
-            IOPath path = paths[i];
-            string root = GetRoot(path);
+            string root = GetRoot(paths[i]);
             if (!root.IsEmpty())
             {
                 roots.Add(root);
@@ -126,12 +125,6 @@ internal static class DetectDriveTypes
         [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
         [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
         IntPtr hTemplateFile);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool RootIsLetter(string root)
-    {
-        return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
-    }
 
     private static string GetRoot(IOPath path)
     {
@@ -245,6 +238,12 @@ internal static class DetectDriveTypes
             {
                 safeHandle?.Dispose();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool RootIsLetter(string root)
+        {
+            return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
         }
     }
 
