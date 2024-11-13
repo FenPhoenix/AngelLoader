@@ -19,7 +19,7 @@ using std::string;
 using std::wstring;
 namespace fs = std::filesystem;
 
-int show_loader_alert()
+int show_loader_alert()  // NOLINT(misc-use-internal-linkage)
 {
     const wstring msg1 =
         L"AngelLoader is set as the FM selector for this game.\r\n\r\n";
