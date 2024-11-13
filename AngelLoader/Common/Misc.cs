@@ -443,14 +443,14 @@ public static partial class Misc
         }
     }
 
-    public sealed class SettingsIOPath
+    public sealed class ThreadablePath
     {
         public readonly string OriginalPath;
         public string Root = "";
         public readonly IOPathType IOPathType;
         public AL_DriveType DriveType = AL_DriveType.Other;
 
-        public SettingsIOPath(string originalPath, IOPathType ioPathType)
+        public ThreadablePath(string originalPath, IOPathType ioPathType)
         {
             OriginalPath = originalPath;
             IOPathType = ioPathType;

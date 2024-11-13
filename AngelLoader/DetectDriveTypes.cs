@@ -22,7 +22,7 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    internal static void FillSettingsDriveTypes(List<SettingsIOPath> paths)
+    internal static void FillSettingsDriveTypes(List<ThreadablePath> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -32,7 +32,7 @@ internal static class DetectDriveTypes
 
         for (int i = 0; i < paths.Count; i++)
         {
-            SettingsIOPath path = paths[i];
+            ThreadablePath path = paths[i];
 
             path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
 
