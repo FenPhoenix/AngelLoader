@@ -425,21 +425,44 @@ public static partial class Misc
             "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Mode) + ": " + Mode + " }";
     }
 
-    internal enum IOPathType
+    public enum IOPathType
     {
         File,
         Directory,
     }
 
-    internal readonly struct IOPath
+    public readonly struct IOPath
     {
-        internal readonly string Path;
-        internal readonly IOPathType Type;
+        public readonly string Path;
+        public readonly IOPathType Type;
 
         public IOPath(string path, IOPathType type)
         {
             Path = path;
             Type = type;
+        }
+    }
+
+    public sealed class SettingsIOPath
+    {
+        public readonly string OriginalPath;
+        public string Root = "";
+        public readonly IOPathType IOPathType;
+        public AL_DriveType DriveType = AL_DriveType.Other;
+
+        public SettingsIOPath(string originalPath, IOPathType ioPathType)
+        {
+            OriginalPath = originalPath;
+            IOPathType = ioPathType;
+        }
+
+        public override string ToString()
+        {
+            return "----" + $"{NL}" +
+                   nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
+                   nameof(Root) + ": " + Root + $"{NL}" +
+                   nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
+                   nameof(DriveType) + ": " + DriveType + $"{NL}";
         }
     }
 }

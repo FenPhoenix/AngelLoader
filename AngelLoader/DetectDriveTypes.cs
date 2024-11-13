@@ -22,38 +22,56 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
+    internal static void FillSettingsDriveTypes(List<SettingsIOPath> paths)
+    {
+#if TIMING_TEST
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
+        DictionaryI<AL_DriveType> rootsDict = new(paths.Count);
+
+        for (int i = 0; i < paths.Count; i++)
+        {
+            SettingsIOPath path = paths[i];
+
+            path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
+
+            if (!path.Root.IsEmpty())
+            {
+                if (rootsDict.TryGetValue(path.Root, out AL_DriveType driveType))
+                {
+                    path.DriveType = driveType;
+                }
+                else
+                {
+                    driveType = GetDriveType(path.Root);
+                    rootsDict[path.Root] = driveType;
+                    path.DriveType = driveType;
+                }
+            }
+        }
+
+#if TIMING_TEST
+        sw.Stop();
+        System.Diagnostics.Trace.WriteLine(nameof(FillSettingsDriveTypes) + ": " + sw.Elapsed);
+#endif
+    }
+
     internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
-
         List<string> roots = new(paths.Count);
 
         for (int i = 0; i < paths.Count; i++)
         {
-            if (paths[i].Path.IsWhiteSpace()) continue;
-
-            try
+            IOPath path = paths[i];
+            string root = GetRoot(path);
+            if (!root.IsEmpty())
             {
-                IOPath path = paths[i];
-                if (!PathStartsWithLetterAndVolumeSeparator(path.Path))
-                {
-                    continue;
-                }
-
-                IOPath realPath = GetRealDirectory(path);
-                string? root = Path.GetPathRoot(realPath.Path)?.TrimEnd(CA_BS_FS);
-                if (!root.IsEmpty())
-                {
-                    roots.Add(root);
-                }
-            }
-            catch
-            {
-                // ignore and don't add
+                roots.Add(root);
             }
         }
 
@@ -65,7 +83,7 @@ internal static class DetectDriveTypes
         {
 #if TIMING_TEST
             sw.Stop();
-            System.Diagnostics.Trace.WriteLine(sw.Elapsed);
+            System.Diagnostics.Trace.WriteLine(nameof(GetAllDrivesType) + ": " + sw.Elapsed);
 #endif
             return RetOrDefault(ret);
         }
@@ -76,15 +94,14 @@ internal static class DetectDriveTypes
         Now that's more like it.
         */
 
-        foreach (string root in roots)
+        for (int i = 0; i < roots.Count; i++)
         {
-            AL_DriveType driveType = GetDriveType(root);
-            ret.Add(driveType);
+            ret.Add(GetDriveType(roots[i]));
         }
 
 #if TIMING_TEST
         sw.Stop();
-        System.Diagnostics.Trace.WriteLine(sw.Elapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(GetAllDrivesType) + ": " + sw.Elapsed);
 #endif
 
         return RetOrDefault(ret);
@@ -116,8 +133,31 @@ internal static class DetectDriveTypes
         return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
     }
 
+    private static string GetRoot(IOPath path)
+    {
+        if (!path.Path.IsWhiteSpace())
+        {
+            try
+            {
+                if (PathStartsWithLetterAndVolumeSeparator(path.Path))
+                {
+                    IOPath realPath = GetRealDirectory(path);
+                    return Path.GetPathRoot(realPath.Path)?.TrimEnd(CA_BS_FS) ?? "";
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        return "";
+    }
+
     private static AL_DriveType GetDriveType(string root)
     {
+        // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
+
         // We've got a network drive or something else, and we don't know what it is.
         if (!RootIsLetter(root))
         {
