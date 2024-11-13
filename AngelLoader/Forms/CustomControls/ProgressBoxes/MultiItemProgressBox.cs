@@ -13,7 +13,7 @@ using static AngelLoader.Misc;
 namespace AngelLoader.Forms.CustomControls;
 
 // @MT_TASK: Make this resizable somehow? Maybe even make it a window?
-// @MT_TASK: Add percent setting back in regardless of if we add the progress bar back or not, because we want taskbar progress
+// @MT_TASK: Add percent label and progress bar back, now that we have total percentage working
 public sealed partial class MultiItemProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
@@ -50,6 +50,15 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         MainMessage1,
         MainProgress,
     }
+
+    /// <summary>
+    /// For example, if there were 24 rows and row 1 was 15% done and row 2 was 32% done, this would be 32+15=47.
+    /// </summary>
+    private ulong _totalPercentPoints;
+    /// <summary>
+    /// For example, if there were 24 rows, this would be 2400.
+    /// </summary>
+    private ulong _oneHundredPercentPointsTimesRowCount;
 
     private readonly MessageItem[] MessageItems;
 
@@ -264,6 +273,8 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
                     percent: 0,
                     ProgressType.Determinate));
             }
+            _totalPercentPoints = 0;
+            _oneHundredPercentPointsTimesRowCount = 100 * (uint)rowCount;
         }
     }
 
@@ -310,7 +321,10 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
             if (item.Percent != percentInt)
             {
                 refreshRequired = true;
+                int difference = percentInt - item.Percent;
                 item.Percent = percentInt;
+                _totalPercentPoints = (_totalPercentPoints + (ulong)difference).Clamp<ulong>(0, _oneHundredPercentPointsTimesRowCount);
+                SetPercent(Common.GetPercentFromValue_ULong(_totalPercentPoints, _oneHundredPercentPointsTimesRowCount));
             }
         }
 
@@ -346,6 +360,8 @@ public sealed partial class MultiItemProgressBox : UserControl, IDarkable
         _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
         ItemsDGV.RowCount = 0;
+        _totalPercentPoints = 0;
+        _oneHundredPercentPointsTimesRowCount = 0;
 
         base.Hide();
 

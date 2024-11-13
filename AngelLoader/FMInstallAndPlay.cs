@@ -1859,8 +1859,6 @@ internal static partial class FMInstallAndPlay
                         return false;
                     }
 
-                    bool singleFM = fmDataList.Count == 1;
-
                     ZipContext_Pool zipCtxPool = new();
                     ZipContext_Threaded_Pool zipCtxThreadedPool = new();
                     IOBufferPools ioBufferPools = new();
@@ -1887,24 +1885,20 @@ internal static partial class FMInstallAndPlay
                                             zipCtxPool,
                                             zipCtxThreadedPool,
                                             ioBufferPools,
-                                            threadingData,
-                                            singleFM)
+                                            threadingData)
                                         : InstallFMZip(
                                             progress,
                                             fmData,
                                             ioBufferPools,
-                                            zipCtxPool,
-                                            singleFM)
+                                            zipCtxPool)
                                     : fmData.ArchivePath.ExtIsRar()
                                         ? InstallFMRar(
                                             progress,
                                             fmData,
-                                            ioBufferPools,
-                                            singleFM)
+                                            ioBufferPools)
                                         : InstallFMSevenZip(
                                             progress,
-                                            fmData,
-                                            singleFM);
+                                            fmData);
 
                             if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                             {
@@ -2284,12 +2278,10 @@ internal static partial class FMInstallAndPlay
             percent: 100,
             progressType: ProgressType.Determinate);
 
-        // @MT_TASK: We could pick back up the trying to set percent based on all completed FMs' state again.
         // @MT_TASK: Currently it says "0 / x" meaning "0 / x finished".
         //           Maybe it should be "0 / x started" and be bumped up by one?
         Core.View.MultiItemProgress_SetState(
-            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur(),
-            percent: GetPercentFromValue_Int(fmsFinishedCount, fmDataListCount)
+            mainProgressMessage: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
         );
     }
 
@@ -2299,8 +2291,7 @@ internal static partial class FMInstallAndPlay
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
         IOBufferPools ioBufferPools,
-        ThreadingData threadingData,
-        bool singleFM)
+        ThreadingData threadingData)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
         try
@@ -2386,8 +2377,7 @@ internal static partial class FMInstallAndPlay
                             report: report,
                             fmData: fmData,
                             entryNumber: entryNumber,
-                            entriesCount: entriesCount,
-                            singleFM: singleFM);
+                            entriesCount: entriesCount);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
@@ -2426,8 +2416,7 @@ internal static partial class FMInstallAndPlay
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
         IOBufferPools ioBufferPools,
-        ZipContext_Pool zipCtxPool,
-        bool singleFM)
+        ZipContext_Pool zipCtxPool)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
@@ -2477,8 +2466,7 @@ internal static partial class FMInstallAndPlay
                         report: report,
                         fmData: fmData,
                         entryNumber: i,
-                        entriesCount: entriesCount,
-                        singleFM: singleFM);
+                        entriesCount: entriesCount);
 
                     _installCts.Token.ThrowIfCancellationRequested();
                 }
@@ -2561,8 +2549,7 @@ internal static partial class FMInstallAndPlay
         ProgressReport_Install report,
         FMData fmData,
         int entryNumber,
-        int entriesCount,
-        bool singleFM)
+        int entriesCount)
     {
         int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
 
@@ -2570,19 +2557,13 @@ internal static partial class FMInstallAndPlay
         report.Text = fmData.FM.Archive;
         report.Percent = percent;
         progress.Report(report);
-
-        if (singleFM)
-        {
-            Core.View.MultiItemProgress_SetState(percent: percent);
-        }
     }
 
     private static FMInstallResult
     InstallFMRar(
         IProgress<ProgressReport_Install> progress,
         FMData fmData,
-        IOBufferPools ioBufferPools,
-        bool singleFM)
+        IOBufferPools ioBufferPools)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
@@ -2641,8 +2622,7 @@ internal static partial class FMInstallAndPlay
                         report: report,
                         fmData: fmData,
                         entryNumber: i,
-                        entriesCount: entriesCount,
-                        singleFM: singleFM);
+                        entriesCount: entriesCount);
                 }
             }
 
@@ -2669,8 +2649,7 @@ internal static partial class FMInstallAndPlay
     private static FMInstallResult
     InstallFMSevenZip(
         IProgress<ProgressReport_Install> progressInstall,
-        FMData fmData,
-        bool singleFM)
+        FMData fmData)
     {
         string fmInstalledPath = fmData.InstalledPath;
 
@@ -2696,11 +2675,6 @@ internal static partial class FMInstallAndPlay
                     report.Text = fmData.FM.Archive;
                     report.Percent = pr.PercentOfEntries;
                     progressInstall.Report(report);
-
-                    if (singleFM)
-                    {
-                        Core.View.MultiItemProgress_SetState(percent: pr.PercentOfEntries);
-                    }
                 }
             }
 

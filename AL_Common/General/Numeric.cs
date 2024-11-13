@@ -43,6 +43,7 @@ public static partial class Common
     #region Percent
 
     public static int GetPercentFromValue_Int(int current, int total) => total == 0 ? 0 : (100 * current) / total;
+    public static int GetPercentFromValue_ULong(ulong current, ulong total) => (int)(total == 0 ? 0 : (100 * current) / total);
     public static float GetValueFromPercent_Float(float percent, int total) => (percent / 100f) * total;
     public static int GetValueFromPercent_Int(double percent, int total) => (int)((percent / 100d) * total);
 #if false
