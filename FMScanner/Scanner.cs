@@ -389,7 +389,6 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    // @MT_TASK: Test with sets that include installed-folder scans in parallel set
     [PublicAPI]
     public static List<ScannedFMDataAndError>
     ScanThreaded(
