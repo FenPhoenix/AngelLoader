@@ -900,6 +900,25 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_ManualDriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string value in values)
+        {
+            string[] letterAndDriveType = value.Split(CA_Colon, StringSplitOptions.RemoveEmptyEntries);
+            if (letterAndDriveType.Length != 2) continue;
+
+            string letter = letterAndDriveType[0].Trim();
+
+            string driveTypeStr = letterAndDriveType[1].Trim();
+            FieldInfo? field = typeof(AL_DriveType).GetField(driveTypeStr, _bFlagsEnum);
+            if (field != null)
+            {
+                config.DriveLettersAndTypes[letter] = (AL_DriveType)field.GetValue(null);
+            }
+        }
+    }
+
     #endregion
 
     [StructLayout(LayoutKind.Auto)]
@@ -1107,6 +1126,7 @@ internal static partial class Ini
         { "IOThreadingLevel", new Config_DelegatePointerWrapper(&Config_IOThreadingLevel_Set) },
         { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
         { "CustomIOThreadingMode", new Config_DelegatePointerWrapper(&Config_CustomIOThreadingMode_Set) },
+        { "ManualDriveTypes", new Config_DelegatePointerWrapper(&Config_ManualDriveTypes_Set) },
 
         #region Backward compatibility
 
@@ -1514,5 +1534,15 @@ internal static partial class Ini
         sw.Append("IOThreadingLevel=").AppendLine(config.IOThreadingLevel);
         sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
         sw.Append("CustomIOThreadingMode=").AppendLine(config.CustomIOThreadingMode);
+        sw.Append("ManualDriveTypes=");
+        var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
+        for (int i = 0; i < driveLettersAndTypes.Length; i++)
+        {
+            var item = driveLettersAndTypes[i];
+            if (i > 0) sw.Append(',');
+            // @MT_TASK: We shouldn't write with : since we're allowing arbitrary strings like network paths?
+            sw.Append(item.Key).Append(':').Append(item.Value);
+        }
+        sw.AppendLine();
     }
 }

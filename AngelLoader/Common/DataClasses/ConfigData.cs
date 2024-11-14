@@ -449,6 +449,9 @@ public sealed class ConfigData
 
     internal IOThreadingMode CustomIOThreadingMode;
 
+    // 26 * 2 = the alphabet * 2 (upper and lowercase)
+    internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26 * 2);
+
     // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic
