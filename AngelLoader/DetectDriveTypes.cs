@@ -22,18 +22,16 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    internal static void FillSettingsDriveTypes(List<ThreadablePath> paths)
+    internal static void FillSettingsDriveTypes(ThreadablePath[] paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        DictionaryI<AL_DriveType> rootsDict = new(paths.Count);
+        DictionaryI<AL_DriveType> rootsDict = new(paths.Length);
 
-        for (int i = 0; i < paths.Count; i++)
+        foreach (ThreadablePath path in paths)
         {
-            ThreadablePath path = paths[i];
-
             path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
 
             if (!path.Root.IsEmpty())

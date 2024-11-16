@@ -683,6 +683,27 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 AdvancedPage.CustomThreadingModeNormalRadioButton.Checked = true;
             }
 
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            ThreadablePath[] threadablePaths = new ThreadablePath[drives.Length];
+
+            for (int i = 0; i < drives.Length; i++)
+            {
+                DriveInfo drive = drives[i];
+                threadablePaths[i] = new ThreadablePath(drive.Name, IOPathType.Directory);
+            }
+
+            DetectDriveTypes.FillSettingsDriveTypes(threadablePaths);
+
+            DrivesAndTypes = new DriveAndType[threadablePaths.Length];
+
+            for (int i = 0; i < threadablePaths.Length; i++)
+            {
+                ThreadablePath path = threadablePaths[i];
+                DrivesAndTypes[i] = new DriveAndType(path.Root, path.DriveType);
+            }
+
+            // @MT_TASK: Implement whatever control we come up with for the drive letters and types...
+
             #endregion
         }
 
@@ -1984,6 +2005,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         AdvancedPage.CustomModePanel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
     }
+
+    private readonly struct DriveAndType
+    {
+        internal readonly string Drive;
+        internal readonly AL_DriveType DriveType;
+
+        public DriveAndType(string drive, AL_DriveType driveType)
+        {
+            Drive = drive;
+            DriveType = driveType;
+        }
+    }
+
+    private readonly DriveAndType[] DrivesAndTypes = Array.Empty<DriveAndType>();
 
     #endregion
 

@@ -95,8 +95,6 @@ sealed partial class AdvancedPage
             this.CustomThreadingModeAggressiveRadioButton.Size = new System.Drawing.Size(77, 17);
             this.CustomThreadingModeAggressiveRadioButton.TabIndex = 4;
             this.CustomThreadingModeAggressiveRadioButton.Text = "Aggressive";
-            this.CustomThreadingModeAggressiveRadioButton.UseMnemonic = false;
-            this.CustomThreadingModeAggressiveRadioButton.UseVisualStyleBackColor = true;
             // 
             // CustomThreadingModeLabel
             // 
@@ -106,7 +104,6 @@ sealed partial class AdvancedPage
             this.CustomThreadingModeLabel.Size = new System.Drawing.Size(87, 13);
             this.CustomThreadingModeLabel.TabIndex = 2;
             this.CustomThreadingModeLabel.Text = "Threading mode:";
-            this.CustomThreadingModeLabel.UseMnemonic = false;
             // 
             // CustomThreadingModeNormalRadioButton
             // 
@@ -118,8 +115,6 @@ sealed partial class AdvancedPage
             this.CustomThreadingModeNormalRadioButton.TabIndex = 3;
             this.CustomThreadingModeNormalRadioButton.TabStop = true;
             this.CustomThreadingModeNormalRadioButton.Text = "Normal";
-            this.CustomThreadingModeNormalRadioButton.UseMnemonic = false;
-            this.CustomThreadingModeNormalRadioButton.UseVisualStyleBackColor = true;
             // 
             // CustomThreadsNumericUpDown
             // 
@@ -151,7 +146,6 @@ sealed partial class AdvancedPage
             this.CustomThreadsLabel.Size = new System.Drawing.Size(49, 13);
             this.CustomThreadsLabel.TabIndex = 0;
             this.CustomThreadsLabel.Text = "Threads:";
-            this.CustomThreadsLabel.UseMnemonic = false;
             // 
             // CustomModeRadioButton
             // 
@@ -162,8 +156,6 @@ sealed partial class AdvancedPage
             this.CustomModeRadioButton.TabIndex = 1;
             this.CustomModeRadioButton.TabStop = true;
             this.CustomModeRadioButton.Text = "Custom";
-            this.CustomModeRadioButton.UseMnemonic = false;
-            this.CustomModeRadioButton.UseVisualStyleBackColor = true;
             // 
             // AutoModeRadioButton
             // 
@@ -175,8 +167,6 @@ sealed partial class AdvancedPage
             this.AutoModeRadioButton.TabIndex = 0;
             this.AutoModeRadioButton.TabStop = true;
             this.AutoModeRadioButton.Text = "Auto";
-            this.AutoModeRadioButton.UseMnemonic = false;
-            this.AutoModeRadioButton.UseVisualStyleBackColor = true;
             // 
             // AdvancedPage
             // 

@@ -63,14 +63,11 @@ sealed partial class AdvancedPage
         this.CustomThreadingModeAggressiveRadioButton.AutoSize = true;
         this.CustomThreadingModeAggressiveRadioButton.Location = new System.Drawing.Point(24, 80);
         this.CustomThreadingModeAggressiveRadioButton.TabIndex = 4;
-        this.CustomThreadingModeAggressiveRadioButton.UseMnemonic = false;
-        this.CustomThreadingModeAggressiveRadioButton.UseVisualStyleBackColor = true;
         // 
         // CustomThreadingModeLabel
         // 
         this.CustomThreadingModeLabel.AutoSize = true;
         this.CustomThreadingModeLabel.Location = new System.Drawing.Point(24, 48);
-        this.CustomThreadingModeLabel.UseMnemonic = false;
         // 
         // CustomThreadingModeNormalRadioButton
         // 
@@ -79,8 +76,6 @@ sealed partial class AdvancedPage
         this.CustomThreadingModeNormalRadioButton.Location = new System.Drawing.Point(24, 64);
         this.CustomThreadingModeNormalRadioButton.TabIndex = 3;
         this.CustomThreadingModeNormalRadioButton.TabStop = true;
-        this.CustomThreadingModeNormalRadioButton.UseMnemonic = false;
-        this.CustomThreadingModeNormalRadioButton.UseVisualStyleBackColor = true;
         // 
         // CustomThreadsNumericUpDown
         // 
@@ -107,7 +102,6 @@ sealed partial class AdvancedPage
         // 
         this.CustomThreadsLabel.AutoSize = true;
         this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 0);
-        this.CustomThreadsLabel.UseMnemonic = false;
         // 
         // CustomModeRadioButton
         // 
@@ -115,8 +109,6 @@ sealed partial class AdvancedPage
         this.CustomModeRadioButton.Location = new System.Drawing.Point(16, 48);
         this.CustomModeRadioButton.TabIndex = 1;
         this.CustomModeRadioButton.TabStop = true;
-        this.CustomModeRadioButton.UseMnemonic = false;
-        this.CustomModeRadioButton.UseVisualStyleBackColor = true;
         // 
         // AutoModeRadioButton
         // 
@@ -125,8 +117,6 @@ sealed partial class AdvancedPage
         this.AutoModeRadioButton.Location = new System.Drawing.Point(16, 24);
         this.AutoModeRadioButton.TabIndex = 0;
         this.AutoModeRadioButton.TabStop = true;
-        this.AutoModeRadioButton.UseMnemonic = false;
-        this.AutoModeRadioButton.UseVisualStyleBackColor = true;
         // 
         // AdvancedPage
         // 
