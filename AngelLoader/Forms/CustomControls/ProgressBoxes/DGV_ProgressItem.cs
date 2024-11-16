@@ -219,7 +219,7 @@ public sealed class DGV_ProgressItem : DataGridView, IDarkable
                 try
                 {
                     /*
-                    Of course, you can get use GetThemeColor() to get the progress bar color, and of course, it's
+                    Of course, you can get GetThemeColor() to get the progress bar color, and of course, it's
                     slightly off. Just like that toolbar gray. What's the point of exposing the theme colors if
                     they're always bloody wrong? Who knows. So do a completely stupid thing here to get the color
                     that the control displays in the real actual world, rather than the pretend fantasy world
