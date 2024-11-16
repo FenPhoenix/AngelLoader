@@ -1878,7 +1878,7 @@ internal static partial class FMInstallAndPlay
                                     toes like I thought they would. But test with the NVME and do a more thorough
                                     diff test.
                                     */
-                                    ? threadingData.Mode == IOThreadingMode.Aggressive
+                                    ? threadingData.Level == IOThreadingLevel.Aggressive
                                         ? InstallFMZip_ThreadedPerEntry(
                                             progress,
                                             fmData,

@@ -874,12 +874,12 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_IOThreadingLevel_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_IOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(IOThreadingLevel).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
         if (field != null)
         {
-            config.IOThreadingLevel = (IOThreadingLevel)field.GetValue(null);
+            config.IOThreadingMode = (IOThreadingMode)field.GetValue(null);
         }
     }
 
@@ -1114,7 +1114,7 @@ internal static partial class Ini
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
 
-        { "IOThreadingLevel", new Config_DelegatePointerWrapper(&Config_IOThreadingLevel_Set) },
+        { "IOThreadingMode", new Config_DelegatePointerWrapper(&Config_IOThreadingMode_Set) },
         { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
         { "ManualDriveTypes", new Config_DelegatePointerWrapper(&Config_ManualDriveTypes_Set) },
 
@@ -1521,7 +1521,7 @@ internal static partial class Ini
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
 
-        sw.Append("IOThreadingLevel=").AppendLine(config.IOThreadingLevel);
+        sw.Append("IOThreadingMode=").AppendLine(config.IOThreadingMode);
         sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
         sw.Append("ManualDriveTypes=");
         var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
@@ -1529,7 +1529,6 @@ internal static partial class Ini
         {
             var item = driveLettersAndTypes[i];
             if (i > 0) sw.Append(',');
-            // @MT_TASK: We shouldn't write with : since we're allowing arbitrary strings like network paths?
             sw.Append(item.Key).Append(':').Append(item.Value);
         }
         sw.AppendLine();

@@ -214,14 +214,13 @@ public enum CheckForUpdates
     False,
 }
 
-// @MT_TASK: We should probably swap the names of these now (level/mode)
-public enum IOThreadingLevel
+public enum IOThreadingMode
 {
     Auto,
     Custom,
 }
 
-public enum IOThreadingMode
+public enum IOThreadingLevel
 {
     Normal,
     Aggressive,

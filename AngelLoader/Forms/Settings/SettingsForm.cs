@@ -668,12 +668,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            switch (config.IOThreadingLevel)
+            switch (config.IOThreadingMode)
             {
-                case IOThreadingLevel.Custom:
+                case IOThreadingMode.Custom:
                     AdvancedPage.CustomModeRadioButton.Checked = true;
                     break;
-                case IOThreadingLevel.Auto:
+                case IOThreadingMode.Auto:
                 default:
                     AdvancedPage.AutoModeRadioButton.Checked = true;
                     break;
@@ -1544,9 +1544,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            OutConfig.IOThreadingLevel =
-                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingLevel.Custom :
-                IOThreadingLevel.Auto;
+            OutConfig.IOThreadingMode =
+                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingMode.Custom :
+                IOThreadingMode.Auto;
 
             OutConfig.CustomIOThreads = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
 

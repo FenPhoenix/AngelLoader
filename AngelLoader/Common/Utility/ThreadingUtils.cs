@@ -20,7 +20,7 @@ public static partial class Utils
     {
         int? threadCount = null;
 
-        if (Config.IOThreadingLevel == IOThreadingLevel.Custom)
+        if (Config.IOThreadingMode == IOThreadingMode.Custom)
         {
             threadCount = Config.CustomIOThreads;
         }
@@ -30,15 +30,15 @@ public static partial class Utils
         ThreadingData threadingData;
         if (types.Any(static x => x == AL_DriveType.Other))
         {
-            threadingData = new ThreadingData(threadCount ?? 1, IOThreadingMode.Normal);
+            threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
         }
         else if (types.All(static x => x == AL_DriveType.NVMe_SSD))
         {
-            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingMode.Aggressive);
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
         }
         else
         {
-            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingMode.Normal);
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Normal);
         }
 
 #if TESTING

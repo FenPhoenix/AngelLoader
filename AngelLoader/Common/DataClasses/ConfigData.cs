@@ -438,7 +438,7 @@ public sealed class ConfigData
 
     // @MT_TASK: Finalize names
 
-    internal IOThreadingLevel IOThreadingLevel = IOThreadingLevel.Auto;
+    internal IOThreadingMode IOThreadingMode = IOThreadingMode.Auto;
 
     private int _customIOThreads = CoreCount;
     internal int CustomIOThreads

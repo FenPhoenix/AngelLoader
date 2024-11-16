@@ -411,18 +411,18 @@ public static partial class Misc
     internal sealed class ThreadingData
     {
         internal readonly int Threads;
-        internal readonly IOThreadingMode Mode;
+        internal readonly IOThreadingLevel Level;
 
         public static readonly ThreadingData Empty = new(1, default);
 
-        public ThreadingData(int threads, IOThreadingMode mode)
+        public ThreadingData(int threads, IOThreadingLevel level)
         {
             Threads = threads.ClampToMin(1);
-            Mode = mode;
+            Level = level;
         }
 
         public override string ToString() =>
-            "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Mode) + ": " + Mode + " }";
+            "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Level) + ": " + Level + " }";
     }
 
     public enum IOPathType
