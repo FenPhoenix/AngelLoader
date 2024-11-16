@@ -58,6 +58,8 @@ public static class DarkColors
         SystemColors.Highlight.B);
     public static readonly Color TabDragOverlay_Dark = Color.FromArgb(64, 75, 110, 175);
 
+    public static readonly Color LightScrollBarButtonHot = Color.FromArgb(218, 218, 218);
+
     #endregion
 
     #region DarkUI
@@ -161,13 +163,15 @@ public static class DarkColors
     public static readonly SolidBrush BlueSelectionBrush = new SolidBrush(BlueSelection);
     public static readonly SolidBrush GreyHighlightBrush = new SolidBrush(GreyHighlight);
     public static readonly SolidBrush GreySelectionBrush = new SolidBrush(GreySelection);
-    //public static readonly SolidBrush DarkGreySelectionBrush = new SolidBrush(DarkGreySelection);
+    public static readonly SolidBrush DarkGreySelectionBrush = new SolidBrush(DarkGreySelection);
     //public static readonly SolidBrush DarkBlueBorderBrush = new SolidBrush(DarkBlueBorder);
     //public static readonly SolidBrush LightBlueBorderBrush = new SolidBrush(LightBlueBorder);
     public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
     //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
     public static readonly SolidBrush DGV_PinnedBackgroundDarkBrush = new SolidBrush(DGV_PinnedBackgroundDark);
+
+    public static readonly SolidBrush LightScrollBarButtonHotBrush = new SolidBrush(LightScrollBarButtonHot);
 
     #endregion
 }
