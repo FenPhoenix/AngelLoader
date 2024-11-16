@@ -449,8 +449,20 @@ public sealed class ConfigData
 
     internal IOThreadingMode CustomIOThreadingMode;
 
-    // 26 * 2 = the alphabet * 2 (upper and lowercase)
-    internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26 * 2);
+    internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26);
+
+    internal AL_DriveType GetDriveType(string letter)
+    {
+        if (DriveLettersAndTypes.TryGetValue(letter, out AL_DriveType result))
+        {
+            return result;
+        }
+        else
+        {
+            DriveLettersAndTypes[letter] = AL_DriveType.Auto;
+            return AL_DriveType.Auto;
+        }
+    }
 
     // @MT_TASK: End finalize names
 

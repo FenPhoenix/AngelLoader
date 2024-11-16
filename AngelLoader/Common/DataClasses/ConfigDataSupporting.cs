@@ -231,6 +231,7 @@ public enum AL_DriveType
     Other,
     SATA_SSD,
     NVMe_SSD,
+    Auto,
 }
 
 #region FM tabs
