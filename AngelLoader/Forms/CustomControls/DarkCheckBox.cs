@@ -8,6 +8,10 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
+// @MT_TASK(Accessibility):
+//  Should we render checkboxes/radio buttons in visible blue when checked in dark mode and fixed Win11 light mode?
+//  That's one thing Win11 actually is doing well, it's just that the indeterminate checkbox is impossible to tell
+
 // @DarkModeNote(DarkCheckBox):
 // We could add support for putting the checkbox on the right-hand side if we feel like we need it
 public sealed class DarkCheckBox : CheckBox, IDarkable
