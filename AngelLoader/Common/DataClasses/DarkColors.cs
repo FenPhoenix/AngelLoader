@@ -16,6 +16,14 @@ public static class DarkColors
     public static readonly Color SettingsButtonHighlight_Light = Color.FromArgb(229, 241, 251);
     public static readonly Color SettingsButtonHighlightBorder_Light = Color.FromArgb(0, 120, 215);
 
+    public static readonly Color CheckBoxPressedBorder = Color.FromArgb(0, 84, 153);
+    public static readonly Pen CheckBoxPressedBorderPen = new Pen(CheckBoxPressedBorder);
+    public static readonly SolidBrush CheckBoxPressedBorderBrush = new SolidBrush(CheckBoxPressedBorder);
+
+    public static readonly Color CheckBoxPressedFill = Color.FromArgb(204, 228, 247);
+    //public static readonly Pen CheckBoxPressedFillPen = new Pen(CheckBoxPressedFill);
+    public static readonly SolidBrush CheckBoxPressedFillBrush = new SolidBrush(CheckBoxPressedFill);
+
     public static readonly Color GLMLRed_Light = Color.Red;
     public static readonly Color GLMLRed_Dark = Color.FromArgb(222, 73, 64);
 

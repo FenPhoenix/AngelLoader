@@ -14,6 +14,8 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 {
     #region Field Region
 
+    private bool UsingCustomRendering => _darkModeEnabled || WinVersion.Is11OrAbove;
+
     private DarkControlState _controlState = DarkControlState.Normal;
 
     private bool _spacePressed;
@@ -80,7 +82,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
     private void InvalidateIfDark()
     {
-        if (_darkModeEnabled) Invalidate();
+        if (UsingCustomRendering) Invalidate();
     }
 
     #region Method Region
@@ -116,7 +118,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnMouseMove(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (_spacePressed) return;
 
@@ -129,7 +131,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnMouseDown(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (e.Button == MouseButtons.Left && ClientRectangle.Contains(e.Location))
         {
@@ -141,7 +143,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnMouseUp(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (_spacePressed) return;
 
@@ -152,7 +154,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnMouseLeave(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (_spacePressed) return;
 
@@ -163,7 +165,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnMouseCaptureChanged(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (_spacePressed) return;
 
@@ -177,7 +179,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnGotFocus(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         InvalidateIfDark();
     }
@@ -186,7 +188,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnLostFocus(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         _spacePressed = false;
 
@@ -199,7 +201,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnKeyDown(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (e.KeyCode == Keys.Space)
         {
@@ -212,7 +214,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
     {
         base.OnKeyUp(e);
 
-        if (!_darkModeEnabled) return;
+        if (!UsingCustomRendering) return;
 
         if (e.KeyCode == Keys.Space)
         {
@@ -230,36 +232,65 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
     protected override void OnPaint(PaintEventArgs e)
     {
-        if (!_darkModeEnabled)
+        if (!UsingCustomRendering)
         {
             base.OnPaint(e);
             return;
         }
 
+        bool usingLightMode = WinVersion.Is11OrAbove && !_darkModeEnabled;
+
         Graphics g = e.Graphics;
         Rectangle rect = ClientRectangle;
 
-        Color textColor = DarkColors.LightText;
-        Pen borderPen = DarkColors.LightTextPen;
-        SolidBrush fillBrush = DarkColors.LightTextBrush;
+        Color textColor =
+            usingLightMode
+                ? SystemColors.ControlText
+                : DarkColors.LightText;
+        Pen borderPen =
+            usingLightMode
+                ? SystemPens.ControlText
+                : DarkColors.LightTextPen;
+        Brush fillBrush =
+            usingLightMode
+                ? SystemBrushes.ControlText
+                : DarkColors.LightTextBrush;
 
         if (Enabled)
         {
             if (AutoCheck && Focused)
             {
-                borderPen = DarkColors.BlueHighlightPen;
-                fillBrush = DarkColors.BlueHighlightBrush;
+                borderPen =
+                    usingLightMode
+                        ? SystemPens.ControlText
+                        : DarkColors.BlueHighlightPen;
+                fillBrush =
+                    usingLightMode
+                        ? SystemBrushes.ControlText
+                        : DarkColors.BlueHighlightBrush;
             }
 
             if (_controlState == DarkControlState.Hover)
             {
-                borderPen = DarkColors.BlueHighlightPen;
-                fillBrush = DarkColors.BlueSelectionBrush;
+                borderPen =
+                    usingLightMode
+                        ? SystemPens.Highlight
+                        : DarkColors.BlueHighlightPen;
+                fillBrush =
+                    usingLightMode
+                        ? SystemBrushes.Highlight
+                        : DarkColors.BlueSelectionBrush;
             }
             else if (_controlState == DarkControlState.Pressed)
             {
-                borderPen = DarkColors.GreyHighlightPen;
-                fillBrush = DarkColors.GreySelectionBrush;
+                borderPen =
+                    usingLightMode
+                        ? DarkColors.CheckBoxPressedBorderPen
+                        : DarkColors.GreyHighlightPen;
+                fillBrush =
+                    usingLightMode
+                        ? DarkColors.CheckBoxPressedFillBrush
+                        : DarkColors.GreySelectionBrush;
             }
         }
         else
@@ -281,18 +312,34 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         }
 
         var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
+        if (usingLightMode)
+        {
+            g.FillRectangle(
+                _controlState == DarkControlState.Pressed
+                    ? DarkColors.CheckBoxPressedFillBrush
+                    : SystemBrushes.Window,
+                outlineBoxRect);
+        }
         g.DrawRectangle(borderPen, outlineBoxRect);
+
+
+        Brush checkBrush =
+            usingLightMode
+                ? _controlState == DarkControlState.Pressed
+                    ? DarkColors.CheckBoxPressedBorderBrush
+                    : fillBrush
+                : fillBrush;
 
         if (CheckState == CheckState.Checked)
         {
             // IMPORTANT! Stop removing this thing, IT NEEDS TO BE SEPARATE BECAUSE IT'S GOT A DIFFERENT WIDTH!
-            using var checkMarkPen = new Pen(fillBrush, 1.6f);
+            using var checkMarkPen = new Pen(checkBrush, 1.6f);
             ControlUtils.DrawCheckMark(g, checkMarkPen, outlineBoxRect);
         }
         else if (CheckState == CheckState.Indeterminate)
         {
             var boxRect = new Rectangle(3, ((rect.Height / 2) - ((_checkBoxSize - 4) / 2)) + 1, _checkBoxSize - 5, _checkBoxSize - 5);
-            g.FillRectangle(fillBrush, boxRect);
+            g.FillRectangle(checkBrush, boxRect);
         }
 
         TextFormatFlags textFormatFlags =
