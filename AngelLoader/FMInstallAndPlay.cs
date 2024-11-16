@@ -2289,6 +2289,7 @@ internal static partial class FMInstallAndPlay
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
         IOBufferPools ioBufferPools,
+        // @MT_TASK(InstallFMZip_ThreadedPerEntry): We need our own set of threading data that excludes the backup path
         ThreadingData threadingData)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
