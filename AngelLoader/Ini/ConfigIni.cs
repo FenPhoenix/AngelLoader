@@ -891,15 +891,6 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_CustomIOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
-    {
-        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
-        if (field != null)
-        {
-            config.CustomIOThreadingMode = (IOThreadingMode)field.GetValue(null);
-        }
-    }
-
     private static void Config_ManualDriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
@@ -1125,7 +1116,6 @@ internal static partial class Ini
 
         { "IOThreadingLevel", new Config_DelegatePointerWrapper(&Config_IOThreadingLevel_Set) },
         { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
-        { "CustomIOThreadingMode", new Config_DelegatePointerWrapper(&Config_CustomIOThreadingMode_Set) },
         { "ManualDriveTypes", new Config_DelegatePointerWrapper(&Config_ManualDriveTypes_Set) },
 
         #region Backward compatibility
@@ -1533,7 +1523,6 @@ internal static partial class Ini
 
         sw.Append("IOThreadingLevel=").AppendLine(config.IOThreadingLevel);
         sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
-        sw.Append("CustomIOThreadingMode=").AppendLine(config.CustomIOThreadingMode);
         sw.Append("ManualDriveTypes=");
         var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
         for (int i = 0; i < driveLettersAndTypes.Length; i++)

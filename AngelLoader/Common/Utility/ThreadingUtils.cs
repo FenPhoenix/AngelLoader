@@ -18,28 +18,27 @@ public static partial class Utils
 
     internal static ThreadingData GetLowestCommonThreadingData(List<IOPath> paths)
     {
-        ThreadingData threadingData;
-        // @MT_TASK: We can't just have one "Custom" anymore... we have different scenarios: install, audio conv, scan, etc...
+        int? threadCount = null;
+
         if (Config.IOThreadingLevel == IOThreadingLevel.Custom)
         {
-            threadingData = new ThreadingData(Config.CustomIOThreads, Config.CustomIOThreadingMode);
+            threadCount = Config.CustomIOThreads;
+        }
+
+        List<AL_DriveType> types = DetectDriveTypes.GetAllDrivesType(paths, Config.DriveLettersAndTypes);
+
+        ThreadingData threadingData;
+        if (types.Any(static x => x == AL_DriveType.Other))
+        {
+            threadingData = new ThreadingData(threadCount ?? 1, IOThreadingMode.Normal);
+        }
+        else if (types.All(static x => x == AL_DriveType.NVMe_SSD))
+        {
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingMode.Aggressive);
         }
         else
         {
-            List<AL_DriveType> types = DetectDriveTypes.GetAllDrivesType(paths);
-
-            if (types.Any(static x => x == AL_DriveType.Other))
-            {
-                threadingData = new ThreadingData(1, IOThreadingMode.Normal);
-            }
-            else if (types.All(static x => x == AL_DriveType.NVMe_SSD))
-            {
-                threadingData = new ThreadingData(CoreCount, IOThreadingMode.Aggressive);
-            }
-            else
-            {
-                threadingData = new ThreadingData(CoreCount, IOThreadingMode.Normal);
-            }
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingMode.Normal);
         }
 
 #if TESTING

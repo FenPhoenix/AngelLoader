@@ -447,19 +447,23 @@ public sealed class ConfigData
         set => _customIOThreads = value.ClampToMin(1);
     }
 
-    internal IOThreadingMode CustomIOThreadingMode;
-
     internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26);
 
-    internal AL_DriveType GetDriveType(string letter)
+    internal static AL_DriveType GetDriveType(DictionaryI<AL_DriveType> dict, string letter)
     {
-        if (DriveLettersAndTypes.TryGetValue(letter, out AL_DriveType result))
+        if (letter.Length == 0)
+        {
+            return AL_DriveType.Auto;
+        }
+
+        letter = letter[0].ToString();
+        if (dict.TryGetValue(letter, out AL_DriveType result))
         {
             return result;
         }
         else
         {
-            DriveLettersAndTypes[letter] = AL_DriveType.Auto;
+            dict[letter] = AL_DriveType.Auto;
             return AL_DriveType.Auto;
         }
     }

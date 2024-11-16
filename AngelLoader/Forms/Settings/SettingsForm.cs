@@ -51,6 +51,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
 
+    private readonly DictionaryI<AL_DriveType> _driveLettersAndTypes = new();
+
     #endregion
 
     private VisualTheme _selfTheme;
@@ -162,6 +164,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         _inTheme = config.VisualTheme;
         _inFollowSystemTheme = config.FollowSystemTheme;
+
+        foreach (var item in config.DriveLettersAndTypes)
+        {
+            _driveLettersAndTypes[item.Key] = item.Value;
+        }
 
         #endregion
 
@@ -724,6 +731,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     TabIndex = tabIndex + 2,
                     TabStop = true,
                     Text = "Autodetected (" + GetDriveTypeString(driveAndType.DriveType) + ")",
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.Auto),
                 };
                 DarkRadioButton nvmeRadioButton = new()
                 {
@@ -732,6 +741,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     TabIndex = tabIndex + 3,
                     TabStop = true,
                     Text = GetDriveTypeString(AL_DriveType.NVMe_SSD),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.NVMe_SSD),
                 };
                 DarkRadioButton sataRadioButton = new()
                 {
@@ -740,6 +751,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     TabIndex = tabIndex + 4,
                     TabStop = true,
                     Text = GetDriveTypeString(AL_DriveType.SATA_SSD),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.SATA_SSD),
                 };
                 DarkRadioButton hddRadioButton = new()
                 {
@@ -748,7 +761,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     TabIndex = tabIndex + 5,
                     TabStop = true,
                     Text = GetDriveTypeString(AL_DriveType.Other),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.Other),
                 };
+
+                autoDetectRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                nvmeRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                sataRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                hddRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
 
                 panel.Controls.Add(driveLabel);
                 panel.Controls.Add(autoDetectRadioButton);
@@ -760,7 +780,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 AdvancedPage.HorizDivYPositions.Add(y - 20);
 
-                AL_DriveType driveType = Config.GetDriveType(driveAndType.Drive);
+                AL_DriveType driveType = ConfigData.GetDriveType(_driveLettersAndTypes, driveAndType.Drive);
                 switch (driveType)
                 {
                     case AL_DriveType.Auto:
@@ -792,8 +812,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 return driveType switch
                 {
-                    AL_DriveType.NVMe_SSD => "NVMe",
-                    AL_DriveType.SATA_SSD => "SATA",
+                    AL_DriveType.NVMe_SSD => "NVMe SSD",
+                    AL_DriveType.SATA_SSD => "SATA SSD",
                     _ => "HDD or other",
                 };
             }
@@ -900,6 +920,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
 
         #endregion
+    }
+
+    private void DriveTypeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    {
+        if (sender is DarkRadioButton { Tag: DriveControlIndex dci })
+        {
+            DrivesAndTypes[dci.Index].DriveType = dci.DriveType;
+        }
     }
 
     protected override void OnLoad(EventArgs e)
@@ -1522,6 +1550,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OutConfig.CustomIOThreads = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
 
+            foreach (var item in DrivesAndTypes)
+            {
+                OutConfig.DriveLettersAndTypes[item.Drive[0].ToString()] = item.DriveType;
+            }
+
             #endregion
         }
 
@@ -2093,10 +2126,22 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         AdvancedPage.CustomThreadsNumericUpDown.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
     }
 
-    private readonly struct DriveAndType
+    private readonly struct DriveControlIndex
+    {
+        internal readonly int Index;
+        internal readonly AL_DriveType DriveType;
+
+        public DriveControlIndex(int index, AL_DriveType driveType)
+        {
+            Index = index;
+            DriveType = driveType;
+        }
+    }
+
+    private sealed class DriveAndType
     {
         internal readonly string Drive;
-        internal readonly AL_DriveType DriveType;
+        internal AL_DriveType DriveType;
 
         public DriveAndType(string drive, AL_DriveType driveType)
         {

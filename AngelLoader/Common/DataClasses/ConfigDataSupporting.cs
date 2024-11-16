@@ -214,6 +214,7 @@ public enum CheckForUpdates
     False,
 }
 
+// @MT_TASK: We should probably swap the names of these now (level/mode)
 public enum IOThreadingLevel
 {
     Auto,
