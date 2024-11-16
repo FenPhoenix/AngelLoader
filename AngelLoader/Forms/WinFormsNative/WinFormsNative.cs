@@ -925,11 +925,67 @@ internal static class Native
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
 
+    #endregion
+
+    #region High contrast code from .NET latest runtime
+
+    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern unsafe bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, void* pvParam, uint fWinIni);
+
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
         var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
         SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
+    }
+
+
+    [Flags]
+    private enum HIGHCONTRASTW_FLAGS : uint
+    {
+        HCF_HIGHCONTRASTON = 0x00000001,
+        HCF_AVAILABLE = 0x00000002,
+        HCF_HOTKEYACTIVE = 0x00000004,
+        HCF_CONFIRMHOTKEY = 0x00000008,
+        HCF_HOTKEYSOUND = 0x00000010,
+        HCF_INDICATOR = 0x00000020,
+        HCF_HOTKEYAVAILABLE = 0x00000040,
+        HCF_OPTION_NOTHEMECHANGE = 0x00001000,
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private unsafe struct HIGHCONTRASTW
+    {
+        internal uint cbSize;
+        internal HIGHCONTRASTW_FLAGS dwFlags;
+        internal void* lpszDefaultScheme;
+    }
+
+    private enum SystemParametersAction : uint
+    {
+        SPI_GETICONTITLELOGFONT = 0x1F,
+        SPI_GETNONCLIENTMETRICS = 0x29,
+        SPI_GETHIGHCONTRAST = 0x42,
+    }
+
+    internal static unsafe bool HighContrastEnabled()
+    {
+        HIGHCONTRASTW highContrast = default;
+
+        // Note that the documentation for HIGHCONTRASTW says that the lpszDefaultScheme member needs to be
+        // freed, but this is incorrect. No internal users ever free the pointer and the pointer never changes.
+        highContrast.cbSize = (uint)sizeof(HIGHCONTRASTW);
+        bool success = SystemParametersInfoW(
+            SystemParametersAction.SPI_GETHIGHCONTRAST,
+            highContrast.cbSize,
+            &highContrast,
+            0); // This has no meaning when getting values
+
+        return success && highContrast.dwFlags.HasFlag(HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON);
     }
 
     #endregion

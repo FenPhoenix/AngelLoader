@@ -609,7 +609,7 @@ internal static class Win32ThemeHooks
 
     // @MT_TASK: Tweak the colors here
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ScrollBarEnabled() => Global.Config.DarkMode || WinVersion.Is11OrAbove;
+    private static bool ScrollBarEnabled() => Global.Config.DarkMode || (WinVersion.Is11OrAbove && !Native.HighContrastEnabled());
 
     private static bool ScrollBar_TryDrawThemeBackground(
         IntPtr hdc,
@@ -617,7 +617,7 @@ internal static class Win32ThemeHooks
         int iStateId,
         ref Native.RECT pRect)
     {
-        bool usingLightMode = WinVersion.Is11OrAbove && !Global.Config.DarkMode;
+        bool usingLightMode = WinVersion.Is11OrAbove && !Global.Config.DarkMode && !Native.HighContrastEnabled();
 
         using Graphics g = Graphics.FromHdc(hdc);
 
