@@ -22,18 +22,16 @@ namespace AngelLoader;
 
 internal static class DetectDriveTypes
 {
-    internal static void FillSettingsDriveTypes(List<ThreadablePath> paths)
+    internal static void FillSettingsDriveTypes(ThreadablePath[] paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        DictionaryI<AL_DriveType> rootsDict = new(paths.Count);
+        DictionaryI<AL_DriveType> rootsDict = new(paths.Length);
 
-        for (int i = 0; i < paths.Count; i++)
+        foreach (ThreadablePath path in paths)
         {
-            ThreadablePath path = paths[i];
-
             path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
 
             if (!path.Root.IsEmpty())
@@ -57,7 +55,7 @@ internal static class DetectDriveTypes
 #endif
     }
 
-    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths)
+    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths, DictionaryI<AL_DriveType> driveTypesDict)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -87,15 +85,12 @@ internal static class DetectDriveTypes
             return RetOrDefault(ret);
         }
 
-        /*
-        Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
-        drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
-        Now that's more like it.
-        */
-
         for (int i = 0; i < roots.Count; i++)
         {
-            ret.Add(GetDriveType(roots[i]));
+            string rootLetter = roots[i][0].ToString();
+            ret.Add(driveTypesDict.TryGetValue(rootLetter, out AL_DriveType result) && result != AL_DriveType.Auto
+                ? result
+                : GetDriveType(roots[i]));
         }
 
 #if TIMING_TEST
@@ -149,6 +144,12 @@ internal static class DetectDriveTypes
 
     private static AL_DriveType GetDriveType(string root)
     {
+        /*
+        Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
+        drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
+        Now that's more like it.
+        */
+
         // This stuff all works on Windows 7 which is the oldest we support, so no need to check.
 
         // We've got a network drive or something else, and we don't know what it is.

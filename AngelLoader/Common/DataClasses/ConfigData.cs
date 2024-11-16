@@ -438,7 +438,7 @@ public sealed class ConfigData
 
     // @MT_TASK: Finalize names
 
-    internal IOThreadingLevel IOThreadingLevel = IOThreadingLevel.Auto;
+    internal IOThreadingMode IOThreadingMode = IOThreadingMode.Auto;
 
     private int _customIOThreads = CoreCount;
     internal int CustomIOThreads
@@ -447,7 +447,27 @@ public sealed class ConfigData
         set => _customIOThreads = value.ClampToMin(1);
     }
 
-    internal IOThreadingMode CustomIOThreadingMode;
+    // @MT_TASK: Have a stronger guarantee of the letter being one ASCII letter, not just a string
+    internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26);
+
+    internal static AL_DriveType GetDriveType(DictionaryI<AL_DriveType> dict, string letter)
+    {
+        if (letter.Length == 0)
+        {
+            return AL_DriveType.Auto;
+        }
+
+        letter = letter[0].ToString();
+        if (dict.TryGetValue(letter, out AL_DriveType result))
+        {
+            return result;
+        }
+        else
+        {
+            dict[letter] = AL_DriveType.Auto;
+            return AL_DriveType.Auto;
+        }
+    }
 
     // @MT_TASK: End finalize names
 

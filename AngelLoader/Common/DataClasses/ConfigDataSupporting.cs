@@ -214,13 +214,13 @@ public enum CheckForUpdates
     False,
 }
 
-public enum IOThreadingLevel
+public enum IOThreadingMode
 {
     Auto,
     Custom,
 }
 
-public enum IOThreadingMode
+public enum IOThreadingLevel
 {
     Normal,
     Aggressive,
@@ -231,6 +231,7 @@ public enum AL_DriveType
     Other,
     SATA_SSD,
     NVMe_SSD,
+    Auto,
 }
 
 #region FM tabs

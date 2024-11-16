@@ -676,9 +676,14 @@ internal static class Core
 
         #region Advanced page
 
-        Config.IOThreadingLevel = outConfig.IOThreadingLevel;
+        Config.IOThreadingMode = outConfig.IOThreadingMode;
         Config.CustomIOThreads = outConfig.CustomIOThreads;
-        Config.CustomIOThreadingMode = outConfig.CustomIOThreadingMode;
+
+        Config.DriveLettersAndTypes.Clear();
+        foreach (var item in outConfig.DriveLettersAndTypes)
+        {
+            Config.DriveLettersAndTypes[item.Key] = item.Value;
+        }
 
         #endregion
 

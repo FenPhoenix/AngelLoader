@@ -874,12 +874,12 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_IOThreadingLevel_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_IOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(IOThreadingLevel).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
         if (field != null)
         {
-            config.IOThreadingLevel = (IOThreadingLevel)field.GetValue(null);
+            config.IOThreadingMode = (IOThreadingMode)field.GetValue(null);
         }
     }
 
@@ -891,12 +891,22 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_CustomIOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ManualDriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
-        if (field != null)
+        string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
+        foreach (string value in values)
         {
-            config.CustomIOThreadingMode = (IOThreadingMode)field.GetValue(null);
+            string[] letterAndDriveType = value.Split(CA_Colon, StringSplitOptions.RemoveEmptyEntries);
+            if (letterAndDriveType.Length != 2) continue;
+
+            string letter = letterAndDriveType[0].Trim();
+
+            string driveTypeStr = letterAndDriveType[1].Trim();
+            FieldInfo? field = typeof(AL_DriveType).GetField(driveTypeStr, _bFlagsEnum);
+            if (field != null)
+            {
+                config.DriveLettersAndTypes[letter] = (AL_DriveType)field.GetValue(null);
+            }
         }
     }
 
@@ -1104,9 +1114,9 @@ internal static partial class Ini
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
 
-        { "IOThreadingLevel", new Config_DelegatePointerWrapper(&Config_IOThreadingLevel_Set) },
+        { "IOThreadingMode", new Config_DelegatePointerWrapper(&Config_IOThreadingMode_Set) },
         { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
-        { "CustomIOThreadingMode", new Config_DelegatePointerWrapper(&Config_CustomIOThreadingMode_Set) },
+        { "ManualDriveTypes", new Config_DelegatePointerWrapper(&Config_ManualDriveTypes_Set) },
 
         #region Backward compatibility
 
@@ -1511,8 +1521,16 @@ internal static partial class Ini
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
 
-        sw.Append("IOThreadingLevel=").AppendLine(config.IOThreadingLevel);
+        sw.Append("IOThreadingMode=").AppendLine(config.IOThreadingMode);
         sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
-        sw.Append("CustomIOThreadingMode=").AppendLine(config.CustomIOThreadingMode);
+        sw.Append("ManualDriveTypes=");
+        var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
+        for (int i = 0; i < driveLettersAndTypes.Length; i++)
+        {
+            var item = driveLettersAndTypes[i];
+            if (i > 0) sw.Append(',');
+            sw.Append(item.Key).Append(':').Append(item.Value);
+        }
+        sw.AppendLine();
     }
 }

@@ -51,6 +51,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
 
+    private readonly DictionaryI<AL_DriveType> _driveLettersAndTypes = new();
+
     #endregion
 
     private VisualTheme _selfTheme;
@@ -162,6 +164,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         _inTheme = config.VisualTheme;
         _inFollowSystemTheme = config.FollowSystemTheme;
+
+        foreach (var item in config.DriveLettersAndTypes)
+        {
+            _driveLettersAndTypes[item.Key] = item.Value;
+        }
 
         #endregion
 
@@ -661,12 +668,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            switch (config.IOThreadingLevel)
+            switch (config.IOThreadingMode)
             {
-                case IOThreadingLevel.Custom:
+                case IOThreadingMode.Custom:
                     AdvancedPage.CustomModeRadioButton.Checked = true;
                     break;
-                case IOThreadingLevel.Auto:
+                case IOThreadingMode.Auto:
                 default:
                     AdvancedPage.AutoModeRadioButton.Checked = true;
                     break;
@@ -674,13 +681,141 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             SetIOThreadsState();
 
             AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
-            if (config.CustomIOThreadingMode == IOThreadingMode.Aggressive)
+
+            DriveInfo[] drives = DriveInfo.GetDrives();
+            ThreadablePath[] threadablePaths = new ThreadablePath[drives.Length];
+
+            for (int i = 0; i < drives.Length; i++)
             {
-                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Checked = true;
+                DriveInfo drive = drives[i];
+                threadablePaths[i] = new ThreadablePath(drive.Name, IOPathType.Directory);
             }
-            else
+
+            DetectDriveTypes.FillSettingsDriveTypes(threadablePaths);
+
+            DrivesAndTypes = new DriveAndType[threadablePaths.Length];
+
+            for (int i = 0; i < threadablePaths.Length; i++)
             {
-                AdvancedPage.CustomThreadingModeNormalRadioButton.Checked = true;
+                ThreadablePath path = threadablePaths[i];
+                DrivesAndTypes[i] = new DriveAndType(path.Root, path.DriveType);
+            }
+
+            // @MT_TASK: Implement whatever control we come up with for the drive letters and types...
+
+            const int driveTypePanelHeight = 104;
+            int y = 152;
+            int tabIndex = 2;
+            for (int i = 0; i < DrivesAndTypes.Length; i++, y += driveTypePanelHeight, tabIndex++)
+            {
+                DriveAndType driveAndType = DrivesAndTypes[i];
+
+                Panel panel = new()
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    //BorderStyle = BorderStyle.FixedSingle,
+                    Location = new Point(8, y),
+                    Size = new Size(AdvancedPage.IOThreadingGroupBox.Width - 16, driveTypePanelHeight - 20),
+                    TabIndex = tabIndex,
+                };
+                DarkLabel driveLabel = new()
+                {
+                    AutoSize = true,
+                    TabIndex = tabIndex + 1,
+                    Text = driveAndType.Drive,
+                };
+                DarkRadioButton autoDetectRadioButton = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(8, 16),
+                    TabIndex = tabIndex + 2,
+                    TabStop = true,
+                    Text = "Autodetected (" + GetDriveTypeString(driveAndType.DriveType) + ")",
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.Auto),
+                };
+                DarkRadioButton nvmeRadioButton = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(8, 32),
+                    TabIndex = tabIndex + 3,
+                    TabStop = true,
+                    Text = GetDriveTypeString(AL_DriveType.NVMe_SSD),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.NVMe_SSD),
+                };
+                DarkRadioButton sataRadioButton = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(8, 48),
+                    TabIndex = tabIndex + 4,
+                    TabStop = true,
+                    Text = GetDriveTypeString(AL_DriveType.SATA_SSD),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.SATA_SSD),
+                };
+                DarkRadioButton hddRadioButton = new()
+                {
+                    AutoSize = true,
+                    Location = new Point(8, 64),
+                    TabIndex = tabIndex + 5,
+                    TabStop = true,
+                    Text = GetDriveTypeString(AL_DriveType.Other),
+
+                    Tag = new DriveControlIndex(i, AL_DriveType.Other),
+                };
+
+                autoDetectRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                nvmeRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                sataRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                hddRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+
+                panel.Controls.Add(driveLabel);
+                panel.Controls.Add(autoDetectRadioButton);
+                panel.Controls.Add(nvmeRadioButton);
+                panel.Controls.Add(sataRadioButton);
+                panel.Controls.Add(hddRadioButton);
+
+                AdvancedPage.IOThreadingGroupBox.Controls.Add(panel);
+
+                AdvancedPage.HorizDivYPositions.Add(y - 20);
+
+                AL_DriveType driveType = ConfigData.GetDriveType(_driveLettersAndTypes, driveAndType.Drive);
+                switch (driveType)
+                {
+                    case AL_DriveType.Auto:
+                        autoDetectRadioButton.Checked = true;
+                        break;
+                    case AL_DriveType.NVMe_SSD:
+                        nvmeRadioButton.Checked = true;
+                        break;
+                    case AL_DriveType.SATA_SSD:
+                        sataRadioButton.Checked = true;
+                        break;
+                    case AL_DriveType.Other:
+                        hddRadioButton.Checked = true;
+                        break;
+                }
+            }
+            AdvancedPage.IOThreadingGroupBox.Size = AdvancedPage.IOThreadingGroupBox.Size with
+            {
+                Height = y - 8,
+            };
+
+            foreach (Control c in AdvancedPage.IOThreadingGroupBox.Controls)
+            {
+                //c.Hide();
+            }
+
+            // @MT_TASK: Localize these
+            static string GetDriveTypeString(AL_DriveType driveType)
+            {
+                return driveType switch
+                {
+                    AL_DriveType.NVMe_SSD => "NVMe SSD",
+                    AL_DriveType.SATA_SSD => "SATA SSD",
+                    _ => "HDD or other",
+                };
             }
 
             #endregion
@@ -785,6 +920,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
 
         #endregion
+    }
+
+    private void DriveTypeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    {
+        if (sender is DarkRadioButton { Tag: DriveControlIndex dci })
+        {
+            DrivesAndTypes[dci.Index].DriveType = dci.DriveType;
+        }
     }
 
     protected override void OnLoad(EventArgs e)
@@ -1065,9 +1208,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 AdvancedPage.CustomModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Custom;
                 AdvancedPage.CustomThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
-                AdvancedPage.CustomThreadingModeLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_ThreadingMode;
-                AdvancedPage.CustomThreadingModeNormalRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Normal;
-                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Aggressive;
 
                 #endregion
 
@@ -1404,16 +1544,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            OutConfig.IOThreadingLevel =
-                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingLevel.Custom :
-                IOThreadingLevel.Auto;
+            OutConfig.IOThreadingMode =
+                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingMode.Custom :
+                IOThreadingMode.Auto;
 
             OutConfig.CustomIOThreads = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
 
-            OutConfig.CustomIOThreadingMode =
-                AdvancedPage.CustomThreadingModeAggressiveRadioButton.Checked
-                    ? IOThreadingMode.Aggressive
-                    : IOThreadingMode.Normal;
+            foreach (var item in DrivesAndTypes)
+            {
+                OutConfig.DriveLettersAndTypes[item.Drive[0].ToString()] = item.DriveType;
+            }
 
             #endregion
         }
@@ -1982,8 +2122,35 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void SetIOThreadsState()
     {
-        AdvancedPage.CustomModePanel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+        AdvancedPage.CustomThreadsLabel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+        AdvancedPage.CustomThreadsNumericUpDown.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
     }
+
+    private readonly struct DriveControlIndex
+    {
+        internal readonly int Index;
+        internal readonly AL_DriveType DriveType;
+
+        public DriveControlIndex(int index, AL_DriveType driveType)
+        {
+            Index = index;
+            DriveType = driveType;
+        }
+    }
+
+    private sealed class DriveAndType
+    {
+        internal readonly string Drive;
+        internal AL_DriveType DriveType;
+
+        public DriveAndType(string drive, AL_DriveType driveType)
+        {
+            Drive = drive;
+            DriveType = driveType;
+        }
+    }
+
+    private readonly DriveAndType[] DrivesAndTypes = Array.Empty<DriveAndType>();
 
     #endregion
 
