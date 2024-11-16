@@ -447,24 +447,23 @@ public sealed class ConfigData
         set => _customIOThreads = value.ClampToMin(1);
     }
 
-    // @MT_TASK: Have a stronger guarantee of the letter being one ASCII letter, not just a string
-    internal readonly DictionaryI<AL_DriveType> DriveLettersAndTypes = new(26);
+    internal readonly DriveLetterDictionary DriveLettersAndTypes = new(26);
 
-    internal static AL_DriveType GetDriveType(DictionaryI<AL_DriveType> dict, string letter)
+    internal static AL_DriveType GetDriveType(DriveLetterDictionary dict, string letter)
     {
         if (letter.Length == 0)
         {
             return AL_DriveType.Auto;
         }
 
-        letter = letter[0].ToString();
-        if (dict.TryGetValue(letter, out AL_DriveType result))
+        char letterChar = letter[0];
+        if (dict.TryGetValue(letterChar, out AL_DriveType result))
         {
             return result;
         }
         else
         {
-            dict[letter] = AL_DriveType.Auto;
+            dict[letterChar] = AL_DriveType.Auto;
             return AL_DriveType.Auto;
         }
     }

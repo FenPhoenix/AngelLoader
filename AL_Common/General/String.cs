@@ -99,6 +99,16 @@ public static partial class Common
     public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static char ToAsciiUpper(this char c)
+    {
+        if (c.IsAsciiLower())
+        {
+            c = (char)(c & 0x5F); // = low 7 bits of ~0x20
+        }
+        return c;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
         char1 == char2 ||
         (char1.IsAsciiAlpha() && char2.IsAsciiAlpha() && (char1 & '_') == (char2 & '_'));

@@ -28,7 +28,7 @@ internal static class DetectDriveTypes
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        DictionaryI<AL_DriveType> rootsDict = new(paths.Length);
+        DriveLetterDictionary rootsDict = new(paths.Length);
 
         foreach (ThreadablePath path in paths)
         {
@@ -36,14 +36,15 @@ internal static class DetectDriveTypes
 
             if (!path.Root.IsEmpty())
             {
-                if (rootsDict.TryGetValue(path.Root, out AL_DriveType driveType))
+                char rootLetter = path.Root[0];
+                if (rootsDict.TryGetValue(rootLetter, out AL_DriveType driveType))
                 {
                     path.DriveType = driveType;
                 }
                 else
                 {
                     driveType = GetDriveType(path.Root);
-                    rootsDict[path.Root] = driveType;
+                    rootsDict[rootLetter] = driveType;
                     path.DriveType = driveType;
                 }
             }
@@ -55,7 +56,7 @@ internal static class DetectDriveTypes
 #endif
     }
 
-    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths, DictionaryI<AL_DriveType> driveTypesDict)
+    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths, DriveLetterDictionary driveTypesDict)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -87,7 +88,7 @@ internal static class DetectDriveTypes
 
         for (int i = 0; i < roots.Count; i++)
         {
-            string rootLetter = roots[i][0].ToString();
+            char rootLetter = roots[i][0];
             ret.Add(driveTypesDict.TryGetValue(rootLetter, out AL_DriveType result) && result != AL_DriveType.Auto
                 ? result
                 : GetDriveType(roots[i]));

@@ -51,7 +51,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
 
-    private readonly DictionaryI<AL_DriveType> _driveLettersAndTypes = new();
+    private readonly DriveLetterDictionary _driveLettersAndTypes = new();
 
     #endregion
 
@@ -1552,7 +1552,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             foreach (var item in DrivesAndTypes)
             {
-                OutConfig.DriveLettersAndTypes[item.Drive[0].ToString()] = item.DriveType;
+                OutConfig.DriveLettersAndTypes[item.Drive[0]] = item.DriveType;
             }
 
             #endregion

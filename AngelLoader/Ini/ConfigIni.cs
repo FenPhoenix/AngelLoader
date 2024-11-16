@@ -900,12 +900,16 @@ internal static partial class Ini
             if (letterAndDriveType.Length != 2) continue;
 
             string letter = letterAndDriveType[0].Trim();
-
-            string driveTypeStr = letterAndDriveType[1].Trim();
-            FieldInfo? field = typeof(AL_DriveType).GetField(driveTypeStr, _bFlagsEnum);
-            if (field != null)
+            if (letter.Length > 0)
             {
-                config.DriveLettersAndTypes[letter] = (AL_DriveType)field.GetValue(null);
+                char letterChar = letter[0];
+
+                string driveTypeStr = letterAndDriveType[1].Trim();
+                FieldInfo? field = typeof(AL_DriveType).GetField(driveTypeStr, _bFlagsEnum);
+                if (field != null)
+                {
+                    config.DriveLettersAndTypes[letterChar] = (AL_DriveType)field.GetValue(null);
+                }
             }
         }
     }

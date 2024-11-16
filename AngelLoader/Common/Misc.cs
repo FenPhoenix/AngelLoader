@@ -465,4 +465,38 @@ public static partial class Misc
                    nameof(DriveType) + ": " + DriveType + $"{NL}";
         }
     }
+
+    [PublicAPI]
+    public sealed class DriveLetterDictionary : Dictionary<char, AL_DriveType>
+    {
+        public DriveLetterDictionary() { }
+
+        public DriveLetterDictionary(int capacity) : base(capacity) { }
+
+        public new AL_DriveType this[char key]
+        {
+            get => base[key.ToAsciiUpper()];
+            set
+            {
+                if (key.IsAsciiAlpha())
+                {
+                    base[key.ToAsciiUpper()] = value;
+                }
+            }
+        }
+
+        public new void Add(char key, AL_DriveType value)
+        {
+            if (key.IsAsciiAlpha())
+            {
+                base.Add(key.ToAsciiUpper(), value);
+            }
+        }
+
+        public new bool ContainsKey(char key) => base.ContainsKey(key.ToAsciiUpper());
+
+        public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
+
+        public new bool TryGetValue(char key, out AL_DriveType value) => base.TryGetValue(key.ToAsciiUpper(), out value);
+    }
 }
