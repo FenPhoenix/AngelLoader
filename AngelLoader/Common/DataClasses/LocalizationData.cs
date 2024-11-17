@@ -930,13 +930,16 @@ internal sealed class LText_Class
         internal readonly string Advanced_IO_Threading = "I/O threading";
         internal readonly string Advanced_IO_Threading_Auto = "Auto";
         [FenGenBlankLine]
-        internal readonly string Advanced_IO_Threading_Autodetected_NVMe_SSD = "Autodetected (NVMe SSD)";
-        internal readonly string Advanced_IO_Threading_Autodetected_SATA_SSD = "Autodetected (SATA SSD)";
-        internal readonly string Advanced_IO_Threading_Autodetected_OtherDriveType = "Autodetected (Other)";
+        internal readonly string Advanced_IO_Threading_ThreadingLevel_BeforeDriveLetter = "Multithreading level for drive ";
+        internal readonly string Advanced_IO_Threading_ThreadingLevel_AfterDriveLetter = "";
         [FenGenBlankLine]
-        internal readonly string Advanced_IO_Threading_NVMe_SSD = "NVMe SSD";
-        internal readonly string Advanced_IO_Threading_SATA_SSD = "SATA SSD";
-        internal readonly string Advanced_IO_Threading_OtherDriveType = "Other";
+        internal readonly string Advanced_IO_Threading_Autodetected_AggressiveMultithreading = "Autodetect (Aggressive)";
+        internal readonly string Advanced_IO_Threading_Autodetected_StandardMultithreading = "Autodetect (Normal)";
+        internal readonly string Advanced_IO_Threading_Autodetected_NoMultithreading = "Autodetect (None)";
+        [FenGenBlankLine]
+        internal readonly string Advanced_IO_Threading_AggressiveMultithreading = "Aggressive";
+        internal readonly string Advanced_IO_Threading_StandardMultithreading = "Normal";
+        internal readonly string Advanced_IO_Threading_NoMultithreading = "None";
         [FenGenBlankLine]
         internal readonly string Advanced_IO_Threading_Custom = "Custom";
         internal readonly string Advanced_IO_Threading_Threads = "Threads:";
