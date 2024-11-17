@@ -109,7 +109,7 @@ internal static partial class FMInstallAndPlay
     {
         FanMission fm = fmData.FM;
 
-        bool backupSavesAndScreensOnly = fmData.ArchivePath.IsEmpty() ||
+        bool backupSavesAndScreensOnly = fmData.ArchiveFilePath.IsEmpty() ||
                                          (Config.BackupFMData == BackupFMData.SavesAndScreensOnly &&
                                           (fm.Game != Game.Thief3 || !Config.T3UseCentralSaves));
 
@@ -317,7 +317,7 @@ internal static partial class FMInstallAndPlay
             var fullList = new HashSetPathI();
 
             FanMission fm = fmData.FM;
-            string fmArchivePath = fmData.ArchivePath;
+            string fmArchivePath = fmData.ArchiveFilePath;
             string fmInstalledPath = fmData.InstalledPath;
 
             if (fmArchivePath.ExtIsZip())

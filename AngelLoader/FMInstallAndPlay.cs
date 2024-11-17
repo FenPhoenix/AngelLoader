@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -1522,9 +1523,10 @@ internal static partial class FMInstallAndPlay
         FanMission[] fms,
         List<FMData> fmDataList,
         bool install,
-        out List<string> archivePaths,
-        out ThreadingData threadingData)
+        [NotNullWhen(true)] out List<string>? archivePaths,
+        [NotNullWhen(true)] out List<ThreadablePath>? threadablePaths)
     {
+        threadablePaths = null;
         try
         {
             bool single = fms.Length == 1;
@@ -1532,7 +1534,6 @@ internal static partial class FMInstallAndPlay
             bool[] gamesChecked = new bool[SupportedGameCount];
 
             archivePaths = FMArchives.GetFMArchivePaths();
-            threadingData = ThreadingData.Empty;
 
             HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
             for (int i = 0; i < fms.Length; i++)
@@ -1587,6 +1588,7 @@ internal static partial class FMInstallAndPlay
                 (
                     fm,
                     fmArchivePath,
+                    archiveDirectoryFullPath,
                     instBasePath,
                     gameIndex
                 ));
@@ -1656,9 +1658,7 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            threadingData = GetLowestCommonThreadingData(
-                GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked)
-            );
+            threadablePaths = GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked);
         }
         catch (Exception ex)
         {
@@ -1666,7 +1666,6 @@ internal static partial class FMInstallAndPlay
             Core.Dialogs.ShowError("Exception occurred in " + nameof(FMInstallAndPlay) + "." + nameof(DoPreChecks) + "(). See log for details.");
 
             archivePaths = new List<string>();
-            threadingData = ThreadingData.Empty;
             return false;
         }
 
@@ -1714,6 +1713,7 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine("---------");
 #endif
 
+            FillThreadablePaths(ret);
             return ret;
         }
     }
@@ -1723,7 +1723,8 @@ internal static partial class FMInstallAndPlay
     private sealed class FMData
     {
         internal readonly FanMission FM;
-        internal readonly string ArchivePath;
+        internal readonly string ArchiveFilePath;
+        internal readonly string ArchiveDirectoryPath;
         internal readonly string InstBasePath;
         internal readonly string InstalledPath;
         internal readonly GameIndex GameIndex;
@@ -1744,10 +1745,11 @@ internal static partial class FMInstallAndPlay
             (!FM.Archive.IsEmpty() ? FMArchiveNoExtension : FM.InstalledDir) +
             Paths.FMBackupSuffix);
 
-        public FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
+        public FMData(FanMission fm, string archiveFilePath, string archiveDirectoryPath, string instBasePath, GameIndex gameIndex)
         {
             FM = fm;
-            ArchivePath = archivePath;
+            ArchiveFilePath = archiveFilePath;
+            ArchiveDirectoryPath = archiveDirectoryPath;
             InstBasePath = instBasePath;
             InstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
             GameIndex = gameIndex;
@@ -1755,7 +1757,8 @@ internal static partial class FMInstallAndPlay
 
         public override string ToString() =>
             "FM id: " + FM.GetId() + $"{NL}" +
-            "Archive path: " + ArchivePath + $"{NL}" +
+            "Archive file path: " + ArchiveFilePath + $"{NL}" +
+            "Archive directory path: " + ArchiveDirectoryPath + $"{NL}" +
             "Installed base path: " + InstBasePath + $"{NL}" +
             "Installed path: " + InstalledPath + $"{NL}" +
             "Game index: " + GameIndex + $"{NL}" +
@@ -1824,8 +1827,8 @@ internal static partial class FMInstallAndPlay
                         fms,
                         fmDataList,
                         install: true,
-                        out List<string> archivePaths,
-                        out ThreadingData threadingData))
+                        out List<string>? archivePaths,
+                        out List<ThreadablePath>? threadablePaths))
                 {
                     return false;
                 }
@@ -1859,7 +1862,15 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, threadingData);
+                    ThreadingData fullSetThreadingData = GetLowestCommonThreadingData(threadablePaths
+                        .Where(static x =>
+                            x.ThreadablePathType
+                                is ThreadablePathType.FMInstallPath
+                                or ThreadablePathType.ArchivePath
+                                or ThreadablePathType.BackupPath)
+                        .ToList());
+
+                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, fullSetThreadingData);
 
 #if TIMING_TEST
                     Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
@@ -1879,37 +1890,50 @@ internal static partial class FMInstallAndPlay
                         while (pd.CQ.TryDequeue(out FMData fmData))
                         {
                             fmData.InstallStarted = true;
+                            /*
+                            @MT_TASK(Aggressive threading on multiple):
+                            This seems to work fine and achieve the same or better speed as non-aggressive
+                            per-archive overlap. The threads don't appear to be stepping on each others'
+                            toes like I thought they would. But test with the NVME and do a more thorough
+                            diff test.
+                            */
+                            FMInstallResult fmInstallResult;
+                            if (fmData.ArchiveFilePath.ExtIsZip())
+                            {
+                                ThreadingData installThreadingData = GetLowestCommonThreadingData(threadablePaths
+                                    .Where(x =>
+                                        (x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
+                                         x.GameIndex == fmData.GameIndex &&
+                                         x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath)) ||
+                                        (x.ThreadablePathType == ThreadablePathType.ArchivePath &&
+                                         x.OriginalPath.PathEqualsI_Dir(fmData.ArchiveDirectoryPath)))
+                                    .ToList());
 
-                            FMInstallResult fmInstallResult =
-                                fmData.ArchivePath.ExtIsZip()
-                                    /*
-                                    @MT_TASK(Aggressive threading on multiple):
-                                    This seems to work fine and achieve the same or better speed as non-aggressive
-                                    per-archive overlap. The threads don't appear to be stepping on each others'
-                                    toes like I thought they would. But test with the NVME and do a more thorough
-                                    diff test.
-                                    */
-                                    ? threadingData.Level == IOThreadingLevel.Aggressive
-                                        ? InstallFMZip_ThreadedPerEntry(
-                                            progress,
-                                            fmData,
-                                            zipCtxPool,
-                                            zipCtxThreadedPool,
-                                            ioBufferPools,
-                                            threadingData)
-                                        : InstallFMZip(
-                                            progress,
-                                            fmData,
-                                            ioBufferPools,
-                                            zipCtxPool)
-                                    : fmData.ArchivePath.ExtIsRar()
-                                        ? InstallFMRar(
-                                            progress,
-                                            fmData,
-                                            ioBufferPools)
-                                        : InstallFMSevenZip(
-                                            progress,
-                                            fmData);
+                                fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
+                                    ? InstallFMZip_ThreadedPerEntry(
+                                        progress,
+                                        fmData,
+                                        zipCtxPool,
+                                        zipCtxThreadedPool,
+                                        ioBufferPools,
+                                        installThreadingData)
+                                    : InstallFMZip(
+                                        progress,
+                                        fmData,
+                                        ioBufferPools,
+                                        zipCtxPool);
+                            }
+                            else
+                            {
+                                fmInstallResult = fmData.ArchiveFilePath.ExtIsRar()
+                                    ? InstallFMRar(
+                                        progress,
+                                        fmData,
+                                        ioBufferPools)
+                                    : InstallFMSevenZip(
+                                        progress,
+                                        fmData);
+                            }
 
                             if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                             {
@@ -1936,7 +1960,7 @@ internal static partial class FMInstallAndPlay
                                 ctx,
                                 archivePaths,
                                 fmDataList.Count,
-                                threadingData);
+                                threadablePaths);
                         }
                     });
                 }
@@ -1946,7 +1970,7 @@ internal static partial class FMInstallAndPlay
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
 
-                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadingData);
+                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadablePaths);
 
                     if (rollbackErrorResults.Count > 0)
                     {
@@ -2083,7 +2107,7 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, ThreadingData threadingData)
+        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, List<ThreadablePath> threadablePaths)
         {
             ConcurrentBag<FMInstallResult> results = new();
 
@@ -2097,6 +2121,11 @@ internal static partial class FMInstallAndPlay
                     filteredList.Add(fmData);
                 }
             }
+
+            ThreadingData threadingData = GetLowestCommonThreadingData(threadablePaths
+                .Where(static x =>
+                    x.ThreadablePathType == ThreadablePathType.FMInstallPath)
+                .ToList());
 
             int threadCount = GetThreadCountForParallelOperation(filteredList.Count, threadingData);
 
@@ -2174,7 +2203,7 @@ internal static partial class FMInstallAndPlay
         DarkLoaderBackupContext ctx,
         List<string> archivePaths,
         int fmDataListCount,
-        ThreadingData threadingData)
+        List<ThreadablePath> threadablePaths)
     {
         byte[] fmSelInfFileStreamBuffer = ioBufferPools.FileStream.Rent();
         try
@@ -2205,6 +2234,13 @@ internal static partial class FMInstallAndPlay
                     percent: 100,
                     progressType: ProgressType.Indeterminate);
 
+                ThreadingData audioConversionThreadingData = GetLowestCommonThreadingData(threadablePaths
+                    .Where(x =>
+                        x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
+                        x.GameIndex == fmData.GameIndex &&
+                        x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath))
+                    .ToList());
+
 #if TIMING_TEST
                 var audioConvertSW = Stopwatch.StartNew();
 #endif
@@ -2216,7 +2252,7 @@ internal static partial class FMInstallAndPlay
                 FMAudio.ConvertAsPartOfInstall(
                     validAudioConvertibleFM,
                     AudioConvert.MP3ToWAV,
-                    threadingData,
+                    audioConversionThreadingData,
                     cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
@@ -2226,7 +2262,7 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.OGGToWAV,
-                        threadingData,
+                        audioConversionThreadingData,
                         cancellationToken);
                 }
 
@@ -2237,7 +2273,7 @@ internal static partial class FMInstallAndPlay
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,
                         AudioConvert.WAVToWAV16,
-                        threadingData,
+                        audioConversionThreadingData,
                         cancellationToken);
                 }
 
@@ -2300,7 +2336,6 @@ internal static partial class FMInstallAndPlay
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
         IOBufferPools ioBufferPools,
-        // @MT_TASK(InstallFMZip_ThreadedPerEntry): We need our own set of threading data that excludes the backup path
         ThreadingData threadingData)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
@@ -2308,7 +2343,7 @@ internal static partial class FMInstallAndPlay
         {
             using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
 
-            string fmDataArchivePath = fmData.ArchivePath;
+            string fmDataArchivePath = fmData.ArchiveFilePath;
 
             Directory.CreateDirectory(fmInstalledPath);
 
@@ -2411,7 +2446,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchiveFilePath + " to " + fmInstalledPath, ex);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2445,7 +2480,7 @@ internal static partial class FMInstallAndPlay
             {
                 using ZipArchiveFast archive =
                     GetReadModeZipArchiveCharEnc_Fast(
-                        fmData.ArchivePath,
+                        fmData.ArchiveFilePath,
                         fileStreamReadBuffer,
                         zipCtxRentScope.Ctx);
 
@@ -2490,7 +2525,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log(ErrorText.Ex + "while installing zip " + fmData.ArchivePath + " to " + fmInstalledPath, ex);
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchiveFilePath + " to " + fmInstalledPath, ex);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2584,7 +2619,7 @@ internal static partial class FMInstallAndPlay
 
             Directory.CreateDirectory(fmInstalledPath);
 
-            using var fs = File_OpenReadFast(fmData.ArchivePath);
+            using var fs = File_OpenReadFast(fmData.ArchiveFilePath);
             int entriesCount;
             using (var archive = RarArchive.Open(fs))
             {
@@ -2642,7 +2677,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting rar " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            Log("Error extracting rar " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}", ex);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2671,7 +2706,7 @@ internal static partial class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var fs = File_OpenReadFast(fmData.ArchivePath))
+            using (var fs = File_OpenReadFast(fmData.ArchiveFilePath))
             {
                 var extractor = new SevenZipArchive(fs);
                 entriesCount = extractor.GetEntryCountOnly();
@@ -2693,7 +2728,7 @@ internal static partial class FMInstallAndPlay
             Fen7z.Result result = Fen7z.Extract(
                 Paths.SevenZipPath,
                 Paths.SevenZipExe,
-                fmData.ArchivePath,
+                fmData.ArchiveFilePath,
                 fmInstalledPath,
                 cancellationToken: _installCts.Token,
                 entriesCount,
@@ -2702,7 +2737,7 @@ internal static partial class FMInstallAndPlay
 
             if (result.ErrorOccurred)
             {
-                Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
+                Log("Error extracting 7z " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}" + result);
 
                 return new FMInstallResult(
                     fmData,
@@ -2735,7 +2770,7 @@ internal static partial class FMInstallAndPlay
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting 7z " + fmData.ArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
+            Log("Error extracting 7z " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}", ex);
             return new FMInstallResult(
                 fmData,
                 InstallResultType.InstallFailed,
@@ -2878,7 +2913,7 @@ internal static partial class FMInstallAndPlay
                 {
                     FMData fmData = fmDataList[i];
 
-                    if (fmData.ArchivePath.IsEmpty())
+                    if (fmData.ArchiveFilePath.IsEmpty())
                     {
                         // Match previous behavior: any not-really-installed FM gets rejected silently first.
                         // Put it inside the empty-archive check so as to minimize the number of times we hit the
@@ -3087,7 +3122,7 @@ internal static partial class FMInstallAndPlay
 #if false
             Directory.Delete(path, recursive: true);
 #else
-            var threadingData = GetLowestCommonThreadingData(new List<ThreadablePath>
+            ThreadingData threadingData = GetLowestCommonThreadingData(new List<ThreadablePath>
             {
                 new(path, IOPathType.Directory, ThreadablePathType.FMInstallPath, fmData.GameIndex),
             });

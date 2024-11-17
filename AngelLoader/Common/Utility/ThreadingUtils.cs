@@ -16,6 +16,14 @@ public static partial class Utils
         return Math.Min(threadingData.Threads, maxWorkItemsCount);
     }
 
+    // @MT_TASK: Maybe make these take IEnumerable so as not to have to convert back and forth all the time
+    // @MT_TASK: Thoroughly test all threadable-path codepaths now that we have this fully granular system
+    internal static void FillThreadablePaths(List<ThreadablePath> paths)
+    {
+        ThreadablePath[] threadablePathsArray = paths.ToArray();
+        DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
+    }
+
     internal static ThreadingData GetLowestCommonThreadingData(List<ThreadablePath> paths)
     {
         int? threadCount = null;
@@ -25,15 +33,12 @@ public static partial class Utils
             threadCount = Config.CustomIOThreads;
         }
 
-        ThreadablePath[] threadablePathsArray = paths.ToArray();
-        DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
-
         ThreadingData threadingData;
-        if (threadablePathsArray.Any(static x => x.DriveType == AL_DriveType.Other))
+        if (paths.Any(static x => x.DriveType == AL_DriveType.Other))
         {
             threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
         }
-        else if (threadablePathsArray.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
+        else if (paths.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
         {
             threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
         }

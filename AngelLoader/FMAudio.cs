@@ -163,6 +163,7 @@ internal static class FMAudio
                 }
             }
 
+            FillThreadablePaths(ret);
             return ret;
         }
 

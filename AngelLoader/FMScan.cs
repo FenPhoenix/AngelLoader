@@ -632,6 +632,7 @@ internal static class FMScan
             Trace.WriteLine("---------");
 #endif
 
+            FillThreadablePaths(ret);
             return ret;
         }
 
