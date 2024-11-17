@@ -3119,16 +3119,14 @@ internal static partial class FMInstallAndPlay
             var sw = Stopwatch.StartNew();
 #endif
 
-#if false
-            Directory.Delete(path, recursive: true);
-#else
-            ThreadingData threadingData = GetLowestCommonThreadingData(new List<ThreadablePath>
+            List<ThreadablePath> paths = new()
             {
-                new(path, IOPathType.Directory, ThreadablePathType.FMInstallPath, fmData.GameIndex),
-            });
-            Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
+                new ThreadablePath(path, IOPathType.Directory, ThreadablePathType.FMInstallPath, fmData.GameIndex),
+            };
+            FillThreadablePaths(paths);
 
-#endif
+            ThreadingData threadingData = GetLowestCommonThreadingData(paths);
+            Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
 
 #if TIMING_TEST
             sw.Stop();
