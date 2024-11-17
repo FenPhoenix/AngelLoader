@@ -18,7 +18,10 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 {
     #region Field Region
 
-    private bool UsingCustomRendering => _darkModeEnabled || (WinVersion.Is11OrAbove && !Native.HighContrastEnabled());
+    private bool UsingCustomRendering => _darkModeEnabled || (
+        WinVersion.Is11OrAbove &&
+        ThreeState &&
+        !Native.HighContrastEnabled());
 
     private DarkControlState _controlState = DarkControlState.Normal;
 
