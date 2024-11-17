@@ -344,6 +344,15 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
         TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
+
+        if (Focused && ShowFocusCues)
+        {
+            ControlUtils.DrawFocusRectangle(
+                this,
+                e.Graphics,
+                ClientRectangle,
+                parentBackColor ?? BackColor);
+        }
     }
 
     #endregion

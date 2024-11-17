@@ -1067,4 +1067,18 @@ internal static class ControlUtils
             TaskBarProgress.SetValue(form.Handle, progressValue, progressMax);
         }
     }
+
+    internal static void DrawFocusRectangle(Control c, Graphics g, Rectangle rect, Color color)
+    {
+        // This draws around the entire control rather than just around the text, but meh. It's good enough.
+        // I don't know if there's any way to get the text rectangle reliably, so let's just leave it like
+        // this.
+        ControlPaint.DrawFocusRectangle(
+            g,
+            rect,
+            // This method doesn't even use the foreColor value. Straight up it just ignores it and passes
+            // only backColor. Meh?
+            c.ForeColor,
+            color);
+    }
 }

@@ -104,7 +104,7 @@ public sealed class DarkRadioButtonCustom : DarkButton
         Pen pen;
         if (_darkModeEnabled)
         {
-            pen = Checked
+            pen = (Focused && ShowFocusCues) || Checked
                 ? DarkColors.BlueHighlightPen
                 : _buttonState == DarkControlState.Hover
                     ? DarkColors.BlueHighlightPen

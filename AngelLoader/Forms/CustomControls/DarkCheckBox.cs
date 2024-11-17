@@ -413,6 +413,15 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
 
         var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
         TextRenderer.DrawText(g, Text, Font, textRect, DarkModeForeColor ?? textColor, textFormatFlags);
+
+        if (Focused && ShowFocusCues)
+        {
+            ControlUtils.DrawFocusRectangle(
+                this,
+                e.Graphics,
+                ClientRectangle,
+                parentBackColor ?? BackColor);
+        }
     }
 
     #endregion
