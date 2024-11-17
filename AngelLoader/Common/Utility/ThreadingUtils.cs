@@ -24,7 +24,12 @@ public static partial class Utils
         DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
     }
 
-    internal static ThreadingData GetLowestCommonThreadingData(List<ThreadablePath> paths)
+    internal static ThreadingData GetLowestCommonThreadingData(
+        List<ThreadablePath> paths
+#if TESTING
+        , [System.Runtime.CompilerServices.CallerMemberName] string caller = ""
+#endif
+        )
     {
         int? threadCount = null;
 
@@ -48,7 +53,9 @@ public static partial class Utils
         }
 
 #if TESTING
-        System.Diagnostics.Trace.WriteLine(nameof(GetLowestCommonThreadingData) + ": " + threadingData);
+        System.Diagnostics.Trace.WriteLine(
+            nameof(GetLowestCommonThreadingData) + ": " + threadingData + $"{NL}" +
+            "---- Caller: " + caller);
 #endif
 
         return threadingData;
