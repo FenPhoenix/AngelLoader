@@ -431,29 +431,37 @@ public static partial class Misc
         Directory,
     }
 
-    public readonly struct IOPath
-    {
-        public readonly string Path;
-        public readonly IOPathType Type;
-
-        public IOPath(string path, IOPathType type)
-        {
-            Path = path;
-            Type = type;
-        }
-    }
-
     public sealed class ThreadablePath
     {
         public readonly string OriginalPath;
         public string Root = "";
         public readonly IOPathType IOPathType;
         public AL_DriveType DriveType = AL_DriveType.Other;
+        public readonly ThreadablePathType ThreadablePathType;
+        public readonly GameIndex GameIndex;
 
         public ThreadablePath(string originalPath, IOPathType ioPathType)
         {
             OriginalPath = originalPath;
             IOPathType = ioPathType;
+            ThreadablePathType = ThreadablePathType.None;
+            GameIndex = default;
+        }
+
+        public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType)
+        {
+            OriginalPath = originalPath;
+            IOPathType = ioPathType;
+            ThreadablePathType = threadablePathType;
+            GameIndex = default;
+        }
+
+        public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType, GameIndex gameIndex)
+        {
+            OriginalPath = originalPath;
+            IOPathType = ioPathType;
+            ThreadablePathType = threadablePathType;
+            GameIndex = gameIndex;
         }
 
         public override string ToString()

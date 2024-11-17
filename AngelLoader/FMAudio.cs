@@ -140,9 +140,9 @@ internal static class FMAudio
             return true;
         }
 
-        static List<IOPath> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
+        static List<ThreadablePath> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
         {
-            List<IOPath> ret = new(SupportedGameCount);
+            List<ThreadablePath> ret = new(SupportedGameCount);
 
             bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
             for (int i = 0; i < fms.Count; i++)
@@ -154,7 +154,12 @@ internal static class FMAudio
             {
                 if (fmInstalledDirsRequired[i])
                 {
-                    ret.Add(new IOPath(Config.GetFMInstallPath((GameIndex)i), IOPathType.Directory));
+                    GameIndex gameIndex = (GameIndex)i;
+                    ret.Add(new ThreadablePath(
+                        Config.GetFMInstallPath(gameIndex),
+                        IOPathType.Directory,
+                        ThreadablePathType.FMInstallPath,
+                        gameIndex));
                 }
             }
 

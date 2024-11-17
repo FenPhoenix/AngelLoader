@@ -592,34 +592,42 @@ internal static class FMScan
             Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
         }
 
-        static List<IOPath> GetScanRelevantPaths(
+        static List<ThreadablePath> GetScanRelevantPaths(
             HashSetI usedArchivePaths,
             bool[] fmInstalledDirsRequired,
             bool atLeastOneSolidArchiveInSet)
         {
-            List<IOPath> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
+            List<ThreadablePath> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
             foreach (var item in usedArchivePaths)
             {
-                ret.Add(new IOPath(item, IOPathType.Directory));
+                ret.Add(new ThreadablePath(
+                    item,
+                    IOPathType.Directory,
+                    ThreadablePathType.ArchivePath));
             }
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (fmInstalledDirsRequired[i])
                 {
-                    ret.Add(new IOPath(Config.GetFMInstallPath((GameIndex)i), IOPathType.Directory));
+                    GameIndex gameIndex = (GameIndex)i;
+                    ret.Add(new ThreadablePath(
+                        Config.GetFMInstallPath(gameIndex),
+                        IOPathType.Directory,
+                        ThreadablePathType.FMInstallPath,
+                        gameIndex));
                 }
             }
             if (atLeastOneSolidArchiveInSet)
             {
-                ret.Add(new IOPath(Paths.BaseTemp, IOPathType.Directory));
-                ret.Add(new IOPath(Paths.FMsCache, IOPathType.Directory));
+                ret.Add(new ThreadablePath(Paths.BaseTemp, IOPathType.Directory, ThreadablePathType.TempPath));
+                ret.Add(new ThreadablePath(Paths.FMsCache, IOPathType.Directory, ThreadablePathType.FMCachePath));
             }
 
 #if TIMING_TEST
             Trace.WriteLine("--------- " + nameof(GetScanRelevantPaths) + "():");
-            foreach (IOPath item in ret)
+            foreach (ThreadablePath item in ret)
             {
-                Trace.WriteLine(item.Path + ", " + item.Type);
+                Trace.WriteLine(item.OriginalPath + ", " + item.OriginalPath);
             }
             Trace.WriteLine("---------");
 #endif

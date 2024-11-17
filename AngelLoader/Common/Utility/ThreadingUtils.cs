@@ -17,7 +17,7 @@ public static partial class Utils
         return Math.Min(threadingData.Threads, maxWorkItemsCount);
     }
 
-    internal static ThreadingData GetLowestCommonThreadingData(List<IOPath> paths)
+    internal static ThreadingData GetLowestCommonThreadingData(List<ThreadablePath> paths)
     {
         int? threadCount = null;
 
@@ -26,18 +26,13 @@ public static partial class Utils
             threadCount = Config.CustomIOThreads;
         }
 
-        ThreadablePath[] threadablePaths = new ThreadablePath[paths.Count];
-        for (int i = 0; i < paths.Count; i++)
-        {
-            threadablePaths[i] = new ThreadablePath(paths[i].Path, paths[i].Type);
-        }
+        ThreadablePath[] threadablePathsArray = paths.ToArray();
+        DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
 
-        DetectDriveTypes.GetAllDrivesType(threadablePaths, Config.DriveLettersAndTypes);
-
-        List<ThreadablePath> threadablePathsList = new(threadablePaths.Length);
-        for (int i = 0; i < threadablePaths.Length; i++)
+        List<ThreadablePath> threadablePathsList = new(threadablePathsArray.Length);
+        for (int i = 0; i < threadablePathsArray.Length; i++)
         {
-            ThreadablePath item = threadablePaths[i];
+            ThreadablePath item = threadablePathsArray[i];
             if (!item.Root.IsEmpty())
             {
                 threadablePathsList.Add(item);

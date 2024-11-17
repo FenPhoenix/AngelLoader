@@ -30,7 +30,7 @@ internal static class DetectDriveTypes
 
         foreach (ThreadablePath path in paths)
         {
-            path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
+            path.Root = GetRoot(path.OriginalPath, path.IOPathType);
 
             if (!path.Root.IsEmpty())
             {
@@ -72,7 +72,7 @@ internal static class DetectDriveTypes
 
         foreach (ThreadablePath path in paths)
         {
-            path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
+            path.Root = GetRoot(path.OriginalPath, path.IOPathType);
 
             if (!path.Root.IsEmpty())
             {
@@ -114,16 +114,16 @@ internal static class DetectDriveTypes
         [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
         IntPtr hTemplateFile);
 
-    private static string GetRoot(IOPath path)
+    private static string GetRoot(string path, IOPathType ioPathType)
     {
-        if (!path.Path.IsWhiteSpace())
+        if (!path.IsWhiteSpace())
         {
             try
             {
-                if (PathStartsWithLetterAndVolumeSeparator(path.Path))
+                if (PathStartsWithLetterAndVolumeSeparator(path))
                 {
-                    IOPath realPath = GetRealDirectory(path);
-                    return Path.GetPathRoot(realPath.Path)?.TrimEnd(CA_BS_FS) ?? "";
+                    string realPath = GetRealDirectory(path, ioPathType);
+                    return Path.GetPathRoot(realPath)?.TrimEnd(CA_BS_FS) ?? "";
                 }
             }
             catch
@@ -327,18 +327,18 @@ internal static class DetectDriveTypes
 
 
     // In case the directory is a symlink pointing at some other drive
-    private static IOPath GetRealDirectory(IOPath path)
+    private static string GetRealDirectory(string path, IOPathType ioPathType)
     {
         try
         {
-            if (path.Type == IOPathType.File)
+            if (ioPathType == IOPathType.File)
             {
-                string? dir = Path.GetDirectoryName(path.Path);
+                string? dir = Path.GetDirectoryName(path);
                 if (dir.IsEmpty()) return path;
-                path = new IOPath(dir, IOPathType.Directory);
+                path = dir;
             }
 
-            DirectoryInfo di = new(path.Path);
+            DirectoryInfo di = new(path);
             if (!di.Exists)
             {
                 return path;
@@ -350,28 +350,28 @@ internal static class DetectDriveTypes
             // just do a reparse point check first, which is effectively instantaneous.
             if (!IsReparsePoint(di))
             {
-                if (TryGetSubstedPath(path.Path, out realPath))
+                if (TryGetSubstedPath(path, out realPath))
                 {
-                    return new IOPath(realPath, IOPathType.Directory);
+                    return realPath;
                 }
                 return path;
             }
             else
             {
-                if (TryGetSubstedPath(path.Path, out realPath))
+                if (TryGetSubstedPath(path, out realPath))
                 {
-                    if (!IsReparsePoint(new DirectoryInfo(path.Path)))
+                    if (!IsReparsePoint(new DirectoryInfo(path)))
                     {
-                        return new IOPath(realPath, IOPathType.Directory);
+                        return realPath;
                     }
-                    path = new IOPath(realPath, IOPathType.Directory);
+                    path = realPath;
                 }
             }
 
-            FileSystemInfo? fsi = Directory_ResolveLinkTarget(path.Path, returnFinalTarget: true);
+            FileSystemInfo? fsi = Directory_ResolveLinkTarget(path, returnFinalTarget: true);
             if (fsi != null)
             {
-                path = new IOPath(fsi.FullName, IOPathType.Directory);
+                path = fsi.FullName;
             }
 
             return path;

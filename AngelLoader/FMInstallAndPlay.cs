@@ -1674,31 +1674,42 @@ internal static partial class FMInstallAndPlay
 
         static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
 
-        static List<IOPath> GetInstallUninstallRelevantPaths(
+        static List<ThreadablePath> GetInstallUninstallRelevantPaths(
             HashSetI usedArchivePaths,
             bool[] fmInstalledDirsRequired)
         {
-            List<IOPath> ret = new(Config.FMArchivePaths.Count + SupportedGameCount + 1);
+            List<ThreadablePath> ret = new(Config.FMArchivePaths.Count + SupportedGameCount + 1);
 
             foreach (string item in usedArchivePaths)
             {
-                ret.Add(new IOPath(item, IOPathType.Directory));
+                ret.Add(new ThreadablePath(
+                    item,
+                    IOPathType.Directory,
+                    ThreadablePathType.ArchivePath));
             }
 
             for (int i = 0; i < SupportedGameCount; i++)
             {
                 if (fmInstalledDirsRequired[i])
                 {
-                    ret.Add(new IOPath(Config.GetFMInstallPath((GameIndex)i), IOPathType.Directory));
+                    GameIndex gameIndex = (GameIndex)i;
+                    ret.Add(new ThreadablePath(
+                        Config.GetFMInstallPath(gameIndex),
+                        IOPathType.Directory,
+                        ThreadablePathType.FMInstallPath,
+                        gameIndex));
                 }
             }
-            ret.Add(new IOPath(Config.FMsBackupPath, IOPathType.Directory));
+            ret.Add(new ThreadablePath(
+                Config.FMsBackupPath,
+                IOPathType.Directory,
+                ThreadablePathType.BackupPath));
 
 #if TIMING_TEST
             Trace.WriteLine("--------- " + nameof(GetInstallUninstallRelevantPaths) + "():");
-            foreach (IOPath item in ret)
+            foreach (ThreadablePath item in ret)
             {
-                Trace.WriteLine(item.Path + ", " + item.Type);
+                Trace.WriteLine(item.OriginalPath + ", " + item.IOPathType);
             }
             Trace.WriteLine("---------");
 #endif
@@ -3076,7 +3087,10 @@ internal static partial class FMInstallAndPlay
 #if false
             Directory.Delete(path, recursive: true);
 #else
-            var threadingData = GetLowestCommonThreadingData(new List<IOPath> { new(path, IOPathType.Directory) });
+            var threadingData = GetLowestCommonThreadingData(new List<ThreadablePath>
+            {
+                new(path, IOPathType.Directory, ThreadablePathType.FMInstallPath, fmData.GameIndex),
+            });
             Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
 
 #endif

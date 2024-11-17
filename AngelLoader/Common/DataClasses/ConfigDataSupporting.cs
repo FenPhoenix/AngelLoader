@@ -234,6 +234,16 @@ public enum AL_DriveType
     Auto,
 }
 
+public enum ThreadablePathType
+{
+    None,
+    FMInstallPath,
+    BackupPath,
+    ArchivePath,
+    TempPath,
+    FMCachePath,
+}
+
 #region FM tabs
 
 // IMPORTANT(FM tabs enum): Do not rename members, they're used in the config file
