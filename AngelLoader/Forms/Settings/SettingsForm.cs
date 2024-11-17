@@ -1219,6 +1219,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        if (e.Control && e.KeyCode == Keys.E)
+        {
+            PagePanel.Enabled = !PagePanel.Enabled;
+            return;
+        }
+#endif
+
         if (e.KeyCode == Keys.Escape)
         {
             if (MainSplitContainer.Resizing)

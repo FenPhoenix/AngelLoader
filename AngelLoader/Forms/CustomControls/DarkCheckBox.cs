@@ -269,21 +269,21 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
                         borderPen =
                             usingLightMode
                                 ? SystemPens.Highlight
-                                : DarkColors.DisabledTextPen;
+                                : DarkColors.GreyHighlightPen;
                         fillBrush =
                             usingLightMode
                                 ? SystemBrushes.Highlight
-                                : DarkColors.DisabledTextBrush;
+                                : DarkColors.GreyHighlightBrush;
                         break;
                     case DarkControlState.Pressed:
                         borderPen =
                             usingLightMode
                                 ? DarkColors.CheckBoxPressedBorderPen
-                                : DarkColors.DisabledTextPen;
+                                : DarkColors.GreySelectionPen;
                         fillBrush =
                             usingLightMode
                                 ? DarkColors.CheckBoxPressedFillBrush
-                                : DarkColors.DisabledTextBrush;
+                                : DarkColors.GreySelectionBrush;
                         break;
                     default:
                         borderPen =

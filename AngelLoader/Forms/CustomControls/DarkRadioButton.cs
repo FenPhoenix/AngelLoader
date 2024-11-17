@@ -242,33 +242,39 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         Graphics g = e.Graphics;
 
-        Color textColor = DarkColors.LightText;
-        Pen borderColorPen = DarkColors.Fen_HyperlinkPen;
-        SolidBrush fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+        Color textColor;
+        Pen borderColorPen;
+        SolidBrush fillColorBrush;
 
         if (Enabled)
         {
-            if (Focused)
-            {
-                borderColorPen = DarkColors.Fen_HyperlinkPen;
-                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
-            }
+            textColor = DarkColors.LightText;
 
-            if (_controlState == DarkControlState.Hover)
+            switch (_controlState)
             {
-                borderColorPen = DarkColors.Fen_HyperlinkPen;
-                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
-            }
-            else if (_controlState == DarkControlState.Pressed)
-            {
-                borderColorPen = DarkColors.Fen_HyperlinkPen;
-                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                case DarkControlState.Hover:
+                case DarkControlState.Pressed:
+                    borderColorPen = DarkColors.Fen_HyperlinkPen;
+                    fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    break;
+                default:
+                    if (Checked)
+                    {
+                        borderColorPen = DarkColors.Fen_HyperlinkPen;
+                        fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    }
+                    else
+                    {
+                        borderColorPen = DarkColors.LightTextPen;
+                        fillColorBrush = DarkColors.LightTextBrush;
+                    }
+                    break;
             }
         }
         else
         {
             textColor = DarkColors.DisabledText;
-            borderColorPen = DarkColors.GreyHighlightPen;
+            borderColorPen = DarkColors.GreySelectionPen;
             fillColorBrush = DarkColors.GreySelectionBrush;
         }
 
@@ -314,18 +320,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
         }
         else
         {
-            switch (_controlState)
-            {
-                case DarkControlState.Hover:
-                    g.DrawEllipse(DarkColors.DisabledTextPen, boxRect);
-                    break;
-                case DarkControlState.Pressed:
-                    g.DrawEllipse(DarkColors.GreySelectionPen, boxRect);
-                    break;
-                default:
-                    g.DrawEllipse(DarkColors.LightTextPen, boxRect);
-                    break;
-            }
+            g.DrawEllipse(borderColorPen, boxRect);
         }
 
         g.SmoothingMode = SmoothingMode.Default;
