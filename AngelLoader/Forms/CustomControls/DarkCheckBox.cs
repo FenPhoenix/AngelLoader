@@ -8,9 +8,6 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-// @MT_TASK(Accessibility):
-//  Keyboard focus outlines aren't drawn in dark mode, so we need to add back some way to show focus in that case
-
 // @DarkModeNote(DarkCheckBox):
 // We could add support for putting the checkbox on the right-hand side if we feel like we need it
 public sealed class DarkCheckBox : CheckBox, IDarkable

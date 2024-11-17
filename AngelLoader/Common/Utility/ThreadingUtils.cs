@@ -16,12 +16,10 @@ public static partial class Utils
         return Math.Min(threadingData.Threads, maxWorkItemsCount);
     }
 
-    // @MT_TASK: Maybe make these take IEnumerable so as not to have to convert back and forth all the time
     // @MT_TASK: Thoroughly test all threadable-path codepaths now that we have this fully granular system
     internal static void FillThreadablePaths(List<ThreadablePath> paths)
     {
-        ThreadablePath[] threadablePathsArray = paths.ToArray();
-        DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
+        DetectDriveTypes.GetAllDrivesType(paths, Config.DriveLettersAndTypes);
     }
 
     internal static ThreadingData GetLowestCommonThreadingData(

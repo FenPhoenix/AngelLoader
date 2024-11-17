@@ -2,6 +2,7 @@
 //#define TIMING_TEST
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -54,13 +55,13 @@ internal static class DetectDriveTypes
 #endif
     }
 
-    internal static void GetAllDrivesType(ThreadablePath[] paths, DriveLetterDictionary driveTypesDict)
+    internal static void GetAllDrivesType(List<ThreadablePath> paths, DriveLetterDictionary driveTypesDict)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        DriveLetterDictionary rootsDict = new(paths.Length);
+        DriveLetterDictionary rootsDict = new(paths.Count);
 
         foreach (ThreadablePath path in paths)
         {

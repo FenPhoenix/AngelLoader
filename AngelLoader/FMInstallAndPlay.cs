@@ -1891,11 +1891,10 @@ internal static partial class FMInstallAndPlay
                         {
                             fmData.InstallStarted = true;
                             /*
-                            @MT_TASK(Aggressive threading on multiple):
-                            This seems to work fine and achieve the same or better speed as non-aggressive
-                            per-archive overlap. The threads don't appear to be stepping on each others'
-                            toes like I thought they would. But test with the NVME and do a more thorough
-                            diff test.
+                            @MT_TASK_NOTE(Aggressive threading on multiple):
+                            This seems to work fine and achieve the same or better speed as non-aggressive per-
+                            archive overlap. The threads don't appear to be stepping on each others' toes like I
+                            thought they would.
                             */
                             FMInstallResult fmInstallResult;
                             if (fmData.ArchiveFilePath.ExtIsZip())
