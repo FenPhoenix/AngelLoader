@@ -929,9 +929,15 @@ internal sealed class LText_Class
         internal readonly string Advanced_TabText = "Advanced";
         internal readonly string Advanced_IO_Threading = "I/O threading";
         internal readonly string Advanced_IO_Threading_Auto = "Auto";
-        internal readonly string Advanced_IO_Threading_HDD = "HDD";
-        internal readonly string Advanced_IO_Threading_SATA_SSD = "SATA SSD";
+        [FenGenBlankLine]
+        internal readonly string Advanced_IO_Threading_Autodetected_NVMe_SSD = "Autodetected (NVMe SSD)";
+        internal readonly string Advanced_IO_Threading_Autodetected_SATA_SSD = "Autodetected (SATA SSD)";
+        internal readonly string Advanced_IO_Threading_Autodetected_OtherDriveType = "Autodetected (Other)";
+        [FenGenBlankLine]
         internal readonly string Advanced_IO_Threading_NVMe_SSD = "NVMe SSD";
+        internal readonly string Advanced_IO_Threading_SATA_SSD = "SATA SSD";
+        internal readonly string Advanced_IO_Threading_OtherDriveType = "Other";
+        [FenGenBlankLine]
         internal readonly string Advanced_IO_Threading_Custom = "Custom";
         internal readonly string Advanced_IO_Threading_Threads = "Threads:";
         internal readonly string Advanced_IO_Threading_ThreadingMode = "Threading mode:";

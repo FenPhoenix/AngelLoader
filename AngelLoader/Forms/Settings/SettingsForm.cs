@@ -727,7 +727,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     Location = new Point(8, 16),
                     TabIndex = tabIndex + 2,
                     TabStop = true,
-                    Text = "Autodetected (" + GetDriveTypeString(driveAndType.DriveType) + ")",
+                    Text = GetDriveTypeString(driveAndType.DriveType, auto: true),
 
                     Tag = new DriveControlIndex(i, AL_DriveType.Auto),
                 };
@@ -799,20 +799,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 Height = y - 8,
             };
 
-            foreach (Control c in AdvancedPage.IOThreadingGroupBox.Controls)
+            static string GetDriveTypeString(AL_DriveType driveType, bool auto = false)
             {
-                //c.Hide();
-            }
-
-            // @MT_TASK: Localize these
-            static string GetDriveTypeString(AL_DriveType driveType)
-            {
-                return driveType switch
-                {
-                    AL_DriveType.NVMe_SSD => "NVMe SSD",
-                    AL_DriveType.SATA_SSD => "SATA SSD",
-                    _ => "HDD or other",
-                };
+                return auto
+                    ? driveType switch
+                    {
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_SATA_SSD,
+                        _ => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_OtherDriveType,
+                    }
+                    : driveType switch
+                    {
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD,
+                        _ => LText.SettingsWindow.Advanced_IO_Threading_OtherDriveType,
+                    };
             }
 
             #endregion
