@@ -17,9 +17,21 @@ public static class DarkColors
     public static readonly Color SettingsButtonHighlightBorder_Light = Color.FromArgb(0, 120, 215);
     //public static readonly SolidBrush SettingsButtonHighlightBorder_LightBrush = new SolidBrush(SettingsButtonHighlightBorder_Light);
 
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Normal = Color.FromArgb(0, 95, 184);
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Hover = Color.FromArgb(25, 110, 191);
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Pressed = Color.FromArgb(50, 126, 197);
+
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_NormalPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Normal);
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_HoverPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Hover);
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_PressedPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Pressed);
+
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_NormalBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Normal);
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_HoverBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Hover);
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_PressedBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Pressed);
+
     public static readonly Color CheckBoxPressedBorder = Color.FromArgb(0, 84, 153);
     public static readonly Pen CheckBoxPressedBorderPen = new Pen(CheckBoxPressedBorder);
-    public static readonly SolidBrush CheckBoxPressedBorderBrush = new SolidBrush(CheckBoxPressedBorder);
+    //public static readonly SolidBrush CheckBoxPressedBorderBrush = new SolidBrush(CheckBoxPressedBorder);
 
     public static readonly Color CheckBoxPressedFill = Color.FromArgb(204, 228, 247);
     //public static readonly Pen CheckBoxPressedFillPen = new Pen(CheckBoxPressedFill);
@@ -121,7 +133,7 @@ public static class DarkColors
     //public static readonly Pen BlueBackgroundPen = new Pen(BlueBackground);
     //public static readonly Pen DarkBlueBackgroundPen = new Pen(DarkBlueBackground);
     public static readonly Pen DarkBackgroundPen = new Pen(DarkBackground);
-//    public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
+    //public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
     public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
     public static readonly Pen LighterBackgroundPen = new Pen(LighterBackground);
     //public static readonly Pen LightestBackgroundPen = new Pen(LightestBackground);
@@ -131,7 +143,7 @@ public static class DarkColors
     public static readonly Pen LightTextPen = new Pen(LightText);
     public static readonly Pen DisabledTextPen = new Pen(DisabledText);
     public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
-    //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
+    public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
     public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);
     public static readonly Pen GreySelectionPen = new Pen(GreySelection);
     //public static readonly Pen DarkGreySelectionPen = new Pen(DarkGreySelection);

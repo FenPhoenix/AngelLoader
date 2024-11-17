@@ -272,7 +272,12 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
             fillColorBrush = DarkColors.GreySelectionBrush;
         }
 
-        g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
+        Color? parentBackColor = Parent?.BackColor;
+        if (parentBackColor != null)
+        {
+            using var b = new SolidBrush((Color)parentBackColor);
+            g.FillRectangle(b, ClientRectangle);
+        }
 
         g.SmoothingMode = SmoothingMode.HighQuality;
 
@@ -305,12 +310,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
             g.DrawEllipse(borderColorPen, boxRect);
             g.FillEllipse(fillColorBrush, boxRect);
 
-            Color? parentBackColor = Parent?.BackColor;
-            if (parentBackColor != null)
-            {
-                using var b = new SolidBrush((Color)parentBackColor);
-                g.FillEllipse(b, checkRect);
-            }
+            g.FillEllipse(DarkColors.GreyBackgroundBrush, checkRect);
         }
         else
         {
