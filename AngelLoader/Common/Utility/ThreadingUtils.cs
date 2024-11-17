@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -29,22 +28,12 @@ public static partial class Utils
         ThreadablePath[] threadablePathsArray = paths.ToArray();
         DetectDriveTypes.GetAllDrivesType(threadablePathsArray, Config.DriveLettersAndTypes);
 
-        List<ThreadablePath> threadablePathsList = new(threadablePathsArray.Length);
-        for (int i = 0; i < threadablePathsArray.Length; i++)
-        {
-            ThreadablePath item = threadablePathsArray[i];
-            if (!item.Root.IsEmpty())
-            {
-                threadablePathsList.Add(item);
-            }
-        }
-
         ThreadingData threadingData;
-        if (threadablePathsList.Any(static x => x.DriveType == AL_DriveType.Other))
+        if (threadablePathsArray.Any(static x => x.DriveType == AL_DriveType.Other))
         {
             threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
         }
-        else if (threadablePathsList.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
+        else if (threadablePathsArray.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
         {
             threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
         }
