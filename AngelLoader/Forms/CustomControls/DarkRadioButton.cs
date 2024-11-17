@@ -289,7 +289,10 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
                     _radioButtonSize - 4),
                 DarkControlState.Pressed => new RectangleF(
                     3.5f,
-                    (ClientRectangle.Height / 2f) - ((_radioButtonSize - 8) / 2f) - 0.5f,
+                    // ReSharper disable once RedundantCast
+#pragma warning disable IDE0004
+                    (int)((ClientRectangle.Height / 2) - ((_radioButtonSize - 8) / 2)) - 0.5f,
+#pragma warning restore IDE0004
                     _radioButtonSize - 7,
                     _radioButtonSize - 7),
                 _ => new Rectangle(
