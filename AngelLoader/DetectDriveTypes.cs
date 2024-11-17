@@ -54,14 +54,6 @@ internal static class DetectDriveTypes
 #endif
     }
 
-    /*
-    @MT_TASK(Drive detection):
-     Maybe we should pass in a list to be filled like above to ensure we get the same amount out as in, and then
-     carry the returned list around, marking each as what actual path it is (for what game etc.) and then only
-     get the threading data just-in-time as needed, to avoid having to call this many times to get the same data
-     for every operation that needs a slightly different set of paths.
-     Is this even possible though?
-    */
     internal static void GetAllDrivesType(ThreadablePath[] paths, DriveLetterDictionary driveTypesDict)
     {
 #if TIMING_TEST
@@ -346,8 +338,8 @@ internal static class DetectDriveTypes
 
             string? realPath;
 
-            // Perf: Checking for symbolic link is expensive(double-digit milliseconds for one check), so
-            // just do a reparse point check first, which is effectively instantaneous.
+            // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so just
+            // do a reparse point check first, which is effectively instantaneous.
             if (!IsReparsePoint(di))
             {
                 if (TryGetSubstedPath(path, out realPath))

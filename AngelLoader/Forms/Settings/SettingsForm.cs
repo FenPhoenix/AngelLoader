@@ -701,8 +701,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 DrivesAndTypes[i] = new DriveAndType(path.Root, path.DriveType);
             }
 
-            // @MT_TASK: Implement whatever control we come up with for the drive letters and types...
-
             const int driveTypePanelHeight = 104;
             int y = 152;
             int tabIndex = 2;
@@ -713,7 +711,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 Panel panel = new()
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-                    //BorderStyle = BorderStyle.FixedSingle,
                     Location = new Point(8, y),
                     Size = new Size(AdvancedPage.IOThreadingGroupBox.Width - 16, driveTypePanelHeight - 20),
                     TabIndex = tabIndex,
