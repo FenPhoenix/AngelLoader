@@ -916,6 +916,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             AdvancedPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
             AdvancedPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            AdvancedPage.IOThreadsResetButton.Click += IOThreadsResetButton_Click;
 
             #endregion
         }
@@ -2133,6 +2134,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         AdvancedPage.CustomThreadsLabel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
         AdvancedPage.CustomThreadsNumericUpDown.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+        AdvancedPage.IOThreadsResetButton.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+    }
+
+    private void IOThreadsResetButton_Click(object sender, EventArgs e)
+    {
+        AdvancedPage.CustomThreadsNumericUpDown.Value = CoreCount;
     }
 
     private readonly struct DriveControlIndex

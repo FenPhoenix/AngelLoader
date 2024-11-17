@@ -1210,6 +1210,13 @@ public static class Images
             ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
             : _refresh ??= Resources.Refresh;
 
+    private static Image? __refresh_Disabled;
+    private static Image? __refresh_Disabled_Dark;
+    public static Image Refresh_Disabled =>
+        Config.DarkMode
+            ? __refresh_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh, DarkModeImageConversion.Matrix.DarkDisabled)
+            : __refresh_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.Refresh);
+
     private static Bitmap? _updateIcon;
     private static Bitmap? _updateIcon_Dark;
     public static Bitmap UpdateIcon =>

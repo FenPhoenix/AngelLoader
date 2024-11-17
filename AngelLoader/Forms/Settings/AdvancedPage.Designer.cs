@@ -34,6 +34,7 @@ sealed partial class AdvancedPage
             this.PagePanel = new System.Windows.Forms.Panel();
             this.IOThreadingGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.CustomModePanel = new System.Windows.Forms.Panel();
+            this.IOThreadsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.AutoModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -73,6 +74,7 @@ sealed partial class AdvancedPage
             // 
             this.CustomModePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.CustomModePanel.Controls.Add(this.IOThreadsResetButton);
             this.CustomModePanel.Controls.Add(this.CustomThreadsNumericUpDown);
             this.CustomModePanel.Controls.Add(this.CustomThreadsLabel);
             this.CustomModePanel.Controls.Add(this.AutoModeRadioButton);
@@ -81,6 +83,14 @@ sealed partial class AdvancedPage
             this.CustomModePanel.Name = "CustomModePanel";
             this.CustomModePanel.Size = new System.Drawing.Size(408, 104);
             this.CustomModePanel.TabIndex = 0;
+            // 
+            // IOThreadsResetButton
+            // 
+            this.IOThreadsResetButton.Location = new System.Drawing.Point(130, 71);
+            this.IOThreadsResetButton.Name = "IOThreadsResetButton";
+            this.IOThreadsResetButton.Size = new System.Drawing.Size(22, 22);
+            this.IOThreadsResetButton.TabIndex = 4;
+            this.IOThreadsResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.IOThreadsResetButton_PaintCustom);
             // 
             // CustomThreadsNumericUpDown
             // 
@@ -112,7 +122,6 @@ sealed partial class AdvancedPage
             this.CustomThreadsLabel.Size = new System.Drawing.Size(49, 13);
             this.CustomThreadsLabel.TabIndex = 2;
             this.CustomThreadsLabel.Text = "Threads:";
-            this.CustomThreadsLabel.UseMnemonic = false;
             // 
             // AutoModeRadioButton
             // 
@@ -124,8 +133,6 @@ sealed partial class AdvancedPage
             this.AutoModeRadioButton.TabIndex = 0;
             this.AutoModeRadioButton.TabStop = true;
             this.AutoModeRadioButton.Text = "Auto";
-            this.AutoModeRadioButton.UseMnemonic = false;
-            this.AutoModeRadioButton.UseVisualStyleBackColor = true;
             // 
             // CustomModeRadioButton
             // 
@@ -136,8 +143,6 @@ sealed partial class AdvancedPage
             this.CustomModeRadioButton.TabIndex = 1;
             this.CustomModeRadioButton.TabStop = true;
             this.CustomModeRadioButton.Text = "Custom";
-            this.CustomModeRadioButton.UseMnemonic = false;
-            this.CustomModeRadioButton.UseVisualStyleBackColor = true;
             // 
             // AdvancedPage
             // 
@@ -165,4 +170,5 @@ sealed partial class AdvancedPage
     internal CustomControls.DarkNumericUpDown CustomThreadsNumericUpDown;
     internal CustomControls.DarkLabel CustomThreadsLabel;
     internal System.Windows.Forms.Panel CustomModePanel;
+    internal CustomControls.DarkButton IOThreadsResetButton;
 }

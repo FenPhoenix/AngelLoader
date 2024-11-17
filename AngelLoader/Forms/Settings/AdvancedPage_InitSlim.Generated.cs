@@ -10,6 +10,7 @@ sealed partial class AdvancedPage
         this.PagePanel = new System.Windows.Forms.Panel();
         this.IOThreadingGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.CustomModePanel = new System.Windows.Forms.Panel();
+        this.IOThreadsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
         this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.AutoModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -45,6 +46,7 @@ sealed partial class AdvancedPage
         // 
         this.CustomModePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
+        this.CustomModePanel.Controls.Add(this.IOThreadsResetButton);
         this.CustomModePanel.Controls.Add(this.CustomThreadsNumericUpDown);
         this.CustomModePanel.Controls.Add(this.CustomThreadsLabel);
         this.CustomModePanel.Controls.Add(this.AutoModeRadioButton);
@@ -52,6 +54,13 @@ sealed partial class AdvancedPage
         this.CustomModePanel.Location = new System.Drawing.Point(8, 16);
         this.CustomModePanel.Size = new System.Drawing.Size(408, 104);
         this.CustomModePanel.TabIndex = 0;
+        // 
+        // IOThreadsResetButton
+        // 
+        this.IOThreadsResetButton.Location = new System.Drawing.Point(130, 71);
+        this.IOThreadsResetButton.Size = new System.Drawing.Size(22, 22);
+        this.IOThreadsResetButton.TabIndex = 4;
+        this.IOThreadsResetButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.IOThreadsResetButton_PaintCustom);
         // 
         // CustomThreadsNumericUpDown
         // 
@@ -78,7 +87,6 @@ sealed partial class AdvancedPage
         // 
         this.CustomThreadsLabel.AutoSize = true;
         this.CustomThreadsLabel.Location = new System.Drawing.Point(24, 56);
-        this.CustomThreadsLabel.UseMnemonic = false;
         // 
         // AutoModeRadioButton
         // 
@@ -87,8 +95,6 @@ sealed partial class AdvancedPage
         this.AutoModeRadioButton.Location = new System.Drawing.Point(8, 8);
         this.AutoModeRadioButton.TabIndex = 0;
         this.AutoModeRadioButton.TabStop = true;
-        this.AutoModeRadioButton.UseMnemonic = false;
-        this.AutoModeRadioButton.UseVisualStyleBackColor = true;
         // 
         // CustomModeRadioButton
         // 
@@ -96,8 +102,6 @@ sealed partial class AdvancedPage
         this.CustomModeRadioButton.Location = new System.Drawing.Point(8, 32);
         this.CustomModeRadioButton.TabIndex = 1;
         this.CustomModeRadioButton.TabStop = true;
-        this.CustomModeRadioButton.UseMnemonic = false;
-        this.CustomModeRadioButton.UseVisualStyleBackColor = true;
         // 
         // AdvancedPage
         // 
