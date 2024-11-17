@@ -2,11 +2,9 @@
 //#define TIMING_TEST
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -64,60 +62,46 @@ internal static class DetectDriveTypes
      for every operation that needs a slightly different set of paths.
      Is this even possible though?
     */
-    internal static List<AL_DriveType> GetAllDrivesType(List<IOPath> paths, DriveLetterDictionary driveTypesDict)
+    internal static void GetAllDrivesType(ThreadablePath[] paths, DriveLetterDictionary driveTypesDict)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
 
-        List<string> roots = new(paths.Count);
+        DriveLetterDictionary rootsDict = new(paths.Length);
 
-        for (int i = 0; i < paths.Count; i++)
+        foreach (ThreadablePath path in paths)
         {
-            string root = GetRoot(paths[i]);
-            if (!root.IsEmpty())
+            path.Root = GetRoot(new IOPath(path.OriginalPath, path.IOPathType));
+
+            if (!path.Root.IsEmpty())
             {
-                roots.Add(root);
+                char rootLetter = path.Root[0];
+
+                if (driveTypesDict.TryGetValue(rootLetter, out AL_DriveType result) && result != AL_DriveType.Auto)
+                {
+                    path.DriveType = result;
+                }
+                else
+                {
+                    if (rootsDict.TryGetValue(rootLetter, out AL_DriveType driveType))
+                    {
+                        path.DriveType = driveType;
+                    }
+                    else
+                    {
+                        driveType = GetDriveType(path.Root);
+                        rootsDict[rootLetter] = driveType;
+                        path.DriveType = driveType;
+                    }
+                }
             }
-        }
-
-        List<AL_DriveType> ret = new(roots.Count);
-
-        roots = roots.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
-
-        if (roots.Count == 0)
-        {
-#if TIMING_TEST
-            sw.Stop();
-            System.Diagnostics.Trace.WriteLine(nameof(GetAllDrivesType) + ": " + sw.Elapsed);
-#endif
-            return RetOrDefault(ret);
-        }
-
-        for (int i = 0; i < roots.Count; i++)
-        {
-            char rootLetter = roots[i][0];
-            ret.Add(driveTypesDict.TryGetValue(rootLetter, out AL_DriveType result) && result != AL_DriveType.Auto
-                ? result
-                : GetDriveType(roots[i]));
         }
 
 #if TIMING_TEST
         sw.Stop();
         System.Diagnostics.Trace.WriteLine(nameof(GetAllDrivesType) + ": " + sw.Elapsed);
 #endif
-
-        return RetOrDefault(ret);
-
-        // IMPORTANT: Always return at least one item in the list, to prevent All() returning true on an empty list
-        static List<AL_DriveType> RetOrDefault(List<AL_DriveType> ret)
-        {
-            if (ret.Count == 0)
-            {
-                ret.Add(AL_DriveType.Other);
-            }
-            return ret;
-        }
     }
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
