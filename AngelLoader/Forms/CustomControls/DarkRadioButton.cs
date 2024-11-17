@@ -253,9 +253,20 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
             switch (_controlState)
             {
                 case DarkControlState.Hover:
-                case DarkControlState.Pressed:
                     borderColorPen = DarkColors.Fen_HyperlinkPen;
                     fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    break;
+                case DarkControlState.Pressed:
+                    if (Checked)
+                    {
+                        borderColorPen = DarkColors.Fen_HyperlinkPen;
+                        fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    }
+                    else
+                    {
+                        borderColorPen = DarkColors.GreyHighlightPen;
+                        fillColorBrush = DarkColors.GreyHighlightBrush;
+                    }
                     break;
                 default:
                     if (Checked)

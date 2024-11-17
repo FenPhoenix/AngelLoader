@@ -9,8 +9,7 @@ using JetBrains.Annotations;
 namespace AngelLoader.Forms.CustomControls;
 
 // @MT_TASK(Accessibility):
-//  Should we render checkboxes/radio buttons in visible blue when checked in dark mode and fixed Win11 light mode?
-//  That's one thing Win11 actually is doing well, it's just that the indeterminate checkbox is impossible to tell
+//  Keyboard focus outlines aren't drawn in dark mode, so we need to add back some way to show focus in that case
 
 // @DarkModeNote(DarkCheckBox):
 // We could add support for putting the checkbox on the right-hand side if we feel like we need it
@@ -269,21 +268,21 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
                         borderPen =
                             usingLightMode
                                 ? SystemPens.Highlight
-                                : DarkColors.GreyHighlightPen;
+                                : DarkColors.Fen_HyperlinkPen;
                         fillBrush =
                             usingLightMode
                                 ? SystemBrushes.Highlight
-                                : DarkColors.GreyHighlightBrush;
+                                : DarkColors.Fen_HyperlinkBrush;
                         break;
                     case DarkControlState.Pressed:
                         borderPen =
                             usingLightMode
                                 ? DarkColors.CheckBoxPressedBorderPen
-                                : DarkColors.GreySelectionPen;
+                                : DarkColors.GreyHighlightPen;
                         fillBrush =
                             usingLightMode
                                 ? DarkColors.CheckBoxPressedFillBrush
-                                : DarkColors.GreySelectionBrush;
+                                : DarkColors.GreyHighlightBrush;
                         break;
                     default:
                         borderPen =
