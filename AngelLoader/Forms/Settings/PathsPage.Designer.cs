@@ -42,21 +42,6 @@ sealed partial class PathsPage
             this.BackupPathHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BackupPathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.BackupPathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-            this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
-            this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.SS2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief3UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.PathsToGameExesGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.TDMExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.TDMExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
@@ -75,6 +60,21 @@ sealed partial class PathsPage
             this.Thief3ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief1ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
+            this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
+            this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SS2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief3UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
             this.LayoutFLP.SuspendLayout();
@@ -82,11 +82,11 @@ sealed partial class PathsPage
             this.BackupPathPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
+            this.PathsToGameExesGroupBox.SuspendLayout();
+            this.GameRequirementsPanel.SuspendLayout();
             this.FMArchivePathsGroupBox.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
             this.LaunchTheseGamesThroughSteamPanel.SuspendLayout();
-            this.PathsToGameExesGroupBox.SuspendLayout();
-            this.GameRequirementsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -104,8 +104,8 @@ sealed partial class PathsPage
             // 
             this.ActualPathsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.ActualPathsPanel.Controls.Add(this.FMArchivePathsGroupBox);
             this.ActualPathsPanel.Controls.Add(this.LayoutFLP);
-            this.ActualPathsPanel.Controls.Add(this.SteamOptionsGroupBox);
             this.ActualPathsPanel.Controls.Add(this.PathsToGameExesGroupBox);
             this.ActualPathsPanel.Location = new System.Drawing.Point(0, 0);
             this.ActualPathsPanel.MinimumSize = new System.Drawing.Size(440, 0);
@@ -118,9 +118,9 @@ sealed partial class PathsPage
             this.LayoutFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LayoutFLP.Controls.Add(this.BackupGroupBox);
-            this.LayoutFLP.Controls.Add(this.FMArchivePathsGroupBox);
+            this.LayoutFLP.Controls.Add(this.SteamOptionsGroupBox);
             this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.LayoutFLP.Location = new System.Drawing.Point(0, 485);
+            this.LayoutFLP.Location = new System.Drawing.Point(0, 567);
             this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.LayoutFLP.Name = "LayoutFLP";
             this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
@@ -216,12 +216,13 @@ sealed partial class PathsPage
             // 
             // FMArchivePathsGroupBox
             // 
+            this.FMArchivePathsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
             this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
             this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
-            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 124);
-            this.FMArchivePathsGroupBox.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
+            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 300);
             this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
             this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
             this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
@@ -275,10 +276,11 @@ sealed partial class PathsPage
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
-            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 300);
+            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 118);
+            this.SteamOptionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.SteamOptionsGroupBox.Name = "SteamOptionsGroupBox";
             this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
-            this.SteamOptionsGroupBox.TabIndex = 1;
+            this.SteamOptionsGroupBox.TabIndex = 5;
             this.SteamOptionsGroupBox.TabStop = false;
             this.SteamOptionsGroupBox.Text = "Steam options";
             // 
@@ -571,16 +573,16 @@ sealed partial class PathsPage
             this.BackupPathPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
+            this.PathsToGameExesGroupBox.ResumeLayout(false);
+            this.PathsToGameExesGroupBox.PerformLayout();
+            this.GameRequirementsPanel.ResumeLayout(false);
+            this.GameRequirementsPanel.PerformLayout();
             this.FMArchivePathsGroupBox.ResumeLayout(false);
             this.FMArchivePathsGroupBox.PerformLayout();
             this.SteamOptionsGroupBox.ResumeLayout(false);
             this.SteamOptionsGroupBox.PerformLayout();
             this.LaunchTheseGamesThroughSteamPanel.ResumeLayout(false);
             this.LaunchTheseGamesThroughSteamPanel.PerformLayout();
-            this.PathsToGameExesGroupBox.ResumeLayout(false);
-            this.PathsToGameExesGroupBox.PerformLayout();
-            this.GameRequirementsPanel.ResumeLayout(false);
-            this.GameRequirementsPanel.PerformLayout();
             this.ResumeLayout(false);
 
     }

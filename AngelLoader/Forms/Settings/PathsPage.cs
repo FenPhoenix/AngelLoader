@@ -3,6 +3,8 @@ using AL_Common;
 
 namespace AngelLoader.Forms;
 
+// @MT_TASK: Update screenshots of Paths page and Initial Settings page to show new positions of controls
+
 public sealed partial class PathsPage : UserControl, Interfaces.ISettingsPage
 {
     /// <summary>
