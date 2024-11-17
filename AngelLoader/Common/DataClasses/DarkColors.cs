@@ -15,6 +15,7 @@ public static class DarkColors
 
     public static readonly Color SettingsButtonHighlight_Light = Color.FromArgb(229, 241, 251);
     public static readonly Color SettingsButtonHighlightBorder_Light = Color.FromArgb(0, 120, 215);
+    //public static readonly SolidBrush SettingsButtonHighlightBorder_LightBrush = new SolidBrush(SettingsButtonHighlightBorder_Light);
 
     public static readonly Color CheckBoxPressedBorder = Color.FromArgb(0, 84, 153);
     public static readonly Pen CheckBoxPressedBorderPen = new Pen(CheckBoxPressedBorder);
@@ -47,6 +48,8 @@ public static class DarkColors
 
     public static readonly Color Fen_ThumbScrollBarHover = Color.FromArgb(110, 110, 110);
     public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
+    public static readonly SolidBrush Fen_HyperlinkBrush = new SolidBrush(Fen_Hyperlink);
+    public static readonly Pen Fen_HyperlinkPen = new Pen(Fen_Hyperlink);
     public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
 
     public static readonly Color Fen_CautionText = Color.FromArgb(225, 135, 135);
@@ -118,7 +121,7 @@ public static class DarkColors
     //public static readonly Pen BlueBackgroundPen = new Pen(BlueBackground);
     //public static readonly Pen DarkBlueBackgroundPen = new Pen(DarkBlueBackground);
     public static readonly Pen DarkBackgroundPen = new Pen(DarkBackground);
-    //public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
+//    public static readonly Pen MediumBackgroundPen = new Pen(MediumBackground);
     public static readonly Pen LightBackgroundPen = new Pen(LightBackground);
     public static readonly Pen LighterBackgroundPen = new Pen(LighterBackground);
     //public static readonly Pen LightestBackgroundPen = new Pen(LightestBackground);
@@ -126,7 +129,7 @@ public static class DarkColors
     public static readonly Pen LighterBorderPen = new Pen(LighterBorder);
     //public static readonly Pen DarkBorderPen = new Pen(DarkBorder);
     public static readonly Pen LightTextPen = new Pen(LightText);
-    //public static readonly Pen DisabledTextPen = new Pen(DisabledText);
+    public static readonly Pen DisabledTextPen = new Pen(DisabledText);
     public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
     //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
     public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);

@@ -243,26 +243,26 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
         Graphics g = e.Graphics;
 
         Color textColor = DarkColors.LightText;
-        Pen borderColorPen = DarkColors.LightTextPen;
-        SolidBrush fillColorBrush = DarkColors.LightTextBrush;
+        Pen borderColorPen = DarkColors.Fen_HyperlinkPen;
+        SolidBrush fillColorBrush = DarkColors.Fen_HyperlinkBrush;
 
         if (Enabled)
         {
             if (Focused)
             {
-                borderColorPen = DarkColors.BlueHighlightPen;
-                fillColorBrush = DarkColors.BlueSelectionBrush;
+                borderColorPen = DarkColors.Fen_HyperlinkPen;
+                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
             }
 
             if (_controlState == DarkControlState.Hover)
             {
-                borderColorPen = DarkColors.BlueHighlightPen;
-                fillColorBrush = DarkColors.BlueSelectionBrush;
+                borderColorPen = DarkColors.Fen_HyperlinkPen;
+                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
             }
             else if (_controlState == DarkControlState.Pressed)
             {
-                borderColorPen = DarkColors.GreyHighlightPen;
-                fillColorBrush = DarkColors.GreySelectionBrush;
+                borderColorPen = DarkColors.Fen_HyperlinkPen;
+                fillColorBrush = DarkColors.Fen_HyperlinkBrush;
             }
         }
         else
@@ -277,12 +277,52 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
         g.SmoothingMode = SmoothingMode.HighQuality;
 
         var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
-        g.DrawEllipse(borderColorPen, boxRect);
 
         if (Checked)
         {
-            var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1, _radioButtonSize - 6, _radioButtonSize - 6);
-            g.FillEllipse(fillColorBrush, checkRect);
+            var checkRect = _controlState switch
+            {
+                DarkControlState.Hover => new Rectangle(
+                    2,
+                    (ClientRectangle.Height / 2) - ((_radioButtonSize - 6) / 2) - 1,
+                    _radioButtonSize - 4,
+                    _radioButtonSize - 4),
+                DarkControlState.Pressed => new RectangleF(
+                    3.5f,
+                    (ClientRectangle.Height / 2f) - ((_radioButtonSize - 8) / 2f) - 0.5f,
+                    _radioButtonSize - 7,
+                    _radioButtonSize - 7),
+                _ => new Rectangle(
+                    3,
+                    (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1,
+                    _radioButtonSize - 6,
+                    _radioButtonSize - 6),
+            };
+
+            g.DrawEllipse(borderColorPen, boxRect);
+            g.FillEllipse(fillColorBrush, boxRect);
+
+            Color? parentBackColor = Parent?.BackColor;
+            if (parentBackColor != null)
+            {
+                using var b = new SolidBrush((Color)parentBackColor);
+                g.FillEllipse(b, checkRect);
+            }
+        }
+        else
+        {
+            switch (_controlState)
+            {
+                case DarkControlState.Hover:
+                    g.DrawEllipse(DarkColors.DisabledTextPen, boxRect);
+                    break;
+                case DarkControlState.Pressed:
+                    g.DrawEllipse(DarkColors.GreySelectionPen, boxRect);
+                    break;
+                default:
+                    g.DrawEllipse(DarkColors.LightTextPen, boxRect);
+                    break;
+            }
         }
 
         g.SmoothingMode = SmoothingMode.Default;
