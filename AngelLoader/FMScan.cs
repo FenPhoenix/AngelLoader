@@ -561,9 +561,12 @@ internal static class FMScan
             /*
             @MT_TASK_NOTE: Necessary if we have multiple threads to allow UI time to catch up.
             Not necessary if we're on one thread, but does no harm either.
-            @MT_TASK(Scanner 7z reporting):
+            @MT_TASK_NOTE(Scanner 7z reporting):
              >1 or >2 thread 7z scans don't report smoothly, probably due to the out-of-order nature of it.
              We could try the multi item progress box here, just to see?
+             2024/11/18: We tried that and there are other problems with UI updating interval and whatever else.
+             Even though for 7z the percentage display is suboptimal, this is overall the least worst thing for
+             now...
             */
             if (scanningOne ||
                 fmNumber is 0 or 1 ||
