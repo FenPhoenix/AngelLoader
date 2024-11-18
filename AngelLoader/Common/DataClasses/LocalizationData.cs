@@ -927,15 +927,16 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
         [FenGenBlankLine]
-        internal readonly string IOThreading_IOThreadingLevels_Level_Auto = "Auto";
-        [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
-
-        internal readonly string IOThreading_IOThreadingLevels_Aggressive = "Aggressive threading (NVMe SSD or better)";
-        internal readonly string IOThreading_IOThreadingLevels_Normal = "Normal threading (SATA SSD)";
-        internal readonly string IOThreading_IOThreadingLevels_Single = "Single thread (HDD or other)";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveThreading = "Auto: Aggressive threading";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_StandardThreading = "Auto: Standard threading";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_NoThreading = "Auto: No threading";
+        internal readonly string IOThreading_IOThreadingLevels_AggressiveThreading = "Aggressive threading";
+        internal readonly string IOThreading_IOThreadingLevels_StandardThreading = "Standard threading";
+        internal readonly string IOThreading_IOThreadingLevels_NoThreading = "No threading";
     }
 
     internal sealed class DateFilterBox_Class

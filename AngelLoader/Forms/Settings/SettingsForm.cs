@@ -1250,25 +1250,35 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 foreach (DriveTypeSection section in IOThreadingLevelDriveTypeSections)
                 {
-                    section.DriveLabel.Text = section.Drive + " " + GetDriveTypeShortString(section.DriveType);
+                    section.DriveLabel.Text = section.Drive + " " + GetDriveTypeString(section.DriveType);
 
-                    section.AutoRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreadingLevels_Level_Auto;
-                    section.NVME_RadioButton.Text = GetDriveTypeString(AL_DriveType.NVMe_SSD);
-                    section.SATA_RadioButton.Text = GetDriveTypeString(AL_DriveType.SATA_SSD);
-                    section.HDD_RadioButton.Text = GetDriveTypeString(AL_DriveType.Other);
+                    section.AutoRadioButton.Text = GetAutodetectedThreadingLevelString(section.DriveType);
+                    section.NVME_RadioButton.Text = GetThreadingLevelString(AL_DriveType.NVMe_SSD);
+                    section.SATA_RadioButton.Text = GetThreadingLevelString(AL_DriveType.SATA_SSD);
+                    section.HDD_RadioButton.Text = GetThreadingLevelString(AL_DriveType.Other);
                 }
 
-                static string GetDriveTypeString(AL_DriveType driveType)
+                static string GetAutodetectedThreadingLevelString(AL_DriveType driveType)
                 {
                     return driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Aggressive,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Normal,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Single,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_AggressiveThreading,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_StandardThreading,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_NoThreading,
                     };
                 }
 
-                static string GetDriveTypeShortString(AL_DriveType driveType)
+                static string GetThreadingLevelString(AL_DriveType driveType)
+                {
+                    return driveType switch
+                    {
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_AggressiveThreading,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_StandardThreading,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_NoThreading,
+                    };
+                }
+
+                static string GetDriveTypeString(AL_DriveType driveType)
                 {
                     return driveType switch
                     {
