@@ -1,6 +1,12 @@
 ﻿// @MT_TASK: Comment this out for final release
 //#define TIMING_TEST
 
+// @MT_TASK: We could call SATA-to-other-SATA an aggressive-threading scenario
+//  But we'd have to be able to differentiate physical drives, and we can't do it with drive letters either
+//  because they could be symlinks.
+//  If we did that, we'd have to change the UI threading levels back to drive type, because the threading level
+//  would now depend on more than one drive, so it wouldn't make sense.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -173,7 +179,7 @@ internal static class DetectDriveTypes
                 StorageDeviceWrapper device = new(safeHandle);
 
                 /*
-                @MT_TASK: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
+                @MT_TASK_NOTE: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
                 If it fails, we fall back to Other which is probably fine. But, we could also say if this
                 fails then we should continue on below and get the bus type, from which we may be able to
                 make a more intelligent decision.
@@ -202,11 +208,14 @@ internal static class DetectDriveTypes
                         STORAGE_BUS_TYPE.BusTypeNvme
                             or STORAGE_BUS_TYPE.BusTypeSCM
                             /*
-                            @MT_TASK: The question of RAID
-                            We could have SATA RAID or NVMe RAID, and we don't know which... we also don't
-                            know if it's striped or mirrored. Striped SATA RAID is probably fast enough for
-                            aggressive threading, but mirrored RAID is the same speed as non-RAID. So we're
-                            in a bit of a conundrum here.
+                            @MT_TASK_NOTE: The question of RAID
+                            We could have SATA RAID or NVMe RAID, and we don't know which... we also don't know
+                            if it's striped or mirrored. Striped SATA RAID is probably fast enough for aggressive
+                            threading, but mirrored RAID is the same speed as non-RAID. So we're in a bit of a
+                            conundrum here.
+
+                            However, we have the manual drive threading level selection for this case, so it's
+                            fine if not quite as ideal as we'd like.
                             */
                             //or STORAGE_BUS_TYPE.BusTypeRAID
                             => AL_DriveType.NVMe_SSD,

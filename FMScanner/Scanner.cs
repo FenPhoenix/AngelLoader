@@ -658,14 +658,14 @@ public sealed class Scanner : IDisposable
             {
                 progressReport.FMName = fm.DisplayName;
                 /*
-                @MT_TASK: Race condition with fms.Count
+                @MT_TASK_NOTE: Race condition with fms.Count
                 The count could have gone down between when we dequeued this fm and when we get the count here.
                 Not sure if there's anything that can be done about it, there doesn't seem to be an atomic
                 operation to dequeue AND get the count.
                 Probably doesn't matter anyway because even if we could do that, another thread will report its
                 progress anyway and there'll still be a race between us and it, even if we've removed the race
                 between us and ourselves.
-                @MT_TASK: We could pass in the original total count and use the FM's index field.
+                @MT_TASK_NOTE: We could pass in the original total count and use the FM's index field.
                 */
                 progressReport.FMsRemainingInQueue = fms.Count;
 

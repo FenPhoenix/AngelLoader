@@ -2152,7 +2152,7 @@ internal static partial class FMInstallAndPlay
                         results.Add(result);
                     }
 
-                    // @MT_TASK: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
+                    // @MT_TASK_NOTE: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
                     Core.View.MultiItemProgress_SetItemData(
                         index: fmData.ViewItemIndex,
                         line2: LText.ProgressBox.Canceled,
