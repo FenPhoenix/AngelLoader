@@ -607,7 +607,6 @@ internal static class Win32ThemeHooks
 
     #region ScrollBar
 
-    // @MT_TASK: Tweak the colors here
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool ScrollBarEnabled() => Global.Config.DarkMode || (WinVersion.Is11OrAbove && !Native.HighContrastEnabled());
 
@@ -705,7 +704,7 @@ internal static class Win32ThemeHooks
                 {
                     Native.SCRBS_NORMAL =>
                         usingLightMode
-                            ? SystemBrushes.ControlDark
+                            ? DarkColors.ScrollBarLightBrush
                             : DarkColors.GreySelectionBrush,
                     Native.SCRBS_HOVER =>
                         usingLightMode

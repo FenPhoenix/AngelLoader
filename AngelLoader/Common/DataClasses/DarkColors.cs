@@ -68,6 +68,10 @@ public static class DarkColors
 
     public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
 
+    public static readonly Color ScrollBarLight = Color.FromArgb(180, 180, 180);
+    //public static readonly Pen ScrollBarLightPen = new Pen(ScrollBarLight);
+    public static readonly SolidBrush ScrollBarLightBrush = new SolidBrush(ScrollBarLight);
+
     public static readonly Color DGV_PinnedBackgroundLight = Color.FromArgb(203, 226, 206);
     public static readonly Color DGV_PinnedBackgroundDark = Color.FromArgb(0, 59, 0);
     public static readonly Color DGV_RecentHighlightColorLight = Color.LightGoldenrodYellow;
