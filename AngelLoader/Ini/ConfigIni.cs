@@ -874,24 +874,24 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_IOThreadingMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_IOThreadsMode_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        FieldInfo? field = typeof(IOThreadingMode).GetField(valTrimmed, _bFlagsEnum);
+        FieldInfo? field = typeof(IOThreadsMode).GetField(valTrimmed, _bFlagsEnum);
         if (field != null)
         {
-            config.IOThreadingMode = (IOThreadingMode)field.GetValue(null);
+            config.IOThreadsMode = (IOThreadsMode)field.GetValue(null);
         }
     }
 
-    private static void Config_CustomIOThreads_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_CustomIOThreadCount_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
         {
-            config.CustomIOThreads = result;
+            config.CustomIOThreadCount = result;
         }
     }
 
-    private static void Config_ManualDriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         foreach (string value in values)
@@ -1118,9 +1118,9 @@ internal static partial class Ini
         { "CheckForUpdates", new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent", new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
 
-        { "IOThreadingMode", new Config_DelegatePointerWrapper(&Config_IOThreadingMode_Set) },
-        { "CustomIOThreads", new Config_DelegatePointerWrapper(&Config_CustomIOThreads_Set) },
-        { "ManualDriveTypes", new Config_DelegatePointerWrapper(&Config_ManualDriveTypes_Set) },
+        { "IOThreadsMode", new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
+        { "CustomIOThreadCount", new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
+        { "DriveTypes", new Config_DelegatePointerWrapper(&Config_DriveTypes_Set) },
 
         #region Backward compatibility
 
@@ -1525,9 +1525,9 @@ internal static partial class Ini
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
 
-        sw.Append("IOThreadingMode=").AppendLine(config.IOThreadingMode);
-        sw.Append("CustomIOThreads=").AppendLine(config.CustomIOThreads);
-        sw.Append("ManualDriveTypes=");
+        sw.Append("IOThreadsMode=").AppendLine(config.IOThreadsMode);
+        sw.Append("CustomIOThreadCount=").AppendLine(config.CustomIOThreadCount);
+        sw.Append("DriveTypes=");
         var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
         for (int i = 0; i < driveLettersAndTypes.Length; i++)
         {

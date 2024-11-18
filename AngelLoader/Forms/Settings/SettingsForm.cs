@@ -668,19 +668,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            switch (config.IOThreadingMode)
+            switch (config.IOThreadsMode)
             {
-                case IOThreadingMode.Custom:
+                case IOThreadsMode.Custom:
                     AdvancedPage.CustomModeRadioButton.Checked = true;
                     break;
-                case IOThreadingMode.Auto:
+                case IOThreadsMode.Auto:
                 default:
                     AdvancedPage.AutoModeRadioButton.Checked = true;
                     break;
             }
             SetIOThreadsState();
 
-            AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
+            AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
 
             string[] drives;
             try
@@ -1562,11 +1562,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Advanced page
 
-            OutConfig.IOThreadingMode =
-                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadingMode.Custom :
-                IOThreadingMode.Auto;
+            OutConfig.IOThreadsMode =
+                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
+                IOThreadsMode.Auto;
 
-            OutConfig.CustomIOThreads = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
+            OutConfig.CustomIOThreadCount = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
 
             foreach (var item in DrivesAndTypes)
             {

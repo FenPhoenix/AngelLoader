@@ -31,9 +31,9 @@ public static partial class Utils
     {
         int? threadCount = null;
 
-        if (Config.IOThreadingMode == IOThreadingMode.Custom)
+        if (Config.IOThreadsMode == IOThreadsMode.Custom)
         {
-            threadCount = Config.CustomIOThreads;
+            threadCount = Config.CustomIOThreadCount;
         }
 
         ThreadingData threadingData;

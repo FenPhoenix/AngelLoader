@@ -436,15 +436,13 @@ public sealed class ConfigData
         set => _screenshotGammaPercent = value.Clamp(0, 100);
     }
 
-    // @MT_TASK: Finalize names
+    internal IOThreadsMode IOThreadsMode = IOThreadsMode.Auto;
 
-    internal IOThreadingMode IOThreadingMode = IOThreadingMode.Auto;
-
-    private int _customIOThreads = CoreCount;
-    internal int CustomIOThreads
+    private int _customIOThreadCount = CoreCount;
+    internal int CustomIOThreadCount
     {
-        get => _customIOThreads;
-        set => _customIOThreads = value.ClampToMin(1);
+        get => _customIOThreadCount;
+        set => _customIOThreadCount = value.ClampToMin(1);
     }
 
     internal readonly DriveLetterDictionary DriveLettersAndTypes = new(26);
@@ -467,8 +465,6 @@ public sealed class ConfigData
             return AL_DriveType.Auto;
         }
     }
-
-    // @MT_TASK: End finalize names
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

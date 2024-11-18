@@ -214,7 +214,7 @@ public enum CheckForUpdates
     False,
 }
 
-public enum IOThreadingMode
+public enum IOThreadsMode
 {
     Auto,
     Custom,

@@ -676,8 +676,8 @@ internal static class Core
 
         #region Advanced page
 
-        Config.IOThreadingMode = outConfig.IOThreadingMode;
-        Config.CustomIOThreads = outConfig.CustomIOThreads;
+        Config.IOThreadsMode = outConfig.IOThreadsMode;
+        Config.CustomIOThreadCount = outConfig.CustomIOThreadCount;
 
         Config.DriveLettersAndTypes.Clear();
         foreach (var item in outConfig.DriveLettersAndTypes)
