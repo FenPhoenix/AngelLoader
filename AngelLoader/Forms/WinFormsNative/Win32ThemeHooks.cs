@@ -637,7 +637,7 @@ internal static class Win32ThemeHooks
                         case Native.ABS_DOWNPRESSED:
                         case Native.ABS_LEFTPRESSED:
                         case Native.ABS_RIGHTPRESSED:
-                            brush = SystemBrushes.ControlDarkDark;
+                            brush = DarkColors.LightScrollBarButtonPressedBrush;
                             break;
                         case Native.ABS_UPDISABLED:
                         case Native.ABS_DOWNDISABLED:
@@ -708,13 +708,15 @@ internal static class Win32ThemeHooks
                             : DarkColors.GreySelectionBrush,
                     Native.SCRBS_HOVER =>
                         usingLightMode
-                            ? DarkColors.GreyHighlightBrush
+                            ? DarkColors.LightScrollBarHoverBrush
                             : DarkColors.Fen_ThumbScrollBarHoverBrush,
                     Native.SCRBS_HOT =>
-                        SystemBrushes.ControlDarkDark,
+                        usingLightMode
+                            ? DarkColors.DisabledTextBrush
+                            : SystemBrushes.ControlDarkDark,
                     Native.SCRBS_PRESSED =>
                         usingLightMode
-                            ? DarkColors.GreySelectionBrush
+                            ? DarkColors.LightScrollBarButtonPressedBrush
                             : DarkColors.ActiveControlBrush,
                     _ => DarkColors.DarkGreySelectionBrush,
                 };
@@ -762,7 +764,7 @@ internal static class Win32ThemeHooks
                 case Native.ABS_RIGHTHOT:
                     pen =
                         usingLightMode
-                            ? SystemPens.ControlDarkDark
+                            ? SystemPens.ControlText
                             : DarkColors.GreyHighlightPen;
                     break;
 #if false

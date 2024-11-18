@@ -67,6 +67,7 @@ public static class DarkColors
     public static readonly Color Fen_CautionText = Color.FromArgb(225, 135, 135);
 
     public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
+    //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
     public static readonly Color ScrollBarLight = Color.FromArgb(180, 180, 180);
     //public static readonly Pen ScrollBarLightPen = new Pen(ScrollBarLight);
@@ -86,6 +87,10 @@ public static class DarkColors
     public static readonly Color TabDragOverlay_Dark = Color.FromArgb(64, 75, 110, 175);
 
     public static readonly Color LightScrollBarButtonHot = Color.FromArgb(218, 218, 218);
+    public static readonly Color LightScrollBarHover = Color.FromArgb(170, 170, 170);
+    public static readonly SolidBrush LightScrollBarHoverBrush = new SolidBrush(LightScrollBarHover);
+    public static readonly Color LightScrollBarButtonPressed = Color.FromArgb(96, 96, 96);
+    public static readonly SolidBrush LightScrollBarButtonPressedBrush = new SolidBrush(LightScrollBarButtonPressed);
 
     #endregion
 
