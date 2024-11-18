@@ -934,7 +934,7 @@ internal static class Native
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern unsafe bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, void* pvParam, uint fWinIni);
+    private static extern bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, ref HIGHCONTRASTW pvParam, uint fWinIni);
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
@@ -982,10 +982,10 @@ internal static class Native
         bool success = SystemParametersInfoW(
             SystemParametersAction.SPI_GETHIGHCONTRAST,
             highContrast.cbSize,
-            &highContrast,
+            ref highContrast,
             0); // This has no meaning when getting values
 
-        return success && highContrast.dwFlags.HasFlag(HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON);
+        return success && (highContrast.dwFlags & HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
     }
 
     #endregion
