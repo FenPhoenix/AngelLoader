@@ -6,7 +6,6 @@ namespace AngelLoader;
 internal static class WinVersion
 {
     internal static readonly bool Is7OrAbove = WinVersionIs7OrAbove();
-    internal static readonly bool Is8OrAbove = WinVersionIs8OrAbove();
     internal static readonly bool Is11OrAbove = WinVersionIs11OrAbove();
     internal static readonly bool SupportsPersistentToolTips = OSSupportsPersistentToolTips();
     internal static readonly bool SupportsDarkMode = WinVersionSupportsDarkMode();
@@ -18,20 +17,8 @@ internal static class WinVersion
             OperatingSystem osVersion = Environment.OSVersion;
             return osVersion.Platform == PlatformID.Win32NT &&
                    osVersion.Version >= new Version(6, 1);
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
-    private static bool WinVersionIs8OrAbove()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(6, 2);
+            // Windows 8 is 6, 2
         }
         catch
         {
