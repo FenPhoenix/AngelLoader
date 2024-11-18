@@ -1,11 +1,14 @@
 ﻿// @MT_TASK: Comment this out for final release
 //#define TIMING_TEST
 
-// @MT_TASK: We could call SATA-to-other-SATA an aggressive-threading scenario
-//  But we'd have to be able to differentiate physical drives, and we can't do it with drive letters either
-//  because they could be symlinks or separate partitions on the same drive or whatever else.
-//  If we did that, we'd have to change the UI threading levels back to drive type, because the threading level
-//  would now depend on more than one drive, so it wouldn't make sense.
+/*
+@MT_TASK_NOTE: We could call SATA-to-other-SATA an aggressive-threading scenario
+ But we'd have to be able to differentiate physical drives, and we can't do it with drive letters either because
+ they could be symlinks or separate partitions on the same drive or whatever else.
+ Also, the user wouldn't be able to tell it NOT to do so - if we had two SATA drives and they become NVMe-like
+ between them, the user couldn't tell each to still act like SATA between them.
+ Better to keep it the way we have now, where the user can explicitly tell both drives to act like NVMe.
+*/
 
 using System;
 using System.Collections.Generic;
