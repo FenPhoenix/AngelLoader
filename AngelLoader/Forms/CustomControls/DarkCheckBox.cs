@@ -241,7 +241,11 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
             return;
         }
 
-        bool usingLightMode = WinVersion.Is11OrAbove && ThreeState && !_darkModeEnabled;
+        bool usingLightMode =
+            WinVersion.Is11OrAbove &&
+            !_darkModeEnabled &&
+            !Native.HighContrastEnabled() &&
+            ThreeState;
 
         Graphics g = e.Graphics;
         Rectangle rect = ClientRectangle;
