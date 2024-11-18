@@ -3,7 +3,7 @@
 
 // @MT_TASK: We could call SATA-to-other-SATA an aggressive-threading scenario
 //  But we'd have to be able to differentiate physical drives, and we can't do it with drive letters either
-//  because they could be symlinks.
+//  because they could be symlinks or separate partitions on the same drive or whatever else.
 //  If we did that, we'd have to change the UI threading levels back to drive type, because the threading level
 //  would now depend on more than one drive, so it wouldn't make sense.
 
