@@ -79,9 +79,10 @@ internal static class WinVersion
     {
         try
         {
+            if (!Is11OrAbove) return false;
             using RegistryKey? hklm = (RegistryKey?)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
             using RegistryKey? ndpKey = hklm?.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\", writable: false);
-            return ndpKey?.GetValue("Release") is >= 533320 && Is11OrAbove;
+            return ndpKey?.GetValue("Release") is >= 533320;
         }
         catch
         {
