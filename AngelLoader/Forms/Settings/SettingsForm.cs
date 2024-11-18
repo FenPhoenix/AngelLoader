@@ -682,6 +682,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
 
+            // @MT_TASK(GetDrives()): This thing can throw...
             DriveInfo[] drives = DriveInfo.GetDrives();
             ThreadablePath[] threadablePaths = new ThreadablePath[drives.Length];
 
@@ -702,7 +703,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             }
 
             const int driveTypePanelHeight = 104;
-            int y = 152;
+            int y = 24;
             int tabIndex = 2;
             for (int i = 0; i < DrivesAndTypes.Length; i++, y += driveTypePanelHeight, tabIndex++)
             {
@@ -712,7 +713,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     Location = new Point(8, y),
-                    Size = new Size(AdvancedPage.IOThreadingGroupBox.Width - 16, driveTypePanelHeight - 20),
+                    Size = new Size(AdvancedPage.IOThreadingLevelGroupBox.Width - 16, driveTypePanelHeight - 20),
                     TabIndex = tabIndex,
                 };
                 DarkLabel driveLabel = new()
@@ -776,9 +777,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 panel.Controls.Add(sataRadioButton);
                 panel.Controls.Add(hddRadioButton);
 
-                AdvancedPage.IOThreadingGroupBox.Controls.Add(panel);
+                AdvancedPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
-                AdvancedPage.HorizDivYPositions.Add(y - 20);
+                if (i < DrivesAndTypes.Length - 1)
+                {
+                    AdvancedPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
+                }
 
                 AL_DriveType driveType = ConfigData.GetDriveType(_driveLettersAndTypes, driveAndType.Drive);
                 switch (driveType)
@@ -797,7 +801,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         break;
                 }
             }
-            AdvancedPage.IOThreadingGroupBox.Size = AdvancedPage.IOThreadingGroupBox.Size with
+            AdvancedPage.IOThreadingLevelGroupBox.Size = AdvancedPage.IOThreadingLevelGroupBox.Size with
             {
                 Height = y - 8,
             };
@@ -1198,20 +1202,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 AdvancedRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
 
-                AdvancedPage.IOThreadingGroupBox.Text = LText.SettingsWindow.Advanced_IO_Threading;
-
-                #region Auto
+                AdvancedPage.IOThreadCountBox.Text = LText.SettingsWindow.Advanced_IO_Threading;
 
                 AdvancedPage.AutoModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Auto;
-
-                #endregion
-
-                #region Custom
 
                 AdvancedPage.CustomModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Custom;
                 AdvancedPage.CustomThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
 
-                #endregion
+                AdvancedPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.Advanced_IO_Threading_Levels;
 
                 #endregion
             }
