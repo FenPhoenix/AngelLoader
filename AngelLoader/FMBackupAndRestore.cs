@@ -200,6 +200,31 @@ internal static partial class FMInstallAndPlay
 
         try
         {
+            List<(string FileName, string FileNameRelative)> filesList = new();
+            string fmSelInfString = "";
+
+            foreach (string f in installedFMFiles)
+            {
+                string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
+                if (IsSaveOrScreenshot(fn, fm.Game) ||
+                    (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
+                     (changedList.Contains(fn) || addedList.Contains(fn))))
+                {
+                    filesList.Add((f, fn));
+                }
+            }
+
+            foreach (string f in fullList)
+            {
+                if (!installedFMFiles.Contains(Path.Combine(fmData.InstalledPath, f)))
+                {
+                    // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
+                    fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
+                }
+            }
+
+            if (filesList.Count == 0 && fmSelInfString.IsEmpty()) return;
+
             using (var archive = new ZipArchive(
                        new FileStream(
                            bakFile,
@@ -208,25 +233,9 @@ internal static partial class FMInstallAndPlay
                        ZipArchiveMode.Create,
                        leaveOpen: false))
             {
-                foreach (string f in installedFMFiles)
+                foreach ((string fileName, string fileNameRelative) in filesList)
                 {
-                    string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
-                    if (IsSaveOrScreenshot(fn, fm.Game) ||
-                        (!fn.EqualsI(Paths.FMSelInf) && !fn.EqualsI(_startMisSav) &&
-                         (changedList.Contains(fn) || addedList.Contains(fn))))
-                    {
-                        AddEntry(archive, f, fn, fileStreamBuffer);
-                    }
-                }
-
-                string fmSelInfString = "";
-                foreach (string f in fullList)
-                {
-                    if (!installedFMFiles.Contains(Path.Combine(fmData.InstalledPath, f)))
-                    {
-                        // @DIRSEP: Test if FMSel is dirsep-agnostic here. If so, remove the ToSystemDirSeps()
-                        fmSelInfString += _removeFileEq + f.ToSystemDirSeps() + "\r\n";
-                    }
+                    AddEntry(archive, fileName, fileNameRelative, fileStreamBuffer);
                 }
 
                 if (!fmSelInfString.IsEmpty())
