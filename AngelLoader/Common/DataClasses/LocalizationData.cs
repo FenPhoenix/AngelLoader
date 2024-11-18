@@ -229,7 +229,7 @@ internal sealed class LText_Class
         [FenGenComment(
             "During the FM install process, either the user canceled the install or the install failed, and during the attempt to remove the leftover",
             "FM installed folder, an error occurred.")]
-        internal readonly string InstallRollback_FMInstallFolderDeleteFail_Multi = "One or more FM folders could not be removed. See the log file for details.";
+        internal readonly string InstallRollback_FMInstallFolderDeleteFail = "One or more FM folders could not be removed. See the log file for details.";
         [FenGenBlankLine]
         internal readonly string AudioConversion_GameIsRunning = "Game is running; unable to convert audio files. Please exit the game and then try again.";
         internal readonly string AudioConversion_SomeSelectedFilesDoNotSupportConversion = "Some of the selected FMs don't support audio conversion. Audio can only be converted for installed FMs that are for Thief 1, Thief 2, or System Shock 2. If you continue, any FMs whose audio cannot be converted will be skipped.";
@@ -267,6 +267,7 @@ internal sealed class LText_Class
         internal readonly string Patch_FMFolderNotFound = "The FM's folder couldn't be found.";
         [FenGenBlankLine]
         internal readonly string Misc_SneakyOptionsIniNotFound = "A Thief: Deadly Shadows install exists, but SneakyOptions.ini couldn't be found. Make sure your Thief: Deadly Shadows install has been patched with the Sneaky Upgrade 1.1.9.1 or later.";
+        [FenGenBlankLine]
         internal readonly string Extract_ZipExtractFailedFullyOrPartially = "Zip extraction failed fully or partially.";
         internal readonly string Extract_SevenZipExtractFailedFullyOrPartially = "7-Zip extraction failed fully or partially.";
         internal readonly string Extract_RarExtractFailedFullyOrPartially = "RAR extraction failed fully or partially.";
@@ -744,7 +745,7 @@ internal sealed class LText_Class
         [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
         internal readonly string InstallFailed = "Install failed.";
-        [FenGenComment("For example, we could be backing up (or restoring) saves and screenshots for this FM")]
+        [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
         internal readonly string RestoringBackup = "Restoring backup...";
         internal readonly string InstallComplete = "Install complete.";
         [FenGenBlankLine]
@@ -918,6 +919,7 @@ internal sealed class LText_Class
         internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
         [FenGenBlankLine]
         internal readonly string IOThreading_TabText = "I/O Threading";
+        [FenGenBlankLine]
         internal readonly string IOThreading_IOThreads = "I/O threads";
         internal readonly string IOThreading_IOThreads_Auto = "Auto";
         internal readonly string IOThreading_IOThreads_Custom = "Custom";
@@ -926,11 +928,9 @@ internal sealed class LText_Class
         internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
         [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
-        [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
-        [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading = "Auto: Aggressive multithreading";
         internal readonly string IOThreading_IOThreadingLevels_Auto_StandardMultithreading = "Auto: Standard multithreading";
         internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto: Single thread";

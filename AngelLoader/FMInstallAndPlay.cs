@@ -1978,7 +1978,7 @@ internal static partial class FMInstallAndPlay
                             "--- End Rollback errors ---");
 
                         Core.Dialogs.ShowError(
-                            LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail_Multi,
+                            LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail,
                             LText.AlertMessages.Alert,
                             icon: MBoxIcon.Warning);
                     }
