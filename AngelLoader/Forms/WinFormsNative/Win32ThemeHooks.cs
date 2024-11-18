@@ -837,7 +837,13 @@ internal static class Win32ThemeHooks
         // This is the ONLY way that works on those versions.
         if (iPartId == Native.SBP_CORNER && iPropId == Native.TMT_FILLCOLOR)
         {
-            pColor = ColorTranslator.ToWin32(DarkColors.DarkBackground);
+            bool usingLightMode = WinVersion.Is11OrAbove && !Global.Config.DarkMode && !Native.HighContrastEnabled();
+
+            Color color = usingLightMode
+                ? SystemColors.Control
+                : DarkColors.DarkBackground;
+
+            pColor = ColorTranslator.ToWin32(color);
             return true;
         }
         else
