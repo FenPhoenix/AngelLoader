@@ -29,12 +29,12 @@ for writing. Even if you put it after the using block, it throws. So always set 
 Because we're trimming from the start of a relative path, so we won't trim any "\\" from "\\netPC" or anything
 
 NOTE(Backup/restore): Note about empty directories
-It seems we already explicitly ignore empty directory entries in GetFMDiff(), which means empty dirs are never
-backed up - nor deleted empty dirs marked as deleted - in any case. So, we could just leave this alone and we'd
-have the same behavior as before. To be completely correct, we should count empty dirs in the diff, but then any
-FM that contained empty dirs and was installed with a previous AL version would get those dirs marked as deleted
-in its backup, and then they'd always end up deleted on subsequent installs. To prevent this, we should stick to
-ignoring empty dirs for now.
+It seems we already explicitly ignore empty directory entries in the get diff function, which means empty dirs
+are neve backed up - nor deleted empty dirs marked as deleted - in any case. So, we could just leave this alone
+and we'd have the same behavior as before. To be completely correct, we should count empty dirs in the diff, but
+then any FM that contained empty dirs and was installed with a previous AL version would get those dirs marked as
+deleted in its backup, and then they'd always end up deleted on subsequent installs. To prevent this, we should
+stick to ignoring empty dirs for now.
 */
 
 internal static partial class FMInstallAndPlay
@@ -335,6 +335,19 @@ internal static partial class FMInstallAndPlay
                     ZipArchiveEntry entry = entries[i];
                     string efn = entry.FullName.ToBackSlashes();
 
+                    /*
+                    @MT_TASK: One_Mans_Trash_v1.2.zip has a duplicate entry: obj/txt16/gold.gif
+                    The first is dated 2004/7/19, the other 2005/10/22
+                    The end result is we end up extracting both and the second overwrites the first, so the 2005
+                    one is the one that ends up on disk. Then when we diff against the archive we diff against
+                    the 2004 one and detect a modified file which then gets put into the backup archive.
+                    FMSel also overwrites the 2004 with the 2005, so nobody gets the edge case right.
+                    WinRAR and 7-Zip, upon full archive extract, both say there's a file with the same name and
+                    ask if you want to overwrite.
+                    If we wanted to be as correct as we can in the face of this, we should build a dictionary of
+                    <Entry, List<Entry>> and put dupes in there, then check against it for the diff.
+                    Or, just make each entry a List<Entry> and check all in the list for the diff.
+                    */
                     entriesFullNamesHash.Add(efn);
 
                     if (IsIgnoredFile(efn) ||
