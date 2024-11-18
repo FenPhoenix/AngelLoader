@@ -33,6 +33,11 @@ sealed partial class PathsPage
     {
             this.PagePanel = new System.Windows.Forms.Panel();
             this.ActualPathsPanel = new System.Windows.Forms.Panel();
+            this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
             this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
             this.BackupGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.BackupPathPanel = new System.Windows.Forms.Panel();
@@ -42,6 +47,16 @@ sealed partial class PathsPage
             this.BackupPathHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.BackupPathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.BackupPathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
+            this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+            this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
+            this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SS2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief3UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.Thief2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+            this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
+            this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
+            this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.PathsToGameExesGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.TDMExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.TDMExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
@@ -60,33 +75,18 @@ sealed partial class PathsPage
             this.Thief3ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief2ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Thief1ExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
-            this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-            this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
-            this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.SS2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief3UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.Thief2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-            this.SteamExeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.SteamExeTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-            this.SteamExeBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.PagePanel.SuspendLayout();
             this.ActualPathsPanel.SuspendLayout();
+            this.FMArchivePathsGroupBox.SuspendLayout();
             this.LayoutFLP.SuspendLayout();
             this.BackupGroupBox.SuspendLayout();
             this.BackupPathPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).BeginInit();
-            this.PathsToGameExesGroupBox.SuspendLayout();
-            this.GameRequirementsPanel.SuspendLayout();
-            this.FMArchivePathsGroupBox.SuspendLayout();
             this.SteamOptionsGroupBox.SuspendLayout();
             this.LaunchTheseGamesThroughSteamPanel.SuspendLayout();
+            this.PathsToGameExesGroupBox.SuspendLayout();
+            this.GameRequirementsPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // PagePanel
@@ -97,7 +97,7 @@ sealed partial class PathsPage
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PagePanel.Location = new System.Drawing.Point(0, 0);
             this.PagePanel.Name = "PagePanel";
-            this.PagePanel.Size = new System.Drawing.Size(440, 910);
+            this.PagePanel.Size = new System.Drawing.Size(440, 908);
             this.PagePanel.TabIndex = 3;
             // 
             // ActualPathsPanel
@@ -113,6 +113,60 @@ sealed partial class PathsPage
             this.ActualPathsPanel.Size = new System.Drawing.Size(440, 888);
             this.ActualPathsPanel.TabIndex = 4;
             // 
+            // FMArchivePathsGroupBox
+            // 
+            this.FMArchivePathsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
+            this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
+            this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
+            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 300);
+            this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+            this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
+            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
+            this.FMArchivePathsGroupBox.TabIndex = 3;
+            this.FMArchivePathsGroupBox.TabStop = false;
+            this.FMArchivePathsGroupBox.Text = "FM archive paths";
+            // 
+            // IncludeSubfoldersCheckBox
+            // 
+            this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.IncludeSubfoldersCheckBox.AutoSize = true;
+            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 224);
+            this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
+            this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.IncludeSubfoldersCheckBox.TabIndex = 1;
+            this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
+            // 
+            // AddFMArchivePathButton
+            // 
+            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
+            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
+            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.AddFMArchivePathButton.TabIndex = 3;
+            this.AddFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.AddFMArchivePathButton_Paint);
+            // 
+            // RemoveFMArchivePathButton
+            // 
+            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
+            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
+            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
+            this.RemoveFMArchivePathButton.TabIndex = 2;
+            this.RemoveFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveFMArchivePathButton_Paint);
+            // 
+            // FMArchivePathsListBox
+            // 
+            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
+            this.FMArchivePathsListBox.MultiSelect = false;
+            this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
+            this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
+            this.FMArchivePathsListBox.TabIndex = 0;
+            // 
             // LayoutFLP
             // 
             this.LayoutFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -124,7 +178,7 @@ sealed partial class PathsPage
             this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
             this.LayoutFLP.Name = "LayoutFLP";
             this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
-            this.LayoutFLP.Size = new System.Drawing.Size(440, 403);
+            this.LayoutFLP.Size = new System.Drawing.Size(440, 313);
             this.LayoutFLP.TabIndex = 4;
             this.LayoutFLP.WrapContents = false;
             this.LayoutFLP.Layout += new System.Windows.Forms.LayoutEventHandler(this.LayoutFLP_Layout);
@@ -214,60 +268,6 @@ sealed partial class PathsPage
             this.BackupPathBrowseButton.TabIndex = 2;
             this.BackupPathBrowseButton.Text = "Browse...";
             // 
-            // FMArchivePathsGroupBox
-            // 
-            this.FMArchivePathsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMArchivePathsGroupBox.Controls.Add(this.IncludeSubfoldersCheckBox);
-            this.FMArchivePathsGroupBox.Controls.Add(this.AddFMArchivePathButton);
-            this.FMArchivePathsGroupBox.Controls.Add(this.RemoveFMArchivePathButton);
-            this.FMArchivePathsGroupBox.Controls.Add(this.FMArchivePathsListBox);
-            this.FMArchivePathsGroupBox.Location = new System.Drawing.Point(8, 300);
-            this.FMArchivePathsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-            this.FMArchivePathsGroupBox.Name = "FMArchivePathsGroupBox";
-            this.FMArchivePathsGroupBox.Size = new System.Drawing.Size(424, 258);
-            this.FMArchivePathsGroupBox.TabIndex = 3;
-            this.FMArchivePathsGroupBox.TabStop = false;
-            this.FMArchivePathsGroupBox.Text = "FM archive paths";
-            // 
-            // IncludeSubfoldersCheckBox
-            // 
-            this.IncludeSubfoldersCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.IncludeSubfoldersCheckBox.AutoSize = true;
-            this.IncludeSubfoldersCheckBox.Location = new System.Drawing.Point(16, 224);
-            this.IncludeSubfoldersCheckBox.Name = "IncludeSubfoldersCheckBox";
-            this.IncludeSubfoldersCheckBox.Size = new System.Drawing.Size(112, 17);
-            this.IncludeSubfoldersCheckBox.TabIndex = 1;
-            this.IncludeSubfoldersCheckBox.Text = "Include subfolders";
-            // 
-            // AddFMArchivePathButton
-            // 
-            this.AddFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.AddFMArchivePathButton.Location = new System.Drawing.Point(386, 224);
-            this.AddFMArchivePathButton.Name = "AddFMArchivePathButton";
-            this.AddFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.AddFMArchivePathButton.TabIndex = 3;
-            this.AddFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.AddFMArchivePathButton_Paint);
-            // 
-            // RemoveFMArchivePathButton
-            // 
-            this.RemoveFMArchivePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.RemoveFMArchivePathButton.Location = new System.Drawing.Point(362, 224);
-            this.RemoveFMArchivePathButton.Name = "RemoveFMArchivePathButton";
-            this.RemoveFMArchivePathButton.Size = new System.Drawing.Size(23, 23);
-            this.RemoveFMArchivePathButton.TabIndex = 2;
-            this.RemoveFMArchivePathButton.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.RemoveFMArchivePathButton_Paint);
-            // 
-            // FMArchivePathsListBox
-            // 
-            this.FMArchivePathsListBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.FMArchivePathsListBox.Location = new System.Drawing.Point(16, 24);
-            this.FMArchivePathsListBox.MultiSelect = false;
-            this.FMArchivePathsListBox.Name = "FMArchivePathsListBox";
-            this.FMArchivePathsListBox.Size = new System.Drawing.Size(392, 199);
-            this.FMArchivePathsListBox.TabIndex = 0;
-            // 
             // SteamOptionsGroupBox
             // 
             this.SteamOptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -276,7 +276,7 @@ sealed partial class PathsPage
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeLabel);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeTextBox);
             this.SteamOptionsGroupBox.Controls.Add(this.SteamExeBrowseButton);
-            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 118);
+            this.SteamOptionsGroupBox.Location = new System.Drawing.Point(8, 124);
             this.SteamOptionsGroupBox.Margin = new System.Windows.Forms.Padding(3, 9, 3, 3);
             this.SteamOptionsGroupBox.Name = "SteamOptionsGroupBox";
             this.SteamOptionsGroupBox.Size = new System.Drawing.Size(424, 176);
@@ -564,25 +564,25 @@ sealed partial class PathsPage
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
             this.Name = "PathsPage";
-            this.Size = new System.Drawing.Size(440, 910);
+            this.Size = new System.Drawing.Size(440, 908);
             this.PagePanel.ResumeLayout(false);
             this.ActualPathsPanel.ResumeLayout(false);
+            this.FMArchivePathsGroupBox.ResumeLayout(false);
+            this.FMArchivePathsGroupBox.PerformLayout();
             this.LayoutFLP.ResumeLayout(false);
             this.BackupGroupBox.ResumeLayout(false);
             this.BackupPathPanel.ResumeLayout(false);
             this.BackupPathPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpTDMPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BackupHelpPictureBox)).EndInit();
-            this.PathsToGameExesGroupBox.ResumeLayout(false);
-            this.PathsToGameExesGroupBox.PerformLayout();
-            this.GameRequirementsPanel.ResumeLayout(false);
-            this.GameRequirementsPanel.PerformLayout();
-            this.FMArchivePathsGroupBox.ResumeLayout(false);
-            this.FMArchivePathsGroupBox.PerformLayout();
             this.SteamOptionsGroupBox.ResumeLayout(false);
             this.SteamOptionsGroupBox.PerformLayout();
             this.LaunchTheseGamesThroughSteamPanel.ResumeLayout(false);
             this.LaunchTheseGamesThroughSteamPanel.PerformLayout();
+            this.PathsToGameExesGroupBox.ResumeLayout(false);
+            this.PathsToGameExesGroupBox.PerformLayout();
+            this.GameRequirementsPanel.ResumeLayout(false);
+            this.GameRequirementsPanel.PerformLayout();
             this.ResumeLayout(false);
 
     }

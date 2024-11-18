@@ -8,15 +8,24 @@ sealed partial class IOThreadingPage
     private void InitSlim()
     {
         this.PagePanel = new System.Windows.Forms.Panel();
+        this.ActualPagePanel = new System.Windows.Forms.Panel();
+        this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.HelpPanel = new System.Windows.Forms.Panel();
+        this.HelpPictureBox = new System.Windows.Forms.PictureBox();
+        this.HelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IOThreadingLevelGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.IOThreadCountBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+        this.IOThreadCountGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.IOThreadsResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.CustomThreadsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
         this.CustomThreadsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.AutoModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.CustomModeRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.PagePanel.SuspendLayout();
-        this.IOThreadCountBox.SuspendLayout();
+        this.ActualPagePanel.SuspendLayout();
+        this.LayoutFLP.SuspendLayout();
+        this.HelpPanel.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.HelpPictureBox)).BeginInit();
+        this.IOThreadCountGroupBox.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.CustomThreadsNumericUpDown)).BeginInit();
         this.SuspendLayout();
         // 
@@ -24,37 +33,80 @@ sealed partial class IOThreadingPage
         // 
         this.PagePanel.AutoScroll = true;
         this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
-        this.PagePanel.Controls.Add(this.IOThreadingLevelGroupBox);
-        this.PagePanel.Controls.Add(this.IOThreadCountBox);
+        this.PagePanel.Controls.Add(this.ActualPagePanel);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 692);
+        this.PagePanel.Size = new System.Drawing.Size(440, 591);
         this.PagePanel.TabIndex = 0;
+        // 
+        // ActualPagePanel
+        // 
+        this.ActualPagePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.ActualPagePanel.Controls.Add(this.LayoutFLP);
+        this.ActualPagePanel.Controls.Add(this.IOThreadCountGroupBox);
+        this.ActualPagePanel.MinimumSize = new System.Drawing.Size(440, 0);
+        this.ActualPagePanel.Size = new System.Drawing.Size(440, 568);
+        this.ActualPagePanel.TabIndex = 5;
+        // 
+        // LayoutFLP
+        // 
+        this.LayoutFLP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.LayoutFLP.Controls.Add(this.HelpPanel);
+        this.LayoutFLP.Controls.Add(this.IOThreadingLevelGroupBox);
+        this.LayoutFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
+        this.LayoutFLP.Location = new System.Drawing.Point(0, 144);
+        this.LayoutFLP.Margin = new System.Windows.Forms.Padding(0, 3, 0, 3);
+        this.LayoutFLP.Padding = new System.Windows.Forms.Padding(5, 0, 0, 0);
+        this.LayoutFLP.Size = new System.Drawing.Size(440, 403);
+        this.LayoutFLP.TabIndex = 4;
+        this.LayoutFLP.WrapContents = false;
+        this.LayoutFLP.Layout += new System.Windows.Forms.LayoutEventHandler(this.LayoutFLP_Layout);
+        // 
+        // HelpPanel
+        // 
+        this.HelpPanel.Controls.Add(this.HelpPictureBox);
+        this.HelpPanel.Controls.Add(this.HelpLabel);
+        this.HelpPanel.Margin = new System.Windows.Forms.Padding(0);
+        this.HelpPanel.MinimumSize = new System.Drawing.Size(424, 0);
+        this.HelpPanel.Size = new System.Drawing.Size(430, 146);
+        this.HelpPanel.TabIndex = 5;
+        // 
+        // HelpPictureBox
+        // 
+        this.HelpPictureBox.Location = new System.Drawing.Point(8, 12);
+        this.HelpPictureBox.Size = new System.Drawing.Size(16, 16);
+        this.HelpPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+        // 
+        // HelpLabel
+        // 
+        this.HelpLabel.AutoSize = true;
+        this.HelpLabel.Location = new System.Drawing.Point(28, 14);
+        this.HelpLabel.MaximumSize = new System.Drawing.Size(380, 0);
+        this.HelpLabel.TextChanged += new System.EventHandler(this.HelpLabel_TextChanged);
         // 
         // IOThreadingLevelGroupBox
         // 
-        this.IOThreadingLevelGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.IOThreadingLevelGroupBox.Location = new System.Drawing.Point(8, 148);
         this.IOThreadingLevelGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.IOThreadingLevelGroupBox.Size = new System.Drawing.Size(424, 104);
         this.IOThreadingLevelGroupBox.TabIndex = 0;
         this.IOThreadingLevelGroupBox.TabStop = false;
         this.IOThreadingLevelGroupBox.PaintCustom += new System.EventHandler<System.Windows.Forms.PaintEventArgs>(this.IOThreadingLevelGroupBox_PaintCustom);
         // 
-        // IOThreadCountBox
+        // IOThreadCountGroupBox
         // 
-        this.IOThreadCountBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        this.IOThreadCountGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.IOThreadCountBox.Controls.Add(this.IOThreadsResetButton);
-        this.IOThreadCountBox.Controls.Add(this.CustomThreadsNumericUpDown);
-        this.IOThreadCountBox.Controls.Add(this.CustomThreadsLabel);
-        this.IOThreadCountBox.Controls.Add(this.AutoModeRadioButton);
-        this.IOThreadCountBox.Controls.Add(this.CustomModeRadioButton);
-        this.IOThreadCountBox.Location = new System.Drawing.Point(8, 8);
-        this.IOThreadCountBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.IOThreadCountBox.Size = new System.Drawing.Size(424, 128);
-        this.IOThreadCountBox.TabIndex = 0;
-        this.IOThreadCountBox.TabStop = false;
+        this.IOThreadCountGroupBox.Controls.Add(this.IOThreadsResetButton);
+        this.IOThreadCountGroupBox.Controls.Add(this.CustomThreadsNumericUpDown);
+        this.IOThreadCountGroupBox.Controls.Add(this.CustomThreadsLabel);
+        this.IOThreadCountGroupBox.Controls.Add(this.AutoModeRadioButton);
+        this.IOThreadCountGroupBox.Controls.Add(this.CustomModeRadioButton);
+        this.IOThreadCountGroupBox.Location = new System.Drawing.Point(8, 8);
+        this.IOThreadCountGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+        this.IOThreadCountGroupBox.Size = new System.Drawing.Size(424, 128);
+        this.IOThreadCountGroupBox.TabIndex = 0;
+        this.IOThreadCountGroupBox.TabStop = false;
         // 
         // IOThreadsResetButton
         // 
@@ -109,10 +161,15 @@ sealed partial class IOThreadingPage
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 692);
+        this.Size = new System.Drawing.Size(440, 591);
         this.PagePanel.ResumeLayout(false);
-        this.IOThreadCountBox.ResumeLayout(false);
-        this.IOThreadCountBox.PerformLayout();
+        this.ActualPagePanel.ResumeLayout(false);
+        this.LayoutFLP.ResumeLayout(false);
+        this.HelpPanel.ResumeLayout(false);
+        this.HelpPanel.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)(this.HelpPictureBox)).EndInit();
+        this.IOThreadCountGroupBox.ResumeLayout(false);
+        this.IOThreadCountGroupBox.PerformLayout();
         ((System.ComponentModel.ISupportInitialize)(this.CustomThreadsNumericUpDown)).EndInit();
         this.ResumeLayout(false);
     }

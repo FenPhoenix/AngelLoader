@@ -923,15 +923,19 @@ internal sealed class LText_Class
         internal readonly string IOThreading_IOThreads_Custom = "Custom";
         internal readonly string IOThreading_IOThreads_Threads = "Threads:";
         [FenGenBlankLine]
-        internal readonly string IOThreading_DriveTypes = "Drive types";
+        internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
         [FenGenBlankLine]
-        internal readonly string IOThreading_DriveTypes_Autodetected_NVMe_SSD = "Autodetected (NVMe SSD or better)";
-        internal readonly string IOThreading_DriveTypes_Autodetected_SATA_SSD = "Autodetected (SATA SSD)";
-        internal readonly string IOThreading_DriveTypes_Autodetected_HDD_Or_Other = "Autodetected (HDD or other)";
+        internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
         [FenGenBlankLine]
-        internal readonly string IOThreading_DriveTypes_NVMe_SSD = "NVMe SSD or better";
-        internal readonly string IOThreading_DriveTypes_SATA_SSD = "SATA SSD";
-        internal readonly string IOThreading_DriveTypes_HDD_Or_Other = "HDD or other";
+        internal readonly string IOThreading_IOThreadingLevels_Level_Auto = "Auto";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
+        internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
+        internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
+
+        internal readonly string IOThreading_IOThreadingLevels_Aggressive = "Aggressive threading (NVMe SSD or better)";
+        internal readonly string IOThreading_IOThreadingLevels_Normal = "Normal threading (SATA SSD)";
+        internal readonly string IOThreading_IOThreadingLevels_Single = "Single thread (HDD or other)";
     }
 
     internal sealed class DateFilterBox_Class

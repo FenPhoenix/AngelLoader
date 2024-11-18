@@ -77,6 +77,37 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly DarkTextBox[] GameWebSearchUrlTextBoxes;
     private readonly DarkButton[] GameWebSearchUrlResetButtons;
 
+    private sealed class DriveTypeSection
+    {
+        internal readonly DarkLabel DriveLabel;
+        internal readonly AL_DriveType DriveType;
+        internal readonly string Drive;
+        internal readonly DarkRadioButton AutoRadioButton;
+        internal readonly DarkRadioButton NVME_RadioButton;
+        internal readonly DarkRadioButton SATA_RadioButton;
+        internal readonly DarkRadioButton HDD_RadioButton;
+
+        public DriveTypeSection(
+            DarkLabel driveLabel,
+            AL_DriveType driveType,
+            string drive,
+            DarkRadioButton autoRadioButton,
+            DarkRadioButton nvmeRadioButton,
+            DarkRadioButton sataRadioButton,
+            DarkRadioButton hddRadioButton)
+        {
+            DriveLabel = driveLabel;
+            DriveType = driveType;
+            Drive = drive;
+            AutoRadioButton = autoRadioButton;
+            NVME_RadioButton = nvmeRadioButton;
+            SATA_RadioButton = sataRadioButton;
+            HDD_RadioButton = hddRadioButton;
+        }
+    }
+
+    private readonly DriveTypeSection[] IOThreadingLevelDriveTypeSections;
+
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
     // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
     private readonly DateTime _exampleDate = new(DateTime.Now.Year, 8, 4);
@@ -708,6 +739,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             DetectDriveTypes.FillSettingsDriveTypes(threadablePaths);
 
             DrivesAndTypes = new DriveAndType[threadablePaths.Length];
+            IOThreadingLevelDriveTypeSections = new DriveTypeSection[threadablePaths.Length];
 
             for (int i = 0; i < threadablePaths.Length; i++)
             {
@@ -715,7 +747,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 DrivesAndTypes[i] = new DriveAndType(path.Root, path.DriveType);
             }
 
-            const int driveTypePanelHeight = 104;
+            const int driveTypePanelHeight = 120;
             int y = 24;
             int tabIndex = 2;
             for (int i = 0; i < DrivesAndTypes.Length; i++, y += driveTypePanelHeight, tabIndex++)
@@ -733,45 +765,40 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     AutoSize = true,
                     TabIndex = tabIndex + 1,
-                    Text = driveAndType.Drive,
                 };
                 DarkRadioButton autoDetectRadioButton = new()
                 {
                     AutoSize = true,
-                    Location = new Point(8, 16),
+                    Location = new Point(8, 20),
                     TabIndex = tabIndex + 2,
                     TabStop = true,
-                    Text = GetDriveTypeString(driveAndType.DriveType, auto: true),
 
                     Tag = new DriveControlIndex(i, AL_DriveType.Auto),
                 };
                 DarkRadioButton nvmeRadioButton = new()
                 {
                     AutoSize = true,
-                    Location = new Point(8, 32),
+                    Location = new Point(8, 20 + (20 * 1)),
                     TabIndex = tabIndex + 3,
                     TabStop = true,
-                    Text = GetDriveTypeString(AL_DriveType.NVMe_SSD),
 
                     Tag = new DriveControlIndex(i, AL_DriveType.NVMe_SSD),
                 };
                 DarkRadioButton sataRadioButton = new()
                 {
                     AutoSize = true,
-                    Location = new Point(8, 48),
+                    Location = new Point(8, 20 + (20 * 2)),
                     TabIndex = tabIndex + 4,
                     TabStop = true,
-                    Text = GetDriveTypeString(AL_DriveType.SATA_SSD),
 
                     Tag = new DriveControlIndex(i, AL_DriveType.SATA_SSD),
                 };
                 DarkRadioButton hddRadioButton = new()
                 {
                     AutoSize = true,
-                    Location = new Point(8, 64),
+                    Location = new Point(8, 20 + (20 * 3)),
                     TabIndex = tabIndex + 5,
                     TabStop = true,
-                    Text = GetDriveTypeString(AL_DriveType.Other),
 
                     Tag = new DriveControlIndex(i, AL_DriveType.Other),
                 };
@@ -786,6 +813,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 panel.Controls.Add(nvmeRadioButton);
                 panel.Controls.Add(sataRadioButton);
                 panel.Controls.Add(hddRadioButton);
+
+                IOThreadingLevelDriveTypeSections[i] = new DriveTypeSection(
+                    driveLabel,
+                    driveAndType.DriveType,
+                    driveAndType.Drive,
+                    autoDetectRadioButton,
+                    nvmeRadioButton,
+                    sataRadioButton,
+                    hddRadioButton);
 
                 IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
@@ -816,24 +852,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 Height = y - 8,
             };
 
-            static string GetDriveTypeString(AL_DriveType driveType, bool auto = false)
-            {
-                return auto
-                    ? driveType switch
-                    {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_NVMe_SSD,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_SATA_SSD,
-                        _ => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_HDD_Or_Other,
-                    }
-                    : driveType switch
-                    {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_DriveTypes_NVMe_SSD,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_DriveTypes_SATA_SSD,
-                        _ => LText.SettingsWindow.IOThreading_DriveTypes_HDD_Or_Other,
-                    };
-            }
-
             #endregion
+        }
+        else
+        {
+            IOThreadingLevelDriveTypeSections = Array.Empty<DriveTypeSection>();
         }
 
         #endregion
@@ -989,6 +1012,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // questions.
         PathsPage.DoLayout = true;
         PathsPage.LayoutFLP.PerformLayout();
+        IOThreadingPage.DoLayout = true;
+        IOThreadingPage.LayoutFLP.PerformLayout();
 
         base.OnShown(e);
     }
@@ -1212,14 +1237,46 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 IOThreadingRadioButton.Text = LText.SettingsWindow.IOThreading_TabText;
 
-                IOThreadingPage.IOThreadCountBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
+                IOThreadingPage.IOThreadCountGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
 
                 IOThreadingPage.AutoModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Auto;
 
                 IOThreadingPage.CustomModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Custom;
                 IOThreadingPage.CustomThreadsLabel.Text = LText.SettingsWindow.IOThreading_IOThreads_Threads;
 
-                IOThreadingPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.IOThreading_DriveTypes;
+                IOThreadingPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreadingLevels;
+
+                IOThreadingPage.HelpLabel.Text = LText.SettingsWindow.IOThreading_HelpMessage;
+
+                foreach (DriveTypeSection section in IOThreadingLevelDriveTypeSections)
+                {
+                    section.DriveLabel.Text = section.Drive + " " + GetDriveTypeShortString(section.DriveType);
+
+                    section.AutoRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreadingLevels_Level_Auto;
+                    section.NVME_RadioButton.Text = GetDriveTypeString(AL_DriveType.NVMe_SSD);
+                    section.SATA_RadioButton.Text = GetDriveTypeString(AL_DriveType.SATA_SSD);
+                    section.HDD_RadioButton.Text = GetDriveTypeString(AL_DriveType.Other);
+                }
+
+                static string GetDriveTypeString(AL_DriveType driveType)
+                {
+                    return driveType switch
+                    {
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Aggressive,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Normal,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Single,
+                    };
+                }
+
+                static string GetDriveTypeShortString(AL_DriveType driveType)
+                {
+                    return driveType switch
+                    {
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_DriveType_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_DriveType_SATA_SSD,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other,
+                    };
+                }
 
                 #endregion
             }
