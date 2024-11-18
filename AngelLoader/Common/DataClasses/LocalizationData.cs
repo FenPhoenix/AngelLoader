@@ -928,9 +928,9 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string IOThreading_DriveTypes = "Drive types";
         [FenGenBlankLine]
-        internal readonly string IOThreading_DriveTypes_Autodetected_NVMe_SSD = "Autodetect (NVMe SSD or better)";
-        internal readonly string IOThreading_DriveTypes_Autodetected_SATA_SSD = "Autodetect (SATA SSD)";
-        internal readonly string IOThreading_DriveTypes_Autodetected_HDD_Or_Other = "Autodetect (HDD or other)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_NVMe_SSD = "Autodetected (NVMe SSD or better)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_SATA_SSD = "Autodetected (SATA SSD)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_HDD_Or_Other = "Autodetected (HDD or other)";
         [FenGenBlankLine]
         internal readonly string IOThreading_DriveTypes_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_DriveTypes_SATA_SSD = "SATA SSD";
