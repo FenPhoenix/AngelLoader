@@ -16,7 +16,6 @@ public static partial class Utils
         return Math.Min(threadingData.Threads, maxWorkItemsCount);
     }
 
-    // @MT_TASK: Thoroughly test all threadable-path codepaths now that we have this fully granular system
     internal static void FillThreadablePaths(List<ThreadablePath> paths)
     {
         DetectDriveTypes.GetAllDrivesType(paths, Config.DriveLettersAndTypes);

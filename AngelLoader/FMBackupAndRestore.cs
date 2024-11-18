@@ -345,7 +345,7 @@ internal static partial class FMInstallAndPlay
                     string efn = entry.FullName.ToBackSlashes();
 
                     /*
-                    @MT_TASK: One_Mans_Trash_v1.2.zip has a duplicate entry: obj/txt16/gold.gif
+                    @ZipSafety: One_Mans_Trash_v1.2.zip has a duplicate entry: obj/txt16/gold.gif
                     The first is dated 2004/7/19, the other 2005/10/22
                     The end result is we end up extracting both and the second overwrites the first, so the 2005
                     one is the one that ends up on disk. Then when we diff against the archive we diff against
