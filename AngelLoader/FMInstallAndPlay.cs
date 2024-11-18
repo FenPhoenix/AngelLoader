@@ -2798,7 +2798,7 @@ internal static partial class FMInstallAndPlay
 
         var fmDataList = new List<FMData>(fms.Length);
 
-        bool single = fmDataList.Count == 1;
+        bool single = fms.Length == 1;
 
         bool doBackup;
 
