@@ -12,8 +12,6 @@ public sealed partial class IOThreadingPage : UserControl, Interfaces.ISettingsP
     /// </summary>
     public bool DoLayout;
 
-    // @MT_TASK(I/O Threading page): Put some kind of help message on here, like:
-    //  "Increasing the thread level can result in slower I/O performance if the drive can't handle it"
     public IOThreadingPage()
     {
 #if DEBUG

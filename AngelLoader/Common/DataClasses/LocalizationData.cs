@@ -735,7 +735,6 @@ internal sealed class LText_Class
 
     internal sealed class ProgressBox_Class
     {
-        // @MT_TASK: Go through here and polish up any text that needs it
         internal readonly string Queued = "Queued...";
         internal readonly string InstallingFM = "Installing FM...";
         internal readonly string InstallingFMs = "Installing FMs...";

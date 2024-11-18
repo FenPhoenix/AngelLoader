@@ -1,5 +1,4 @@
-﻿// @MT_TASK: Comment this out for final release
-//#define TIMING_TEST
+﻿//#define TIMING_TEST
 
 /*
 @MT_TASK_NOTE: We could call SATA-to-other-SATA an aggressive-threading scenario

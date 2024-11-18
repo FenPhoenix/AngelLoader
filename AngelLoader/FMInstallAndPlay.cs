@@ -1,5 +1,4 @@
-﻿// @MT_TASK: Comment this out for final release
-#define TIMING_TEST
+﻿//#define TIMING_TEST
 
 using System;
 using System.Collections.Concurrent;

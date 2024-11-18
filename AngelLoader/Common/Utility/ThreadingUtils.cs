@@ -1,5 +1,4 @@
-﻿// @MT_TASK: Comment this out for final release
-#define TESTING
+﻿//#define TESTING
 
 using System;
 using System.Collections.Generic;
