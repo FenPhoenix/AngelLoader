@@ -1262,9 +1262,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_AggressiveThreading,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_StandardThreading,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_NoThreading,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_StandardMultithreading,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_SingleThread,
                     };
                 }
 
@@ -1272,9 +1272,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_AggressiveThreading,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_StandardThreading,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_NoThreading,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_AggressiveMultithreading,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_IOThreadingLevels_StandardMultithreading,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_SingleThread,
                     };
                 }
 
