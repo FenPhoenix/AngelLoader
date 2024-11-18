@@ -35,7 +35,6 @@ Our current hack is nasty, but it does do what we want, is performant enough, an
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
@@ -259,95 +258,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void Test3Button_Click(object sender, EventArgs e)
     {
-    }
-
-    // @MT_TASK: Remove this test stuff for final release
-    private async Task InstallTestSet()
-    {
-        string[] fmArchives =
-        {
-            "10Rooms_AHome.zip",
-            "10Rooms_Cave_v1.zip",
-            "10Rooms_Hammered_EnglishV1.0.zip",
-            "10Rooms_LostInTheFarEdgesV1.1.zip",
-            "10Rooms_LostInTheFarEdgesV1.2ENG.zip",
-            "1MIL_ThePerdurance.zip",
-            "2001-08-30_c1OswaldsPatisserie.zip",
-            "2003-05-26_JenivereDeJaVu.zip",
-            "2004-02-11_GatheringattheBar_T2.zip",
-            "2004-02-29_c5FrozenMines.zip",
-            "2004-04-21_MysticLady,The.zip",
-            "2006-10-05_MountainMonestary,The.zip",
-            "2008-04-06_CrazyManiacMrTimmsandTheWoodenShack,The.zip",
-            "2008-09-04_CTE_ShadowMoon.zip",
-            "2013-04-16_NiceGameofChess.zip",
-            "2479_VC_angel.zip",
-            "2481_VC_thirdtimefinal.zip",
-            "48HC_Canvassing_v1.zip",
-            "48HC_DoubleOrQuits.zip",
-            "48HC_FortyEight.zip",
-            "48HC_Piev.zip",
-            "48HC_Secret of the Keepers demo.zip",
-            "48HC_sibel.zip",
-            "48HC_tcb-v1.0.zip",
-            "48HC_WEDDING.zip",
-            "7SoM_v11.zip",
-            "A Tough Night Final5.zip",
-            "A Visit To The Baron v1.04.zip",
-            "Abandoned Castle V2.zip",
-            "AbgrundV2.zip",
-            "AcidTripv1.1.zip",
-            "ADireReturn.zip",
-            "AffairsOfWizards1.3.zip",
-            "AfterDark.zip",
-            "Agutt.zip",
-            "AlexandersMansion-v1-0.zip",
-            "alltorc.zip",
-            "AlternaCrystallisV15.zip",
-            "Amnesia2.zip",
-            "amoralfinal.zip",
-            "ANiceStroll.zip",
-            "ANIR1NewBeginning-NoveauDepart.zip",
-            "ANIR2Discovery-Decouverte.zip",
-            "ANIR3_Encre_MoviesUS.zip",
-            "art.zip",
-            "ArtifactReturns.zip",
-            "AshenAge,The_Part1_V4.zip",
-            "AThiefsHoliday2004_v3(0c).zip",
-            "AThiefsHoliday2004_v3.zip",
-            "ats.zip",
-            "Aurumpendo.zip",
-            "a_job_well_done.zip",
-            "a_job_well_done1.2.zip",
-            "A_Lucky_HandFRV1.1.zip",
-            "a_pirates_downfall (book-br fixed).zip",
-            "Babel.zip",
-            "BadHangoverV1.01.zip",
-            "Bad_Debts.zip",
-            "ball.zip",
-            "Bane1KeepofDeceitv1_47.zip",
-            "Bane2CultoftheDamned.zip",
-            "Bank1.4.zip",
-            "bathory_campaign_newdark_v3.zip",
-            "Beanstalk.zip",
-        };
-
-        List<FanMission> fms = new();
-
-        foreach (string fmArchive in fmArchives)
-        {
-            FanMission? fm = FMsViewList.Find(x => x.Archive.EqualsI(fmArchive));
-            if (fm != null)
-            {
-                fms.Add(fm);
-            }
-            else
-            {
-                Trace.WriteLine("****** FM WAS NULL");
-            }
-        }
-
-        await FMInstallAndPlay.Install(fms.ToArray());
     }
 
     private void Test4Button_Click(object sender, EventArgs e)

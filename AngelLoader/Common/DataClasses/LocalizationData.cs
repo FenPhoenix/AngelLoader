@@ -142,8 +142,6 @@ internal sealed class LText_Class
         )]
         internal readonly string SelectFM_DarkMod = "Select FM";
         internal readonly string DeselectFM_DarkMod = "Deselect FM";
-        [FenGenBlankLine]
-        internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
     }
 
     internal sealed class SplashScreen_Class
@@ -224,8 +222,6 @@ internal sealed class LText_Class
         internal readonly string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
         internal readonly string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";
         internal readonly string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
-        internal readonly string Uninstall_OneOrMoreFMsFailedToUninstall = "One or more FMs could not be uninstalled. See the log file for details.";
-        internal readonly string Uninstall_OneOrMoreFMsCouldNotBeBackedUp = "One or more FMs could not be backed up. These FMs will remain installed. See the log file for details.";
         internal readonly string Uninstall_Error = "One or more errors occurred during the uninstall process. See the log file for details.";
         internal readonly string Uninstall_BackupError = "The FM backup failed. If you choose to uninstall the FM anyway, you will lose any saves, screenshots, and modified data that would normally have been backed up.";
         internal readonly string Uninstall_BackupError_KeepInstalled = "Keep installed";
@@ -752,13 +748,11 @@ internal sealed class LText_Class
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
         internal readonly string InstallFailed = "Install failed.";
         [FenGenComment("For example, we could be backing up (or restoring) saves and screenshots for this FM")]
-        internal readonly string PerformingBackup = "Performing backup...";
         internal readonly string RestoringBackup = "Restoring backup...";
         internal readonly string InstallComplete = "Install complete.";
         [FenGenBlankLine]
         internal readonly string UninstallingFM = "Uninstalling FM...";
         internal readonly string UninstallingFMs = "Uninstalling FMs...";
-        internal readonly string UninstallComplete = "Uninstall complete.";
         [FenGenBlankLine]
         internal readonly string ConvertingAudioFiles = "Converting audio files...";
         [FenGenBlankLine]
