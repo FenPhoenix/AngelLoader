@@ -2322,8 +2322,8 @@ internal static partial class FMInstallAndPlay
             percent: 100,
             progressType: ProgressType.Determinate);
 
-        // @MT_TASK: Currently it says "0 / x" meaning "0 / x finished".
-        //           Maybe it should be "0 / x started" and be bumped up by one?
+        // @MT_TASK_NOTE: Currently it says "0 / x" meaning "0 / x finished".
+        //  Maybe it should be "0 / x started" and be bumped up by one?
         Core.View.MultiItemProgress_SetState(
             mainMessage2: fmsFinishedCount.ToStrCur() + " / " + fmDataListCount.ToStrCur()
         );
