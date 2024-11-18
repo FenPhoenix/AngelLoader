@@ -733,10 +733,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     AutoSize = true,
                     TabIndex = tabIndex + 1,
-                    Text =
-                        LText.SettingsWindow.Advanced_IO_Threading_ThreadingLevel_BeforeDriveLetter +
-                        driveAndType.Drive +
-                        LText.SettingsWindow.Advanced_IO_Threading_ThreadingLevel_AfterDriveLetter,
+                    Text = driveAndType.Drive,
                 };
                 DarkRadioButton autoDetectRadioButton = new()
                 {
@@ -824,15 +821,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 return auto
                     ? driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_AggressiveMultithreading,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_StandardMultithreading,
-                        _ => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_NoMultithreading,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_SATA_SSD,
+                        _ => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_HDD_Or_Other,
                     }
                     : driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_AggressiveMultithreading,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_StandardMultithreading,
-                        _ => LText.SettingsWindow.Advanced_IO_Threading_NoMultithreading,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD,
+                        _ => LText.SettingsWindow.Advanced_IO_Threading_HDD_Or_Other,
                     };
             }
 
