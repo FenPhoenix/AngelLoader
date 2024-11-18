@@ -550,7 +550,7 @@ internal enum SettingsTab
     Other,
     ThiefBuddy,
     Update,
-    Advanced,
+    IOThreading,
 }
 
 /*

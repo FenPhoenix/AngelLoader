@@ -674,7 +674,7 @@ internal static class Core
 
         #endregion
 
-        #region Advanced page
+        #region I/O Threading page
 
         Config.IOThreadsMode = outConfig.IOThreadsMode;
         Config.CustomIOThreadCount = outConfig.CustomIOThreadCount;

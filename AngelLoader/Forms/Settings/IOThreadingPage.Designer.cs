@@ -2,7 +2,7 @@
 
 namespace AngelLoader.Forms;
 
-sealed partial class AdvancedPage
+sealed partial class IOThreadingPage
 {
     /// <summary> 
     /// Required designer variable.
@@ -146,12 +146,12 @@ sealed partial class AdvancedPage
             this.CustomModeRadioButton.TabStop = true;
             this.CustomModeRadioButton.Text = "Custom";
             // 
-            // AdvancedPage
+            // IOThreadingPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.PagePanel);
-            this.Name = "AdvancedPage";
+            this.Name = "IOThreadingPage";
             this.Size = new System.Drawing.Size(440, 692);
             this.PagePanel.ResumeLayout(false);
             this.IOThreadCountBox.ResumeLayout(false);

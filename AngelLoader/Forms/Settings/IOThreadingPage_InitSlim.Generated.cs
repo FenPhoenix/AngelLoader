@@ -1,6 +1,6 @@
 ﻿namespace AngelLoader.Forms;
 
-sealed partial class AdvancedPage
+sealed partial class IOThreadingPage
 {
     /// <summary>
     /// Custom generated component initializer with cruft removed.
@@ -104,7 +104,7 @@ sealed partial class AdvancedPage
         this.CustomModeRadioButton.TabIndex = 6;
         this.CustomModeRadioButton.TabStop = true;
         // 
-        // AdvancedPage
+        // IOThreadingPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

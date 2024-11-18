@@ -920,21 +920,21 @@ internal sealed class LText_Class
         internal readonly string Update_UpdateOptions = "Update options";
         internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
         [FenGenBlankLine]
-        internal readonly string Advanced_TabText = "Advanced";
-        internal readonly string Advanced_IO_Threading = "I/O threading";
-        internal readonly string Advanced_IO_Threading_Auto = "Auto";
-        internal readonly string Advanced_IO_Threading_Custom = "Custom";
-        internal readonly string Advanced_IO_Threading_Threads = "Threads:";
+        internal readonly string IOThreading_TabText = "I/O Threading";
+        internal readonly string IOThreading_IOThreads = "I/O threads";
+        internal readonly string IOThreading_IOThreads_Auto = "Auto";
+        internal readonly string IOThreading_IOThreads_Custom = "Custom";
+        internal readonly string IOThreading_IOThreads_Threads = "Threads:";
         [FenGenBlankLine]
-        internal readonly string Advanced_IO_Threading_Levels = "Drive types";
+        internal readonly string IOThreading_DriveTypes = "Drive types";
         [FenGenBlankLine]
-        internal readonly string Advanced_IO_Threading_Autodetected_NVMe_SSD = "Autodetect (NVMe SSD or better)";
-        internal readonly string Advanced_IO_Threading_Autodetected_SATA_SSD = "Autodetect (SATA SSD)";
-        internal readonly string Advanced_IO_Threading_Autodetected_HDD_Or_Other = "Autodetect (HDD or other)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_NVMe_SSD = "Autodetect (NVMe SSD or better)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_SATA_SSD = "Autodetect (SATA SSD)";
+        internal readonly string IOThreading_DriveTypes_Autodetected_HDD_Or_Other = "Autodetect (HDD or other)";
         [FenGenBlankLine]
-        internal readonly string Advanced_IO_Threading_NVMe_SSD = "NVMe SSD or better";
-        internal readonly string Advanced_IO_Threading_SATA_SSD = "SATA SSD";
-        internal readonly string Advanced_IO_Threading_HDD_Or_Other = "HDD or other";
+        internal readonly string IOThreading_DriveTypes_NVMe_SSD = "NVMe SSD or better";
+        internal readonly string IOThreading_DriveTypes_SATA_SSD = "SATA SSD";
+        internal readonly string IOThreading_DriveTypes_HDD_Or_Other = "HDD or other";
     }
 
     internal sealed class DateFilterBox_Class

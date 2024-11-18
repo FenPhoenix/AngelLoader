@@ -89,7 +89,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
     private readonly UpdatePage UpdatePage;
-    private readonly AdvancedPage AdvancedPage;
+    private readonly IOThreadingPage IOThreadingPage;
 
     private enum PathError { True, False }
 
@@ -184,7 +184,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
-            (AdvancedRadioButton, AdvancedPage = new AdvancedPage { Visible = false }),
+            (IOThreadingRadioButton, IOThreadingPage = new IOThreadingPage { Visible = false }),
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -666,21 +666,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Advanced page
+            #region I/O Threading page
 
             switch (config.IOThreadsMode)
             {
                 case IOThreadsMode.Custom:
-                    AdvancedPage.CustomModeRadioButton.Checked = true;
+                    IOThreadingPage.CustomModeRadioButton.Checked = true;
                     break;
                 case IOThreadsMode.Auto:
                 default:
-                    AdvancedPage.AutoModeRadioButton.Checked = true;
+                    IOThreadingPage.AutoModeRadioButton.Checked = true;
                     break;
             }
             SetIOThreadsState();
 
-            AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
+            IOThreadingPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
 
             string[] drives;
             try
@@ -726,7 +726,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     Location = new Point(8, y),
-                    Size = new Size(AdvancedPage.IOThreadingLevelGroupBox.Width - 16, driveTypePanelHeight - 20),
+                    Size = new Size(IOThreadingPage.IOThreadingLevelGroupBox.Width - 16, driveTypePanelHeight - 20),
                     TabIndex = tabIndex,
                 };
                 DarkLabel driveLabel = new()
@@ -787,11 +787,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 panel.Controls.Add(sataRadioButton);
                 panel.Controls.Add(hddRadioButton);
 
-                AdvancedPage.IOThreadingLevelGroupBox.Controls.Add(panel);
+                IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
                 if (i < DrivesAndTypes.Length - 1)
                 {
-                    AdvancedPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
+                    IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
                 }
 
                 AL_DriveType driveType = ConfigData.GetDriveType(_driveLettersAndTypes, driveAndType.Drive);
@@ -811,7 +811,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         break;
                 }
             }
-            AdvancedPage.IOThreadingLevelGroupBox.Size = AdvancedPage.IOThreadingLevelGroupBox.Size with
+            IOThreadingPage.IOThreadingLevelGroupBox.Size = IOThreadingPage.IOThreadingLevelGroupBox.Size with
             {
                 Height = y - 8,
             };
@@ -821,15 +821,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 return auto
                     ? driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_NVMe_SSD,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_SATA_SSD,
-                        _ => LText.SettingsWindow.Advanced_IO_Threading_Autodetected_HDD_Or_Other,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_SATA_SSD,
+                        _ => LText.SettingsWindow.IOThreading_DriveTypes_Autodetected_HDD_Or_Other,
                     }
                     : driveType switch
                     {
-                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.Advanced_IO_Threading_NVMe_SSD,
-                        AL_DriveType.SATA_SSD => LText.SettingsWindow.Advanced_IO_Threading_SATA_SSD,
-                        _ => LText.SettingsWindow.Advanced_IO_Threading_HDD_Or_Other,
+                        AL_DriveType.NVMe_SSD => LText.SettingsWindow.IOThreading_DriveTypes_NVMe_SSD,
+                        AL_DriveType.SATA_SSD => LText.SettingsWindow.IOThreading_DriveTypes_SATA_SSD,
+                        _ => LText.SettingsWindow.IOThreading_DriveTypes_HDD_Or_Other,
                     };
             }
 
@@ -926,11 +926,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Advanced page
+            #region I/O Threading page
 
-            AdvancedPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
-            AdvancedPage.IOThreadsResetButton.Click += IOThreadsResetButton_Click;
+            IOThreadingPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            IOThreadingPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            IOThreadingPage.IOThreadsResetButton.Click += IOThreadsResetButton_Click;
 
             #endregion
         }
@@ -1208,18 +1208,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #endregion
 
-                #region Advanced page
+                #region I/O Threading page
 
-                AdvancedRadioButton.Text = LText.SettingsWindow.Advanced_TabText;
+                IOThreadingRadioButton.Text = LText.SettingsWindow.IOThreading_TabText;
 
-                AdvancedPage.IOThreadCountBox.Text = LText.SettingsWindow.Advanced_IO_Threading;
+                IOThreadingPage.IOThreadCountBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
 
-                AdvancedPage.AutoModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Auto;
+                IOThreadingPage.AutoModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Auto;
 
-                AdvancedPage.CustomModeRadioButton.Text = LText.SettingsWindow.Advanced_IO_Threading_Custom;
-                AdvancedPage.CustomThreadsLabel.Text = LText.SettingsWindow.Advanced_IO_Threading_Threads;
+                IOThreadingPage.CustomModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Custom;
+                IOThreadingPage.CustomThreadsLabel.Text = LText.SettingsWindow.IOThreading_IOThreads_Threads;
 
-                AdvancedPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.Advanced_IO_Threading_Levels;
+                IOThreadingPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.IOThreading_DriveTypes;
 
                 #endregion
             }
@@ -1560,13 +1560,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Advanced page
+            #region I/O Threading page
 
             OutConfig.IOThreadsMode =
-                AdvancedPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
+                IOThreadingPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
                 IOThreadsMode.Auto;
 
-            OutConfig.CustomIOThreadCount = (int)AdvancedPage.CustomThreadsNumericUpDown.Value;
+            OutConfig.CustomIOThreadCount = (int)IOThreadingPage.CustomThreadsNumericUpDown.Value;
 
             foreach (var item in DrivesAndTypes)
             {
@@ -2131,7 +2131,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #endregion
 
-    #region Advanced page
+    #region I/O Threading page
 
     private void IOThreadsRadioButtons_CheckedChanged(object sender, EventArgs e)
     {
@@ -2140,14 +2140,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void SetIOThreadsState()
     {
-        AdvancedPage.CustomThreadsLabel.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
-        AdvancedPage.CustomThreadsNumericUpDown.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
-        AdvancedPage.IOThreadsResetButton.Enabled = AdvancedPage.CustomModeRadioButton.Checked;
+        IOThreadingPage.CustomThreadsLabel.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
+        IOThreadingPage.CustomThreadsNumericUpDown.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
+        IOThreadingPage.IOThreadsResetButton.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
     }
 
     private void IOThreadsResetButton_Click(object sender, EventArgs e)
     {
-        AdvancedPage.CustomThreadsNumericUpDown.Value = CoreCount;
+        IOThreadingPage.CustomThreadsNumericUpDown.Value = CoreCount;
     }
 
     private readonly struct DriveControlIndex

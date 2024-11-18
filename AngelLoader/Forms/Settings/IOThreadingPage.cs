@@ -5,12 +5,12 @@ using AL_Common;
 using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
-public sealed partial class AdvancedPage : UserControl, Interfaces.ISettingsPage
+public sealed partial class IOThreadingPage : UserControl, Interfaces.ISettingsPage
 {
-    // @MT_TASK(Advanced page): Put some kind of help message on here, like:
+    // @MT_TASK(I/O Threading page): Put some kind of help message on here, like:
     //  "Increasing the thread level can result in slower I/O performance if the drive can't handle it"
     // @MT_TASK: Do we want to rename this tab to I/O threading?
-    public AdvancedPage()
+    public IOThreadingPage()
     {
 #if DEBUG
         InitializeComponent();
