@@ -682,14 +682,27 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             AdvancedPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreads;
 
-            // @MT_TASK(GetDrives()): This thing can throw...
-            DriveInfo[] drives = DriveInfo.GetDrives();
+            string[] drives;
+            try
+            {
+                drives = Directory.GetLogicalDrives();
+            }
+            catch
+            {
+                /*
+                Unlikely but whatever. If we get here then the I/O threading levels group box will end up with
+                min height, which will at least provide a sign that something's wrong to the user. For that
+                reason we shouldn't do anything slick like hide the group box, because that would just cause
+                confusion if the user is told to do something with a groupbox that isn't there.
+                */
+                drives = Array.Empty<string>();
+            }
             ThreadablePath[] threadablePaths = new ThreadablePath[drives.Length];
 
             for (int i = 0; i < drives.Length; i++)
             {
-                DriveInfo drive = drives[i];
-                threadablePaths[i] = new ThreadablePath(drive.Name, IOPathType.Directory);
+                string drive = drives[i];
+                threadablePaths[i] = new ThreadablePath(drive, IOPathType.Directory);
             }
 
             DetectDriveTypes.FillSettingsDriveTypes(threadablePaths);
