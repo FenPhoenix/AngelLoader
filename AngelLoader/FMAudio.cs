@@ -138,33 +138,6 @@ internal static class FMAudio
             return true;
         }
 
-        static List<ThreadablePath> GetAudioConversionRelevantPaths(List<ValidAudioConvertibleFM> fms)
-        {
-            List<ThreadablePath> ret = new(SupportedGameCount);
-
-            bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
-            for (int i = 0; i < fms.Count; i++)
-            {
-                fmInstalledDirsRequired[(int)fms[i].GameIndex] = true;
-            }
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                if (fmInstalledDirsRequired[i])
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    ret.Add(new ThreadablePath(
-                        Config.GetFMInstallPath(gameIndex),
-                        IOPathType.Directory,
-                        ThreadablePathType.FMInstallPath,
-                        gameIndex));
-                }
-            }
-
-            FillThreadablePaths(ret);
-            return ret;
-        }
-
         #endregion
     }
 
@@ -217,7 +190,7 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    int threadCount = GetThreadCount(wavFiles.Length, threadingData);
+                    int threadCount = GetAudioConversionThreadCount(wavFiles.Length, threadingData);
 
                     if (!TryGetParallelForData(threadCount, wavFiles, ct, out var pd))
                     {
@@ -307,7 +280,7 @@ internal static class FMAudio
 
                     if (ct.IsCancellationRequested) return ConvertAudioError.None;
 
-                    int threadCount = GetThreadCount(files.Length, threadingData);
+                    int threadCount = GetAudioConversionThreadCount(files.Length, threadingData);
 
                     if (!TryGetParallelForData(threadCount, files, ct, out var pd))
                     {
@@ -476,11 +449,6 @@ internal static class FMAudio
                 ? new[] { sndPath, Path.Combine(instPath, "snd2") }
                 : new[] { sndPath };
         }
-
-        static int GetThreadCount(int maxWorkItemsCount, ThreadingData threadingData) =>
-            threadingData.Level == IOThreadingLevel.Aggressive
-                ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData)
-                : 1;
 
         #endregion
     }

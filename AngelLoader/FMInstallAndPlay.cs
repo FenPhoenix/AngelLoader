@@ -1671,55 +1671,11 @@ internal static partial class FMInstallAndPlay
         return true;
 
         static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
-
-        static List<ThreadablePath> GetInstallUninstallRelevantPaths(
-            HashSetI usedArchivePaths,
-            bool[] fmInstalledDirsRequired)
-        {
-            List<ThreadablePath> ret = new(Config.FMArchivePaths.Count + SupportedGameCount + 1);
-
-            foreach (string item in usedArchivePaths)
-            {
-                ret.Add(new ThreadablePath(
-                    item,
-                    IOPathType.Directory,
-                    ThreadablePathType.ArchivePath));
-            }
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                if (fmInstalledDirsRequired[i])
-                {
-                    GameIndex gameIndex = (GameIndex)i;
-                    ret.Add(new ThreadablePath(
-                        Config.GetFMInstallPath(gameIndex),
-                        IOPathType.Directory,
-                        ThreadablePathType.FMInstallPath,
-                        gameIndex));
-                }
-            }
-            ret.Add(new ThreadablePath(
-                Config.FMsBackupPath,
-                IOPathType.Directory,
-                ThreadablePathType.BackupPath));
-
-#if TIMING_TEST
-            Trace.WriteLine("--------- " + nameof(GetInstallUninstallRelevantPaths) + "():");
-            foreach (ThreadablePath item in ret)
-            {
-                Trace.WriteLine(item.OriginalPath + ", " + item.IOPathType);
-            }
-            Trace.WriteLine("---------");
-#endif
-
-            FillThreadablePaths(ret);
-            return ret;
-        }
     }
 
     #region Install
 
-    private sealed class FMData
+    internal sealed class FMData
     {
         internal readonly FanMission FM;
         internal readonly string ArchiveFilePath;
@@ -1861,13 +1817,8 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    ThreadingData fullSetThreadingData = GetLowestCommonThreadingData(threadablePaths
-                        .Where(static x =>
-                            x.ThreadablePathType
-                                is ThreadablePathType.FMInstallPath
-                                or ThreadablePathType.ArchivePath
-                                or ThreadablePathType.BackupPath)
-                        .ToList());
+                    ThreadingData fullSetThreadingData =
+                        GetLowestCommonThreadingData(threadablePaths.FilterToInstallRelevant());
 
                     int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, fullSetThreadingData);
 
@@ -1898,14 +1849,9 @@ internal static partial class FMInstallAndPlay
                             FMInstallResult fmInstallResult;
                             if (fmData.ArchiveFilePath.ExtIsZip())
                             {
-                                ThreadingData installThreadingData = GetLowestCommonThreadingData(threadablePaths
-                                    .Where(x =>
-                                        (x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
-                                         x.GameIndex == fmData.GameIndex &&
-                                         x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath)) ||
-                                        (x.ThreadablePathType == ThreadablePathType.ArchivePath &&
-                                         x.OriginalPath.PathEqualsI_Dir(fmData.ArchiveDirectoryPath)))
-                                    .ToList());
+                                ThreadingData installThreadingData =
+                                    GetLowestCommonThreadingData(
+                                        threadablePaths.FilterToZipFMInstallRelevant(fmData));
 
                                 /*
                                 @MT_TASK: My boot SATA SSD is benefitting from aggressive threading even when
@@ -2181,10 +2127,8 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            ThreadingData threadingData = GetLowestCommonThreadingData(threadablePaths
-                .Where(static x =>
-                    x.ThreadablePathType == ThreadablePathType.FMInstallPath)
-                .ToList());
+            ThreadingData threadingData =
+                GetLowestCommonThreadingData(threadablePaths.FilterToRollbackMultipleRelevant());
 
             int threadCount = GetThreadCountForParallelOperation(filteredList.Count, threadingData);
 
@@ -2293,12 +2237,8 @@ internal static partial class FMInstallAndPlay
                     percent: 100,
                     progressType: ProgressType.Indeterminate);
 
-                ThreadingData audioConversionThreadingData = GetLowestCommonThreadingData(threadablePaths
-                    .Where(x =>
-                        x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
-                        x.GameIndex == fmData.GameIndex &&
-                        x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath))
-                    .ToList());
+                ThreadingData audioConversionThreadingData =
+                    GetLowestCommonThreadingData(threadablePaths.FilterToPostInstallWorkRelevant(fmData));
 
 #if TIMING_TEST
                 var audioConvertSW = Stopwatch.StartNew();
@@ -3199,11 +3139,7 @@ internal static partial class FMInstallAndPlay
             var sw = Stopwatch.StartNew();
 #endif
 
-            List<ThreadablePath> paths = new()
-            {
-                new ThreadablePath(path, IOPathType.Directory, ThreadablePathType.FMInstallPath, fmData.GameIndex),
-            };
-            FillThreadablePaths(paths);
+            List<ThreadablePath> paths = GetDeleteInstalledDirRelevantPaths(path, fmData.GameIndex);
 
             ThreadingData threadingData = GetLowestCommonThreadingData(paths);
             Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
