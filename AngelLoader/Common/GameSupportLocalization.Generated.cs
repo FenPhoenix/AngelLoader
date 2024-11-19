@@ -84,11 +84,29 @@ public static partial class GameSupport
 
     internal static string GetLocalizedSelectGameExecutableMessage(GameIndex gameIndex) => gameIndex switch
     {
-        GameIndex.Thief1 => LText.SettingsWindow.Paths_DialogTitle_SelectT1Exe,
-        GameIndex.Thief2 => LText.SettingsWindow.Paths_DialogTitle_SelectT2Exe,
-        GameIndex.Thief3 => LText.SettingsWindow.Paths_DialogTitle_SelectT3Exe,
-        GameIndex.SS2 => LText.SettingsWindow.Paths_DialogTitle_SelectSS2Exe,
-        _ => LText.SettingsWindow.Paths_DialogTitle_SelectTDMExe,
+        GameIndex.Thief1 => LText.SettingsWindow.Paths_ChooseT1Exe_DialogTitle,
+        GameIndex.Thief2 => LText.SettingsWindow.Paths_ChooseT2Exe_DialogTitle,
+        GameIndex.Thief3 => LText.SettingsWindow.Paths_ChooseT3Exe_DialogTitle,
+        GameIndex.SS2 => LText.SettingsWindow.Paths_ChooseSS2Exe_DialogTitle,
+        _ => LText.SettingsWindow.Paths_ChooseTDMExe_DialogTitle,
+    };
+
+    internal static string GetLocalizedSelectFMSelIniDialogTitle(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.Importing.ChooseT1FMSelIni_DialogTitle,
+        GameIndex.Thief2 => LText.Importing.ChooseT2FMSelIni_DialogTitle,
+        GameIndex.Thief3 => LText.Importing.ChooseT3FMSelIni_DialogTitle,
+        GameIndex.SS2 => LText.Importing.ChooseSS2FMSelIni_DialogTitle,
+        _ => LText.Importing.ChooseTdmFMSelIni_DialogTitle,
+    };
+
+    internal static string GetLocalizedSelectNewDarkLoaderIniDialogTitle(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.Importing.ChooseT1NewDarkLoaderIni_DialogTitle,
+        GameIndex.Thief2 => LText.Importing.ChooseT2NewDarkLoaderIni_DialogTitle,
+        GameIndex.Thief3 => LText.Importing.ChooseT3NewDarkLoaderIni_DialogTitle,
+        GameIndex.SS2 => LText.Importing.ChooseSS2NewDarkLoaderIni_DialogTitle,
+        _ => LText.Importing.ChooseTdmNewDarkLoaderIni_DialogTitle,
     };
 
     #endregion

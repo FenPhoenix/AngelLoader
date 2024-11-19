@@ -19,12 +19,14 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         (DarkGroupBox GroupBox,
         DarkCheckBox AutodetectCheckBox,
         DarkTextBox TextBox,
-        StandardButton BrowseButton)[]
+        StandardButton BrowseButton,
+        GameIndex GameIndex)[]
         GameIniItems = new
             (DarkGroupBox GroupBox,
             DarkCheckBox AutodetectCheckBox,
             DarkTextBox TextBox,
-            StandardButton BrowseButton)[ImportSupportingGameCount];
+            StandardButton BrowseButton,
+            GameIndex GameIndex)[ImportSupportingGameCount];
 
     private readonly DarkLabel ChooseIniFilesLabel;
 
@@ -45,8 +47,15 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         Size = new Size(551, 410);
         Controls.Add(ChooseIniFilesLabel);
 
-        for (int i = 0, y = 32; i < ImportSupportingGameCount; i++, y += 88)
+        int y = 32;
+        for (int i = 0; i < SupportedGameCount; i++)
         {
+            GameIndex gameIndex = (GameIndex)i;
+            if (!GameSupportsImport(gameIndex))
+            {
+                continue;
+            }
+
             var checkBox = new DarkCheckBox();
             var textBox = new DarkTextBox();
             var button = new StandardButton();
@@ -82,10 +91,13 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
             GameIniItems[i].AutodetectCheckBox = checkBox;
             GameIniItems[i].TextBox = textBox;
             GameIniItems[i].BrowseButton = button;
+            GameIniItems[i].GameIndex = gameIndex;
 
             Controls.Add(groupBox);
 
             groupBox.ResumeLayout(false);
+
+            y += 88;
         }
 
         ResumeLayout(false);
@@ -128,11 +140,11 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         }
     }
 
-    private void AutodetectGameIni(GameIndex game, TextBox textBox)
+    private void AutodetectGameIni(GameIndex gameIndex, TextBox textBox)
     {
         string iniFile = _importType == ImportType.NewDarkLoader ? Paths.NewDarkLoaderIni : Paths.FMSelIni;
 
-        string fmsPath = Config.GetFMInstallPath(game);
+        string fmsPath = Config.GetFMInstallPath(gameIndex);
         textBox.Text = !fmsPath.IsWhiteSpace() && TryCombineFilePathAndCheckExistence(fmsPath, iniFile, out string iniFileFull)
             ? iniFileFull
             : "";
@@ -140,11 +152,17 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
 
     private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
     {
+        var gameIniItem = GameIniItems.First(x => x.BrowseButton == sender);
+
         using var d = new OpenFileDialog();
+        d.Title =
+            _importType == ImportType.FMSel
+                ? GetLocalizedSelectFMSelIniDialogTitle(gameIniItem.GameIndex)
+                : GetLocalizedSelectNewDarkLoaderIniDialogTitle(gameIniItem.GameIndex);
         d.Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*";
         if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;
 
-        DarkTextBox tb = GameIniItems.First(x => x.BrowseButton == sender).TextBox;
+        DarkTextBox tb = gameIniItem.TextBox;
         tb.Text = d.FileName;
     }
 
@@ -157,6 +175,9 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
         gameIniItem.TextBox.ReadOnly = s.Checked;
         gameIniItem.BrowseButton.Enabled = !s.Checked;
 
-        if (s.Checked) AutodetectGameIni((GameIndex)Array.IndexOf(GameIniItems, gameIniItem), gameIniItem.TextBox);
+        if (s.Checked)
+        {
+            AutodetectGameIni(gameIniItem.GameIndex, gameIniItem.TextBox);
+        }
     }
 }

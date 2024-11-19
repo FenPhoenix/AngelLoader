@@ -819,14 +819,14 @@ internal sealed class LText_Class
         internal readonly string Paths_ErrorSomePathsAreInvalid = "Some paths are invalid.";
         [FenGenBlankLine]
         [FenGenGameSet("GetLocalizedSelectGameExecutableMessage")]
-        internal readonly string Paths_DialogTitle_SelectT1Exe = "Select Thief Executable";
-        internal readonly string Paths_DialogTitle_SelectT2Exe = "Select Thief II Executable";
-        internal readonly string Paths_DialogTitle_SelectT3Exe = "Select Thief: Deadly Shadows Executable";
-        internal readonly string Paths_DialogTitle_SelectSS2Exe = "Select System Shock 2 Executable";
-        internal readonly string Paths_DialogTitle_SelectTDMExe = "Select The Dark Mod Executable";
-        internal readonly string Paths_DialogTitle_SelectSteamExe = "Select Steam Executable";
-        internal readonly string Paths_DialogTitle_SelectBackupPath = "Select Backup Path";
-        internal readonly string Paths_DialogTitle_AddFMArchivePath = "Add Archive Path";
+        internal readonly string Paths_ChooseT1Exe_DialogTitle = "Choose Thief Executable";
+        internal readonly string Paths_ChooseT2Exe_DialogTitle = "Choose Thief II Executable";
+        internal readonly string Paths_ChooseT3Exe_DialogTitle = "Choose Thief: Deadly Shadows Executable";
+        internal readonly string Paths_ChooseSS2Exe_DialogTitle = "Choose System Shock 2 Executable";
+        internal readonly string Paths_ChooseTDMExe_DialogTitle = "Choose The Dark Mod Executable";
+        internal readonly string Paths_ChooseSteamExe_DialogTitle = "Choose Steam Executable";
+        internal readonly string Paths_ChooseBackupPath_DialogTitle = "Choose Backup Path";
+        internal readonly string Paths_AddFMArchivePath_DialogTitle = "Add Archive Path";
         [FenGenBlankLine]
         internal readonly string Appearance_TabText = "Appearance";
         [FenGenBlankLine]
@@ -1002,11 +1002,28 @@ internal sealed class LText_Class
         internal readonly string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
         internal readonly string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
         internal readonly string DarkLoader_NoArchiveDirsFound = "No archive directories were specified in DarkLoader.ini. Unable to import.";
+        internal readonly string ChooseDarkLoaderIni_DialogTitle = "Choose DarkLoader.ini";
         [FenGenBlankLine]
         internal readonly string ImportFromNewDarkLoader_TitleText = "Import from NewDarkLoader";
         internal readonly string ImportFromFMSel_TitleText = "Import from FMSel";
-        internal readonly string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader .ini file(s):";
-        internal readonly string ChooseFMSelIniFiles = "Choose FMSel .ini file(s):";
+        internal readonly string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader.ini file(s):";
+        internal readonly string ChooseFMSelIniFiles = "Choose fmsel.ini file(s):";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectFMSelIniDialogTitle")]
+        internal readonly string ChooseT1FMSelIni_DialogTitle = "Choose fmsel.ini for Thief";
+        internal readonly string ChooseT2FMSelIni_DialogTitle = "Choose fmsel.ini for Thief II";
+        internal readonly string ChooseT3FMSelIni_DialogTitle = "Choose fmsel.ini for Thief: Deadly Shadows";
+        internal readonly string ChooseSS2FMSelIni_DialogTitle = "Choose fmsel.ini for System Shock 2";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string ChooseTdmFMSelIni_DialogTitle = "";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectNewDarkLoaderIniDialogTitle")]
+        internal readonly string ChooseT1NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief";
+        internal readonly string ChooseT2NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief II";
+        internal readonly string ChooseT3NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief: Deadly Shadows";
+        internal readonly string ChooseSS2NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for System Shock 2";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string ChooseTdmNewDarkLoaderIni_DialogTitle = "";
         [FenGenBlankLine]
         internal readonly string ImportData_Title = "Title";
         internal readonly string ImportData_ReleaseDate = "Release date";

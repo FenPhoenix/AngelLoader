@@ -1753,7 +1753,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             }
         }
         tb ??= PathsPage.SteamExeTextBox;
-        dialogTitle ??= LText.SettingsWindow.Paths_DialogTitle_SelectSteamExe;
+        dialogTitle ??= LText.SettingsWindow.Paths_ChooseSteamExe_DialogTitle;
 
         string initialPath = "";
         try
@@ -1818,7 +1818,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         using (var d = new VistaFolderBrowserDialog())
         {
-            d.Title = LText.SettingsWindow.Paths_DialogTitle_SelectBackupPath;
+            d.Title = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
             d.InitialDirectory = SanitizePathForDialog(tb.Text);
             d.MultiSelect = false;
             if (d.ShowDialogDark(this) == DialogResult.OK) tb.Text = d.DirectoryName;
@@ -1861,7 +1861,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         using var d = new VistaFolderBrowserDialog();
 
-        d.Title = LText.SettingsWindow.Paths_DialogTitle_AddFMArchivePath;
+        d.Title = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
 
         DarkListBox lb = PathsPage.FMArchivePathsListBox;
         string initDir =
