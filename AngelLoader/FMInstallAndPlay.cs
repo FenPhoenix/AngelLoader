@@ -1924,6 +1924,23 @@ internal static partial class FMInstallAndPlay
                                  -
                                  So really the heuristic we have is basically still good, over-conservative in
                                  some cases but we have to be, cause we don't know much about the hardware...
+                                 -
+                                 After more testing:
+                                 -WD Blue SATA has strange performance characteristics - even in single-threaded,
+                                 TROTB2's time depends on how much I/O has come before it, both in the current and
+                                 pre-multithreading snapshot branch.
+                                 My guess is we're leaving SLC cache.
+                                 -
+                                 What we could do then is say that "standard threading" is:
+                                 -Scanning
+                                  -Scans are entirely read except for 7z, and even those are not that much write
+                                 -Deleting files
+                                  -Deleting is just writing to the NTFS TOC or whatever
+                                 And then have some option to enable "you better have high end SATA or NVME for this"
+                                 mode.
+                                 -
+                                 But then again, if lower end SATA tanks our perf even on single-threaded, then
+                                 is multithreaded still fine? Is it any worse really?
                                 */
                                 fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                     ? InstallFMZip_ThreadedPerEntry(
