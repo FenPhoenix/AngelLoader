@@ -1974,7 +1974,7 @@ internal static partial class FMInstallAndPlay
                     // Apparently because it has to spew out all those exception messages in the output console.
                     // Everything's fine outside of VS. So just ignore this during dev.
 
-                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, threadablePaths);
+                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList);
 
                     if (rollbackErrorResults.Count > 0)
                     {
@@ -2111,7 +2111,7 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, List<ThreadablePath> threadablePaths)
+        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList)
         {
             List<FMInstallResult> results = new();
 
