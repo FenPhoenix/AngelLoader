@@ -2481,6 +2481,9 @@ internal static partial class FMInstallAndPlay
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
+#if TIMING_TEST
+        var sw = Stopwatch.StartNew();
+#endif
         try
         {
             var report = new ProgressReport_Install();
@@ -2549,6 +2552,12 @@ internal static partial class FMInstallAndPlay
                 LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                 ex);
         }
+#if TIMING_TEST
+        finally
+        {
+            Trace.WriteLine(nameof(InstallFMZip) + " (" + fmData.FM.Archive + "): " + sw.Elapsed);
+        }
+#endif
 
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
