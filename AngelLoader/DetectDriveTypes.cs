@@ -212,19 +212,11 @@ internal static class DetectDriveData
                             STORAGE_BUS_TYPE.BusTypeNvme
                                 or STORAGE_BUS_TYPE.BusTypeSCM
                                 /*
-                                @MT_TASK_NOTE: The question of RAID
-                                We could have SATA RAID or NVMe RAID, and we don't know which... we also don't
-                                know if it's striped or mirrored. Striped SATA RAID is probably fast enough for
-                                aggressive threading, but mirrored RAID is the same speed as non-RAID. So we're
-                                in a bit of a conundrum here.
-
-                                However, we have the manual drive threading level selection for this case, so it's
-                                fine if not quite as ideal as we'd like.
+                                @MT_TASK: What happens if the drive is RAID?
+                                @MT_TASK: What's the model name on RAID?
 
                                 @MT_TASK: We never autodetect aggressive now, because we can't know if the drive
                                  is capable of it even if it's NVMe...
-
-                                @MT_TASK: What's the model name on RAID?!
                                 */
                                 //or STORAGE_BUS_TYPE.BusTypeRAID
                                 => DriveThreadability.Standard,
