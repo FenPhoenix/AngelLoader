@@ -1907,6 +1907,14 @@ internal static partial class FMInstallAndPlay
                                          x.OriginalPath.PathEqualsI_Dir(fmData.ArchiveDirectoryPath)))
                                     .ToList());
 
+                                /*
+                                @MT_TASK: My boot SATA SSD is benefitting from aggressive threading even when
+                                 installing to itself, and even when installing 3 very large FMs in parallel (but
+                                 no audio conversion). That wasn't the result in the earlier tests. More testing
+                                 is needed, and on the other SATA SSD too. At the very least maybe we could use
+                                 aggressive threading when there's only one FM? Coarse, but that's probably a
+                                 common scenario and we really don't want to lose out on the performance with it.
+                                */
                                 fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                     ? InstallFMZip_ThreadedPerEntry(
                                         progress,
