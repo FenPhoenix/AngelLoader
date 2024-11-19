@@ -151,6 +151,16 @@ public static partial class Utils
             .ToList();
     }
 
+    internal static List<ThreadablePath> FilterToPostInstallWorkRelevant(this List<ThreadablePath> paths, FMInstallAndPlay.FMData fmData)
+    {
+        return paths
+            .Where(x =>
+                x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
+                x.GameIndex == fmData.GameIndex &&
+                x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath))
+            .ToList();
+    }
+
     internal static List<ThreadablePath> GetDeleteInstalledDirRelevantPaths(string path, GameIndex gameIndex)
     {
         List<ThreadablePath> paths = new()
@@ -160,25 +170,6 @@ public static partial class Utils
         FillThreadablePaths(paths);
 
         return paths;
-    }
-
-    // @MT_TASK: Remove this; deletion is already threaded, rollbacks themselves should be sequential
-    internal static List<ThreadablePath> FilterToRollbackMultipleRelevant(this List<ThreadablePath> paths)
-    {
-        return paths
-            .Where(static x =>
-                x.ThreadablePathType == ThreadablePathType.FMInstallPath)
-            .ToList();
-    }
-
-    internal static List<ThreadablePath> FilterToPostInstallWorkRelevant(this List<ThreadablePath> paths, FMInstallAndPlay.FMData fmData)
-    {
-        return paths
-            .Where(x =>
-                x.ThreadablePathType == ThreadablePathType.FMInstallPath &&
-                x.GameIndex == fmData.GameIndex &&
-                x.OriginalPath.PathEqualsI_Dir(fmData.InstBasePath))
-            .ToList();
     }
 
     #endregion

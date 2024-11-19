@@ -2113,7 +2113,7 @@ internal static partial class FMInstallAndPlay
 
         static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, List<ThreadablePath> threadablePaths)
         {
-            ConcurrentBag<FMInstallResult> results = new();
+            List<FMInstallResult> results = new();
 
             List<FMData> filteredList = new();
 
@@ -2126,56 +2126,44 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            ThreadingData threadingData =
-                GetLowestCommonThreadingData(threadablePaths.FilterToRollbackMultipleRelevant());
-
-            int threadCount = GetThreadCountForParallelOperation(filteredList.Count, threadingData);
-
-            if (!TryGetParallelForData(threadCount, filteredList, CancellationToken.None, out var pd))
-            {
-                return new List<FMInstallResult>(0);
-            }
-
 #if TIMING_TEST
             var sw = Stopwatch.StartNew();
 #endif
 
-            Parallel.For(0, threadCount, pd.PO, _ =>
+            for (int i = 0; i < filteredList.Count; i++)
             {
-                while (pd.CQ.TryDequeue(out FMData fmData))
+                FMData fmData = filteredList[i];
+
+                Core.View.MultiItemProgress_SetItemData(
+                    index: fmData.ViewItemIndex,
+                    line2: LText.ProgressBox.CancelingInstall,
+                    progressType: ProgressType.Indeterminate);
+
+                FMInstallResult result = RemoveFMFromDisk(fmData);
+                if (result.ResultType == InstallResultType.RollbackFailed)
                 {
-                    Core.View.MultiItemProgress_SetItemData(
-                        index: fmData.ViewItemIndex,
-                        line2: LText.ProgressBox.CancelingInstall,
-                        progressType: ProgressType.Indeterminate);
-
-                    FMInstallResult result = RemoveFMFromDisk(fmData);
-                    if (result.ResultType == InstallResultType.RollbackFailed)
-                    {
-                        results.Add(result);
-                    }
-
-                    // @MT_TASK_NOTE: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
-                    Core.View.MultiItemProgress_SetItemData(
-                        index: fmData.ViewItemIndex,
-                        line2: LText.ProgressBox.Canceled,
-                        percent: 0,
-                        progressType: ProgressType.Determinate);
+                    results.Add(result);
                 }
-            });
+
+                // @MT_TASK_NOTE: Say "Cancellation failed" or something if we fail? Do we need to be that fancy?
+                Core.View.MultiItemProgress_SetItemData(
+                    index: fmData.ViewItemIndex,
+                    line2: LText.ProgressBox.Canceled,
+                    percent: 0,
+                    progressType: ProgressType.Determinate);
+            }
 
 #if TIMING_TEST
             sw.Stop();
             Trace.WriteLine("Rollback: " + sw.Elapsed);
 #endif
 
-            return results.ToList();
+            return results;
         }
 
         static FMInstallResult RemoveFMFromDisk(FMData fmData)
         {
-            string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-            if (DeleteFMInstalledDirectory(fmInstalledPath, fmData).ResultType != UninstallResultType.UninstallSucceeded)
+            if (DeleteFMInstalledDirectory(fmData.InstalledPath, fmData).ResultType != UninstallResultType.UninstallSucceeded)
             {
                 // Don't log it here because the deleter method will already have logged it
 
@@ -2188,10 +2176,10 @@ internal static partial class FMInstallAndPlay
                     fmData,
                     InstallResultType.RollbackFailed,
                     type,
-                    $"Failed to delete the following directory:{NL}{NL}" + fmInstalledPath);
+                    $"Failed to delete the following directory:{NL}{NL}" + fmData.InstalledPath);
             }
             // This is going to get set based on this anyway at the next load from disk, might as well do it now
-            fmData.FM.Installed = Directory.Exists(fmInstalledPath);
+            fmData.FM.Installed = Directory.Exists(fmData.InstalledPath);
 
             return new FMInstallResult(fmData, InstallResultType.RollbackSucceeded);
         }
