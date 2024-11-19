@@ -1817,8 +1817,7 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    ThreadingData fullSetThreadingData =
-                        GetLowestCommonThreadingData(threadablePaths.FilterToInstallRelevant());
+                    ThreadingData fullSetThreadingData = GetLowestCommonThreadingData(threadablePaths);
 
                     int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, fullSetThreadingData);
 
