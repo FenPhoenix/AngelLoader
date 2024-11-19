@@ -177,6 +177,19 @@ internal static class Core
                     }
                 }
 
+                try
+                {
+                    string[] drives = Directory.GetLogicalDrives();
+                    foreach (string letter in drives)
+                    {
+                        ConfigData.GetDriveType(Config.DriveLettersAndTypes, letter);
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 #endregion
             }
             finally
