@@ -1941,6 +1941,9 @@ internal static partial class FMInstallAndPlay
                                  -
                                  But then again, if lower end SATA tanks our perf even on single-threaded, then
                                  is multithreaded still fine? Is it any worse really?
+                                 UPDATE: Yeah, it is a lot worse. We need to do single-threaded only for standard
+                                 threaded install and FM convert (which also slams the disk, it's not bottlenecked
+                                 on cpu/memory).
                                 */
                                 fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                     ? InstallFMZip_ThreadedPerEntry(
