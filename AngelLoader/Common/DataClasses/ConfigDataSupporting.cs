@@ -226,17 +226,16 @@ public enum IOThreadingLevel
     Aggressive,
 }
 
-public enum AL_DriveType
+public enum DriveThreadability
 {
-    Other,
-    SATA_SSD,
-    NVMe_SSD,
+    Single,
+    Standard,
+    Aggressive,
     Auto,
 }
 
 public enum ThreadablePathType
 {
-    None,
     FMInstallPath,
     BackupPath,
     ArchivePath,

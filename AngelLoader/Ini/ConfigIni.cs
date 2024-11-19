@@ -891,24 +891,24 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_DriveTypes_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DriveThreadability_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         foreach (string value in values)
         {
-            string[] letterAndDriveType = value.Split(CA_Colon, StringSplitOptions.RemoveEmptyEntries);
-            if (letterAndDriveType.Length != 2) continue;
+            string[] letterAndThreadability = value.Split(CA_Colon, StringSplitOptions.RemoveEmptyEntries);
+            if (letterAndThreadability.Length != 2) continue;
 
-            string letter = letterAndDriveType[0].Trim();
+            string letter = letterAndThreadability[0].Trim();
             if (letter.Length > 0)
             {
                 char letterChar = letter[0];
 
-                string driveTypeStr = letterAndDriveType[1].Trim();
-                FieldInfo? field = typeof(AL_DriveType).GetField(driveTypeStr, _bFlagsEnum);
+                string threadabilityStr = letterAndThreadability[1].Trim();
+                FieldInfo? field = typeof(DriveThreadability).GetField(threadabilityStr, _bFlagsEnum);
                 if (field != null)
                 {
-                    config.DriveLettersAndTypes[letterChar] = (AL_DriveType)field.GetValue(null);
+                    config.DriveLettersAndTypes[letterChar] = (DriveThreadability)field.GetValue(null);
                 }
             }
         }
@@ -1120,7 +1120,7 @@ internal static partial class Ini
 
         { "IOThreadsMode", new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
         { "CustomIOThreadCount", new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
-        { "DriveTypes", new Config_DelegatePointerWrapper(&Config_DriveTypes_Set) },
+        { "DriveThreadability", new Config_DelegatePointerWrapper(&Config_DriveThreadability_Set) },
 
         #region Backward compatibility
 
@@ -1527,7 +1527,7 @@ internal static partial class Ini
 
         sw.Append("IOThreadsMode=").AppendLine(config.IOThreadsMode);
         sw.Append("CustomIOThreadCount=").AppendLine(config.CustomIOThreadCount);
-        sw.Append("DriveTypes=");
+        sw.Append("DriveThreadability=");
         var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
         for (int i = 0; i < driveLettersAndTypes.Length; i++)
         {

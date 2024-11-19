@@ -182,7 +182,7 @@ internal static class Core
                     string[] drives = Directory.GetLogicalDrives();
                     foreach (string letter in drives)
                     {
-                        ConfigData.GetDriveType(Config.DriveLettersAndTypes, letter);
+                        ConfigData.GetDriveThreadability(Config.DriveLettersAndTypes, letter);
                     }
                 }
                 catch

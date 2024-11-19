@@ -428,22 +428,35 @@ public static partial class Misc
         Directory,
     }
 
+    public sealed class SettingsDriveData
+    {
+        public readonly string OriginalPath;
+        public string Root = "";
+        public DriveThreadability Threadability = DriveThreadability.Single;
+        public string ModelName = "";
+
+        public SettingsDriveData(string originalPath)
+        {
+            OriginalPath = originalPath;
+        }
+
+        public override string ToString()
+        {
+            return "----" + $"{NL}" +
+                   nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
+                   nameof(Root) + ": " + Root + $"{NL}" +
+                   nameof(Threadability) + ": " + Threadability + $"{NL}";
+        }
+    }
+
     public sealed class ThreadablePath
     {
         public readonly string OriginalPath;
         public string Root = "";
         public readonly IOPathType IOPathType;
-        public AL_DriveType DriveType = AL_DriveType.Other;
+        public DriveThreadability DriveThreadability = DriveThreadability.Single;
         public readonly ThreadablePathType ThreadablePathType;
         public readonly GameIndex GameIndex;
-
-        public ThreadablePath(string originalPath, IOPathType ioPathType)
-        {
-            OriginalPath = originalPath;
-            IOPathType = ioPathType;
-            ThreadablePathType = ThreadablePathType.None;
-            GameIndex = default;
-        }
 
         public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType)
         {
@@ -467,18 +480,18 @@ public static partial class Misc
                    nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
                    nameof(Root) + ": " + Root + $"{NL}" +
                    nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
-                   nameof(DriveType) + ": " + DriveType + $"{NL}";
+                   nameof(DriveThreadability) + ": " + DriveThreadability + $"{NL}";
         }
     }
 
     [PublicAPI]
-    public sealed class DriveLetterDictionary : Dictionary<char, AL_DriveType>
+    public sealed class DriveLetterDictionary : Dictionary<char, DriveThreadability>
     {
         public DriveLetterDictionary() { }
 
         public DriveLetterDictionary(int capacity) : base(capacity) { }
 
-        public new AL_DriveType this[char key]
+        public new DriveThreadability this[char key]
         {
             get => base[key.ToAsciiUpper()];
             set
@@ -490,7 +503,7 @@ public static partial class Misc
             }
         }
 
-        public new void Add(char key, AL_DriveType value)
+        public new void Add(char key, DriveThreadability value)
         {
             if (key.IsAsciiAlpha())
             {
@@ -502,6 +515,6 @@ public static partial class Misc
 
         public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
 
-        public new bool TryGetValue(char key, out AL_DriveType value) => base.TryGetValue(key.ToAsciiUpper(), out value);
+        public new bool TryGetValue(char key, out DriveThreadability value) => base.TryGetValue(key.ToAsciiUpper(), out value);
     }
 }

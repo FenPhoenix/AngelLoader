@@ -17,7 +17,7 @@ public static partial class Utils
 
     internal static void FillThreadablePaths(List<ThreadablePath> paths)
     {
-        DetectDriveTypes.GetAllDrivesType(paths, Config.DriveLettersAndTypes);
+        DetectDriveData.GetAllDriveThreadabilities(paths, Config.DriveLettersAndTypes);
     }
 
     internal static ThreadingData GetLowestCommonThreadingData(
@@ -35,11 +35,11 @@ public static partial class Utils
         }
 
         ThreadingData threadingData;
-        if (paths.Any(static x => x.DriveType == AL_DriveType.Other))
+        if (paths.Any(static x => x.DriveThreadability == DriveThreadability.Single))
         {
             threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
         }
-        else if (paths.All(static x => x.DriveType == AL_DriveType.NVMe_SSD))
+        else if (paths.All(static x => x.DriveThreadability == DriveThreadability.Aggressive))
         {
             threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
         }

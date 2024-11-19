@@ -27,9 +27,9 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-internal static class DetectDriveTypes
+internal static class DetectDriveData
 {
-    internal static void FillSettingsDriveTypes(ThreadablePath[] paths)
+    internal static void FillSettingsDriveData(SettingsDriveData[] paths)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -37,33 +37,34 @@ internal static class DetectDriveTypes
 
         DriveLetterDictionary rootsDict = new(paths.Length);
 
-        foreach (ThreadablePath path in paths)
+        foreach (SettingsDriveData path in paths)
         {
-            path.Root = GetRoot(path.OriginalPath, path.IOPathType);
+            path.Root = GetRoot(path.OriginalPath, IOPathType.Directory);
 
             if (!path.Root.IsEmpty())
             {
                 char rootLetter = path.Root[0];
-                if (rootsDict.TryGetValue(rootLetter, out AL_DriveType driveType))
+                if (rootsDict.TryGetValue(rootLetter, out DriveThreadability driveThreadability))
                 {
-                    path.DriveType = driveType;
+                    path.Threadability = driveThreadability;
                 }
                 else
                 {
-                    driveType = GetDriveType(path.Root);
-                    rootsDict[rootLetter] = driveType;
-                    path.DriveType = driveType;
+                    (driveThreadability, string modelName) = GetDriveThreadability(path.Root);
+                    rootsDict[rootLetter] = driveThreadability;
+                    path.Threadability = driveThreadability;
+                    path.ModelName = modelName;
                 }
             }
         }
 
 #if TIMING_TEST
         sw.Stop();
-        System.Diagnostics.Trace.WriteLine(nameof(FillSettingsDriveTypes) + ": " + sw.Elapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(FillSettingsDriveData) + ": " + sw.Elapsed);
 #endif
     }
 
-    internal static void GetAllDrivesType(List<ThreadablePath> paths, DriveLetterDictionary driveTypesDict)
+    internal static void GetAllDriveThreadabilities(List<ThreadablePath> paths, DriveLetterDictionary drivesDict)
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
@@ -79,21 +80,21 @@ internal static class DetectDriveTypes
             {
                 char rootLetter = path.Root[0];
 
-                if (driveTypesDict.TryGetValue(rootLetter, out AL_DriveType result) && result != AL_DriveType.Auto)
+                if (drivesDict.TryGetValue(rootLetter, out DriveThreadability result) && result != DriveThreadability.Auto)
                 {
-                    path.DriveType = result;
+                    path.DriveThreadability = result;
                 }
                 else
                 {
-                    if (rootsDict.TryGetValue(rootLetter, out AL_DriveType driveType))
+                    if (rootsDict.TryGetValue(rootLetter, out DriveThreadability driveThreadability))
                     {
-                        path.DriveType = driveType;
+                        path.DriveThreadability = driveThreadability;
                     }
                     else
                     {
-                        driveType = GetDriveType(path.Root);
-                        rootsDict[rootLetter] = driveType;
-                        path.DriveType = driveType;
+                        (driveThreadability, string modelName) = GetDriveThreadability(path.Root);
+                        rootsDict[rootLetter] = driveThreadability;
+                        path.DriveThreadability = driveThreadability;
                     }
                 }
             }
@@ -101,7 +102,7 @@ internal static class DetectDriveTypes
 
 #if TIMING_TEST
         sw.Stop();
-        System.Diagnostics.Trace.WriteLine(nameof(GetAllDrivesType) + ": " + sw.Elapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(GetAllDriveThreadabilities) + ": " + sw.Elapsed);
 #endif
     }
 
@@ -136,7 +137,8 @@ internal static class DetectDriveTypes
         return "";
     }
 
-    private static AL_DriveType GetDriveType(string root)
+    private static (DriveThreadability Threadability, string DriveModelName)
+    GetDriveThreadability(string root)
     {
         /*
         Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
@@ -149,7 +151,7 @@ internal static class DetectDriveTypes
         // We've got a network drive or something else, and we don't know what it is.
         if (!RootIsLetter(root))
         {
-            return AL_DriveType.Other;
+            return (DriveThreadability.Single, "");
         }
         else
         {
@@ -180,6 +182,10 @@ internal static class DetectDriveTypes
 
                 StorageDeviceWrapper device = new(safeHandle);
 
+                STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
+
+                string modelName = deviceProperty.ProductId;
+
                 /*
                 @MT_TASK_NOTE: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
                 If it fails, we fall back to Other which is probably fine. But, we could also say if this
@@ -197,40 +203,40 @@ internal static class DetectDriveTypes
                 the fact that something beyond it doesn't is completely useless. Oh well.
                 */
                 DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
-                if (seekPenaltyDescriptor.IncursSeekPenalty)
-                {
-                    return AL_DriveType.Other;
-                }
-                else
-                {
-                    STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
 
-                    return deviceProperty.BusType switch
-                    {
-                        STORAGE_BUS_TYPE.BusTypeNvme
-                            or STORAGE_BUS_TYPE.BusTypeSCM
-                            /*
-                            @MT_TASK_NOTE: The question of RAID
-                            We could have SATA RAID or NVMe RAID, and we don't know which... we also don't know
-                            if it's striped or mirrored. Striped SATA RAID is probably fast enough for aggressive
-                            threading, but mirrored RAID is the same speed as non-RAID. So we're in a bit of a
-                            conundrum here.
+                DriveThreadability threadability =
+                    seekPenaltyDescriptor.IncursSeekPenalty
+                        ? DriveThreadability.Single
+                        : deviceProperty.BusType switch
+                        {
+                            STORAGE_BUS_TYPE.BusTypeNvme
+                                or STORAGE_BUS_TYPE.BusTypeSCM
+                                /*
+                                @MT_TASK_NOTE: The question of RAID
+                                We could have SATA RAID or NVMe RAID, and we don't know which... we also don't
+                                know if it's striped or mirrored. Striped SATA RAID is probably fast enough for
+                                aggressive threading, but mirrored RAID is the same speed as non-RAID. So we're
+                                in a bit of a conundrum here.
 
-                            However, we have the manual drive threading level selection for this case, so it's
-                            fine if not quite as ideal as we'd like.
-                            */
-                            //or STORAGE_BUS_TYPE.BusTypeRAID
-                            => AL_DriveType.NVMe_SSD,
-                        STORAGE_BUS_TYPE.BusTypeSata => AL_DriveType.SATA_SSD,
-                        // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
-                        // exotic bus types.
-                        _ => AL_DriveType.SATA_SSD,
-                    };
-                }
+                                However, we have the manual drive threading level selection for this case, so it's
+                                fine if not quite as ideal as we'd like.
+
+                                @MT_TASK: We never autodetect aggressive now, because we can't know if the drive
+                                 is capable of it even if it's NVMe...
+                                */
+                                //or STORAGE_BUS_TYPE.BusTypeRAID
+                                => DriveThreadability.Standard,
+                            STORAGE_BUS_TYPE.BusTypeSata => DriveThreadability.Standard,
+                            // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
+                            // exotic bus types.
+                            _ => DriveThreadability.Standard,
+                        };
+
+                return (threadability, modelName);
             }
             catch
             {
-                return AL_DriveType.Other;
+                return (DriveThreadability.Single, "");
             }
             finally
             {

@@ -447,22 +447,22 @@ public sealed class ConfigData
 
     internal readonly DriveLetterDictionary DriveLettersAndTypes = new(26);
 
-    internal static AL_DriveType GetDriveType(DriveLetterDictionary dict, string letter)
+    internal static DriveThreadability GetDriveThreadability(DriveLetterDictionary dict, string letter)
     {
         if (letter.Length == 0)
         {
-            return AL_DriveType.Auto;
+            return DriveThreadability.Auto;
         }
 
         char letterChar = letter[0];
-        if (dict.TryGetValue(letterChar, out AL_DriveType result))
+        if (dict.TryGetValue(letterChar, out DriveThreadability result))
         {
             return result;
         }
         else
         {
-            dict[letterChar] = AL_DriveType.Auto;
-            return AL_DriveType.Auto;
+            dict[letterChar] = DriveThreadability.Auto;
+            return DriveThreadability.Auto;
         }
     }
 
