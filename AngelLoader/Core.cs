@@ -414,7 +414,6 @@ internal static class Core
             }
             else
             {
-                // Don't wait for set drives task; just quit immediately
                 return;
             }
         }
