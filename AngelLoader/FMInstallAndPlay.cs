@@ -1944,6 +1944,29 @@ internal static partial class FMInstallAndPlay
                                  UPDATE: Yeah, it is a lot worse. We need to do single-threaded only for standard
                                  threaded install and FM convert (which also slams the disk, it's not bottlenecked
                                  on cpu/memory).
+                                 -
+                                 UPDATE: Tested per-entry but archives in sequence, was almost as fast as per-entry
+                                 and per-archive together.
+                                 We could get rid of the multi-item progress box entirely and just use the old
+                                 single/double-height one, since archives themselves will not be parallelized,
+                                 only the entries within a single one, so it's like the Uninstall box where it
+                                 still looks and acts like the old sequential one.
+                                 We could say:
+                                 -"No Threading" is:
+                                  -Single thread everything
+                                 -"Standard" threads:
+                                  -Scan
+                                  -FM Uninstall
+                                 -"Aggressive" threads:
+                                  -Scan
+                                  -FM Uninstall
+                                  -FM Install, per-entry but archives themselves in sequence
+                                  -Audio conversion
+                                 -
+                                 And we can't detect aggressive threading support. We'd need to know if the drive
+                                 uses SLC caching or whatever other cheap-out garbage so they can say "it's fast
+                                 in normal use!" but then it doesn't support actually using the drive in a perf-
+                                 oriented way. Meh. We'd just have to have aggressive threading as a manual option.
                                 */
                                 fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                     ? InstallFMZip_ThreadedPerEntry(
