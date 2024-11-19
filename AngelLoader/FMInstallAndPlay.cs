@@ -2372,6 +2372,11 @@ internal static partial class FMInstallAndPlay
         ThreadingData threadingData)
     {
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
+
+#if TIMING_TEST
+        var overallSW = Stopwatch.StartNew();
+#endif
+
         try
         {
             using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
@@ -2470,9 +2475,10 @@ internal static partial class FMInstallAndPlay
 #if TIMING_TEST
             sw.Stop();
             Trace.WriteLine($"Zip extract threaded:{NL}" +
-                            "Thread count: " + threadCount + $"{NL}" +
-                            "Initial read: " + sw0.Elapsed + $"{NL}" +
-                            "Full archive threaded extract: " + sw.Elapsed);
+                            "    FM: " + fmData.FM.Archive + $"{NL}" +
+                            "    Thread count: " + threadCount + $"{NL}" +
+                            "    Initial read: " + sw0.Elapsed + $"{NL}" +
+                            "    Full archive threaded extract: " + sw.Elapsed);
 #endif
 
             return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
@@ -2487,6 +2493,12 @@ internal static partial class FMInstallAndPlay
                 LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
                 ex);
         }
+#if TIMING_TEST
+        finally
+        {
+            Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " (" + fmData.FM.Archive + "): " + overallSW.Elapsed);
+        }
+#endif
     }
 
     private static FMInstallResult
