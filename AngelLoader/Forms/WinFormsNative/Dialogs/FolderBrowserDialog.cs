@@ -15,6 +15,8 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
     #region Public properties
 
+    public string Title = "";
+
     /// <summary>
     /// Gets or sets the initial directory displayed when the dialog is shown.
     /// If null, empty, or otherwise invalid, the default directory will be used.
@@ -46,6 +48,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
     /// </summary>
     public override void Reset()
     {
+        Title = "";
         InitialDirectory = "";
         DirectoryName = "";
         MultiSelect = false;
@@ -107,6 +110,11 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
         if (MultiSelect) flags |= NativeMethods.FOS.FOS_ALLOWMULTISELECT;
 
         dialog.SetOptions(flags);
+
+        if (!Title.IsEmpty())
+        {
+            dialog.SetTitle(Title);
+        }
 
         if (!InitialDirectory.IsWhiteSpace())
         {

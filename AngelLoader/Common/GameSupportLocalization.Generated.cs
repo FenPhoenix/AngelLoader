@@ -82,5 +82,14 @@ public static partial class GameSupport
         _ => LText.PlayOriginalGameMenu.Mods_EnableOrDisableModsForTDM,
     };
 
+    internal static string GetLocalizedSelectGameExecutableMessage(GameIndex gameIndex) => gameIndex switch
+    {
+        GameIndex.Thief1 => LText.SettingsWindow.Paths_DialogTitle_SelectT1Exe,
+        GameIndex.Thief2 => LText.SettingsWindow.Paths_DialogTitle_SelectT2Exe,
+        GameIndex.Thief3 => LText.SettingsWindow.Paths_DialogTitle_SelectT3Exe,
+        GameIndex.SS2 => LText.SettingsWindow.Paths_DialogTitle_SelectSS2Exe,
+        _ => LText.SettingsWindow.Paths_DialogTitle_SelectTDMExe,
+    };
+
     #endregion
 }

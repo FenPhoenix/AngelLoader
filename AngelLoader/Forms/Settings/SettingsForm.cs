@@ -1740,16 +1740,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void ExePathBrowseButtons_Click(object sender, EventArgs e)
     {
+        string? dialogTitle = null;
         DarkTextBox? tb = null;
         for (int i = 0; i < SupportedGameCount; i++)
         {
+            GameIndex gameIndex = (GameIndex)i;
             if (sender == GameExeBrowseButtons[i])
             {
+                dialogTitle = GetLocalizedSelectGameExecutableMessage(gameIndex);
                 tb = GameExeTextBoxes[i];
                 break;
             }
         }
         tb ??= PathsPage.SteamExeTextBox;
+        dialogTitle ??= LText.SettingsWindow.Paths_DialogTitle_SelectSteamExe;
 
         string initialPath = "";
         try
@@ -1761,7 +1765,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             // ignore
         }
 
-        (DialogResult result, string fileName) = BrowseForExeFile(initialPath);
+        (DialogResult result, string fileName) = BrowseForExeFile(initialPath, dialogTitle);
         if (result == DialogResult.OK) tb.Text = fileName;
 
         ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
@@ -1814,6 +1818,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         using (var d = new VistaFolderBrowserDialog())
         {
+            d.Title = LText.SettingsWindow.Paths_DialogTitle_SelectBackupPath;
             d.InitialDirectory = SanitizePathForDialog(tb.Text);
             d.MultiSelect = false;
             if (d.ShowDialogDark(this) == DialogResult.OK) tb.Text = d.DirectoryName;
@@ -1823,9 +1828,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     private (DialogResult Result, string FileName)
-    BrowseForExeFile(string initialPath)
+    BrowseForExeFile(string initialPath, string title)
     {
         using var dialog = new OpenFileDialog();
+        dialog.Title = title;
         dialog.InitialDirectory = initialPath;
         dialog.Filter = LText.BrowseDialogs.ExeFiles + "|*.exe";
         return (dialog.ShowDialogDark(this), dialog.FileName);
@@ -1854,6 +1860,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void AddFMArchivePathButton_Click(object sender, EventArgs e)
     {
         using var d = new VistaFolderBrowserDialog();
+
+        d.Title = LText.SettingsWindow.Paths_DialogTitle_AddFMArchivePath;
 
         DarkListBox lb = PathsPage.FMArchivePathsListBox;
         string initDir =

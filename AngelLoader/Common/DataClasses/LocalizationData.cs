@@ -631,6 +631,7 @@ internal sealed class LText_Class
         internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
         internal readonly string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
         internal readonly string OpenFMFolder = "Open FM folder";
+        internal readonly string AddDMLPatchDialogTitle = "Add .dml Patch";
     }
 
     internal sealed class ModsTab_Class
@@ -816,6 +817,16 @@ internal sealed class LText_Class
         internal readonly string Paths_RemoveArchivePathToolTip = "Remove selected archive path";
         [FenGenBlankLine]
         internal readonly string Paths_ErrorSomePathsAreInvalid = "Some paths are invalid.";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectGameExecutableMessage")]
+        internal readonly string Paths_DialogTitle_SelectT1Exe = "Select Thief Executable";
+        internal readonly string Paths_DialogTitle_SelectT2Exe = "Select Thief II Executable";
+        internal readonly string Paths_DialogTitle_SelectT3Exe = "Select Thief: Deadly Shadows Executable";
+        internal readonly string Paths_DialogTitle_SelectSS2Exe = "Select System Shock 2 Executable";
+        internal readonly string Paths_DialogTitle_SelectTDMExe = "Select The Dark Mod Executable";
+        internal readonly string Paths_DialogTitle_SelectSteamExe = "Select Steam Executable";
+        internal readonly string Paths_DialogTitle_SelectBackupPath = "Select Backup Path";
+        internal readonly string Paths_DialogTitle_AddFMArchivePath = "Add Archive Path";
         [FenGenBlankLine]
         internal readonly string Appearance_TabText = "Appearance";
         [FenGenBlankLine]
