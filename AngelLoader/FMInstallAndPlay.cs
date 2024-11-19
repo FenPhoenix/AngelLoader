@@ -1914,6 +1914,16 @@ internal static partial class FMInstallAndPlay
                                  is needed, and on the other SATA SSD too. At the very least maybe we could use
                                  aggressive threading when there's only one FM? Coarse, but that's probably a
                                  common scenario and we really don't want to lose out on the performance with it.
+                                 -
+                                 After testing:
+                                 -The other SATA SSD doesn't fare nearly as well; it really needs standard threading
+                                  because with aggressive it chokes hard.
+                                 -The gen 4 NVMe works fine self-to-self, being equal or slightly faster when doing
+                                  12/aggressive for the audio conv test set.
+                                 -Need to test on like a low end garbage NVMe, just to see...
+                                 -
+                                 So really the heuristic we have is basically still good, over-conservative in
+                                 some cases but we have to be, cause we don't know much about the hardware...
                                 */
                                 fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                     ? InstallFMZip_ThreadedPerEntry(
