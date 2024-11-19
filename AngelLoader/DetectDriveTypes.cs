@@ -223,6 +223,8 @@ internal static class DetectDriveData
 
                                 @MT_TASK: We never autodetect aggressive now, because we can't know if the drive
                                  is capable of it even if it's NVMe...
+
+                                @MT_TASK: What's the model name on RAID?!
                                 */
                                 //or STORAGE_BUS_TYPE.BusTypeRAID
                                 => DriveThreadability.Standard,
