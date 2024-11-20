@@ -434,11 +434,28 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
     }
 
     [PublicAPI]
-    public void DoAutoSize()
+    public void DoAutoSize(int rightPadding = 0)
     {
         COMBOBOXINFO cbInfo = new() { cbSize = _comboboxInfoSize };
         GetComboBoxInfo(Handle, ref cbInfo);
-        Size = Size with { Width = cbInfo.rcButton.Width + GetLongestItemTextWidth() };
+        Size = Size with { Width = cbInfo.rcButton.Width + GetLongestItemTextWidth() + rightPadding };
+    }
+
+    [PublicAPI]
+    public static void DoAutoSizeForSet(DarkComboBox[] comboBoxes, int rightPadding = 0)
+    {
+        int finalWidth = 0;
+        foreach (DarkComboBox comboBox in comboBoxes)
+        {
+            int currentWidth = comboBox.GetLongestItemTextWidth();
+            if (finalWidth < currentWidth) finalWidth = currentWidth;
+        }
+        foreach (DarkComboBox comboBox in comboBoxes)
+        {
+            COMBOBOXINFO cbInfo = new() { cbSize = _comboboxInfoSize };
+            GetComboBoxInfo(comboBox.Handle, ref cbInfo);
+            comboBox.Size = comboBox.Size with { Width = cbInfo.rcButton.Width + finalWidth + rightPadding };
+        }
     }
 
     [StructLayout(LayoutKind.Sequential)]

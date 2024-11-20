@@ -83,29 +83,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         internal readonly DriveThreadability Threadability;
         internal readonly string Drive;
         internal readonly string ModelName;
-        internal readonly DarkRadioButton AutoRadioButton;
-        internal readonly DarkRadioButton AggressiveThreading_RadioButton;
-        internal readonly DarkRadioButton StandardThreading_RadioButton;
-        internal readonly DarkRadioButton SingleThread_RadioButton;
+        internal readonly DarkComboBox ComboBox;
 
         public DriveDataSection(
             DarkLabel driveLabel,
             DriveThreadability threadability,
             string drive,
             string modelName,
-            DarkRadioButton autoRadioButton,
-            DarkRadioButton aggressiveThreadingRadioButton,
-            DarkRadioButton standardThreadingRadioButton,
-            DarkRadioButton singleThreadRadioButton)
+            DarkComboBox comboBox)
         {
             DriveLabel = driveLabel;
             Threadability = threadability;
             Drive = drive;
             ModelName = modelName;
-            AutoRadioButton = autoRadioButton;
-            AggressiveThreading_RadioButton = aggressiveThreadingRadioButton;
-            StandardThreading_RadioButton = standardThreadingRadioButton;
-            SingleThread_RadioButton = singleThreadRadioButton;
+            ComboBox = comboBox;
         }
     }
 
@@ -750,7 +741,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 DrivesAndTypes[i] = new DriveData(driveData.Root, driveData.Threadability, driveData.ModelName);
             }
 
-            const int driveTypePanelHeight = 120;
+            const int driveTypePanelHeight = 64;
             int y = 24;
             int tabIndex = 2;
             for (int i = 0; i < DrivesAndTypes.Length; i++, y += driveTypePanelHeight, tabIndex++)
@@ -769,63 +760,28 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     AutoSize = true,
                     TabIndex = tabIndex + 1,
                 };
-                DarkRadioButton autoDetectRadioButton = new()
+                DarkComboBox comboBox = new()
                 {
-                    AutoSize = true,
                     Location = new Point(8, 20),
+                    MinimumSize = new Size(160, 0),
                     TabIndex = tabIndex + 2,
                     TabStop = true,
 
-                    Tag = new DriveControlIndex(i, DriveThreadability.Auto),
+                    Tag = i,
                 };
-                DarkRadioButton aggressiveThreadingRadioButton = new()
-                {
-                    AutoSize = true,
-                    Location = new Point(8, 20 + (20 * 1)),
-                    TabIndex = tabIndex + 3,
-                    TabStop = true,
-
-                    Tag = new DriveControlIndex(i, DriveThreadability.Aggressive),
-                };
-                DarkRadioButton standardThreadingRadioButton = new()
-                {
-                    AutoSize = true,
-                    Location = new Point(8, 20 + (20 * 2)),
-                    TabIndex = tabIndex + 4,
-                    TabStop = true,
-
-                    Tag = new DriveControlIndex(i, DriveThreadability.Standard),
-                };
-                DarkRadioButton singleThreadRadioButton = new()
-                {
-                    AutoSize = true,
-                    Location = new Point(8, 20 + (20 * 3)),
-                    TabIndex = tabIndex + 5,
-                    TabStop = true,
-
-                    Tag = new DriveControlIndex(i, DriveThreadability.Single),
-                };
-
-                autoDetectRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
-                aggressiveThreadingRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
-                standardThreadingRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
-                singleThreadRadioButton.CheckedChanged += DriveTypeRadioButtons_CheckedChanged;
+                comboBox.Items.AddRange(new object[] { "", "", "", "" });
+                comboBox.SelectedIndex = 0;
 
                 panel.Controls.Add(driveLabel);
-                panel.Controls.Add(autoDetectRadioButton);
-                panel.Controls.Add(aggressiveThreadingRadioButton);
-                panel.Controls.Add(standardThreadingRadioButton);
-                panel.Controls.Add(singleThreadRadioButton);
+                panel.Controls.Add(comboBox);
 
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
                     driveLabel,
                     driveData.Threadability,
                     driveData.Drive,
                     driveData.ModelName,
-                    autoDetectRadioButton,
-                    aggressiveThreadingRadioButton,
-                    standardThreadingRadioButton,
-                    singleThreadRadioButton);
+                    comboBox
+                );
 
                 IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
@@ -835,21 +791,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 }
 
                 DriveThreadability driveThreadability = ConfigData.GetDriveThreadability(_driveLettersAndTypes, driveData.Drive);
-                switch (driveThreadability)
+                comboBox.SelectedIndex = driveThreadability switch
                 {
-                    case DriveThreadability.Auto:
-                        autoDetectRadioButton.Checked = true;
-                        break;
-                    case DriveThreadability.Aggressive:
-                        aggressiveThreadingRadioButton.Checked = true;
-                        break;
-                    case DriveThreadability.Standard:
-                        standardThreadingRadioButton.Checked = true;
-                        break;
-                    case DriveThreadability.Single:
-                        singleThreadRadioButton.Checked = true;
-                        break;
-                }
+                    DriveThreadability.Aggressive => 1,
+                    DriveThreadability.Standard => 2,
+                    DriveThreadability.Single => 3,
+                    _ => 0,
+                };
+                comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             }
             IOThreadingPage.IOThreadingLevelGroupBox.Size = IOThreadingPage.IOThreadingLevelGroupBox.Size with
             {
@@ -965,11 +914,17 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         #endregion
     }
 
-    private void DriveTypeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (sender is DarkRadioButton { Tag: DriveControlIndex dci })
+        if (sender is DarkComboBox { Tag: int index } comboBox)
         {
-            DrivesAndTypes[dci.Index].Threadability = dci.Threadability;
+            DrivesAndTypes[index].Threadability = comboBox.SelectedIndex switch
+            {
+                1 => DriveThreadability.Aggressive,
+                2 => DriveThreadability.Standard,
+                3 => DriveThreadability.Single,
+                _ => DriveThreadability.Auto,
+            };
         }
     }
 
@@ -1256,11 +1211,18 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     section.DriveLabel.Text = section.Drive + " " + section.ModelName;
 
-                    section.AutoRadioButton.Text = GetAutodetectedThreadingLevelString(section.Threadability);
-                    section.AggressiveThreading_RadioButton.Text = GetThreadingLevelString(DriveThreadability.Aggressive);
-                    section.StandardThreading_RadioButton.Text = GetThreadingLevelString(DriveThreadability.Standard);
-                    section.SingleThread_RadioButton.Text = GetThreadingLevelString(DriveThreadability.Single);
+                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.Threadability);
+                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveThreadability.Aggressive);
+                    section.ComboBox.Items[2] = GetThreadingLevelString(DriveThreadability.Standard);
+                    section.ComboBox.Items[3] = GetThreadingLevelString(DriveThreadability.Single);
                 }
+
+                DarkComboBox[] threadingLevelComboBoxes = new DarkComboBox[IOThreadingLevelDriveDataSections.Length];
+                for (int i = 0; i < IOThreadingLevelDriveDataSections.Length; i++)
+                {
+                    threadingLevelComboBoxes[i] = IOThreadingLevelDriveDataSections[i].ComboBox;
+                }
+                DarkComboBox.DoAutoSizeForSet(threadingLevelComboBoxes, rightPadding: 16);
 
                 static string GetAutodetectedThreadingLevelString(DriveThreadability threadability)
                 {
