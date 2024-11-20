@@ -140,6 +140,8 @@ internal static class DetectDriveData
     private static (DriveThreadability Threadability, string DriveModelName)
     GetDriveThreadability(string root)
     {
+        string modelName = "";
+
         /*
         Whereas the WMI-based method could take upwards of 500ms _per drive_ for HDDs - and still ~50ms per
         drive for SSDs - this DeviceIoControl-based method gets the whole set done in under 10ms.
@@ -151,7 +153,7 @@ internal static class DetectDriveData
         // We've got a network drive or something else, and we don't know what it is.
         if (!RootIsLetter(root))
         {
-            return (DriveThreadability.Single, "");
+            return (DriveThreadability.Single, modelName);
         }
         else
         {
@@ -184,7 +186,7 @@ internal static class DetectDriveData
 
                 STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
 
-                string modelName = deviceProperty.ProductId;
+                modelName = deviceProperty.ProductId;
 
                 /*
                 @MT_TASK_NOTE: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
@@ -230,7 +232,7 @@ internal static class DetectDriveData
             }
             catch
             {
-                return (DriveThreadability.Single, "");
+                return (DriveThreadability.Single, modelName);
             }
             finally
             {
