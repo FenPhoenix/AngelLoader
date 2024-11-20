@@ -554,8 +554,7 @@ internal static class FMScan
                 return;
             }
 
-            int fmNumber = fmsTotalCount - pr.FMsRemainingInQueue;
-            int percent = GetPercentFromValue_Int(scanningOne ? 0 : fmNumber - 1, fmsTotalCount);
+            int percent = GetPercentFromValue_Int(scanningOne ? 0 : pr.FMNumber - 1, pr.FMsCount);
 
             /*
             @MT_TASK_NOTE: Necessary if we have multiple threads to allow UI time to catch up.
@@ -568,21 +567,20 @@ internal static class FMScan
              now...
             */
             if (scanningOne ||
-                fmNumber is 0 or 1 ||
-                (fmNumber > lastFMNumber && reportThrottleSW.ElapsedMilliseconds > 4))
+                pr.FMNumber is 0 or 1 ||
+                reportThrottleSW.ElapsedMilliseconds > 4)
             {
                 Core.View.SetProgressBoxState_Single(
                     message1:
                     scanMessage ??
                     LText.ProgressBox.ReportScanningFirst +
-                    fmNumber.ToStrCur() +
+                    pr.FMNumber.ToStrCur() +
                     reportCachedString,
                     message2:
                     pr.FMName,
                     percent: percent
                 );
 
-                lastFMNumber = fmNumber;
                 reportThrottleSW.Restart();
             }
         }

@@ -194,7 +194,8 @@ public sealed class ScanOptions
 public sealed class ProgressReport
 {
     public string FMName = "";
-    public int FMsRemainingInQueue;
+    public int FMNumber;
+    public int FMsCount;
 }
 
 [PublicAPI]

@@ -408,6 +408,9 @@ public sealed class Scanner : IDisposable
             throw new ArgumentOutOfRangeException(nameof(ParallelOptions.MaxDegreeOfParallelism));
         }
 
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+
         ConcurrentBag<List<ScannedFMDataAndError>> returnLists = new();
 
         ReadOnlyDataContext ctx = new();
@@ -422,12 +425,14 @@ public sealed class Scanner : IDisposable
                     readOnlyDataContext: ctx,
                     tdmContext: tdmContext);
 
-                returnLists.Add(scanner.Scan(
+                returnLists.Add(scanner.ScanMany(
                     pd.CQ,
                     tempPath: tempPath,
                     scanOptions: scanOptions,
                     progress: progress,
-                    cancellationToken: pd.PO.CancellationToken));
+                    cancellationToken: pd.PO.CancellationToken,
+                    fmNumber: ref fmNumber,
+                    fmsCount: fmsCount));
             });
         }
         catch (OperationCanceledException)
@@ -486,7 +491,9 @@ public sealed class Scanner : IDisposable
     Scan(ConcurrentQueue<FMToScan> missions, string tempPath, ScanOptions scanOptions,
          IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
-        return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken);
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
     }
 
     #endregion
@@ -530,7 +537,9 @@ public sealed class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
-        return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken));
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
     }
 
     #endregion
@@ -566,8 +575,14 @@ public sealed class Scanner : IDisposable
     }
 
     private List<ScannedFMDataAndError>
-    ScanMany(ConcurrentQueue<FMToScan> fms, string tempPath, ScanOptions scanOptions,
-             IProgress<ProgressReport>? progress, CancellationToken cancellationToken)
+        ScanMany(
+            ConcurrentQueue<FMToScan> fms,
+            string tempPath,
+            ScanOptions scanOptions,
+            IProgress<ProgressReport>? progress,
+            CancellationToken cancellationToken,
+            ref int fmNumber,
+            int fmsCount)
     {
         // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
         // entries as the in-list; this allows the calling app to not have to do a search to link up the FMs
@@ -592,7 +607,10 @@ public sealed class Scanner : IDisposable
 
         var scannedFMDataList = new List<ScannedFMDataAndError>(fms.Count);
 
-        var progressReport = new ProgressReport();
+        ProgressReport progressReport = new()
+        {
+            FMsCount = fmsCount,
+        };
 
         while (fms.TryDequeue(out FMToScan fm))
         {
@@ -657,17 +675,7 @@ public sealed class Scanner : IDisposable
             if (progress != null)
             {
                 progressReport.FMName = fm.DisplayName;
-                /*
-                @MT_TASK_NOTE: Race condition with fms.Count
-                The count could have gone down between when we dequeued this fm and when we get the count here.
-                Not sure if there's anything that can be done about it, there doesn't seem to be an atomic
-                operation to dequeue AND get the count.
-                Probably doesn't matter anyway because even if we could do that, another thread will report its
-                progress anyway and there'll still be a race between us and it, even if we've removed the race
-                between us and ourselves.
-                @MT_TASK_NOTE: We could pass in the original total count and use the FM's index field.
-                */
-                progressReport.FMsRemainingInQueue = fms.Count;
+                progressReport.FMNumber = Interlocked.Increment(ref fmNumber);
 
                 progress.Report(progressReport);
             }
