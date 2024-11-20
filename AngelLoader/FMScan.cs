@@ -86,8 +86,6 @@ internal static class FMScan
 
         bool scanningOne = fmsToScan.Single;
 
-        int fmsTotalCount = 0;
-        int lastFMNumber = 0;
         // Cache once globally, not once per-thread (allocation reduction)
         string reportCachedString = "";
 
@@ -259,7 +257,6 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-                        fmsTotalCount = fms.Count;
 
                         reportThrottleSW.Start();
 
@@ -268,7 +265,7 @@ internal static class FMScan
 #endif
                         reportCachedString =
                             LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                            fmsTotalCount.ToStrCur() +
+                            fms.Count.ToStrCur() +
                             LText.ProgressBox.ReportScanningLast;
 
                         ThreadingData threadingData = GetLowestCommonThreadingData(
