@@ -1815,6 +1815,8 @@ internal static partial class FMInstallAndPlay
                     ZipContext_Threaded_Pool zipCtxThreadedPool = new();
                     IOBufferPools ioBufferPools = new();
 
+                    // Entry-parallel/archive-sequential is nearly as fast as entry-parallel/archive-parallel,
+                    // but much simpler.
                     int fmDataListCount = fmDataList.Count;
                     for (; fmDataIndex < fmDataListCount; fmDataIndex++)
                     {
@@ -1830,65 +1832,24 @@ internal static partial class FMInstallAndPlay
                                     threadablePaths.FilterToZipFMInstallRelevant(fmData));
 
                             /*
-                            @MT_TASK: My boot SATA SSD is benefitting from aggressive threading even when
-                             installing to itself, and even when installing 3 very large FMs in parallel (but
-                             no audio conversion). That wasn't the result in the earlier tests. More testing
-                             is needed, and on the other SATA SSD too. At the very least maybe we could use
-                             aggressive threading when there's only one FM? Coarse, but that's probably a
-                             common scenario and we really don't want to lose out on the performance with it.
-                             -
-                             After testing:
-                             -The other SATA SSD doesn't fare nearly as well; it really needs standard threading
-                              because with aggressive it chokes hard.
-                             -The gen 4 NVMe works fine self-to-self, being equal or slightly faster when doing
-                              12/aggressive for the audio conv test set.
-                             -Need to test on like a low end garbage NVMe, just to see...
-                             -
-                             So really the heuristic we have is basically still good, over-conservative in
-                             some cases but we have to be, cause we don't know much about the hardware...
-                             -
-                             After more testing:
-                             -WD Blue SATA has strange performance characteristics - even in single-threaded,
-                             TROTB2's time depends on how much I/O has come before it, both in the current and
-                             pre-multithreading snapshot branch.
-                             My guess is we're leaving SLC cache.
-                             -
-                             What we could do then is say that "standard threading" is:
-                             -Scanning
-                              -Scans are entirely read except for 7z, and even those are not that much write
-                             -Deleting files
-                              -Deleting is just writing to the NTFS TOC or whatever
-                             And then have some option to enable "you better have high end SATA or NVME for this"
-                             mode.
-                             -
-                             But then again, if lower end SATA tanks our perf even on single-threaded, then
-                             is multithreaded still fine? Is it any worse really?
-                             UPDATE: Yeah, it is a lot worse. We need to do single-threaded only for standard
-                             threaded install and FM convert (which also slams the disk, it's not bottlenecked
-                             on cpu/memory).
-                             -
-                             UPDATE: Tested per-entry but archives in sequence, was almost as fast as per-entry
-                             and per-archive together.
-                             We could get rid of the multi-item progress box entirely and just use the old
-                             single/double-height one, since archives themselves will not be parallelized,
-                             only the entries within a single one, so it's like the Uninstall box where it
-                             still looks and acts like the old sequential one.
-                             We could say:
-                             -"No Threading" is:
-                              -Single thread everything
-                             -"Standard" threads:
-                              -Scan
-                              -FM Uninstall
-                             -"Aggressive" threads:
-                              -Scan
-                              -FM Uninstall
-                              -FM Install, per-entry but archives themselves in sequence
-                              -Audio conversion
-                             -
-                             And we can't detect aggressive threading support. We'd need to know if the drive
-                             uses SLC caching or whatever other cheap-out garbage so they can say "it's fast
-                             in normal use!" but then it doesn't support actually using the drive in a perf-
-                             oriented way. Meh. We'd just have to have aggressive threading as a manual option.
+                            @MT_TASK_NOTE(Threading levels and drive types)
+                            Whether write-heavy threading gives a benefit seems to depend mostly on how "high end"
+                            the drive is, not necessarily whether it's SATA or NVMe. My Samsung 870 Evo 2TB SATA
+                            SSD responds well even to aggressive threading, and even while extracting to itself!
+                            The drive has a large DRAM cache and has no pseudo-SLC nonsense, it's proper performance
+                            all the way through, no BS.
+                            My WD Blue SA510 1TB SATA SSD has no DRAM cache at all and uses the pseudo-SLC crap,
+                            and thus performance tanks hard when hit with aggressive threading or even standard
+                            threading (entry-sequential/archive-parallel) or even single-threaded writing when
+                            a lot of it is done in sequence! There's nothing to be done about that last one, but
+                            it's still less slow than any parallel option.
+                            
+                            I'd need to get a cheap garbage NVMe drive to see if the same would apply to it, but
+                            I'm pretty sure it would.
+
+                            So, we can't detect aggressive threading support. We'd need to know about the cache
+                            or lack thereof at least, and there's probably other things that affect performance
+                            too. So we just have to leave aggressive threading as a manual option.
                             */
                             fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
                                 ? InstallFMZip_ThreadedPerEntry(
