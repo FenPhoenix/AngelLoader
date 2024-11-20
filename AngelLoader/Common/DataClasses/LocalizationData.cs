@@ -938,9 +938,9 @@ internal sealed class LText_Class
         internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading = "Auto: Aggressive multithreading";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_StandardMultithreading = "Auto: Standard multithreading";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto: Single thread";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading = "Auto (Aggressive multithreading)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_StandardMultithreading = "Auto (Standard multithreading)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
         internal readonly string IOThreading_IOThreadingLevels_AggressiveMultithreading = "Aggressive multithreading";
         internal readonly string IOThreading_IOThreadingLevels_StandardMultithreading = "Standard multithreading";
         internal readonly string IOThreading_IOThreadingLevels_SingleThread = "Single thread";
