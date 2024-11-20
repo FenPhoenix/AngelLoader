@@ -1798,19 +1798,6 @@ internal static partial class FMInstallAndPlay
                 {
                     DarkLoaderBackupContext ctx = new();
 
-                    ThreadingData fullSetThreadingData = GetLowestCommonThreadingData(threadablePaths);
-
-                    int threadCount = GetThreadCountForParallelOperation(fmDataList.Count, fullSetThreadingData);
-
-#if TIMING_TEST
-                    Trace.WriteLine(nameof(InstallInternal) + " Parallel.For thread count: " + threadCount);
-#endif
-
-                    if (!TryGetParallelForData(threadCount, fmDataList, _installCts.Token, out var pd))
-                    {
-                        return false;
-                    }
-
                     ZipContext_Pool zipCtxPool = new();
                     ZipContext_Threaded_Pool zipCtxThreadedPool = new();
                     IOBufferPools ioBufferPools = new();
@@ -1890,7 +1877,7 @@ internal static partial class FMInstallAndPlay
 
                         results.Add(fmInstallResult);
 
-                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        _installCts.Token.ThrowIfCancellationRequested();
 
                         // @MT_TASK_NOTE: Set this before post-install work because it gets checked!
                         // This will again cause the UI to update the installed status if it's refreshed.
@@ -1901,7 +1888,7 @@ internal static partial class FMInstallAndPlay
                         DoPostInstallWork(
                             fmData,
                             ioBufferPools,
-                            pd.PO.CancellationToken,
+                            _installCts.Token,
                             ctx,
                             archivePaths,
                             fmDataList.Count,
