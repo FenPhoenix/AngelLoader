@@ -9,7 +9,6 @@ namespace AngelLoader.Forms;
 public sealed partial class MainForm
 {
     private ProgressBox? ProgressBox;
-    private MultiItemProgressBox? MultiItemProgressBox;
 
     // Note! If we WEREN'T always invoking these, we would want to have a lock around them!
 
@@ -23,17 +22,6 @@ public sealed partial class MainForm
         ProgressBox.Anchor = AnchorStyles.None;
         ProgressBox.DarkModeEnabled = Global.Config.DarkMode;
         ProgressBox.SetSizeToDefault();
-    }
-
-    [MemberNotNull(nameof(MultiItemProgressBox))]
-    private void ConstructMultiItemProgressBox()
-    {
-        if (MultiItemProgressBox != null) return;
-
-        MultiItemProgressBox = new MultiItemProgressBox(this) { Tag = LoadType.Lazy, Visible = false };
-        Controls.Add(MultiItemProgressBox);
-        MultiItemProgressBox.Anchor = AnchorStyles.None;
-        MultiItemProgressBox.DarkModeEnabled = Global.Config.DarkMode;
     }
 
     #region Progress box
@@ -199,68 +187,6 @@ public sealed partial class MainForm
     public void HideProgressBox() => Invoke(() => ProgressBox?.Hide());
 
     public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
-
-    #endregion
-
-    #region Multi-item progress box
-
-    public bool MultiItemProgress_Visible() => (bool)Invoke(() => MultiItemProgressBox is { Visible: true });
-
-    public void MultiItemProgress_Show(
-        (string Line1, string Line2)[]? initialRowTexts = null,
-        string? message1 = null,
-        string? mainMessage2 = null,
-        int? percent = null,
-        ProgressType? progressType = null,
-        string? cancelMessage = null,
-        Action? cancelAction = null) => Invoke(() =>
-    {
-        ConstructMultiItemProgressBox();
-        MultiItemProgressBox.SetState(
-            initialRowTexts: initialRowTexts,
-            visible: true,
-            mainMessage1: message1,
-            mainMessage2: mainMessage2,
-            mainPercent: percent,
-            mainProgressBarType: progressType ?? MultiItemProgressBox.DefaultProgressType,
-            cancelButtonMessage: cancelMessage ?? MultiItemProgressBox.DefaultCancelMessage,
-            cancelAction: cancelAction ?? NullAction);
-    });
-
-    public void MultiItemProgress_SetState(
-        (string Line1, string Line2)[]? initialRowTexts = null,
-        string? message1 = null,
-        string? mainMessage2 = null,
-        int? percent = null,
-        ProgressType? progressType = null,
-        string? cancelMessage = null,
-        Action? cancelAction = null) => Invoke(() =>
-    {
-        ConstructMultiItemProgressBox();
-        MultiItemProgressBox.SetState(
-            initialRowTexts: initialRowTexts,
-            visible: null,
-            mainMessage1: message1,
-            mainMessage2: mainMessage2,
-            mainPercent: percent,
-            mainProgressBarType: progressType,
-            cancelButtonMessage: cancelMessage,
-            cancelAction: cancelAction);
-    });
-
-    public void MultiItemProgress_Hide() => Invoke(() => MultiItemProgressBox?.Hide());
-
-    public void MultiItemProgress_SetItemData(
-        int index,
-        string? line1 = null,
-        string? line2 = null,
-        int? percent = null,
-        ProgressType? progressType = null,
-        bool forwardOnly = false) => Invoke(() =>
-    {
-        ConstructMultiItemProgressBox();
-        MultiItemProgressBox.SetItemData(index, line1, line2, percent, progressType, forwardOnly);
-    });
 
     #endregion
 }
