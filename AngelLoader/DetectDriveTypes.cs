@@ -83,7 +83,7 @@ internal static class DetectDriveData
                     }
                     else
                     {
-                        (driveThreadability, string modelName) = GetDriveThreadability(path.Root);
+                        (driveThreadability, _) = GetDriveThreadability(path.Root);
                         rootsDict[rootLetter] = driveThreadability;
                         path.DriveThreadability = driveThreadability;
                     }

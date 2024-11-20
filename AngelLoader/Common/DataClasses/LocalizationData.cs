@@ -736,18 +736,14 @@ internal sealed class LText_Class
 
     internal sealed class ProgressBox_Class
     {
-        internal readonly string Queued = "Queued...";
         internal readonly string InstallingFM = "Installing FM...";
         internal readonly string InstallingFMs = "Installing FMs...";
         internal readonly string PreparingToInstall = "Preparing to install...";
         internal readonly string CancelingInstall = "Canceling install...";
-        internal readonly string Canceled = "Canceled.";
         [FenGenComment("It's removing any leftover files from an FM install that didn't succeed")]
         internal readonly string CleaningUpFailedInstall = "Cleaning up failed install...";
-        internal readonly string InstallFailed = "Install failed.";
         [FenGenComment("For example, we could be restoring backed up saves and screenshots for this FM")]
         internal readonly string RestoringBackup = "Restoring backup...";
-        internal readonly string InstallComplete = "Install complete.";
         [FenGenBlankLine]
         internal readonly string UninstallingFM = "Uninstalling FM...";
         internal readonly string UninstallingFMs = "Uninstalling FMs...";
@@ -938,6 +934,7 @@ internal sealed class LText_Class
         internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
         [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
+        // @MT_TASK(Localized drive type strings): We're not sure what we want to do here yet
         internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
