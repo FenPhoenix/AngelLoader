@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -414,7 +415,13 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
     protected override void OnDropDown(EventArgs e)
     {
-        // Autosize dropdown to accomodate the longest item
+        DropDownWidth = Math.Max(GetLongestItemTextWidth(), Width);
+
+        base.OnDropDown(e);
+    }
+
+    private int GetLongestItemTextWidth()
+    {
         int finalWidth = 0;
         foreach (object item in Items)
         {
@@ -423,10 +430,44 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
             int currentItemWidth = TextRenderer.MeasureText(itemStr, Font, Size.Empty).Width;
             if (finalWidth < currentItemWidth) finalWidth = currentItemWidth;
         }
-        DropDownWidth = Math.Max(finalWidth, Width);
-
-        base.OnDropDown(e);
+        return finalWidth;
     }
+
+    [PublicAPI]
+    public void DoAutoSize()
+    {
+        COMBOBOXINFO cbInfo = new() { cbSize = _comboboxInfoSize };
+        GetComboBoxInfo(Handle, ref cbInfo);
+        Size = Size with { Width = cbInfo.rcButton.Width + GetLongestItemTextWidth() };
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct COMBOBOXINFO
+    {
+        internal int cbSize;
+        internal Native.RECT rcItem;
+        internal Native.RECT rcButton;
+        internal int stateButton;
+        internal IntPtr hwndCombo;
+        internal IntPtr hwndItem;
+        internal IntPtr hwndList;
+
+        internal COMBOBOXINFO(int size)
+        {
+            cbSize = size;
+            rcItem = Native.RECT.Empty;
+            rcButton = Native.RECT.Empty;
+            stateButton = 0;
+            hwndCombo = IntPtr.Zero;
+            hwndItem = IntPtr.Zero;
+            hwndList = IntPtr.Zero;
+        }
+    };
+
+    private static readonly int _comboboxInfoSize = Marshal.SizeOf(typeof(COMBOBOXINFO));
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+    private static extern bool GetComboBoxInfo(IntPtr hwnd, [In, Out] ref COMBOBOXINFO cbInfo);
 
     #endregion
 }

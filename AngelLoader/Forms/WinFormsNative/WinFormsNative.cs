@@ -48,7 +48,19 @@ internal static class Native
         public readonly int right;
         public readonly int bottom;
 
+        public RECT(int left, int top, int right, int bottom)
+        {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+
+        internal int Width => right - left;
+
         internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
+
+        internal static RECT Empty => new(0, 0, 0, 0);
     }
 
     [StructLayout(LayoutKind.Sequential)]
