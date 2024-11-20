@@ -229,8 +229,6 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
     internal new void Hide()
     {
-        if (!Visible) return;
-
         _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
         base.Hide();
