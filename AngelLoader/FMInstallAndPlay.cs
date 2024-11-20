@@ -2345,6 +2345,10 @@ internal static partial class FMInstallAndPlay
             var sw = Stopwatch.StartNew();
 #endif
 
+            var uiThrottleSW = Stopwatch.StartNew();
+
+            int entryNumber = 0;
+
             Parallel.For(0, threadCount, pd.PO, _ =>
             {
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
@@ -2359,7 +2363,7 @@ internal static partial class FMInstallAndPlay
 
                     while (pd.CQ.TryDequeue(out (ZipArchiveFastEntry Entry, string ExtractedName) entry))
                     {
-                        int entryNumber = entriesCount - pd.CQ.Count;
+                        //int entryNumber = entriesCount - pd.CQ.Count;
 
                         ZipArchiveFast_Threaded.ExtractToFile_Fast(
                                 entry: entry.Entry,
@@ -2375,18 +2379,24 @@ internal static partial class FMInstallAndPlay
 
                         int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                        if (single)
+                        if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
                         {
-                            Core.View.SetProgressPercent(percent);
+                            if (single)
+                            {
+                                Core.View.SetProgressPercent(percent);
+                            }
+                            else
+                            {
+                                Core.View.SetProgressBoxState_Double(
+                                    mainPercent: newMainPercent,
+                                    subMessage: fmData.FM.Archive,
+                                    subPercent: percent
+                                );
+                            }
+                            uiThrottleSW.Restart();
                         }
-                        else
-                        {
-                            Core.View.SetProgressBoxState_Double(
-                                mainPercent: newMainPercent,
-                                subMessage: fmData.FM.Archive,
-                                subPercent: percent
-                            );
-                        }
+
+                        Interlocked.Increment(ref entryNumber);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
