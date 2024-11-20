@@ -2375,7 +2375,7 @@ internal static partial class FMInstallAndPlay
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
-                        int percent = GetPercentFromValue_Int(entryNumber + 1, entriesCount);
+                        int percent = GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), entriesCount);
 
                         int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
@@ -2395,8 +2395,6 @@ internal static partial class FMInstallAndPlay
                             }
                             uiThrottleSW.Restart();
                         }
-
-                        Interlocked.Increment(ref entryNumber);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
                     }
