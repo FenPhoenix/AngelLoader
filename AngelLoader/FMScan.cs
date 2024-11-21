@@ -36,7 +36,7 @@ internal static class FMScan
     {
         _timingTestStopWatch.Stop();
         // ReSharper disable RedundantNameQualifier
-        Trace.WriteLine(_timingTestStopWatch.Elapsed);
+        Trace.WriteLine("Scan: " + _timingTestStopWatch.Elapsed);
     }
 #endif
 
