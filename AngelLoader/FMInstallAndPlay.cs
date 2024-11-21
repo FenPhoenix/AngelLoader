@@ -2311,8 +2311,6 @@ internal static partial class FMInstallAndPlay
 
                     while (pd.CQ.TryDequeue(out (ZipArchiveFastEntry Entry, string ExtractedName) entry))
                     {
-                        //int entryNumber = entriesCount - pd.CQ.Count;
-
                         ZipArchiveFast_Threaded.ExtractToFile_Fast(
                                 entry: entry.Entry,
                                 fileName: entry.ExtractedName,
