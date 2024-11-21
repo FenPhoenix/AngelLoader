@@ -1,6 +1,7 @@
 ﻿#define WinForms
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
+//#define TRACE_WRITE_TO_FILE
 
 global using static AL_Common.FullyGlobal;
 using System;
@@ -58,6 +59,12 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+#if TRACE_WRITE_TO_FILE
+        using var fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
+        using var fl = new System.Diagnostics.TextWriterTraceListener(fs);
+        System.Diagnostics.Trace.Listeners.Add(fl);
+#endif
+
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
         Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
         return;
