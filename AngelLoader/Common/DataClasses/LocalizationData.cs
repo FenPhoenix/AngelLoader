@@ -938,6 +938,11 @@ internal sealed class LText_Class
         internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
         internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
+        /*
+        @MT_TASK: "Aggressive" threading is really multithreaded writes, and the associated issues are all to
+         do with writing, not reading. Maybe we should make that clearer somehow, like call "standard multithreading"
+         "read multithreading" and "aggressive multithreading" "write multithreading" or similar.
+        */
         internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading = "Auto (Aggressive multithreading)";
         internal readonly string IOThreading_IOThreadingLevels_Auto_StandardMultithreading = "Auto (Standard multithreading)";
         internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
