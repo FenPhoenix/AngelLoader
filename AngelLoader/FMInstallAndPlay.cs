@@ -2322,23 +2322,11 @@ internal static partial class FMInstallAndPlay
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
                         int percent = GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), entriesCount);
-
                         int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                         if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
                         {
-                            if (single)
-                            {
-                                Core.View.SetProgressPercent(percent);
-                            }
-                            else
-                            {
-                                Core.View.SetProgressBoxState_Double(
-                                    mainPercent: newMainPercent,
-                                    subMessage: fmData.FM.Archive,
-                                    subPercent: percent
-                                );
-                            }
+                            ReportExtractProgress(percent, newMainPercent, fmData, single);
                             uiThrottleSW.Restart();
                         }
 
@@ -2436,21 +2424,9 @@ internal static partial class FMInstallAndPlay
                     _installCts.Token.ThrowIfCancellationRequested();
 
                     int percent = GetPercentFromValue_Int(i + 1, entriesCount);
-
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(percent);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmData.FM.Archive,
-                            subPercent: percent
-                        );
-                    }
+                    ReportExtractProgress(percent, newMainPercent, fmData, single);
 
                     _installCts.Token.ThrowIfCancellationRequested();
                 }
@@ -2596,18 +2572,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!_installCts.IsCancellationRequested)
                 {
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(percentOfEntries);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmData.FM.Archive,
-                            subPercent: percentOfEntries
-                        );
-                    }
+                    ReportExtractProgress(percentOfEntries, newMainPercent, fmData, single);
                 }
             }
 
@@ -2659,18 +2624,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!pr.Canceling)
                 {
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(pr.PercentOfEntries);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmData.FM.Archive,
-                            subPercent: pr.PercentOfEntries
-                        );
-                    }
+                    ReportExtractProgress(pr.PercentOfEntries, newMainPercent, fmData, single);
                 }
             }
 
@@ -2728,6 +2682,22 @@ internal static partial class FMInstallAndPlay
                 ArchiveType.SevenZip,
                 LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
                 ex);
+        }
+    }
+
+    private static void ReportExtractProgress(int percent, int newMainPercent, FMData fmData, bool single)
+    {
+        if (single)
+        {
+            Core.View.SetProgressPercent(percent);
+        }
+        else
+        {
+            Core.View.SetProgressBoxState_Double(
+                mainPercent: newMainPercent,
+                subMessage: fmData.FM.Archive,
+                subPercent: percent
+            );
         }
     }
 
