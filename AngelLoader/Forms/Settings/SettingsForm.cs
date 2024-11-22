@@ -1228,9 +1228,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return threadability switch
                     {
-                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading,
-                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_StandardMultithreading,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_SingleThread,
+                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_ReadAndWrite,
+                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_Read,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_None,
                     };
                 }
 
@@ -1238,9 +1238,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return threadability switch
                     {
-                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_AggressiveMultithreading,
-                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_StandardMultithreading,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_SingleThread,
+                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_ReadAndWrite,
+                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_Read,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_None,
                     };
                 }
 

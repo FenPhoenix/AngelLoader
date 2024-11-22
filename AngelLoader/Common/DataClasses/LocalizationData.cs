@@ -943,12 +943,12 @@ internal sealed class LText_Class
          do with writing, not reading. Maybe we should make that clearer somehow, like call "standard multithreading"
          "read multithreading" and "aggressive multithreading" "write multithreading" or similar.
         */
-        internal readonly string IOThreading_IOThreadingLevels_Auto_AggressiveMultithreading = "Auto (Aggressive multithreading)";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_StandardMultithreading = "Auto (Standard multithreading)";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
-        internal readonly string IOThreading_IOThreadingLevels_AggressiveMultithreading = "Aggressive multithreading";
-        internal readonly string IOThreading_IOThreadingLevels_StandardMultithreading = "Standard multithreading";
-        internal readonly string IOThreading_IOThreadingLevels_SingleThread = "Single thread";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_ReadAndWrite = "Auto (Read and write)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_Read = "Auto (Read)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_None = "Auto (None)";
+        internal readonly string IOThreading_IOThreadingLevels_ReadAndWrite = "Read and write";
+        internal readonly string IOThreading_IOThreadingLevels_Read = "Read";
+        internal readonly string IOThreading_IOThreadingLevels_None = "None";
     }
 
     internal sealed class DateFilterBox_Class
