@@ -218,7 +218,7 @@ internal static class DetectDriveData
 
                 -My Gigabyte Aorus GP-ASM2NE6200TTTD 2TB NVMe SSD of course has zero trouble with any sort of
                  threading whatsoever, but it's almost ludicrously high-end with 3600TBW and enough sustained
-                 sequential for uncompressed 1400p video footage and all.
+                 sequential for uncompressed 1440p video footage and all.
 
                 To test if it's safe to detect NVMe SSDs as write-threadable, I'd have to start buying cheap
                 drives just to test them, and that's a questionable decision for a free app.
