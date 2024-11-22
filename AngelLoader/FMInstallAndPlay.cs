@@ -1815,27 +1815,6 @@ internal static partial class FMInstallAndPlay
                         if (fmData.ArchiveFilePath.ExtIsZip())
                         {
                             List<ThreadablePath> zipInstallRelevantPaths = threadablePaths.FilterToZipFMInstallRelevant(fmData);
-
-                            /*
-                            @MT_TASK_NOTE(Threading levels and drive types)
-                            Whether write-heavy threading gives a benefit seems to depend mostly on how "high end"
-                            the drive is, not necessarily whether it's SATA or NVMe. My Samsung 870 Evo 2TB SATA
-                            SSD responds well even to aggressive threading, and even while extracting to itself!
-                            The drive has a large DRAM cache and has no pseudo-SLC nonsense, it's proper performance
-                            all the way through, no BS.
-                            My WD Blue SA510 1TB SATA SSD has no DRAM cache at all and uses the pseudo-SLC crap,
-                            and thus performance tanks hard when hit with aggressive threading or even standard
-                            threading (entry-sequential/archive-parallel) or even single-threaded writing when
-                            a lot of it is done in sequence! There's nothing to be done about that last one, but
-                            it's still less slow than any parallel option.
-                            
-                            I'd need to get a cheap garbage NVMe drive to see if the same would apply to it, but
-                            I'm pretty sure it would.
-
-                            So, we can't detect aggressive threading support. We'd need to know about the cache
-                            or lack thereof at least, and there's probably other things that affect performance
-                            too. So we just have to leave aggressive threading as a manual option.
-                            */
                             if (IsArchivePathAtLeastReadAndInstallPathAtLeastReadWrite(zipInstallRelevantPaths))
                             {
                                 ThreadingData installThreadingData = GetLowestCommonThreadingData(zipInstallRelevantPaths);

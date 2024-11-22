@@ -205,6 +205,29 @@ internal static class DetectDriveData
                 modelName = deviceProperty.ProductId;
 
                 /*
+                @MT_TASK_NOTE(Threading levels and drive types)
+                Whether write-heavy threading gives a benefit seems to depend mostly on how "high end" the drive
+                is, not necessarily whether it's SATA or NVMe.
+
+                -My Samsung 870 Evo 2TB SATA SSD responds well even to write threading, and even while extracting
+                 to itself.
+
+                -My WD Blue SA510 1TB SATA SSD tanks hard when hit with write threading or even single-threaded
+                 writing when a lot of it is done in sequence. There's nothing to be done about the latter, but
+                 it's still less slow than any parallel option.
+
+                -My Gigabyte Aorus GP-ASM2NE6200TTTD 2TB NVMe SSD of course has zero trouble with any sort of
+                 threading whatsoever, but it's almost ludicrously high-end with 3600TBW and enough sustained
+                 sequential for uncompressed 1400p video footage and all.
+
+                To test if it's safe to detect NVMe SSDs as write-threadable, I'd have to start buying cheap
+                drives just to test them, and that's a questionable decision for a free app.
+
+                So, we can't feasibly detect write threading support. We just have to leave read/write threading
+                as a manual option.
+                */
+
+                /*
                 @MT_TASK_NOTE: This can fail (for USB/Optical (virtual mounted)/SD (through USB dongle)/etc.)
                 If it fails, we fall back to Other which is probably fine. But, we could also say if this
                 fails then we should continue on below and get the bus type, from which we may be able to
