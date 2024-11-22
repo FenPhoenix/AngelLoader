@@ -82,20 +82,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private sealed class DriveDataSection
     {
         internal readonly DarkLabel DriveLabel;
-        internal DriveThreadability Threadability;
+        internal DriveMultithreadingLevel MultithreadingLevel;
         internal readonly string Drive;
         internal readonly string ModelName;
         internal readonly DarkComboBox ComboBox;
 
         public DriveDataSection(
             DarkLabel driveLabel,
-            DriveThreadability threadability,
+            DriveMultithreadingLevel multithreadingLevel,
             string drive,
             string modelName,
             DarkComboBox comboBox)
         {
             DriveLabel = driveLabel;
-            Threadability = threadability;
+            MultithreadingLevel = multithreadingLevel;
             Drive = drive;
             ModelName = modelName;
             ComboBox = comboBox;
@@ -775,7 +775,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
                     driveLabel,
-                    driveData.Threadability,
+                    driveData.MultithreadingLevel,
                     driveData.Root,
                     driveData.ModelName,
                     comboBox
@@ -788,15 +788,15 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
                 }
 
-                DriveThreadability driveThreadability =
+                DriveMultithreadingLevel driveMultithreadingLevel =
                     ConfigData.GetDriveThreadability(
                         _driveLettersAndTypes,
                         IOThreadingLevelDriveDataSections[i].Drive);
-                comboBox.SelectedIndex = driveThreadability switch
+                comboBox.SelectedIndex = driveMultithreadingLevel switch
                 {
-                    DriveThreadability.Aggressive => 1,
-                    DriveThreadability.Standard => 2,
-                    DriveThreadability.Single => 3,
+                    DriveMultithreadingLevel.ReadWrite => 1,
+                    DriveMultithreadingLevel.Read => 2,
+                    DriveMultithreadingLevel.None => 3,
                     _ => 0,
                 };
                 comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
@@ -919,12 +919,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (sender is DarkComboBox { Tag: int index } comboBox)
         {
-            IOThreadingLevelDriveDataSections[index].Threadability = comboBox.SelectedIndex switch
+            IOThreadingLevelDriveDataSections[index].MultithreadingLevel = comboBox.SelectedIndex switch
             {
-                1 => DriveThreadability.Aggressive,
-                2 => DriveThreadability.Standard,
-                3 => DriveThreadability.Single,
-                _ => DriveThreadability.Auto,
+                1 => DriveMultithreadingLevel.ReadWrite,
+                2 => DriveMultithreadingLevel.Read,
+                3 => DriveMultithreadingLevel.None,
+                _ => DriveMultithreadingLevel.Auto,
             };
         }
     }
@@ -1212,10 +1212,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     section.DriveLabel.Text = section.Drive + " " + section.ModelName;
 
-                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.Threadability);
-                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveThreadability.Aggressive);
-                    section.ComboBox.Items[2] = GetThreadingLevelString(DriveThreadability.Standard);
-                    section.ComboBox.Items[3] = GetThreadingLevelString(DriveThreadability.Single);
+                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.MultithreadingLevel);
+                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveMultithreadingLevel.ReadWrite);
+                    section.ComboBox.Items[2] = GetThreadingLevelString(DriveMultithreadingLevel.Read);
+                    section.ComboBox.Items[3] = GetThreadingLevelString(DriveMultithreadingLevel.None);
                 }
 
                 DarkComboBox[] threadingLevelComboBoxes = new DarkComboBox[IOThreadingLevelDriveDataSections.Length];
@@ -1225,22 +1225,22 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 }
                 DarkComboBox.DoAutoSizeForSet(threadingLevelComboBoxes, rightPadding: 16);
 
-                static string GetAutodetectedThreadingLevelString(DriveThreadability threadability)
+                static string GetAutodetectedThreadingLevelString(DriveMultithreadingLevel threadability)
                 {
                     return threadability switch
                     {
-                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_ReadAndWrite,
-                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_Read,
+                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_ReadAndWrite,
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_Read,
                         _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_None,
                     };
                 }
 
-                static string GetThreadingLevelString(DriveThreadability threadability)
+                static string GetThreadingLevelString(DriveMultithreadingLevel threadability)
                 {
                     return threadability switch
                     {
-                        DriveThreadability.Aggressive => LText.SettingsWindow.IOThreading_IOThreadingLevels_ReadAndWrite,
-                        DriveThreadability.Standard => LText.SettingsWindow.IOThreading_IOThreadingLevels_Read,
+                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_ReadAndWrite,
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Read,
                         _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_None,
                     };
                 }
@@ -1594,7 +1594,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
             {
-                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.Threadability;
+                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.MultithreadingLevel;
             }
 
             #endregion

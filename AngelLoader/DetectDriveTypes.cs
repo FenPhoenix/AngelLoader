@@ -35,15 +35,15 @@ internal static class DetectDriveData
             if (!path.Root.IsEmpty())
             {
                 char rootLetter = path.Root[0];
-                if (rootsDict.TryGetValue(rootLetter, out DriveThreadability driveThreadability))
+                if (rootsDict.TryGetValue(rootLetter, out DriveMultithreadingLevel driveThreadability))
                 {
-                    path.Threadability = driveThreadability;
+                    path.MultithreadingLevel = driveThreadability;
                 }
                 else
                 {
                     (driveThreadability, string modelName) = GetDriveThreadability(path.Root);
                     rootsDict[rootLetter] = driveThreadability;
-                    path.Threadability = driveThreadability;
+                    path.MultithreadingLevel = driveThreadability;
                     path.ModelName = modelName;
                 }
             }
@@ -71,21 +71,21 @@ internal static class DetectDriveData
             {
                 char rootLetter = path.Root[0];
 
-                if (drivesDict.TryGetValue(rootLetter, out DriveThreadability result) && result != DriveThreadability.Auto)
+                if (drivesDict.TryGetValue(rootLetter, out DriveMultithreadingLevel result) && result != DriveMultithreadingLevel.Auto)
                 {
-                    path.DriveThreadability = result;
+                    path.DriveMultithreadingLevel = result;
                 }
                 else
                 {
-                    if (rootsDict.TryGetValue(rootLetter, out DriveThreadability driveThreadability))
+                    if (rootsDict.TryGetValue(rootLetter, out DriveMultithreadingLevel driveThreadability))
                     {
-                        path.DriveThreadability = driveThreadability;
+                        path.DriveMultithreadingLevel = driveThreadability;
                     }
                     else
                     {
                         (driveThreadability, _) = GetDriveThreadability(path.Root);
                         rootsDict[rootLetter] = driveThreadability;
-                        path.DriveThreadability = driveThreadability;
+                        path.DriveMultithreadingLevel = driveThreadability;
                     }
                 }
             }
@@ -128,7 +128,7 @@ internal static class DetectDriveData
         return "";
     }
 
-    private static (DriveThreadability Threadability, string DriveModelName)
+    private static (DriveMultithreadingLevel Threadability, string DriveModelName)
     GetDriveThreadability(string root)
     {
         string modelName = "";
@@ -144,7 +144,7 @@ internal static class DetectDriveData
         // We've got a network drive or something else, and we don't know what it is.
         if (!RootIsLetter(root))
         {
-            return (DriveThreadability.Single, modelName);
+            return (DriveMultithreadingLevel.None, modelName);
         }
         else
         {
@@ -197,9 +197,9 @@ internal static class DetectDriveData
                 */
                 DEVICE_SEEK_PENALTY_DESCRIPTOR seekPenaltyDescriptor = device.StorageGetSeekPenaltyDescriptor();
 
-                DriveThreadability threadability =
+                DriveMultithreadingLevel multithreadingLevel =
                     seekPenaltyDescriptor.IncursSeekPenalty
-                        ? DriveThreadability.Single
+                        ? DriveMultithreadingLevel.None
                         : deviceProperty.BusType switch
                         {
                             STORAGE_BUS_TYPE.BusTypeNvme
@@ -212,18 +212,18 @@ internal static class DetectDriveData
                                  is capable of it even if it's NVMe...
                                 */
                                 //or STORAGE_BUS_TYPE.BusTypeRAID
-                                => DriveThreadability.Standard,
-                            STORAGE_BUS_TYPE.BusTypeSata => DriveThreadability.Standard,
+                                => DriveMultithreadingLevel.Read,
+                            STORAGE_BUS_TYPE.BusTypeSata => DriveMultithreadingLevel.Read,
                             // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
                             // exotic bus types.
-                            _ => DriveThreadability.Standard,
+                            _ => DriveMultithreadingLevel.Read,
                         };
 
-                return (threadability, modelName);
+                return (multithreadingLevel, modelName);
             }
             catch
             {
-                return (DriveThreadability.Single, modelName);
+                return (DriveMultithreadingLevel.None, modelName);
             }
             finally
             {

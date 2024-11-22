@@ -33,11 +33,11 @@ public static partial class Utils
         }
 
         ThreadingData threadingData;
-        if (paths.Any(static x => x.DriveThreadability == DriveThreadability.Single))
+        if (paths.Any(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.None))
         {
             threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
         }
-        else if (paths.All(static x => x.DriveThreadability == DriveThreadability.Aggressive))
+        else if (paths.All(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.ReadWrite))
         {
             threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
         }

@@ -226,11 +226,11 @@ public enum IOThreadingLevel
     Aggressive,
 }
 
-public enum DriveThreadability
+public enum DriveMultithreadingLevel
 {
-    Single,
-    Standard,
-    Aggressive,
+    None,
+    Read,
+    ReadWrite,
     Auto,
 }
 

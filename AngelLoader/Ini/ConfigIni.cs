@@ -891,7 +891,7 @@ internal static partial class Ini
         }
     }
 
-    private static void Config_DriveThreadability_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_DriveMultithreadingLevel_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         string[] values = valTrimmed.Split(CA_Comma, StringSplitOptions.RemoveEmptyEntries);
         foreach (string value in values)
@@ -905,10 +905,10 @@ internal static partial class Ini
                 char letterChar = letter[0];
 
                 string threadabilityStr = letterAndThreadability[1].Trim();
-                FieldInfo? field = typeof(DriveThreadability).GetField(threadabilityStr, _bFlagsEnum);
+                FieldInfo? field = typeof(DriveMultithreadingLevel).GetField(threadabilityStr, _bFlagsEnum);
                 if (field != null)
                 {
-                    config.DriveLettersAndTypes[letterChar] = (DriveThreadability)field.GetValue(null);
+                    config.DriveLettersAndTypes[letterChar] = (DriveMultithreadingLevel)field.GetValue(null);
                 }
             }
         }
@@ -1120,7 +1120,7 @@ internal static partial class Ini
 
         { "IOThreadsMode", new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
         { "CustomIOThreadCount", new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
-        { "DriveThreadability", new Config_DelegatePointerWrapper(&Config_DriveThreadability_Set) },
+        { "DriveMultithreadingLevel", new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
 
         #region Backward compatibility
 
@@ -1527,7 +1527,7 @@ internal static partial class Ini
 
         sw.Append("IOThreadsMode=").AppendLine(config.IOThreadsMode);
         sw.Append("CustomIOThreadCount=").AppendLine(config.CustomIOThreadCount);
-        sw.Append("DriveThreadability=");
+        sw.Append("DriveMultithreadingLevel=");
         var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
         for (int i = 0; i < driveLettersAndTypes.Length; i++)
         {

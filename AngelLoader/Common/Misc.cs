@@ -432,7 +432,7 @@ public static partial class Misc
     {
         public readonly string OriginalPath;
         public string Root = "";
-        public DriveThreadability Threadability = DriveThreadability.Single;
+        public DriveMultithreadingLevel MultithreadingLevel = DriveMultithreadingLevel.None;
         public string ModelName = "";
 
         public SettingsDriveData(string originalPath)
@@ -445,7 +445,7 @@ public static partial class Misc
             return "----" + $"{NL}" +
                    nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
                    nameof(Root) + ": " + Root + $"{NL}" +
-                   nameof(Threadability) + ": " + Threadability + $"{NL}";
+                   nameof(MultithreadingLevel) + ": " + MultithreadingLevel + $"{NL}";
         }
     }
 
@@ -454,7 +454,7 @@ public static partial class Misc
         public readonly string OriginalPath;
         public string Root = "";
         public readonly IOPathType IOPathType;
-        public DriveThreadability DriveThreadability = DriveThreadability.Single;
+        public DriveMultithreadingLevel DriveMultithreadingLevel = DriveMultithreadingLevel.None;
         public readonly ThreadablePathType ThreadablePathType;
         public readonly GameIndex GameIndex;
 
@@ -480,18 +480,18 @@ public static partial class Misc
                    nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
                    nameof(Root) + ": " + Root + $"{NL}" +
                    nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
-                   nameof(DriveThreadability) + ": " + DriveThreadability + $"{NL}";
+                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}";
         }
     }
 
     [PublicAPI]
-    public sealed class DriveLetterDictionary : Dictionary<char, DriveThreadability>
+    public sealed class DriveLetterDictionary : Dictionary<char, DriveMultithreadingLevel>
     {
         public DriveLetterDictionary() { }
 
         public DriveLetterDictionary(int capacity) : base(capacity) { }
 
-        public new DriveThreadability this[char key]
+        public new DriveMultithreadingLevel this[char key]
         {
             get => base[key.ToAsciiUpper()];
             set
@@ -503,7 +503,7 @@ public static partial class Misc
             }
         }
 
-        public new void Add(char key, DriveThreadability value)
+        public new void Add(char key, DriveMultithreadingLevel value)
         {
             if (key.IsAsciiAlpha())
             {
@@ -515,6 +515,6 @@ public static partial class Misc
 
         public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
 
-        public new bool TryGetValue(char key, out DriveThreadability value) => base.TryGetValue(key.ToAsciiUpper(), out value);
+        public new bool TryGetValue(char key, out DriveMultithreadingLevel value) => base.TryGetValue(key.ToAsciiUpper(), out value);
     }
 }

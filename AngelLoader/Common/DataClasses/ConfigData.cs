@@ -447,22 +447,22 @@ public sealed class ConfigData
 
     internal readonly DriveLetterDictionary DriveLettersAndTypes = new(26);
 
-    internal static DriveThreadability GetDriveThreadability(DriveLetterDictionary dict, string letter)
+    internal static DriveMultithreadingLevel GetDriveThreadability(DriveLetterDictionary dict, string letter)
     {
         if (letter.Length == 0)
         {
-            return DriveThreadability.Auto;
+            return DriveMultithreadingLevel.Auto;
         }
 
         char letterChar = letter[0];
-        if (dict.TryGetValue(letterChar, out DriveThreadability result))
+        if (dict.TryGetValue(letterChar, out DriveMultithreadingLevel result))
         {
             return result;
         }
         else
         {
-            dict[letterChar] = DriveThreadability.Auto;
-            return DriveThreadability.Auto;
+            dict[letterChar] = DriveMultithreadingLevel.Auto;
+            return DriveMultithreadingLevel.Auto;
         }
     }
 
