@@ -480,7 +480,9 @@ public static partial class Misc
                    nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
                    nameof(Root) + ": " + Root + $"{NL}" +
                    nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
-                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}";
+                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}"+
+                   nameof(ThreadablePathType) + ": " + ThreadablePathType + $"{NL}" +
+                   nameof(GameIndex) + ": " + GameIndex + $"{NL}";
         }
     }
 

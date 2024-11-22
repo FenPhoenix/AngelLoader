@@ -1814,9 +1814,7 @@ internal static partial class FMInstallAndPlay
                         FMInstallResult fmInstallResult;
                         if (fmData.ArchiveFilePath.ExtIsZip())
                         {
-                            ThreadingData installThreadingData =
-                                GetLowestCommonThreadingData(
-                                    threadablePaths.FilterToZipFMInstallRelevant(fmData));
+                            List<ThreadablePath> zipInstallRelevantPaths = threadablePaths.FilterToZipFMInstallRelevant(fmData);
 
                             /*
                             @MT_TASK_NOTE(Threading levels and drive types)
@@ -1838,21 +1836,27 @@ internal static partial class FMInstallAndPlay
                             or lack thereof at least, and there's probably other things that affect performance
                             too. So we just have to leave aggressive threading as a manual option.
                             */
-                            fmInstallResult = installThreadingData.Level == IOThreadingLevel.Aggressive
-                                ? InstallFMZip_ThreadedPerEntry(
+                            if (IsArchivePathAtLeastReadAndInstallPathAtLeastReadWrite(zipInstallRelevantPaths))
+                            {
+                                ThreadingData installThreadingData = GetLowestCommonThreadingData(zipInstallRelevantPaths);
+                                fmInstallResult = InstallFMZip_ThreadedPerEntry(
                                     fmData,
                                     mainPercent,
                                     fmDataListCount,
                                     zipCtxPool,
                                     zipCtxThreadedPool,
                                     ioBufferPools,
-                                    installThreadingData)
-                                : InstallFMZip(
+                                    installThreadingData.Threads);
+                            }
+                            else
+                            {
+                                fmInstallResult = InstallFMZip(
                                     fmData,
                                     mainPercent,
                                     fmDataListCount,
                                     ioBufferPools,
                                     zipCtxPool);
+                            }
                         }
                         else
                         {
@@ -2233,7 +2237,7 @@ internal static partial class FMInstallAndPlay
         ZipContext_Pool zipCtxPool,
         ZipContext_Threaded_Pool zipCtxThreadedPool,
         IOBufferPools ioBufferPools,
-        ThreadingData threadingData)
+        int threads)
     {
         bool single = fmCount == 1;
 
@@ -2278,7 +2282,7 @@ internal static partial class FMInstallAndPlay
             Trace.WriteLine("sw0: " + sw0.Elapsed);
 #endif
 
-            int threadCount = GetThreadCountForParallelOperation(entriesCount, threadingData);
+            int threadCount = GetThreadCountForParallelOperation(entriesCount, threads);
 
 #if TIMING_TEST
             Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);

@@ -13,9 +13,30 @@ namespace AngelLoader;
 
 public static partial class Utils
 {
-    internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount, ThreadingData threadingData)
+    internal static int GetThreadCountForParallelOperation(int maxWorkItemsCount, int threads)
     {
-        return Math.Min(threadingData.Threads, maxWorkItemsCount);
+        return Math.Min(threads, maxWorkItemsCount);
+    }
+
+    internal static bool IsArchivePathAtLeastReadAndInstallPathAtLeastReadWrite(List<ThreadablePath> paths)
+    {
+        if (paths.Count != 2) return false;
+
+        ThreadablePath? archivePath =
+                paths.FirstOrDefault(static x => x.ThreadablePathType == ThreadablePathType.ArchivePath);
+
+        if (archivePath == null) return false;
+
+        ThreadablePath? installPath =
+            paths.FirstOrDefault(static x => x.ThreadablePathType == ThreadablePathType.FMInstallPath);
+
+        if (installPath == null) return false;
+
+        return
+            (archivePath.DriveMultithreadingLevel
+                is DriveMultithreadingLevel.Read
+                or DriveMultithreadingLevel.ReadWrite) &&
+            installPath.DriveMultithreadingLevel == DriveMultithreadingLevel.ReadWrite;
     }
 
     internal static ThreadingData GetLowestCommonThreadingData(
@@ -88,7 +109,7 @@ public static partial class Utils
 
     internal static int GetAudioConversionThreadCount(int maxWorkItemsCount, ThreadingData threadingData) =>
         threadingData.Level == IOThreadingLevel.Aggressive
-            ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData)
+            ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData.Threads)
             : 1;
 
     #endregion
