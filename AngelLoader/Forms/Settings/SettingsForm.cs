@@ -77,6 +77,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly DarkTextBox[] GameWebSearchUrlTextBoxes;
     private readonly DarkButton[] GameWebSearchUrlResetButtons;
 
+    #region I/O threading
+
     private sealed class DriveDataSection
     {
         internal readonly DarkLabel DriveLabel;
@@ -100,7 +102,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
+    private sealed class DriveData
+    {
+        internal readonly string Drive;
+        internal DriveThreadability Threadability;
+        internal readonly string ModelName;
+
+        public DriveData(string drive, DriveThreadability threadability, string modelName)
+        {
+            Drive = drive;
+            Threadability = threadability;
+            ModelName = modelName;
+        }
+    }
+
+    private readonly DriveData[] DrivesAndTypes = Array.Empty<DriveData>();
+
     private readonly DriveDataSection[] IOThreadingLevelDriveDataSections;
+
+    #endregion
 
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
     // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
@@ -2180,34 +2200,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         IOThreadingPage.CustomThreadsNumericUpDown.Value = CoreCount;
     }
-
-    private readonly struct DriveControlIndex
-    {
-        internal readonly int Index;
-        internal readonly DriveThreadability Threadability;
-
-        public DriveControlIndex(int index, DriveThreadability threadability)
-        {
-            Index = index;
-            Threadability = threadability;
-        }
-    }
-
-    private sealed class DriveData
-    {
-        internal readonly string Drive;
-        internal DriveThreadability Threadability;
-        internal readonly string ModelName;
-
-        public DriveData(string drive, DriveThreadability threadability, string modelName)
-        {
-            Drive = drive;
-            Threadability = threadability;
-            ModelName = modelName;
-        }
-    }
-
-    private readonly DriveData[] DrivesAndTypes = Array.Empty<DriveData>();
 
     #endregion
 
