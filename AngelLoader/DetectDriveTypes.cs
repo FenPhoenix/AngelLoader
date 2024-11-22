@@ -193,7 +193,13 @@ internal static class DetectDriveData
                 }
 
                 StorageDeviceWrapper device = new(safeHandle);
-
+                /*
+                @MT_TASK: If the drive is Windows software RAID, this call fails with Win32 error "Incorrect function",
+                 so we get no drive type and no model name either.
+                 Hardware RAID would presumably return the actual RAID bus type in which case we'd get Read threading
+                 level, which is fine enough. But I can't just go buying a bunch of random RAID hardware to try
+                 to test that or I'll go broke working on this free program. Meh...
+                */
                 STORAGE_DEVICE_DESCRIPTOR_PARSED deviceProperty = device.StorageGetDeviceProperty();
 
                 modelName = deviceProperty.ProductId;
@@ -221,20 +227,16 @@ internal static class DetectDriveData
                         ? DriveMultithreadingLevel.None
                         : deviceProperty.BusType switch
                         {
-                            STORAGE_BUS_TYPE.BusTypeNvme
-                                or STORAGE_BUS_TYPE.BusTypeSCM
-                                /*
-                                @MT_TASK: What happens if the drive is RAID?
-                                @MT_TASK: What's the model name on RAID?
-
-                                @MT_TASK: We never autodetect aggressive now, because we can't know if the drive
-                                 is capable of it even if it's NVMe...
-                                */
-                                //or STORAGE_BUS_TYPE.BusTypeRAID
-                                => DriveMultithreadingLevel.Read,
+                            /*
+                            @MT_TASK: We never autodetect aggressive now, because we can't know if the drive is
+                             capable of it even if it's NVMe...
+                            */
+                            STORAGE_BUS_TYPE.BusTypeNvme => DriveMultithreadingLevel.Read,
+                            STORAGE_BUS_TYPE.BusTypeSCM => DriveMultithreadingLevel.Read,
+                            STORAGE_BUS_TYPE.BusTypeRAID => DriveMultithreadingLevel.Read,
                             STORAGE_BUS_TYPE.BusTypeSata => DriveMultithreadingLevel.Read,
-                            // We know we have no seek penalty, so "SATA SSD" should be a safe minimum level for
-                            // exotic bus types.
+                            // We know we have no seek penalty, so Read should be a safe minimum level for exotic
+                            // bus types.
                             _ => DriveMultithreadingLevel.Read,
                         };
 
