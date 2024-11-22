@@ -597,16 +597,16 @@ internal static partial class Ini
 #if write_old_resources_style
             if (fm.ResourcesScanned)
             {
-                sw.WriteLine("HasMap=" + FMHasResource(fm, CustomResources.Map).ToString());
-                sw.WriteLine("HasAutomap=" + FMHasResource(fm, CustomResources.Automap).ToString());
-                sw.WriteLine("HasScripts=" + FMHasResource(fm, CustomResources.Scripts).ToString());
-                sw.WriteLine("HasTextures=" + FMHasResource(fm, CustomResources.Textures).ToString());
-                sw.WriteLine("HasSounds=" + FMHasResource(fm, CustomResources.Sounds).ToString());
-                sw.WriteLine("HasObjects=" + FMHasResource(fm, CustomResources.Objects).ToString());
-                sw.WriteLine("HasCreatures=" + FMHasResource(fm, CustomResources.Creatures).ToString());
-                sw.WriteLine("HasMotions=" + FMHasResource(fm, CustomResources.Motions).ToString());
-                sw.WriteLine("HasMovies=" + FMHasResource(fm, CustomResources.Movies).ToString());
-                sw.WriteLine("HasSubtitles=" + FMHasResource(fm, CustomResources.Subtitles).ToString());
+                sw.WriteLine("HasMap=" + fm.HasResource(CustomResources.Map).ToString());
+                sw.WriteLine("HasAutomap=" + fm.HasResource(CustomResources.Automap).ToString());
+                sw.WriteLine("HasScripts=" + fm.HasResource(CustomResources.Scripts).ToString());
+                sw.WriteLine("HasTextures=" + fm.HasResource(CustomResources.Textures).ToString());
+                sw.WriteLine("HasSounds=" + fm.HasResource(CustomResources.Sounds).ToString());
+                sw.WriteLine("HasObjects=" + fm.HasResource(CustomResources.Objects).ToString());
+                sw.WriteLine("HasCreatures=" + fm.HasResource(CustomResources.Creatures).ToString());
+                sw.WriteLine("HasMotions=" + fm.HasResource(CustomResources.Motions).ToString());
+                sw.WriteLine("HasMovies=" + fm.HasResource(CustomResources.Movies).ToString());
+                sw.WriteLine("HasSubtitles=" + fm.HasResource(CustomResources.Subtitles).ToString());
             }
 #else
             sw.Write("HasResources=");

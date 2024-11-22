@@ -67,7 +67,7 @@ internal static class DetectDriveData
 
 #if TIMING_TEST
         sw.Stop();
-        System.Diagnostics.Trace.WriteLine(nameof(FillSettingsDriveData) + ": " + sw.Elapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(GetSettingsDriveData) + ": " + sw.Elapsed);
 #endif
 
         return ret;
