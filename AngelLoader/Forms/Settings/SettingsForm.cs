@@ -737,6 +737,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 settingsDriveData[i] = new SettingsDriveData(drives[i]);
             }
 
+            /*
+            @MT_TASK: Symlinked drives show up as their destination drive letter repeated and with no model name
+            We can disable symlink resolution here but then we have unique letters but duplicate physical drives
+            (and thus duplicate model names). We don't want the ability to set different levels for the same drive,
+            so really what we want is just to filter out symlinked drive letters entirely.
+            */
             DetectDriveData.FillSettingsDriveData(settingsDriveData);
 
             const int driveTypePanelHeight = 64;
