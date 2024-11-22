@@ -127,7 +127,7 @@ internal static class FMScan
             {
                 scannedFMs = scanner.Scan(
                     fms,
-                    @"J:\Local Storage NVME\FMs\FM pack\All\ExtractTemp",
+                    @"J:\FM packs\FM pack\All\ExtractTemp",
                     scanOptions,
                     null!,
                     CancellationToken.None);
@@ -165,7 +165,7 @@ internal static class FMScan
             {
                 scannedFMs = await scanner.ScanAsync(
                     fms,
-                    @"J:\Local Storage NVME\FMs\FM pack\All\ExtractTemp",
+                    @"J:\FM packs\FM pack\All\ExtractTemp",
                     scanOptions,
                     progress,
                     _scannerCTS.Token);
