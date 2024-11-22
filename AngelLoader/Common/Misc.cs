@@ -456,6 +456,10 @@ public static partial class Misc
         public readonly IOPathType IOPathType;
         public DriveMultithreadingLevel DriveMultithreadingLevel = DriveMultithreadingLevel.None;
         public readonly ThreadablePathType ThreadablePathType;
+        /// <summary>
+        /// Only used if <see cref="T:ThreadablePathType"/> is <see cref="ThreadablePathType.FMInstallPath"/>.
+        /// Otherwise its value should be ignored.
+        /// </summary>
         public readonly GameIndex GameIndex;
 
         public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType)
@@ -480,7 +484,7 @@ public static partial class Misc
                    nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
                    nameof(Root) + ": " + Root + $"{NL}" +
                    nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
-                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}"+
+                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}" +
                    nameof(ThreadablePathType) + ": " + ThreadablePathType + $"{NL}" +
                    nameof(GameIndex) + ": " + GameIndex + $"{NL}";
         }
