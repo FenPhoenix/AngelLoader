@@ -179,10 +179,10 @@ internal static class Core
 
                 try
                 {
-                    string[] drives = Directory.GetLogicalDrives();
-                    foreach (string letter in drives)
+                    List<SettingsDriveData> settingsDriveData = DetectDriveData.GetSettingsDriveData();
+                    for (int i = 0; i < settingsDriveData.Count; i++)
                     {
-                        ConfigData.GetDriveThreadability(Config.DriveLettersAndTypes, letter);
+                        ConfigData.GetDriveThreadability(Config.DriveLettersAndTypes, settingsDriveData[i].Root);
                     }
                 }
                 catch

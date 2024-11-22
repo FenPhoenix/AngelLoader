@@ -20,19 +20,39 @@ namespace AngelLoader;
 
 internal static class DetectDriveData
 {
-    internal static void FillSettingsDriveData(SettingsDriveData[] paths)
+    internal static List<SettingsDriveData> GetSettingsDriveData()
     {
 #if TIMING_TEST
         var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
-
-        DriveLetterDictionary rootsDict = new(paths.Length);
-
-        foreach (SettingsDriveData path in paths)
+        string[] drives;
+        try
         {
-            path.Root = GetRoot(path.OriginalPath, IOPathType.Directory);
+            drives = Directory.GetLogicalDrives();
+        }
+        catch
+        {
+            /*
+            Unlikely but whatever. If we get here then the I/O threading levels group box will end up with
+            min height, which will at least provide a sign that something's wrong to the user. For that
+            reason we shouldn't do anything slick like hide the group box, because that would just cause
+            confusion if the user is told to do something with a groupbox that isn't there.
+            */
+            drives = Array.Empty<string>();
+        }
 
-            if (!path.Root.IsEmpty())
+        List<SettingsDriveData> ret = new(drives.Length);
+
+        DriveLetterDictionary rootsDict = new(drives.Length);
+
+        for (int i = 0; i < drives.Length; i++)
+        {
+            string drive = drives[i];
+            SettingsDriveData path = new(drive);
+
+            (path.Root, bool isLink) = GetRoot(drive, IOPathType.Directory);
+
+            if (!path.Root.IsEmpty() && !isLink)
             {
                 char rootLetter = path.Root[0];
                 if (rootsDict.TryGetValue(rootLetter, out DriveMultithreadingLevel driveThreadability))
@@ -46,6 +66,8 @@ internal static class DetectDriveData
                     path.MultithreadingLevel = driveThreadability;
                     path.ModelName = modelName;
                 }
+
+                ret.Add(path);
             }
         }
 
@@ -53,6 +75,8 @@ internal static class DetectDriveData
         sw.Stop();
         System.Diagnostics.Trace.WriteLine(nameof(FillSettingsDriveData) + ": " + sw.Elapsed);
 #endif
+
+        return ret;
     }
 
     internal static void GetAllDriveThreadabilities(List<ThreadablePath> paths, DriveLetterDictionary drivesDict)
@@ -65,7 +89,7 @@ internal static class DetectDriveData
 
         foreach (ThreadablePath path in paths)
         {
-            path.Root = GetRoot(path.OriginalPath, path.IOPathType);
+            (path.Root, _) = GetRoot(path.OriginalPath, path.IOPathType);
 
             if (!path.Root.IsEmpty())
             {
@@ -107,7 +131,8 @@ internal static class DetectDriveData
         [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
         IntPtr hTemplateFile);
 
-    private static string GetRoot(string path, IOPathType ioPathType)
+    private static (string Root, bool IsLink)
+    GetRoot(string path, IOPathType ioPathType)
     {
         if (!path.IsWhiteSpace())
         {
@@ -115,8 +140,8 @@ internal static class DetectDriveData
             {
                 if (PathStartsWithLetterAndVolumeSeparator(path))
                 {
-                    string realPath = GetRealDirectory(path, ioPathType);
-                    return Path.GetPathRoot(realPath)?.TrimEnd(CA_BS_FS) ?? "";
+                    (string realPath, bool isLink) = GetRealDirectory(path, ioPathType);
+                    return (Path.GetPathRoot(realPath)?.TrimEnd(CA_BS_FS) ?? "", isLink);
                 }
             }
             catch
@@ -125,7 +150,7 @@ internal static class DetectDriveData
             }
         }
 
-        return "";
+        return ("", false);
     }
 
     private static (DriveMultithreadingLevel Threadability, string DriveModelName)
@@ -324,24 +349,26 @@ internal static class DetectDriveData
 
 
     // In case the directory is a symlink pointing at some other drive
-    private static string GetRealDirectory(string path, IOPathType ioPathType)
+    private static (string Path, bool IsLink) GetRealDirectory(string path, IOPathType ioPathType)
     {
         try
         {
             if (ioPathType == IOPathType.File)
             {
                 string? dir = Path.GetDirectoryName(path);
-                if (dir.IsEmpty()) return path;
+                if (dir.IsEmpty()) return (path, false);
                 path = dir;
             }
 
             DirectoryInfo di = new(path);
             if (!di.Exists)
             {
-                return path;
+                return (path, false);
             }
 
             string? realPath;
+
+            bool finalIsLink = false;
 
             // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so just
             // do a reparse point check first, which is effectively instantaneous.
@@ -349,9 +376,9 @@ internal static class DetectDriveData
             {
                 if (TryGetSubstedPath(path, out realPath))
                 {
-                    return realPath;
+                    return (realPath, true);
                 }
-                return path;
+                return (path, false);
             }
             else
             {
@@ -359,8 +386,9 @@ internal static class DetectDriveData
                 {
                     if (!IsReparsePoint(new DirectoryInfo(path)))
                     {
-                        return realPath;
+                        return (realPath, true);
                     }
+                    finalIsLink = true;
                     path = realPath;
                 }
             }
@@ -371,13 +399,13 @@ internal static class DetectDriveData
                 path = fsi.FullName;
             }
 
-            return path;
+            return (path, finalIsLink);
 
             static bool IsReparsePoint(DirectoryInfo di) => (di.Attributes & FileAttributes.ReparsePoint) != 0;
         }
         catch
         {
-            return path;
+            return (path, false);
         }
     }
 }

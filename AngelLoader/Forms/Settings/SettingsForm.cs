@@ -711,44 +711,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             IOThreadingPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
 
-            string[] drives;
-            try
-            {
-                drives = Directory.GetLogicalDrives();
-            }
-            catch
-            {
-                /*
-                Unlikely but whatever. If we get here then the I/O threading levels group box will end up with
-                min height, which will at least provide a sign that something's wrong to the user. For that
-                reason we shouldn't do anything slick like hide the group box, because that would just cause
-                confusion if the user is told to do something with a groupbox that isn't there.
-                */
-                drives = Array.Empty<string>();
-            }
-
-            int drivesCount = drives.Length;
-
-            SettingsDriveData[] settingsDriveData = new SettingsDriveData[drivesCount];
-            IOThreadingLevelDriveDataSections = new DriveDataSection[drivesCount];
-
-            for (int i = 0; i < drivesCount; i++)
-            {
-                settingsDriveData[i] = new SettingsDriveData(drives[i]);
-            }
-
-            /*
-            @MT_TASK: Symlinked drives show up as their destination drive letter repeated and with no model name
-            We can disable symlink resolution here but then we have unique letters but duplicate physical drives
-            (and thus duplicate model names). We don't want the ability to set different levels for the same drive,
-            so really what we want is just to filter out symlinked drive letters entirely.
-            */
-            DetectDriveData.FillSettingsDriveData(settingsDriveData);
+            List<SettingsDriveData> settingsDriveData = DetectDriveData.GetSettingsDriveData();
+            IOThreadingLevelDriveDataSections = new DriveDataSection[settingsDriveData.Count];
 
             const int driveTypePanelHeight = 64;
             int y = 24;
             int tabIndex = 2;
-            for (int i = 0; i < drivesCount; i++, y += driveTypePanelHeight, tabIndex++)
+            for (int i = 0; i < settingsDriveData.Count; i++, y += driveTypePanelHeight, tabIndex++)
             {
                 SettingsDriveData driveData = settingsDriveData[i];
 
@@ -789,7 +758,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
-                if (i < drivesCount - 1)
+                if (i < settingsDriveData.Count - 1)
                 {
                     IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
                 }
