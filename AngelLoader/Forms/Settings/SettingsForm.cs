@@ -712,6 +712,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             IOThreadingPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
 
             List<SettingsDriveData> settingsDriveData = DetectDriveData.GetSettingsDriveData();
+            /*
+            If count is 0, then the I/O threading levels group box will end up with min height, which will at
+            least provide a sign that something's wrong to the user. For that reason we shouldn't do anything
+            slick like hide the group box, because that would just cause confusion if the user is told to do
+            something with a group box that isn't there.
+            */
             IOThreadingLevelDriveDataSections = new DriveDataSection[settingsDriveData.Count];
 
             const int driveTypePanelHeight = 64;
