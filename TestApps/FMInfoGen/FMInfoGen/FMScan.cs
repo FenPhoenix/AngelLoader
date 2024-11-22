@@ -127,7 +127,7 @@ internal static class FMScan
             {
                 scannedFMs = scanner.Scan(
                     fms,
-                    @"F:\FM pack\All\ExtractTemp",
+                    @"J:\Local Storage NVME\FMs\FM pack\All\ExtractTemp",
                     scanOptions,
                     null!,
                     CancellationToken.None);
@@ -153,8 +153,6 @@ internal static class FMScan
 
         var t = new Stopwatch();
 
-        ConcurrentQueue<FMToScan> cq = new(fms);
-
         try
         {
             _scannerCTS = new CancellationTokenSource();
@@ -166,8 +164,8 @@ internal static class FMScan
             using (var scanner = new Scanner(Paths.SevenZipExe))
             {
                 scannedFMs = await scanner.ScanAsync(
-                    cq,
-                    @"F:\FM pack\All\ExtractTemp",
+                    fms,
+                    @"J:\Local Storage NVME\FMs\FM pack\All\ExtractTemp",
                     scanOptions,
                     progress,
                     _scannerCTS.Token);
@@ -200,13 +198,12 @@ internal static class FMScan
 
         return;
 
-        void ReportProgress(ProgressReport pr)
+        static void ReportProgress(ProgressReport pr)
         {
-            int fmNumber = fms.Count - pr.FMsRemainingInQueue;
-            int percent = Common.GetPercentFromValue_Int(fmNumber - 1, fms.Count);
+            int percent = Common.GetPercentFromValue_Int(pr.FMNumber - 1, pr.FMsCount);
 
             Core.View.SetDebugLabelText(
-                "Scanned " + fmNumber + "/" + fms.Count + ", " +
+                "Scanned " + pr.FMNumber + "/" + pr.FMsCount + ", " +
                 percent + "%\r\n" +
                 pr.FMName);
             Core.View.SetFMScanProgressBarValue(percent);

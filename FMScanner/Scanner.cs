@@ -432,7 +432,8 @@ public sealed class Scanner : IDisposable
                     progress: progress,
                     cancellationToken: pd.PO.CancellationToken,
                     fmNumber: ref fmNumber,
-                    fmsCount: fmsCount));
+                    fmsCount: fmsCount,
+                    listCapacity: threadCount <= 0 ? fmsCount : fmsCount / threadCount));
             });
         }
         catch (OperationCanceledException)
@@ -463,24 +464,28 @@ public sealed class Scanner : IDisposable
     public ScannedFMDataAndError
     Scan(string mission, string tempPath, bool forceFullIfNew, string name, bool isArchive)
     {
-        ConcurrentQueue<FMToScan> cq = new(new List<FMToScan>
+        List<FMToScan> missions = new()
         {
-            new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
+            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
                 isArchive: isArchive, originalIndex: 0),
-        });
-        return ScanMany(cq, tempPath, _scanOptions, null, CancellationToken.None)[0];
+        };
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
     }
 
     [PublicAPI]
     public ScannedFMDataAndError
     Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
     {
-        ConcurrentQueue<FMToScan> cq = new(new List<FMToScan>
+        List<FMToScan> missions = new()
         {
-            new(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
+            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
                 isArchive: isArchive, originalIndex: 0),
-        });
-        return ScanMany(cq, tempPath, scanOptions, null, CancellationToken.None)[0];
+        };
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
     }
 
 #endif
@@ -488,12 +493,12 @@ public sealed class Scanner : IDisposable
     // Debug should also use this - scan on UI thread so breaks will actually break where they're supposed to
     [PublicAPI]
     public List<ScannedFMDataAndError>
-    Scan(ConcurrentQueue<FMToScan> missions, string tempPath, ScanOptions scanOptions,
+    Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
          IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
         int fmNumber = 0;
         int fmsCount = missions.Count;
-        return ScanMany_Multithreaded(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
+        return ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
     }
 
     #endregion
@@ -506,16 +511,18 @@ public sealed class Scanner : IDisposable
     public Task<List<ScannedFMDataAndError>>
     ScanAsync(List<FMToScan> missions, string tempPath)
     {
-        ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany_Single(cq, tempPath, _scanOptions, null, CancellationToken.None));
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
     }
 
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>>
     ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
     {
-        ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany_Single(cq, tempPath, scanOptions, null, CancellationToken.None));
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
     }
 
     [PublicAPI]
@@ -523,8 +530,9 @@ public sealed class Scanner : IDisposable
     ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
               CancellationToken cancellationToken)
     {
-        ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany_Single(cq, tempPath, _scanOptions, progress, cancellationToken));
+        int fmNumber = 0;
+        int fmsCount = missions.Count;
+        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
     }
 
 #endif
@@ -575,7 +583,7 @@ public sealed class Scanner : IDisposable
     }
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
-    GetInitialScanData(string tempPath, ScanOptions scanOptions, int fmsCount)
+    GetInitialScanData(string tempPath, ScanOptions scanOptions, int fmsCount, int listCapacity)
     {
         if (tempPath.IsEmpty())
         {
@@ -588,8 +596,7 @@ public sealed class Scanner : IDisposable
         // depend on it not changing.
         _scanOptions = scanOptions?.DeepCopy() ?? throw new ArgumentNullException(nameof(scanOptions));
 
-        // @MT_TASK: Each list will the length of all FMs; we should divide it approximately evenly I guess
-        List<ScannedFMDataAndError> scannedFMDataList = new(fmsCount);
+        List<ScannedFMDataAndError> scannedFMDataList = new(listCapacity);
 
         ProgressReport progressReport = new()
         {
@@ -611,7 +618,7 @@ public sealed class Scanner : IDisposable
         if (fms == null) throw new ArgumentNullException(nameof(fms));
 
         (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
-            GetInitialScanData(tempPath, scanOptions, fmsCount);
+            GetInitialScanData(tempPath, scanOptions, fmsCount, fmsCount);
 
         for (int i = 0; i < fms.Count; i++)
         {
@@ -636,12 +643,13 @@ public sealed class Scanner : IDisposable
         IProgress<ProgressReport>? progress,
         CancellationToken cancellationToken,
         ref int fmNumber,
-        int fmsCount)
+        int fmsCount,
+        int listCapacity)
     {
         if (fms == null) throw new ArgumentNullException(nameof(fms));
 
         (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
-            GetInitialScanData(tempPath, scanOptions, fmsCount);
+            GetInitialScanData(tempPath, scanOptions, fmsCount, listCapacity);
 
         while (fms.TryDequeue(out FMToScan fm))
         {
