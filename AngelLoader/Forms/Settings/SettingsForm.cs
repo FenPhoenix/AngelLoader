@@ -82,7 +82,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private sealed class DriveDataSection
     {
         internal readonly DarkLabel DriveLabel;
-        internal readonly DriveThreadability Threadability;
+        internal DriveThreadability Threadability;
         internal readonly string Drive;
         internal readonly string ModelName;
         internal readonly DarkComboBox ComboBox;
@@ -101,22 +101,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             ComboBox = comboBox;
         }
     }
-
-    private sealed class DriveData
-    {
-        internal readonly string Drive;
-        internal DriveThreadability Threadability;
-        internal readonly string ModelName;
-
-        public DriveData(string drive, DriveThreadability threadability, string modelName)
-        {
-            Drive = drive;
-            Threadability = threadability;
-            ModelName = modelName;
-        }
-    }
-
-    private readonly DriveData[] DrivesAndTypes = Array.Empty<DriveData>();
 
     private readonly DriveDataSection[] IOThreadingLevelDriveDataSections;
 
@@ -742,31 +726,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 */
                 drives = Array.Empty<string>();
             }
-            SettingsDriveData[] settingsDriveData = new SettingsDriveData[drives.Length];
 
-            for (int i = 0; i < drives.Length; i++)
+            int drivesCount = drives.Length;
+
+            SettingsDriveData[] settingsDriveData = new SettingsDriveData[drivesCount];
+            IOThreadingLevelDriveDataSections = new DriveDataSection[drivesCount];
+
+            for (int i = 0; i < drivesCount; i++)
             {
-                string drive = drives[i];
-                settingsDriveData[i] = new SettingsDriveData(drive);
+                settingsDriveData[i] = new SettingsDriveData(drives[i]);
             }
 
             DetectDriveData.FillSettingsDriveData(settingsDriveData);
 
-            DrivesAndTypes = new DriveData[settingsDriveData.Length];
-            IOThreadingLevelDriveDataSections = new DriveDataSection[settingsDriveData.Length];
-
-            for (int i = 0; i < settingsDriveData.Length; i++)
-            {
-                SettingsDriveData driveData = settingsDriveData[i];
-                DrivesAndTypes[i] = new DriveData(driveData.Root, driveData.Threadability, driveData.ModelName);
-            }
-
             const int driveTypePanelHeight = 64;
             int y = 24;
             int tabIndex = 2;
-            for (int i = 0; i < DrivesAndTypes.Length; i++, y += driveTypePanelHeight, tabIndex++)
+            for (int i = 0; i < drivesCount; i++, y += driveTypePanelHeight, tabIndex++)
             {
-                DriveData driveData = DrivesAndTypes[i];
+                SettingsDriveData driveData = settingsDriveData[i];
 
                 Panel panel = new()
                 {
@@ -798,19 +776,22 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
                     driveLabel,
                     driveData.Threadability,
-                    driveData.Drive,
+                    driveData.Root,
                     driveData.ModelName,
                     comboBox
                 );
 
                 IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
 
-                if (i < DrivesAndTypes.Length - 1)
+                if (i < drivesCount - 1)
                 {
                     IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
                 }
 
-                DriveThreadability driveThreadability = ConfigData.GetDriveThreadability(_driveLettersAndTypes, driveData.Drive);
+                DriveThreadability driveThreadability =
+                    ConfigData.GetDriveThreadability(
+                        _driveLettersAndTypes,
+                        IOThreadingLevelDriveDataSections[i].Drive);
                 comboBox.SelectedIndex = driveThreadability switch
                 {
                     DriveThreadability.Aggressive => 1,
@@ -938,7 +919,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (sender is DarkComboBox { Tag: int index } comboBox)
         {
-            DrivesAndTypes[index].Threadability = comboBox.SelectedIndex switch
+            IOThreadingLevelDriveDataSections[index].Threadability = comboBox.SelectedIndex switch
             {
                 1 => DriveThreadability.Aggressive,
                 2 => DriveThreadability.Standard,
@@ -1611,9 +1592,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OutConfig.CustomIOThreadCount = (int)IOThreadingPage.CustomThreadsNumericUpDown.Value;
 
-            foreach (var item in DrivesAndTypes)
+            foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
             {
-                OutConfig.DriveLettersAndTypes[item.Drive[0]] = item.Threadability;
+                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.Threadability;
             }
 
             #endregion
