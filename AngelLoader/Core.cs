@@ -691,7 +691,7 @@ internal static class Core
         Config.IOThreadsMode = outConfig.IOThreadsMode;
         Config.CustomIOThreadCount = outConfig.CustomIOThreadCount;
 
-        Config.DriveLettersAndTypes.Clear();
+        // Don't clear the existing dict; we want to keep settings even for drives that have been removed
         foreach (var item in outConfig.DriveLettersAndTypes)
         {
             Config.DriveLettersAndTypes[item.Key] = item.Value;
