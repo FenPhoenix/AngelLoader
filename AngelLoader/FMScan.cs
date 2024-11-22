@@ -268,21 +268,41 @@ internal static class FMScan
                             fms.Count.ToStrCur() +
                             LText.ProgressBox.ReportScanningLast;
 
-                        ThreadingData threadingData = GetLowestCommonThreadingData(
-                            GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
-                        );
+                        // Don't take the substantial parallel loop overhead if it's just one FMs
+                        if (fms.Count == 1)
+                        {
+                            using Scanner scanner = new(
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
+                                fullScanOptions: GetDefaultScanOptions(),
+                                readOnlyDataContext: new ReadOnlyDataContext(),
+                                tdmContext: tdmContext);
 
-                        fmDataList = Scanner.ScanThreaded(
-                            Paths.SevenZipPath,
-                            Paths.SevenZipExe,
-                            fullScanOptions: GetDefaultScanOptions(),
-                            tdmContext: tdmContext,
-                            threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData),
-                            fms: fms,
-                            tempPath: Paths.FMScannerTemp,
-                            scanOptions: scanOptions,
-                            progress: progress,
-                            cancellationToken: _scanCts.Token);
+                            fmDataList = await scanner.ScanAsync(
+                                missions: fms,
+                                tempPath: Paths.FMScannerTemp,
+                                scanOptions: scanOptions,
+                                progress: progress,
+                                cancellationToken: _scanCts.Token);
+                        }
+                        else
+                        {
+                            ThreadingData threadingData = GetLowestCommonThreadingData(
+                                GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
+                            );
+
+                            fmDataList = Scanner.ScanThreaded(
+                                Paths.SevenZipPath,
+                                Paths.SevenZipExe,
+                                fullScanOptions: GetDefaultScanOptions(),
+                                tdmContext: tdmContext,
+                                threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData),
+                                fms: fms,
+                                tempPath: Paths.FMScannerTemp,
+                                scanOptions: scanOptions,
+                                progress: progress,
+                                cancellationToken: _scanCts.Token);
+                        }
 
                         Core.View.SetProgressPercent(100);
 #if TIMING_TEST

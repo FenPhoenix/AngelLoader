@@ -418,14 +418,14 @@ public sealed class Scanner : IDisposable
         {
             _ = Parallel.For(0, threadCount, pd.PO, _ =>
             {
-                using var scanner = new Scanner(
+                using Scanner scanner = new(
                     sevenZipWorkingPath: sevenZipWorkingPath,
                     sevenZipExePath: sevenZipExePath,
                     fullScanOptions: fullScanOptions,
                     readOnlyDataContext: ctx,
                     tdmContext: tdmContext);
 
-                returnLists.Add(scanner.ScanMany(
+                returnLists.Add(scanner.ScanMany_Multithreaded(
                     pd.CQ,
                     tempPath: tempPath,
                     scanOptions: scanOptions,
@@ -493,7 +493,7 @@ public sealed class Scanner : IDisposable
     {
         int fmNumber = 0;
         int fmsCount = missions.Count;
-        return ScanMany(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
+        return ScanMany_Multithreaded(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
     }
 
     #endregion
@@ -507,7 +507,7 @@ public sealed class Scanner : IDisposable
     ScanAsync(List<FMToScan> missions, string tempPath)
     {
         ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany(cq, tempPath, _scanOptions, null, CancellationToken.None));
+        return Task.Run(() => ScanMany_Single(cq, tempPath, _scanOptions, null, CancellationToken.None));
     }
 
     [PublicAPI]
@@ -515,7 +515,7 @@ public sealed class Scanner : IDisposable
     ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
     {
         ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany(cq, tempPath, scanOptions, null, CancellationToken.None));
+        return Task.Run(() => ScanMany_Single(cq, tempPath, scanOptions, null, CancellationToken.None));
     }
 
     [PublicAPI]
@@ -524,14 +524,14 @@ public sealed class Scanner : IDisposable
               CancellationToken cancellationToken)
     {
         ConcurrentQueue<FMToScan> cq = new(missions);
-        return Task.Run(() => ScanMany(cq, tempPath, _scanOptions, progress, cancellationToken));
+        return Task.Run(() => ScanMany_Single(cq, tempPath, _scanOptions, progress, cancellationToken));
     }
 
 #endif
 
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>> ScanAsync(
-        ConcurrentQueue<FMToScan> missions,
+        List<FMToScan> missions,
         string tempPath,
         ScanOptions scanOptions,
         IProgress<ProgressReport> progress,
@@ -539,7 +539,7 @@ public sealed class Scanner : IDisposable
     {
         int fmNumber = 0;
         int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
+        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
     }
 
     #endregion
@@ -574,166 +574,220 @@ public sealed class Scanner : IDisposable
         _t3GmpFiles?.Clear();
     }
 
-    private List<ScannedFMDataAndError>
-        ScanMany(
-            ConcurrentQueue<FMToScan> fms,
-            string tempPath,
-            ScanOptions scanOptions,
-            IProgress<ProgressReport>? progress,
-            CancellationToken cancellationToken,
-            ref int fmNumber,
-            int fmsCount)
+    private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
+    GetInitialScanData(string tempPath, ScanOptions scanOptions, int fmsCount)
     {
-        // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
-        // entries as the in-list; this allows the calling app to not have to do a search to link up the FMs
-        // and stuff
-
-        #region Checks
-
         if (tempPath.IsEmpty())
         {
             Log("Argument is null or empty: " + nameof(tempPath));
             ThrowHelper.ArgumentException("Argument is null or empty.", nameof(tempPath));
         }
 
-        if (fms == null) throw new ArgumentNullException(nameof(fms));
-
         // Deep-copy the scan options object because we might have to change its values in some cases, but we
         // don't want to modify the original because the caller will still have a reference to it and may
         // depend on it not changing.
         _scanOptions = scanOptions?.DeepCopy() ?? throw new ArgumentNullException(nameof(scanOptions));
 
-        #endregion
-
-        var scannedFMDataList = new List<ScannedFMDataAndError>(fms.Count);
+        // @MT_TASK: Each list will the length of all FMs; we should divide it approximately evenly I guess
+        List<ScannedFMDataAndError> scannedFMDataList = new(fmsCount);
 
         ProgressReport progressReport = new()
         {
             FMsCount = fmsCount,
         };
 
-        while (fms.TryDequeue(out FMToScan fm))
+        return (scannedFMDataList, progressReport);
+    }
+
+    private List<ScannedFMDataAndError> ScanMany_SingleThread(
+        List<FMToScan> fms,
+        string tempPath,
+        ScanOptions scanOptions,
+        IProgress<ProgressReport>? progress,
+        CancellationToken cancellationToken,
+        ref int fmNumber,
+        int fmsCount)
+    {
+        if (fms == null) throw new ArgumentNullException(nameof(fms));
+
+        (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
+            GetInitialScanData(tempPath, scanOptions, fmsCount);
+
+        for (int i = 0; i < fms.Count; i++)
         {
-            ResetCachedFields();
-
-            // Random name for solid archive temp extract operations, to prevent possible file/folder name
-            // clashes in parallelized scenario.
-            string tempRandomName = Path.GetRandomFileName().Trim();
-
-            bool nullAlreadyAdded = false;
-
-            #region Init
-
-            if (fm.Path.IsEmpty())
-            {
-                scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-                nullAlreadyAdded = true;
-            }
-            else
-            {
-                string fmPath = fm.Path;
-                _fmFormat =
-                    !fm.IsArchive
-                        ? FMFormat.NotInArchive
-                        : fmPath.ExtIsZip()
-                            ? FMFormat.Zip
-                            : fmPath.ExtIs7z()
-                                ? FMFormat.SevenZip
-                                : fmPath.ExtIsRar()
-                                    ? FMFormat.Rar
-                                    : FMFormat.NotInArchive;
-
-                _archive?.Dispose();
-                _rarArchive?.Dispose();
-                _rarStream?.Dispose();
-
-                if (_fmFormat > FMFormat.NotInArchive)
-                {
-                    try
-                    {
-                        _fmWorkingPath = Path.Combine(tempPath, tempRandomName);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
-                        scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-                        nullAlreadyAdded = true;
-                    }
-                }
-                else
-                {
-                    _fmWorkingPath = fmPath;
-                }
-            }
-
-            #endregion
-
-            #region Report progress and handle cancellation
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            if (progress != null)
-            {
-                progressReport.FMName = fm.DisplayName;
-                progressReport.FMNumber = Interlocked.Increment(ref fmNumber);
-
-                progress.Report(progressReport);
-            }
-
-            #endregion
-
-            // If there was an error then we already added null to the list. DON'T add any extra items!
-            if (!nullAlreadyAdded)
-            {
-                var scannedFMAndError = new ScannedFMDataAndError(fm.OriginalIndex);
-                ScanOptions? _tempScanOptions = null;
-                try
-                {
-                    if (fm.ForceFullScan)
-                    {
-                        _tempScanOptions = _scanOptions.DeepCopy();
-                        _scanOptions = _fullScanOptions.DeepCopy();
-                    }
-
-                    try
-                    {
-                        scannedFMAndError =
-                            fm.IsTDM
-                                ? ScanCurrentDarkModFM(fm)
-                                : ScanCurrentFM(fm, tempPath, tempRandomName, cancellationToken);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(fm.Path + ": Exception in FM scan", ex);
-                        scannedFMAndError.ScannedFMData = null;
-                        scannedFMAndError.Exception = ex;
-                        scannedFMAndError.ErrorInfo = fm.Path + ": Exception in FM scan";
-                    }
-                    finally
-                    {
-                        if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
-                        {
-                            DeleteFMWorkingPath();
-                        }
-                    }
-
-                    scannedFMDataList.Add(scannedFMAndError);
-                }
-                finally
-                {
-                    if (fm.ForceFullScan)
-                    {
-                        _scanOptions = _tempScanOptions!.DeepCopy();
-                    }
-                }
-            }
+            FMToScan fm = fms[i];
+            ScanFM(
+                scannedFMDataList,
+                progressReport,
+                tempPath,
+                fm,
+                progress,
+                cancellationToken,
+                ref fmNumber);
         }
 
         return scannedFMDataList;
+    }
+
+    private List<ScannedFMDataAndError> ScanMany_Multithreaded(
+        ConcurrentQueue<FMToScan> fms,
+        string tempPath,
+        ScanOptions scanOptions,
+        IProgress<ProgressReport>? progress,
+        CancellationToken cancellationToken,
+        ref int fmNumber,
+        int fmsCount)
+    {
+        if (fms == null) throw new ArgumentNullException(nameof(fms));
+
+        (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
+            GetInitialScanData(tempPath, scanOptions, fmsCount);
+
+        while (fms.TryDequeue(out FMToScan fm))
+        {
+            ScanFM(
+                scannedFMDataList,
+                progressReport,
+                tempPath,
+                fm,
+                progress,
+                cancellationToken,
+                ref fmNumber);
+        }
+
+        return scannedFMDataList;
+    }
+
+    private void ScanFM(
+        List<ScannedFMDataAndError> scannedFMDataList,
+        ProgressReport progressReport,
+        string tempPath,
+        FMToScan fm,
+        IProgress<ProgressReport>? progress,
+        CancellationToken cancellationToken,
+        ref int fmNumber)
+    {
+        // The try-catch blocks are to guarantee that the out-list will at least contain the same number of
+        // entries as the in-list; this allows the calling app to not have to do a search to link up the FMs
+        // and stuff
+
+        ResetCachedFields();
+
+        // Random name for solid archive temp extract operations, to prevent possible file/folder name
+        // clashes in parallelized scenario.
+        string tempRandomName = Path.GetRandomFileName().Trim();
+
+        bool nullAlreadyAdded = false;
+
+        #region Init
+
+        if (fm.Path.IsEmpty())
+        {
+            scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
+            nullAlreadyAdded = true;
+        }
+        else
+        {
+            string fmPath = fm.Path;
+            _fmFormat =
+                !fm.IsArchive
+                    ? FMFormat.NotInArchive
+                    : fmPath.ExtIsZip()
+                        ? FMFormat.Zip
+                        : fmPath.ExtIs7z()
+                            ? FMFormat.SevenZip
+                            : fmPath.ExtIsRar()
+                                ? FMFormat.Rar
+                                : FMFormat.NotInArchive;
+
+            _archive?.Dispose();
+            _rarArchive?.Dispose();
+            _rarStream?.Dispose();
+
+            if (_fmFormat > FMFormat.NotInArchive)
+            {
+                try
+                {
+                    _fmWorkingPath = Path.Combine(tempPath, tempRandomName);
+                }
+                catch (Exception ex)
+                {
+                    Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
+                    scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
+                    nullAlreadyAdded = true;
+                }
+            }
+            else
+            {
+                _fmWorkingPath = fmPath;
+            }
+        }
+
+        #endregion
+
+        #region Report progress and handle cancellation
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (progress != null)
+        {
+            progressReport.FMName = fm.DisplayName;
+            progressReport.FMNumber = Interlocked.Increment(ref fmNumber);
+
+            progress.Report(progressReport);
+        }
+
+        #endregion
+
+        // If there was an error then we already added null to the list. DON'T add any extra items!
+        if (!nullAlreadyAdded)
+        {
+            var scannedFMAndError = new ScannedFMDataAndError(fm.OriginalIndex);
+            ScanOptions? _tempScanOptions = null;
+            try
+            {
+                if (fm.ForceFullScan)
+                {
+                    _tempScanOptions = _scanOptions.DeepCopy();
+                    _scanOptions = _fullScanOptions.DeepCopy();
+                }
+
+                try
+                {
+                    scannedFMAndError =
+                        fm.IsTDM
+                            ? ScanCurrentDarkModFM(fm)
+                            : ScanCurrentFM(fm, tempPath, tempRandomName, cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Log(fm.Path + ": Exception in FM scan", ex);
+                    scannedFMAndError.ScannedFMData = null;
+                    scannedFMAndError.Exception = ex;
+                    scannedFMAndError.ErrorInfo = fm.Path + ": Exception in FM scan";
+                }
+                finally
+                {
+                    if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
+                    {
+                        DeleteFMWorkingPath();
+                    }
+                }
+
+                scannedFMDataList.Add(scannedFMAndError);
+            }
+            finally
+            {
+                if (fm.ForceFullScan)
+                {
+                    _scanOptions = _tempScanOptions!.DeepCopy();
+                }
+            }
+        }
     }
 
     private void SetOrAddTitle(List<string> titles, string value)
