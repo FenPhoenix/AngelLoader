@@ -353,13 +353,20 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         Graphics g = e.Graphics;
         Rectangle rect = e.Bounds;
 
-        SolidBrush textColorBrush = DarkColors.LightTextBrush;
-        SolidBrush fillColorBrush = DarkColors.LightBackgroundBrush;
+        bool itemIsHighlighted = (e.State & DrawItemState.Selected) != 0 ||
+                                 (e.State & DrawItemState.Focus) != 0;
 
-        if ((e.State & DrawItemState.Selected) != 0 ||
-            (e.State & DrawItemState.Focus) != 0)
+        Color textColor;
+        SolidBrush fillColorBrush;
+        if (itemIsHighlighted)
         {
+            textColor = DarkColors.Fen_HighlightText;
             fillColorBrush = DarkColors.BlueSelectionBrush;
+        }
+        else
+        {
+            textColor = DarkColors.LightText;
+            fillColorBrush = DarkColors.LightBackgroundBrush;
         }
 
         g.FillRectangle(fillColorBrush, rect);
@@ -376,7 +383,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
                 rect.Height - (padding * 2));
 
             // Explicitly set the fill color so that the antialiasing/ClearType looks right
-            TextRenderer.DrawText(g, text, Font, textRect, textColorBrush.Color, fillColorBrush.Color, _textFormat);
+            TextRenderer.DrawText(g, text, Font, textRect, textColor, fillColorBrush.Color, _textFormat);
         }
     }
 
