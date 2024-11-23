@@ -222,13 +222,13 @@ public enum IOThreadsMode
 
 public enum IOThreadingLevel
 {
-    Normal,
-    Aggressive,
+    Read,
+    ReadWrite,
 }
 
 public enum DriveMultithreadingLevel
 {
-    None,
+    Single,
     Read,
     ReadWrite,
     Auto,

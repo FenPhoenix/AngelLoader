@@ -163,7 +163,7 @@ internal static class DetectDriveData
         // We've got a network drive or something else, and we don't know what it is.
         if (!RootIsLetter(root))
         {
-            return (DriveMultithreadingLevel.None, modelName);
+            return (DriveMultithreadingLevel.Single, modelName);
         }
         else
         {
@@ -247,7 +247,7 @@ internal static class DetectDriveData
 
                 DriveMultithreadingLevel multithreadingLevel =
                     seekPenaltyDescriptor.IncursSeekPenalty
-                        ? DriveMultithreadingLevel.None
+                        ? DriveMultithreadingLevel.Single
                         : deviceProperty.BusType switch
                         {
                             /*
@@ -267,7 +267,7 @@ internal static class DetectDriveData
             }
             catch
             {
-                return (DriveMultithreadingLevel.None, modelName);
+                return (DriveMultithreadingLevel.Single, modelName);
             }
             finally
             {

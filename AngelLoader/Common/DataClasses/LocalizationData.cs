@@ -934,9 +934,6 @@ internal sealed class LText_Class
         internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
         [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
-        /*
-        @MT_TASK: Finalize names and values here
-        */
         internal readonly string IOThreading_IOThreadingLevels_Auto_MultithreadedRead = "Auto (Multithreaded read)";
         internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
         internal readonly string IOThreading_IOThreadingLevels_MultithreadedReadAndWrite = "Multithreaded read and write (high-end SSDs only)";

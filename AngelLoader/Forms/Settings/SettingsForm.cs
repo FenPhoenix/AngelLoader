@@ -779,7 +779,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 comboBox.SelectedIndex = driveMultithreadingLevel switch
                 {
-                    DriveMultithreadingLevel.None => 1,
+                    DriveMultithreadingLevel.Single => 1,
                     DriveMultithreadingLevel.Read => 2,
                     DriveMultithreadingLevel.ReadWrite => 3,
                     _ => 0,
@@ -906,7 +906,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             IOThreadingLevelDriveDataSections[index].MultithreadingLevel = comboBox.SelectedIndex switch
             {
-                1 => DriveMultithreadingLevel.None,
+                1 => DriveMultithreadingLevel.Single,
                 2 => DriveMultithreadingLevel.Read,
                 3 => DriveMultithreadingLevel.ReadWrite,
                 _ => DriveMultithreadingLevel.Auto,
@@ -1198,7 +1198,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     section.DriveLabel.Text = section.Drive + " " + section.ModelName;
 
                     section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.AutoMultithreadingLevel);
-                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveMultithreadingLevel.None);
+                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveMultithreadingLevel.Single);
                     section.ComboBox.Items[2] = GetThreadingLevelString(DriveMultithreadingLevel.Read);
                     section.ComboBox.Items[3] = GetThreadingLevelString(DriveMultithreadingLevel.ReadWrite);
                 }

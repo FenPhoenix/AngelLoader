@@ -54,17 +54,17 @@ public static partial class Utils
         }
 
         ThreadingData threadingData;
-        if (paths.Any(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.None))
+        if (paths.Any(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.Single))
         {
-            threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Normal);
+            threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Read);
         }
         else if (paths.All(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.ReadWrite))
         {
-            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Aggressive);
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.ReadWrite);
         }
         else
         {
-            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Normal);
+            threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.Read);
         }
 
 #if TESTING
@@ -108,7 +108,7 @@ public static partial class Utils
     }
 
     internal static int GetAudioConversionThreadCount(int maxWorkItemsCount, ThreadingData threadingData) =>
-        threadingData.Level == IOThreadingLevel.Aggressive
+        threadingData.Level == IOThreadingLevel.ReadWrite
             ? GetThreadCountForParallelOperation(maxWorkItemsCount, threadingData.Threads)
             : 1;
 

@@ -432,7 +432,7 @@ public static partial class Misc
     {
         public readonly string OriginalPath;
         public string Root = "";
-        public DriveMultithreadingLevel MultithreadingLevel = DriveMultithreadingLevel.None;
+        public DriveMultithreadingLevel MultithreadingLevel = DriveMultithreadingLevel.Single;
         public string ModelName = "";
 
         public SettingsDriveData(string originalPath)
@@ -454,7 +454,7 @@ public static partial class Misc
         public readonly string OriginalPath;
         public string Root = "";
         public readonly IOPathType IOPathType;
-        public DriveMultithreadingLevel DriveMultithreadingLevel = DriveMultithreadingLevel.None;
+        public DriveMultithreadingLevel DriveMultithreadingLevel = DriveMultithreadingLevel.Single;
         public readonly ThreadablePathType ThreadablePathType;
         /// <summary>
         /// Only used if <see cref="T:ThreadablePathType"/> is <see cref="ThreadablePathType.FMInstallPath"/>.
