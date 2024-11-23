@@ -51,8 +51,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly VisualTheme _inTheme;
     private readonly bool _inFollowSystemTheme;
 
-    private readonly DriveLetterDictionary _driveLettersAndTypes = new();
-
     #endregion
 
     private VisualTheme _selfTheme;
@@ -196,11 +194,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         _inTheme = config.VisualTheme;
         _inFollowSystemTheme = config.FollowSystemTheme;
-
-        foreach (var item in config.DriveLettersAndTypes)
-        {
-            _driveLettersAndTypes[item.Key] = item.Value;
-        }
 
         #endregion
 
@@ -700,6 +693,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region I/O Threading page
 
+            DriveLetterDictionary driveLettersAndTypes = new();
+            foreach (var item in config.DriveLettersAndTypes)
+            {
+                driveLettersAndTypes[item.Key] = item.Value;
+            }
+
             switch (config.IOThreadsMode)
             {
                 case IOThreadsMode.Custom:
@@ -759,7 +758,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 DriveMultithreadingLevel driveMultithreadingLevel =
                     ConfigData.GetDriveThreadability(
-                        _driveLettersAndTypes,
+                        driveLettersAndTypes,
                         driveData.Root);
 
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
