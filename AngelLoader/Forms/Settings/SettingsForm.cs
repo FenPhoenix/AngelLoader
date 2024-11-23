@@ -82,6 +82,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private sealed class DriveDataSection
     {
         internal readonly DarkLabel DriveLabel;
+        internal readonly DriveMultithreadingLevel AutoMultithreadingLevel;
         internal DriveMultithreadingLevel MultithreadingLevel;
         internal readonly string Drive;
         internal readonly string ModelName;
@@ -89,12 +90,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         public DriveDataSection(
             DarkLabel driveLabel,
+            DriveMultithreadingLevel autoMultithreadingLevel,
             DriveMultithreadingLevel multithreadingLevel,
             string drive,
             string modelName,
             DarkComboBox comboBox)
         {
             DriveLabel = driveLabel;
+            AutoMultithreadingLevel = autoMultithreadingLevel;
             MultithreadingLevel = multithreadingLevel;
             Drive = drive;
             ModelName = modelName;
@@ -760,11 +763,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         driveData.Root);
 
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
-                    driveLabel,
-                    driveMultithreadingLevel,
-                    driveData.Root,
-                    driveData.ModelName,
-                    comboBox
+                    driveLabel: driveLabel,
+                    autoMultithreadingLevel: driveData.MultithreadingLevel,
+                    multithreadingLevel: driveMultithreadingLevel,
+                    drive: driveData.Root,
+                    modelName: driveData.ModelName,
+                    comboBox: comboBox
                 );
 
                 IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
@@ -1194,7 +1198,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     section.DriveLabel.Text = section.Drive + " " + section.ModelName;
 
-                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.MultithreadingLevel);
+                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.AutoMultithreadingLevel);
                     section.ComboBox.Items[1] = GetThreadingLevelString(DriveMultithreadingLevel.None);
                     section.ComboBox.Items[2] = GetThreadingLevelString(DriveMultithreadingLevel.Read);
                     section.ComboBox.Items[3] = GetThreadingLevelString(DriveMultithreadingLevel.ReadWrite);
