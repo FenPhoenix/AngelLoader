@@ -432,7 +432,6 @@ public static partial class Misc
     {
         public readonly string OriginalPath;
         public string Root = "";
-        public DriveMultithreadingLevel AutoMultithreadingLevel = DriveMultithreadingLevel.None;
         public DriveMultithreadingLevel MultithreadingLevel = DriveMultithreadingLevel.None;
         public string ModelName = "";
 

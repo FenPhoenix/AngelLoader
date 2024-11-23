@@ -486,7 +486,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
             hwndItem = IntPtr.Zero;
             hwndList = IntPtr.Zero;
         }
-    };
+    }
 
     private static readonly int _comboboxInfoSize = Marshal.SizeOf(typeof(COMBOBOXINFO));
 
