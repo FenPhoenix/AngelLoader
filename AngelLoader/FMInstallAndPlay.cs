@@ -1902,13 +1902,7 @@ internal static partial class FMInstallAndPlay
 
                 foreach (FMInstallResult result in results)
                 {
-                    // Set this after the operation is finished, to prevent the UI from prematurely updating
-                    // with the new installed statuses if it gets redrawn
-                    if (result.ResultType == InstallResultType.InstallSucceeded)
-                    {
-                        result.FMData.FM.Installed = true;
-                    }
-                    else
+                    if (result.ResultType != InstallResultType.InstallSucceeded)
                     {
                         if (result.ResultType == InstallResultType.RollbackFailed)
                         {
