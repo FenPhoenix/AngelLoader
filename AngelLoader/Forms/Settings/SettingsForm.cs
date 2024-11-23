@@ -754,9 +754,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 panel.Controls.Add(driveLabel);
                 panel.Controls.Add(comboBox);
 
+                DriveMultithreadingLevel driveMultithreadingLevel =
+                    ConfigData.GetDriveThreadability(
+                        _driveLettersAndTypes,
+                        driveData.Root);
+
                 IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
                     driveLabel,
-                    driveData.MultithreadingLevel,
+                    driveMultithreadingLevel,
                     driveData.Root,
                     driveData.ModelName,
                     comboBox
@@ -769,10 +774,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                     IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
                 }
 
-                DriveMultithreadingLevel driveMultithreadingLevel =
-                    ConfigData.GetDriveThreadability(
-                        _driveLettersAndTypes,
-                        IOThreadingLevelDriveDataSections[i].Drive);
                 comboBox.SelectedIndex = driveMultithreadingLevel switch
                 {
                     DriveMultithreadingLevel.None => 1,
