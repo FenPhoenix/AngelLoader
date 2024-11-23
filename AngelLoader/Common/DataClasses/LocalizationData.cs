@@ -934,19 +934,14 @@ internal sealed class LText_Class
         internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
         [FenGenBlankLine]
         internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
-        // @MT_TASK(Localized drive type strings): We're not sure what we want to do here yet
-        internal readonly string IOThreading_IOThreadingLevels_DriveType_NVMe_SSD = "NVMe SSD or better";
-        internal readonly string IOThreading_IOThreadingLevels_DriveType_SATA_SSD = "SATA SSD";
-        internal readonly string IOThreading_IOThreadingLevels_DriveType_HDD_Or_Other = "HDD or other";
         /*
         @MT_TASK: Finalize names and values here
         */
-        internal readonly string IOThreading_IOThreadingLevels_Auto_ReadAndWrite = "Auto (Threaded read and write)";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_Read = "Auto (Threaded read)";
-        internal readonly string IOThreading_IOThreadingLevels_Auto_None = "Auto (Single thread)";
-        internal readonly string IOThreading_IOThreadingLevels_ReadAndWrite = "Threaded read and write";
-        internal readonly string IOThreading_IOThreadingLevels_Read = "Threaded read";
-        internal readonly string IOThreading_IOThreadingLevels_None = "Single thread";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_MultithreadedRead = "Auto (Multithreaded read)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
+        internal readonly string IOThreading_IOThreadingLevels_MultithreadedReadAndWrite = "Multithreaded read and write (high-end SSDs only)";
+        internal readonly string IOThreading_IOThreadingLevels_MultithreadedRead = "Multithreaded read";
+        internal readonly string IOThreading_IOThreadingLevels_SingleThread = "Single thread";
     }
 
     internal sealed class DateFilterBox_Class

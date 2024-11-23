@@ -1210,9 +1210,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return threadability switch
                     {
-                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_ReadAndWrite,
-                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_Read,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_None,
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_MultithreadedRead,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_SingleThread,
                     };
                 }
 
@@ -1220,9 +1219,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 {
                     return threadability switch
                     {
-                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_ReadAndWrite,
-                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Read,
-                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_None,
+                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_MultithreadedReadAndWrite,
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_MultithreadedRead,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_SingleThread,
                     };
                 }
 
