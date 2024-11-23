@@ -1720,9 +1720,6 @@ internal static partial class FMInstallAndPlay
         return await InstallInternal(false, false, fms);
     }
 
-    // @MT_TASK(InstallInternal): Check if we want to put back in some of the old dialogs - were they more specific
-    //  about errors, like stating exactly which FM had the error? I don't think we need the "one or more" style
-    //  of thing anymore now that we're archive-sequential. Should probably just revert back to the old dialogs.
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
         var fmDataList = new List<FMData>(fms.Length);

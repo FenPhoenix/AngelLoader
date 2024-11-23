@@ -194,8 +194,8 @@ internal static class DetectDriveData
 
                 StorageDeviceWrapper device = new(safeHandle);
                 /*
-                @MT_TASK: If the drive is Windows software RAID, this call fails with Win32 error "Incorrect function",
-                 so we get no drive type and no model name either.
+                @MT_TASK_NOTE: If the drive is Windows software RAID, this call fails with Win32 error "Incorrect
+                 function", so we get no drive type and no model name either.
                  Hardware RAID would presumably return the actual RAID bus type in which case we'd get Read threading
                  level, which is fine enough. But I can't just go buying a bunch of random RAID hardware to try
                  to test that or I'll go broke working on this free program. Meh...
@@ -251,8 +251,8 @@ internal static class DetectDriveData
                         : deviceProperty.BusType switch
                         {
                             /*
-                            @MT_TASK: We never autodetect aggressive now, because we can't know if the drive is
-                             capable of it even if it's NVMe...
+                            @MT_TASK_NOTE: We never autodetect ReadWrite now, because we can't know if the drive
+                             is capable of it even if it's NVMe...
                             */
                             STORAGE_BUS_TYPE.BusTypeNvme => DriveMultithreadingLevel.Read,
                             STORAGE_BUS_TYPE.BusTypeSCM => DriveMultithreadingLevel.Read,
