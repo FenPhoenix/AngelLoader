@@ -188,32 +188,6 @@ internal static partial class Ini
         public int GetHashCode(ReadOnlyMemory<char> obj) => string.GetHashCode(obj.Span);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
-    {
-        if (fm != null)
-        {
-            List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
-            list.Add(fm);
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static unsafe void PopulateFMFieldFromLine(FanMission fm, string line)
-    {
-        ReadOnlyMemory<char> lineTS = line.AsMemory().TrimStart();
-        ReadOnlySpan<char> lineTSSpan = lineTS.Span;
-        int eqIndex = lineTSSpan.IndexOf('=');
-        if (eqIndex > -1 && lineTSSpan[0] != ';')
-        {
-            if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
-            {
-                ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
-                result.Action(fm, valRaw);
-            }
-        }
-    }
-
     internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
@@ -247,6 +221,32 @@ internal static partial class Ini
             }
         }
         AddFMIfNotNull(fm, fmsList, fmsListTDM);
+
+        return;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static unsafe void PopulateFMFieldFromLine(FanMission fm, string line)
+        {
+            ReadOnlyMemory<char> lineTS = line.AsMemory().TrimStart();
+            ReadOnlySpan<char> lineTSSpan = lineTS.Span;
+            int eqIndex = lineTSSpan.IndexOf('=');
+            if (eqIndex > -1 && lineTSSpan[0] != ';')
+            {
+                if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
+                {
+                    ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
+                    result.Action(fm, valRaw);
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
+        {
+            if (fm == null) return;
+            List<FanMission> list = fm.Game == Game.TDM ? fmsListTDM : fmsList;
+            list.Add(fm);
+        }
     }
 
     internal static void WriteConfigIni()

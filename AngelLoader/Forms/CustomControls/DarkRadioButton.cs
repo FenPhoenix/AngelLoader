@@ -242,47 +242,96 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         Graphics g = e.Graphics;
 
-        Color textColor = DarkColors.LightText;
-        Pen borderColorPen = DarkColors.LightTextPen;
-        SolidBrush fillColorBrush = DarkColors.LightTextBrush;
+        Color textColor;
+        Pen borderColorPen;
+        SolidBrush fillColorBrush;
 
         if (Enabled)
         {
-            if (Focused)
-            {
-                borderColorPen = DarkColors.BlueHighlightPen;
-                fillColorBrush = DarkColors.BlueSelectionBrush;
-            }
+            textColor = DarkColors.LightText;
 
-            if (_controlState == DarkControlState.Hover)
+            switch (_controlState)
             {
-                borderColorPen = DarkColors.BlueHighlightPen;
-                fillColorBrush = DarkColors.BlueSelectionBrush;
-            }
-            else if (_controlState == DarkControlState.Pressed)
-            {
-                borderColorPen = DarkColors.GreyHighlightPen;
-                fillColorBrush = DarkColors.GreySelectionBrush;
+                case DarkControlState.Hover:
+                    borderColorPen = DarkColors.Fen_HyperlinkPen;
+                    fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    break;
+                case DarkControlState.Pressed:
+                    if (Checked)
+                    {
+                        borderColorPen = DarkColors.Fen_HyperlinkPen;
+                        fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    }
+                    else
+                    {
+                        borderColorPen = DarkColors.GreyHighlightPen;
+                        fillColorBrush = DarkColors.GreyHighlightBrush;
+                    }
+                    break;
+                default:
+                    if (Checked)
+                    {
+                        borderColorPen = DarkColors.Fen_HyperlinkPen;
+                        fillColorBrush = DarkColors.Fen_HyperlinkBrush;
+                    }
+                    else
+                    {
+                        borderColorPen = DarkColors.LightTextPen;
+                        fillColorBrush = DarkColors.LightTextBrush;
+                    }
+                    break;
             }
         }
         else
         {
             textColor = DarkColors.DisabledText;
-            borderColorPen = DarkColors.GreyHighlightPen;
+            borderColorPen = DarkColors.GreySelectionPen;
             fillColorBrush = DarkColors.GreySelectionBrush;
         }
 
-        g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, ClientRectangle);
+        Color? parentBackColor = Parent?.BackColor;
+        if (parentBackColor != null)
+        {
+            using var b = new SolidBrush((Color)parentBackColor);
+            g.FillRectangle(b, ClientRectangle);
+        }
 
         g.SmoothingMode = SmoothingMode.HighQuality;
 
         var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
-        g.DrawEllipse(borderColorPen, boxRect);
 
         if (Checked)
         {
-            var checkRect = new Rectangle(3, (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1, _radioButtonSize - 6, _radioButtonSize - 6);
-            g.FillEllipse(fillColorBrush, checkRect);
+            var checkRect = _controlState switch
+            {
+                DarkControlState.Hover => new Rectangle(
+                    2,
+                    (ClientRectangle.Height / 2) - ((_radioButtonSize - 6) / 2) - 1,
+                    _radioButtonSize - 4,
+                    _radioButtonSize - 4),
+                DarkControlState.Pressed => new RectangleF(
+                    3.5f,
+                    // ReSharper disable once RedundantCast
+#pragma warning disable IDE0004
+                    (int)((ClientRectangle.Height / 2) - ((_radioButtonSize - 8) / 2)) - 0.5f,
+#pragma warning restore IDE0004
+                    _radioButtonSize - 7,
+                    _radioButtonSize - 7),
+                _ => new Rectangle(
+                    3,
+                    (ClientRectangle.Height / 2) - ((_radioButtonSize - 7) / 2) - 1,
+                    _radioButtonSize - 6,
+                    _radioButtonSize - 6),
+            };
+
+            g.DrawEllipse(borderColorPen, boxRect);
+            g.FillEllipse(fillColorBrush, boxRect);
+
+            g.FillEllipse(DarkColors.GreyBackgroundBrush, checkRect);
+        }
+        else
+        {
+            g.DrawEllipse(borderColorPen, boxRect);
         }
 
         g.SmoothingMode = SmoothingMode.Default;
@@ -295,6 +344,15 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
 
         var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
         TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
+
+        if (Focused && ShowFocusCues)
+        {
+            ControlUtils.DrawFocusRectangle(
+                this,
+                e.Graphics,
+                ClientRectangle,
+                parentBackColor ?? BackColor);
+        }
     }
 
     #endregion

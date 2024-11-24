@@ -51,20 +51,25 @@ internal sealed class Dialogs : IDialogs
     /// <param name="no"></param>
     /// <param name="cancel"></param>
     /// <param name="yesIsDangerous"></param>
+    /// <param name="noIsDangerous"></param>
+    /// <param name="cancelIsDangerous"></param>
     /// <param name="checkBoxText"></param>
     /// <param name="defaultButton"></param>
+    /// <param name="viewLogButtonVisible"></param>
     /// <returns></returns>
     public (MBoxButton ButtonPressed, bool CheckBoxChecked)
-    ShowMultiChoiceDialog(
-        string message,
+    ShowMultiChoiceDialog(string message,
         string title,
         MBoxIcon icon,
         string? yes,
         string? no,
         string? cancel = null,
         bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
         string? checkBoxText = null,
-        MBoxButton defaultButton = MBoxButton.Yes) =>
+        MBoxButton defaultButton = MBoxButton.Yes,
+        bool viewLogButtonVisible = false) =>
         ((MBoxButton, bool))InvokeIfViewExists(() =>
         {
             using var d = new DarkTaskDialog(
@@ -75,8 +80,11 @@ internal sealed class Dialogs : IDialogs
                 noText: no,
                 cancelText: cancel,
                 yesIsDangerous: yesIsDangerous,
+                noIsDangerous: noIsDangerous,
+                cancelIsDangerous: cancelIsDangerous,
                 checkBoxText: checkBoxText,
-                defaultButton: defaultButton);
+                defaultButton: defaultButton,
+                viewLogButtonVisible: viewLogButtonVisible);
 
             DialogResult result = FormsViewEnvironment.ViewCreated
                 ? d.ShowDialogDark(FormsViewEnvironment.ViewInternal)

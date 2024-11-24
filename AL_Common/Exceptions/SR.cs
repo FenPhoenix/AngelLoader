@@ -16,10 +16,12 @@ public static class SR
 {
     // Not localizable cause who the hell cares
     public static readonly string GenericInvalidData = "Found invalid data while decoding.";
+    public static readonly string InvalidArgumentOffsetCount = "Offset plus count is larger than the length of target array.";
     public static readonly string InvalidBlockLength = "Block length does not match with its complement.";
     public static readonly string InvalidHuffmanData = "Failed to construct a huffman tree using the length array. The stream might be corrupted.";
     public static readonly string NotSupported = "This operation is not supported.";
     public static readonly string NotSupported_UnreadableStream = "Stream does not support reading.";
+    public static readonly string ObjectDisposed_StreamClosed = "Cannot access a closed stream.";
     public static readonly string UnknownBlockType = "Unknown block type. Stream might be corrupted.";
     public static readonly string UnknownState = "Decoder is in some unknown state. This might be caused by corrupted data.";
     public static readonly string CDCorrupt = "Central Directory corrupt.";
@@ -46,7 +48,30 @@ public static class SR
     public static readonly string EOF_ReadBeyondEOF = "Unable to read beyond the end of the stream.";
     public static readonly string CannotWriteToDeflateStream = "Writing to the compression stream is not supported.";
     public static readonly string InvalidBeginCall = "Only one asynchronous reader or writer is allowed time at one time.";
-#if ENABLE_UNUSED
     public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+    public static readonly string IO_NoPermissionToDirectoryName = "<Path discovery permission to the specified directory was denied.>";
+    public static readonly string FileNotFound = "Unable to find the specified file.";
+    public static readonly string FileNotFound_FileName = "Could not find file '{0}'.";
+    public static readonly string PathNotFound_NoPathName = "Could not find a part of the path.";
+    public static readonly string PathNotFound_Path = "Could not find a part of the path '{0}'.";
+    public static readonly string UnauthorizedAccess_IODenied_NoPathName = "Access to the path is denied.";
+    public static readonly string UnauthorizedAccess_IODenied_Path = "Access to the path '{0}' is denied.";
+    public static readonly string IO_AlreadyExists_Name = "Cannot create \"{0}\" because a file or directory with the same name already exists.";
+    public static readonly string PathTooLong = "The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.";
+    public static readonly string PathTooLong_Path = "The path '{0}' is too long, or a component of the specified path is too long.";
+    public static readonly string DriveNotFound_Drive = "Could not find the drive '{0}'. The drive might not be ready or might not be mapped.";
+    public static readonly string IO_SharingViolation_NoFileName = "The process cannot access the file because it is being used by another process.";
+    public static readonly string IO_SharingViolation_File = "The process cannot access the file '{0}' because it is being used by another process.";
+    public static readonly string IO_FileExists_Name = "The file '{0}' already exists.";
+    public static readonly string Arg_ArrayPlusOffTooSmall = "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
+    public static readonly string ArgumentOutOfRange_IndexMustBeLess = "Index was out of range. Must be non-negative and less than the size of the collection.";
+    public static readonly string ObjectDisposed_StreamReaderCustomClosed = "Cannot read from a closed stream reader.";
+    public static readonly string Arg_InvalidHandle = "Invalid handle.";
+    public static readonly string ObjectDisposed_FileClosed = "Cannot access a closed file.";
+    public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
+#if ENABLE_UNUSED
 #endif
+    public static readonly string EntryNameEncodingNotSupported = "Entry name encoding not supported.";
+    public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
+    public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
 }

@@ -5,6 +5,9 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
@@ -109,6 +112,7 @@ public static partial class Misc
             "#settings_other_section",
             "#settings_thief_buddy_section",
             "#settings_update_section",
+            "#settings_io_threading_section",
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -145,6 +149,8 @@ public static partial class Misc
     #endregion
 
     internal static readonly SortDirection[] ColumnDefaultSortDirections = new SortDirection[ColumnCount];
+
+    internal static readonly int CoreCount = Environment.ProcessorCount.ClampToMin(1);
 
     static Misc()
     {
@@ -273,6 +279,7 @@ public static partial class Misc
         static () => LText.StatisticsTab.Subtitles,
     };
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct PerGameGoFlags
     {
         private readonly bool[] _array;
@@ -299,6 +306,7 @@ public static partial class Misc
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct NonEmptyList<T> : IEnumerable<T>
     {
         private readonly List<T> _list;
@@ -396,5 +404,123 @@ public static partial class Misc
         public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    internal sealed class ThreadingData
+    {
+        internal readonly int Threads;
+        internal readonly IOThreadingLevel Level;
+
+        public ThreadingData(int threads, IOThreadingLevel level)
+        {
+            Threads = threads.ClampToMin(1);
+            Level = level;
+        }
+
+        public override string ToString() =>
+            "{ " + nameof(Threads) + ": " + Threads.ToStrInv() + ", " + nameof(Level) + ": " + Level + " }";
+    }
+
+    public enum IOPathType
+    {
+        File,
+        Directory,
+    }
+
+    public sealed class SettingsDriveData
+    {
+        public readonly string OriginalPath;
+        public string Root = "";
+        public DriveMultithreadingLevel MultithreadingLevel = DriveMultithreadingLevel.Single;
+        public string ModelName = "";
+
+        public SettingsDriveData(string originalPath)
+        {
+            OriginalPath = originalPath;
+        }
+
+        public override string ToString()
+        {
+            return "----" + $"{NL}" +
+                   nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
+                   nameof(Root) + ": " + Root + $"{NL}" +
+                   nameof(MultithreadingLevel) + ": " + MultithreadingLevel + $"{NL}";
+        }
+    }
+
+    public sealed class ThreadablePath
+    {
+        public readonly string OriginalPath;
+        public string Root = "";
+        public readonly IOPathType IOPathType;
+        public DriveMultithreadingLevel DriveMultithreadingLevel = DriveMultithreadingLevel.Single;
+        public readonly ThreadablePathType ThreadablePathType;
+        /// <summary>
+        /// Only used if <see cref="T:ThreadablePathType"/> is <see cref="ThreadablePathType.FMInstallPath"/>.
+        /// Otherwise its value should be ignored.
+        /// </summary>
+        public readonly GameIndex GameIndex;
+
+        public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType)
+        {
+            OriginalPath = originalPath;
+            IOPathType = ioPathType;
+            ThreadablePathType = threadablePathType;
+            GameIndex = default;
+        }
+
+        public ThreadablePath(string originalPath, IOPathType ioPathType, ThreadablePathType threadablePathType, GameIndex gameIndex)
+        {
+            OriginalPath = originalPath;
+            IOPathType = ioPathType;
+            ThreadablePathType = threadablePathType;
+            GameIndex = gameIndex;
+        }
+
+        public override string ToString()
+        {
+            return "----" + $"{NL}" +
+                   nameof(OriginalPath) + ": " + OriginalPath + $"{NL}" +
+                   nameof(Root) + ": " + Root + $"{NL}" +
+                   nameof(IOPathType) + ": " + IOPathType + $"{NL}" +
+                   nameof(DriveMultithreadingLevel) + ": " + DriveMultithreadingLevel + $"{NL}" +
+                   nameof(ThreadablePathType) + ": " + ThreadablePathType + $"{NL}" +
+                   nameof(GameIndex) + ": " + GameIndex + $"{NL}";
+        }
+    }
+
+    // @NET5: Override any new methods like the try-add or whatever too
+    [PublicAPI]
+    public sealed class DriveLetterDictionary : Dictionary<char, DriveMultithreadingLevel>
+    {
+        public DriveLetterDictionary() { }
+
+        public DriveLetterDictionary(int capacity) : base(capacity) { }
+
+        public new DriveMultithreadingLevel this[char key]
+        {
+            get => base[key.ToAsciiUpper()];
+            set
+            {
+                if (char.IsAsciiLetter(key))
+                {
+                    base[key.ToAsciiUpper()] = value;
+                }
+            }
+        }
+
+        public new void Add(char key, DriveMultithreadingLevel value)
+        {
+            if (char.IsAsciiLetter(key))
+            {
+                base.Add(key.ToAsciiUpper(), value);
+            }
+        }
+
+        public new bool ContainsKey(char key) => base.ContainsKey(key.ToAsciiUpper());
+
+        public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
+
+        public new bool TryGetValue(char key, out DriveMultithreadingLevel value) => base.TryGetValue(key.ToAsciiUpper(), out value);
     }
 }

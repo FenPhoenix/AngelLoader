@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -12,6 +13,53 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.DataClasses;
+
+/// <summary>
+/// Cheesy hack to make sure exceptions are thrown in the same places as before - on access of the path properties.
+/// And because we're not actually modifying the global config object anymore, we're thread-safe now too.
+/// </summary>
+public sealed class DarkLoaderBackupContext
+{
+    private readonly Exception? DarkLoaderBackupPathException;
+    private readonly Exception? DarkLoaderOriginalBackupPathException;
+
+    public DarkLoaderBackupContext()
+    {
+        try
+        {
+            _darkLoaderBackupPath = Path.Combine(Global.Config.FMsBackupPath, Paths.DarkLoaderSaveBakDir);
+            DarkLoaderBackupPathException = null;
+        }
+        catch (Exception ex)
+        {
+            _darkLoaderBackupPath = "";
+            DarkLoaderBackupPathException = ex;
+        }
+
+        try
+        {
+            _darkLoaderOriginalBackupPath = Path.Combine(Global.Config.FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+            DarkLoaderOriginalBackupPathException = null;
+        }
+        catch (Exception ex)
+        {
+            _darkLoaderOriginalBackupPath = "";
+            DarkLoaderOriginalBackupPathException = ex;
+        }
+    }
+
+    private readonly string _darkLoaderBackupPath;
+    public string DarkLoaderBackupPath =>
+        DarkLoaderBackupPathException == null
+            ? _darkLoaderBackupPath
+            : throw DarkLoaderBackupPathException;
+
+    private readonly string _darkLoaderOriginalBackupPath;
+    public string DarkLoaderOriginalBackupPath =>
+        DarkLoaderOriginalBackupPathException == null
+            ? _darkLoaderOriginalBackupPath
+            : throw DarkLoaderOriginalBackupPathException;
+}
 
 #region Columns
 
@@ -164,6 +212,35 @@ public enum CheckForUpdates
     FirstTimeAsk,
     True,
     False,
+}
+
+public enum IOThreadsMode
+{
+    Auto,
+    Custom,
+}
+
+public enum IOThreadingLevel
+{
+    Read,
+    ReadWrite,
+}
+
+public enum DriveMultithreadingLevel
+{
+    Single,
+    Read,
+    ReadWrite,
+    Auto,
+}
+
+public enum ThreadablePathType
+{
+    FMInstallPath,
+    BackupPath,
+    ArchivePath,
+    TempPath,
+    FMCachePath,
 }
 
 #region FM tabs
@@ -472,6 +549,7 @@ internal enum SettingsTab
     Other,
     ThiefBuddy,
     Update,
+    IOThreading,
 }
 
 /*

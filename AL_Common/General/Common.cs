@@ -1,5 +1,7 @@
 ﻿global using static AL_Common.FullyGlobal;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -7,6 +9,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
 using JetBrains.Annotations;
 
@@ -82,6 +86,25 @@ public static partial class Common
 
     public const RegexOptions IgnoreCaseInvariant = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
+    // @MT_TASK_NOTE: This is rented/returned in tight loops a lot, we should back it out to reduce call count
+    public sealed class FixedLengthByteArrayPool
+    {
+        private readonly int _length;
+        private readonly ConcurrentBag<byte[]> _items = new();
+
+        public FixedLengthByteArrayPool(int length) => _length = length;
+
+        public byte[] Rent() => _items.TryTake(out byte[]? item) ? item : new byte[_length];
+
+        public void Return(byte[] item) => _items.Add(item);
+    }
+
+    public sealed class IOBufferPools
+    {
+        public readonly FixedLengthByteArrayPool StreamCopy = new(StreamCopyBufferSize);
+        public readonly FixedLengthByteArrayPool FileStream = new(FileStreamBufferSize);
+    }
+
     #endregion
 
     #region Methods
@@ -130,20 +153,20 @@ public static partial class Common
     public static string ToStrInv(this byte value) => value.ToString(NumberFormatInfo.InvariantInfo);
 
     /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this int value) => value.ToString(CultureInfo.CurrentCulture);
+    public static string ToStrCur(this int value) => value.ToString(NumberFormatInfo.CurrentInfo);
 
     /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="CultureInfo.CurrentCulture"/>)
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this double value) => value.ToString(CultureInfo.CurrentCulture);
+    public static string ToStrCur(this double value) => value.ToString(NumberFormatInfo.CurrentInfo);
 
     public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
@@ -215,7 +238,7 @@ public static partial class Common
 
         if (full.PathStartsWithI(path))
         {
-            return extractedName;
+            return full;
         }
         else
         {
@@ -266,7 +289,72 @@ public static partial class Common
         }
     }
 
+    public static Encoding GetOEMCodePageOrFallback(Encoding fallback)
+    {
+        Encoding enc;
+        try
+        {
+            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
+        }
+        catch
+        {
+            enc = fallback;
+        }
+
+        return enc;
+    }
+
     #endregion
+
+    public readonly struct ParallelForData<T>
+    {
+        public readonly ConcurrentQueue<T> CQ;
+        public readonly ParallelOptions PO;
+
+        public ParallelForData(ConcurrentQueue<T> cq, ParallelOptions po)
+        {
+            CQ = cq;
+            PO = po;
+        }
+
+        public ParallelForData()
+        {
+            CQ = new ConcurrentQueue<T>();
+            PO = new ParallelOptions();
+        }
+    }
+
+    public static bool TryGetParallelForData<T>(
+        int threadCount,
+        IEnumerable<T> items,
+        CancellationToken cancellationToken,
+        out ParallelForData<T> pd)
+    {
+        if (threadCount is 0 or < -1)
+        {
+            pd = new ParallelForData<T>();
+            return false;
+        }
+
+        try
+        {
+            pd = new ParallelForData<T>(
+                cq: new ConcurrentQueue<T>(items),
+                po: new ParallelOptions
+                {
+                    CancellationToken = cancellationToken,
+                    MaxDegreeOfParallelism = threadCount,
+                }
+            );
+
+            return true;
+        }
+        catch
+        {
+            pd = new ParallelForData<T>();
+            return false;
+        }
+    }
 
     #endregion
 }

@@ -24,27 +24,29 @@ public sealed class DarkRadioButtonCustom : DarkButton
     public DarkRadioButtonCustom()
     {
         DarkModeBackColor = DarkColors.Fen_ControlBackground;
-        DarkModeHoverColor = DarkColors.Fen_DarkBackground;
-        DarkModePressedColor = DarkColors.Fen_DarkBackground;
+        DarkModeHoverColor = DarkColors.BlueBackground;
+        DarkModePressedColor = DarkColors.BlueBackground;
 
         FlatAppearance.BorderSize = 0;
-        FlatAppearance.MouseDownBackColor = SystemColors.Window;
-        FlatAppearance.MouseOverBackColor = SystemColors.Window;
+        FlatAppearance.MouseDownBackColor = DarkColors.SettingsButtonHighlight_Light;
+        FlatAppearance.MouseOverBackColor = DarkColors.SettingsButtonHighlight_Light;
         FlatStyle = FlatStyle.Flat;
+
+        BackColor = SystemColors.ButtonFace;
     }
 
     private void SetCheckedVisualState()
     {
         DarkModeBackColor =
             _checked
-                ? DarkColors.Fen_DarkBackground
+                ? DarkColors.BlueBackground
                 : DarkColors.Fen_ControlBackground;
 
         if (!_darkModeEnabled)
         {
             BackColor = _checked
-                ? SystemColors.Window
-                : SystemColors.Control;
+                ? DarkColors.SettingsButtonHighlight_Light
+                : SystemColors.ButtonFace;
         }
 
         // Needed to prevent background color sticking when unchecked sometimes
@@ -96,7 +98,33 @@ public sealed class DarkRadioButtonCustom : DarkButton
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
-        var rect = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
-        e.Graphics.DrawRectangle(_darkModeEnabled ? DarkColors.LightTextPen : SystemPens.ControlText, rect);
+
+        Rectangle rect = new(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+
+        Pen pen;
+        if (_darkModeEnabled)
+        {
+            pen = (Focused && ShowFocusCues) || Checked
+                ? DarkColors.BlueHighlightPen
+                : _buttonState == DarkControlState.Hover
+                    ? DarkColors.BlueHighlightPen
+                    : DarkColors.GreySelectionPen;
+        }
+        else
+        {
+            if (Checked)
+            {
+                pen = DarkColors.SettingsButtonHighlightBorder_LightPen;
+                e.Graphics.DrawRectangle(pen, Rectangle.Inflate(rect, -1, -1));
+            }
+            else
+            {
+                pen = _buttonState == DarkControlState.Hover
+                    ? DarkColors.SettingsButtonHighlightBorder_LightPen
+                    : SystemPens.ControlDarkDark;
+            }
+        }
+
+        e.Graphics.DrawRectangle(pen, rect);
     }
 }

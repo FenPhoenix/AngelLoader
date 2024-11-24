@@ -1,8 +1,10 @@
 ﻿using System.Buffers.Binary;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace AL_Common;
 
+[StructLayout(LayoutKind.Auto)]
 public readonly struct BinaryBuffer()
 {
     public readonly byte[] Buffer = new byte[8];

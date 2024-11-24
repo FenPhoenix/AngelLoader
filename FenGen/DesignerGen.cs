@@ -290,8 +290,7 @@ internal static class DesignerGen
                     {
                         if (mes.Name.ToString() == "Add")
                         {
-                            string nodeStr = mesN.ToString().Trim();
-                            if (nodeStr.StartsWithO("this.")) nodeStr = nodeStr.Substring(5);
+                            string nodeStr = mesN.ToString().Trim().RemoveThis();
 
                             string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
 
@@ -302,8 +301,7 @@ internal static class DesignerGen
                                     ies.ArgumentList.Arguments.Count == 1)
                                 {
                                     var arg = ies.ArgumentList.Arguments[0];
-                                    string argStr = arg.ToString().Trim();
-                                    if (argStr.StartsWithO("this.")) argStr = argStr.Substring(5);
+                                    string argStr = arg.ToString().Trim().RemoveThis();
                                     controlsInFlowLayoutPanels.Add(argStr);
                                 }
 
@@ -316,8 +314,7 @@ internal static class DesignerGen
                         }
                         else if (mes.Name.ToString() == "SetToolTip")
                         {
-                            string nodeStr = mesN.ToString().Trim();
-                            if (nodeStr.StartsWithO("this.")) nodeStr = nodeStr.Substring(5);
+                            string nodeStr = mesN.ToString().Trim().RemoveThis();
 
                             string nodeControlName = nodeStr.Substring(0, nodeStr.IndexOf('.'));
 
@@ -389,7 +386,7 @@ internal static class DesignerGen
                 case "MinimumSize":
                 {
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
-                        oce.Type.ToString() == "System.Drawing.Size" &&
+                        oce.Type.ToString().TypeEquals("System.Drawing", "Size") &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
                         Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
                         Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int height))
@@ -424,7 +421,7 @@ internal static class DesignerGen
                 case "Location":
                 {
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
-                        oce.Type.ToString() == "System.Drawing.Point" &&
+                        oce.Type.ToString().TypeEquals("System.Drawing", "Point") &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
                         Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
                         Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int y))
@@ -462,14 +459,14 @@ internal static class DesignerGen
                     SyntaxNode[] anchorStyles = aes.Right.DescendantNodesAndSelf()
                         .Where(static x =>
                             x is MemberAccessExpressionSyntax &&
-                            x.ToString().StartsWithO("System.Windows.Forms.AnchorStyles."))
+                            x.ToString().TypeStartsWith("System.Windows.Forms", "AnchorStyles."))
                         .ToArray();
 
                     CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                     props.HasDefaultAnchor =
                         anchorStyles.Length == 2 &&
-                        Array.Find(anchorStyles, static x => x.ToString() == "System.Windows.Forms.AnchorStyles.Top") != null &&
-                        Array.Find(anchorStyles, static x => x.ToString() == "System.Windows.Forms.AnchorStyles.Left") != null;
+                        Array.Find(anchorStyles, static x => x.ToString().TypeEquals("System.Windows.Forms", "AnchorStyles.Top")) != null &&
+                        Array.Find(anchorStyles, static x => x.ToString().TypeEquals("System.Windows.Forms", "AnchorStyles.Left")) != null;
                     break;
                 }
                 case "Dock":
@@ -477,7 +474,7 @@ internal static class DesignerGen
                     if (aes.Right is MemberAccessExpressionSyntax mae)
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
-                        props.DockIsFill = mae.ToString() == "System.Windows.Forms.DockStyle.Fill";
+                        props.DockIsFill = mae.ToString().TypeEquals("System.Windows.Forms", "DockStyle.Fill");
                     }
                     break;
                 }
@@ -487,11 +484,11 @@ internal static class DesignerGen
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
 
-                        props.CheckState = les.ToString() switch
+                        props.CheckState = les.ToString().RemoveTypeQualifier("System.Windows.Forms") switch
                         {
-                            "System.Windows.Forms.CheckState.Checked" => CheckState.Checked,
-                            "System.Windows.Forms.CheckState.Unchecked" => CheckState.Unchecked,
-                            "System.Windows.Forms.CheckState.Indeterminate" => CheckState.Indeterminate,
+                            "CheckState.Checked" => CheckState.Checked,
+                            "CheckState.Unchecked" => CheckState.Unchecked,
+                            "CheckState.Indeterminate" => CheckState.Indeterminate,
                             _ => null,
                         };
                     }
@@ -683,9 +680,8 @@ internal static class DesignerGen
 
                 if (designerFile.SplashScreen)
                 {
-                    string line = finalLine.Trim();
+                    string line = finalLine.Trim().RemoveThis();
 
-                    if (line.StartsWithO("this.")) line = line.Substring(5);
                     int index = line.IndexOf('(');
                     if (index > -1)
                     {

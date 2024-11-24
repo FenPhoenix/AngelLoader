@@ -189,6 +189,7 @@ public sealed class PatchTabPage : Lazy_TabsBase
 
         using (var d = new OpenFileDialog())
         {
+            d.Title = LText.PatchTab.AddDMLPatchDialogTitle;
             d.Multiselect = true;
             d.Filter = LText.BrowseDialogs.DMLFiles + "|*.dml";
             if (d.ShowDialogDark(this) != DialogResult.OK || d.FileNames.Length == 0) return;

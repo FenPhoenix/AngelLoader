@@ -113,19 +113,6 @@ internal static class FastIO
             dateTimes);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsFile(FindData findData)
-    {
-        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsDirectory(FindData findData, bool ignoreReparsePoints)
-    {
-        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
-               (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
-    }
-
     // ~2.4x faster than GetFiles() - huge boost to cold startup time
     private static void GetFilesTopOnlyInternal(
         string path,
@@ -193,6 +180,21 @@ internal static class FastIO
                 dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
             }
         } while (fileFinder.TryFindNextFile(out findData));
+
+    return;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static bool IsFile(FindData findData)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static bool IsDirectory(FindData findData, bool ignoreReparsePoints)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
+               (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
+    }
     }
 
     /// <summary>

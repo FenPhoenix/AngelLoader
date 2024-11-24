@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AL_Common;
 
@@ -11,6 +12,7 @@ public interface IUpdateRegion
     void EndUpdate();
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct UpdateRegion
 {
     private readonly IUpdateRegion _obj;
@@ -55,6 +57,7 @@ public interface IEventDisabler
     int EventsDisabled { get; set; }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct DisableEvents
 {
     /*
@@ -100,6 +103,7 @@ public interface IZeroSelectCodeDisabler
     int ZeroSelectCodeDisabled { get; set; }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct DisableZeroSelectCode
 {
     private readonly IZeroSelectCodeDisabler _obj;

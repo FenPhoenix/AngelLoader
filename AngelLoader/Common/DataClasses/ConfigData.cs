@@ -143,23 +143,7 @@ public sealed class ConfigData
     2023/10/11:
     Backup path is now only required if you've specified one or more games that require it (TDM doesn't).
     */
-    private string _fmsBackupPath = "";
-    internal string FMsBackupPath
-    {
-        get => _fmsBackupPath;
-        set
-        {
-            _fmsBackupPath = value;
-            _darkLoaderBackupPath = null;
-            _darkLoaderOriginalBackupPath = null;
-        }
-    }
-
-    private string? _darkLoaderBackupPath;
-    internal string DarkLoaderBackupPath => _darkLoaderBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveBakDir);
-
-    private string? _darkLoaderOriginalBackupPath;
-    internal string DarkLoaderOriginalBackupPath => _darkLoaderOriginalBackupPath ??= Path.Combine(FMsBackupPath, Paths.DarkLoaderSaveOrigBakDir);
+    internal string FMsBackupPath = "";
 
     #region Game exes
 
@@ -464,6 +448,36 @@ public sealed class ConfigData
     {
         get => _screenshotGammaPercent;
         set => _screenshotGammaPercent = value.Clamp(0, 100);
+    }
+
+    internal IOThreadsMode IOThreadsMode = IOThreadsMode.Auto;
+
+    private int _customIOThreadCount = CoreCount;
+    internal int CustomIOThreadCount
+    {
+        get => _customIOThreadCount;
+        set => _customIOThreadCount = value.ClampToMin(1);
+    }
+
+    internal readonly DriveLetterDictionary DriveLettersAndTypes = new(26);
+
+    internal static DriveMultithreadingLevel GetDriveThreadability(DriveLetterDictionary dict, string letter)
+    {
+        if (letter.Length == 0)
+        {
+            return DriveMultithreadingLevel.Auto;
+        }
+
+        char letterChar = letter[0];
+        if (dict.TryGetValue(letterChar, out DriveMultithreadingLevel result))
+        {
+            return result;
+        }
+        else
+        {
+            dict[letterChar] = DriveMultithreadingLevel.Auto;
+            return DriveMultithreadingLevel.Auto;
+        }
     }
 
 #if !ReleaseBeta && !ReleasePublic

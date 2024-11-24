@@ -178,43 +178,44 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
 
 public sealed class DisableScreenshotWatchers : IDisposable
 {
-    /*
-    IMPORTANT! @THREADING(FMInstalledDirModificationScope):
-    If we ever make it so that things can go in parallel (install/uninstall, scan, delete, etc.), this will
-    no longer be safe! We're threading noobs so we don't know if volatile will solve the problem or what.
-    Needs testing.
-    */
+    private static readonly object _lock = new();
     private static int _count;
 
     private readonly bool[] _originalValues = new bool[SupportedGameCount];
 
     public DisableScreenshotWatchers()
     {
-        if (_count == 0)
+        lock (_lock)
         {
-            for (int i = 0; i < SupportedGameCount; i++)
+            if (_count == 0)
             {
-                GameIndex gameIndex = (GameIndex)i;
-                ScreenshotWatcher watcher = Screenshots.GetScreenshotWatcher(gameIndex);
-                _originalValues[i] = watcher.EnableWatching;
-                watcher.EnableWatching = false;
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    ScreenshotWatcher watcher = Screenshots.GetScreenshotWatcher(gameIndex);
+                    _originalValues[i] = watcher.EnableWatching;
+                    watcher.EnableWatching = false;
+                }
             }
+            _count++;
         }
-        _count++;
     }
 
     public void Dispose()
     {
-        if (_count == 1)
+        lock (_lock)
         {
-            for (int i = 0; i < SupportedGameCount; i++)
+            if (_count == 1)
             {
-                GameIndex gameIndex = (GameIndex)i;
-                ScreenshotWatcher watcher = Screenshots.GetScreenshotWatcher(gameIndex);
-                watcher.EnableWatching = _originalValues[i];
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameIndex gameIndex = (GameIndex)i;
+                    ScreenshotWatcher watcher = Screenshots.GetScreenshotWatcher(gameIndex);
+                    watcher.EnableWatching = _originalValues[i];
+                }
             }
+            _count = (_count - 1).ClampToZero();
         }
-        _count = (_count - 1).ClampToZero();
     }
 }
 

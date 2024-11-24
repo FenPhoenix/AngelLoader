@@ -84,7 +84,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         _foreColorCached = ForeColor;
         _backColorCached = BackColor;
 
-        Program.PreloadState.SplashScreenPreloadTask.Wait();
+        Program.SplashScreenPreloadState.SplashScreenPreloadTask.Wait();
 
         base.Show();
     }
@@ -124,7 +124,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             TextFormatFlags.NoClipping |
             TextFormatFlags.WordBreak;
 
-        TextRenderer.DrawText(_graphicsContext.G, _message, Program.PreloadState.MessageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
+        TextRenderer.DrawText(_graphicsContext.G, _message, Program.SplashScreenPreloadState.MessageFont, _messageRect, _foreColorCached, _backColorCached, _messageTextFormatFlags);
     }
 
     public void SetMessage(string message)
@@ -141,7 +141,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
             TextFormatFlags.NoPrefix |
             TextFormatFlags.NoClipping;
 
-        _checkMessageWidth = TextRenderer.MeasureText(message, Program.PreloadState.MessageFont, Size.Empty, _messageTextFormatFlags).Width;
+        _checkMessageWidth = TextRenderer.MeasureText(message, Program.SplashScreenPreloadState.MessageFont, Size.Empty, _messageTextFormatFlags).Width;
     }
 
     public void SetCheckAtStoredMessageWidth()
@@ -208,14 +208,14 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
 
         if (disposing)
         {
-            Program.PreloadState.SplashScreenPreloadTask.Wait();
+            Program.SplashScreenPreloadState.SplashScreenPreloadTask.Wait();
 
-            Program.PreloadState.MessageFont?.Dispose();
-            Program.PreloadState.FontCollection?.Dispose();
+            Program.SplashScreenPreloadState.MessageFont?.Dispose();
+            Program.SplashScreenPreloadState.FontCollection?.Dispose();
             _graphicsContext.Dispose();
             _fen_ControlBackgroundBrush.Dispose();
 
-            Program.PreloadState.SplashScreenPreloadTask.Dispose();
+            Program.SplashScreenPreloadState.SplashScreenPreloadTask.Dispose();
         }
         base.Dispose(disposing);
     }

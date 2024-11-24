@@ -74,7 +74,7 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
             if (toolTipProperty != null)
             {
                 ToolTip? toolTip = (ToolTip?)toolTipProperty.GetValue(this);
-                toolTip?.TrySetMaxDelay();
+                toolTip?.SetMaxDelay();
             }
         }
         catch

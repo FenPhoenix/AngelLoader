@@ -2,6 +2,7 @@
 
 namespace AL_Common;
 
+// Static class to provide cheap thread-safe lazy init
 public static class HTML
 {
     /*
@@ -119,8 +120,8 @@ public static class HTML
     yen
     yuml
     */
-    private static Dictionary<string, string>? _html401NamedEntities;
-    public static Dictionary<string, string> HTML401NamedEntities => _html401NamedEntities ??= new Dictionary<string, string>
+
+    public static readonly Dictionary<string, string> HTML401NamedEntities = new()
     {
         { "QUOT", "34" },
         { "quot", "34" },

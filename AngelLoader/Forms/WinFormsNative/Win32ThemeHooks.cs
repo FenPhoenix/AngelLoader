@@ -322,6 +322,7 @@ internal static class Win32ThemeHooks
     unlikely scenario though, and even if it happens we refresh the whole app on dialog close anyway so at
     least it's temporary.
     */
+    [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct DialogScope
     {
         private readonly bool _active;
@@ -387,6 +388,7 @@ internal static class Win32ThemeHooks
     // color change
     private static Override SysColorOverride = Override.None;
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct OverrideSysColorScope
     {
         public OverrideSysColorScope(Override @override) => SysColorOverride = @override;
@@ -586,7 +588,7 @@ internal static class Win32ThemeHooks
     #region ScrollBar
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ScrollBarEnabled() => Global.Config.DarkMode;
+    private static bool ScrollBarEnabled() => Global.Config.DarkMode || (WinVersion.Is11OrAbove && !Native.HighContrastEnabled());
 
     private static bool ScrollBar_TryDrawThemeBackground(
         IntPtr hdc,
@@ -594,6 +596,8 @@ internal static class Win32ThemeHooks
         int iStateId,
         ref Native.RECT pRect)
     {
+        bool usingLightMode = WinVersion.Is11OrAbove && !Global.Config.DarkMode && !Native.HighContrastEnabled();
+
         using Graphics g = Graphics.FromHdc(hdc);
 
         #region Background
@@ -604,8 +608,46 @@ internal static class Win32ThemeHooks
         switch (iPartId)
         {
             case Native.SBP_ARROWBTN:
-                brush = DarkColors.DarkBackgroundBrush;
+            {
+                if (usingLightMode)
+                {
+                    switch (iStateId)
+                    {
+                        case Native.ABS_UPPRESSED:
+                        case Native.ABS_DOWNPRESSED:
+                        case Native.ABS_LEFTPRESSED:
+                        case Native.ABS_RIGHTPRESSED:
+                            brush = DarkColors.LightScrollBarButtonPressedBrush;
+                            break;
+                        case Native.ABS_UPDISABLED:
+                        case Native.ABS_DOWNDISABLED:
+                        case Native.ABS_LEFTDISABLED:
+                        case Native.ABS_RIGHTDISABLED:
+                            brush = SystemBrushes.Control;
+                            break;
+                        case Native.ABS_UPHOT:
+                        case Native.ABS_DOWNHOT:
+                        case Native.ABS_LEFTHOT:
+                        case Native.ABS_RIGHTHOT:
+                            brush = DarkColors.LightScrollBarButtonHotBrush;
+                            break;
+#if false
+                        case Native.ABS_UPNORMAL:
+                        case Native.ABS_DOWNNORMAL:
+                        case Native.ABS_LEFTNORMAL:
+                        case Native.ABS_RIGHTNORMAL:
+#endif
+                        default:
+                            brush = SystemBrushes.Control;
+                            break;
+                    }
+                }
+                else
+                {
+                    brush = DarkColors.DarkBackgroundBrush;
+                }
                 break;
+            }
             case Native.SBP_GRIPPERHORZ:
             case Native.SBP_GRIPPERVERT:
                 // The "gripper" is a subset of the thumb, except sometimes it extends outside of it and
@@ -616,18 +658,22 @@ internal static class Win32ThemeHooks
 
                 #region Correct the thumb width
 
+                Pen thumbPen = usingLightMode
+                    ? SystemPens.Control
+                    : DarkColors.DarkBackgroundPen;
+
                 // Match Windows behavior - the thumb is 1px in from each side
                 // The "gripper" rect gives us the right width, but the wrong length
                 switch (iPartId)
                 {
                     case Native.SBP_THUMBBTNHORZ:
-                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.Right, rect.Y);
-                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
+                        g.DrawLine(thumbPen, rect.X, rect.Y, rect.Right, rect.Y);
+                        g.DrawLine(thumbPen, rect.X, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
                         rect = rect with { Y = rect.Y + 1, Height = rect.Height - 2 };
                         break;
                     case Native.SBP_THUMBBTNVERT:
-                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.X, rect.Y, rect.X, rect.Bottom);
-                        g.DrawLine(DarkColors.DarkBackgroundPen, rect.Right - 1, rect.Y, rect.Right - 1, rect.Bottom);
+                        g.DrawLine(thumbPen, rect.X, rect.Y, rect.X, rect.Bottom);
+                        g.DrawLine(thumbPen, rect.Right - 1, rect.Y, rect.Right - 1, rect.Bottom);
                         rect = rect with { X = rect.X + 1, Width = rect.Width - 2 };
                         break;
                 }
@@ -636,15 +682,30 @@ internal static class Win32ThemeHooks
 
                 brush = iStateId switch
                 {
-                    Native.SCRBS_NORMAL => DarkColors.GreySelectionBrush,
-                    Native.SCRBS_HOVER => DarkColors.Fen_ThumbScrollBarHoverBrush,
-                    Native.SCRBS_HOT => DarkColors.GreyHighlightBrush,
-                    Native.SCRBS_PRESSED => DarkColors.ActiveControlBrush,
-                    _ => DarkColors.GreySelectionBrush,
+                    Native.SCRBS_NORMAL =>
+                        usingLightMode
+                            ? DarkColors.ScrollBarLightBrush
+                            : DarkColors.GreySelectionBrush,
+                    Native.SCRBS_HOVER =>
+                        usingLightMode
+                            ? DarkColors.LightScrollBarHoverBrush
+                            : DarkColors.Fen_ThumbScrollBarHoverBrush,
+                    Native.SCRBS_HOT =>
+                        usingLightMode
+                            ? DarkColors.DisabledTextBrush
+                            : SystemBrushes.ControlDarkDark,
+                    Native.SCRBS_PRESSED =>
+                        usingLightMode
+                            ? DarkColors.LightScrollBarButtonPressedBrush
+                            : DarkColors.ActiveControlBrush,
+                    _ => DarkColors.DarkGreySelectionBrush,
                 };
                 break;
             default:
-                brush = DarkColors.DarkBackgroundBrush;
+                brush =
+                    usingLightMode
+                        ? SystemBrushes.Control
+                        : DarkColors.DarkBackgroundBrush;
                 break;
         }
 
@@ -663,19 +724,28 @@ internal static class Win32ThemeHooks
                 case Native.ABS_DOWNPRESSED:
                 case Native.ABS_LEFTPRESSED:
                 case Native.ABS_RIGHTPRESSED:
-                    pen = DarkColors.ActiveControlPen;
+                    pen =
+                        usingLightMode
+                            ? SystemPens.Control
+                            : DarkColors.ActiveControlPen;
                     break;
                 case Native.ABS_UPDISABLED:
                 case Native.ABS_DOWNDISABLED:
                 case Native.ABS_LEFTDISABLED:
                 case Native.ABS_RIGHTDISABLED:
-                    pen = DarkColors.GreySelectionPen;
+                    pen =
+                        usingLightMode
+                            ? SystemPens.ControlDark
+                            : DarkColors.GreySelectionPen;
                     break;
                 case Native.ABS_UPHOT:
                 case Native.ABS_DOWNHOT:
                 case Native.ABS_LEFTHOT:
                 case Native.ABS_RIGHTHOT:
-                    pen = DarkColors.GreyHighlightPen;
+                    pen =
+                        usingLightMode
+                            ? SystemPens.ControlText
+                            : DarkColors.GreyHighlightPen;
                     break;
 #if false
                 case Native.ABS_UPNORMAL:
@@ -684,7 +754,10 @@ internal static class Win32ThemeHooks
                 case Native.ABS_RIGHTNORMAL:
 #endif
                 default:
-                    pen = DarkColors.GreySelectionPen;
+                    pen =
+                        usingLightMode
+                            ? SystemPens.ControlDarkDark
+                            : DarkColors.GreySelectionPen;
                     break;
             }
 
@@ -746,7 +819,13 @@ internal static class Win32ThemeHooks
         // This is the ONLY way that works on those versions.
         if (iPartId == Native.SBP_CORNER && iPropId == Native.TMT_FILLCOLOR)
         {
-            pColor = ColorTranslator.ToWin32(DarkColors.DarkBackground);
+            bool usingLightMode = WinVersion.Is11OrAbove && !Global.Config.DarkMode && !Native.HighContrastEnabled();
+
+            Color color = usingLightMode
+                ? SystemColors.Control
+                : DarkColors.DarkBackground;
+
+            pColor = ColorTranslator.ToWin32(color);
             return true;
         }
         else

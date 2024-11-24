@@ -1,14 +1,20 @@
-﻿using System;
+﻿//#define TIMING_TEST
+
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
@@ -26,7 +32,109 @@ namespace AngelLoader;
 
 internal static partial class FMInstallAndPlay
 {
+#if TIMING_TEST
+    private static readonly Stopwatch _timingTestStopWatch = new();
+
+    private static void StartTiming()
+    {
+        _timingTestStopWatch.Restart();
+    }
+
+    private static void StopTimingAndPrintResult(string msg)
+    {
+        _timingTestStopWatch.Stop();
+        Trace.WriteLine(msg + ": " + _timingTestStopWatch.Elapsed);
+    }
+#endif
+
     #region Private fields
+
+    private enum InstallResultType
+    {
+        InstallSucceeded,
+        InstallFailed,
+        RollbackSucceeded,
+        RollbackFailed,
+    }
+
+    private enum UninstallResultType
+    {
+        UninstallSucceeded,
+        UninstallFailed,
+        BackupFailed,
+    }
+
+    private enum ArchiveType
+    {
+        Zip,
+        Rar,
+        SevenZip,
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct FMInstallResult
+    {
+        internal readonly FMData FMData;
+        internal readonly InstallResultType ResultType;
+        internal readonly ArchiveType ArchiveType;
+        internal readonly string ErrorMessage;
+        internal readonly Exception? Exception;
+
+        public FMInstallResult(FMData fmData, InstallResultType resultType)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = "";
+        }
+
+        public FMInstallResult(FMData fmData, InstallResultType resultType, ArchiveType archiveType, string errorMessage)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ArchiveType = archiveType;
+            ErrorMessage = errorMessage;
+        }
+
+        public FMInstallResult(FMData fmData, InstallResultType resultType, ArchiveType archiveType, string errorMessage, Exception? exception)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ArchiveType = archiveType;
+            ErrorMessage = errorMessage;
+            Exception = exception;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct FMUninstallResult
+    {
+        internal readonly FMData FMData;
+        internal readonly UninstallResultType ResultType;
+        internal readonly string ErrorMessage;
+        internal readonly Exception? Exception;
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = "";
+        }
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = errorMessage;
+        }
+
+        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage, Exception? exception)
+        {
+            FMData = fmData;
+            ResultType = resultType;
+            ErrorMessage = errorMessage;
+            Exception = exception;
+        }
+    }
 
     private enum PlaySource
     {
@@ -37,11 +145,24 @@ internal static partial class FMInstallAndPlay
 
     private static readonly byte[] _DARKMISS_Bytes = "DARKMISS"u8.ToArray();
 
-    private static Encoding? _utf8NoBOM;
-    private static Encoding UTF8NoBOM => _utf8NoBOM ??= new UTF8Encoding(false, true);
+    // Immediately static init for thread safety
+    private static readonly Encoding UTF8NoBOM = new UTF8Encoding(false, true);
 
     private static CancellationTokenSource _installCts = new();
-    private static void CancelInstallToken() => _installCts.CancelIfNotDisposed();
+
+    private static void CancelInstallToken()
+    {
+        _installCts.CancelIfNotDisposed();
+        Core.View.Invoke(ShowCancelingInstallMessage);
+    }
+
+    private static void ShowCancelingInstallMessage()
+    {
+        if (Core.View.ProgressBoxVisible())
+        {
+            Core.View.SetProgressBoxState(mainMessage1: LText.ProgressBox.CancelingInstall);
+        }
+    }
 
     private static CancellationTokenSource _uninstallCts = new();
     private static void CancelUninstallToken() => _uninstallCts.CancelIfNotDisposed();
@@ -285,7 +406,7 @@ internal static partial class FMInstallAndPlay
         everything would be fine again.
         I could solve it if there was a way to detect if we were being launched through Steam. I don't
         know if there is, but then I could just specify a Steam=True line in the stub file, and then
-        if we're being launched through steam we read and act on it as usual, but if we're not, then
+        if we're being launched through Steam we read and act on it as usual, but if we're not, then
         we just delete it and ignore.
         I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
         works and one that doesn't, so I can test both paths.
@@ -1049,14 +1170,21 @@ internal static partial class FMInstallAndPlay
                     missFlagLines.Add(curLine);
                 }
 
-                File.WriteAllLines(missFlagFile, missFlagLines, new UTF8Encoding(false, true));
+                File.WriteAllLines(missFlagFile, missFlagLines, UTF8NoBOM);
             }
             catch (Exception ex)
             {
                 fm.LogInfo(ErrorText.ExTry + "generate missflag.str file for an FM that needs it", ex);
-                Core.Dialogs.ShowError($"Failed trying to generate a missflag.str file for the following FM:{NL}{NL}" +
-                                       fm.GetId() + $"{NL}{NL}" +
-                                       "The FM will probably not be able to play its mission(s).");
+                // IMPORTANT: Do NOT put up this dialog during threaded install!
+                // Don't bother returning the exception or anything; we'll try to generate again on play and show
+                // the dialog then if it still fails.
+                if (errorOnCantPlay)
+                {
+                    Core.Dialogs.ShowError(
+                        $"Failed trying to generate a missflag.str file for the following FM:{NL}{NL}" +
+                        fm.GetId() + $"{NL}{NL}" +
+                        "The FM will probably not be able to play its mission(s).");
+                }
             }
         }
         catch (Exception ex)
@@ -1389,146 +1517,203 @@ internal static partial class FMInstallAndPlay
     #region Install/Uninstall
 
     [MustUseReturnValue]
-    private static (bool Success, List<string> ArchivePaths)
-    DoPreChecks(FanMission[] fms, FMData[] fmDataList, bool install)
+    private static bool DoPreChecks(
+        FanMission[] fms,
+        List<FMData> fmDataList,
+        bool install,
+        [NotNullWhen(true)] out List<string>? archivePaths,
+        [NotNullWhen(true)] out List<ThreadablePath>? threadablePaths)
     {
-        var fail = (false, new List<string>());
-
-        static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
-
-        bool single = fms.Length == 1;
-
-        bool[] gamesChecked = new bool[SupportedGameCount];
-
-        List<string> archivePaths = FMArchives.GetFMArchivePaths();
-
-        for (int i = 0; i < fms.Length; i++)
+        threadablePaths = null;
+        try
         {
-            FanMission fm = fms[i];
+            bool single = fms.Length == 1;
 
-            AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
+            bool[] gamesChecked = new bool[SupportedGameCount];
 
-            if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
+            archivePaths = FMArchives.GetFMArchivePaths();
+
+            HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
+            for (int i = 0; i < fms.Length; i++)
             {
-                fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
-                Core.Dialogs.ShowError(fm.GetId() + $"{NL}" + ErrorText.FMGameU);
-                return fail;
-            }
+                FanMission fm = fms[i];
 
-            int intGameIndex = (int)gameIndex;
+                AssertR(install ? !fm.Installed : fm.Installed, "fm.Installed == " + fm.Installed);
 
-            if (Canceled(install)) return fail;
-
-            string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths);
-
-            if (Canceled(install)) return fail;
-
-            string gameExe = Config.GetGameExe(gameIndex);
-            string gameName = GetLocalizedGameName(gameIndex);
-            string instBasePath = Config.GetFMInstallPath(gameIndex);
-
-            fmDataList[i] = new FMData
-            (
-                fm,
-                fmArchivePath,
-                instBasePath,
-                gameIndex
-            );
-
-            if (install)
-            {
-                if (fmArchivePath.IsEmpty() && !fm.MarkedUnavailable)
+                if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                 {
-                    fm.LogInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
-                    Core.Dialogs.ShowError(fm.GetId() + $"{NL}" +
-                                           LText.AlertMessages.Install_ArchiveNotFound);
-
-                    return fail;
+                    fm.LogInfo(ErrorText.FMGameU, stackTrace: true);
+                    Core.Dialogs.ShowError(fm.GetId() + $"{NL}" + ErrorText.FMGameU);
+                    return false;
                 }
-            }
 
-            if (!gamesChecked[intGameIndex])
-            {
+                int intGameIndex = (int)gameIndex;
+
+                if (Canceled(install)) return false;
+
+                string fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archiveDirectoryFullPath);
+                if (!archiveDirectoryFullPath.IsEmpty())
+                {
+                    usedArchivePaths.Add(archiveDirectoryFullPath);
+                }
+
+                if (Canceled(install)) return false;
+
+                string gameExe = Config.GetGameExe(gameIndex);
+                string gameName = GetLocalizedGameName(gameIndex);
+                string instBasePath = Config.GetFMInstallPath(gameIndex);
+
                 if (install)
                 {
-                    if (!File.Exists(gameExe))
-                    {
-                        fm.LogInfo($"Game executable not found.{NL}Game executable: " + gameExe);
-                        Core.Dialogs.ShowError(gameName + $":{NL}" +
-                                               fm.GetId() + $"{NL}" +
-                                               LText.AlertMessages.Install_ExecutableNotFound);
+                    bool fmArchivePathIsEmpty = fmArchivePath.IsEmpty();
+                    bool fmIsMarkedUnavailable = fm.MarkedUnavailable;
 
-                        return fail;
+                    if (fmArchivePathIsEmpty && !fmIsMarkedUnavailable)
+                    {
+                        fm.LogInfo("FM archive field was empty; this means an archive was not found for it on the last search.");
+                        Core.Dialogs.ShowError(fm.GetId() + $"{NL}" +
+                                               LText.AlertMessages.Install_ArchiveNotFound);
+
+                        return false;
                     }
-
-                    if (Canceled(install)) return fail;
-
-                    if (!Directory.Exists(instBasePath))
+                    else if (fmArchivePathIsEmpty || fmIsMarkedUnavailable)
                     {
-                        fm.LogInfo("FM install path not found.");
-
-                        Core.Dialogs.ShowError(gameName + $":{NL}" +
-                                               fm.GetId() + $"{NL}" +
-                                               LText.AlertMessages.Install_FMInstallPathNotFound);
-
-                        return fail;
+                        continue;
                     }
                 }
 
-                if (!DirectoryHasWritePermission(instBasePath))
+                fmDataList.Add(new FMData
+                (
+                    fm,
+                    fmArchivePath,
+                    archiveDirectoryFullPath,
+                    instBasePath,
+                    gameIndex
+                ));
+
+                if (!gamesChecked[intGameIndex])
                 {
-                    Log(gameName + $": No write permission for installed FMs directory.{NL}" +
-                        "Installed FMs directory: " + instBasePath);
+                    if (install)
+                    {
+                        if (!File.Exists(gameExe))
+                        {
+                            fm.LogInfo($"Game executable not found.{NL}Game executable: " + gameExe);
+                            Core.Dialogs.ShowError(gameName + $":{NL}" +
+                                                   fm.GetId() + $"{NL}" +
+                                                   LText.AlertMessages.Install_ExecutableNotFound);
 
-                    Core.Dialogs.ShowError(
-                        GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
-                        LText.AlertMessages.NoWriteAccessToInstalledFMsDir + $"{NL}{NL}" +
-                        LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
-                        instBasePath,
-                        icon: MBoxIcon.Warning
-                    );
+                            return false;
+                        }
 
-                    return fail;
+                        if (Canceled(install)) return false;
+
+                        if (!Directory.Exists(instBasePath))
+                        {
+                            fm.LogInfo("FM install path not found.");
+
+                            Core.Dialogs.ShowError(gameName + $":{NL}" +
+                                                   fm.GetId() + $"{NL}" +
+                                                   LText.AlertMessages.Install_FMInstallPathNotFound);
+
+                            return false;
+                        }
+                    }
+
+                    if (!DirectoryHasWritePermission(instBasePath))
+                    {
+                        Log(gameName + $": No write permission for installed FMs directory.{NL}" +
+                            "Installed FMs directory: " + instBasePath);
+
+                        Core.Dialogs.ShowError(
+                            GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
+                            LText.AlertMessages.NoWriteAccessToInstalledFMsDir + $"{NL}{NL}" +
+                            LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
+                            instBasePath,
+                            icon: MBoxIcon.Warning
+                        );
+
+                        return false;
+                    }
+
+                    if (Canceled(install)) return false;
+
+                    if (GameIsRunning(gameExe))
+                    {
+                        Core.Dialogs.ShowAlert(
+                            !single
+                                ? LText.AlertMessages.OneOrMoreGamesAreRunning
+                                : gameName + $":{NL}" + (install
+                                    ? LText.AlertMessages.Install_GameIsRunning
+                                    : LText.AlertMessages.Uninstall_GameIsRunning),
+                            LText.AlertMessages.Alert);
+
+                        return false;
+                    }
+
+                    if (Canceled(install)) return false;
+
+                    gamesChecked[intGameIndex] = true;
                 }
-
-                if (Canceled(install)) return fail;
-
-                if (GameIsRunning(gameExe))
-                {
-                    Core.Dialogs.ShowAlert(
-                        !single
-                            ? LText.AlertMessages.OneOrMoreGamesAreRunning
-                            : gameName + $":{NL}" + (install
-                                ? LText.AlertMessages.Install_GameIsRunning
-                                : LText.AlertMessages.Uninstall_GameIsRunning),
-                        LText.AlertMessages.Alert);
-
-                    return fail;
-                }
-
-                if (Canceled(install)) return fail;
-
-                gamesChecked[intGameIndex] = true;
             }
+
+            threadablePaths = GetInstallUninstallRelevantPaths(usedArchivePaths, gamesChecked);
+        }
+        catch (Exception ex)
+        {
+            Log(ex: ex);
+            Core.Dialogs.ShowError("Exception occurred in " + nameof(FMInstallAndPlay) + "." + nameof(DoPreChecks) + "(). See log for details.");
+
+            archivePaths = new List<string>();
+            return false;
         }
 
-        return (true, archivePaths);
+        return true;
+
+        static bool Canceled(bool install) => install && _installCts.IsCancellationRequested;
     }
 
     #region Install
 
-    private sealed class FMData(FanMission fm, string archivePath, string instBasePath, GameIndex gameIndex)
+    internal sealed class FMData
     {
-        internal readonly FanMission FM = fm;
-        internal readonly string ArchivePath = archivePath;
-        internal readonly string InstBasePath = instBasePath;
-        internal readonly GameIndex GameIndex = gameIndex;
-    }
+        internal readonly FanMission FM;
+        internal readonly string ArchiveFilePath;
+        internal readonly string ArchiveDirectoryPath;
+        internal readonly string InstBasePath;
+        internal readonly string InstalledPath;
+        internal readonly GameIndex GameIndex;
 
-    private sealed class Buffers
-    {
-        private byte[]? _fileStreamBuffer;
-        internal byte[] FileStreamBuffer => _fileStreamBuffer ??= new byte[FileStreamBufferSize];
+        internal bool Uninstall_MarkFMAsUnavailable;
+        internal bool Uninstall_SkipUninstallingThisFM;
+
+        private string? _fmArchiveNoExtension;
+        internal string FMArchiveNoExtension => _fmArchiveNoExtension ??= FM.Archive.RemoveExtension();
+
+        private string? _archiveNoExtensionWhitespaceTrimmed;
+        internal string ArchiveNoExtensionWhitespaceTrimmed => _archiveNoExtensionWhitespaceTrimmed ??= FMArchiveNoExtension.Trim();
+
+        private string? _bakFile;
+        internal string BakFile => _bakFile ??= Path.Combine(Config.FMsBackupPath,
+            (!FM.Archive.IsEmpty() ? FMArchiveNoExtension : FM.InstalledDir) +
+            Paths.FMBackupSuffix);
+
+        public FMData(FanMission fm, string archiveFilePath, string archiveDirectoryPath, string instBasePath, GameIndex gameIndex)
+        {
+            FM = fm;
+            ArchiveFilePath = archiveFilePath;
+            ArchiveDirectoryPath = archiveDirectoryPath;
+            InstBasePath = instBasePath;
+            InstalledPath = Path.Combine(instBasePath, fm.InstalledDir);
+            GameIndex = gameIndex;
+        }
+
+        public override string ToString() =>
+            "FM id: " + FM.GetId() + $"{NL}" +
+            "Archive file path: " + ArchiveFilePath + $"{NL}" +
+            "Archive directory path: " + ArchiveDirectoryPath + $"{NL}" +
+            "Installed base path: " + InstBasePath + $"{NL}" +
+            "Installed path: " + InstalledPath + $"{NL}" +
+            "Game index: " + GameIndex;
     }
 
     internal static async Task<bool> Install(params FanMission[] fms)
@@ -1539,94 +1724,9 @@ internal static partial class FMInstallAndPlay
 
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
-        #region Local functions
+        var fmDataList = new List<FMData>(fms.Length);
 
-        static Task RollBackInstalls(FMData[] fmDataList, int lastInstalledFMIndex, bool rollBackCurrentOnly = false)
-        {
-            return Task.Run(() =>
-            {
-                bool single = fmDataList.Length == 1;
-                static void RemoveFMFromDisk(FMData fmData)
-                {
-                    string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-                    if (!DeleteFMInstalledDirectory(fmInstalledPath))
-                    {
-                        // Don't log it here because the deleter method will already have logged it
-                        Core.Dialogs.ShowError(
-                            message: LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail + $"{NL}{NL}" +
-                                     fmInstalledPath);
-                    }
-                    // This is going to get set based on this anyway at the next load from disk, might as well
-                    // do it now
-                    fmData.FM.Installed = Directory.Exists(fmInstalledPath);
-                }
-
-                if (rollBackCurrentOnly)
-                {
-                    try
-                    {
-                        if (single)
-                        {
-                            Core.View.SetProgressBoxState_Single(
-                                message1: LText.ProgressBox.CleaningUpFailedInstall,
-                                progressType: ProgressType.Indeterminate,
-                                cancelAction: NullAction
-                            );
-                        }
-                        else
-                        {
-                            Core.View.SetProgressBoxState_Double(
-                                subMessage: LText.ProgressBox.CleaningUpFailedInstall,
-                                subProgressType: ProgressType.Indeterminate
-                            );
-                        }
-
-                        RemoveFMFromDisk(fmDataList[lastInstalledFMIndex]);
-                    }
-                    finally
-                    {
-                        if (!single)
-                        {
-                            Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
-                        }
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        Core.View.SetProgressBoxState_Single(
-                            message1: LText.ProgressBox.CancelingInstall,
-                            percent: 100,
-                            progressType: ProgressType.Determinate,
-                            cancelAction: NullAction
-                        );
-
-                        for (int j = lastInstalledFMIndex; j >= 0; j--)
-                        {
-                            FMData fmData = fmDataList[j];
-
-                            Core.View.SetProgressBoxState_Single(
-                                message2: fmData.FM.GetId(),
-                                percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
-
-                            RemoveFMFromDisk(fmData);
-                        }
-                    }
-                    finally
-                    {
-                        Ini.WriteFullFMDataIni();
-                        Core.View.HideProgressBox();
-                    }
-                }
-            });
-        }
-
-        #endregion
-
-        var fmDataList = new FMData[fms.Length];
-
-        bool single = fmDataList.Length == 1;
+        bool single = fms.Length == 1;
 
         if (!suppressConfirmation &&
             (Config.ConfirmBeforeInstall == ConfirmBeforeInstall.Always ||
@@ -1638,7 +1738,7 @@ internal static partial class FMInstallAndPlay
                         ? LText.AlertMessages.Play_InstallAndPlayConfirmMessage
                         : LText.AlertMessages.Install_ConfirmSingular
                     : LText.AlertMessages.Install_ConfirmPlural_BeforeNumber +
-                      fmDataList.Length.ToStrCur() +
+                      fms.Length.ToStrCur() +
                       LText.AlertMessages.Install_ConfirmPlural_AfterNumber,
                 title: LText.AlertMessages.Alert,
                 icon: MBoxIcon.None,
@@ -1651,156 +1751,357 @@ internal static partial class FMInstallAndPlay
             if (dontAskAgain) Config.ConfirmBeforeInstall = ConfirmBeforeInstall.Never;
         }
 
-        try
+        _installCts = _installCts.Recreate();
+
+        Core.View.ShowProgressBox_Single(
+            message1: LText.ProgressBox.PreparingToInstall,
+            progressType: ProgressType.Indeterminate,
+            cancelAction: CancelInstallToken
+        );
+
+        return await Task.Run(() =>
         {
-            _installCts = _installCts.Recreate();
-
-            Core.View.ShowProgressBox_Single(
-                message1: LText.ProgressBox.PreparingToInstall,
-                progressType: ProgressType.Indeterminate,
-                cancelAction: CancelInstallToken
-            );
-
-            (bool success, List<string> archivePaths) =
-                await Task.Run(() => DoPreChecks(fms, fmDataList, install: true));
-
-            if (!success) return false;
-
-            Core.View.SetProgressBoxState(
-                size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
-                mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
-                mainMessage2: "",
-                mainPercent: 0,
-                mainProgressType: ProgressType.Determinate,
-                subMessage: "",
-                subPercent: 0,
-                subProgressType: ProgressType.Determinate,
-                cancelMessage: LText.Global.Cancel
-            );
-
-            BinaryBuffer binaryBuffer = new();
-            Buffers buffers = new();
-
-            for (int i = 0; i < fmDataList.Length; i++)
+            try
             {
-                FMData fmData = fmDataList[i];
-
-                if (fmData.ArchivePath.IsEmpty() || fmData.FM.MarkedUnavailable) continue;
-
-                string fmInstalledPath = Path.Combine(fmData.InstBasePath, fmData.FM.InstalledDir);
-
-                int mainPercent = GetPercentFromValue_Int(i, fmDataList.Length);
-
-                // Framework zip extracting is much faster, so use it if possible
-                // 2022-07-25: This may or may not be the case anymore now that we use 7z.exe
-                // But we don't want to parse out stupid console output for error detection and junk if we
-                // don't have to so whatever.
-
-                (bool canceled, bool installFailed) = await (fmData.ArchivePath.ExtIsZip()
-                    ? Task.Run(() => InstallFMZip(
-                        fmData.ArchivePath,
-                        fmInstalledPath,
-                        fmData.FM.Archive,
-                        mainPercent,
-                        fmDataList.Length,
-                        buffers.FileStreamBuffer))
-                    : fmData.ArchivePath.ExtIsRar()
-                    ? Task.Run(() => InstallFMRar(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length))
-                    : Task.Run(() => InstallFMSevenZip(fmData.ArchivePath, fmInstalledPath, fmData.FM.Archive, mainPercent, fmDataList.Length)));
-
-                if (installFailed)
+                if (!DoPreChecks(
+                        fms,
+                        fmDataList,
+                        install: true,
+                        out List<string>? archivePaths,
+                        out List<ThreadablePath>? threadablePaths))
                 {
-                    await RollBackInstalls(fmDataList, i, rollBackCurrentOnly: true);
-                    continue;
-                }
-
-                if (canceled)
-                {
-                    await RollBackInstalls(fmDataList, i);
                     return false;
                 }
 
-                fmData.FM.Installed = true;
+                if (fmDataList.Count == 0) return false;
 
+                Core.View.SetProgressBoxState(
+                    size: single ? ProgressSizeMode.Single : ProgressSizeMode.Double,
+                    mainMessage1: single ? LText.ProgressBox.InstallingFM : LText.ProgressBox.InstallingFMs,
+                    mainMessage2: "",
+                    mainPercent: 0,
+                    mainProgressType: ProgressType.Determinate,
+                    subMessage: "",
+                    subPercent: 0,
+                    subProgressType: ProgressType.Determinate,
+                    cancelMessage: LText.Global.Cancel
+                );
+
+                List<FMInstallResult> results = new();
+
+#if TIMING_TEST
+                StartTiming();
+#endif
+                int fmDataIndex = 0;
                 try
                 {
-                    using var sw = new StreamWriter(Path.Combine(fmInstalledPath, Paths.FMSelInf));
-                    await sw.WriteLineAsync("Name=" + fmData.FM.InstalledDir);
-                    await sw.WriteLineAsync("Archive=" + fmData.FM.Archive);
-                }
-                catch (Exception ex)
-                {
-                    Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmInstalledPath, ex);
-                }
+                    DarkLoaderBackupContext ctx = new();
 
-                // Only Dark engine games need audio conversion
-                if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
-                {
-                    try
+                    ZipContext_Pool zipCtxPool = new();
+                    ZipContext_Threaded_Pool zipCtxThreadedPool = new();
+                    IOBufferPools ioBufferPools = new();
+
+                    // Entry-parallel/archive-sequential is nearly as fast as entry-parallel/archive-parallel,
+                    // but much simpler.
+                    int fmDataListCount = fmDataList.Count;
+                    for (; fmDataIndex < fmDataListCount; fmDataIndex++)
                     {
-                        if (single)
+                        FMData fmData = fmDataList[fmDataIndex];
+
+                        int mainPercent = GetPercentFromValue_Int(fmDataIndex, fmDataListCount);
+
+                        FMInstallResult fmInstallResult;
+                        if (fmData.ArchiveFilePath.ExtIsZip())
                         {
-                            Core.View.SetProgressBoxState_Single(
-                                message1: LText.ProgressBox.ConvertingAudioFiles,
-                                message2: "",
-                                progressType: ProgressType.Indeterminate
-                            );
+                            List<ThreadablePath> zipInstallRelevantPaths = threadablePaths.FilterToZipFMInstallRelevant(fmData);
+                            if (IsArchivePathAtLeastReadAndInstallPathAtLeastReadWrite(zipInstallRelevantPaths))
+                            {
+                                ThreadingData installThreadingData = GetLowestCommonThreadingData(zipInstallRelevantPaths);
+                                fmInstallResult = InstallFMZip_ThreadedPerEntry(
+                                    fmData,
+                                    mainPercent,
+                                    fmDataListCount,
+                                    zipCtxPool,
+                                    zipCtxThreadedPool,
+                                    ioBufferPools,
+                                    installThreadingData.Threads);
+                            }
+                            else
+                            {
+                                fmInstallResult = InstallFMZip(
+                                    fmData,
+                                    mainPercent,
+                                    fmDataListCount,
+                                    ioBufferPools,
+                                    zipCtxPool);
+                            }
                         }
                         else
                         {
-                            Core.View.SetProgressBoxState_Double(
-                                subMessage: LText.ProgressBox.ConvertingAudioFiles,
-                                subPercent: 100
-                            );
+                            fmInstallResult = fmData.ArchiveFilePath.ExtIsRar()
+                                ? InstallFMRar(
+                                    fmData,
+                                    mainPercent,
+                                    fmDataListCount,
+                                    ioBufferPools)
+                                : InstallFMSevenZip(
+                                    fmData,
+                                    mainPercent,
+                                    fmDataListCount);
                         }
 
-                        // Dark engine games can't play MP3s, so they must be converted in all cases.
-                        // This one won't be called anywhere except during install, because it always runs during
-                        // install so there's no need to make it optional elsewhere. So we don't need to have a
-                        // check bool or anything.
-                        await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.MP3ToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
-
-                        if (_installCts.IsCancellationRequested)
+                        if (fmInstallResult.ResultType != InstallResultType.InstallSucceeded)
                         {
-                            await RollBackInstalls(fmDataList, i);
-                            return false;
+                            FMInstallResult result = RollBackSingleFM(fmData, fmDataListCount == 1);
+                            results.Add(result);
+                            continue;
                         }
 
-                        if (Config.ConvertOGGsToWAVsOnInstall)
-                        {
-                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.OGGToWAV, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
-                        }
+                        results.Add(fmInstallResult);
 
-                        if (_installCts.IsCancellationRequested)
-                        {
-                            await RollBackInstalls(fmDataList, i);
-                            return false;
-                        }
+                        _installCts.Token.ThrowIfCancellationRequested();
 
-                        if (Config.ConvertWAVsTo16BitOnInstall)
-                        {
-                            await FMAudio.ConvertAsPartOfInstall(validAudioConvertibleFM, AudioConvert.WAVToWAV16, binaryBuffer, buffers.FileStreamBuffer, _installCts.Token);
-                        }
+                        // @MT_TASK_NOTE: Set this before post-install work because it gets checked!
+                        // This will again cause the UI to update the installed status if it's refreshed.
+                        // If we wanted to prevent that we could get really fancy about it later, but keep
+                        // this for now.
+                        fmData.FM.Installed = true;
 
-                        if (_installCts.IsCancellationRequested)
-                        {
-                            await RollBackInstalls(fmDataList, i);
-                            return false;
-                        }
+                        DoPostInstallWork(
+                            fmData,
+                            ioBufferPools,
+                            _installCts.Token,
+                            ctx,
+                            archivePaths,
+                            fmDataList.Count,
+                            threadablePaths);
                     }
-                    catch (Exception ex)
+                }
+                catch (OperationCanceledException)
+                {
+                    // @MT_TASK_NOTE: We get a brief UI thread block when run from within Visual Studio.
+                    // Apparently because it has to spew out all those exception messages in the output console.
+                    // Everything's fine outside of VS. So just ignore this during dev.
+
+                    List<FMInstallResult> rollbackErrorResults = RollBackMultipleFMs(fmDataList, fmDataIndex);
+
+                    if (rollbackErrorResults.Count > 0)
                     {
-                        validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
+                        Log($"--- Rollback errors ---{NL}" +
+                            GetResultErrorsLogText(rollbackErrorResults) +
+                            "--- End Rollback errors ---");
+
+                        Core.Dialogs.ShowError(
+                            LText.AlertMessages.InstallRollback_FMInstallFolderDeleteFail,
+                            LText.AlertMessages.Alert,
+                            icon: MBoxIcon.Warning);
+                    }
+
+                    return false;
+                }
+
+                List<FMInstallResult> errorResults = new();
+
+                foreach (FMInstallResult result in results)
+                {
+                    if (result.ResultType != InstallResultType.InstallSucceeded)
+                    {
+                        if (result.ResultType == InstallResultType.RollbackFailed)
+                        {
+                            // Rollbacks failing should be the rare case, so it's okay to take a disk hit here
+                            result.FMData.FM.Installed = Directory.Exists(result.FMData.InstalledPath);
+                        }
+                        errorResults.Add(result);
                     }
                 }
 
-                // Don't be lazy about this; there can be no harm and only benefits by doing it right away
-                GenerateMissFlagFileIfRequired(fmData.FM);
+                if (errorResults.Count > 0)
+                {
+                    Log($"--- Install errors ---{NL}" +
+                        GetResultErrorsLogText(errorResults) +
+                        "--- End Install errors ---");
 
+                    Core.Dialogs.ShowError(
+                        LText.AlertMessages.Install_OneOrMoreFMsFailedToInstall,
+                        LText.AlertMessages.Alert,
+                        icon: MBoxIcon.Warning);
+                }
+
+                Core.View.Invoke(Core.View.RefreshAllSelectedFMs_UpdateInstallState);
+
+                return true;
+            }
+            finally
+            {
+#if TIMING_TEST
+                StopTimingAndPrintResult(nameof(InstallInternal));
+#endif
+
+                Ini.WriteFullFMDataIni();
+                Core.View.HideProgressBox();
+
+                _installCts.Dispose();
+            }
+        });
+
+        static string GetResultErrorsLogText(List<FMInstallResult> results)
+        {
+            string logText = "";
+
+            for (int i = 0; i < results.Count; i++)
+            {
+                FMInstallResult result = results[i];
+
+                if (!logText.IsEmpty())
+                {
+                    logText += $"{NL}---{NL}";
+                }
+
+                logText +=
+                    $"{NL}" +
+                    "Archive type: " + result.ArchiveType + $"{NL}" +
+                    "Result type: " + result.ResultType + $"{NL}" +
+                    "Exception: " + (result.Exception?.ToString() ?? "none") + $"{NL}" +
+                    "Error message: " + (result.ErrorMessage.IsEmpty() ? "none" : $"{NL}" + result.ErrorMessage) + $"{NL}" +
+                    "FMData:" + $"{NL}" + result.FMData + $"{NL}";
+            }
+
+            logText += $"{NL}";
+
+            return logText;
+        }
+
+        static FMInstallResult RollBackSingleFM(FMData fm, bool singleFMInList)
+        {
+            try
+            {
+                if (singleFMInList)
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        message1: LText.ProgressBox.CleaningUpFailedInstall,
+                        progressType: ProgressType.Indeterminate,
+                        cancelAction: NullAction
+                    );
+                }
+                else
+                {
+                    Core.View.SetProgressBoxState_Double(
+                        subMessage: LText.ProgressBox.CleaningUpFailedInstall,
+                        subProgressType: ProgressType.Indeterminate
+                    );
+                }
+
+                return RemoveFMFromDisk(fm);
+            }
+            finally
+            {
+                if (!singleFMInList)
+                {
+                    Core.View.SetProgressBoxState_Double(subProgressType: ProgressType.Determinate);
+                }
+            }
+        }
+
+        static List<FMInstallResult> RollBackMultipleFMs(List<FMData> fmDataList, int lastInstalledFMIndex)
+        {
+            List<FMInstallResult> results = new();
+
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
+            Core.View.SetProgressBoxState_Single(
+                message1: LText.ProgressBox.CancelingInstall,
+                percent: 100,
+                progressType: ProgressType.Determinate,
+                cancelAction: NullAction
+            );
+
+            for (int j = lastInstalledFMIndex; j >= 0; j--)
+            {
+                FMData fmData = fmDataList[j];
+
+                Core.View.SetProgressBoxState_Single(
+                    message2: fmData.FM.GetId(),
+                    percent: GetPercentFromValue_Int(j + 1, lastInstalledFMIndex));
+
+                FMInstallResult result = RemoveFMFromDisk(fmData);
+                if (result.ResultType == InstallResultType.RollbackFailed)
+                {
+                    results.Add(result);
+                }
+            }
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine("Rollback: " + sw.Elapsed);
+#endif
+
+            return results;
+        }
+
+        static FMInstallResult RemoveFMFromDisk(FMData fmData)
+        {
+            if (DeleteFMInstalledDirectory(fmData.InstalledPath, fmData).ResultType != UninstallResultType.UninstallSucceeded)
+            {
+                // Don't log it here because the deleter method will already have logged it
+
+                ArchiveType type =
+                    fmData.FM.Archive.ExtIsZip() ? ArchiveType.Zip :
+                    fmData.FM.Archive.ExtIs7z() ? ArchiveType.SevenZip :
+                    ArchiveType.Rar;
+
+                return new FMInstallResult(
+                    fmData,
+                    InstallResultType.RollbackFailed,
+                    type,
+                    $"Failed to delete the following directory:{NL}{NL}" + fmData.InstalledPath);
+            }
+            // This is going to get set based on this anyway at the next load from disk, might as well do it now
+            fmData.FM.Installed = Directory.Exists(fmData.InstalledPath);
+
+            return new FMInstallResult(fmData, InstallResultType.RollbackSucceeded);
+        }
+    }
+
+    private static void DoPostInstallWork(
+        FMData fmData,
+        IOBufferPools ioBufferPools,
+        CancellationToken cancellationToken,
+        DarkLoaderBackupContext ctx,
+        List<string> archivePaths,
+        int fmDataListCount,
+        List<ThreadablePath> threadablePaths)
+    {
+        bool single = fmDataListCount == 1;
+
+        byte[] fmSelInfFileStreamBuffer = ioBufferPools.FileStream.Rent();
+        try
+        {
+            string fileName = Path.Combine(fmData.InstalledPath, Paths.FMSelInf);
+            using FileStream fs = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite: true, fmSelInfFileStreamBuffer);
+            using var sw = new StreamWriter(fs);
+            sw.WriteLine("Name=" + fmData.FM.InstalledDir);
+            sw.WriteLine("Archive=" + fmData.FM.Archive);
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.ExCreate + Paths.FMSelInf + " in " + fmData.InstalledPath, ex);
+        }
+        finally
+        {
+            ioBufferPools.FileStream.Return(fmSelInfFileStreamBuffer);
+        }
+
+        // Only Dark engine games need audio conversion
+        if (ValidAudioConvertibleFM.TryCreateFrom(fmData.FM, out ValidAudioConvertibleFM validAudioConvertibleFM))
+        {
+            try
+            {
                 if (single)
                 {
                     Core.View.SetProgressBoxState_Single(
-                        message1: LText.ProgressBox.RestoringBackup,
+                        message1: LText.ProgressBox.ConvertingAudioFiles,
                         message2: "",
                         progressType: ProgressType.Indeterminate
                     );
@@ -1808,130 +2109,400 @@ internal static partial class FMInstallAndPlay
                 else
                 {
                     Core.View.SetProgressBoxState_Double(
-                        subMessage: LText.ProgressBox.RestoringBackup,
+                        subMessage: LText.ProgressBox.ConvertingAudioFiles,
                         subPercent: 100
                     );
                 }
 
-                try
+                ThreadingData audioConversionThreadingData =
+                    GetLowestCommonThreadingData(threadablePaths.FilterToPostInstallWorkRelevant(fmData));
+
+#if TIMING_TEST
+                var audioConvertSW = Stopwatch.StartNew();
+#endif
+
+                // Dark engine games can't play MP3s, so they must be converted in all cases.
+                // This one won't be called anywhere except during install, because it always runs during
+                // install so there's no need to make it optional elsewhere. So we don't need to have a
+                // check bool or anything.
+                FMAudio.ConvertAsPartOfInstall(
+                    validAudioConvertibleFM,
+                    AudioConvert.MP3ToWAV,
+                    audioConversionThreadingData,
+                    cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (Config.ConvertOGGsToWAVsOnInstall)
                 {
-                    await RestoreFM(
-                        fmData.FM,
-                        archivePaths,
-                        buffers.FileStreamBuffer,
-                        _installCts.Token);
-                }
-                catch (Exception ex)
-                {
-                    Log(ex: ex);
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.OGGToWAV,
+                        audioConversionThreadingData,
+                        cancellationToken);
                 }
 
-                if (_installCts.IsCancellationRequested)
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (Config.ConvertWAVsTo16BitOnInstall)
                 {
-                    await RollBackInstalls(fmDataList, i);
-                    return false;
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.WAVToWAV16,
+                        audioConversionThreadingData,
+                        cancellationToken);
                 }
+
+#if TIMING_TEST
+                audioConvertSW.Stop();
+                Trace.WriteLine("CA: " + audioConvertSW.Elapsed + " (" + fmData.FM.GetId() + ")");
+#endif
+
+                cancellationToken.ThrowIfCancellationRequested();
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                validAudioConvertibleFM.LogInfo(ErrorText.Ex + "in audio conversion", ex);
             }
         }
-        finally
-        {
-            Ini.WriteFullFMDataIni();
-            Core.View.HideProgressBox();
 
-            _installCts.Dispose();
+        // Don't be lazy about this; there can be no harm and only benefits by doing it right away
+        GenerateMissFlagFileIfRequired(fmData.FM);
+
+        if (single)
+        {
+            Core.View.SetProgressBoxState_Single(
+                message1: LText.ProgressBox.RestoringBackup,
+                message2: "",
+                progressType: ProgressType.Indeterminate
+            );
+        }
+        else
+        {
+            Core.View.SetProgressBoxState_Double(
+                subMessage: LText.ProgressBox.RestoringBackup,
+                subPercent: 100
+            );
         }
 
-        Core.View.RefreshAllSelectedFMs_UpdateInstallState();
+        try
+        {
+            RestoreFM(
+                ctx,
+                fmData,
+                archivePaths,
+                ioBufferPools,
+                cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Log(ex: ex);
+        }
 
-        return true;
+        cancellationToken.ThrowIfCancellationRequested();
     }
 
-    private static (bool Canceled, bool InstallFailed)
-    InstallFMZip(
-        string fmArchivePath,
-        string fmInstalledPath,
-        string fmArchive,
+    private static FMInstallResult InstallFMZip_ThreadedPerEntry(
+        FMData fmData,
         int mainPercent,
         int fmCount,
-        byte[] fileStreamBuffer)
+        ZipContext_Pool zipCtxPool,
+        ZipContext_Threaded_Pool zipCtxThreadedPool,
+        IOBufferPools ioBufferPools,
+        int threads)
     {
         bool single = fmCount == 1;
 
-        fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
+
+#if TIMING_TEST
+        var overallSW = Stopwatch.StartNew();
+#endif
 
         try
         {
+            using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
+
+            string fmDataArchivePath = fmData.ArchiveFilePath;
+
             Directory.CreateDirectory(fmInstalledPath);
 
-            using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamBuffer);
+            _installCts.Token.ThrowIfCancellationRequested();
 
-            int filesCount = archive.Entries.Count;
-            for (int i = 0; i < filesCount; i++)
+#if TIMING_TEST
+            var sw0 = Stopwatch.StartNew();
+#endif
+
+            ListFast<ZipArchiveFastEntry> entries =
+                ZipArchiveFast.GetThreadableEntries(
+                    fmDataArchivePath,
+                    zipCtxRentScope.Ctx,
+                    ioBufferPools.FileStream);
+
+            _installCts.Token.ThrowIfCancellationRequested();
+
+            // Create the entire directory tree beforehand, to avoid the possibility of race conditions during
+            // file extraction. Normally we'd create each entry's directory tree on extract, which could easily
+            // contain some or all of the same folders as other entries.
+            List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
+                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath);
+
+            int entriesCount = entriesToExtract.Count;
+
+#if TIMING_TEST
+            sw0.Stop();
+            Trace.WriteLine("sw0: " + sw0.Elapsed);
+#endif
+
+            int threadCount = GetThreadCountForParallelOperation(entriesCount, threads);
+
+#if TIMING_TEST
+            Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
+#endif
+
+            if (!TryGetParallelForData(threadCount, entriesToExtract, _installCts.Token, out var pd))
             {
-                ZipArchiveEntry entry = archive.Entries[i];
-
-                string fileName = entry.FullName;
-
-                if (fileName[^1].IsDirSep()) continue;
-
-                string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-                if (fileName.Rel_ContainsDirSep())
-                {
-                    Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                        fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
-                }
-
-                entry.ExtractToFile_Fast(extractedName, overwrite: true);
-
-                File_UnSetReadOnly(extractedName);
-
-                int percent = GetPercentFromValue_Int(i + 1, filesCount);
-
-                int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
-
-                if (single)
-                {
-                    Core.View.SetProgressPercent(percent);
-                }
-                else
-                {
-                    Core.View.SetProgressBoxState_Double(
-                        mainPercent: newMainPercent,
-                        subMessage: fmArchive,
-                        subPercent: percent
-                    );
-                }
-
-                if (_installCts.Token.IsCancellationRequested)
-                {
-                    return (true, false);
-                }
+                return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
             }
-        }
-        catch (Exception ex)
-        {
-            Log(ErrorText.Ex + "while installing zip " + fmArchivePath + " to " + fmInstalledPath, ex);
-            Core.Dialogs.ShowError(LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially);
-            return (false, true);
-        }
 
-        return (false, false);
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
+            var uiThrottleSW = Stopwatch.StartNew();
+
+            int entryNumber = 0;
+
+            Parallel.For(0, threadCount, pd.PO, _ =>
+            {
+                byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
+                byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
+
+                try
+                {
+                    using FileStream fs = GetReadModeFileStreamWithCachedBuffer(fmDataArchivePath, fileStreamReadBuffer);
+                    using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
+
+                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                    while (pd.CQ.TryDequeue(out (ZipArchiveFastEntry Entry, string ExtractedName) entry))
+                    {
+                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                                entry: entry.Entry,
+                                fileName: entry.ExtractedName,
+                                overwrite: true,
+                                unSetReadOnly: true,
+                                context: zipCtxThreadedRentScope.Ctx,
+                                fileStreamWriteBuffer: fileStreamWriteBuffer);
+
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                        int percent = GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), entriesCount);
+                        int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                        if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
+                        {
+                            ReportExtractProgress(percent, newMainPercent, fmData, single);
+                            uiThrottleSW.Restart();
+                        }
+
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                    }
+                }
+                finally
+                {
+                    ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                    ioBufferPools.FileStream.Return(fileStreamReadBuffer);
+                }
+            });
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine($"Zip extract threaded:{NL}" +
+                            "    FM: " + fmData.FM.Archive + $"{NL}" +
+                            "    Thread count: " + threadCount + $"{NL}" +
+                            "    Initial read: " + sw0.Elapsed + $"{NL}" +
+                            "    Full archive threaded extract: " + sw.Elapsed);
+#endif
+
+            return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchiveFilePath + " to " + fmInstalledPath, ex);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Zip,
+                LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                ex);
+        }
+#if TIMING_TEST
+        finally
+        {
+            Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " (" + fmData.FM.Archive + "): " + overallSW.Elapsed);
+        }
+#endif
     }
 
-    private static (bool Canceled, bool InstallFailed)
-    InstallFMRar(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    private static FMInstallResult
+    InstallFMZip(
+        FMData fmData,
+        int mainPercent,
+        int fmCount,
+        IOBufferPools ioBufferPools,
+        ZipContext_Pool zipCtxPool)
     {
         bool single = fmCount == 1;
 
-        fmInstalledPath = fmInstalledPath.TrimEnd(CA_BS_FS) + "\\";
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
+#if TIMING_TEST
+        var sw = Stopwatch.StartNew();
+#endif
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
-            using var fs = File.OpenRead(fmArchivePath);
+            using ZipContextRentScope zipCtxRentScope = new(zipCtxPool);
+
+            byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
+            byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
+            byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+            try
+            {
+                using ZipArchiveFast archive =
+                    GetReadModeZipArchiveCharEnc_Fast(
+                        fmData.ArchiveFilePath,
+                        fileStreamReadBuffer,
+                        zipCtxRentScope.Ctx);
+
+                /*
+                We don't need to pre-run this on this codepath, but it doesn't hurt anything and reduces code
+                duplication, plus we get the benefit of the large reduction in Directory.CreateDirectory() calls.
+                */
+                List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
+                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath);
+
+                int entriesCount = entriesToExtract.Count;
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    (ZipArchiveFastEntry Entry, string ExtractedName) entry = entriesToExtract[i];
+
+                    archive.ExtractToFile_Fast(
+                        entry: entry.Entry,
+                        fileName: entry.ExtractedName,
+                        overwrite: true,
+                        unSetReadOnly: true,
+                        fileStreamWriteBuffer: fileStreamWriteBuffer,
+                        streamCopyBuffer: streamCopyBuffer);
+
+                    _installCts.Token.ThrowIfCancellationRequested();
+
+                    int percent = GetPercentFromValue_Int(i + 1, entriesCount);
+                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                    ReportExtractProgress(percent, newMainPercent, fmData, single);
+
+                    _installCts.Token.ThrowIfCancellationRequested();
+                }
+            }
+            finally
+            {
+                ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+                ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                ioBufferPools.FileStream.Return(fileStreamReadBuffer);
+            }
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            Log(ErrorText.Ex + "while installing zip " + fmData.ArchiveFilePath + " to " + fmInstalledPath, ex);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Zip,
+                LText.AlertMessages.Extract_ZipExtractFailedFullyOrPartially,
+                ex);
+        }
+#if TIMING_TEST
+        finally
+        {
+            Trace.WriteLine(nameof(InstallFMZip) + " (" + fmData.FM.Archive + "): " + sw.Elapsed);
+        }
+#endif
+
+        return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+    }
+
+    private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
+    Zip_CreateDirsAndGetExtractableEntries(ListFast<ZipArchiveFastEntry> entries, string fmInstalledPath)
+    {
+#if TIMING_TEST
+        var sw = Stopwatch.StartNew();
+#endif
+
+        List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
+        List<string> dirEntries = new(entries.Count);
+
+        foreach (ZipArchiveFastEntry entry in entries)
+        {
+            string fileName = entry.FullName;
+
+            if (fileName.IsEmpty()) continue;
+
+            string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+            if (fileName.EndsWithDirSep())
+            {
+                dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
+            }
+            else
+            {
+                if (fileName.Rel_ContainsDirSep())
+                {
+                    string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
+                    dirEntries.Add(dir);
+                }
+
+                ret.Add((entry, extractedName));
+            }
+        }
+
+        // This still results in some amount of duplicate disk hitting, but far, far less than before where
+        // we'd do it for every single entry that wasn't in the base dir.
+        // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
+        IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string dir in dirEntriesDistinct)
+        {
+            Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
+        }
+
+#if TIMING_TEST
+        sw.Stop();
+        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries) + ": " + sw.Elapsed);
+#endif
+
+        return ret;
+    }
+
+    private static FMInstallResult
+    InstallFMRar(
+        FMData fmData,
+        int mainPercent,
+        int fmCount,
+        IOBufferPools ioBufferPools)
+    {
+        bool single = fmCount == 1;
+
+        string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
+
+        byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
+        try
+        {
+            Directory.CreateDirectory(fmInstalledPath);
+
+            using var fs = File_OpenReadFast(fmData.ArchiveFilePath);
             int entriesCount;
             using (var archive = RarArchive.Open(fs))
             {
@@ -1948,24 +2519,28 @@ internal static partial class FMInstallAndPlay
                 RarReaderEntry entry = reader.Entry;
                 string fileName = entry.Key;
 
-                if (!entry.IsDirectory && !fileName.IsEmpty() && !fileName[^1].IsDirSep())
+                if (!fileName.IsEmpty())
                 {
                     string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
-                    if (fileName.Rel_ContainsDirSep())
+                    if (entry.IsDirectory)
                     {
-                        Directory.CreateDirectory(Path.Combine(fmInstalledPath,
-                            fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                        Directory.CreateDirectory(extractedName);
+                    }
+                    else
+                    {
+                        if (fileName.Rel_ContainsDirSep())
+                        {
+                            Directory.CreateDirectory(Path.Combine(fmInstalledPath,
+                                fileName.Substring(0, fileName.Rel_LastIndexOfDirSep())));
+                        }
+
+                        reader.ExtractToFile_Fast(extractedName, overwrite: true, ioBufferPools);
+
+                        File_UnSetReadOnly(extractedName);
                     }
 
-                    reader.ExtractToFile_Fast(extractedName, overwrite: true);
-
-                    File_UnSetReadOnly(extractedName);
-
-                    if (_installCts.Token.IsCancellationRequested)
-                    {
-                        return (true, false);
-                    }
+                    _installCts.Token.ThrowIfCancellationRequested();
                 }
 
                 int percentOfEntries = GetPercentFromValue_Int(i, entriesCount).Clamp(0, 100);
@@ -1973,44 +2548,47 @@ internal static partial class FMInstallAndPlay
 
                 if (!_installCts.IsCancellationRequested)
                 {
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(percentOfEntries);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmArchive,
-                            subPercent: percentOfEntries
-                        );
-                    }
+                    ReportExtractProgress(percentOfEntries, newMainPercent, fmData, single);
                 }
             }
 
-            return (_installCts.IsCancellationRequested, false);
+            _installCts.Token.ThrowIfCancellationRequested();
+
+            return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting rar " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            Core.Dialogs.ShowError(LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially);
-            return (false, true);
+            Log("Error extracting rar " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}", ex);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.Rar,
+                LText.AlertMessages.Extract_RarExtractFailedFullyOrPartially,
+                ex);
+        }
+        finally
+        {
+            ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
         }
     }
 
-    private static (bool Canceled, bool InstallFailed)
-    InstallFMSevenZip(string fmArchivePath, string fmInstalledPath, string fmArchive, int mainPercent, int fmCount)
+    private static FMInstallResult
+    InstallFMSevenZip(
+        FMData fmData,
+        int mainPercent,
+        int fmCount)
     {
         bool single = fmCount == 1;
+
+        string fmInstalledPath = fmData.InstalledPath;
 
         try
         {
             Directory.CreateDirectory(fmInstalledPath);
-            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
             int entriesCount;
 
-            using (var fs = File.OpenRead(fmArchivePath))
+            using (var fs = File_OpenReadFast(fmData.ArchiveFilePath))
             {
                 var extractor = new SevenZipArchive(fs);
                 entriesCount = extractor.GetEntryCountOnly();
@@ -2022,18 +2600,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!pr.Canceling)
                 {
-                    if (single)
-                    {
-                        Core.View.SetProgressPercent(pr.PercentOfEntries);
-                    }
-                    else
-                    {
-                        Core.View.SetProgressBoxState_Double(
-                            mainPercent: newMainPercent,
-                            subMessage: fmArchive,
-                            subPercent: pr.PercentOfEntries
-                        );
-                    }
+                    ReportExtractProgress(pr.PercentOfEntries, newMainPercent, fmData, single);
                 }
             }
 
@@ -2042,7 +2609,7 @@ internal static partial class FMInstallAndPlay
             Fen7z.Result result = Fen7z.Extract(
                 Paths.SevenZipPath,
                 Paths.SevenZipExe,
-                fmArchivePath,
+                fmData.ArchiveFilePath,
                 fmInstalledPath,
                 cancellationToken: _installCts.Token,
                 entriesCount,
@@ -2051,11 +2618,15 @@ internal static partial class FMInstallAndPlay
 
             if (result.ErrorOccurred)
             {
-                Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}" + result);
+                Log("Error extracting 7z " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}" + result);
 
-                Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-
-                return (result.Canceled, true);
+                return new FMInstallResult(
+                    fmData,
+                    InstallResultType.InstallFailed,
+                    ArchiveType.SevenZip,
+                    LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially + $"{NL}" +
+                    result.ErrorText,
+                    result.Exception);
             }
 
             if (!result.Canceled)
@@ -2066,13 +2637,43 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            return (result.Canceled, false);
+            if (result.Canceled)
+            {
+                // MUST pass the token or else the exception doesn't get caught and the whole app crashes.
+                // Best guess is the Parallel.For needs the token in order to throw the exception outside the
+                // threading or however the hell it works. Whatever man, fixed, moving on.
+                throw new OperationCanceledException(_installCts.Token);
+            }
+            else
+            {
+                return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+            }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            Log("Error extracting 7z " + fmArchivePath + " to " + fmInstalledPath + $"{NL}", ex);
-            Core.Dialogs.ShowError(LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially);
-            return (false, true);
+            Log("Error extracting 7z " + fmData.ArchiveFilePath + " to " + fmInstalledPath + $"{NL}", ex);
+            return new FMInstallResult(
+                fmData,
+                InstallResultType.InstallFailed,
+                ArchiveType.SevenZip,
+                LText.AlertMessages.Extract_SevenZipExtractFailedFullyOrPartially,
+                ex);
+        }
+    }
+
+    private static void ReportExtractProgress(int percent, int newMainPercent, FMData fmData, bool single)
+    {
+        if (single)
+        {
+            Core.View.SetProgressPercent(percent);
+        }
+        else
+        {
+            Core.View.SetProgressBoxState_Double(
+                mainPercent: newMainPercent,
+                subMessage: fmData.FM.Archive,
+                subPercent: percent
+            );
         }
     }
 
@@ -2080,6 +2681,13 @@ internal static partial class FMInstallAndPlay
 
     #region Uninstall
 
+    /*
+    If the user clicks "Stop", we may be in the middle of several delete operations and they're all going to
+    finish before the operation stops. Whereas if we're single-threaded, we'll stop immediately after the current
+    FM. This delayed-cancel behavior is fine for cancel-semantics (revertible) operations, but stop-semantics
+    (non-revertible) operations don't play as well with it. This is also a convenient excuse to sidestep the
+    entire set of difficulties we were having with multithreading this thing. Shame to lose performance, but eh...
+    */
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
@@ -2087,23 +2695,28 @@ internal static partial class FMInstallAndPlay
 
         var fail = (false, false);
 
-        var fmDataList = new FMData[fms.Length];
+        var fmDataList = new List<FMData>(fms.Length);
 
-        bool single = fmDataList.Length == 1;
+        bool single = fms.Length == 1;
 
         bool doBackup;
 
         // Do checks first before progress box so it's not just annoyingly there while in confirmation dialogs
         #region Checks
 
-        List<string> archivePaths;
         try
         {
             Core.View.SetWaitCursor(true);
 
-            (bool success, archivePaths) = DoPreChecks(fms, fmDataList, install: false);
-
-            if (!success) return fail;
+            if (!DoPreChecks(
+                    fms,
+                    fmDataList,
+                    install: false,
+                    out _,
+                    out _))
+            {
+                return fail;
+            }
         }
         finally
         {
@@ -2166,122 +2779,200 @@ internal static partial class FMInstallAndPlay
         bool atLeastOneFMMarkedUnavailable = false;
         try
         {
-            _uninstallCts = _uninstallCts.Recreate();
-
-            if (single)
+            return await Task.Run(() =>
             {
-                Core.View.SetProgressBoxState_Single(
-                    visible: true,
-                    message1: LText.ProgressBox.UninstallingFM,
-                    progressType: ProgressType.Indeterminate
-                );
-            }
-            else
-            {
-                Core.View.SetProgressBoxState_Single(
-                    visible: true,
-                    message1: LText.ProgressBox.UninstallingFMs,
-                    progressType: ProgressType.Determinate,
-                    cancelMessage: LText.Global.Stop,
-                    cancelAction: CancelUninstallToken
-                );
-            }
+                _uninstallCts = _uninstallCts.Recreate();
 
-            bool skipUninstallWithNoArchiveWarning = false;
-
-            byte[]? fileStreamBuffer = null;
-
-            for (int i = 0; i < fmDataList.Length; i++)
-            {
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                FMData fmData = fmDataList[i];
-
-                FanMission fm = fmData.FM;
-
-                string fmInstalledPath = Path.Combine(Config.GetFMInstallPath(fmData.GameIndex), fm.InstalledDir);
-
-                #region Check for already uninstalled
-
-                bool fmDirExists = await Task.Run(() => Directory.Exists(fmInstalledPath));
-                if (!fmDirExists)
+                if (single)
                 {
-                    fm.Installed = false;
-                    continue;
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFM,
+                        progressType: ProgressType.Indeterminate
+                    );
+                }
+                else
+                {
+                    Core.View.SetProgressBoxState_Single(
+                        visible: true,
+                        message1: LText.ProgressBox.UninstallingFMs,
+                        progressType: ProgressType.Determinate,
+                        cancelMessage: LText.Global.Stop,
+                        cancelAction: CancelUninstallToken
+                    );
+                }
+
+                bool skipUninstallWithNoArchiveWarning = false;
+
+                #region Pre-check for missing archive and ask the user what to do
+
+                for (int i = 0; i < fmDataList.Count; i++)
+                {
+                    FMData fmData = fmDataList[i];
+
+                    if (fmData.ArchiveFilePath.IsEmpty())
+                    {
+                        // Match previous behavior: any not-really-installed FM gets rejected silently first.
+                        // Put it inside the empty-archive check so as to minimize the number of times we hit the
+                        // disk sequentially (since we'll be parallelizing below).
+                        if (!Directory.Exists(fmData.InstalledPath))
+                        {
+                            fmData.FM.Installed = false;
+                            fmData.Uninstall_SkipUninstallingThisFM = true;
+                            continue;
+                        }
+
+                        if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                        if (doEndTasks && !skipUninstallWithNoArchiveWarning)
+                        {
+                            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                                message: fmData.FM.GetId() + $"{NL}{NL}" +
+                                         LText.AlertMessages.Uninstall_ArchiveNotFound,
+                                title: LText.AlertMessages.Warning,
+                                icon: MBoxIcon.Warning,
+                                yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
+                                no: LText.Global.Skip,
+                                cancel: LText.Global.Cancel,
+                                defaultButton: MBoxButton.No);
+
+                            if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
+                            if (result == MBoxButton.No)
+                            {
+                                fmData.Uninstall_SkipUninstallingThisFM = true;
+                                continue;
+                            }
+
+                            if (!single) skipUninstallWithNoArchiveWarning = true;
+                        }
+                        fmData.Uninstall_MarkFMAsUnavailable = true;
+                        atLeastOneFMMarkedUnavailable = true;
+                    }
                 }
 
                 #endregion
 
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+                byte[]? fileStreamBuffer = null;
 
-                bool markFMAsUnavailable = false;
+                DarkLoaderBackupContext ctx = new();
 
-                if (fmData.ArchivePath.IsEmpty())
+#if TIMING_TEST
+                var totalDeleteSW = Stopwatch.StartNew();
+#endif
+
+                for (int i = 0; i < fmDataList.Count; i++)
                 {
-                    if (doEndTasks && !skipUninstallWithNoArchiveWarning)
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                    FMData fmData = fmDataList[i];
+
+                    if (fmData.Uninstall_SkipUninstallingThisFM) continue;
+
+                    FanMission fm = fmData.FM;
+
+                    if (!Directory.Exists(fmData.InstalledPath))
                     {
-                        (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                            message: LText.AlertMessages.Uninstall_ArchiveNotFound,
-                            title: LText.AlertMessages.Warning,
-                            icon: MBoxIcon.Warning,
-                            yes: single ? LText.AlertMessages.Uninstall : LText.AlertMessages.UninstallAll,
-                            no: LText.Global.Skip,
-                            cancel: LText.Global.Cancel,
-                            defaultButton: MBoxButton.No);
-
-                        if (result == MBoxButton.Cancel) return (false, atLeastOneFMMarkedUnavailable);
-                        if (result == MBoxButton.No) continue;
-
-                        if (!single) skipUninstallWithNoArchiveWarning = true;
+                        fm.Installed = false;
+                        continue;
                     }
-                    markFMAsUnavailable = true;
-                    atLeastOneFMMarkedUnavailable = true;
+
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                    /*
+                    If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
+                    This file will be included in the search when restoring, and the newest will be taken as
+                    usual.
+
+                    fm.Archive can be blank at this point when all of the following conditions are true:
+                    -fm is installed
+                    -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
+                    -fm was not in the database on startup
+                    -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
+                     folders if that option is enabled)
+
+                    It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
+                    don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
+                    archive folder on initial setup, and hasn't imported from NDL by this point.
+                    */
+
+                    if (doBackup)
+                    {
+                        try
+                        {
+                            BackupFM(ctx, fmData, fileStreamBuffer ??= new byte[FileStreamBufferSize]);
+                        }
+                        catch (Exception ex)
+                        {
+                            fmData.FM.LogInfo(ErrorText.ExTry + "back up FM", ex);
+                            (MBoxButton buttonPressed, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                                message:
+                                fm.InstalledDir + $":{NL}{NL}" +
+                                LText.AlertMessages.Uninstall_BackupError,
+                                title: LText.AlertMessages.Alert,
+                                icon: MBoxIcon.Warning,
+                                yes: LText.AlertMessages.Uninstall_BackupError_KeepInstalled,
+                                no: LText.AlertMessages.Uninstall_BackupError_UninstallWithoutBackup,
+                                cancel: LText.Global.Cancel,
+                                noIsDangerous: true,
+                                defaultButton: MBoxButton.Yes,
+                                viewLogButtonVisible: true);
+
+                            if (buttonPressed == MBoxButton.Yes)
+                            {
+                                continue;
+                            }
+                            else if (buttonPressed == MBoxButton.Cancel)
+                            {
+                                return (false, atLeastOneFMMarkedUnavailable);
+                            }
+                        }
+                    }
+
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
+
+                    // TODO: Give the user the option to retry or something, if it's cause they have a file open
+                    // Make option to open the folder in Explorer and delete it manually?
+                    FMUninstallResult result = DeleteFMInstalledDirectory(fmData.InstalledPath, fmData);
+                    if (result.ResultType != UninstallResultType.UninstallSucceeded)
+                    {
+                        fm.LogInfo(ErrorText.Un + "delete FM installed directory." + $"{NL}" +
+                                   "Error message: " + result.ErrorMessage + $"{NL}" +
+                                   "Result type: " + result.ResultType, ex: result.Exception);
+                        Core.Dialogs.ShowError(
+                            LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
+                            "FM: " + fm.GetId());
+                    }
+
+                    fm.Installed = false;
+                    if (fmData.Uninstall_MarkFMAsUnavailable) fm.MarkedUnavailable = true;
+
+                    if (!single)
+                    {
+                        Core.View.SetProgressBoxState_Single(
+                            message2: fm.GetId(),
+                            percent: GetPercentFromValue_Int(i + 1, fmDataList.Count)
+                        );
+                    }
+
+                    if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
                 }
 
-                /*
-                If fm.Archive is blank, then fm.InstalledDir will be used for the backup file name instead.
-                This file will be included in the search when restoring, and the newest will be taken as
-                usual.
-                
-                fm.Archive can be blank at this point when all of the following conditions are true:
-                -fm is installed
-                -fm does not have fmsel.inf in its installed folder (or its fmsel.inf is blank or invalid)
-                -fm was not in the database on startup
-                -the folder where the FM's archive is located is not in Config.FMArchivePaths (or its sub-
-                 folders if that option is enabled)
+#if TIMING_TEST
+                totalDeleteSW.Stop();
+                Trace.WriteLine("Total delete time: " + totalDeleteSW.Elapsed);
+#endif
 
-                It's not particularly likely, but it could happen if the user had NDL-installed FMs (which
-                don't have fmsel.inf), started AngelLoader for the first time, didn't specify the right
-                archive folder on initial setup, and hasn't imported from NDL by this point.
-                */
-
-                if (doBackup) await BackupFM(fm, fmInstalledPath, fmData.ArchivePath, archivePaths, fileStreamBuffer ??= new byte[FileStreamBufferSize]);
-
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-
-                // TODO: Give the user the option to retry or something, if it's cause they have a file open
-                // Make option to open the folder in Explorer and delete it manually?
-                if (!await Task.Run(() => DeleteFMInstalledDirectory(fmInstalledPath)))
-                {
-                    fm.LogInfo(ErrorText.Un + "delete FM installed directory.");
-                    Core.Dialogs.ShowError(
-                        LText.AlertMessages.Uninstall_FailedFullyOrPartially + $"{NL}{NL}" +
-                        "FM: " + fm.GetId());
-                }
-
-                fm.Installed = false;
-                if (markFMAsUnavailable) fm.MarkedUnavailable = true;
-
-                if (!single)
-                {
-                    Core.View.SetProgressBoxState_Single(
-                        message2: fm.GetId(),
-                        percent: GetPercentFromValue_Int(i + 1, fmDataList.Length)
-                    );
-                }
-
-                if (_uninstallCts.IsCancellationRequested) return (false, atLeastOneFMMarkedUnavailable);
-            }
+                return (true, atLeastOneFMMarkedUnavailable);
+            });
+        }
+        catch (Exception ex)
+        {
+            Log(ErrorText.Ex + " during uninstall.", ex);
+            Core.Dialogs.ShowError(
+                LText.AlertMessages.Uninstall_Error,
+                LText.AlertMessages.Alert,
+                icon: MBoxIcon.Warning);
+            return (false, atLeastOneFMMarkedUnavailable);
         }
         finally
         {
@@ -2295,8 +2986,6 @@ internal static partial class FMInstallAndPlay
 
             _uninstallCts.Dispose();
         }
-
-        return (true, atLeastOneFMMarkedUnavailable);
     }
 
     internal static Task DoUninstallEndTasks(bool atLeastOneFMMarkedUnavailable)
@@ -2314,46 +3003,57 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    private static bool DeleteFMInstalledDirectory(string path)
+    private static FMUninstallResult DeleteFMInstalledDirectory(string path, FMData fmData)
     {
-        if (!Directory.Exists(path)) return true;
-
-        bool triedReadOnlyRemove = false;
-
-        // Failsafe cause this is nasty
-        for (int i = 0; i < 2; i++)
+        if (!Directory.Exists(path))
         {
+            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+        }
+
+        try
+        {
+#if TIMING_TEST
+            var sw = Stopwatch.StartNew();
+#endif
+
+            List<ThreadablePath> paths = GetDeleteInstalledDirRelevantPaths(path, fmData.GameIndex);
+
+            ThreadingData threadingData = GetLowestCommonThreadingData(paths);
+            Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
+
+#if TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine("**** " + nameof(DeleteFMInstalledDirectory) + " Delete: " + sw.Elapsed);
+#endif
+            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+        }
+        catch (Exception mainEx)
+        {
+            Log(ErrorText.FTDel + "FM path '" + path + "', attempting to remove readonly attributes and trying again...", mainEx);
+            try
+            {
+                // FMs installed by us will not have any readonly attributes set, so we work on the assumption
+                // that this is the rarer case and only do this extra work if we need to.
+                DirAndFileTree_UnSetReadOnly(path, throwException: true);
+            }
+            catch (Exception removeReadOnlyAttributesEx)
+            {
+                Log(ErrorText.FT + "remove readonly attributes.", removeReadOnlyAttributesEx);
+            }
+
             try
             {
                 Directory.Delete(path, recursive: true);
-                return true;
+                Log("Delete of '" + path + "' succeeded after removing readonly attributes.");
+                return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
             }
-            catch (Exception ex1)
+            catch (Exception retryDeleteEx)
             {
-                Log(ErrorText.FTDel + "FM path '" + path + "', attempting to remove readonly attributes and trying again...", ex1);
-                try
-                {
-                    if (triedReadOnlyRemove)
-                    {
-                        Log(ErrorText.FTDel + "FM path '" + path + "' twice, giving up...");
-                        return false;
-                    }
-
-                    // FMs installed by us will not have any readonly attributes set, so we work on the
-                    // assumption that this is the rarer case and only do this extra work if we need to.
-                    DirAndFileTree_UnSetReadOnly(path, throwException: true);
-
-                    triedReadOnlyRemove = true;
-                }
-                catch (Exception ex2)
-                {
-                    Log(ErrorText.FT + "remove readonly attributes, giving up...", ex2);
-                    return false;
-                }
+                string msg = ErrorText.FTDel + "FM path '" + path + "' twice, giving up...";
+                Log(msg, retryDeleteEx);
+                return new FMUninstallResult(fmData, UninstallResultType.UninstallFailed, msg, retryDeleteEx);
             }
         }
-
-        return false;
     }
 
     #endregion

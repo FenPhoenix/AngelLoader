@@ -24,8 +24,6 @@ IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work corre
 but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
 the scroll bar was).
 
-@X64: IntPtr will be 64-bit, so search for all places where we deal with them and make sure they all still work
-
 @SEL_SYNC_HACK enlightenment:
 There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of
 bloody course), but it can be set in a roundabout way by setting CurrentCell to a cell in the current row. BUT,
@@ -1432,7 +1430,30 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
 #endif
 
-        if (ViewBlocked) return;
+        #region Escape key / tags dropdown handling
+
+        if (e.KeyCode == Keys.Escape)
+        {
+            CancelResizables();
+
+            TagsTabPage.HideAndClearAddTagLLDropDown();
+
+            // Easy way to "get out" of the filter if you want to use Home and End again
+            if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
+            {
+                FMsDGV.Focus();
+            }
+        }
+
+        // Fixes tags dropdown remaining open when new FM selected with arrow keys when mouse is over FMs list
+        if (ViewBlocked || TagsTabPage.AddTagLLDropDownVisible()) return;
+
+        if (e.KeyCode == Keys.Escape)
+        {
+            return;
+        }
+
+        #endregion
 
         // Let user use Home+End keys to navigate a filter textbox if it's focused, even if the mouse is over
         // the FMs list
@@ -1673,18 +1694,6 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 await FMDelete.HandleDelete();
                 SetAvailableAndFinishedFMCount();
-            }
-        }
-        else if (e.KeyCode == Keys.Escape)
-        {
-            CancelResizables();
-
-            TagsTabPage.HideAndClearAddTagLLDropDown();
-
-            // Easy way to "get out" of the filter if you want to use Home and End again
-            if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
-            {
-                FMsDGV.Focus();
             }
         }
         else if (e.KeyCode == Keys.F5)
@@ -2051,8 +2060,8 @@ public sealed partial class MainForm : DarkFormBase,
                     theme: theme,
                     excludePredicate: x =>
                         x.EqualsIfNotNull(ProgressBox)
-                        || (ProgressBox != null && x is Control xControl &&
-                            ProgressBox.Controls.Contains(xControl))
+                        || (x is Control xControl &&
+                            (ProgressBox?.Controls.Contains(xControl) == true))
                         || x is SplitterPanel,
                     createControlHandles: createControlHandles,
                     createHandlePredicate: CreateHandlePredicate,
@@ -2926,22 +2935,6 @@ public sealed partial class MainForm : DarkFormBase,
         // Don't run this a zillion gatrillion times during init
         if (EventsDisabled > 0 || !Visible) return;
 
-        void ShowLeft()
-        {
-            FilterBarScrollLeftButton.Location = FilterBarFLP.Location with { Y = FilterBarFLP.Location.Y + 1 };
-            FilterBarScrollLeftButton.Show();
-        }
-
-        void ShowRight()
-        {
-            // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
-            // the first time
-            FilterBarScrollRightButton.Location = new Point(
-                RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
-                FilterBarFLP.Location.Y + 1);
-            FilterBarScrollRightButton.Show();
-        }
-
         HScrollProperties hs = FilterBarFLP.HorizontalScroll;
         if (!hs.Visible)
         {
@@ -2985,6 +2978,24 @@ public sealed partial class MainForm : DarkFormBase,
         {
             ShowLeft();
             ShowRight();
+        }
+
+        return;
+
+        void ShowLeft()
+        {
+            FilterBarScrollLeftButton.Location = FilterBarFLP.Location with { Y = FilterBarFLP.Location.Y + 1 };
+            FilterBarScrollLeftButton.Show();
+        }
+
+        void ShowRight()
+        {
+            // Don't set it based on the filter bar width and location, otherwise it gets it slightly wrong
+            // the first time
+            FilterBarScrollRightButton.Location = new Point(
+                RefreshAreaToolStrip.Location.X - FilterBarScrollRightButton.Width - 4,
+                FilterBarFLP.Location.Y + 1);
+            FilterBarScrollRightButton.Show();
         }
     }
 
@@ -4237,7 +4248,8 @@ public sealed partial class MainForm : DarkFormBase,
                 // Manual hours display to avoid hours being reset back to 0 when days increments to 1
                 TimeSpan playTime = fm.PlayTime;
                 string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
-                e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep + playTime.ToString(@"mm\" + sep + "ss");
+                e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep +
+                          playTime.ToString(@"mm\" + sep + "ss", DateTimeFormatInfo.CurrentInfo);
                 break;
             }
 
@@ -4599,22 +4611,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void SetPlayOriginalGameControlsState()
     {
-        static bool AnyControlVisible()
-        {
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                // Check the backing data states rather than the controls' Visible properties, because those
-                // will be false if they're _physically_ not shown, even if the _logical_ state is set to
-                // "Visible = true"
-                if (!Config.GetGameExe((GameIndex)i).IsEmpty())
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         // We hide the separate-buttons flow layout panel when empty, because although its _interior_ has
         // zero width when empty, it has outside margin spacing that we want to get rid of when we're not
         // showing it.
@@ -4637,6 +4633,24 @@ public sealed partial class MainForm : DarkFormBase,
         finally
         {
             EverythingPanel.ResumeDrawing();
+        }
+
+        return;
+
+        static bool AnyControlVisible()
+        {
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                // Check the backing data states rather than the controls' Visible properties, because those
+                // will be false if they're _physically_ not shown, even if the _logical_ state is set to
+                // "Visible = true"
+                if (!Config.GetGameExe((GameIndex)i).IsEmpty())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 

@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using AL_Common;
+using AL_Common.FastZipReader;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
@@ -19,6 +20,20 @@ public static partial class Utils
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
         return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
+    }
+
+    internal static ZipArchiveFast GetReadModeZipArchiveCharEnc_Fast(
+        string fileName,
+        byte[] buffer,
+        ZipContext ctx)
+    {
+        // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
+        Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
+        return new ZipArchiveFast(
+            stream: GetReadModeFileStreamWithCachedBuffer(fileName, buffer),
+            context: ctx,
+            allowUnsupportedEntries: true,
+            entryNameEncoding: enc);
     }
 
     internal static void Update_ExtractToDirectory_Fast(
@@ -68,8 +83,6 @@ public static partial class Utils
                             "Zip entry name ends in directory separator character but contains data.");
                     }
                     Directory.CreateDirectory(fullPath);
-
-                    cancellationToken.ThrowIfCancellationRequested();
                 }
                 else
                 {
@@ -102,7 +115,7 @@ public static partial class Utils
             CancellationToken cancellationToken)
         {
             FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-            using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+            using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
             using (Stream source = entry.Open())
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -133,49 +146,79 @@ public static partial class Utils
     internal static void ExtractToFile_Fast(
         this ZipArchiveEntry entry,
         string fileName,
-        bool overwrite)
+        bool overwrite,
+        IOBufferPools ioBufferPools)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = entry.Open())
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+        try
         {
-            source.CopyTo(destination);
+            using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = entry.Open())
+            {
+                source.CopyTo(destination);
+            }
+            File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
         }
-        File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
+        finally
+        {
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
+        }
     }
 
     internal static void ExtractToFile_Fast(
         this RarArchiveEntry entry,
         string fileName,
-        bool overwrite)
+        bool overwrite,
+        IOBufferPools ioBufferPools)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = entry.OpenEntryStream())
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+        try
         {
-            source.CopyTo(destination);
+            using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = entry.OpenEntryStream())
+            {
+                source.CopyTo(destination);
+            }
+            if (entry.LastModifiedTime != null)
+            {
+                File.SetLastWriteTime(fileName, (DateTime)entry.LastModifiedTime);
+            }
         }
-        if (entry.LastModifiedTime != null)
+        finally
         {
-            File.SetLastWriteTime(fileName, (DateTime)entry.LastModifiedTime);
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
 
     internal static void ExtractToFile_Fast(
         this RarReader reader,
         string fileName,
-        bool overwrite)
+        bool overwrite,
+        IOBufferPools ioBufferPools)
     {
-        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
-        using (Stream source = reader.OpenEntryStream())
+        byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
+        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
+        try
         {
-            source.CopyTo(destination);
+            using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
+            using (Stream source = reader.OpenEntryStream())
+            {
+                source.CopyTo(destination);
+            }
+            DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
+            if (lastModifiedTime != null)
+            {
+                File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+            }
         }
-        DateTime? lastModifiedTime = reader.Entry.LastModifiedTime;
-        if (lastModifiedTime != null)
+        finally
         {
-            File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
+            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
+            ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
 }

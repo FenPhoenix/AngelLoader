@@ -52,11 +52,35 @@ public interface IViewEnvironment
 
 public interface IDialogs
 {
-    (MBoxButton ButtonPressed, bool CheckBoxChecked) ShowMultiChoiceDialog(string message, string title, MBoxIcon icon, string? yes, string? no, string? cancel = null, bool yesIsDangerous = false, string? checkBoxText = null, MBoxButton defaultButton = MBoxButton.Yes);
+    (MBoxButton ButtonPressed, bool CheckBoxChecked)
+    ShowMultiChoiceDialog(
+        string message,
+        string title,
+        MBoxIcon icon,
+        string? yes,
+        string? no,
+        string? cancel = null,
+        bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
+        string? checkBoxText = null,
+        MBoxButton defaultButton = MBoxButton.Yes,
+        bool viewLogButtonVisible = false);
     void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
     void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
     void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
-    (bool Accepted, List<string> SelectedItems) ShowListDialog(string messageTop, string messageBottom, string title, MBoxIcon icon, string okText, string cancelText, bool okIsDangerous, string[] choiceStrings, bool multiSelectionAllowed);
+
+    (bool Accepted, List<string> SelectedItems)
+    ShowListDialog(
+        string messageTop,
+        string messageBottom,
+        string title,
+        MBoxIcon icon,
+        string okText,
+        string cancelText,
+        bool okIsDangerous,
+        string[] choiceStrings,
+        bool multiSelectionAllowed);
 }
 
 public interface IView : ISettingsChangeableView
@@ -169,6 +193,11 @@ public interface IView : ISettingsChangeableView
     /// This method call is auto-invoked, so no need to wrap it manually.
     /// </summary>
     void HideProgressBox();
+
+    /// <summary>
+    /// This method call is auto-invoked, so no need to wrap it manually.
+    /// </summary>
+    bool ProgressBoxVisible();
 
     #endregion
 

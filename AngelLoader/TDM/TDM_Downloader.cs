@@ -3,7 +3,6 @@
 
 #if ENABLE_ONLINE
 using System.Net.Http;
-using static AL_Common.Common;
 #endif
 using System;
 using System.Collections.Generic;
@@ -54,7 +53,7 @@ internal static class TDM_Downloader
             foreach (string url in _availableMissionsUrls)
             {
                 request?.Dispose();
-                request = await GlobalHttpClient.GetAsync(url, cancellationToken);
+                request = await GlobalHttpClient.Instance.GetAsync(url, cancellationToken);
                 if (request.IsSuccessStatusCode)
                 {
                     success = true;

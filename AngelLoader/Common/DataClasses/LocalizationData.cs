@@ -142,8 +142,6 @@ internal sealed class LText_Class
         )]
         internal readonly string SelectFM_DarkMod = "Select FM";
         internal readonly string DeselectFM_DarkMod = "Deselect FM";
-        [FenGenBlankLine]
-        internal readonly string ErrorReadingMods = "There was an error reading the list of mods for this game. Click this message to view the log.";
     }
 
     internal sealed class SplashScreen_Class
@@ -214,6 +212,7 @@ internal sealed class LText_Class
         internal readonly string SelectFM_DarkMod_GameIsRunning = "The Dark Mod is running. Unable to select this FM.";
         internal readonly string SelectFM_DarkMod_UnableToSelect = "This FM couldn't be selected. Unable to write to currentfm.txt.";
         internal readonly string OneOrMoreGamesAreRunning = "One or more supported games are running. Please exit them first.";
+        internal readonly string Install_OneOrMoreFMsFailedToInstall = "One or more FMs could not be installed. See the log file for details.";
         [FenGenBlankLine]
         internal readonly string Uninstall_Confirm = "Are you sure you want to uninstall this FM?";
         internal readonly string Uninstall_Confirm_Multiple = "Are you sure you want to uninstall these FMs?";
@@ -223,10 +222,14 @@ internal sealed class LText_Class
         internal readonly string Uninstall_BackupAllData = "Back up all modified/added/removed files (including saves and screenshots)?";
         internal readonly string Uninstall_BackupChooseNoNote = "If you choose \"Don't back up\", then existing backups will remain, but they will not be updated.";
         internal readonly string Uninstall_FailedFullyOrPartially = "Uninstall failed fully or partially.";
+        internal readonly string Uninstall_Error = "One or more errors occurred during the uninstall process. See the log file for details.";
+        internal readonly string Uninstall_BackupError = "The FM backup failed. If you choose to uninstall the FM anyway, you will lose any saves, screenshots, and modified data that would normally have been backed up.";
+        internal readonly string Uninstall_BackupError_KeepInstalled = "Keep installed";
+        internal readonly string Uninstall_BackupError_UninstallWithoutBackup = "Uninstall without backup";
         [FenGenComment(
             "During the FM install process, either the user canceled the install or the install failed, and during the attempt to remove the leftover",
             "FM installed folder, an error occurred.")]
-        internal readonly string InstallRollback_FMInstallFolderDeleteFail = "The following folder could not be removed:";
+        internal readonly string InstallRollback_FMInstallFolderDeleteFail = "One or more FM folders could not be removed. See the log file for details.";
         [FenGenBlankLine]
         internal readonly string AudioConversion_GameIsRunning = "Game is running; unable to convert audio files. Please exit the game and then try again.";
         internal readonly string AudioConversion_SomeSelectedFilesDoNotSupportConversion = "Some of the selected FMs don't support audio conversion. Audio can only be converted for installed FMs that are for Thief 1, Thief 2, or System Shock 2. If you continue, any FMs whose audio cannot be converted will be skipped.";
@@ -628,6 +631,7 @@ internal sealed class LText_Class
         internal readonly string AddDMLPatchToolTip = "Add a new .dml patch to this FM";
         internal readonly string RemoveDMLPatchToolTip = "Remove selected .dml patch from this FM";
         internal readonly string OpenFMFolder = "Open FM folder";
+        internal readonly string AddDMLPatchDialogTitle = "Add .dml Patch";
     }
 
     internal sealed class ModsTab_Class
@@ -749,6 +753,7 @@ internal sealed class LText_Class
         internal readonly string PreparingToScanFMs = "Preparing to scan...";
         internal readonly string RetrievingFMDataFromTDMServer = "Retrieving FM data from The Dark Mod server...";
         internal readonly string Scanning = "Scanning...";
+        internal readonly string CancelingScan = "Canceling scan...";
         internal readonly string ReportScanningFirst = "Scanning ";
         internal readonly string ReportScanningBetweenNumAndTotal = " of ";
         internal readonly string ReportScanningLast = "...";
@@ -808,6 +813,16 @@ internal sealed class LText_Class
         internal readonly string Paths_RemoveArchivePathToolTip = "Remove selected archive path";
         [FenGenBlankLine]
         internal readonly string Paths_ErrorSomePathsAreInvalid = "Some paths are invalid.";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectGameExecutableMessage")]
+        internal readonly string Paths_ChooseT1Exe_DialogTitle = "Choose Thief Executable";
+        internal readonly string Paths_ChooseT2Exe_DialogTitle = "Choose Thief II Executable";
+        internal readonly string Paths_ChooseT3Exe_DialogTitle = "Choose Thief: Deadly Shadows Executable";
+        internal readonly string Paths_ChooseSS2Exe_DialogTitle = "Choose System Shock 2 Executable";
+        internal readonly string Paths_ChooseTDMExe_DialogTitle = "Choose The Dark Mod Executable";
+        internal readonly string Paths_ChooseSteamExe_DialogTitle = "Choose Steam Executable";
+        internal readonly string Paths_ChooseBackupPath_DialogTitle = "Choose Backup Path";
+        internal readonly string Paths_AddFMArchivePath_DialogTitle = "Add Archive Path";
         [FenGenBlankLine]
         internal readonly string Appearance_TabText = "Appearance";
         [FenGenBlankLine]
@@ -908,6 +923,22 @@ internal sealed class LText_Class
         internal readonly string Update_TabText = "Update";
         internal readonly string Update_UpdateOptions = "Update options";
         internal readonly string Update_CheckForUpdatesOnStartup = "Check for updates on startup";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_TabText = "I/O Threading";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_IOThreads = "I/O threads";
+        internal readonly string IOThreading_IOThreads_Auto = "Auto";
+        internal readonly string IOThreading_IOThreads_Custom = "Custom";
+        internal readonly string IOThreading_IOThreads_Threads = "Threads:";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_HelpMessage = "Setting a drive to a threading level above its capability may result in slower I/O performance.";
+        [FenGenBlankLine]
+        internal readonly string IOThreading_IOThreadingLevels = "I/O threading levels";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_MultithreadedRead = "Auto (Multithreaded read)";
+        internal readonly string IOThreading_IOThreadingLevels_Auto_SingleThread = "Auto (Single thread)";
+        internal readonly string IOThreading_IOThreadingLevels_MultithreadedReadAndWrite = "Multithreaded read and write (high-end SSDs only)";
+        internal readonly string IOThreading_IOThreadingLevels_MultithreadedRead = "Multithreaded read";
+        internal readonly string IOThreading_IOThreadingLevels_SingleThread = "Single thread";
     }
 
     internal sealed class DateFilterBox_Class
@@ -963,11 +994,28 @@ internal sealed class LText_Class
         internal readonly string DarkLoader_SelectedFileIsNotDarkLoaderIni = "Selected file is not DarkLoader.ini.";
         internal readonly string DarkLoader_SelectedDarkLoaderIniWasNotFound = "Selected DarkLoader.ini was not found.";
         internal readonly string DarkLoader_NoArchiveDirsFound = "No archive directories were specified in DarkLoader.ini. Unable to import.";
+        internal readonly string ChooseDarkLoaderIni_DialogTitle = "Choose DarkLoader.ini";
         [FenGenBlankLine]
         internal readonly string ImportFromNewDarkLoader_TitleText = "Import from NewDarkLoader";
         internal readonly string ImportFromFMSel_TitleText = "Import from FMSel";
-        internal readonly string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader .ini file(s):";
-        internal readonly string ChooseFMSelIniFiles = "Choose FMSel .ini file(s):";
+        internal readonly string ChooseNewDarkLoaderIniFiles = "Choose NewDarkLoader.ini file(s):";
+        internal readonly string ChooseFMSelIniFiles = "Choose fmsel.ini file(s):";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectFMSelIniDialogTitle")]
+        internal readonly string ChooseT1FMSelIni_DialogTitle = "Choose fmsel.ini for Thief";
+        internal readonly string ChooseT2FMSelIni_DialogTitle = "Choose fmsel.ini for Thief II";
+        internal readonly string ChooseT3FMSelIni_DialogTitle = "Choose fmsel.ini for Thief: Deadly Shadows";
+        internal readonly string ChooseSS2FMSelIni_DialogTitle = "Choose fmsel.ini for System Shock 2";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string ChooseTdmFMSelIni_DialogTitle = "";
+        [FenGenBlankLine]
+        [FenGenGameSet("GetLocalizedSelectNewDarkLoaderIniDialogTitle")]
+        internal readonly string ChooseT1NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief";
+        internal readonly string ChooseT2NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief II";
+        internal readonly string ChooseT3NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for Thief: Deadly Shadows";
+        internal readonly string ChooseSS2NewDarkLoaderIni_DialogTitle = "Choose NewDarkLoader.ini for System Shock 2";
+        [FenGenDoNotWrite] // Dummy to keep the game count the same
+        internal readonly string ChooseTdmNewDarkLoaderIni_DialogTitle = "";
         [FenGenBlankLine]
         internal readonly string ImportData_Title = "Title";
         internal readonly string ImportData_ReleaseDate = "Release date";

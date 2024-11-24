@@ -1,128 +1,37 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
 
-using System;
 using System.Collections.Generic;
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using AL_Common;
 using static AL_Common.Common;
+using static AL_Common.LanguageSupport;
 
 namespace FMScanner;
 
-public sealed partial class Scanner
+// IMPORTANT: No lazy-loading allowed in here. Everything should be immediate-initialized for thread safety.
+public sealed partial class ReadOnlyDataContext
 {
-    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
-
-    private ListFast<char>? _utf32CharBuffer;
-    private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
-
-    private readonly BinaryBuffer _binaryReadBuffer = new();
-
-    private const char LeftDoubleQuote = '\u201C';
-    private const char RightDoubleQuote = '\u201D';
-
-    private readonly struct AsciiCharWithNonAsciiEquivalent(char original, char ascii)
+    [StructLayout(LayoutKind.Auto)]
+    internal readonly struct NonAsciiCharWithAsciiEquivalent(char original, char ascii)
     {
         internal readonly char Original = original;
         internal readonly char Ascii = ascii;
     }
 
-    private readonly AsciiCharWithNonAsciiEquivalent[] _nonAsciiCharsWithAsciiEquivalents =
-    {
-        new('\x2003', ' '),
-        new('\x2002', ' '),
-        new('\x2005', ' '),
-        new('\xA0', ' '),
-        new('\x2014', '-'),
-        new('\x2013', '-'),
-        new('\x2018', '\''),
-        new('\x2019', '\''),
-        new('\x201C', '"'),
-        new('\x201D', '"'),
-    };
+    internal readonly string[] FMFiles_TitlesStrLocations;
 
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    private static class FMDirs
-    {
-        // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
-        // the chance of error.
+    internal readonly string[] Languages_FS_Lang_FS;
+    internal readonly string[] Languages_FS_Lang_Language_FS;
+    internal readonly string[] LanguagesC;
 
-        // We only need BooksS
-        internal const string Fam = "fam";
-        // We only need IntrfaceS
-        internal const string Mesh = "mesh";
-        internal const string Motions = "motions";
-        internal const string Movies = "movies";
-        internal const string Cutscenes = "cutscenes"; // SS2 only
-        internal const string Obj = "obj";
-        internal const string Scripts = "scripts";
-        internal const string Snd = "snd";
-        internal const string Snd2 = "snd2"; // SS2 only
-        // We only need StringsS
-        internal const string Subtitles = "subtitles";
-
-        internal const string BooksS = "books/";
-        internal const string FamS = Fam + "/";
-        internal const string IntrfaceS = "intrface/";
-        internal const string MeshS = Mesh + "/";
-        internal const string MotionsS = Motions + "/";
-        internal const string MoviesS = Movies + "/";
-        internal const string CutscenesS = Cutscenes + "/"; // SS2 only
-        internal const string ObjS = Obj + "/";
-        internal const string ScriptsS = Scripts + "/";
-        internal const string SndS = Snd + "/";
-        internal const string Snd2S = Snd2 + "/"; // SS2 only
-        internal const string StringsS = "strings/";
-        internal const string SubtitlesS = Subtitles + "/";
-
-        internal const string T3FMExtras1S = "Fan Mission Extras/";
-        internal const string T3FMExtras2S = "FanMissionExtras/";
-
-        internal const string T3DetectS = "Content/T3/Maps/";
-    }
-
-    [SuppressMessage("ReSharper", "IdentifierTypo")]
-    [SuppressMessage("ReSharper", "CommentTypo")]
-    private static class FMFiles
-    {
-        internal const string SS2Fingerprint1 = "/usemsg.str";
-        internal const string SS2Fingerprint2 = "/savename.str";
-        internal const string SS2Fingerprint3 = "/objlooks.str";
-        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
-
-        internal const string IntrfaceEnglishNewGameStr = "intrface/english/newgame.str";
-        internal const string IntrfaceNewGameStr = "intrface/newgame.str";
-        internal const string SNewGameStr = "/newgame.str";
-
-        internal const string StringsMissFlag = "strings/missflag.str";
-        internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
-        internal const string SMissFlag = "/missflag.str";
-
-        // Telliamed's fminfo.xml file, used in a grand total of three missions
-        internal const string FMInfoXml = "fminfo.xml";
-
-        // fm.ini, a NewDark (or just FMSel?) file
-        internal const string FMIni = "fm.ini";
-
-        // System Shock 2 file
-        internal const string ModIni = "mod.ini";
-
-        // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
-        internal const string EntryGmp = "Entry.gmp";
-
-        internal const string TDM_DarkModTxt = "darkmod.txt";
-        internal const string TDM_ReadmeTxt = "readme.txt";
-        internal const string TDM_MapSequence = "tdm_mapsequence.txt";
-    }
-
-    #region Non-const FM Files
-
-    private readonly string[] FMFiles_TitlesStrLocations = new string[24];
+    internal readonly byte[] RomanNumeralToDecimalTable;
 
     // Used for SS2 fingerprinting for the game type scan fallback
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
-    private readonly HashSetI FMFiles_SS2MisFiles = new(23)
+    internal readonly HashSetI FMFiles_SS2MisFiles = new(23)
     {
         "command1.mis",
         "command2.mis",
@@ -149,27 +58,94 @@ public sealed partial class Scanner
         "station.mis",
     };
 
-    #endregion
+    public ReadOnlyDataContext()
+    {
+        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
+        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
+        LanguagesC = new string[SupportedLanguageCount];
 
-    #region Preallocated arrays
+        #region FMFiles_TitlesStrLocations
+
+        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
+        FMFiles_TitlesStrLocations = new string[(SupportedLanguageCount * 2) + 2];
+
+        // Do not change search order: strings/english, strings, strings/[any other language]
+        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
+        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
+        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
+        FMFiles_TitlesStrLocations[3] = "strings/title.str";
+
+        for (int i = 1; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
+        }
+
+        #endregion
+
+        #region Languages
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            Languages_FS_Lang_FS[i] = "/" + lang + "/";
+            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
+
+            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
+            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
+        }
+
+        #endregion
+
+        #region Roman numeral table
+
+        RomanNumeralToDecimalTable = new byte['X' + 1];
+        RomanNumeralToDecimalTable['I'] = 1;
+        RomanNumeralToDecimalTable['V'] = 5;
+        RomanNumeralToDecimalTable['X'] = 10;
+
+        #endregion
+    }
+
+    internal readonly TitlesStrNaturalNumericSortComparer TitlesStrNaturalNumericSort = new();
+
+    internal readonly NonAsciiCharWithAsciiEquivalent[] NonAsciiCharsWithAsciiEquivalents =
+    {
+        new('\x2003', ' '),
+        new('\x2002', ' '),
+        new('\x2005', ' '),
+        new('\xA0', ' '),
+        new('\x2014', '-'),
+        new('\x2013', '-'),
+        new('\x2018', '\''),
+        new('\x2019', '\''),
+        new('\x201C', '"'),
+        new('\x201D', '"'),
+    };
+
+    #region Misc preallocated char and string arrays
 
     // Perf, for passing to params[]-taking methods so we don't allocate all the time
-    private readonly char[] CA_AsteriskHyphen = { '*', '-' };
-    private readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
-    private readonly char[] CA_DateSeparators = { ' ', '-', '/' };
-    private readonly char[] CA_Parens = { '(', ')' };
-    private readonly string[] SA_Linebreaks = { "\r\n", "\r", "\n" };
-    private readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
-    private readonly string[] SA_AllFiles = { "*" };
-    private readonly string[] SA_AllBinFiles = { "*.bin" };
-    private readonly string[] SA_AllSubFiles = { "*.sub" };
+    internal readonly char[] CA_AsteriskHyphen = { '*', '-' };
+    internal readonly char[] CA_UnicodeQuotes = { LeftDoubleQuote, RightDoubleQuote };
+    internal readonly char[] CA_DateSeparators = { ' ', '-', '/' };
+    internal readonly char[] CA_Parens = { '(', ')' };
+    internal readonly char[] CA_AuthorJunkChars = { '!', '@', '#', '$', '%', '^', '&', '*' };
+    internal readonly string[] SA_Linebreaks = { "\r\n", "\r", "\n" };
+    internal readonly string[] SA_T3DetectExtensions = { "*.ibt", "*.cbt", "*.gmp", "*.ned", "*.unr" };
+    internal readonly string[] SA_AllFiles = { "*" };
+    internal readonly string[] SA_AllBinFiles = { "*.bin" };
+    internal readonly string[] SA_AllSubFiles = { "*.sub" };
+
+    #endregion
 
     #region Field detect strings
 
     // IMPORTANT(Field detect strings): Always use lowercase for letters where you want case insensitivity!
     // This gets matched with "given case or upper case" to prevent false positives from lowercase first letters.
 
-    private readonly string[] SA_TitleDetect =
+    internal readonly string[] SA_TitleDetect =
     {
         "Title of the mission",
         "Title",
@@ -192,7 +168,7 @@ public sealed partial class Scanner
 #endif
     };
 
-    private readonly string[] SA_AuthorDetect =
+    internal readonly string[] SA_AuthorDetect =
     {
         "Author",
         "Authors",
@@ -216,7 +192,7 @@ public sealed partial class Scanner
         "Fan Mission/Map Author",
     };
 
-    private readonly string[] SA_LatestUpdateDateDetect =
+    internal readonly string[] SA_LatestUpdateDateDetect =
     {
         "Update date",
         "Updated date",
@@ -240,7 +216,7 @@ public sealed partial class Scanner
         "Release date of latest revision",
     };
 
-    private readonly string[] SA_ReleaseDateDetect =
+    internal readonly string[] SA_ReleaseDateDetect =
     {
         "Date of release",
         "Release date",
@@ -292,10 +268,8 @@ public sealed partial class Scanner
     };
 
 #if FMScanner_FullCode
-    private readonly string[] SA_VersionDetect = { "Version" };
+    internal readonly string[] SA_VersionDetect = { "Version" };
 #endif
-
-    #endregion
 
     #endregion
 
@@ -310,29 +284,21 @@ public sealed partial class Scanner
     png: 11,290
     bmp: 657
     */
-    private readonly string[] ImageFileExtensions = { ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp" };
-    private readonly string[] ImageFilePatterns = { "*.gif", "*.pcx", "*.tga", "*.dds", "*.png", "*.bmp" };
+    internal readonly string[] ImageFileExtensions = { ".gif", ".pcx", ".tga", ".dds", ".png", ".bmp" };
+    internal readonly string[] ImageFilePatterns = { "*.gif", "*.pcx", "*.tga", "*.dds", "*.png", "*.bmp" };
 
-    private readonly string[] MotionFilePatterns = { "*.mc", "*.mi" };
-    private readonly string[] MotionFileExtensions = { ".mc", ".mi" };
+    internal readonly string[] MotionFilePatterns = { "*.mc", "*.mi" };
+    internal readonly string[] MotionFileExtensions = { ".mc", ".mi" };
 
     // .osm for the classic scripts; .nut for Squirrel scripts for NewDark >= 1.25
-    private readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
-
-    #endregion
-
-    #region Languages
-
-    private readonly string[] Languages_FS_Lang_FS;
-    private readonly string[] Languages_FS_Lang_Language_FS;
-    private readonly string[] LanguagesC;
+    internal readonly string[] ScriptFileExtensions = { ".osm", ".nut" };
 
     #endregion
 
     #region Dates
 
-    private readonly string[]
-    _dateFormatsEuropean =
+    internal readonly string[]
+    DateFormatsEuropean =
     {
         "d.M.yyyy",
         "dd.M.yyyy",
@@ -353,8 +319,8 @@ public sealed partial class Scanner
     yy - The year, from 00 to 99.
     yyyy - The year as a four-digit number.
     */
-    private readonly (string Format, bool CanBeAmbiguous)[]
-    _dateFormats =
+    internal readonly (string Format, bool CanBeAmbiguous)[]
+    DateFormats =
     {
         ("MMM d yy", false),
         ("MMM dd yy", false),
@@ -404,8 +370,8 @@ public sealed partial class Scanner
         ("d M yy", true),
     };
 
-    private readonly string[]
-    _monthNames =
+    internal readonly string[]
+    MonthNames =
     {
         // January and February are matched by German "Januar" / "Februar"
         "March",
@@ -474,7 +440,20 @@ public sealed partial class Scanner
 
     // ReSharper disable IdentifierTypo
 
-    private readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
+    internal const int SS2_NewDark_MAPPARAM_Location = 696;
+    internal const int T2_OldDark_SKYOBJVAR_Location = 772;
+    internal const int SS2_OldDark_MAPPARAM_Location = 916;
+    // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
+    internal const int NewDark_SKYOBJVAR_Location1 = 7217;
+    internal const int NewDark_SKYOBJVAR_Location2 = 3093;
+
+    internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
+    internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
+    internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
+    internal const int NewDark_SKYOBJVAR_Offset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
+    internal const int NewDark_SKYOBJVAR_Offset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
+
+    internal readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
@@ -484,46 +463,25 @@ public sealed partial class Scanner
     extra strength defense against a custom RopeyArrow archetype... except that a handful of legit T2 missions
     have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
     */
-    private readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
+    internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
 
-    private const int _gameTypeBufferSize = 81_920;
-
-    private byte[]? _gameTypeBuffer_ChunkPlusRopeyArrow;
-    private byte[] GameTypeBuffer_ChunkPlusRopeyArrow => _gameTypeBuffer_ChunkPlusRopeyArrow ??= new byte[_gameTypeBufferSize + RopeyArrow.Length];
-
-    private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
-    private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
-
-    private const int _ss2MapParamNewDarkLoc = 696;
-    private const int _oldDarkT2Loc = 772;
-    private const int _ss2MapParamOldDarkLoc = 916;
-    // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
-    private const int _newDarkLoc1 = 7217;
-    private const int _newDarkLoc2 = 3093;
-
-    private readonly int[] _locations = { _ss2MapParamNewDarkLoc, _oldDarkT2Loc, _ss2MapParamOldDarkLoc, _newDarkLoc1, _newDarkLoc2 };
-
-    private const int _ss2NewDarkOffset = 705; // 696+9 = 705
-    private const int _t2OldDarkOffset = 76;   // (772+9)-705 = 76
-    private const int _ss2OldDarkOffset = 144; // ((916+9)-76)-705 = 144
-    private const int _newDarkOffset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
-    private const int _newDarkOffset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
-
-    private readonly int[] _zipOffsets = { _ss2NewDarkOffset, _t2OldDarkOffset, _ss2OldDarkOffset, _newDarkOffset1, _newDarkOffset2 };
-
-    private readonly byte[][] _zipOffsetBuffers =
+    internal readonly int[] GameDetect_KeyPhraseLocations =
     {
-        new byte[_ss2NewDarkOffset],
-        new byte[_t2OldDarkOffset],
-        new byte[_ss2OldDarkOffset],
-        new byte[_newDarkOffset1],
-        new byte[_newDarkOffset2],
+        SS2_NewDark_MAPPARAM_Location,
+        T2_OldDark_SKYOBJVAR_Location,
+        SS2_OldDark_MAPPARAM_Location,
+        NewDark_SKYOBJVAR_Location1,
+        NewDark_SKYOBJVAR_Location2,
     };
 
-    // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
-    // complicating things any further than they already are.
-    private const int _gameDetectStringBufferLength = 9;
-    private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
+    internal readonly int[] GameDetect_KeyPhraseZipOffsets =
+    {
+        SS2_NewDark_MAPPARAM_Offset,
+        T2_OldDark_SKYOBJVAR_Offset,
+        SS2_OldDark_MAPPARAM_Offset,
+        NewDark_SKYOBJVAR_Offset1,
+        NewDark_SKYOBJVAR_Offset2,
+    };
 
     // ReSharper restore IdentifierTypo
 
@@ -534,61 +492,61 @@ public sealed partial class Scanner
     #region Regexes
 
     [GeneratedRegex("^A Thief( 1| 2| Gold)? (fan|campaign)", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
-    private static partial Regex AThiefMissionRegex();
+    internal static partial Regex AThiefMissionRegex();
 
     [GeneratedRegex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
-    private static partial Regex AThief3MissionRegex();
+    internal static partial Regex AThief3MissionRegex();
 
     [GeneratedRegex(@"\(\s+")]
-    private static partial Regex OpenParenSpacesRegex();
+    internal static partial Regex OpenParenSpacesRegex();
 
     [GeneratedRegex(@"\s+\)")]
-    private static partial Regex CloseParenSpacesRegex();
+    internal static partial Regex CloseParenSpacesRegex();
 
     [GeneratedRegex("[0-9](?<Suffix>(st|nd|rd|th)).+", RegexOptions.ExplicitCapture | IgnoreCaseInvariant)]
-    private static partial Regex DaySuffixesRegex();
+    internal static partial Regex DaySuffixesRegex();
 
     [GeneratedRegex(@"\(?\S+@\S+\.\S{2,5}\)?")]
-    private static partial Regex AuthorEmailRegex();
+    internal static partial Regex AuthorEmailRegex();
 
 #if FMScanner_FullCode
     [GeneratedRegex(@"\d\.\d+\+")]
-    private static partial Regex VersionExclude1Regex();
+    internal static partial Regex VersionExclude1Regex();
 
     // TODO: This one looks iffy though
     [GeneratedRegex(@"[0123456789\.]+")]
-    private static partial Regex VersionFirstNumberRegex();
+    internal static partial Regex VersionFirstNumberRegex();
 
     [GeneratedRegex(@"NewDark (?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion1();
+    internal static partial Regex NewDarkVersion1();
 
     [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion2();
+    internal static partial Regex NewDarkVersion2();
 
     [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion3();
+    internal static partial Regex NewDarkVersion3();
 
     [GeneratedRegex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion4();
+    internal static partial Regex NewDarkVersion4();
 
     [GeneratedRegex(@"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion5();
+    internal static partial Regex NewDarkVersion5();
 
     [GeneratedRegex(@"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion6();
+    internal static partial Regex NewDarkVersion6();
 
     [GeneratedRegex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion7();
+    internal static partial Regex NewDarkVersion7();
 
     [GeneratedRegex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion8();
+    internal static partial Regex NewDarkVersion8();
 
     [GeneratedRegex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkVersion9();
+    internal static partial Regex NewDarkVersion9();
 
     // Much, much faster to iterate through possible regex matches, common ones first
     // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
-    private readonly Regex[] NewDarkVersionRegexes =
+    internal readonly Regex[] NewDarkVersionRegexes =
     {
         NewDarkVersion1(),
         NewDarkVersion2(),
@@ -607,24 +565,24 @@ public sealed partial class Scanner
     [GeneratedRegex(
         @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorRegex1();
+    internal static partial Regex AuthorRegex1();
 
     [GeneratedRegex(
         @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorRegex2();
+    internal static partial Regex AuthorRegex2();
 
     [GeneratedRegex(
         @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorRegex3();
+    internal static partial Regex AuthorRegex3();
 
     [GeneratedRegex(
         @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorRegex4();
+    internal static partial Regex AuthorRegex4();
 
-    private readonly Regex[] AuthorRegexes =
+    internal readonly Regex[] AuthorRegexes =
     {
         AuthorRegex1(),
         AuthorRegex2(),
@@ -648,23 +606,23 @@ public sealed partial class Scanner
         //language=regexp
         @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorMissionCopyrightRegex1();
+    internal static partial Regex AuthorMissionCopyrightRegex1();
 
     [GeneratedRegex(
         //language=regexp
         @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
         _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorMissionCopyrightRegex2();
+    internal static partial Regex AuthorMissionCopyrightRegex2();
 
     [GeneratedRegex(
         //language=regexp
         @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
         _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorMissionCopyrightRegex3();
+    internal static partial Regex AuthorMissionCopyrightRegex3();
 
-    private readonly Regex[] AuthorMissionCopyrightRegexes =
+    internal readonly Regex[] AuthorMissionCopyrightRegexes =
     {
         AuthorMissionCopyrightRegex1(),
         AuthorMissionCopyrightRegex2(),
@@ -676,134 +634,134 @@ public sealed partial class Scanner
     // means what we think it means.
     [GeneratedRegex(@"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorGeneralCopyrightIncludeAtSymbolRegex();
+    internal static partial Regex AuthorGeneralCopyrightIncludeAtSymbolRegex();
 
     [GeneratedRegex(@"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AuthorGeneralCopyrightRegex();
+    internal static partial Regex AuthorGeneralCopyrightRegex();
 
     [GeneratedRegex(" [0-9]+.*$")]
-    private static partial Regex CopyrightAuthorYearRegex();
+    internal static partial Regex CopyrightAuthorYearRegex();
 
     #endregion
 
     [GeneratedRegex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex TitleByAuthorRegex();
+    internal static partial Regex TitleByAuthorRegex();
 
     #region Release date detection
 
     [GeneratedRegex(@"(:\s*)+", RegexOptions.ExplicitCapture)]
-    private static partial Regex MultipleColonsRegex();
+    internal static partial Regex MultipleColonsRegex();
 
     [GeneratedRegex("-{2,}", RegexOptions.ExplicitCapture)]
-    private static partial Regex MultipleDashesRegex();
+    internal static partial Regex MultipleDashesRegex();
 
     [GeneratedRegex(@"\u2013{2,}", RegexOptions.ExplicitCapture)]
-    private static partial Regex MultipleUnicodeDashesRegex();
+    internal static partial Regex MultipleUnicodeDashesRegex();
 
     [GeneratedRegex("(Y2K|[0-9])",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft)]
-    private static partial Regex AnyDateNumberRTLRegex();
+    internal static partial Regex AnyDateNumberRTLRegex();
 
     [GeneratedRegex(@"New ?Dark [0-9]\.[0-9]{1,2}",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex NewDarkAndNumberRegex();
+    internal static partial Regex NewDarkAndNumberRegex();
 
     [GeneratedRegex(@"\.*[0-9]{1,2}\s*\.\s*[0-9]{1,2}\s*\.\s*([0-9]{4}|[0-9]{2})\.*",
         RegexOptions.ExplicitCapture)]
-    private static partial Regex EuropeanDateRegex();
+    internal static partial Regex EuropeanDateRegex();
 
     [GeneratedRegex(@"\s*\.\s*", RegexOptions.ExplicitCapture)]
-    private static partial Regex PeriodWithOptionalSurroundingSpacesRegex();
+    internal static partial Regex PeriodWithOptionalSurroundingSpacesRegex();
 
     // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
     [GeneratedRegex(@"\s*(,|~|-|/|\.)\s*", RegexOptions.ExplicitCapture)]
-    private static partial Regex DateSeparatorsRegex();
+    internal static partial Regex DateSeparatorsRegex();
 
     [GeneratedRegex(@"\s*of\s*", IgnoreCaseInvariant)]
-    private static partial Regex DateOfSeparatorRegex();
+    internal static partial Regex DateOfSeparatorRegex();
 
     [GeneratedRegex(@"\s+")]
-    private static partial Regex OneOrMoreWhiteSpaceCharsRegex();
+    internal static partial Regex OneOrMoreWhiteSpaceCharsRegex();
 
     [GeneratedRegex("Febr ", IgnoreCaseInvariant)]
-    private static partial Regex FebrRegex();
+    internal static partial Regex FebrRegex();
 
     [GeneratedRegex("Sept ", IgnoreCaseInvariant)]
-    private static partial Regex SeptRegex();
+    internal static partial Regex SeptRegex();
 
     [GeneratedRegex("Okt ", IgnoreCaseInvariant)]
-    private static partial Regex OktRegex();
+    internal static partial Regex OktRegex();
 
     [GeneratedRegex("Y2K", IgnoreCaseInvariant)]
-    private static partial Regex Y2KRegex();
+    internal static partial Regex Y2KRegex();
 
     [GeneratedRegex("Jan(vier|uar )", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex JanuaryVariationsRegex();
+    internal static partial Regex JanuaryVariationsRegex();
 
     [GeneratedRegex("F(eburar(y| )|(é|e)vrier)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex FebruaryVariationsRegex();
+    internal static partial Regex FebruaryVariationsRegex();
 
     [GeneratedRegex("M(ar(tch|s|z)|ärz)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex MarchVariationsRegex();
+    internal static partial Regex MarchVariationsRegex();
 
     [GeneratedRegex("avril", IgnoreCaseInvariant)]
-    private static partial Regex AprilVariationsRegex();
+    internal static partial Regex AprilVariationsRegex();
 
     [GeneratedRegex("mai", IgnoreCaseInvariant)]
-    private static partial Regex MayVariationsRegex();
+    internal static partial Regex MayVariationsRegex();
 
     [GeneratedRegex("Ju(in|ni)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex JuneVariationsRegex();
+    internal static partial Regex JuneVariationsRegex();
 
     [GeneratedRegex("Ju(l(ly|i)|ille(t|r))",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex JulyVariationsRegex();
+    internal static partial Regex JulyVariationsRegex();
 
     [GeneratedRegex("ao(u|û)t",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex AugustVariationsRegex();
+    internal static partial Regex AugustVariationsRegex();
 
     [GeneratedRegex("septembre", IgnoreCaseInvariant)]
-    private static partial Regex SeptemberVariationsRegex();
+    internal static partial Regex SeptemberVariationsRegex();
 
     [GeneratedRegex("\"O(ctobre|ktober)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex OctoberVariationsRegex();
+    internal static partial Regex OctoberVariationsRegex();
 
     [GeneratedRegex("Halloween", IgnoreCaseInvariant)]
-    private static partial Regex HalloweenRegex();
+    internal static partial Regex HalloweenRegex();
 
     [GeneratedRegex("Christmas", IgnoreCaseInvariant)]
-    private static partial Regex ChristmasRegex();
+    internal static partial Regex ChristmasRegex();
 
     [GeneratedRegex("novembre", IgnoreCaseInvariant)]
-    private static partial Regex NovemberVariationsRegex();
+    internal static partial Regex NovemberVariationsRegex();
 
     [GeneratedRegex("D((é|e)cembre|ezember)", IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    private static partial Regex DecemberVariationsRegex();
+    internal static partial Regex DecemberVariationsRegex();
 
     #endregion
 
     [GeneratedRegex(@"\s{2,}")]
-    private static partial Regex MultipleWhiteSpaceRegex();
+    internal static partial Regex MultipleWhiteSpaceRegex();
 
     [GeneratedRegex(@"^Mission [0-9]+\:\s*.+")]
-    private static partial Regex DarkMod_TDM_MapSequence_MissionLine_Regex();
+    internal static partial Regex DarkMod_TDM_MapSequence_MissionLine_Regex();
 
     [GeneratedRegex("(Title:|Author:|Description:|Version:|Required TDM Version:)",
         RegexOptions.ExplicitCapture)]
-    private static partial Regex DarkModTxtFieldsRegex();
+    internal static partial Regex DarkModTxtFieldsRegex();
 
     /*
     Catches stuff like "PD" but also "CoS"
-    Also catches stuff like "FM" and also roman numerals. We could get clever if we wanted, but that would just
+    Also catches stuff like "FM" and also Roman numerals. We could get clever if we wanted, but that would just
     be a perf tweak, as everything works out fine as is in terms of accuracy.
     */
     [GeneratedRegex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
         RegexOptions.ExplicitCapture)]
-    private static partial Regex AcronymRegex();
+    internal static partial Regex AcronymRegex();
 
     #endregion
 
@@ -812,7 +770,7 @@ public sealed partial class Scanner
     /*
     Titles.str files are often in OEM850, but we can't detect this with the general purpose charset detector.
     So we detect by looking for byte sequences that represent non-ASCII stock mission names in OEM850.
-
+    
     NOTE: Do NOT add the surrounding quotes to the byte sequences, or performance will tank!
     This is because hits are way more expensive than misses, and quotes will cause a zillion hits for the first
     char of each keyphrase due to all the quotes in the file. Not having quotes is fine because we're only
@@ -920,11 +878,11 @@ public sealed partial class Scanner
         return ret;
     }
 
-    private readonly byte[] Suspected1252Bytes = InitSuspected1252Bytes();
+    internal readonly byte[] Suspected1252Bytes = InitSuspected1252Bytes();
 
-    private readonly byte[] Suspected850Bytes = InitSuspected850Bytes();
+    internal readonly byte[] Suspected850Bytes = InitSuspected850Bytes();
 
-    private readonly byte[][] TitlesStrOEM850KeyPhrases =
+    internal readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
         // Das Hüter-Training
         new byte[]
@@ -1063,11 +1021,90 @@ public sealed partial class Scanner
 
     #endregion
 
+    internal const char LeftDoubleQuote = '\u201C';
+    internal const char RightDoubleQuote = '\u201D';
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    internal static class FMDirs
+    {
+        // PERF: const string concatenation is free (const concats are done at compile time), so do it to lessen
+        // the chance of error.
+
+        // We only need BooksS
+        internal const string Fam = "fam";
+        // We only need IntrfaceS
+        internal const string Mesh = "mesh";
+        internal const string Motions = "motions";
+        internal const string Movies = "movies";
+        internal const string Cutscenes = "cutscenes"; // SS2 only
+        internal const string Obj = "obj";
+        internal const string Scripts = "scripts";
+        internal const string Snd = "snd";
+        internal const string Snd2 = "snd2"; // SS2 only
+        // We only need StringsS
+        internal const string Subtitles = "subtitles";
+
+        internal const string BooksS = "books/";
+        internal const string FamS = Fam + "/";
+        internal const string IntrfaceS = "intrface/";
+        internal const string MeshS = Mesh + "/";
+        internal const string MotionsS = Motions + "/";
+        internal const string MoviesS = Movies + "/";
+        internal const string CutscenesS = Cutscenes + "/"; // SS2 only
+        internal const string ObjS = Obj + "/";
+        internal const string ScriptsS = Scripts + "/";
+        internal const string SndS = Snd + "/";
+        internal const string Snd2S = Snd2 + "/"; // SS2 only
+        internal const string StringsS = "strings/";
+        internal const string SubtitlesS = Subtitles + "/";
+
+        internal const string T3FMExtras1S = "Fan Mission Extras/";
+        internal const string T3FMExtras2S = "FanMissionExtras/";
+
+        internal const string T3DetectS = "Content/T3/Maps/";
+    }
+
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    [SuppressMessage("ReSharper", "CommentTypo")]
+    internal static class FMFiles
+    {
+        internal const string SS2Fingerprint1 = "/usemsg.str";
+        internal const string SS2Fingerprint2 = "/savename.str";
+        internal const string SS2Fingerprint3 = "/objlooks.str";
+        internal const string SS2Fingerprint4 = "/OBJSHORT.str";
+
+        internal const string IntrfaceEnglishNewGameStr = "intrface/english/newgame.str";
+        internal const string IntrfaceNewGameStr = "intrface/newgame.str";
+        internal const string SNewGameStr = "/newgame.str";
+
+        internal const string StringsMissFlag = "strings/missflag.str";
+        internal const string StringsEnglishMissFlag = "strings/english/missflag.str";
+        internal const string SMissFlag = "/missflag.str";
+
+        // Telliamed's fminfo.xml file, used in a grand total of three missions
+        internal const string FMInfoXml = "fminfo.xml";
+
+        // fm.ini, a NewDark (or just FMSel?) file
+        internal const string FMIni = "fm.ini";
+
+        // System Shock 2 file
+        internal const string ModIni = "mod.ini";
+
+        // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
+        internal const string EntryGmp = "Entry.gmp";
+
+        internal const string TDM_DarkModTxt = "darkmod.txt";
+        internal const string TDM_ReadmeTxt = "readme.txt";
+        internal const string TDM_MapSequence = "tdm_mapsequence.txt";
+    }
+
+    #region Comparer classes
+
     /// <summary>
     /// Specialized (therefore fast) sort for titles.str lines only. Anything else is likely to throw an
     /// IndexOutOfRangeException.
     /// </summary>
-    private sealed class TitlesStrNaturalNumericSort : IComparer<string>
+    internal sealed class TitlesStrNaturalNumericSortComparer : IComparer<string>
     {
         public int Compare(string? x, string? y)
         {
@@ -1119,4 +1156,14 @@ public sealed partial class Scanner
             return xNum - yNum;
         }
     }
+
+    internal sealed class FMScanOriginalIndexComparer : IComparer<ScannedFMDataAndError>
+    {
+        public int Compare(ScannedFMDataAndError? x, ScannedFMDataAndError? y)
+        {
+            return x!.OriginalIndex.CompareTo(y!.OriginalIndex);
+        }
+    }
+
+    #endregion
 }

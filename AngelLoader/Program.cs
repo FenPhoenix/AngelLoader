@@ -1,6 +1,7 @@
 ﻿#define WinForms
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
+//#define TRACE_WRITE_TO_FILE
 
 global using static AL_Common.FullyGlobal;
 using System;
@@ -14,14 +15,14 @@ using static AL_Common.Logger;
 
 namespace AngelLoader;
 
-internal sealed class PreloadState
+internal sealed class SplashScreenPreloadState
 {
     internal PrivateFontCollection? FontCollection;
     internal Font? MessageFont;
 
     internal readonly Task SplashScreenPreloadTask;
 
-    internal PreloadState()
+    internal SplashScreenPreloadState()
     {
         SplashScreenPreloadTask = Task.Run(() =>
         {
@@ -50,7 +51,7 @@ internal sealed class PreloadState
 
 internal static class Program
 {
-    internal static PreloadState PreloadState = null!;
+    internal static SplashScreenPreloadState SplashScreenPreloadState = null!;
 
     /// <summary>
     /// The main entry point for the application.
@@ -58,6 +59,12 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        #if TRACE_WRITE_TO_FILE
+                using var fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
+                using var fl = new System.Diagnostics.TextWriterTraceListener(fs);
+                System.Diagnostics.Trace.Listeners.Add(fl);
+        #endif
+        
         // Absolute first thing, so it comes before any Process calls (so we can tell it to use UTF8 if we need).
         // We don't know if there might be any Process calls somewhere in this SingleInstance mess, or somewhere
         // else, so just assume there are and do this first.
@@ -69,7 +76,7 @@ internal static class Program
 #endif
 
 #if WinForms
-        PreloadState = new PreloadState();
+        SplashScreenPreloadState = new SplashScreenPreloadState();
 
         // Need to set these here, because the single-instance thing internally creates a window and message-
         // loop etc... that's also why we straight-up ditched our clever "init the ConfigurationManager in

@@ -87,7 +87,8 @@ internal static class FMDelete
                 icon: MBoxIcon.Warning,
                 yes: LText.FMDeletion.DeleteFromDB_OKMessage,
                 no: LText.Global.Cancel,
-                yesIsDangerous: true);
+                yesIsDangerous: true,
+                defaultButton: MBoxButton.No);
         if (result == MBoxButton.No) return Task.CompletedTask;
 
         DeleteFMsFromDB_Internal(fmsToDelete);
@@ -203,21 +204,7 @@ internal static class FMDelete
 
         var unavailableFMs = new List<FanMission>(fms.Count);
 
-        void MoveUnavailableFMsFromMainListToUnavailableList()
-        {
-            for (int i = 0; i < fms.Count; i++)
-            {
-                FanMission fm = fms[i];
-                if (fm.MarkedUnavailable)
-                {
-                    unavailableFMs.Add(fm);
-                    fms.RemoveAt(i);
-                    i--;
-                }
-            }
-        }
-
-        MoveUnavailableFMsFromMainListToUnavailableList();
+        MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 
         if (fms.Count == 0)
         {
@@ -245,7 +232,8 @@ internal static class FMDelete
             yesIsDangerous: true,
             checkBoxText: single
                 ? LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Single
-                : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple);
+                : LText.FMDeletion.DeleteFMs_AlsoDeleteFromDB_Multiple,
+            defaultButton: MBoxButton.No);
 
         if (result == MBoxButton.No) return;
 
@@ -268,7 +256,8 @@ internal static class FMDelete
                 icon: MBoxIcon.Warning,
                 yes: LText.AlertMessages.Uninstall,
                 no: deleteFromDB ? null : LText.AlertMessages.LeaveInstalled,
-                cancel: LText.Global.Cancel
+                cancel: LText.Global.Cancel,
+                defaultButton: MBoxButton.Cancel
             );
 
             if (result == MBoxButton.Cancel) return;
@@ -284,12 +273,31 @@ internal static class FMDelete
                         i2++;
                     }
                 }
-                (bool success, bool uninstMarkedAnFMUnavailable) =
-                    await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
-                if (!success)
+                try
                 {
+                    (bool success, bool uninstMarkedAnFMUnavailable) =
+                        await FMInstallAndPlay.Uninstall(installedFMs, doEndTasks: false);
+                    if (!success)
+                    {
+                        /*
+                        Uninstall() does hide it in the finally block BUT only if it's running end tasks!
+                        We've told it not to here, so that's why we have to hide it ourselves.
+                        This is to do with keeping one progress box up for the whole operation without closing
+                        and reopening flicker I guess.
+                        */
+                        Core.View.HideProgressBox();
+                        await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Uninstall() shouldn't be throwing now, but just in case...
                     Core.View.HideProgressBox();
-                    await FMInstallAndPlay.DoUninstallEndTasks(uninstMarkedAnFMUnavailable);
+                    // We don't know if any FMs were marked unavailable so let's be conservative and say that
+                    // some were, and do the more forceful refresh or whatever else. Probably better than under-
+                    // refreshing? Probably?
+                    await FMInstallAndPlay.DoUninstallEndTasks(true);
                     return;
                 }
                 refreshRequired = true;
@@ -301,7 +309,7 @@ internal static class FMDelete
 
             // Even though we culled out the unavailable FMs already, Uninstall() could have marked some more
             // of them unavailable if they didn't have an archive after being uninstalled.
-            MoveUnavailableFMsFromMainListToUnavailableList();
+            MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 
             if (fms.Count == 0 && !deleteFromDB)
             {
@@ -408,6 +416,22 @@ internal static class FMDelete
                 // Just always do this because trying to determine the right "lighter" thing to do is
                 // COMPLEXITY HELL. This always does what we want, idgaf if it involves a reload from disk.
                 await DeleteFromDBRefresh();
+            }
+        }
+
+        return;
+
+        static void MoveUnavailableFMsFromMainListToUnavailableList(List<FanMission> fms, List<FanMission> unavailableFMs)
+        {
+            for (int i = 0; i < fms.Count; i++)
+            {
+                FanMission fm = fms[i];
+                if (fm.MarkedUnavailable)
+                {
+                    unavailableFMs.Add(fm);
+                    fms.RemoveAt(i);
+                    i--;
+                }
             }
         }
     }

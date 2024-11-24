@@ -198,6 +198,19 @@ internal static class Core
                     }
                 }
 
+                try
+                {
+                    List<SettingsDriveData> settingsDriveData = DetectDriveData.GetSettingsDriveData();
+                    for (int i = 0; i < settingsDriveData.Count; i++)
+                    {
+                        ConfigData.GetDriveThreadability(Config.DriveLettersAndTypes, settingsDriveData[i].Root);
+                    }
+                }
+                catch
+                {
+                    // ignore
+                }
+
                 #endregion
             }
             finally
@@ -243,13 +256,6 @@ internal static class Core
 
         static void ReadLanguages(SplashScreen splashScreen)
         {
-            static void ResetLanguages()
-            {
-                LText = new LText_Class();
-                Config.Language = "English";
-                Config.LanguageNames.Clear();
-            }
-
             // We can't show a message until we've read the config file (to know which language to use) and
             // the current language file (to get the translated message strings). So just show language dir/
             // language file names, so it's as clear as possible what we're doing without actually having to
@@ -305,6 +311,15 @@ internal static class Core
                 Log(ErrorText.Ex + "in language files read", ex);
                 Dialogs.ShowError("An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
                 splashScreen.Show(Config.VisualTheme);
+            }
+
+            return;
+
+            static void ResetLanguages()
+            {
+                LText = new LText_Class();
+                Config.Language = "English";
+                Config.LanguageNames.Clear();
             }
         }
 
@@ -407,7 +422,7 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad(false, splashScreen);
+            await DoParallelLoad(askForImport: false, splashScreen);
         }
         else
         {
@@ -689,6 +704,19 @@ internal static class Core
         #region Update page
 
         Config.CheckForUpdates = outConfig.CheckForUpdates;
+
+        #endregion
+
+        #region I/O Threading page
+
+        Config.IOThreadsMode = outConfig.IOThreadsMode;
+        Config.CustomIOThreadCount = outConfig.CustomIOThreadCount;
+
+        // Don't clear the existing dict; we want to keep settings even for drives that have been removed
+        foreach (var item in outConfig.DriveLettersAndTypes)
+        {
+            Config.DriveLettersAndTypes[item.Key] = item.Value;
+        }
 
         #endregion
 

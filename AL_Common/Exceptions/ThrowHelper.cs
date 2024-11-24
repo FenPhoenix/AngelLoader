@@ -12,6 +12,9 @@ public static class ThrowHelper
     [DoesNotReturn]
     public static void ArgumentException(string message, string paramName) => throw new ArgumentException(message, paramName);
     [DoesNotReturn]
+    internal static void ArgumentNullException(string argument) => throw new ArgumentNullException(argument);
+
+    [DoesNotReturn]
     public static void ArgumentOutOfRange(string paramName, string message) => throw new ArgumentOutOfRangeException(paramName, message);
     [DoesNotReturn]
     public static void EndOfFile() => throw new EndOfStreamException(SR.EOF_ReadBeyondEOF);
@@ -31,6 +34,7 @@ public static class ThrowHelper
     public static void ZipCompressionMethodException(string message) => throw new ZipCompressionMethodException(message);
     [DoesNotReturn]
     public static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
+    public static void ObjectDisposed(string message) => throw new ObjectDisposedException(null, message);
     [DoesNotReturn]
     public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
     [DoesNotReturn]

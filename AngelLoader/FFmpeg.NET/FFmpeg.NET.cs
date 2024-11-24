@@ -26,7 +26,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
 using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
@@ -41,7 +40,7 @@ internal enum ConvertType
 
 internal static class Engine
 {
-    internal static async Task ConvertAsync(string input, string output, ConvertType convertType)
+    internal static void Convert(string input, string output, ConvertType convertType)
     {
         if (!File.Exists(Paths.FFmpegExe))
         {
@@ -55,7 +54,7 @@ internal static class Engine
             ? "-y -i \"" + input + "\" \"" + output + "\""
             : "-y -i \"" + input + "\" -ab 16k -map_metadata 0 \"" + output + "\"";
 
-        var startInfo = new ProcessStartInfo
+        ProcessStartInfo startInfo = new()
         {
             Arguments = arguments,
             FileName = Paths.FFmpegExe,
@@ -63,11 +62,12 @@ internal static class Engine
             UseShellExecute = false,
         };
 
-        using var ffmpegProcess = new Process();
+        using Process ffmpegProcess = new();
         ffmpegProcess.StartInfo = startInfo;
         try
         {
-            await WaitForExitAsync(ffmpegProcess);
+            ffmpegProcess.Start();
+            ffmpegProcess.WaitForExit();
         }
         catch (Exception ex)
         {
@@ -88,28 +88,5 @@ internal static class Engine
         }
 
         #endregion
-    }
-
-    private static Task<int> WaitForExitAsync(Process process)
-    {
-        var tcs = new TaskCompletionSource<int>();
-
-        process.EnableRaisingEvents = true;
-        process.Exited += ProcessOnExited;
-
-        bool started = process.Start();
-        if (!started)
-        {
-            tcs.TrySetException(new InvalidOperationException("Could not start process " + process));
-        }
-
-        return tcs.Task;
-
-        void ProcessOnExited(object? sender, EventArgs e)
-        {
-            process.WaitForExit();
-            tcs.TrySetResult(process.ExitCode);
-            process.Exited -= ProcessOnExited;
-        }
     }
 }

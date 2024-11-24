@@ -13,6 +13,30 @@ public static class DarkColors
     // Hot:     122, 128, 132 (GreyHighlight)
     // Pressed: 159, 178, 196 (ActiveControl)
 
+    public static readonly Color SettingsButtonHighlight_Light = Color.FromArgb(229, 241, 251);
+    public static readonly Color SettingsButtonHighlightBorder_Light = Color.FromArgb(0, 120, 215);
+    //public static readonly SolidBrush SettingsButtonHighlightBorder_LightBrush = new SolidBrush(SettingsButtonHighlightBorder_Light);
+
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Normal = Color.FromArgb(0, 95, 184);
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Hover = Color.FromArgb(25, 110, 191);
+    public static readonly Color Win11_LightMode_CheckBox_CheckedBackground_Pressed = Color.FromArgb(50, 126, 197);
+
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_NormalPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Normal);
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_HoverPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Hover);
+    public static readonly Pen Win11_LightMode_CheckBox_CheckedBackground_PressedPen = new Pen(Win11_LightMode_CheckBox_CheckedBackground_Pressed);
+
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_NormalBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Normal);
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_HoverBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Hover);
+    public static readonly SolidBrush Win11_LightMode_CheckBox_CheckedBackground_PressedBrush = new SolidBrush(Win11_LightMode_CheckBox_CheckedBackground_Pressed);
+
+    public static readonly Color CheckBoxPressedBorder = Color.FromArgb(0, 84, 153);
+    public static readonly Pen CheckBoxPressedBorderPen = new Pen(CheckBoxPressedBorder);
+    //public static readonly SolidBrush CheckBoxPressedBorderBrush = new SolidBrush(CheckBoxPressedBorder);
+
+    public static readonly Color CheckBoxPressedFill = Color.FromArgb(204, 228, 247);
+    //public static readonly Pen CheckBoxPressedFillPen = new Pen(CheckBoxPressedFill);
+    public static readonly SolidBrush CheckBoxPressedFillBrush = new SolidBrush(CheckBoxPressedFill);
+
     public static readonly Color GLMLRed_Light = Color.Red;
     public static readonly Color GLMLRed_Dark = Color.FromArgb(222, 73, 64);
 
@@ -36,11 +60,18 @@ public static class DarkColors
 
     public static readonly Color Fen_ThumbScrollBarHover = Color.FromArgb(110, 110, 110);
     public static readonly Color Fen_Hyperlink = Color.FromArgb(121, 180, 240);
+    public static readonly SolidBrush Fen_HyperlinkBrush = new SolidBrush(Fen_Hyperlink);
+    public static readonly Pen Fen_HyperlinkPen = new Pen(Fen_Hyperlink);
     public static readonly Color Fen_HyperlinkPressed = Color.FromArgb(243, 110, 110);
 
     public static readonly Color Fen_CautionText = Color.FromArgb(225, 135, 135);
 
     public static readonly Color ArrowEnabled = Color.FromArgb(150, 156, 160);
+    //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
+
+    public static readonly Color ScrollBarLight = Color.FromArgb(180, 180, 180);
+    //public static readonly Pen ScrollBarLightPen = new Pen(ScrollBarLight);
+    public static readonly SolidBrush ScrollBarLightBrush = new SolidBrush(ScrollBarLight);
 
     public static readonly Color DGV_PinnedBackgroundLight = Color.FromArgb(203, 226, 206);
     public static readonly Color DGV_PinnedBackgroundDark = Color.FromArgb(0, 59, 0);
@@ -54,6 +85,12 @@ public static class DarkColors
         SystemColors.Highlight.G,
         SystemColors.Highlight.B);
     public static readonly Color TabDragOverlay_Dark = Color.FromArgb(64, 75, 110, 175);
+
+    public static readonly Color LightScrollBarButtonHot = Color.FromArgb(218, 218, 218);
+    public static readonly Color LightScrollBarHover = Color.FromArgb(170, 170, 170);
+    public static readonly SolidBrush LightScrollBarHoverBrush = new SolidBrush(LightScrollBarHover);
+    public static readonly Color LightScrollBarButtonPressed = Color.FromArgb(96, 96, 96);
+    public static readonly SolidBrush LightScrollBarButtonPressedBrush = new SolidBrush(LightScrollBarButtonPressed);
 
     #endregion
 
@@ -86,6 +123,8 @@ public static class DarkColors
 
     #region Pens
 
+    public static readonly Pen SettingsButtonHighlightBorder_LightPen = new Pen(SettingsButtonHighlightBorder_Light);
+
     public static readonly Pen Fen_DarkBackgroundPen = new Pen(Fen_DarkBackground);
     public static readonly Pen Fen_DarkForegroundPen = new Pen(Fen_DarkForeground);
     public static readonly Pen Fen_ControlBackgroundPen = new Pen(Fen_ControlBackground);
@@ -111,9 +150,9 @@ public static class DarkColors
     public static readonly Pen LighterBorderPen = new Pen(LighterBorder);
     //public static readonly Pen DarkBorderPen = new Pen(DarkBorder);
     public static readonly Pen LightTextPen = new Pen(LightText);
-    //public static readonly Pen DisabledTextPen = new Pen(DisabledText);
+    public static readonly Pen DisabledTextPen = new Pen(DisabledText);
     public static readonly Pen BlueHighlightPen = new Pen(BlueHighlight);
-    //public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
+    public static readonly Pen BlueSelectionPen = new Pen(BlueSelection);
     public static readonly Pen GreyHighlightPen = new Pen(GreyHighlight);
     public static readonly Pen GreySelectionPen = new Pen(GreySelection);
     //public static readonly Pen DarkGreySelectionPen = new Pen(DarkGreySelection);
@@ -156,13 +195,15 @@ public static class DarkColors
     public static readonly SolidBrush BlueSelectionBrush = new SolidBrush(BlueSelection);
     public static readonly SolidBrush GreyHighlightBrush = new SolidBrush(GreyHighlight);
     public static readonly SolidBrush GreySelectionBrush = new SolidBrush(GreySelection);
-    //public static readonly SolidBrush DarkGreySelectionBrush = new SolidBrush(DarkGreySelection);
+    public static readonly SolidBrush DarkGreySelectionBrush = new SolidBrush(DarkGreySelection);
     //public static readonly SolidBrush DarkBlueBorderBrush = new SolidBrush(DarkBlueBorder);
     //public static readonly SolidBrush LightBlueBorderBrush = new SolidBrush(LightBlueBorder);
     public static readonly SolidBrush ActiveControlBrush = new SolidBrush(ActiveControl);
     //public static readonly SolidBrush ArrowEnabledBrush = new SolidBrush(ArrowEnabled);
 
     public static readonly SolidBrush DGV_PinnedBackgroundDarkBrush = new SolidBrush(DGV_PinnedBackgroundDark);
+
+    public static readonly SolidBrush LightScrollBarButtonHotBrush = new SolidBrush(LightScrollBarButtonHot);
 
     #endregion
 }

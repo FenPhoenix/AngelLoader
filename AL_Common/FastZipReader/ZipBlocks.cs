@@ -6,12 +6,14 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using static AL_Common.Common;
+using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
 namespace AL_Common.FastZipReader;
 
 // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
 // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct ZipGenericExtraField
 {
     internal readonly ushort Tag;
@@ -172,22 +174,22 @@ internal readonly ref struct Zip64ExtraField
         int arrayIndex = 0;
         if (readUncompressedSize)
         {
-            uncompressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            uncompressedSize = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readCompressedSize)
         {
-            compressedSize = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            compressedSize = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readLocalHeaderOffset)
         {
-            localHeaderOffset = ZipHelpers.ReadInt64(extraField.Data, dataSize, arrayIndex);
+            localHeaderOffset = ReadInt64(extraField.Data, dataSize, arrayIndex);
             arrayIndex += 8;
         }
         if (readStartDiskNumber)
         {
-            startDiskNumber = ZipHelpers.ReadUInt32(extraField.Data, dataSize, arrayIndex);
+            startDiskNumber = ReadUInt32(extraField.Data, dataSize, arrayIndex);
         }
 
         // original values are unsigned, so implies value is too big to fit in signed integer
@@ -206,6 +208,7 @@ internal readonly ref struct Zip64ExtraField
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct Zip64EndOfCentralDirectoryLocator
 {
     internal const uint SignatureConstant = 0x07064B50;
@@ -293,22 +296,23 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 internal readonly ref struct ZipLocalFileHeader
 {
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(FileStream stream, long streamLength, ZipContext context)
+    internal static bool TrySkipBlock(FileStream stream, long streamLength, BinaryBuffer binaryReadBuffer)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
-        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant) return false;
+        if (BinaryRead.ReadUInt32(stream, binaryReadBuffer) != SignatureConstant) return false;
         if (stream.Length < stream.Position + offsetToFilenameLength) return false;
 
         stream.Seek(offsetToFilenameLength, SeekOrigin.Current);
 
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        ushort filenameLength = BinaryRead.ReadUInt16(stream, binaryReadBuffer);
+        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, binaryReadBuffer);
 
         if (streamLength < stream.Position + filenameLength + extraFieldLength)
         {
@@ -321,10 +325,12 @@ internal readonly ref struct ZipLocalFileHeader
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipCentralDirectoryFileHeader
 {
     private const uint SignatureConstant = 0x02014B50;
 
+    internal readonly ushort GeneralPurposeBitFlag;
     internal readonly ushort CompressionMethod;
     internal readonly uint LastModified;
     internal readonly long CompressedSize;
@@ -336,6 +342,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     internal readonly ushort FilenameLength;
 
     private ZipCentralDirectoryFileHeader(
+        ushort generalPurposeBitFlag,
         ushort compressionMethod,
         uint lastModified,
         long compressedSize,
@@ -345,6 +352,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         byte[] filename,
         ushort filenameLength)
     {
+        GeneralPurposeBitFlag = generalPurposeBitFlag;
         CompressionMethod = compressionMethod;
         LastModified = lastModified;
         CompressedSize = compressedSize;
@@ -371,8 +379,8 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         stream.Position +=
             ByteLengths.Byte +  // VersionMadeBySpecification
             ByteLengths.Byte +  // VersionMadeByCompatibility
-            ByteLengths.Int16 + // VersionNeededToExtract
-            ByteLengths.Int16;  // GeneralPurposeBitFlag
+            ByteLengths.Int16;  // VersionNeededToExtract
+        ushort generalPurposeBitFlag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
         stream.Position += ByteLengths.Int32; // Crc32
@@ -388,10 +396,10 @@ public readonly ref struct ZipCentralDirectoryFileHeader
 
         stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
 
-        bool uncompressedSizeInZip64 = uncompressedSizeSmall == ZipHelpers.Mask32Bit;
-        bool compressedSizeInZip64 = compressedSizeSmall == ZipHelpers.Mask32Bit;
-        bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == ZipHelpers.Mask32Bit;
-        bool diskNumberStartInZip64 = diskNumberStartSmall == ZipHelpers.Mask16Bit;
+        bool uncompressedSizeInZip64 = uncompressedSizeSmall == Mask32Bit;
+        bool compressedSizeInZip64 = compressedSizeSmall == Mask32Bit;
+        bool relativeOffsetInZip64 = relativeOffsetOfLocalHeaderSmall == Mask32Bit;
+        bool diskNumberStartInZip64 = diskNumberStartSmall == Mask16Bit;
 
         long endExtraFields = stream.Position + extraFieldLength;
 
@@ -417,6 +425,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         uint diskNumberStart = zip64.StartDiskNumber ?? diskNumberStartSmall;
 
         header = new ZipCentralDirectoryFileHeader(
+            generalPurposeBitFlag: generalPurposeBitFlag,
             compressionMethod: compressionMethod,
             lastModified: lastModified,
             compressedSize: compressedSize,

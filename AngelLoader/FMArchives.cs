@@ -76,6 +76,35 @@ internal static class FMArchives
     }
 
     /// <summary>
+    /// Returns the full path of the first matching FM archive file, or the empty string if no matches were found.
+    /// </summary>
+    /// <param name="fmArchive"></param>
+    /// <param name="archivePaths"></param>
+    /// <param name="archivePathMatchWasFoundIn"></param>
+    /// <returns></returns>
+    [PublicAPI]
+    internal static string FindFirstMatch(string fmArchive, List<string> archivePaths, out string archivePathMatchWasFoundIn)
+    {
+        if (fmArchive.IsEmpty())
+        {
+            archivePathMatchWasFoundIn = "";
+            return "";
+        }
+
+        foreach (string path in archivePaths)
+        {
+            if (TryCombineFilePathAndCheckExistence(path, fmArchive, out string f))
+            {
+                archivePathMatchWasFoundIn = path;
+                return f;
+            }
+        }
+
+        archivePathMatchWasFoundIn = "";
+        return "";
+    }
+
+    /// <summary>
     /// Returns a list of all matching FM archive files, or an empty list if no matches were found.
     /// </summary>
     /// <param name="fmArchive"></param>

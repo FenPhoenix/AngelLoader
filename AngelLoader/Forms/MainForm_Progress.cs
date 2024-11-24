@@ -8,31 +8,26 @@ namespace AngelLoader.Forms;
 
 public sealed partial class MainForm
 {
-    // Not great code really, but works.
+    private ProgressBox? ProgressBox;
 
-    private ProgressPanel? ProgressBox;
-
-    // Note! If we WEREN'T always invoking this, we would want to have a lock around it!
+    // Note! If we WEREN'T always invoking these, we would want to have a lock around them!
 
     [MemberNotNull(nameof(ProgressBox))]
     private void ConstructProgressBox()
     {
         if (ProgressBox != null) return;
 
-        ProgressBox = new ProgressPanel(this) { Tag = LoadType.Lazy, Visible = false };
+        ProgressBox = new ProgressBox(this) { Tag = LoadType.Lazy, Visible = false };
         Controls.Add(ProgressBox);
         ProgressBox.Anchor = AnchorStyles.None;
         ProgressBox.DarkModeEnabled = Global.Config.DarkMode;
         ProgressBox.SetSizeToDefault();
     }
 
+    #region Progress box
+    
     // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
     // simple.
-
-    // We don't cache the actions anymore, because we still ended up recreating the params object[] array
-    // every time, which was in almost all cases _larger_ than the 32 bytes of an action. Also, it made our
-    // parameters un-statically-checkable for correct number and types, since they were a variable-length
-    // array of plain objects. So... yeah, not worth it.
 
     // Convenience methods for first show - they handle a few parameters for you
     #region Show methods
@@ -51,11 +46,11 @@ public sealed partial class MainForm
             mainMessage1: message1 ?? "",
             mainMessage2: message2 ?? "",
             mainPercent: 0,
-            mainProgressBarType: progressType ?? ProgressPanel.DefaultProgressType,
+            mainProgressBarType: progressType ?? ProgressBox.DefaultProgressType,
             subMessage: "",
             subPercent: 0,
             subProgressBarType: ProgressType.Determinate,
-            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
 
@@ -76,11 +71,11 @@ public sealed partial class MainForm
             mainMessage1: mainMessage1 ?? "",
             mainMessage2: mainMessage2 ?? "",
             mainPercent: 0,
-            mainProgressBarType: mainProgressType ?? ProgressPanel.DefaultProgressType,
+            mainProgressBarType: mainProgressType ?? ProgressBox.DefaultProgressType,
             subMessage: subMessage ?? "",
             subPercent: 0,
-            subProgressBarType: subProgressType ?? ProgressPanel.DefaultProgressType,
-            cancelButtonMessage: cancelMessage ?? ProgressPanel.DefaultCancelMessage,
+            subProgressBarType: subProgressType ?? ProgressBox.DefaultProgressType,
+            cancelButtonMessage: cancelMessage ?? ProgressBox.DefaultCancelMessage,
             cancelAction: cancelAction ?? NullAction);
     });
 #endif
@@ -189,5 +184,9 @@ public sealed partial class MainForm
 
     #endregion
 
-    public void HideProgressBox() => Invoke(() => ProgressBox?.HideThis());
+    public void HideProgressBox() => Invoke(() => ProgressBox?.Hide());
+
+    public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
+
+    #endregion
 }

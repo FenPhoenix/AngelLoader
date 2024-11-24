@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using static System.StringComparison;
 
@@ -10,8 +11,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     #region Forward/backslash conversion
 
     public static string ToForwardSlashes(this string value) => value.Replace('\\', '/');
@@ -502,8 +501,6 @@ public static partial class Common
             Dir_UnSetReadOnly(d, throwException);
         }
     }
-
-    #endregion
 
     #endregion
 }

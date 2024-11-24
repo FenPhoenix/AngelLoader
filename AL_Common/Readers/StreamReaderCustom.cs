@@ -7,6 +7,8 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
+
 #if ENABLE_UNUSED
 using System.Runtime.InteropServices;
 #endif
@@ -23,6 +25,7 @@ public sealed class StreamReaderCustom
     /// For convenience of using-semantics, but without actually constructing or disposing the underlying
     /// <see cref="T:StreamReaderCustom"/> object (allocation avoidance).
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct SRC_Wrapper
     {
         public readonly StreamReaderCustom Reader;
@@ -282,11 +285,11 @@ public sealed class StreamReaderCustom
     public int Read([In, Out] char[] buffer, int index, int count)
     {
         if (buffer == null)
-            throw new ArgumentNullException(nameof(buffer), ("ArgumentNull_Buffer"));
+            throw new ArgumentNullException(nameof(buffer), SR.ArgumentNull_Buffer);
         if (index < 0 || count < 0)
-            throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), ("ArgumentOutOfRange_NeedNonNegNum"));
+            throw new ArgumentOutOfRangeException(index < 0 ? nameof(index) : nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
         if (buffer.Length - index < count)
-            throw new ArgumentException(("Argument_InvalidOffLen"));
+            throw new ArgumentException(SR.Argument_InvalidOffLen);
         if (_stream == null!)
             ThrowHelper.ReaderClosed();
         int num1 = 0;

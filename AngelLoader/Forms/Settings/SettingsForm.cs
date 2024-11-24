@@ -75,6 +75,38 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly DarkTextBox[] GameWebSearchUrlTextBoxes;
     private readonly DarkButton[] GameWebSearchUrlResetButtons;
 
+    #region I/O threading
+
+    private sealed class DriveDataSection
+    {
+        internal readonly DarkLabel DriveLabel;
+        internal readonly DriveMultithreadingLevel AutoMultithreadingLevel;
+        internal DriveMultithreadingLevel MultithreadingLevel;
+        internal readonly string Drive;
+        internal readonly string ModelName;
+        internal readonly DarkComboBox ComboBox;
+
+        public DriveDataSection(
+            DarkLabel driveLabel,
+            DriveMultithreadingLevel autoMultithreadingLevel,
+            DriveMultithreadingLevel multithreadingLevel,
+            string drive,
+            string modelName,
+            DarkComboBox comboBox)
+        {
+            DriveLabel = driveLabel;
+            AutoMultithreadingLevel = autoMultithreadingLevel;
+            MultithreadingLevel = multithreadingLevel;
+            Drive = drive;
+            ModelName = modelName;
+            ComboBox = comboBox;
+        }
+    }
+
+    private readonly DriveDataSection[] IOThreadingLevelDriveDataSections;
+
+    #endregion
+
     // August 4 is chosen more-or-less randomly, but both its name and its number are different short vs. long
     // (Aug vs. August; 8 vs. 08), and the same thing with 4 (4 vs. 04).
     private readonly DateTime _exampleDate = new(DateTime.Now.Year, 8, 4);
@@ -87,6 +119,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
     private readonly UpdatePage UpdatePage;
+    private readonly IOThreadingPage IOThreadingPage;
 
     private enum PathError { True, False }
 
@@ -176,6 +209,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
+            (IOThreadingRadioButton, IOThreadingPage = new IOThreadingPage { Visible = false }),
         };
 #pragma warning restore IDE0300 // Simplify collection initialization
 
@@ -656,6 +690,112 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked = config.CheckForUpdates == CheckForUpdates.True;
 
             #endregion
+
+            #region I/O Threading page
+
+            DriveLetterDictionary driveLettersAndTypes = new();
+            foreach (var item in config.DriveLettersAndTypes)
+            {
+                driveLettersAndTypes[item.Key] = item.Value;
+            }
+
+            switch (config.IOThreadsMode)
+            {
+                case IOThreadsMode.Custom:
+                    IOThreadingPage.CustomModeRadioButton.Checked = true;
+                    break;
+                case IOThreadsMode.Auto:
+                default:
+                    IOThreadingPage.AutoModeRadioButton.Checked = true;
+                    break;
+            }
+            SetIOThreadsState();
+
+            IOThreadingPage.CustomThreadsNumericUpDown.Value = config.CustomIOThreadCount;
+
+            List<SettingsDriveData> settingsDriveData = DetectDriveData.GetSettingsDriveData();
+            /*
+            If count is 0, then the I/O threading levels group box will end up with min height, which will at
+            least provide a sign that something's wrong to the user. For that reason we shouldn't do anything
+            slick like hide the group box, because that would just cause confusion if the user is told to do
+            something with a group box that isn't there.
+            */
+            IOThreadingLevelDriveDataSections = new DriveDataSection[settingsDriveData.Count];
+
+            const int driveTypePanelHeight = 64;
+            int y = 24;
+            int tabIndex = 2;
+            for (int i = 0; i < settingsDriveData.Count; i++, y += driveTypePanelHeight, tabIndex++)
+            {
+                SettingsDriveData driveData = settingsDriveData[i];
+
+                Panel panel = new()
+                {
+                    Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+                    Location = new Point(8, y),
+                    Size = new Size(IOThreadingPage.IOThreadingLevelGroupBox.Width - 16, driveTypePanelHeight - 20),
+                    TabIndex = tabIndex,
+                };
+                DarkLabel driveLabel = new()
+                {
+                    AutoSize = true,
+                    TabIndex = tabIndex + 1,
+                };
+                DarkComboBox comboBox = new()
+                {
+                    Location = new Point(8, 20),
+                    MinimumSize = new Size(160, 0),
+                    TabIndex = tabIndex + 2,
+                    TabStop = true,
+
+                    Tag = i,
+                };
+                comboBox.Items.AddRange(new object[] { "", "", "", "" });
+                comboBox.SelectedIndex = 0;
+
+                panel.Controls.Add(driveLabel);
+                panel.Controls.Add(comboBox);
+
+                DriveMultithreadingLevel driveMultithreadingLevel =
+                    ConfigData.GetDriveThreadability(
+                        driveLettersAndTypes,
+                        driveData.Root);
+
+                IOThreadingLevelDriveDataSections[i] = new DriveDataSection(
+                    driveLabel: driveLabel,
+                    autoMultithreadingLevel: driveData.MultithreadingLevel,
+                    multithreadingLevel: driveMultithreadingLevel,
+                    drive: driveData.Root,
+                    modelName: driveData.ModelName,
+                    comboBox: comboBox
+                );
+
+                IOThreadingPage.IOThreadingLevelGroupBox.Controls.Add(panel);
+
+                if (i < settingsDriveData.Count - 1)
+                {
+                    IOThreadingPage.HorizDivYPositions.Add(y + (driveTypePanelHeight - 20));
+                }
+
+                comboBox.SelectedIndex = driveMultithreadingLevel switch
+                {
+                    DriveMultithreadingLevel.Single => 1,
+                    DriveMultithreadingLevel.Read => 2,
+                    DriveMultithreadingLevel.ReadWrite => 3,
+                    _ => 0,
+                };
+                comboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+            }
+            IOThreadingPage.IOThreadingLevelGroupBox.Size = IOThreadingPage.IOThreadingLevelGroupBox.Size with
+            {
+                Height = y - 8,
+            };
+
+            #endregion
+        }
+        else
+        {
+            IOThreadingLevelDriveDataSections = Array.Empty<DriveDataSection>();
         }
 
         #endregion
@@ -747,9 +887,31 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             ThiefBuddyPage.GetTBLinkLabel.LinkClicked += ThiefBuddyPage_GetTBLinkLabel_LinkClicked;
 
             #endregion
+
+            #region I/O Threading page
+
+            IOThreadingPage.AutoModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            IOThreadingPage.CustomModeRadioButton.CheckedChanged += IOThreadsRadioButtons_CheckedChanged;
+            IOThreadingPage.IOThreadsResetButton.Click += IOThreadsResetButton_Click;
+
+            #endregion
         }
 
         #endregion
+    }
+
+    private void ComboBox_SelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (sender is DarkComboBox { Tag: int index } comboBox)
+        {
+            IOThreadingLevelDriveDataSections[index].MultithreadingLevel = comboBox.SelectedIndex switch
+            {
+                1 => DriveMultithreadingLevel.Single,
+                2 => DriveMultithreadingLevel.Read,
+                3 => DriveMultithreadingLevel.ReadWrite,
+                _ => DriveMultithreadingLevel.Auto,
+            };
+        }
     }
 
     protected override void OnLoad(EventArgs e)
@@ -795,6 +957,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         // questions.
         PathsPage.DoLayout = true;
         PathsPage.LayoutFLP.PerformLayout();
+        IOThreadingPage.DoLayout = true;
+        IOThreadingPage.LayoutFLP.PerformLayout();
 
         base.OnShown(e);
     }
@@ -1013,6 +1177,59 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
 
                 #endregion
+
+                #region I/O Threading page
+
+                IOThreadingRadioButton.Text = LText.SettingsWindow.IOThreading_TabText;
+
+                IOThreadingPage.IOThreadCountGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
+
+                IOThreadingPage.AutoModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Auto;
+
+                IOThreadingPage.CustomModeRadioButton.Text = LText.SettingsWindow.IOThreading_IOThreads_Custom;
+                IOThreadingPage.CustomThreadsLabel.Text = LText.SettingsWindow.IOThreading_IOThreads_Threads;
+
+                IOThreadingPage.IOThreadingLevelGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreadingLevels;
+
+                IOThreadingPage.HelpLabel.Text = LText.SettingsWindow.IOThreading_HelpMessage;
+
+                foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
+                {
+                    section.DriveLabel.Text = section.Drive + " " + section.ModelName;
+
+                    section.ComboBox.Items[0] = GetAutodetectedThreadingLevelString(section.AutoMultithreadingLevel);
+                    section.ComboBox.Items[1] = GetThreadingLevelString(DriveMultithreadingLevel.Single);
+                    section.ComboBox.Items[2] = GetThreadingLevelString(DriveMultithreadingLevel.Read);
+                    section.ComboBox.Items[3] = GetThreadingLevelString(DriveMultithreadingLevel.ReadWrite);
+                }
+
+                DarkComboBox[] threadingLevelComboBoxes = new DarkComboBox[IOThreadingLevelDriveDataSections.Length];
+                for (int i = 0; i < IOThreadingLevelDriveDataSections.Length; i++)
+                {
+                    threadingLevelComboBoxes[i] = IOThreadingLevelDriveDataSections[i].ComboBox;
+                }
+                DarkComboBox.DoAutoSizeForSet(threadingLevelComboBoxes, rightPadding: 16);
+
+                static string GetAutodetectedThreadingLevelString(DriveMultithreadingLevel threadability)
+                {
+                    return threadability switch
+                    {
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_MultithreadedRead,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_Auto_SingleThread,
+                    };
+                }
+
+                static string GetThreadingLevelString(DriveMultithreadingLevel threadability)
+                {
+                    return threadability switch
+                    {
+                        DriveMultithreadingLevel.ReadWrite => LText.SettingsWindow.IOThreading_IOThreadingLevels_MultithreadedReadAndWrite,
+                        DriveMultithreadingLevel.Read => LText.SettingsWindow.IOThreading_IOThreadingLevels_MultithreadedRead,
+                        _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_SingleThread,
+                    };
+                }
+
+                #endregion
             }
         }
         finally
@@ -1023,6 +1240,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
+#if DEBUG || (Release_Testing && !RT_StartupOnly)
+        if (e.Control && e.KeyCode == Keys.E)
+        {
+            PagePanel.Enabled = !PagePanel.Enabled;
+            return;
+        }
+#endif
+
         if (e.KeyCode == Keys.Escape)
         {
             if (MainSplitContainer.Resizing)
@@ -1332,6 +1557,21 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 : CheckForUpdates.False;
 
             #endregion
+
+            #region I/O Threading page
+
+            OutConfig.IOThreadsMode =
+                IOThreadingPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
+                IOThreadsMode.Auto;
+
+            OutConfig.CustomIOThreadCount = (int)IOThreadingPage.CustomThreadsNumericUpDown.Value;
+
+            foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
+            {
+                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.MultithreadingLevel;
+            }
+
+            #endregion
         }
 
         AskForImport = _state == SettingsWindowState.StartupClean;
@@ -1431,16 +1671,20 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void ExePathBrowseButtons_Click(object? sender, EventArgs e)
     {
+        string? dialogTitle = null;
         DarkTextBox? tb = null;
         for (int i = 0; i < SupportedGameCount; i++)
         {
+            GameIndex gameIndex = (GameIndex)i;
             if (sender == GameExeBrowseButtons[i])
             {
+                dialogTitle = GetLocalizedSelectGameExecutableMessage(gameIndex);
                 tb = GameExeTextBoxes[i];
                 break;
             }
         }
         tb ??= PathsPage.SteamExeTextBox;
+        dialogTitle ??= LText.SettingsWindow.Paths_ChooseSteamExe_DialogTitle;
 
         string initialPath = "";
         try
@@ -1452,7 +1696,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             // ignore
         }
 
-        (DialogResult result, string fileName) = BrowseForExeFile(initialPath);
+        (DialogResult result, string fileName) = BrowseForExeFile(initialPath, dialogTitle);
         if (result == DialogResult.OK) tb.Text = fileName;
 
         ShowPathError(tb, !tb.Text.IsEmpty() && !File.Exists(tb.Text));
@@ -1506,6 +1750,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         using (var d = new VistaFolderBrowserDialog())
         {
+            d.Title = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
             d.InitialDirectory = SanitizePathForDialog(tb.Text);
             d.MultiSelect = false;
             if (d.ShowDialogDark(this) == DialogResult.OK) tb.Text = d.DirectoryName;
@@ -1515,9 +1760,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     }
 
     private (DialogResult Result, string FileName)
-    BrowseForExeFile(string initialPath)
+    BrowseForExeFile(string initialPath, string title)
     {
         using var dialog = new OpenFileDialog();
+        dialog.Title = title;
         dialog.InitialDirectory = initialPath;
         dialog.Filter = LText.BrowseDialogs.ExeFiles + "|*.exe";
         return (dialog.ShowDialogDark(this), dialog.FileName);
@@ -1546,6 +1792,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void AddFMArchivePathButton_Click(object? sender, EventArgs e)
     {
         using var d = new VistaFolderBrowserDialog();
+
+        d.Title = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
 
         DarkListBox lb = PathsPage.FMArchivePathsListBox;
         string initDir =
@@ -1886,6 +2134,27 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
     {
         Core.OpenLink(NonLocalizableText.ThiefBuddyLink);
+    }
+
+    #endregion
+
+    #region I/O Threading page
+
+    private void IOThreadsRadioButtons_CheckedChanged(object? sender, EventArgs e)
+    {
+        SetIOThreadsState();
+    }
+
+    private void SetIOThreadsState()
+    {
+        IOThreadingPage.CustomThreadsLabel.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
+        IOThreadingPage.CustomThreadsNumericUpDown.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
+        IOThreadingPage.IOThreadsResetButton.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
+    }
+
+    private void IOThreadsResetButton_Click(object? sender, EventArgs e)
+    {
+        IOThreadingPage.CustomThreadsNumericUpDown.Value = CoreCount;
     }
 
     #endregion

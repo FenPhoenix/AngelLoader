@@ -77,6 +77,7 @@ internal static partial class Native
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
         private readonly IntPtr _hWnd;

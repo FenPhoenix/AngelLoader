@@ -177,7 +177,7 @@ public static class FenGenAttributes
         bool supportsImport,
         bool supportsLanguages,
         bool supportsResourceDetection,
-        bool RequiresBackupPath) : Attribute;
+        bool requiresBackupPath) : Attribute;
 
     #endregion
 

@@ -14,6 +14,7 @@ using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
+using AngelLoader.Forms.WinFormsNative.Taskbar;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
@@ -361,15 +362,6 @@ internal static class ControlUtils
     {
         get
         {
-            static bool SetFalse()
-            {
-                _toolTipRecreateHandleMethod = null;
-                _toolTipNativeWindowControlField = null;
-                _toolTipNativeWindowClass = null;
-                _toolTipsReflectable = false;
-                return false;
-            }
-
             if (_toolTipsReflectable == null)
             {
                 using var testToolTip = new ToolTip();
@@ -495,8 +487,8 @@ internal static class ControlUtils
                 }
                 finally
                 {
-                    // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very
-                    // least, but in theory it could be, so dispose it if so!
+                    // Ultra paranoid cleanup - this isn't disposable in .NET Framework 4.7.2 at the very least,
+                    // but in theory it could be, so dispose it if so!
                     if (tsNativeWindow is IDisposable tsNativeWindowDisposable)
                     {
                         tsNativeWindowDisposable.Dispose();
@@ -507,6 +499,15 @@ internal static class ControlUtils
             }
 
             return _toolTipsReflectable == true;
+
+            static bool SetFalse()
+            {
+                _toolTipRecreateHandleMethod = null;
+                _toolTipNativeWindowControlField = null;
+                _toolTipNativeWindowClass = null;
+                _toolTipsReflectable = false;
+                return false;
+            }
         }
     }
 
@@ -952,23 +953,11 @@ internal static class ControlUtils
     that this is the help page for AutoPopDelay and NOT InitialDelay means you're expecting any line vaguely
     saying "maximum" and then a number will be the maximum value for the property the page is about. But nope.
     */
-    internal static void TrySetMaxDelay(this ToolTip toolTip)
+    internal static void SetMaxDelay(this ToolTip toolTip)
     {
-        // However, let's be careful just in case.
-        try
+        if (!WinVersion.SupportsPersistentToolTips)
         {
             toolTip.AutoPopDelay = 32767;
-        }
-        catch
-        {
-            try
-            {
-                toolTip.AutoPopDelay = 5000;
-            }
-            catch
-            {
-                // oh well...
-            }
         }
     }
 
@@ -1053,4 +1042,34 @@ internal static class ControlUtils
     }
 
     #endregion
+
+    internal static void SetTaskBarState(this Form form, TaskbarStates states)
+    {
+        if (form.IsHandleCreated)
+        {
+            TaskBarProgress.SetState(form.Handle, states);
+        }
+    }
+
+    internal static void SetTaskBarValue(this Form form, int progressValue, int progressMax)
+    {
+        if (form.IsHandleCreated)
+        {
+            TaskBarProgress.SetValue(form.Handle, progressValue, progressMax);
+        }
+    }
+
+    internal static void DrawFocusRectangle(Control c, Graphics g, Rectangle rect, Color color)
+    {
+        // This draws around the entire control rather than just around the text, but meh. It's good enough.
+        // I don't know if there's any way to get the text rectangle reliably, so let's just leave it like
+        // this.
+        ControlPaint.DrawFocusRectangle(
+            g,
+            rect,
+            // This method doesn't even use the foreColor value. Straight up it just ignores it and passes
+            // only backColor. Meh?
+            c.ForeColor,
+            color);
+    }
 }

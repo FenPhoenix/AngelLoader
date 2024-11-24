@@ -82,6 +82,8 @@
       <li><a href="#settings_appearance_section">Appearance</a></li>
       <li><a href="#settings_other_section">Other</a></li>
       <li><a href="#settings_thief_buddy_section">Thief Buddy</a></li>
+      <li><a href="#settings_update_section">Update</a></li>
+      <li><a href="#settings_io_threading_section">I/O Threading</a></li>
     </ul>
   </li>
   <li>
@@ -124,17 +126,17 @@ Here you can choose the executable files for the supported games you have instal
 <br>For <b>The Dark Mod</b> it is recommended to use version 2.11 or above; older versions have not been tested.
 </p>
 
-<h4>Steam options</h4>
-If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
+<h4>FM archive paths</h4>
+Here you can set the directory or directories where your fan mission archives (.zip, .7z, or .rar files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
+A note on fan mission archive directories: Because multiple directories are allowed, there is the potential for duplicate files. In this case, AngelLoader will simply use the first file it finds, and ignore any further files with the same name. It is recommended that you don't put duplicate files in your archive directories, but if you do, then as long as they're exact copies (ie., not different files with the same name) then it will be fine. It's also recommended that your archive directories should <b>only</b> contain fan missions and/or FMSel/NewDarkLoader backup files. While AngelLoader does attempt to reject non-mission archives on scan, it's still best to keep unrelated files out of your FM directories.
 
 <h4><a id="fm_backup_path"></a>Backup path</h4>
 If you've specified game executables for Thief 1, Thief 2, Thief: Deadly Shadows, or System Shock 2, then this is a required field. This is the directory that will be used for backing up saves, screenshots, etc. when you uninstall a fan mission. This must be a different directory from any FM archive paths. AngelLoader will still be able to use your existing backup files from other loaders, but will place any new backup files in this directory.
 <p/>
 If you've only specified a Dark Mod game executable, then this path is not used or required.
 
-<h4>FM archive paths</h4>
-Here you can set the directory or directories where your fan mission archives (.zip, .7z, or .rar files) are located. If you enable "Include subfolders", then all subfolders inside all directories you specify will also be searched for FM archives (this matches NewDarkLoader's behavior). Otherwise, only the exact directories you specify will be searched.
-A note on fan mission archive directories: Because multiple directories are allowed, there is the potential for duplicate files. In this case, AngelLoader will simply use the first file it finds, and ignore any further files with the same name. It is recommended that you don't put duplicate files in your archive directories, but if you do, then as long as they're exact copies (ie., not different files with the same name) then it will be fine. It's also recommended that your archive directories should <b>only</b> contain fan missions and/or FMSel/NewDarkLoader backup files. While AngelLoader does attempt to reject non-mission archives on scan, it's still best to keep unrelated files out of your FM directories.
+<h4>Steam options</h4>
+If you own one or more supported games on Steam, you can specify the location of <code>steam.exe</code> and choose which games should be launched through it. Launching a game in this way enables access to Steam features such as the in-game overlay, play time counter, etc.
 
 <hr>
 
@@ -663,6 +665,15 @@ Updates keep the same "bitness" as your currently installed version of AngelLoad
 32-bit updates to 32-bit.
 
 <p/>
+
+<h3><a id="settings_io_threading_section"></a>I/O Threading section</h3>
+
+<p><img src="images/setup_io_threading_tab.png" /></p>
+        
+Modern solid-state drives can often handle many requests at once, and allowing multithreaded I/O
+can greatly increase performance for these drives. This can result in faster installs, scans, etc.
+        
+<p />
 
 <hr>
 

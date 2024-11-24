@@ -830,6 +830,34 @@ internal static class FindFMs
 
         string? fmselInf = GetFMSelInfPath(fm);
 
+        if (!File.Exists(fmselInf!)) return FixUp();
+
+        if (!TryReadAllLines(fmselInf!, out List<string>? lines))
+        {
+            return null;
+        }
+
+        if (lines.Count < 2 ||
+            !lines[0].TryGetValueI("Name=", out string installedName) ||
+            !lines[1].TryGetValueI("Archive=", out string archiveName))
+        {
+            return FixUp();
+        }
+
+        installedName = installedName.Trim();
+        if (!installedName.EqualsI(fm.InstalledDir))
+        {
+            return FixUp();
+        }
+
+        archiveName = archiveName.Trim();
+        if (archiveName.IsEmpty())
+        {
+            return FixUp();
+        }
+
+        return archiveName;
+
         string? FixUp()
         {
             // Make a best-effort attempt to find what this FM's archive name should be
@@ -864,34 +892,6 @@ internal static class FindFMs
 
             return tryArchive;
         }
-
-        if (!File.Exists(fmselInf!)) return FixUp();
-
-        if (!TryReadAllLines(fmselInf!, out List<string>? lines))
-        {
-            return null;
-        }
-
-        if (lines.Count < 2 ||
-            !lines[0].TryGetValueI("Name=", out string installedName) ||
-            !lines[1].TryGetValueI("Archive=", out string archiveName))
-        {
-            return FixUp();
-        }
-
-        installedName = installedName.Trim();
-        if (!installedName.EqualsI(fm.InstalledDir))
-        {
-            return FixUp();
-        }
-
-        archiveName = archiveName.Trim();
-        if (archiveName.IsEmpty())
-        {
-            return FixUp();
-        }
-
-        return archiveName;
     }
 
     // TODO(FindFMs.GetFMSelInfPath()):

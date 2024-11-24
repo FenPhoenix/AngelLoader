@@ -71,7 +71,6 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
     /// Sets the progress bar's value instantly. Avoids the la-dee-dah catch-up-when-I-feel-like-it nature of
     /// the progress bar that makes it look annoying and unprofessional.
     /// </summary>
-    /// <param name="value"></param>
     [PublicAPI]
     public new int Value
     {

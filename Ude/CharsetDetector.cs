@@ -117,7 +117,7 @@ public sealed class CharsetDetector
 {
     // @Ude: Static array, probably we want to keep it static because we use it all the time
     // IMPORTANT: These must be in the exact same order as the Ude.Charset enum members! (Done for perf)
-    public static readonly int[] CharsetToCodePage =
+    private static readonly int[] CharsetToCodePage =
     {
         -1,
         20127, // "ASCII"

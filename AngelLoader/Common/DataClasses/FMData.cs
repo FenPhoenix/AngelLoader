@@ -264,6 +264,7 @@ public sealed class FanMission
     [FenGenIgnore]
     internal string CommentSingleLine
     {
+        // @LAZY_INIT_THREAD_SAFETY_CHECK
         get => _commentSingleLine ??= Comment.FromRNEscapes().ToSingleLineComment();
         set => _commentSingleLine = value;
     }
@@ -405,7 +406,8 @@ public sealed class FanMission
     #endregion
 }
 
-public readonly struct ValidAudioConvertibleFM
+[StructLayout(LayoutKind.Auto)]
+public readonly struct ValidAudioConvertibleFM : IEquatable<ValidAudioConvertibleFM>
 {
     private readonly FanMission InternalFM;
 

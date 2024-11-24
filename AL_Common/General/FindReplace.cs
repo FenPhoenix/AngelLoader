@@ -4,8 +4,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
     {
         byte firstByte = pattern[0];
@@ -81,6 +79,4 @@ public static partial class Common
 
         return false;
     }
-
-    #endregion
 }

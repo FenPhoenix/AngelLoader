@@ -614,7 +614,7 @@ internal sealed partial class MainForm : Form
 
     private void Test2Button_Click(object sender, EventArgs e)
     {
-        const string item = @"F:\SS2 FM Pack\ss2 fms\Extracted\Blind Disposition v1.3";
+        const string item = @"J:\FM packs\SS2 FM Pack\ss2 fms\Extracted\Blind Disposition v1.3";
         FMScan.ScanFM(item, false, Path.Combine(Paths.LocalTestPath, "localdata-ss2-folder-ver"));
     }
 
@@ -643,7 +643,7 @@ internal sealed partial class MainForm : Form
             try
             {
                 Process.Start("explorer.exe",
-                    "\"" + Path.Combine(@"F:\FM pack\All\ExtractPermanent", fmDir) + "\"");
+                    "\"" + Path.Combine(@"J:\FM packs\FM pack\All\ExtractPermanent", fmDir) + "\"");
             }
             catch
             {
@@ -677,7 +677,7 @@ internal sealed partial class MainForm : Form
         //    {
         //        Process.Start(Path.Combine(Paths.LocalDataPath, fmDir + ".yaml"));
         //        Process.Start(@"explorer.exe",
-        //            "\"" + Path.Combine(@"F:\FM pack\All\ExtractPermanent", fmDir) + "\"");
+        //            "\"" + Path.Combine(@"J:\FM packs\FM pack\All\ExtractPermanent", fmDir) + "\"");
         //    }
         //    Trace.WriteLine("");
         //}

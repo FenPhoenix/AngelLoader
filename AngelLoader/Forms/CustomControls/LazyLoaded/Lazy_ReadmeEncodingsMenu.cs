@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common;
 using JetBrains.Annotations;
 using static AngelLoader.Global;
 
@@ -367,26 +367,6 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 
         #endregion
 
-        void InitItem(ToolStripItem item)
-        {
-            if (item is ToolStripMenuItemWithBackingField<int> encItem)
-            {
-                if (encItem.Field >= 0)
-                {
-                    _menuItemsDict[encItem.Field] = encItem;
-                    Encoding enc = Encoding.GetEncoding(encItem.Field);
-                    encItem.Text = enc.EncodingName + " (" + enc.CodePage.ToString(NumberFormatInfo.CurrentInfo) + ")";
-                    encItem.CheckOnClick = true;
-                }
-                encItem.CheckedChanged += MenuItems_CheckedChanged;
-                encItem.Click += _owner.ReadmeEncodingMenuItems_Click;
-            }
-            else if (item is ToolStripMenuItemCustom baseItem)
-            {
-                baseItem.CheckedChanged += MenuItems_CheckedChanged;
-            }
-        }
-
         foreach (ToolStripItem baseItem in _menu.Items)
         {
             InitItem(baseItem);
@@ -411,6 +391,28 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
         Localize(suspendResume: false);
 
         _menu.ResumeLayout();
+        
+        return;
+
+        void InitItem(ToolStripItem item)
+        {
+            if (item is ToolStripMenuItemWithBackingField<int> encItem)
+            {
+                if (encItem.Field >= 0)
+                {
+                    _menuItemsDict[encItem.Field] = encItem;
+                    Encoding enc = Encoding.GetEncoding(encItem.Field);
+                    encItem.Text = enc.EncodingName + " (" + enc.CodePage.ToStrCur() + ")";
+                    encItem.CheckOnClick = true;
+                }
+                encItem.CheckedChanged += MenuItems_CheckedChanged;
+                encItem.Click += _owner.ReadmeEncodingMenuItems_Click;
+            }
+            else if (item is ToolStripMenuItemCustom baseItem)
+            {
+                baseItem.CheckedChanged += MenuItems_CheckedChanged;
+            }
+        }
     }
 
     internal void SetMenuItemChecked(Encoding encoding)

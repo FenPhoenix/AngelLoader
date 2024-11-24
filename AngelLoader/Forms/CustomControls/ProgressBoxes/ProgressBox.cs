@@ -16,7 +16,7 @@ namespace AngelLoader.Forms.CustomControls;
 // IMPORTANT (ProgressBox layout / size of controls / centering):
 // Designer layout is NOT accurate on the right edge! Progress bar dimensions look like 9px left/11px right,
 // but in-app it's 9px left/9px right like we want. Ugh.
-public sealed partial class ProgressPanel : UserControl, IDarkable
+public sealed partial class ProgressBox : UserControl, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
     // Controls have a cache-text option but it's weird and causes weird issues sometimes that are not always
@@ -126,7 +126,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
     #region Init
 
-    public ProgressPanel(MainForm owner)
+    public ProgressBox(MainForm owner)
     {
         _owner = owner;
 
@@ -194,15 +194,18 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
         {
             progressBar.Style = ProgressBarStyle.Marquee;
             SetLabelText(messageItemType, "");
+            if (updateTaskbar)
+            {
+                _owner.SetTaskBarState(TaskbarStates.Indeterminate);
+            }
         }
         else
         {
             progressBar.Style = ProgressBarStyle.Blocks;
-        }
-
-        if (updateTaskbar && _owner.IsHandleCreated)
-        {
-            TaskBarProgress.SetState(_owner.Handle, TaskbarStates.Indeterminate);
+            if (updateTaskbar)
+            {
+                _owner.SetTaskBarState(TaskbarStates.Normal);
+            }
         }
     }
 
@@ -214,9 +217,9 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
         progressBar.Value = percent;
 
-        if (updateTaskbar && _owner.IsHandleCreated)
+        if (updateTaskbar)
         {
-            TaskBarProgress.SetValue(_owner.Handle, percent, 100);
+            _owner.SetTaskBarValue(percent, 100);
         }
     }
 
@@ -224,11 +227,11 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
 
     #region Internal methods
 
-    internal void HideThis()
+    internal new void Hide()
     {
-        if (_owner.IsHandleCreated) TaskBarProgress.SetState(_owner.Handle, TaskbarStates.NoProgress);
+        _owner.SetTaskBarState(TaskbarStates.NoProgress);
 
-        Hide();
+        base.Hide();
 
         SetLabelText(MessageItemType.MainMessage1, "");
         SetLabelText(MessageItemType.MainMessage2, "");
@@ -404,7 +407,7 @@ public sealed partial class ProgressPanel : UserControl, IDarkable
             }
             else
             {
-                HideThis();
+                Hide();
             }
         }
     }

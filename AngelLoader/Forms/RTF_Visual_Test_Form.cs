@@ -15,7 +15,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class RTF_Visual_Test_Form : DarkFormBase
+public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSettable
 {
     private const string AppGuid = "3053BA21-EB84-4660-8938-1B7329AA62E4.AngelLoader";
 
@@ -31,6 +31,8 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
         }
     }
 
+    public override void RespondToSystemThemeChange() => SetThemeBase(Config.VisualTheme);
+
     internal static void LoadIfCommandLineArgsArePresent()
     {
         string[] args = Environment.GetCommandLineArgs();
@@ -41,7 +43,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
             {
                 "-rtf_test_light" => false,
                 "-rtf_test_dark" => true,
-                _ => false
+                _ => false,
             };
 
             Application.EnableVisualStyles();
@@ -74,7 +76,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
 
         var rtfFiles = Directory
             .GetFiles(FMsCacheDir, "*", SearchOption.AllDirectories)
-            .Where(x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
+            .Where(static x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
 
         byte[] rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 
@@ -133,7 +135,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
 
     private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText);
+        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText, null);
 
         string notesFile = GetCurrentNotesFile();
         NotesTextBox.Text = File.Exists(notesFile) ? File.ReadAllText(notesFile) : "";
@@ -148,8 +150,6 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
 
     protected override void WndProc(ref Message m)
     {
-        static int MsgAppNum(ref Message m) => m.WParam.ToInt32();
-
         if (m.Msg == WM_CHANGECOMBOBOXSELECTEDINDEX && MsgAppNum(ref m) != AppNum())
         {
             _broadcastEnabled = false;
@@ -168,6 +168,10 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
         {
             base.WndProc(ref m);
         }
+
+        return;
+
+        static int MsgAppNum(ref Message m) => m.WParam.ToInt32();
     }
 
     private void RTFBox_VScroll(object sender, EventArgs e)
@@ -204,5 +208,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase
         Directory.CreateDirectory(ConfigDir);
         File.WriteAllText(ConfigFile, RTFFileComboBox.SelectedIndex.ToStrInv());
     }
+
+    public void SetWaitCursor(bool value) => Cursor = value ? Cursors.WaitCursor : Cursors.Default;
 }
 #endif

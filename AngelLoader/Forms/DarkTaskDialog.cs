@@ -32,9 +32,12 @@ public partial class DarkTaskDialog : DarkFormBase
         string? noText = null,
         string? cancelText = null,
         bool yesIsDangerous = false,
+        bool noIsDangerous = false,
+        bool cancelIsDangerous = false,
         string? checkBoxText = null,
         bool? checkBoxChecked = null,
-        MBoxButton defaultButton = MBoxButton.Cancel)
+        MBoxButton defaultButton = MBoxButton.Cancel,
+        bool viewLogButtonVisible = false)
     {
         // All numbers are just matching the original Win32 task dialog as closely as possible. Don't worry
         // about them.
@@ -84,6 +87,20 @@ public partial class DarkTaskDialog : DarkFormBase
             YesButton.Image = Images.RedExclCircle;
         }
 
+        if (noIsDangerous && _noButtonVisible)
+        {
+            NoButton.TextImageRelation = TextImageRelation.ImageBeforeText;
+            NoButton.ImageAlign = ContentAlignment.MiddleCenter;
+            NoButton.Image = Images.RedExclCircle;
+        }
+
+        if (cancelIsDangerous && _cancelButtonVisible)
+        {
+            Cancel_Button.TextImageRelation = TextImageRelation.ImageBeforeText;
+            Cancel_Button.ImageAlign = ContentAlignment.MiddleCenter;
+            Cancel_Button.Image = Images.RedExclCircle;
+        }
+
         if (yesText != null) YesButton.Text = yesText;
         if (noText != null) NoButton.Text = noText;
         if (cancelText != null) Cancel_Button.Text = cancelText;
@@ -94,6 +111,7 @@ public partial class DarkTaskDialog : DarkFormBase
         Cancel_Button.Visible = _cancelButtonVisible;
         VerificationCheckBox.Visible = checkBoxVisible;
         VerificationCheckBox.Checked = checkBoxChecked == true;
+        ViewLogButton.Visible = viewLogButtonVisible;
 
         if (icon != MessageBoxIcon.None) ControlUtils.SetMessageBoxIcon(IconPictureBox, icon);
 
@@ -212,4 +230,6 @@ public partial class DarkTaskDialog : DarkFormBase
             VerificationCheckBox.BackColor = SystemColors.Control;
         }
     }
+
+    private void ViewLogButton_Click(object sender, EventArgs e) => Core.OpenLogFile();
 }

@@ -67,23 +67,6 @@ internal static class GameConfigFiles
                      List<string> FMSelectorLines, bool AlwaysShowLoader, List<string>? AllLines)
     GetInfoFromCamModIni(string gamePath, bool langOnly, bool returnAllLines)
     {
-        static string CreateAndReturnFMsPath(string gamePath)
-        {
-            string fmsPath = Path.Combine(gamePath, "FMs");
-            try
-            {
-                Directory.CreateDirectory(fmsPath);
-            }
-            catch (Exception ex)
-            {
-                // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
-                // But return an error code, don't put up a dialog here! (thread safety)
-                Log(ErrorText.ExCreate + "FM installed base dir", ex);
-            }
-
-            return fmsPath;
-        }
-
         var fmSelectorLines = new List<string>();
         bool alwaysShowLoader = false;
 
@@ -182,6 +165,23 @@ internal static class GameConfigFiles
 
         return (Directory.Exists(path) ? path : CreateAndReturnFMsPath(gamePath),
             fm_language, fm_language_forced, fmSelectorLines, alwaysShowLoader, retLines);
+
+        static string CreateAndReturnFMsPath(string gamePath)
+        {
+            string fmsPath = Path.Combine(gamePath, "FMs");
+            try
+            {
+                Directory.CreateDirectory(fmsPath);
+            }
+            catch (Exception ex)
+            {
+                // @BetterErrors(GetInfoFromCamModIni()/CreateAndReturnFMsPath())
+                // But return an error code, don't put up a dialog here! (thread safety)
+                Log(ErrorText.ExCreate + "FM installed base dir", ex);
+            }
+
+            return fmsPath;
+        }
     }
 
     // @CAN_RUN_BEFORE_VIEW_INIT
@@ -517,6 +517,34 @@ internal static class GameConfigFiles
 
         static string FindPreviousSelector(List<string> lines, string stubPath, string gamePath)
         {
+            var selectorsList = new List<string>();
+            var commentedSelectorsList = new List<string>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string lt = lines[i].Trim();
+
+                string selectorFileName;
+                if (lt.Length > 0 && lt[0] == ';')
+                {
+                    lt = RemoveLeadingSemicolons(lt);
+
+                    if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
+                    {
+                        if (!commentedSelectorsList.PathContainsI(selectorFileName)) commentedSelectorsList.Add(selectorFileName);
+                    }
+                }
+                else if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
+                {
+                    if (!selectorsList.PathContainsI(selectorFileName)) selectorsList.Add(selectorFileName);
+                }
+            }
+
+            return
+                selectorsList.Count > 0 ? selectorsList[^1] :
+                commentedSelectorsList.Count > 0 ? commentedSelectorsList[^1] :
+                Paths.FMSelDll;
+
             static string GetFullPath(string gamePath, string path)
             {
                 if (PathIsRelative(path))
@@ -554,34 +582,6 @@ internal static class GameConfigFiles
                     return "";
                 }
             }
-
-            var selectorsList = new List<string>();
-            var commentedSelectorsList = new List<string>();
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                string lt = lines[i].Trim();
-
-                string selectorFileName;
-                if (lt.Length > 0 && lt[0] == ';')
-                {
-                    lt = RemoveLeadingSemicolons(lt);
-
-                    if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
-                    {
-                        if (!commentedSelectorsList.PathContainsI(selectorFileName)) commentedSelectorsList.Add(selectorFileName);
-                    }
-                }
-                else if (!(selectorFileName = TryGetOtherSelectorSpecifier(lt)).IsEmpty())
-                {
-                    if (!selectorsList.PathContainsI(selectorFileName)) selectorsList.Add(selectorFileName);
-                }
-            }
-
-            return
-                selectorsList.Count > 0 ? selectorsList[^1] :
-                commentedSelectorsList.Count > 0 ? commentedSelectorsList[^1] :
-                Paths.FMSelDll;
         }
 
         #endregion

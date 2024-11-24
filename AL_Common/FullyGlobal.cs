@@ -11,4 +11,7 @@ public static class FullyGlobal
     /// Shorthand for <see cref="Environment.NewLine"/>
     /// </summary>
     public static readonly string NL = Environment.NewLine;
+
+    public const int StreamCopyBufferSize = 81920;
+    public const int FileStreamBufferSize = 4096;
 }

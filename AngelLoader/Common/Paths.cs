@@ -31,9 +31,6 @@ internal static class TempPaths
 
 internal static class Paths
 {
-    // Fields that will, or will most likely, be used pretty much right away are initialized normally here.
-    // Fields that are likely not to be used right away are lazy-loaded.
-
     #region Startup path
 
 #if DEBUG || Release_Testing
@@ -78,52 +75,42 @@ internal static class Paths
     // Probably can be considered practically impossible... But check if doing cross-platform?
     // -Keep Path.Combine() so we at least throw and exit if that happens though
     // -Also keep this immediately-loaded for the above reason
-    private static readonly string _baseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
+    internal static readonly string BaseTemp = Path.Combine(Path.GetTempPath(), "AngelLoader");
 
     #region Help
 
-    private static string? _helpTemp;
-    internal static string HelpTemp => _helpTemp ??= PathCombineFast_NoChecks(_baseTemp, "Help");
+    internal static readonly string HelpTemp = PathCombineFast_NoChecks(BaseTemp, "Help");
 
-    private static string? _helpRedirectFilePath;
-    internal static string HelpRedirectFilePath => _helpRedirectFilePath ??= PathCombineFast_NoChecks(HelpTemp, "redir.html");
+    internal static readonly string HelpRedirectFilePath = PathCombineFast_NoChecks(HelpTemp, "redir.html");
 
     #endregion
 
     #region Scan
 
-    private static string? _fmScannerTemp;
-    internal static string FMScannerTemp => _fmScannerTemp ??= PathCombineFast_NoChecks(_baseTemp, "FMScan");
+    internal static readonly string FMScannerTemp = PathCombineFast_NoChecks(BaseTemp, "FMScan");
 
-    private static string? _sevenZipListTemp;
-    internal static string SevenZipListTemp => _sevenZipListTemp ??= PathCombineFast_NoChecks(_baseTemp, "7zl");
+    internal static readonly string SevenZipListTemp = PathCombineFast_NoChecks(BaseTemp, "7zl");
 
     #endregion
 
-    private static string? _fmCacheTemp;
-    internal static string FMCacheTemp => _fmCacheTemp ??= PathCombineFast_NoChecks(_baseTemp, "FMCache");
+    internal static readonly string FMCacheTemp = PathCombineFast_NoChecks(BaseTemp, "FMCache");
 
     #region Stub
 
-    private static string? _stubCommTemp;
-    internal static string StubCommTemp => _stubCommTemp ??= PathCombineFast_NoChecks(_baseTemp, "Stub");
+    internal static readonly string StubCommTemp = PathCombineFast_NoChecks(BaseTemp, "Stub");
 
-    private static string? _stubCommFilePath;
     /// <summary>
     /// Tells the stub dll what to do.
     /// </summary>
-    internal static string StubCommFilePath => _stubCommFilePath ??= PathCombineFast_NoChecks(StubCommTemp, "al_stub_args.tmp");
+    internal static readonly string StubCommFilePath = PathCombineFast_NoChecks(StubCommTemp, "al_stub_args.tmp");
 
     #endregion
 
-    private static string? _updateTemp;
-    internal static string UpdateTemp => _updateTemp ??= PathCombineFast_NoChecks(_baseTemp, "Update");
+    internal static readonly string UpdateTemp = PathCombineFast_NoChecks(BaseTemp, "Update");
 
-    private static string? _updateBakTemp;
-    internal static string UpdateBakTemp => _updateBakTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateBak");
+    internal static readonly string UpdateBakTemp = PathCombineFast_NoChecks(BaseTemp, "UpdateBak");
 
-    private static string? _updateAppDownloadTemp;
-    internal static string UpdateAppDownloadTemp => _updateAppDownloadTemp ??= PathCombineFast_NoChecks(_baseTemp, "UpdateDL");
+    internal static readonly string UpdateAppDownloadTemp = PathCombineFast_NoChecks(BaseTemp, "UpdateDL");
 
     internal static void CreateOrClearTempPath(TempPath pathType)
     {
@@ -180,9 +167,8 @@ internal static class Paths
 
     internal static readonly string Languages = PathCombineFast_NoChecks(Data, "Languages");
 
-    private static string? _fmsCache;
     /// <summary>For caching readmes and whatever else we want from non-installed FM archives</summary>
-    internal static string FMsCache => _fmsCache ??= PathCombineFast_NoChecks(Data, "FMsCache");
+    internal static readonly string FMsCache = PathCombineFast_NoChecks(Data, "FMsCache");
 
     internal static readonly string ConfigIni = PathCombineFast_NoChecks(Data, "Config.ini");
     internal const string FMDataBakBase = "FMData.bak";
@@ -191,16 +177,13 @@ internal static class Paths
 
     #endregion
 
-    private static string? _updateExe;
-    internal static string UpdateExe => _updateExe ??= PathCombineFast_NoChecks(Startup, "Update.exe");
+    internal static readonly string UpdateExe = PathCombineFast_NoChecks(Startup, "Update.exe");
 
-    private static string? _updateExeBak;
-    internal static string UpdateExeBak => _updateExeBak ??= PathCombineFast_NoChecks(Startup, "Update.exe.bak");
+    internal static readonly string UpdateExeBak = PathCombineFast_NoChecks(Startup, "Update.exe.bak");
 
     #region Docs
 
-    private static string? _docFile;
-    internal static string DocFile => _docFile ??= PathCombineFast_NoChecks(Startup, "doc", "AngelLoader documentation.html");
+    internal static readonly string DocFile = PathCombineFast_NoChecks(Startup, "doc", "AngelLoader documentation.html");
 
     #endregion
 
@@ -208,26 +191,21 @@ internal static class Paths
 
     internal const string StubFileName = "AngelLoader_Stub.dll";
 
-    private static string? _stubPath;
-    internal static string StubPath => _stubPath ??= PathCombineFast_NoChecks(Startup, StubFileName);
+    internal static readonly string StubPath = PathCombineFast_NoChecks(Startup, StubFileName);
 
     #endregion
 
     #region FFmpeg
 
-    private static string? _ffmpegExe;
-    internal static string FFmpegExe => _ffmpegExe ??= PathCombineFast_NoChecks(Startup, "ffmpeg", "ffmpeg.exe");
+    internal static readonly string FFmpegExe = PathCombineFast_NoChecks(Startup, "ffmpeg", "ffmpeg.exe");
 
-    private static string? _ffprobeExe;
-    internal static string FFprobeExe => _ffprobeExe ??= PathCombineFast_NoChecks(Startup, "ffmpeg", "ffprobe.exe");
+    internal static readonly string FFprobeExe = PathCombineFast_NoChecks(Startup, "ffmpeg", "ffprobe.exe");
 
     #endregion
 
-    private static string? _sevenZipPath;
-    internal static string SevenZipPath => _sevenZipPath ??= PathCombineFast_NoChecks(Startup, "7z64");
+    internal static readonly string SevenZipPath = PathCombineFast_NoChecks(Startup, "7z64");
 
-    private static string? _sevenZipExe;
-    internal static string SevenZipExe => _sevenZipExe ??= PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
+    internal static readonly string SevenZipExe = PathCombineFast_NoChecks(SevenZipPath, "7z.exe");
 
     #region Log files
 
@@ -269,8 +247,7 @@ internal static class Paths
 
     internal const string DarkLoaderSaveBakDir = "DarkLoader";
 
-    private static string? _darkLoaderSaveOrigBakDir;
-    internal static string DarkLoaderSaveOrigBakDir => _darkLoaderSaveOrigBakDir ??= PathCombineFast_NoChecks(DarkLoaderSaveBakDir, "Original");
+    internal static readonly string DarkLoaderSaveOrigBakDir = PathCombineFast_NoChecks(DarkLoaderSaveBakDir, "Original");
 
     internal const string FMSelInf = "fmsel.inf";
 

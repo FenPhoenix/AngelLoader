@@ -45,7 +45,7 @@ typedef struct sFMSelectorData
 } sFMSelectorData;
 #pragma pack()
 
-typedef enum eFMSelReturn
+typedef enum eFMSelReturn  // NOLINT(performance-enum-size)
 {
     kSelFMRet_OK = 0,       // run selected FM 'data->sName' (0-len string to run without an FM)
     kSelFMRet_Cancel = -1,  // cancel FM selection and start game as-is (no FM or if defined in cam_mod.ini use that)

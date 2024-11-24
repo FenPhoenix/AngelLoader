@@ -26,7 +26,7 @@ public static partial class GameSupport
         // Known/supported games
         // IMPORTANT: Prefixes are used in Config.ini, so they must remain the same for compatibility.
         // Don't change the existing values, only add new ones!
-        // Obviously the steam ids must remain the same as well.
+        // Obviously the Steam ids must remain the same as well.
 
         [FenGenGame(
             prefix: "T1",
@@ -37,7 +37,7 @@ public static partial class GameSupport
             supportsImport: true,
             supportsLanguages: true,
             supportsResourceDetection: true,
-            RequiresBackupPath: true)]
+            requiresBackupPath: true)]
         Thief1 = 1,
 
         [FenGenGame(
@@ -49,7 +49,7 @@ public static partial class GameSupport
             supportsImport: true,
             supportsLanguages: true,
             supportsResourceDetection: true,
-            RequiresBackupPath: true)]
+            requiresBackupPath: true)]
         Thief2 = 2,
 
         [FenGenGame(
@@ -61,7 +61,7 @@ public static partial class GameSupport
             supportsImport: true,
             supportsLanguages: false,
             supportsResourceDetection: false,
-            RequiresBackupPath: true)]
+            requiresBackupPath: true)]
         Thief3 = 4,
 
         [FenGenGame(
@@ -73,7 +73,7 @@ public static partial class GameSupport
             supportsImport: true,
             supportsLanguages: true,
             supportsResourceDetection: true,
-            RequiresBackupPath: true)]
+            requiresBackupPath: true)]
         SS2 = 8,
 
         [FenGenGame(
@@ -85,7 +85,7 @@ public static partial class GameSupport
             supportsImport: false,
             supportsLanguages: false,
             supportsResourceDetection: false,
-            RequiresBackupPath: false)]
+            requiresBackupPath: false)]
         TDM = 16,
 
         [FenGenIgnore]

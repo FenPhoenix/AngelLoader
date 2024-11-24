@@ -157,36 +157,6 @@ public static partial class Utils
         return false;
     }
 
-    internal static bool WinVersionIs7OrAbove()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(6, 1);
-
-            // Win8 check: same but version is 6, 2
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    internal static bool WinVersionSupportsDarkMode()
-    {
-        try
-        {
-            OperatingSystem osVersion = Environment.OSVersion;
-            return osVersion.Platform == PlatformID.Win32NT &&
-                   osVersion.Version >= new Version(10, 0, 17763);
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     internal static Font GetMicrosoftSansSerifDefault() => new("Microsoft Sans Serif", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
     internal static string AutodetectDarkLoaderFile(string fileName)
@@ -264,21 +234,6 @@ public static partial class Utils
         timer.Start();
     }
 
-    internal static Encoding GetOEMCodePageOrFallback(Encoding fallback)
-    {
-        Encoding enc;
-        try
-        {
-            enc = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
-        }
-        catch
-        {
-            enc = fallback;
-        }
-
-        return enc;
-    }
-
     internal static void ResetColumnDisplayIndexes(ColumnDataArray columns)
     {
         for (int i = 0; i < ColumnCount; i++)
@@ -300,7 +255,7 @@ public static partial class Utils
     {
         0 => "",
         < ByteSize.MB => Math.Round(size / 1024f).ToStrCur() + " " + LText.Global.KilobyteShort,
-        >= ByteSize.MB and < ByteSize.GB => Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort,
+        < ByteSize.GB => Math.Round(size / 1024f / 1024f).ToStrCur() + " " + LText.Global.MegabyteShort,
         _ => Math.Round(size / 1024f / 1024f / 1024f, 2).ToStrCur() + " " + LText.Global.GigabyteShort,
     };
 

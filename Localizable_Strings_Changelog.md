@@ -6,6 +6,43 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.9.7:
+
+#### [English.ini changes](https://fenphoenix.github.io/AngelLoader/english_1.9.2_1.9.7.html)
+
+#### [AngelLoader documentation.html changes](https://fenphoenix.github.io/AngelLoader/doc_1.9.0_1.9.7.html)
+
+New images:  
+`setup_io_threading_tab.png`  
+
+Updated images:  
+`BottomBar.png`  
+`comment_tab.png`  
+`edit_fm_tab.png`  
+`game_versions_window.png`  
+`initial_setup.png`  
+`main_window_full_960.png`  
+`mods_tab.png`  
+`patch_tab.png`  
+`ScanAllFMs_window.png`  
+`screenshots_tab.png`  
+`settings_appr_date.png`  
+`settings_appr_game_org.png`  
+`settings_appr_hide.png`  
+`settings_appr_lang.png`  
+`settings_appr_no_fm.png`  
+`settings_appr_rating.png`  
+`settings_appr_readme.png`  
+`settings_appr_recent.png`  
+`settings_appr_sort.png`  
+`settings_appr_theme.png`  
+`setup_other_tab.png`  
+`setup_paths_tab.png`  
+`setup_thief_buddy_tab.png`  
+`setup_update_tab.png`  
+`stats_tab.png`  
+`tags_tab.png`  
+
 ### v1.9.6:
 
 No localizable text changes.
@@ -39,7 +76,7 @@ No localizable text changes.
 New images:  
 `screenshots_tab.png`  
 
-Updated images: 
+Updated images:  
 `main_window_full_960.png`  
 `stats_tab.png`  
 `edit_fm_tab.png`  

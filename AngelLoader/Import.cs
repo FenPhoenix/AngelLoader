@@ -291,6 +291,14 @@ internal static class Import
 
         var fms = new List<FanMission>();
 
+        ImportError error = DoImport();
+
+        if (error != ImportError.None) return (error, fms);
+
+        List<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
+
+        return (ImportError.None, importedFMs);
+
         ImportError DoImport()
         {
             try
@@ -502,14 +510,6 @@ internal static class Import
                 Core.View.HideProgressBox();
             }
         }
-
-        ImportError error = DoImport();
-
-        if (error != ImportError.None) return (error, fms);
-
-        List<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
-
-        return (ImportError.None, importedFMs);
     }
 
     private static bool
@@ -565,6 +565,8 @@ internal static class Import
 
         if (t1Dir.IsWhiteSpace() && t2Dir.IsWhiteSpace() && ss2Dir.IsWhiteSpace()) return true;
 
+        DarkLoaderBackupContext ctx = new();
+
         for (int i = 0; i < 3; i++)
         {
             if (i == 0 && t1Dir.IsEmpty()) continue;
@@ -574,13 +576,13 @@ internal static class Import
             string savesPath = Path.Combine(i switch { 0 => t1Dir, 1 => t2Dir, _ => ss2Dir }, "allsaves");
             if (!Directory.Exists(savesPath)) continue;
 
-            Directory.CreateDirectory(Config.DarkLoaderBackupPath);
+            Directory.CreateDirectory(ctx.DarkLoaderBackupPath);
 
             // Converting takes too long, so just copy them to our backup folder and they'll be handled
             // appropriately next time the user installs an FM
             foreach (string f in FastIO.GetFilesTopOnly(savesPath, "*.zip"))
             {
-                string dest = Path.Combine(Config.DarkLoaderBackupPath, f.GetFileNameFast());
+                string dest = Path.Combine(ctx.DarkLoaderBackupPath, f.GetFileNameFast());
                 File.Copy(f, dest, overwrite: true);
             }
         }
@@ -594,6 +596,12 @@ internal static class Import
         // As far as can be ascertained through manual testing, FMSel seems to read/write its ini file in UTF8.
         List<string> lines = File_ReadAllLines_List(iniFile);
         var fms = new List<FanMission>();
+
+        DoImport(lines, fms);
+
+        List<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
+
+        return (ImportError.None, importedFMs);
 
         static void DoImport(List<string> lines, List<FanMission> fms)
         {
@@ -691,12 +699,6 @@ internal static class Import
                 }
             }
         }
-
-        DoImport(lines, fms);
-
-        List<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
-
-        return (ImportError.None, importedFMs);
     }
 
     /*
@@ -728,33 +730,13 @@ internal static class Import
         List<string> lines = File_ReadAllLines_List(iniFile, GetLegacyDefaultEncoding(), true);
         var fms = new List<FanMission>();
 
-        static void TryAddToArchivesHash(string dir, DictionaryI<FileInfo> archivesDict)
-        {
-            try
-            {
-                // NDL always searches subdirectories as well
-                foreach (FileInfo fi in new DirectoryInfo(dir).GetFiles("*", SearchOption.AllDirectories))
-                {
-                    string f = fi.FullName;
+        ImportError error = DoImport(lines, fms, instDirNameContext);
 
-                    // @DIRSEP: '/' conversion due to string.ContainsI()
-                    if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
-                    {
-                        string fn = Path.GetFileName(f);
-                        if (!fn.IsWhiteSpace() &&
-                            fn.ExtIsArchive() &&
-                            !fn.ContainsI(Paths.FMSelBak))
-                        {
-                            archivesDict[fn] = fi;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
-            }
-        }
+        if (error != ImportError.None) return (error, fms);
+
+        List<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
+
+        return (ImportError.None, importedFMs);
 
         static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
         {
@@ -945,13 +927,33 @@ internal static class Import
             return ImportError.None;
         }
 
-        ImportError error = DoImport(lines, fms, instDirNameContext);
+        static void TryAddToArchivesHash(string dir, DictionaryI<FileInfo> archivesDict)
+        {
+            try
+            {
+                // NDL always searches subdirectories as well
+                foreach (FileInfo fi in new DirectoryInfo(dir).GetFiles("*", SearchOption.AllDirectories))
+                {
+                    string f = fi.FullName;
 
-        if (error != ImportError.None) return (error, fms);
-
-        List<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
-
-        return (ImportError.None, importedFMs);
+                    // @DIRSEP: '/' conversion due to string.ContainsI()
+                    if (!f.ToForwardSlashes_Net().ContainsI("/.fix/"))
+                    {
+                        string fn = Path.GetFileName(f);
+                        if (!fn.IsWhiteSpace() &&
+                            fn.ExtIsArchive() &&
+                            !fn.ContainsI(Paths.FMSelBak))
+                        {
+                            archivesDict[fn] = fi;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log(ErrorText.Ex + "in NewDarkLoader archive dir file enumeration", ex);
+            }
+        }
     }
 
     private static List<FanMission> MergeImportedFMData_DL(List<FanMission> importedFMs, FieldsToImport fields)

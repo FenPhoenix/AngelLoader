@@ -7,8 +7,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using AngelLoader.DataClasses;
+using SpanExtensions;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;
@@ -94,9 +96,17 @@ internal static partial class Ini
 
     private static void Config_SettingsUpdateVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed.ToString(), out int result))
+        if (Int_TryParseInv(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.Update, result);
+        }
+    }
+
+    private static void Config_SettingsIOThreadingVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.SetSettingsTabVScrollPos(SettingsTab.IOThreading, result);
         }
     }
 
@@ -861,8 +871,59 @@ internal static partial class Ini
         }
     }
 
+    // @NET5: Split without allocations and so forth, eliminate ToString()s where possible
+    private static void Config_IOThreadsMode_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        FieldInfo? field = typeof(IOThreadsMode).GetField(valTrimmed.ToString(), _bFlagsEnum);
+        if (field != null)
+        {
+            config.IOThreadsMode = (IOThreadsMode)field.GetValue(null)!;
+        }
+    }
+
+    private static void Config_CustomIOThreadCount_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.CustomIOThreadCount = result;
+        }
+    }
+
+    // @NET5: Switch to span iteration
+    private static void Config_DriveMultithreadingLevel_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        foreach (ReadOnlySpan<char> value in ReadOnlySpanExtensions.Split(valTrimmed, ',', StringSplitOptions.RemoveEmptyEntries))
+        {
+            char? letterChar = null;
+            int i = 0;
+            foreach (ReadOnlySpan<char> item in ReadOnlySpanExtensions.Split(value, ':', StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (i == 0)
+                {
+                    ReadOnlySpan<char> letter = item.Trim();
+                    if (letter.Length > 0)
+                    {
+                        letterChar = letter[0];
+                    }
+                }
+                else if (i == 1)
+                {
+                    string threadabilityStr = item.Trim().ToString();
+                    FieldInfo? field = typeof(DriveMultithreadingLevel).GetField(threadabilityStr, _bFlagsEnum);
+                    if (field != null && letterChar is { } letterCharValid)
+                    {
+                        config.DriveLettersAndTypes[letterCharValid] = (DriveMultithreadingLevel)field.GetValue(null)!;
+                    }
+                    break;
+                }
+                i++;
+            }
+        }
+    }
+
     #endregion
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly unsafe struct Config_DelegatePointerWrapper
     {
         internal readonly delegate*<ConfigData, ReadOnlySpan<char>, ReadOnlySpan<char>, GameIndex, bool, void> Action;
@@ -886,6 +947,7 @@ internal static partial class Ini
         { "SettingsOtherVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
         { "SettingsThiefBuddyVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
         { "SettingsUpdateVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsUpdateVScrollPos_Set) },
+        { "SettingsIOThreadingVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsIOThreadingVScrollPos_Set) },
 
         #endregion
 
@@ -1062,6 +1124,9 @@ internal static partial class Ini
         { "EnableFuzzySearch".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
         { "CheckForUpdates".AsMemory(), new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent".AsMemory(), new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
+        { "IOThreadsMode".AsMemory(), new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
+        { "CustomIOThreadCount".AsMemory(), new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
+        { "DriveMultithreadingLevel".AsMemory(), new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
 
         #region Backward compatibility
 
@@ -1248,6 +1313,7 @@ internal static partial class Ini
         sw.Append("SettingsOtherVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Other));
         sw.Append("SettingsThiefBuddyVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy));
         sw.Append("SettingsUpdateVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Update));
+        sw.Append("SettingsIOThreadingVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.IOThreading));
 
         #endregion
 
@@ -1475,5 +1541,17 @@ internal static partial class Ini
         sw.Append("EnableFuzzySearch=").AppendLine(config.EnableFuzzySearch);
         sw.Append("CheckForUpdates=").AppendLine(config.CheckForUpdates);
         sw.Append("ScreenshotGammaPercent=").AppendLine(config.ScreenshotGammaPercent);
+
+        sw.Append("IOThreadsMode=").AppendLine(config.IOThreadsMode);
+        sw.Append("CustomIOThreadCount=").AppendLine(config.CustomIOThreadCount);
+        sw.Append("DriveMultithreadingLevel=");
+        var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
+        for (int i = 0; i < driveLettersAndTypes.Length; i++)
+        {
+            var item = driveLettersAndTypes[i];
+            if (i > 0) sw.Append(',');
+            sw.Append(item.Key).Append(':').Append(item.Value);
+        }
+        sw.AppendLine();
     }
 }

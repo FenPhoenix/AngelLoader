@@ -56,8 +56,6 @@ public sealed partial class MainForm : Form
             rtfFiles.AddRange(Directory.GetFiles(d, "*.txt", SearchOption.AllDirectories));
         }
 
-        byte[] RTFHeaderBytes = Encoding.ASCII.GetBytes(@"{\rtf1");
-
         for (int i = 0; i < rtfFiles.Count; i++)
         {
             string f = rtfFiles[i];

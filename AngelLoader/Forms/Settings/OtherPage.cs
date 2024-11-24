@@ -22,9 +22,13 @@ public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
 
     private void WebSearchUrlResetButton_Paint(object sender, PaintEventArgs e)
     {
-        Rectangle cr = ((DarkButton)sender).ClientRectangle;
-        Images.PaintBitmapButton(e,
-            Images.Refresh,
+        DarkButton button = (DarkButton)sender;
+        Rectangle cr = button.ClientRectangle;
+        Images.PaintBitmapButton(
+            e: e,
+            img: button.Enabled
+                ? Images.Refresh
+                : Images.Refresh_Disabled,
             scaledRect: new RectangleF(
                 cr.X + 2f,
                 cr.Y + 2f,

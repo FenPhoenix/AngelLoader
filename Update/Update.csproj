@@ -30,9 +30,7 @@
     <Compile Update="CustomControls\DarkButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="DarkErrorDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="DarkErrorDialog.cs" />
     <Compile Update="DarkTaskDialog.cs">
       <SubType>Form</SubType>
     </Compile>

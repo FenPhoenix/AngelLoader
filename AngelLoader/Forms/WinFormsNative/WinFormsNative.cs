@@ -8,8 +8,6 @@ using System.Windows.Forms;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
-// ReSharper disable ArrangeTrailingCommaInMultilineLists
-
 namespace AngelLoader.Forms.WinFormsNative;
 
 [SuppressMessage("ReSharper", "IdentifierTypo")]
@@ -50,7 +48,19 @@ internal static partial class Native
         public readonly int right;
         public readonly int bottom;
 
+        public RECT(int left, int top, int right, int bottom)
+        {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+
+        internal int Width => right - left;
+
         internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
+
+        internal static RECT Empty => new(0, 0, 0, 0);
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -266,6 +276,7 @@ internal static partial class Native
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
         private readonly IntPtr _hWnd;
@@ -483,7 +494,7 @@ internal static partial class Native
         SIF_POS = 0x0004,
         //SIF_DISABLENOSCROLL = 0x0008,
         SIF_TRACKPOS = 0x0010,
-        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS
+        SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS,
     }
 
     [LibraryImport("user32.dll")]
@@ -881,11 +892,67 @@ internal static partial class Native
     [LibraryImport("user32.dll")]
     private static partial int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
 
+    #endregion
+
+    #region High contrast code from .NET latest runtime
+
+    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, ref HIGHCONTRASTW pvParam, uint fWinIni);
+
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
         var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
         SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
+    }
+
+
+    [Flags]
+    private enum HIGHCONTRASTW_FLAGS : uint
+    {
+        HCF_HIGHCONTRASTON = 0x00000001,
+        HCF_AVAILABLE = 0x00000002,
+        HCF_HOTKEYACTIVE = 0x00000004,
+        HCF_CONFIRMHOTKEY = 0x00000008,
+        HCF_HOTKEYSOUND = 0x00000010,
+        HCF_INDICATOR = 0x00000020,
+        HCF_HOTKEYAVAILABLE = 0x00000040,
+        HCF_OPTION_NOTHEMECHANGE = 0x00001000,
+    }
+
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    private unsafe struct HIGHCONTRASTW
+    {
+        internal uint cbSize;
+        internal HIGHCONTRASTW_FLAGS dwFlags;
+        internal void* lpszDefaultScheme;
+    }
+
+    private enum SystemParametersAction : uint
+    {
+        SPI_GETICONTITLELOGFONT = 0x1F,
+        SPI_GETNONCLIENTMETRICS = 0x29,
+        SPI_GETHIGHCONTRAST = 0x42,
+    }
+
+    internal static unsafe bool HighContrastEnabled()
+    {
+        HIGHCONTRASTW highContrast = default;
+
+        // Note that the documentation for HIGHCONTRASTW says that the lpszDefaultScheme member needs to be
+        // freed, but this is incorrect. No internal users ever free the pointer and the pointer never changes.
+        highContrast.cbSize = (uint)sizeof(HIGHCONTRASTW);
+        bool success = SystemParametersInfoW(
+            SystemParametersAction.SPI_GETHIGHCONTRAST,
+            highContrast.cbSize,
+            ref highContrast,
+            0); // This has no meaning when getting values
+
+        return success && (highContrast.dwFlags & HIGHCONTRASTW_FLAGS.HCF_HIGHCONTRASTON) != 0;
     }
 
     #endregion

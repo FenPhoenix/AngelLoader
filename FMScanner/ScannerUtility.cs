@@ -86,11 +86,6 @@ internal static class Utility
                 !(dotIndex > 6 && value.StartsWithI("fminfo")));
     }
 
-    #endregion
-
-    #region File extensions
-
-    // Scanner version; might need to be different than the general version
     internal static bool IsValidReadme(this string readme) =>
         readme.ExtIsTxt() ||
         readme.ExtIsRtf() ||
@@ -99,7 +94,9 @@ internal static class Utility
         // We don't scan HTML files, but we may still need them to check their dates
         readme.ExtIsHtml();
 
-    #region Extension checks
+    #endregion
+
+    #region File extensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsIbt(this string value) => value.EndsWithI(".ibt");
@@ -127,8 +124,6 @@ internal static class Utility
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsGam(this string value) => value.EndsWithI(".gam");
-
-    #endregion
 
     #endregion
 
@@ -301,29 +296,6 @@ internal static class Utility
         return false;
     }
 
-    // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
-    // being interpreted as a roman numeral
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
-
-    private static byte RomanToInteger(ListFast<char> value, byte[] romanNumeralToDecimalTable)
-    {
-        byte number = 0;
-        for (int i = 0; i < value.Count; i++)
-        {
-            byte current = romanNumeralToDecimalTable[value[i]];
-            if (i < value.Count - 1 && current < romanNumeralToDecimalTable[value[i + 1]])
-            {
-                number -= current;
-            }
-            else
-            {
-                number += current;
-            }
-        }
-        return number;
-    }
-
     internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
         ListFast<char>? romanNumeralRun = null;
@@ -358,16 +330,41 @@ internal static class Utility
 
         return;
 
+        // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
+        // being interpreted as a Roman numeral
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
+
         static void AddRomanConvertedChar(ListFast<char> romanNumeralRun, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
         {
             byte number = RomanToInteger(romanNumeralRun, romanNumeralToDecimalTable);
             int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
             for (int digitIndex = 0; digitIndex < digits; digitIndex++)
             {
-                char thing = (char)((number % 10) + '0');
-                acronymChars.Add(thing);
+                char decimalChar = (char)((number % 10) + '0');
+                acronymChars.Add(decimalChar);
                 number /= 10;
             }
+        }
+
+        static byte RomanToInteger(ListFast<char> romanNumeralRun, byte[] romanNumeralToDecimalTable)
+        {
+            byte number = 0;
+            for (int i = 0; i < romanNumeralRun.Count; i++)
+            {
+                // We're indexing into a sub-byte-length array with a char-length value, but we know we only have
+                // Roman numeral chars in the run, so we won't go out of bounds.
+                byte current = romanNumeralToDecimalTable[romanNumeralRun[i]];
+                if (i < romanNumeralRun.Count - 1 && current < romanNumeralToDecimalTable[romanNumeralRun[i + 1]])
+                {
+                    number -= current;
+                }
+                else
+                {
+                    number += current;
+                }
+            }
+            return number;
         }
     }
 
@@ -467,7 +464,7 @@ internal static class Utility
         bool overwrite)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.None))
+        using (Stream destination = File.Open(fileName, mode, FileAccess.Write, FileShare.Read))
         {
             reader.WriteEntryTo(destination);
         }
@@ -476,6 +473,23 @@ internal static class Utility
         {
             File.SetLastWriteTime(fileName, (DateTime)lastModifiedTime);
         }
+    }
+
+    /// <summary>
+    /// Removes trailing period unless it's at the end of a single letter (eg. "Robin G.")
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    internal static string RemoveNonSemanticTrailingPeriod(this string value)
+    {
+        if (value.CharAppearsExactlyOnce('.') && value[^1] == '.' &&
+            !((value.Length >= 3 && !char.IsWhiteSpace(value[^2]) && char.IsWhiteSpace(value[^3])) ||
+              (value.Length == 2 && !char.IsWhiteSpace(value[^2]))))
+        {
+            value = value.Substring(0, value.Length - 1);
+        }
+
+        return value;
     }
 
     #region GLML
@@ -492,16 +506,6 @@ internal static class Utility
         // @MEM: We could cache these, and maybe even as ListFast<char>s to avoid the cruft of StringBuilder appending?
         var sb = new StringBuilder(glml.Length);
         var subSB = new StringBuilder(16);
-
-        static bool SBEquals(StringBuilder sb, string value)
-        {
-            if (sb.Length != value.Length) return false;
-            for (int i = 0; i < sb.Length; i++)
-            {
-                if (sb[i] != value[i]) return false;
-            }
-            return true;
-        }
 
         const char unicodeUnknownChar = '\u25A1';
 
@@ -639,6 +643,16 @@ internal static class Utility
         }
 
         return sb.ToString();
+
+        static bool SBEquals(StringBuilder sb, string value)
+        {
+            if (sb.Length != value.Length) return false;
+            for (int i = 0; i < sb.Length; i++)
+            {
+                if (sb[i] != value[i]) return false;
+            }
+            return true;
+        }
     }
 
     #endregion

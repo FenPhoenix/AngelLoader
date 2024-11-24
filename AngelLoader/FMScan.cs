@@ -1,5 +1,8 @@
-﻿using System;
+﻿//#define TIMING_TEST
+
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -8,17 +11,52 @@ using System.Threading.Tasks;
 using AL_Common;
 using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
+using FMScanner;
+using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
+using static AngelLoader.Utils;
+using Game = AngelLoader.GameSupport.Game;
+using ScannerGame = FMScanner.Game;
 
 namespace AngelLoader;
 
 internal static class FMScan
 {
+#if TIMING_TEST
+    private static readonly Stopwatch _timingTestStopWatch = new();
+
+    private static void StartTiming()
+    {
+        _timingTestStopWatch.Restart();
+    }
+
+    private static void StopTimingAndPrintResult()
+    {
+        _timingTestStopWatch.Stop();
+        // ReSharper disable RedundantNameQualifier
+        Trace.WriteLine("Scan: " + _timingTestStopWatch.Elapsed);
+    }
+#endif
+
     private static CancellationTokenSource _scanCts = new();
-    private static void CancelToken() => _scanCts.CancelIfNotDisposed();
+    private static void CancelToken()
+    {
+        // Multithreaded scans can in certain cases take a significant amount of time to cancel, so inform the
+        // user that we're trying our best here.
+        _scanCts.CancelIfNotDisposed();
+        Core.View.Invoke(ShowCancelingScanMessage);
+    }
+
+    private static void ShowCancelingScanMessage()
+    {
+        if (Core.View.ProgressBoxVisible())
+        {
+            Core.View.SetProgressBoxState_Single(message1: LText.ProgressBox.CancelingScan);
+        }
+    }
 
     /// <summary>
     /// Scans a list of FMs using the specified scan options. Pass null for default scan options.
@@ -39,7 +77,7 @@ internal static class FMScan
     /// <returns></returns>
     internal static async Task<bool> ScanFMs(
         NonEmptyList<FanMission> fmsToScan,
-        FMScanner.ScanOptions? scanOptions = null,
+        ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
         bool suppressSingleFMProgressBoxIfFast = false,
         bool setForceReCacheReadmes = false,
@@ -48,6 +86,17 @@ internal static class FMScan
         scanOptions ??= GetDefaultScanOptions();
 
         bool scanningOne = fmsToScan.Single;
+
+        // Cache once globally, not once per-thread (allocation reduction)
+        string reportCachedString = "";
+
+        Stopwatch reportThrottleSW = new();
+
+        // IMPORTANT(Multithreaded scan):
+        // The progress object MUST be constructed here on the UI thread! This is what allows it to report smoothly
+        // and without the endless and unsolvable issues we get when we merely invoke to the UI thread from the
+        // report function.
+        var progress = new Progress<ProgressReport>(ReportProgress);
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -102,7 +151,7 @@ internal static class FMScan
 
                     _scanCts = _scanCts.Recreate();
 
-                    var fms = new List<FMScanner.FMToScan>(fmsToScan.Count);
+                    var fms = new List<FMToScan>(fmsToScan.Count);
 
                     // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                     // cause then it will hit the actual disk rather than just going through a list of paths in
@@ -120,6 +169,10 @@ internal static class FMScan
 
                     bool tdmDataRequired = false;
 
+                    bool[] fmInstalledDirsRequired = new bool[SupportedGameCount];
+                    bool atLeastOneSolidArchiveInSet = false;
+                    HashSetI usedArchivePaths = new(Config.FMArchivePaths.Count);
+
                     for (int i = 0; i < fmsToScan.Count; i++)
                     {
                         FanMission fm = fmsToScan[i];
@@ -131,21 +184,31 @@ internal static class FMScan
                         if (_scanCts.IsCancellationRequested) return false;
 
                         if (!fm.Archive.IsEmpty() &&
-                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths)).IsEmpty())
+                            !(fmArchivePath = FMArchives.FindFirstMatch(fm.Archive, archivePaths, out string archiveDirectoryFullPath)).IsEmpty())
                         {
+                            if (!archiveDirectoryFullPath.IsEmpty())
+                            {
+                                usedArchivePaths.Add(archiveDirectoryFullPath);
+                            }
+                            bool needsReadmesCachedDuringScan = fm.NeedsReadmesCachedDuringScan();
                             fmsToScanFiltered.Add(fm);
-                            fms.Add(new FMScanner.FMToScan
+                            fms.Add(new FMToScan
                             (
                                 path: fmArchivePath,
                                 forceFullScan: scanFullIfNew && !fm.MarkedScanned,
-                                cachePath: fm.NeedsReadmesCachedDuringScan()
+                                cachePath: needsReadmesCachedDuringScan
                                     ? Path.Combine(Paths.FMsCache, fm.RealInstalledDir)
                                     : "",
-                                isTDM: fm.Game == Game.TDM,
+                                // TDM is folder-only
+                                isTDM: false,
                                 displayName: fm.Archive,
-                                isArchive: true
+                                isArchive: true,
+                                originalIndex: fms.Count
                             ));
-                            if (fm.Game == Game.TDM) tdmDataRequired = true;
+                            if (needsReadmesCachedDuringScan)
+                            {
+                                atLeastOneSolidArchiveInSet = true;
+                            }
                         }
                         else if (fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
                         {
@@ -153,15 +216,17 @@ internal static class FMScan
                             if (!fmInstalledPath.IsEmpty())
                             {
                                 fmsToScanFiltered.Add(fm);
-                                fms.Add(new FMScanner.FMToScan
+                                fms.Add(new FMToScan
                                 (
                                     path: Path.Combine(fmInstalledPath, fm.RealInstalledDir),
                                     forceFullScan: scanFullIfNew && !fm.MarkedScanned,
                                     isTDM: fm.Game == Game.TDM,
                                     displayName: fm.RealInstalledDir,
-                                    isArchive: false
+                                    isArchive: false,
+                                    originalIndex: fms.Count
                                 ));
                                 if (fm.Game == Game.TDM) tdmDataRequired = true;
+                                fmInstalledDirsRequired[(int)gameIndex] = true;
                             }
                         }
 
@@ -174,11 +239,9 @@ internal static class FMScan
 
                     #region Run scanner
 
-                    List<FMScanner.ScannedFMDataAndError>? fmDataList = null;
+                    List<ScannedFMDataAndError> fmDataList;
                     try
                     {
-                        var progress = new Progress<FMScanner.ProgressReport>(ReportProgress);
-
                         Paths.CreateOrClearTempPath(TempPaths.FMScanner);
                         Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
 
@@ -195,39 +258,76 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-                        using var scanner = new FMScanner.Scanner(
-                            sevenZipWorkingPath: Paths.SevenZipPath,
-                            sevenZipExePath: Paths.SevenZipExe,
-                            fullScanOptions: GetDefaultScanOptions(),
-                            tdmContext: tdmContext);
 
-                        fmDataList = await scanner.ScanAsync(
-                            missions: fms,
+                        reportThrottleSW.Start();
+
+#if TIMING_TEST
+                        StartTiming();
+#endif
+                        reportCachedString =
+                            LText.ProgressBox.ReportScanningBetweenNumAndTotal +
+                            fms.Count.ToStrCur() +
+                            LText.ProgressBox.ReportScanningLast;
+
+                        // Don't take the substantial parallel loop overhead if it's just one FMs
+                        if (fms.Count == 1)
+                        {
+                            using Scanner scanner = new(
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
+                                fullScanOptions: GetDefaultScanOptions(),
+                                readOnlyDataContext: new ReadOnlyDataContext(),
+                                tdmContext: tdmContext);
+
+                            fmDataList = await scanner.ScanAsync(
+                                missions: fms,
+                                tempPath: Paths.FMScannerTemp,
+                                scanOptions: scanOptions,
+                                progress: progress,
+                                cancellationToken: _scanCts.Token);
+                        }
+                        else
+                        {
+                        ThreadingData threadingData = GetLowestCommonThreadingData(
+                            GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
+                        );
+
+                        fmDataList = Scanner.ScanThreaded(
+                            Paths.SevenZipPath,
+                            Paths.SevenZipExe,
+                            fullScanOptions: GetDefaultScanOptions(),
+                            tdmContext: tdmContext,
+                                threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData.Threads),
+                            fms: fms,
                             tempPath: Paths.FMScannerTemp,
                             scanOptions: scanOptions,
                             progress: progress,
                             cancellationToken: _scanCts.Token);
                     }
+
+                        Core.View.SetProgressPercent(100);
+#if TIMING_TEST
+                        StopTimingAndPrintResult();
+#endif
+                    }
                     catch (OperationCanceledException)
                     {
-                        Paths.CreateOrClearTempPath(TempPaths.FMScanner);
-                        Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+                        CleanupAfterCancel();
                         return false;
                     }
-                    finally
-                    {
-                        if (fmDataList != null)
+
+                        if (fmDataList.Count > 0)
                         {
                             // @MEM(Scanner/unsupported compression errors):
                             // We're looping through the whole thing always just to see if there are errors!
                             // The scanner should just return a list and we can skip this if it's empty.
                             bool errors = false;
                             bool otherErrors = false;
-                            var unsupportedCompressionErrors = new List<(FMScanner.FMToScan FM, FMScanner.ScannedFMDataAndError ScannedFMDataAndError)>();
+                            var unsupportedCompressionErrors = new List<(FMToScan FM, ScannedFMDataAndError ScannedFMDataAndError)>();
 
                             for (int i = 0; i < fmsToScanFiltered.Count; i++)
                             {
-                                FMScanner.ScannedFMDataAndError item = fmDataList[i];
+                                ScannedFMDataAndError item = fmDataList[i];
                                 if (item.Fen7zResult != null ||
                                     item.Exception != null ||
                                     !item.ErrorInfo.IsEmpty())
@@ -291,7 +391,6 @@ internal static class FMScan
                                 }
                             }
                         }
-                    }
 
                     #endregion
 
@@ -301,8 +400,8 @@ internal static class FMScan
 
                     for (int i = 0; i < fmsToScanFiltered.Count; i++)
                     {
-                        FMScanner.ScannedFMDataAndError scannedFMDataAndError = fmDataList[i];
-                        FMScanner.ScannedFMData? scannedFM = scannedFMDataAndError.ScannedFMData;
+                        ScannedFMDataAndError scannedFMDataAndError = fmDataList[i];
+                        ScannedFMData? scannedFM = scannedFMDataAndError.ScannedFMData;
 
                         #region Checks
 
@@ -332,7 +431,7 @@ internal static class FMScan
                             fm.ForceReadmeReCacheAlways = true;
                         }
 
-                        bool gameSup = scannedFM.Game != FMScanner.Game.Unsupported;
+                        bool gameSup = scannedFM.Game != ScannerGame.Unsupported;
 
                         if (fms[i].ForceFullScan || scanOptions.ScanTitle)
                         {
@@ -364,8 +463,8 @@ internal static class FMScan
                             #region This exact setup is needed to get identical results to the old method. Don't change.
                             // We don't scan custom resources for Thief 3, so they should never be set in that case.
                             if (gameSup &&
-                                scannedFM.Game != FMScanner.Game.Thief3 &&
-                                scannedFM.Game != FMScanner.Game.TDM)
+                                scannedFM.Game != ScannerGame.Thief3 &&
+                                scannedFM.Game != ScannerGame.TDM)
                             {
                                 fm.SetResource(CustomResources.Map, scannedFM.HasMap == true);
                                 fm.SetResource(CustomResources.Automap, scannedFM.HasAutomap == true);
@@ -455,7 +554,7 @@ internal static class FMScan
 
         #region Local functions
 
-        static FMScanner.ScanOptions GetDefaultScanOptions() => FMScanner.ScanOptions.FalseDefault(
+        static ScanOptions GetDefaultScanOptions() => ScanOptions.FalseDefault(
             scanTitle: true,
             scanAuthor: true,
             scanGameType: true,
@@ -465,19 +564,53 @@ internal static class FMScan
             scanTags: true,
             scanMissionCount: true);
 
-        void ReportProgress(FMScanner.ProgressReport pr) => Core.View.SetProgressBoxState_Single(
-            message1:
-            scanMessage ??
-            (LText.ProgressBox.ReportScanningFirst +
-             pr.FMNumber.ToString(NumberFormatInfo.CurrentInfo) +
-             (pr.CachedString ??=
-                 (LText.ProgressBox.ReportScanningBetweenNumAndTotal +
-                  pr.FMsTotal.ToString(NumberFormatInfo.CurrentInfo) +
-                  LText.ProgressBox.ReportScanningLast))),
-            message2:
-            pr.FMName,
-            percent: pr.Percent
-        );
+        void ReportProgress(ProgressReport pr)
+        {
+            if (_scanCts.IsCancellationRequested)
+            {
+                ShowCancelingScanMessage();
+                return;
+            }
+
+            int percent = GetPercentFromValue_Int(scanningOne ? 0 : pr.FMNumber - 1, pr.FMsCount);
+
+            /*
+            @MT_TASK_NOTE: Necessary if we have multiple threads to allow UI time to catch up.
+            Not necessary if we're on one thread, but does no harm either.
+            @MT_TASK_NOTE(Scanner 7z reporting):
+             >1 or >2 thread 7z scans don't report smoothly, probably due to the out-of-order nature of it.
+             We could try the multi item progress box here, just to see?
+             2024/11/18: We tried that and there are other problems with UI updating interval and whatever else.
+             Even though for 7z the percentage display is suboptimal, this is overall the least worst thing for
+             now...
+            */
+            if (scanningOne ||
+                pr.FMNumber is 0 or 1 ||
+                reportThrottleSW.ElapsedMilliseconds > 4)
+            {
+                Core.View.SetProgressBoxState_Single(
+                    message1:
+                    scanMessage ??
+                    LText.ProgressBox.ReportScanningFirst +
+                    pr.FMNumber.ToStrCur() +
+                    reportCachedString,
+                    message2:
+                    pr.FMName,
+                    percent: percent
+                );
+
+                reportThrottleSW.Restart();
+            }
+        }
+
+        static void CleanupAfterCancel()
+        {
+#if TIMING_TEST
+            Trace.WriteLine("Canceled");
+#endif
+            Paths.CreateOrClearTempPath(TempPaths.FMScanner);
+            Paths.CreateOrClearTempPath(TempPaths.SevenZipList);
+        }
 
         #endregion
     }
@@ -485,13 +618,13 @@ internal static class FMScan
     internal static Task ScanNewFMs(NonEmptyList<FanMission> newFMs)
     {
         return ScanFMs(newFMs,
-            FMScanner.ScanOptions.FalseDefault(scanGameType: true),
+            ScanOptions.FalseDefault(scanGameType: true),
             scanFullIfNew: true);
     }
 
-    private static FMScanner.ScanOptions? GetScanOptionsFromDialog(bool selected)
+    private static ScanOptions? GetScanOptionsFromDialog(bool selected)
     {
-        (bool accepted, FMScanner.ScanOptions scanOptions, bool noneSelected) =
+        (bool accepted, ScanOptions scanOptions, bool noneSelected) =
             Core.View.ShowScanAllFMsWindow(selected);
 
         if (!accepted) return null;
@@ -512,7 +645,7 @@ internal static class FMScan
             return;
         }
 
-        FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
+        ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: false);
         if (scanOptions == null) return;
 
         if (await ScanFMs(fmsToScan, scanOptions))
@@ -537,7 +670,7 @@ internal static class FMScan
         }
         else
         {
-            FMScanner.ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
+            ScanOptions? scanOptions = GetScanOptionsFromDialog(selected: true);
             if (scanOptions == null) return;
 
             if (await ScanFMs(fmsToScan, scanOptions, setForceReCacheReadmes: true))

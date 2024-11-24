@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
@@ -352,13 +353,20 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         Graphics g = e.Graphics;
         Rectangle rect = e.Bounds;
 
-        SolidBrush textColorBrush = DarkColors.LightTextBrush;
-        SolidBrush fillColorBrush = DarkColors.LightBackgroundBrush;
+        bool itemIsHighlighted = (e.State & DrawItemState.Selected) != 0 ||
+                                 (e.State & DrawItemState.Focus) != 0;
 
-        if ((e.State & DrawItemState.Selected) != 0 ||
-            (e.State & DrawItemState.Focus) != 0)
+        Color textColor;
+        SolidBrush fillColorBrush;
+        if (itemIsHighlighted)
         {
+            textColor = DarkColors.Fen_HighlightText;
             fillColorBrush = DarkColors.BlueSelectionBrush;
+        }
+        else
+        {
+            textColor = DarkColors.LightText;
+            fillColorBrush = DarkColors.LightBackgroundBrush;
         }
 
         g.FillRectangle(fillColorBrush, rect);
@@ -375,7 +383,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
                 rect.Height - (padding * 2));
 
             // Explicitly set the fill color so that the antialiasing/ClearType looks right
-            TextRenderer.DrawText(g, text, Font, textRect, textColorBrush.Color, fillColorBrush.Color, _textFormat);
+            TextRenderer.DrawText(g, text, Font, textRect, textColor, fillColorBrush.Color, _textFormat);
         }
     }
 
@@ -402,7 +410,7 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         else if (FireMouseLeaveOnLeaveWindow && m.Msg == Native.WM_MOUSELEAVE)
         {
             OnMouseLeave(EventArgs.Empty);
-            m.Result = 1;
+            m.Result = (IntPtr)1;
             // If we return here, the ComboBox remains highlighted even when the mouse leaves.
             // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
             // this particular case it's fine, it just hides the readme controls twice. But remember in case
@@ -414,7 +422,13 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
     protected override void OnDropDown(EventArgs e)
     {
-        // Autosize dropdown to accomodate the longest item
+        DropDownWidth = Math.Max(GetLongestItemTextWidth(), Width);
+
+        base.OnDropDown(e);
+    }
+
+    private int GetLongestItemTextWidth()
+    {
         int finalWidth = 0;
         foreach (object item in Items)
         {
@@ -423,10 +437,61 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
             int currentItemWidth = TextRenderer.MeasureText(itemStr, Font, Size.Empty).Width;
             if (finalWidth < currentItemWidth) finalWidth = currentItemWidth;
         }
-        DropDownWidth = Math.Max(finalWidth, Width);
-
-        base.OnDropDown(e);
+        return finalWidth;
     }
+
+    [PublicAPI]
+    public void DoAutoSize(int rightPadding = 0)
+    {
+        COMBOBOXINFO cbInfo = new() { cbSize = _comboboxInfoSize };
+        GetComboBoxInfo(Handle, ref cbInfo);
+        Size = Size with { Width = cbInfo.rcButton.Width + GetLongestItemTextWidth() + rightPadding };
+    }
+
+    [PublicAPI]
+    public static void DoAutoSizeForSet(DarkComboBox[] comboBoxes, int rightPadding = 0)
+    {
+        int finalWidth = 0;
+        foreach (DarkComboBox comboBox in comboBoxes)
+        {
+            int currentWidth = comboBox.GetLongestItemTextWidth();
+            if (finalWidth < currentWidth) finalWidth = currentWidth;
+        }
+        foreach (DarkComboBox comboBox in comboBoxes)
+        {
+            COMBOBOXINFO cbInfo = new() { cbSize = _comboboxInfoSize };
+            GetComboBoxInfo(comboBox.Handle, ref cbInfo);
+            comboBox.Size = comboBox.Size with { Width = cbInfo.rcButton.Width + finalWidth + rightPadding };
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct COMBOBOXINFO
+    {
+        internal int cbSize;
+        internal Native.RECT rcItem;
+        internal Native.RECT rcButton;
+        internal int stateButton;
+        internal IntPtr hwndCombo;
+        internal IntPtr hwndItem;
+        internal IntPtr hwndList;
+
+        internal COMBOBOXINFO(int size)
+        {
+            cbSize = size;
+            rcItem = Native.RECT.Empty;
+            rcButton = Native.RECT.Empty;
+            stateButton = 0;
+            hwndCombo = IntPtr.Zero;
+            hwndItem = IntPtr.Zero;
+            hwndList = IntPtr.Zero;
+        }
+    }
+
+    private static readonly int _comboboxInfoSize = Marshal.SizeOf(typeof(COMBOBOXINFO));
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+    private static extern bool GetComboBoxInfo(IntPtr hwnd, [In, Out] ref COMBOBOXINFO cbInfo);
 
     #endregion
 }

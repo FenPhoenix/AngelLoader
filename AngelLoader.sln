@@ -37,6 +37,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpCompress", "SharpCompress\SharpCompress.csproj", "{30DF0931-3D5A-402C-A831-573EC4848D4D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Update", "Update\Update.csproj", "{5531E1C3-C920-4D99-90DE-3B46B3FDA02E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F8729702-3C79-44D3-97A0-836D30D452B4} = {F8729702-3C79-44D3-97A0-836D30D452B4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

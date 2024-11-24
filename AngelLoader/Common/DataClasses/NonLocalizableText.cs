@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using AL_Common;
 
 namespace AngelLoader.DataClasses;
 
@@ -67,6 +68,7 @@ internal static partial class NonLocalizableText
         ("CoreHook", "https://github.com/unknownv2/CoreHook/"),
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
         ("SpanExtensions.Net", "https://github.com/draconware-dev/SpanExtensions.Net"),
+        ("DeviceIoControlLib", "https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 
@@ -80,7 +82,7 @@ internal static partial class NonLocalizableText
                 _percentStrings = new string[101];
                 for (int i = 0; i < 101; i++)
                 {
-                    _percentStrings[i] = i.ToString(NumberFormatInfo.CurrentInfo) + "%";
+                    _percentStrings[i] = i.ToStrCur() + "%";
                 }
             }
             return _percentStrings;

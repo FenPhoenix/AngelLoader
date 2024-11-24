@@ -1,12 +1,13 @@
 ﻿//#define ScanSynchronous
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AL_Common;
 using FMScanner;
 using YamlDotNet.Serialization;
 using static FMInfoGen.Misc;
@@ -80,12 +81,23 @@ internal static class FMScan
     private static (string YamlPath, List<FMToScan> FMsToScan, ScanOptions ScanOptions)
     GetScanData(bool zips)
     {
-        var fmsList = (zips
-                ? Core.View.GetFMArchives()
-                    .Select(static f => new FMToScan(path: Path.Combine(Config.FMsPath, f), false, cachePath: "", isTDM: false, displayName: f, isArchive: true))
-                : Directory.GetDirectories(Paths.CurrentExtractedDir, "*", SearchOption.TopDirectoryOnly)
-                    .Select(static f => new FMToScan(path: f, forceFullScan: false, cachePath: "", isTDM: false, displayName: f, isArchive: false)))
-            .ToList();
+        List<FMToScan> fmsList = new();
+        if (zips)
+        {
+            foreach (string f in Core.View.GetFMArchives())
+            {
+                fmsList.Add(new FMToScan(path: Path.Combine(Config.FMsPath, f), false, cachePath: "",
+                    isTDM: false, displayName: f, isArchive: true, originalIndex: fmsList.Count));
+            }
+        }
+        else
+        {
+            foreach (string f in Directory.GetDirectories(Paths.CurrentExtractedDir, "*", SearchOption.TopDirectoryOnly))
+            {
+                fmsList.Add(new FMToScan(path: f, forceFullScan: false, cachePath: "", isTDM: false,
+                    displayName: f, isArchive: false, originalIndex: fmsList.Count));
+            }
+        }
 
         string yamlPath = GetYamlPath(zips);
 
@@ -115,7 +127,7 @@ internal static class FMScan
             {
                 scannedFMs = scanner.Scan(
                     fms,
-                    @"F:\FM pack\All\ExtractTemp",
+                    @"J:\FM packs\FM pack\All\ExtractTemp",
                     scanOptions,
                     null!,
                     CancellationToken.None);
@@ -135,15 +147,6 @@ internal static class FMScan
 
     private static async Task ScanAllFMs_Async_Internal(bool zips)
     {
-        static void ReportProgress(ProgressReport pr)
-        {
-            Core.View.SetDebugLabelText(
-                "Scanned " + pr.FMNumber + "/" + pr.FMsTotal + ", " +
-                pr.Percent + "%\r\n" +
-                pr.FMName);
-            Core.View.SetFMScanProgressBarValue(pr.Percent);
-        }
-
         (string yamlPath, List<FMToScan> fms, ScanOptions scanOptions) = GetScanData(zips);
 
         List<ScannedFMDataAndError> scannedFMs;
@@ -162,7 +165,7 @@ internal static class FMScan
             {
                 scannedFMs = await scanner.ScanAsync(
                     fms,
-                    @"F:\FM pack\All\ExtractTemp",
+                    @"J:\FM packs\FM pack\All\ExtractTemp",
                     scanOptions,
                     progress,
                     _scannerCTS.Token);
@@ -192,6 +195,19 @@ internal static class FMScan
         ClearTempDir();
 
         WriteYaml(zips, yamlPath, scannedFMs);
+
+        return;
+
+        static void ReportProgress(ProgressReport pr)
+        {
+            int percent = Common.GetPercentFromValue_Int(pr.FMNumber - 1, pr.FMsCount);
+
+            Core.View.SetDebugLabelText(
+                "Scanned " + pr.FMNumber + "/" + pr.FMsCount + ", " +
+                percent + "%\r\n" +
+                pr.FMName);
+            Core.View.SetFMScanProgressBarValue(percent);
+        }
     }
 
     #endregion

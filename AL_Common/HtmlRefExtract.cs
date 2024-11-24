@@ -26,6 +26,7 @@ public static partial class Common
             {
                 string name = archiveFileNamesNameOnly[i];
                 if (!name.IsEmpty() &&
+                    !name.EndsWithDirSep() &&
                     name.Contains('.') &&
                     !HtmlRefExcludes.Any(name.EndsWithI) &&
                     content.ContainsI(name))

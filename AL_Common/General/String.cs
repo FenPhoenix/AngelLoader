@@ -9,8 +9,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    #region Methods
-
     /// <summary>
     /// Uses <see cref="StringComparison.Ordinal"/>.
     /// </summary>
@@ -48,6 +46,23 @@ public static partial class Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool BothAreAscii(char char1, char char2) => (char1 | char2) < 128;
+
+    // @NET5: Are there internal versions of these?
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiUpper(this char c) => (uint)(c - 'A') <= 'Z' - 'A';
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiLower(this char c) => (uint)(c - 'a') <= 'z' - 'a';
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static char ToAsciiUpper(this char c)
+    {
+        if (c.IsAsciiLower())
+        {
+            c = (char)(c & 0x5F); // = low 7 bits of ~0x20
+        }
+        return c;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool EqualsIAscii(this char char1, char char2) =>
@@ -333,8 +348,6 @@ public static partial class Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool CharAppearsExactlyOnce(this string value, char character) => value.CountCharsUpToAmount(character, 2) == 1;
-
-    #endregion
 
     #endregion
 }
