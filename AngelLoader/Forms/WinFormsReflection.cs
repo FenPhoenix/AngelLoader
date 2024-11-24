@@ -1,6 +1,7 @@
 ﻿namespace AngelLoader.Forms;
 
 // @NET5(WinFormsReflection): Make sure these still work with whatever .NET version we're currently using
+// Tested working for .NET 9
 internal static class WinFormsReflection
 {
     internal const string DGV_SelectionModeBackingFieldName =

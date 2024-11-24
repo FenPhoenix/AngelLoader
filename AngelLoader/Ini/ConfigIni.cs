@@ -871,7 +871,6 @@ internal static partial class Ini
         }
     }
 
-    // @NET5: Split without allocations and so forth, eliminate ToString()s where possible
     private static void Config_IOThreadsMode_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         FieldInfo? field = typeof(IOThreadsMode).GetField(valTrimmed.ToString(), _bFlagsEnum);
@@ -889,7 +888,6 @@ internal static partial class Ini
         }
     }
 
-    // @NET5: Switch to span iteration
     private static void Config_DriveMultithreadingLevel_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         foreach (ReadOnlySpan<char> value in ReadOnlySpanExtensions.Split(valTrimmed, ',', StringSplitOptions.RemoveEmptyEntries))

@@ -488,7 +488,6 @@ public static partial class Misc
         }
     }
 
-    // @NET5: Override any new methods like the try-add or whatever too
     [PublicAPI]
     public sealed class DriveLetterDictionary : Dictionary<char, DriveMultithreadingLevel>
     {
@@ -521,5 +520,7 @@ public static partial class Misc
         public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
 
         public new bool TryGetValue(char key, out DriveMultithreadingLevel value) => base.TryGetValue(key.ToAsciiUpper(), out value);
+
+        public new bool TryAdd(char key, DriveMultithreadingLevel value) => base.TryAdd(key.ToAsciiUpper(), value);
     }
 }

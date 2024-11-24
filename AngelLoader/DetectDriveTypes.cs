@@ -1,5 +1,4 @@
-﻿// @NET5: See if there's any code in here that's internal in modern .NET or whatever else
-//#define TIMING_TEST
+﻿//#define TIMING_TEST
 
 using System;
 using System.Collections.Generic;
