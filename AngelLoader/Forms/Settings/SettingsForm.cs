@@ -19,7 +19,6 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
-using AngelLoader.Forms.WinFormsNative.Dialogs;
 using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Forms.Interfaces;
@@ -1748,12 +1747,13 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         DarkTextBox tb = PathsPage.BackupPathTextBox;
 
-        using (var d = new VistaFolderBrowserDialog())
+        using (var d = new FolderBrowserDialog())
         {
-            d.Title = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
+            d.Description = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
+            d.UseDescriptionForTitle = true;
             d.InitialDirectory = SanitizePathForDialog(tb.Text);
-            d.MultiSelect = false;
-            if (d.ShowDialogDark(this) == DialogResult.OK) tb.Text = d.DirectoryName;
+            d.Multiselect = false;
+            if (d.ShowDialogDark(this) == DialogResult.OK) tb.Text = d.SelectedPath;
         }
 
         ShowPathError(tb, !Directory.Exists(tb.Text));
@@ -1791,9 +1791,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void AddFMArchivePathButton_Click(object? sender, EventArgs e)
     {
-        using var d = new VistaFolderBrowserDialog();
+        using var d = new FolderBrowserDialog();
 
-        d.Title = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
+        d.Description = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
+        d.UseDescriptionForTitle = true;
 
         DarkListBox lb = PathsPage.FMArchivePathsListBox;
         string initDir =
@@ -1811,14 +1812,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 // ignore
             }
         }
-        d.MultiSelect = true;
+        d.Multiselect = true;
         if (d.ShowDialogDark(this) == DialogResult.OK)
         {
             using (new UpdateRegion(PathsPage.FMArchivePathsListBox))
             {
                 HashSetPathI hash = PathsPage.FMArchivePathsListBox.ItemsAsStrings.ToHashSetPathI();
 
-                foreach (string dir in d.DirectoryNames)
+                foreach (string dir in d.SelectedPaths)
                 {
                     if (!hash.Contains(dir)) PathsPage.FMArchivePathsListBox.Items.Add(dir);
                 }
