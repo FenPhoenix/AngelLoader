@@ -18,7 +18,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader;
 
-internal static class DetectDriveData
+internal static partial class DetectDriveData
 {
     internal static List<SettingsDriveData> GetSettingsDriveData()
     {
@@ -115,14 +115,14 @@ internal static class DetectDriveData
 #endif
     }
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern SafeFileHandle CreateFileW(
+    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
+    private static partial SafeFileHandle CreateFileW(
         string lpFileName,
-        [MarshalAs(UnmanagedType.U4)] FileAccess dwDesiredAccess,
-        [MarshalAs(UnmanagedType.U4)] FileShare dwShareMode,
+        FileAccess dwDesiredAccess,
+        FileShare dwShareMode,
         IntPtr lpSecurityAttributes,
-        [MarshalAs(UnmanagedType.U4)] FileMode dwCreationDisposition,
-        [MarshalAs(UnmanagedType.U4)] FileAttributes dwFlagsAndAttributes,
+        FileMode dwCreationDisposition,
+        FileAttributes dwFlagsAndAttributes,
         IntPtr hTemplateFile);
 
     private static (string Root, bool IsLink)
@@ -359,6 +359,7 @@ internal static class DetectDriveData
 
         return buffer.ToString();
 
+        // @NET5(QueryDosDeviceW): LibraryImport needs no StringBuilder param, but getting rid of it needs a bunch of cruft
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint QueryDosDeviceW(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
     }

@@ -10,8 +10,8 @@ internal static partial class Interop
 {
     internal static partial class Kernel32
     {
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [LibraryImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool FindClose(IntPtr hFindFile);
+        internal static partial bool FindClose(IntPtr hFindFile);
     }
 }

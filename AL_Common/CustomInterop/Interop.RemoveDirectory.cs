@@ -12,9 +12,9 @@ internal static partial class Interop
         /// <summary>
         /// WARNING: This method does not implicitly handle long paths. Use RemoveDirectory.
         /// </summary>
-        [DllImport("kernel32", EntryPoint = "RemoveDirectoryW", SetLastError = true, CharSet = CharSet.Unicode)]
+        [LibraryImport("kernel32", EntryPoint = "RemoveDirectoryW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool RemoveDirectoryPrivate(string path);
+        private static partial bool RemoveDirectoryPrivate(string path);
 
         internal static bool RemoveDirectory(string path)
         {

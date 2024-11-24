@@ -9,7 +9,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
+public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 {
     private const int _padding = 10;
 
@@ -488,10 +488,11 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         }
     }
 
-    private static readonly int _comboboxInfoSize = Marshal.SizeOf(typeof(COMBOBOXINFO));
+    private static readonly int _comboboxInfoSize = Marshal.SizeOf<COMBOBOXINFO>();
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
-    private static extern bool GetComboBoxInfo(IntPtr hwnd, [In, Out] ref COMBOBOXINFO cbInfo);
+    [LibraryImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO cbInfo);
 
     #endregion
 }

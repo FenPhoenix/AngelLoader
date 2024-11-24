@@ -725,8 +725,8 @@ internal static partial class Native
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-    [DllImport("dwmapi.dll")]
-    internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
+    [LibraryImport("dwmapi.dll")]
+    internal static partial int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
 
@@ -899,9 +899,9 @@ internal static partial class Native
     // Licensed to the .NET Foundation under one or more agreements.
     // The .NET Foundation licenses this file to you under the MIT license.
 
-    [DllImport("user32.dll")]
+    [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, ref HIGHCONTRASTW pvParam, uint fWinIni);
+    private static partial bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, ref HIGHCONTRASTW pvParam, uint fWinIni);
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
@@ -977,8 +977,9 @@ internal static partial class Native
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
 
-    [DllImport("gdi32.dll")]
-    internal static extern bool DeleteObject(IntPtr handle);
+    [LibraryImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool DeleteObject(IntPtr handle);
 
     #endregion
 
