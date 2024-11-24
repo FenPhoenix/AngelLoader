@@ -3,13 +3,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using JetBrains.Annotations;
 
 namespace Update;
 
 public static class Logger
 {
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 
     private static string _logFile = "";
     // ReSharper disable once InconsistentlySynchronizedField

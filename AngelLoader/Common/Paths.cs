@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
+using System.Threading;
 using AngelLoader.DataClasses;
 using Microsoft.Win32;
 using static AL_Common.Common;
@@ -265,7 +266,7 @@ internal static class Paths
 
     #region Thief Buddy
 
-    private static readonly object _thiefBuddyLock = new();
+    private static readonly Lock _thiefBuddyLock = new();
     /// <summary>
     /// Constructs and returns the Thief Buddy executable full path from the registry, or returns the empty string
     /// if the Thief Buddy registry entry was not found.

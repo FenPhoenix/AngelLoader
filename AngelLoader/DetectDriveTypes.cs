@@ -369,7 +369,7 @@ internal static class DetectDriveData
 
 
     // In case the directory is a symlink pointing at some other drive
-    private static (string Path, bool IsLink)GetRealDirectory(string path, IOPathType ioPathType)
+    private static (string Path, bool IsLink) GetRealDirectory(string path, IOPathType ioPathType)
     {
         try
         {
@@ -389,7 +389,7 @@ internal static class DetectDriveData
             string? realPath;
 
             bool finalIsLink = false;
-            
+
             // Perf: Checking for symbolic link is expensive (double-digit milliseconds for one check), so just
             // do a reparse point check first, which is effectively instantaneous.
             if (!IsReparsePoint(di))

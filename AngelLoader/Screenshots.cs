@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using AngelLoader.DataClasses;
 using static AL_Common.Common;
 using static AngelLoader.GameSupport;
@@ -178,7 +179,7 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
 
 public sealed class DisableScreenshotWatchers : IDisposable
 {
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
     private static int _count;
 
     private readonly bool[] _originalValues = new bool[SupportedGameCount];

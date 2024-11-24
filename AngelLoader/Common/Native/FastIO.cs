@@ -181,20 +181,20 @@ internal static class FastIO
             }
         } while (fileFinder.TryFindNextFile(out findData));
 
-    return;
+        return;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static bool IsFile(FindData findData)
-    {
-        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
-    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool IsFile(FindData findData)
+        {
+            return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
+        }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static bool IsDirectory(FindData findData, bool ignoreReparsePoints)
-    {
-        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
-               (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
-    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool IsDirectory(FindData findData, bool ignoreReparsePoints)
+        {
+            return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
+                   (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
+        }
     }
 
     /// <summary>

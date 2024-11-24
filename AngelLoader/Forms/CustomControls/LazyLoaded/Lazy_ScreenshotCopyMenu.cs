@@ -43,10 +43,9 @@ internal sealed class Lazy_ScreenshotCopyMenu : IDarkable
         if (_constructed) return;
 
         _menu = new DarkContextMenu(_owner);
-        _menu.Items.AddRange(new ToolStripItem[]
-        {
-            CopyMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Control | Keys.C },
-        });
+        _menu.Items.AddRange(
+            CopyMenuItem = new ToolStripMenuItemCustom { ShortcutKeys = Keys.Control | Keys.C }
+        );
 
         _menu.Opening += _owner.CopyMenu_Opening;
         _menu.ItemClicked += _owner.CopyMenu_ItemClicked;

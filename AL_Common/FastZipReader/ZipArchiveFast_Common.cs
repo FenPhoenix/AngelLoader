@@ -66,10 +66,8 @@ public sealed class ZipContext
     internal readonly byte[] FilenameBuffer = new byte[65536];
 
     private const int _backwardsSeekingBufferSize = 32;
-    internal const int ThrowAwayBufferSize = 64;
 
     internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
-    internal readonly byte[] ThrowawayBuffer = new byte[ThrowAwayBufferSize];
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
@@ -135,8 +133,6 @@ public sealed class ZipContext_Threaded
     internal readonly SubReadStream ArchiveSubReadStream;
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
-
-    internal readonly byte[] TempBuffer = new byte[StreamCopyBufferSize];
 
     // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
     // won't have any problems in here.

@@ -565,22 +565,22 @@ public sealed partial class ReadOnlyDataContext
     [GeneratedRegex(
         @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorRegex1();
+    private static partial Regex AuthorRegex1();
 
     [GeneratedRegex(
         @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorRegex2();
+    private static partial Regex AuthorRegex2();
 
     [GeneratedRegex(
         @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorRegex3();
+    private static partial Regex AuthorRegex3();
 
     [GeneratedRegex(
         @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorRegex4();
+    private static partial Regex AuthorRegex4();
 
     internal readonly Regex[] AuthorRegexes =
     {
@@ -606,21 +606,21 @@ public sealed partial class ReadOnlyDataContext
         //language=regexp
         @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorMissionCopyrightRegex1();
+    private static partial Regex AuthorMissionCopyrightRegex1();
 
     [GeneratedRegex(
         //language=regexp
         @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
         _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorMissionCopyrightRegex2();
+    private static partial Regex AuthorMissionCopyrightRegex2();
 
     [GeneratedRegex(
         //language=regexp
         @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
         _copyrightSecondPart,
         IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex AuthorMissionCopyrightRegex3();
+    private static partial Regex AuthorMissionCopyrightRegex3();
 
     internal readonly Regex[] AuthorMissionCopyrightRegexes =
     {

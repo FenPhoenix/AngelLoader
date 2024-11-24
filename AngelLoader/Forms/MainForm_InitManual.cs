@@ -431,7 +431,7 @@ public sealed partial class MainForm
         FilterIconButtonsToolStrip.GripMargin = new Padding(0);
         FilterIconButtonsToolStrip.GripStyle = ToolStripGripStyle.Hidden;
         FilterIconButtonsToolStrip.ImageScalingSize = new Size(22, 22);
-        FilterIconButtonsToolStrip.Items.AddRange(new ToolStripItem[] {
+        FilterIconButtonsToolStrip.Items.AddRange(
             FilterByReleaseDateButton,
             FilterByLastPlayedButton,
             FilterByTagsButton,
@@ -441,7 +441,7 @@ public sealed partial class MainForm
             FilterShowUnsupportedButton,
             FilterShowUnavailableButton,
             FilterShowRecentAtTopButton,
-            FilterControlsShowHideButton});
+            FilterControlsShowHideButton);
         FilterIconButtonsToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
         FilterIconButtonsToolStrip.TabIndex = 3;
         FilterIconButtonsToolStrip.Paint += FilterIconButtonsToolStrip_Paint;
@@ -485,10 +485,10 @@ public sealed partial class MainForm
         RefreshAreaToolStrip.GripMargin = new Padding(0);
         RefreshAreaToolStrip.GripStyle = ToolStripGripStyle.Hidden;
         RefreshAreaToolStrip.ImageScalingSize = new Size(22, 22);
-        RefreshAreaToolStrip.Items.AddRange(new ToolStripItem[] {
+        RefreshAreaToolStrip.Items.AddRange(
             RefreshFromDiskButton,
             RefreshFiltersButton,
-            ClearFiltersButton});
+            ClearFiltersButton);
         RefreshAreaToolStrip.LayoutStyle = ToolStripLayoutStyle.Flow;
         RefreshAreaToolStrip.Location = new Point(994, 0);
         RefreshAreaToolStrip.Size = new Size(91, 26);

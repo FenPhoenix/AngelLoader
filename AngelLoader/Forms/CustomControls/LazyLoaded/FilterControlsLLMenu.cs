@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using static AL_Common.Common;
@@ -58,8 +57,7 @@ internal sealed class FilterControlsLLMenu : IDarkable
         if (_constructed) return;
 
         _menu = new DarkContextMenu(_owner);
-        _menu.Items.AddRange(new ToolStripItem[]
-        {
+        _menu.Items.AddRange(
             TitleMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Title },
             AuthorMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Author },
             ReleaseDateMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ReleaseDate },
@@ -69,8 +67,8 @@ internal sealed class FilterControlsLLMenu : IDarkable
             RatingMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.Rating },
             ShowUnsupportedMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnsupported },
             ShowUnavailableFMsMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowUnavailable },
-            ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowRecentAtTop },
-        });
+            ShowRecentAtTopMenuItem = new ToolStripMenuItemCustom { Tag = HideableFilterControls.ShowRecentAtTop }
+        );
 
         for (int i = 0; i < _menu.Items.Count; i++)
         {

@@ -126,13 +126,12 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 
         #region Add items to menu and hookup events
 
-        _menu.Items.AddRange(new ToolStripItem[]
-        {
+        _menu.Items.AddRange(
             ResetColumnVisibilityMenuItem = new ToolStripMenuItemCustom(),
             ResetAllColumnWidthsMenuItem = new ToolStripMenuItemCustom(),
             ResetColumnPositionsMenuItem = new ToolStripMenuItemCustom(),
-            new ToolStripSeparator(),
-        });
+            new ToolStripSeparator()
+        );
 
         #region Fill ColumnHeaderCheckBoxMenuItems array
 

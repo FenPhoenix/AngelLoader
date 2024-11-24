@@ -235,7 +235,7 @@ internal static partial class PathInternal
     /// Returns true if the path ends in a directory separator.
     /// </summary>
     internal static bool EndsInDirectorySeparator([NotNullWhen(true)] string? path) =>
-          !string.IsNullOrEmpty(path) && IsDirectorySeparator(path![^1]);
+          !string.IsNullOrEmpty(path) && IsDirectorySeparator(path[^1]);
 
 #if ENABLE_UNUSED
     /// <summary>

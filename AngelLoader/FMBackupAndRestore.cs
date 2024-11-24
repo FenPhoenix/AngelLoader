@@ -169,7 +169,7 @@ internal static partial class FMInstallAndPlay
                 foreach (string f in savesAndScreensFiles)
                 {
                     string fn = f.Substring(fmData.InstalledPath.Length).Trim(CA_BS_FS);
-                    AddEntry(archive, f, fn, fileStreamBuffer);
+                    AddEntry(archive, f, fn);
                 }
             }
 
@@ -235,7 +235,7 @@ internal static partial class FMInstallAndPlay
             {
                 foreach ((string fileName, string fileNameRelative) in filesList)
                 {
-                    AddEntry(archive, fileName, fileNameRelative, fileStreamBuffer);
+                    AddEntry(archive, fileName, fileNameRelative);
                 }
 
                 if (!fmSelInfString.IsEmpty())
@@ -295,7 +295,7 @@ internal static partial class FMInstallAndPlay
             }
         }
 
-        static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName, byte[] buffer)
+        static void AddEntry(ZipArchive archive, string fileNameOnDisk, string entryFileName)
         {
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
             ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Runtime.InteropServices;
+using JetBrains.Annotations;
 
 namespace AL_Common;
 
@@ -27,6 +28,7 @@ internal static partial class Interop
     }
 }
 
+[PublicAPI]
 [StructLayout(LayoutKind.Sequential)]
 public struct FILE_TIME
 {

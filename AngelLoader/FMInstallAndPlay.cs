@@ -1,12 +1,10 @@
 ﻿//#define TIMING_TEST
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -2394,8 +2392,7 @@ internal static partial class FMInstallAndPlay
                         fileName: entry.ExtractedName,
                         overwrite: true,
                         unSetReadOnly: true,
-                        fileStreamWriteBuffer: fileStreamWriteBuffer,
-                        streamCopyBuffer: streamCopyBuffer);
+                        fileStreamWriteBuffer: fileStreamWriteBuffer);
 
                     _installCts.Token.ThrowIfCancellationRequested();
 

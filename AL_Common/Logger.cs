@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
@@ -11,7 +12,7 @@ namespace AL_Common;
 
 public static partial class Logger
 {
-    private static readonly object _lock = new();
+    private static readonly Lock _lock = new();
 
     private static string _logFile = "";
     // ReSharper disable once InconsistentlySynchronizedField

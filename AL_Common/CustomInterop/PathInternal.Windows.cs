@@ -47,17 +47,15 @@ internal static partial class PathInternal
     internal const char PathSeparator = ';';
 
     internal const string DirectorySeparatorCharAsString = "\\";
-#endif
 
     internal const string NTPathPrefix = @"\??\";
+#endif
     internal const string ExtendedPathPrefix = @"\\?\";
     internal const string UncPathPrefix = @"\\";
     internal const string UncExtendedPrefixToInsert = @"?\UNC\";
 #if ENABLE_UNUSED
     internal const string UncExtendedPathPrefix = @"\\?\UNC\";
-#endif
     internal const string UncNTPathPrefix = @"\??\UNC\";
-#if ENABLE_UNUSED
     internal const string DevicePathPrefix = @"\\.\";
     internal const string ParentDirectoryPrefix = @"..\";
     internal const string DirectorySeparators = @"\/";
@@ -80,7 +78,7 @@ internal static partial class PathInternal
     /// </summary>
     internal static bool IsValidDriveChar(char value)
     {
-        return (uint)((value | 0x20) - 'a') <= (uint)('z' - 'a');
+        return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
     }
 
     internal static bool EndsWithPeriodOrSpace(string? path)
@@ -90,7 +88,7 @@ internal static partial class PathInternal
             return false;
         }
 
-        char c = path![path.Length - 1];
+        char c = path[^1];
         return c == ' ' || c == '.';
     }
 

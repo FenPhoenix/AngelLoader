@@ -620,71 +620,71 @@ internal static class FMCache
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
 
-        var entries = archive.Entries;
+            var entries = archive.Entries;
 
-        foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
-        {
-            if (!f.ExtIsHtml()) continue;
-
-            string html = File.ReadAllText(f);
-
-            for (int i = 0; i < entries.Count; i++)
+            foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
-                ZipArchiveEntry e = entries[i];
-                AddHtmlRefFile(name: e.Name, fullName: e.FullName, i, html, htmlRefFiles);
-            }
-        }
+                if (!f.ExtIsHtml()) continue;
 
-        if (htmlRefFiles.Count > 0)
-        {
-            for (int ri = 0; ri < htmlRefFiles.Count; ri++)
-            {
-                NameAndIndex f = htmlRefFiles[ri];
-                ZipArchiveEntry re = entries[f.Index];
+                string html = File.ReadAllText(f);
 
-                if (RefFileExcluded(f.Name, re.Length)) continue;
-
-                string content;
-                using (var es = re.Open())
+                for (int i = 0; i < entries.Count; i++)
                 {
-                    using var sr = new StreamReader(es);
-                    content = sr.ReadToEnd();
-                }
-
-                for (int ei = 0; ei < entries.Count; ei++)
-                {
-                    ZipArchiveEntry e = entries[ei];
-                    AddHtmlRefFile(name: e.Name, fullName: e.FullName, ei, content, htmlRefFiles);
+                    ZipArchiveEntry e = entries[i];
+                    AddHtmlRefFile(name: e.Name, fullName: e.FullName, i, html, htmlRefFiles);
                 }
             }
-        }
 
-        if (htmlRefFiles.Count > 0)
-        {
-            foreach (NameAndIndex f in htmlRefFiles)
+            if (htmlRefFiles.Count > 0)
             {
-                string finalFileName;
-                try
+                for (int ri = 0; ri < htmlRefFiles.Count; ri++)
                 {
-                    finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                    NameAndIndex f = htmlRefFiles[ri];
+                    ZipArchiveEntry re = entries[f.Index];
+
+                    if (RefFileExcluded(f.Name, re.Length)) continue;
+
+                    string content;
+                    using (var es = re.Open())
+                    {
+                        using var sr = new StreamReader(es);
+                        content = sr.ReadToEnd();
+                    }
+
+                    for (int ei = 0; ei < entries.Count; ei++)
+                    {
+                        ZipArchiveEntry e = entries[ei];
+                        AddHtmlRefFile(name: e.Name, fullName: e.FullName, ei, content, htmlRefFiles);
+                    }
                 }
-                catch
+            }
+
+            if (htmlRefFiles.Count > 0)
+            {
+                foreach (NameAndIndex f in htmlRefFiles)
                 {
-                    // ignore, message already logged
-                    continue;
-                }
-                string? path = Path.GetDirectoryName(f.Name);
-                if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
+                    string finalFileName;
+                    try
+                    {
+                        finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                    }
+                    catch
+                    {
+                        // ignore, message already logged
+                        continue;
+                    }
+                    string? path = Path.GetDirectoryName(f.Name);
+                    if (!path.IsEmpty()) Directory.CreateDirectory(Path.Combine(fmCachePath, path));
                     entries[f.Index].ExtractToFile_Fast(finalFileName, overwrite: true, ioBufferPools);
-                File_UnSetReadOnly(finalFileName);
+                    File_UnSetReadOnly(finalFileName);
+                }
             }
         }
+        finally
+        {
+            ioBufferPools.FileStream.Return(fileStreamReadBuffer);
+        }
     }
-    finally
-    {
-        ioBufferPools.FileStream.Return(fileStreamReadBuffer);
-    }
-}
 
     private static async Task ExtractHtmlRefFiles_7z(string fmArchivePath, string fmCachePath)
     {
@@ -884,7 +884,7 @@ internal static class FMCache
                         entriesCount = entries.Count;
                         for (int i = 0; i < entriesCount; i++)
                         {
-                                                        RarArchiveEntry entry = entries[i];
+                            RarArchiveEntry entry = entries[i];
                             if (!entry.IsDirectory)
                             {
                                 archiveFileNamesNameOnly.Add(entry.Key.GetFileNameFast());

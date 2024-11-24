@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;

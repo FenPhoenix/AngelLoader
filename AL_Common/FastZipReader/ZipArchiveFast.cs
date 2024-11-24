@@ -187,7 +187,7 @@ public sealed class ZipArchiveFast : IDisposable
         Encoding? entryNameEncoding,
         bool useEntryNameEncodingCodePath)
     {
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
         // Matching Framework
         // @NET5: Match this to .NET modern behavior
@@ -476,8 +476,7 @@ public sealed class ZipArchiveFast : IDisposable
         string fileName,
         bool overwrite,
         bool unSetReadOnly,
-        byte[] fileStreamWriteBuffer,
-        byte[] streamCopyBuffer)
+        byte[] fileStreamWriteBuffer)
     {
         using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamWriteBuffer))
         using (Stream source = OpenEntry(entry))

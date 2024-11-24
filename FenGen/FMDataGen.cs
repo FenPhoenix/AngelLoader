@@ -341,7 +341,7 @@ internal static class FMData
                     }
                 }
             }
-            else if (field.Type[field.Type.Length - 1] == '?' &&
+            else if (field.Type[^1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
                 string tryParseArgs = GetTryParseArgsRead(field.Type);
@@ -641,7 +641,7 @@ internal static class FMData
                     swlSBAppend(fieldIniName, "numberSpan[..written]");
                 }
             }
-            else if (field.Type[field.Type.Length - 1] == '?' &&
+            else if (field.Type[^1] == '?' &&
                      _numericTypes.Contains(field.Type.Substring(0, field.Type.Length - 1)))
             {
                 w.WL("if (" + objDotField + " != null)");

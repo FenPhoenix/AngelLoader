@@ -8,7 +8,7 @@ namespace AL_Common;
 internal static partial class Interop
 {
     // As defined in winerror.h and https://learn.microsoft.com/windows/win32/debug/system-error-codes
-    internal static partial class Errors
+    internal static class Errors
     {
         internal const int ERROR_SUCCESS = 0x0;
 #if ENABLE_UNUSED
@@ -17,49 +17,45 @@ internal static partial class Interop
         internal const int ERROR_FILE_NOT_FOUND = 0x2;
         internal const int ERROR_PATH_NOT_FOUND = 0x3;
         internal const int ERROR_ACCESS_DENIED = 0x5;
-        internal const int ERROR_INVALID_HANDLE = 0x6;
 #if ENABLE_UNUSED
+        internal const int ERROR_INVALID_HANDLE = 0x6;
         internal const int ERROR_NOT_ENOUGH_MEMORY = 0x8;
         internal const int ERROR_INVALID_ACCESS = 0xC;
         internal const int ERROR_INVALID_DATA = 0xD;
         internal const int ERROR_OUTOFMEMORY = 0xE;
-#endif
         internal const int ERROR_INVALID_DRIVE = 0xF;
+#endif
         internal const int ERROR_NO_MORE_FILES = 0x12;
-        internal const int ERROR_NOT_READY = 0x15;
 #if ENABLE_UNUSED
+        internal const int ERROR_NOT_READY = 0x15;
         internal const int ERROR_BAD_COMMAND = 0x16;
         internal const int ERROR_BAD_LENGTH = 0x18;
 #endif
         internal const int ERROR_SHARING_VIOLATION = 0x20;
 #if ENABLE_UNUSED
         internal const int ERROR_LOCK_VIOLATION = 0x21;
-#endif
         internal const int ERROR_HANDLE_EOF = 0x26;
-#if ENABLE_UNUSED
         internal const int ERROR_NOT_SUPPORTED = 0x32;
-#endif
         internal const int ERROR_BAD_NETPATH = 0x35;
         internal const int ERROR_NETWORK_ACCESS_DENIED = 0x41;
         internal const int ERROR_BAD_NET_NAME = 0x43;
+#endif
         internal const int ERROR_FILE_EXISTS = 0x50;
         internal const int ERROR_INVALID_PARAMETER = 0x57;
-        internal const int ERROR_BROKEN_PIPE = 0x6D;
 #if ENABLE_UNUSED
+        internal const int ERROR_BROKEN_PIPE = 0x6D;
         internal const int ERROR_DISK_FULL = 0x70;
         internal const int ERROR_SEM_TIMEOUT = 0x79;
         internal const int ERROR_CALL_NOT_IMPLEMENTED = 0x78;
         internal const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
-#endif
         internal const int ERROR_INVALID_NAME = 0x7B;
-#if ENABLE_UNUSED
         internal const int ERROR_INVALID_LEVEL = 0x7C;
         internal const int ERROR_MOD_NOT_FOUND = 0x7E;
         internal const int ERROR_NEGATIVE_SEEK = 0x83;
 #endif
         internal const int ERROR_DIR_NOT_EMPTY = 0x91;
-        internal const int ERROR_BAD_PATHNAME = 0xA1;
 #if ENABLE_UNUSED
+        internal const int ERROR_BAD_PATHNAME = 0xA1;
         internal const int ERROR_LOCK_FAILED = 0xA7;
         internal const int ERROR_BUSY = 0xAA;
 #endif
@@ -74,9 +70,7 @@ internal static partial class Interop
         internal const int ERROR_FILE_TOO_LARGE = 0xDF;
         internal const int ERROR_PIPE_BUSY = 0xE7;
         internal const int ERROR_NO_DATA = 0xE8;
-#endif
         internal const int ERROR_PIPE_NOT_CONNECTED = 0xE9;
-#if ENABLE_UNUSED
         internal const int ERROR_MORE_DATA = 0xEA;
         internal const int ERROR_NO_MORE_ITEMS = 0x103;
         internal const int ERROR_DIRECTORY = 0x10B;
@@ -107,9 +101,7 @@ internal static partial class Interop
         internal const int ERROR_NOT_FOUND = 0x490;
         internal const int ERROR_INVALID_DOMAINNAME = 0x4BC;
         internal const int ERROR_CANCELLED = 0x4C7;
-#endif
         internal const int ERROR_NETWORK_UNREACHABLE = 0x4CF;
-#if ENABLE_UNUSED
         internal const int ERROR_NON_ACCOUNT_SID = 0x4E9;
         internal const int ERROR_NOT_ALL_ASSIGNED = 0x514;
         internal const int ERROR_UNKNOWN_REVISION = 0x519;
@@ -139,9 +131,7 @@ internal static partial class Interop
         internal const int ERROR_RESOURCE_LANG_NOT_FOUND = 0x717;
         internal const int RPC_S_CALL_CANCELED = 0x71A;
         internal const int ERROR_NO_SITENAME = 0x77F;
-#endif
         internal const int ERROR_NOT_A_REPARSE_POINT = 0x1126;
-#if ENABLE_UNUSED
         internal const int ERROR_DS_NAME_UNPARSEABLE = 0x209E;
         internal const int ERROR_DS_UNKNOWN_ERROR = 0x20EF;
         internal const int ERROR_DS_DRA_BAD_DN = 0x20F7;

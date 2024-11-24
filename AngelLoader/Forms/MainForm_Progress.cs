@@ -25,7 +25,7 @@ public sealed partial class MainForm
     }
 
     #region Progress box
-    
+
     // Just always invoke these, because they're almost always called from another thread anyway. Keeps it
     // simple.
 
@@ -186,7 +186,7 @@ public sealed partial class MainForm
 
     public void HideProgressBox() => Invoke(() => ProgressBox?.Hide());
 
-    public bool ProgressBoxVisible() => (bool)Invoke(() => ProgressBox is { Visible: true });
+    public bool ProgressBoxVisible() => Invoke(() => ProgressBox is { Visible: true });
 
     #endregion
 }

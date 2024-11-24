@@ -9,7 +9,7 @@ internal static partial class Interop
 {
     internal static partial class Kernel32
     {
-        internal static partial class FileAttributes
+        internal static class FileAttributes
         {
 #if ENABLE_UNUSED
             internal const int FILE_ATTRIBUTE_NORMAL = 0x00000080;

@@ -750,7 +750,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                     Tag = i,
                 };
-                comboBox.Items.AddRange(new object[] { "", "", "", "" });
+                comboBox.Items.AddRange("", "", "", "");
                 comboBox.SelectedIndex = 0;
 
                 panel.Controls.Add(driveLabel);

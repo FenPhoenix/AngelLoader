@@ -163,8 +163,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
 
         #region Add items to menu
 
-        _menu.Items.AddRange(new ToolStripItem[]
-        {
+        _menu.Items.AddRange(
             PlayFMMenuItem = new ToolStripMenuItemCustom(),
             PlayFMInMPMenuItem = new ToolStripMenuItemCustom(),
             InstallUninstallMenuItem = new ToolStripMenuItemCustom(),
@@ -186,14 +185,14 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
             RatingMenuItem = new ToolStripMenuItemCustom(),
             FinishedOnMenuItem = new ToolStripMenuItemCustom(),
             new ToolStripSeparator(),
-            WebSearchMenuItem = new ToolStripMenuItemCustom(),
-        });
+            WebSearchMenuItem = new ToolStripMenuItemCustom()
+        );
 
-        ConvertAudioMenuItem.DropDownItems.AddRange(new ToolStripItem[]
-        {
+        ConvertAudioMenuItem.DropDownItems.AddRange(
+
             ConvertWAVsTo16BitMenuItem = new ToolStripMenuItemCustom(),
-            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom(),
-        });
+            ConvertOGGsToWAVsMenuItem = new ToolStripMenuItemCustom()
+        );
 
         for (int i = -1; i < 11; i++)
         {
