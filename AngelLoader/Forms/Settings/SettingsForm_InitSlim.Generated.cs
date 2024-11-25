@@ -95,7 +95,6 @@ partial class SettingsForm
         // 
         this.IOThreadingRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.IOThreadingRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.IOThreadingRadioButton.Location = new System.Drawing.Point(8, 128);
         this.IOThreadingRadioButton.Size = new System.Drawing.Size(136, 23);
         this.IOThreadingRadioButton.TabIndex = 5;
@@ -105,7 +104,6 @@ partial class SettingsForm
         // 
         this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.UpdateRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
         this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
         this.UpdateRadioButton.TabIndex = 4;
@@ -115,7 +113,6 @@ partial class SettingsForm
         // 
         this.ThiefBuddyRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.ThiefBuddyRadioButton.Location = new System.Drawing.Point(8, 80);
         this.ThiefBuddyRadioButton.Size = new System.Drawing.Size(136, 23);
         this.ThiefBuddyRadioButton.TabIndex = 3;
@@ -125,7 +122,6 @@ partial class SettingsForm
         // 
         this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.OtherRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
         this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
         this.OtherRadioButton.TabIndex = 2;
@@ -135,7 +131,6 @@ partial class SettingsForm
         // 
         this.AppearanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.AppearanceRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
         this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
         this.AppearanceRadioButton.TabIndex = 1;
@@ -145,7 +140,6 @@ partial class SettingsForm
         // 
         this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.PathsRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
         this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
         this.PathsRadioButton.TabIndex = 0;
