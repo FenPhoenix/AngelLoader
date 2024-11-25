@@ -71,6 +71,7 @@ public sealed partial class MainForm : DarkFormBase,
     #region Private fields
 
     // Stupid hack for if event handlers need to know
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool StartupState { get; private set; } = true;
 
     private ISplashScreen_Safe? _splashScreen;
@@ -160,6 +161,7 @@ public sealed partial class MainForm : DarkFormBase,
     internal bool CellValueNeededDisabled;
 
     private TransparentPanel? ViewBlockingPanel;
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool ViewBlocked { get; private set; }
 
     #endregion
@@ -5721,6 +5723,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region UI enabled
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool UIEnabled
     {
         get => EverythingPanel.Enabled;

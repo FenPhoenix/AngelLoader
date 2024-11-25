@@ -20,6 +20,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 {
     #region Private fields
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public TabPage? DragTab { get; private set; }
 
     private List<BackingTab> _backingTabList = new(0);
@@ -81,6 +82,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
     /// <param name="list"></param>
     internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal WhichTabControl WhichTabControl { get; private set; } = WhichTabControl.Top;
     internal void SetWhich(WhichTabControl value) => WhichTabControl = value;
 

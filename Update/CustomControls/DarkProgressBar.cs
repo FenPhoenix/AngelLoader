@@ -40,6 +40,7 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
     }
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new ProgressBarStyle Style
     {
         get => base.Style;
@@ -56,6 +57,7 @@ public sealed class DarkProgressBar : ProgressBar, IDarkable
     /// the progress bar that makes it look annoying and unprofessional.
     /// </summary>
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new int Value
     {
         get => base.Value;

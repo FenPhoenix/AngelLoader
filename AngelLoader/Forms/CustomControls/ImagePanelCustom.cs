@@ -38,6 +38,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
         }
     }
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool ShowingErrorImage { get; private set; }
 
     private readonly ImageAttributes _imageAttributes = new();

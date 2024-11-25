@@ -9,6 +9,7 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
+using System.ComponentModel;
 
 namespace AngelLoader;
 
@@ -18,6 +19,7 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
 
     private sealed class ScreenshotWatcherTimer(double interval) : System.Timers.Timer(interval)
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal string FullPath { get; private set; } = "";
 
         internal void ResetWith(string fullPath)

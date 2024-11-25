@@ -11,6 +11,7 @@ public sealed class DarkArrowButton : DarkButton
 
     [Browsable(true)]
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Direction ArrowDirection
     {
         get => _arrowDirection;

@@ -26,6 +26,7 @@ public sealed class DrawnPanel : Panel, IDarkable
     private bool _visibleCached = true;
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool Visible
     {
         get => base.Visible;
