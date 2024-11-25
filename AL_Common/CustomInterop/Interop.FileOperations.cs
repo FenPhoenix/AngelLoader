@@ -9,7 +9,7 @@ internal static partial class Interop
 {
     internal static partial class Kernel32
     {
-        internal static partial class IOReparseOptions
+        internal static class IOReparseOptions
         {
 #if ENABLE_UNUSED
             internal const uint IO_REPARSE_TAG_FILE_PLACEHOLDER = 0x80000015;
@@ -18,7 +18,7 @@ internal static partial class Interop
             internal const uint IO_REPARSE_TAG_SYMLINK = 0xA000000C;
         }
 
-        internal static partial class FileOperations
+        internal static class FileOperations
         {
             internal const int OPEN_EXISTING = 3;
 #if ENABLE_UNUSED

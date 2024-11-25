@@ -83,6 +83,7 @@ public class DarkButton : Button, IDarkable
     public Color? DarkModePressedColor;
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new string Text
     {
         get => base.Text;
@@ -94,6 +95,7 @@ public class DarkButton : Button, IDarkable
     }
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool Enabled
     {
         get => base.Enabled;
@@ -133,6 +135,7 @@ public class DarkButton : Button, IDarkable
     #region Code Property Region
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new FlatStyle FlatStyle
     {
         get => base.FlatStyle;

@@ -27,6 +27,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
     private bool _forceUpdateArmed;
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override bool DarkModeEnabled
     {
         get => base.DarkModeEnabled;

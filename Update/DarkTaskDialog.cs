@@ -76,9 +76,9 @@ public partial class DarkTaskDialog : DarkFormBase
 
         AcceptButton = defaultButton switch
         {
-            DialogResult.Yes when (_yesButtonVisible) => YesButton,
-            DialogResult.No when (_noButtonVisible) => NoButton,
-            DialogResult.Cancel when (_cancelButtonVisible) => Cancel_Button,
+            DialogResult.Yes when _yesButtonVisible => YesButton,
+            DialogResult.No when _noButtonVisible => NoButton,
+            DialogResult.Cancel when _cancelButtonVisible => Cancel_Button,
             _ => Cancel_Button,
         };
 

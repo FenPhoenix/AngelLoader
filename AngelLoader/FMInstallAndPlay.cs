@@ -1386,7 +1386,7 @@ internal static partial class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using FileStream fs = File_OpenReadFast(misFile);
+                    using FileStreamFast fs = File_OpenReadFast(misFile);
 
                     long streamLength = fs.Length;
 
@@ -1418,7 +1418,7 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using FileStream fs = File_OpenReadFast(smallestUsedMisFile);
+                using FileStreamFast fs = File_OpenReadFast(smallestUsedMisFile);
 
                 if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.Length)
                 {

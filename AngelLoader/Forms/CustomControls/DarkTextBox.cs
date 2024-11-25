@@ -41,7 +41,7 @@ public class DarkTextBox : TextBox, IDarkable
     [PublicAPI]
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public bool DarkModeEnabled
+    public unsafe bool DarkModeEnabled
     {
         set
         {
@@ -153,8 +153,8 @@ public class DarkTextBox : TextBox, IDarkable
         if (!Enabled)
         {
             // Flip enabled off and on again to fix disabled text color
-            Native.SendMessage(Handle, Native.WM_ENABLE, (IntPtr)1, IntPtr.Zero);
-            Native.SendMessage(Handle, Native.WM_ENABLE, (IntPtr)0, IntPtr.Zero);
+            Native.SendMessageW(Handle, Native.WM_ENABLE, (IntPtr)1, IntPtr.Zero);
+            Native.SendMessageW(Handle, Native.WM_ENABLE, (IntPtr)0, IntPtr.Zero);
         }
     }
 

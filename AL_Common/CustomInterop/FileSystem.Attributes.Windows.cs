@@ -5,7 +5,7 @@
 
 namespace AL_Common;
 
-internal static partial class FileSystem
+internal static class FileSystem
 {
 #if ENABLE_UNUSED
     public static bool DirectoryExists(string? fullPath)

@@ -118,7 +118,7 @@ public
         Refresh();
         // Explicitly refresh non-client area - otherwise on Win7 the non-client area doesn't refresh and we
         // end up with blacked-out title bar and borders etc.
-        Native.SendMessage(Handle, Native.WM_NCPAINT, IntPtr.Zero, IntPtr.Zero);
+        Native.SendMessageW(Handle, Native.WM_NCPAINT, IntPtr.Zero, IntPtr.Zero);
     }
 
     protected override void WndProc(ref Message m)

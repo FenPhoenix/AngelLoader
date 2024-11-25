@@ -488,9 +488,10 @@ public class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         }
     }
 
-    private static readonly int _comboboxInfoSize = Marshal.SizeOf(typeof(COMBOBOXINFO));
+    private static readonly int _comboboxInfoSize = Marshal.SizeOf<COMBOBOXINFO>();
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetComboBoxInfo(IntPtr hwnd, [In, Out] ref COMBOBOXINFO cbInfo);
 
     #endregion

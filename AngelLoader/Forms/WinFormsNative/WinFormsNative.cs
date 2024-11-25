@@ -118,16 +118,16 @@ internal static class Native
     #region SendMessage/PostMessage
 
     [DllImport("user32.dll")]
-    internal static extern IntPtr PostMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static extern IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     [DllImport("user32.dll")]
-    internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     [DllImport("user32.dll")]
-    internal static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, IntPtr lParam);
+    internal static extern int SendMessageW(IntPtr hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, IntPtr lParam);
 
     [DllImport("user32.dll")]
-    internal static extern void SendMessage(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+    internal static extern void SendMessageW(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
 
     #endregion
 
@@ -161,20 +161,20 @@ internal static class Native
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-    internal struct SHSTOCKICONINFO
+    internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
-        internal string szPath;
+        internal fixed char szPath[MAX_PATH];
     }
 
     [DllImport("Shell32.dll", SetLastError = false)]
     internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
     [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DestroyIcon(IntPtr hIcon);
 
     #endregion
@@ -229,7 +229,7 @@ internal static class Native
         internal IntPtr lParam;
     }
 
-    [DllImport("comctl32.dll", SetLastError = true, EntryPoint = "#383")]
+    [DllImport("comctl32.dll", EntryPoint = "#383", SetLastError = true)]
     internal static extern void DoReaderMode(ref READERMODEINFO prmi);
 
     #endregion
@@ -297,6 +297,7 @@ internal static class Native
     private static extern IntPtr GetWindowDC(IntPtr hWnd);
 
     [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
     public sealed class GraphicsContext_Ref : IDisposable
@@ -345,6 +346,7 @@ internal static class Native
     #region Window
 
     [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
     internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
@@ -524,7 +526,7 @@ internal static class Native
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
-    internal struct SCROLLBARINFO
+    internal unsafe struct SCROLLBARINFO
     {
         internal int cbSize;
         internal RECT rcScrollBar;
@@ -532,8 +534,7 @@ internal static class Native
         internal int xyThumbTop;
         internal int xyThumbBottom;
         internal int reserved;
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 6)]
-        internal int[] rgstate;
+        internal fixed int rgstate[6];
     }
 
     [Flags]
@@ -552,9 +553,9 @@ internal static class Native
     internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 
     [DllImport("user32.dll")]
-    internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, bool fRedraw);
+    internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
 
-    [DllImport("user32.dll", SetLastError = true, EntryPoint = "GetScrollBarInfo")]
+    [DllImport("user32.dll", EntryPoint = "GetScrollBarInfo", SetLastError = true)]
     internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
     #endregion
@@ -761,14 +762,15 @@ internal static class Native
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
 
-    [DllImport("uxtheme.dll", ExactSpelling = true)]
+    [DllImport("uxtheme.dll")]
     public static extern int CloseThemeData(IntPtr hTheme);
 
-    [DllImport("uxtheme.dll", ExactSpelling = true)]
+    [DllImport("uxtheme.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool IsThemeActive();
 
 #if !X64
-    [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
+    [DllImport("gdi32.dll", SetLastError = true)]
     internal static extern IntPtr CreateSolidBrush(int crColor);
 #endif
 
@@ -893,7 +895,7 @@ internal static class Native
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     [PublicAPI]
-    internal struct LOGFONTW
+    internal unsafe struct LOGFONTW
     {
         internal int lfHeight;
         internal int lfWidth;
@@ -908,8 +910,7 @@ internal static class Native
         internal byte lfClipPrecision;
         internal byte lfQuality;
         internal byte lfPitchAndFamily;
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = LF_FACESIZE)]
-        internal string lfFaceName;
+        internal fixed char lfFaceName[LF_FACESIZE];
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -1022,6 +1023,7 @@ internal static class Native
     internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
 
     [DllImport("gdi32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DeleteObject(IntPtr handle);
 
     #endregion

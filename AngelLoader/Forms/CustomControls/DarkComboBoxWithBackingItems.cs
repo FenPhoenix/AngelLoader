@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -9,6 +10,7 @@ public sealed class DarkComboBoxWithBackingItems : DarkComboBox, IListControlWit
     private bool _visibleCached = true;
 
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new bool Visible
     {
         get => base.Visible;

@@ -10,8 +10,8 @@ using size_t = System.UInt64;
 
 using System;
 using SharpCompress.Common;
-using static SharpCompress.Compressors.Rar.UnpackV2017.UnpackGlobal;
 using static SharpCompress.Compressors.Rar.UnpackV2017.PackDef;
+using static SharpCompress.Compressors.Rar.UnpackV2017.UnpackGlobal;
 
 namespace SharpCompress.Compressors.Rar.UnpackV2017;
 

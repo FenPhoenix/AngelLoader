@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AngelLoader.DataClasses;
@@ -17,6 +18,7 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
 
     private sealed class ScreenshotWatcherTimer(double interval) : System.Timers.Timer(interval)
     {
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         internal string FullPath { get; private set; } = "";
 
         internal void ResetWith(string fullPath)

@@ -50,6 +50,7 @@ public static partial class Common
     public static float GetPercentFromValue_Float(long current, long total) => total == 0 ? 0 : (float)(100 * current) / total;
     public static double GetPercentFromValue_Double(int current, int total) => total == 0 ? 0 : (double)(100 * current) / total;
     public static long GetValueFromPercent(double percent, long total) => (long)((percent / 100) * total);
+    public static int GetValueFromPercent(double percent, int total) => (int)((percent / 100d) * total);
     public static int GetValueFromPercent_Rounded(double percent, int total) => (int)Math.Round((percent / 100d) * total, 1, MidpointRounding.AwayFromZero);
     public static double GetValueFromPercent_Double(double percent, int total) => (percent / 100d) * total;
 #endif

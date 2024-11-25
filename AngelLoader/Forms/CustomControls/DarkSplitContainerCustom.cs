@@ -59,6 +59,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     /// <summary>
     /// True if the user is in the middle of dragging the splitter.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool Resizing
     {
         get => _resizing;
@@ -111,6 +112,7 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
             ? (int)Math.Round(_storedSplitterPercent * CrossLength)
             : SplitterDistance;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal bool FullScreen { get; private set; }
     internal int CollapsedSize;
 

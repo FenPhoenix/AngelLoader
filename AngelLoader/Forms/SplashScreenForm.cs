@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using AL_Common;
@@ -54,6 +55,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
     #endregion
 
     // Perf
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public bool VisibleCached { get; private set; }
 
     public SplashScreenForm()

@@ -22,6 +22,7 @@ public sealed class DarkRadioButtonCustom : DarkButton
     }
 #endif
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override bool DarkModeEnabled
     {
         set

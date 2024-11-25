@@ -8,7 +8,7 @@ namespace AL_Common;
 
 internal static partial class Interop
 {
-    internal static partial class NtDll
+    internal static class NtDll
     {
         // https://msdn.microsoft.com/en-us/library/windows/hardware/ff550671.aspx
         [StructLayout(LayoutKind.Sequential)]

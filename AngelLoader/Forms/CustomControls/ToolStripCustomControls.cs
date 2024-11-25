@@ -168,6 +168,7 @@ public class ToolStripMenuItemCustom : ToolStripMenuItem
     /// <summary>
     /// Sets the text and escapes ampersands.
     /// </summary>
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public override string Text
     {
         get => base.Text;
@@ -245,6 +246,7 @@ public sealed class ToolStripArrowButton : ToolStripButton, IDarkable
 
     [Browsable(true)]
     [PublicAPI]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public Direction ArrowDirection
     {
         get => _arrowDirection;

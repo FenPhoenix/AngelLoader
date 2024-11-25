@@ -80,7 +80,7 @@ internal static partial class PathInternal
     /// </summary>
     internal static bool IsValidDriveChar(char value)
     {
-        return (uint)((value | 0x20) - 'a') <= (uint)('z' - 'a');
+        return (uint)((value | 0x20) - 'a') <= 'z' - 'a';
     }
 
     internal static bool EndsWithPeriodOrSpace(string? path)
@@ -90,7 +90,7 @@ internal static partial class PathInternal
             return false;
         }
 
-        char c = path![path.Length - 1];
+        char c = path![^1];
         return c == ' ' || c == '.';
     }
 
