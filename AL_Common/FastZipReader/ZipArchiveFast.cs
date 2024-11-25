@@ -4,9 +4,6 @@
 
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
-// @MT_TASK/@NET5: Test identicality between this and the .NET 8 version, once we lock in our final I/O threading code
-// @MT_TASK/@NET5: Also test perf on .NET 8 or 9 or whatever as at least 9 is using zlib-ng
-
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -47,13 +44,6 @@ public sealed class ZipArchiveFast : IDisposable
         get => _entryNameEncoding;
         private set
         {
-            // @MT_TASK/@NET5: .NET modern has a different check here:
-            // @MT_TASK/@NET5: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
-            /*
-            if (value != null &&
-                (value.Equals(Encoding.BigEndianUnicode) ||
-                 value.Equals(Encoding.Unicode))) { }
-            */
             if (value != null &&
                 (value.Equals(Encoding.BigEndianUnicode) ||
                  value.Equals(Encoding.Unicode) ||
@@ -189,7 +179,6 @@ public sealed class ZipArchiveFast : IDisposable
         bool useEntryNameEncodingCodePath)
     {
         // Matching Framework
-        // @NET5: Match this to .NET modern behavior
         if (useEntryNameEncodingCodePath &&
             entryNameEncoding != null &&
             (entryNameEncoding.Equals(Encoding.BigEndianUnicode) ||
