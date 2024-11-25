@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
@@ -9,7 +10,6 @@ using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
-using System.ComponentModel;
 
 namespace AngelLoader;
 

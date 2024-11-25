@@ -8,10 +8,10 @@ using nuint = System.UInt64;
 using size_t = System.UInt64;
 #endif
 
-using SharpCompress.IO;
 using System;
 using System.IO;
 using System.Text;
+using SharpCompress.IO;
 
 namespace SharpCompress.Common.Rar.Headers;
 

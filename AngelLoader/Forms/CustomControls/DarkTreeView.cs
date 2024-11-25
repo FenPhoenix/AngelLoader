@@ -3,10 +3,10 @@
 #if DRAW_BORDER
 using System;
 #endif
-using AngelLoader.DataClasses;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using AngelLoader.DataClasses;
 #if DRAW_BORDER
 using AngelLoader.Forms.WinFormsNative;
 #endif
