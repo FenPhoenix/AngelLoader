@@ -105,7 +105,7 @@ internal static partial class Native
     #region Theming
 
     [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
-    internal static partial int SetWindowThemeW(IntPtr hWnd, string appname, string idlist);
+    internal static partial int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
