@@ -257,7 +257,6 @@ internal static class FMScan
                             tdmContext = new ScannerTDMContext(Config.GetFMInstallPath(GameIndex.TDM));
                         }
 
-
                         reportThrottleSW.Start();
 
 #if TIMING_TEST

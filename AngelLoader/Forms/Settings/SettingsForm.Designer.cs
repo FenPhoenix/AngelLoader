@@ -93,12 +93,6 @@ partial class SettingsForm
             this.ErrorIconPictureBox.TabStop = false;
             this.ErrorIconPictureBox.Visible = false;
             // 
-            // MainToolTip
-            // 
-            this.MainToolTip.AutoPopDelay = 32767;
-            this.MainToolTip.InitialDelay = 500;
-            this.MainToolTip.ReshowDelay = 100;
-            // 
             // MainSplitContainer
             // 
             this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 

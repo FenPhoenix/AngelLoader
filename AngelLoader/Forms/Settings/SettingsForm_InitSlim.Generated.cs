@@ -66,12 +66,6 @@ partial class SettingsForm
         this.ErrorIconPictureBox.Size = new System.Drawing.Size(14, 14);
         this.ErrorIconPictureBox.Visible = false;
         // 
-        // MainToolTip
-        // 
-        this.MainToolTip.AutoPopDelay = 32767;
-        this.MainToolTip.InitialDelay = 500;
-        this.MainToolTip.ReshowDelay = 100;
-        // 
         // MainSplitContainer
         // 
         this.MainSplitContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
