@@ -31,7 +31,7 @@ public sealed class ZipArchiveFastEntry
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
     // .NET Framework: LastWriteTimes for full set tested identical between ZipArchive and ZipArchiveFast
-    // @MT_TASK/@NET5: Test identicality of LastWriteTime with ZipArchive vs ZipArchiveFast with .NET modern
+    // .NET 9: LastWriteTimes for full set tested identical between ZipArchive and ZipArchiveFast
     public uint LastWriteTime;
 
     /// <summary>
@@ -75,8 +75,7 @@ public sealed class ZipArchiveFastEntry
         StoredOffsetOfCompressedData = null;
 
         // .NET Framework: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
-        // @MT_TASK/@NET5: Test filename identicality for .NET modern
-        // @MT_TASK/@NET5: For .NET modern, ensure we're matching the fixed behavior: https://learn.microsoft.com/en-ca/dotnet/core/compatibility/core-libraries/9.0/ziparchiveentry-encoding
+        // .NET 9: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
         Encoding finalEncoding;
         if (!useEntryNameEncodingCodePath)
         {
@@ -88,10 +87,10 @@ public sealed class ZipArchiveFastEntry
         }
         else
         {
-            // @MT_TASK/@NET5: .NET modern replaces "default" with UTF8:
+            // @NET5: .NET modern replaces "default" with UTF8:
             // _storedEntryName = (_archive.EntryNameAndCommentEncoding ?? Encoding.UTF8).GetString(_storedEntryNameBytes);
             // Encoding.GetEncoding(0) is the same as Encoding.Default
-            finalEncoding = entryNameEncoding ?? Encoding.Default;
+            finalEncoding = entryNameEncoding ?? Encoding.UTF8;
         }
 
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
