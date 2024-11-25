@@ -109,7 +109,8 @@ public sealed class DarkContextMenu : ContextMenuStrip
 
             foreach (ToolStripItem item in menu.Items)
             {
-                if (item is ToolStripMenuItem { DropDown: not null } menuItem)
+                // Use direct count of dropdown items because HasDropDownItems only counts visible. ARGH.
+                if (item is ToolStripMenuItem { DropDownItems.Count: > 0 } menuItem)
                 {
                     SetMenuTheme(menuItem.DropDown);
                 }
