@@ -8,7 +8,6 @@ namespace AL_Common.DeviceIoControlLib.Objects.Enums;
 /// </summary>
 [PublicAPI]
 [Flags]
-[CLSCompliant(false)]
 public enum FileAttributes : uint
 {
     /// <summary>

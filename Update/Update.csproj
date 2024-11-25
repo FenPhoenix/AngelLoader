@@ -23,10 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="CustomControls\DarkButton.cs">
       <SubType>Component</SubType>
     </Compile>
