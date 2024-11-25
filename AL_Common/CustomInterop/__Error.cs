@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Permissions;
 using System.Text;
 
 namespace AL_Common;
@@ -52,7 +51,6 @@ internal static class __Error
         {
             if (!isInvalidPath)
             {
-                new FileIOPermission(FileIOPermissionAccess.PathDiscovery, new[] { path }).Demand();
                 safeToReturn = true;
             }
         }
