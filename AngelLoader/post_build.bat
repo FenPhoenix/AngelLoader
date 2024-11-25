@@ -44,19 +44,11 @@ if %PlatformName% == x86 (
 	rd /S /Q "%TargetDir%7z32"
 )
 
-if "%TargetFramework:~0,4%"=="net4" (
-	del /F "%TargetDir%AngelLoader.dll"
-	del /F "%TargetDir%*.runtimeconfig.json"
-	del /F "%TargetDir%*.deps.json"
-	del /F "%TargetDir%System.Drawing.Primitives.dll"
-	del /F "%TargetDir%SpanExtensions.dll"
-) else (
-	del /F "%TargetDir%*.exe.config"
-	del /F "%TargetDir%System.Buffers.dll"
-	del /F "%TargetDir%System.Memory.dll"
-	del /F "%TargetDir%System.Numerics.Vectors.dll"
-	del /F "%TargetDir%System.Runtime.CompilerServices.Unsafe.dll"
-)
+del /F "%TargetDir%AngelLoader.dll"
+del /F "%TargetDir%*.runtimeconfig.json"
+del /F "%TargetDir%*.deps.json"
+del /F "%TargetDir%System.Drawing.Primitives.dll"
+del /F "%TargetDir%SpanExtensions.dll"
 
 del /F "%TargetDir%EasyHook32Svc.exe"
 del /F "%TargetDir%EasyHook64Svc.exe"
