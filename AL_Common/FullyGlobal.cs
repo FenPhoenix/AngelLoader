@@ -12,6 +12,5 @@ public static class FullyGlobal
     /// </summary>
     public static readonly string NL = Environment.NewLine;
 
-    public const int StreamCopyBufferSize = 81920;
     public const int FileStreamBufferSize = 4096;
 }

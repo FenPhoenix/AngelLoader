@@ -2366,7 +2366,6 @@ internal static partial class FMInstallAndPlay
 
             byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
             byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
-            byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
             try
             {
                 using ZipArchiveFast archive =
@@ -2406,7 +2405,6 @@ internal static partial class FMInstallAndPlay
             }
             finally
             {
-                ioBufferPools.StreamCopy.Return(streamCopyBuffer);
                 ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
                 ioBufferPools.FileStream.Return(fileStreamReadBuffer);
             }

@@ -101,7 +101,6 @@ public static partial class Common
 
     public sealed class IOBufferPools
     {
-        public readonly FixedLengthByteArrayPool StreamCopy = new(StreamCopyBufferSize);
         public readonly FixedLengthByteArrayPool FileStream = new(FileStreamBufferSize);
     }
 

@@ -150,7 +150,6 @@ public static partial class Utils
         IOBufferPools ioBufferPools)
     {
         byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
-        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
             using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
@@ -162,7 +161,6 @@ public static partial class Utils
         }
         finally
         {
-            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
             ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
@@ -174,7 +172,6 @@ public static partial class Utils
         IOBufferPools ioBufferPools)
     {
         byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
-        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
             using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
@@ -189,7 +186,6 @@ public static partial class Utils
         }
         finally
         {
-            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
             ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
@@ -201,7 +197,6 @@ public static partial class Utils
         IOBufferPools ioBufferPools)
     {
         byte[] fileStreamBuffer = ioBufferPools.FileStream.Rent();
-        byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
             using (FileStream destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
@@ -217,7 +212,6 @@ public static partial class Utils
         }
         finally
         {
-            ioBufferPools.StreamCopy.Return(streamCopyBuffer);
             ioBufferPools.FileStream.Return(fileStreamBuffer);
         }
     }
