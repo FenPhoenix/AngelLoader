@@ -1,6 +1,4 @@
-﻿// @NET5: Remove all references to pre-Win10 stuff, because .NET modern can only run on 10+
-
-//#define ENABLE_UNUSED
+﻿//#define ENABLE_UNUSED
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
