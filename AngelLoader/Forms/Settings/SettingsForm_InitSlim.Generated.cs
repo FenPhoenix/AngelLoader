@@ -95,7 +95,6 @@ partial class SettingsForm
         // 
         this.IOThreadingRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.IOThreadingRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.IOThreadingRadioButton.Location = new System.Drawing.Point(8, 128);
         this.IOThreadingRadioButton.Size = new System.Drawing.Size(136, 23);
         this.IOThreadingRadioButton.TabIndex = 5;
@@ -105,7 +104,6 @@ partial class SettingsForm
         // 
         this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.UpdateRadioButton.BackColor = System.Drawing.SystemColors.ButtonFace;
         this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
         this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
         this.UpdateRadioButton.TabIndex = 4;
