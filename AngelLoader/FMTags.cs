@@ -229,7 +229,7 @@ internal static class FMTags
 
     @PerfScale: This method takes ~2.6s out of ~7.25s FM-find time for the huge set.
     
-    (From Framework - we're not doing some of this work in .NET 8)
+    (From Framework - we're not doing some of this work in .NET modern)
     
     string.Split(): 853ms
     List.Add(): 691ms (it's all EnsureCapacity() - at least one call per FM!)

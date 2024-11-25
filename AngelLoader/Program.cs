@@ -60,9 +60,9 @@ internal static class Program
     private static void Main(string[] args)
     {
 #if TRACE_WRITE_TO_FILE
-                using var fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
-                using var fl = new System.Diagnostics.TextWriterTraceListener(fs);
-                System.Diagnostics.Trace.Listeners.Add(fl);
+        using var fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
+        using var fl = new System.Diagnostics.TextWriterTraceListener(fs);
+        System.Diagnostics.Trace.Listeners.Add(fl);
 #endif
 
         // Absolute first thing, so it comes before any Process calls (so we can tell it to use UTF8 if we need).

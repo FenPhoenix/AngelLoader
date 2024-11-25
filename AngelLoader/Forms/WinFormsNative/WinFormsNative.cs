@@ -78,16 +78,16 @@ internal static partial class Native
 
     #region SendMessage/PostMessage
 
-    [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
+    [LibraryImport("user32.dll")]
     internal static partial IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
+    [LibraryImport("user32.dll")]
     internal static partial IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
+    [LibraryImport("user32.dll")]
     internal static partial int SendMessageW(IntPtr hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, IntPtr lParam);
 
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
+    [LibraryImport("user32.dll")]
     internal static partial void SendMessageW(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
 
     #endregion
@@ -969,7 +969,6 @@ internal static partial class Native
         public IntPtr hbmColor;
     }
 
-    // @DockUI: Handle all the new p/invokes
     [DllImport("user32.dll")]
     internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
 

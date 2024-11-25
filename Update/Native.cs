@@ -46,6 +46,8 @@ internal static partial class Native
 
     internal const uint SHGSI_ICON = 0x000000100;
 
+    private const int MAX_PATH = 260;
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
     internal unsafe struct SHSTOCKICONINFO
@@ -54,7 +56,7 @@ internal static partial class Native
         internal IntPtr hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
-        internal fixed char szPath[260];
+        internal fixed char szPath[MAX_PATH];
     }
 
     [LibraryImport("Shell32.dll", SetLastError = false)]
@@ -102,7 +104,7 @@ internal static partial class Native
 
     #region Theming
 
-    [LibraryImport("uxtheme.dll", EntryPoint = "SetWindowThemeW", StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
     internal static partial int SetWindowThemeW(IntPtr hWnd, string appname, string idlist);
 
     // Ridiculous Windows using a different value on different versions...

@@ -296,6 +296,8 @@ internal static class Utility
         return false;
     }
 
+    #region Acronym detection
+
     internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
     {
         ListFast<char>? romanNumeralRun = null;
@@ -455,6 +457,8 @@ internal static class Utility
 
         return true;
     }
+
+    #endregion
 
     // @RAR: Duplicate because we don't want to put it in Common cause then it has to reference SharpCompress
     // And then we couldn't have SharpCompress reference Common. Meh.

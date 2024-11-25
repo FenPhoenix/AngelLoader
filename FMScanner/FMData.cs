@@ -280,7 +280,7 @@ public sealed class ScannedFMDataAndError
     public Fen7z.Result? Fen7zResult;
     public string ErrorInfo = "";
     public bool NeedsHtmlRefExtract;
-        public readonly int OriginalIndex;
+    public readonly int OriginalIndex;
 
     public ScannedFMDataAndError(int originalIndex)
     {

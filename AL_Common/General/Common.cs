@@ -76,7 +76,6 @@ public static partial class Common
     #region Preset char arrays
 
     // Perf, for passing to Split(), Trim() etc. so we don't allocate all the time
-    public static readonly string[] SA_CRLF = { "\r\n" };
     public static readonly char[] CA_CommaSemicolon = { ',', ';' };
     public static readonly char[] CA_CommaSpace = { ',', ' ' };
     public static readonly char[] CA_BS_FS = { '\\', '/' };

@@ -51,6 +51,7 @@ public sealed class DarkButton : Button, IDarkable
     }
 
 #endif
+
     [PublicAPI]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public new string Text

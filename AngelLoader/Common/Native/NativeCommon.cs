@@ -20,9 +20,9 @@ internal static partial class NativeCommon
     [LibraryImport("kernel32.dll")]
     private static partial SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
-    [LibraryImport("kernel32.dll", EntryPoint = "QueryFullProcessImageNameW", SetLastError = true)]
+    [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static unsafe partial bool QueryFullProcessImageName(SafeHandle hProcess, uint dwFlags, char* lpBuffer, ref uint lpdwSize);
+    private static unsafe partial bool QueryFullProcessImageNameW(SafeHandle hProcess, uint dwFlags, char* lpBuffer, ref uint lpdwSize);
 
     private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
 
@@ -41,7 +41,7 @@ internal static partial class NativeCommon
                 uint length = (uint)buffer.Length;
                 fixed (char* pinnedBuffer = &MemoryMarshal.GetReference(buffer))
                 {
-                    if (QueryFullProcessImageName(handle, 0, pinnedBuffer, ref length))
+                    if (QueryFullProcessImageNameW(handle, 0, pinnedBuffer, ref length))
                     {
                         return buffer[..(int)length].ToString();
                     }
@@ -99,7 +99,7 @@ internal static partial class NativeCommon
         }
     }
 
-    [LibraryImport("shell32.dll", EntryPoint = "ILCreateFromPathW", StringMarshalling = StringMarshalling.Utf16)]
+    [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
     private static partial IntPtr ILCreateFromPathW(string pszPath);
 
     [LibraryImport("shell32.dll")]

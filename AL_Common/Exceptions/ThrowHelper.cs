@@ -30,7 +30,7 @@ public static class ThrowHelper
     [DoesNotReturn]
     public static void ZipCompressionMethodException(string message) => throw new ZipCompressionMethodException(message);
     [DoesNotReturn]
-    public static void ReaderClosed() => throw new ObjectDisposedException(null, "ObjectDisposed_ReaderClosed");
+    public static void ReaderClosed() => throw new ObjectDisposedException(null, "Cannot read from a closed TextReader.");
     [DoesNotReturn]
     public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
     [DoesNotReturn]

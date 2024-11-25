@@ -21,8 +21,8 @@ NOTE: MainForm notes:
 IMPORTANT: Remember to change font-size-dependent DGV zoom feature to work correctly with the new font!
 
 -The controls move positions because they're accounting for the scroll bar
-but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
-the scroll bar was).
+ but then when the scroll bar isn't there at runtime, their positions are wrong (too much margin on whatever side
+ the scroll bar was).
 
 @SEL_SYNC_HACK enlightenment:
 There's the concept of "current row" (CurrentRow) and "current cell" (CurrentCell). CurrentRow is read-only (of

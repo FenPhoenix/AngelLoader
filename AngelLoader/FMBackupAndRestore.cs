@@ -303,7 +303,6 @@ internal static partial class FMInstallAndPlay
             using var fs = File_OpenReadFast(fileNameOnDisk);
             using var eo = entry.Open();
             fs.CopyTo(eo);
-            //StreamCopyNoAlloc(fs, eo, buffer);
         }
 
         static bool IsSaveOrScreenshot(string path, Game game) =>
