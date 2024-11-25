@@ -38,7 +38,7 @@ public static partial class Common
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
 
-        FileStream fs = new(path, mode, FileAccess.Read, FileShare.Read, 4096);
+        FileStream fs = new(path, mode, FileAccess.Write, FileShare.Read, 4096);
 
         SetBuffer(fs, buffer);
 
