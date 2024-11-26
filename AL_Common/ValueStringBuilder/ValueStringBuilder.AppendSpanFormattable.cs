@@ -9,7 +9,7 @@ using System;
 
 namespace AL_Common;
 
-internal ref partial struct ValueStringBuilder
+public ref partial struct ValueStringBuilder
 {
     internal void AppendSpanFormattable<T>(T value, string? format = null, IFormatProvider? provider = null) where T : ISpanFormattable
     {

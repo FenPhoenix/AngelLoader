@@ -11,7 +11,7 @@ using System.Text;
 
 namespace AL_Common;
 
-internal ref partial struct ValueStringBuilder
+public ref partial struct ValueStringBuilder
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Append(Rune rune)
@@ -41,8 +41,15 @@ internal ref partial struct ValueStringBuilder
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void GrowAndAppend(Rune rune)
     {
-        Grow(2);
-        Append(rune);
+        if (rune.Value <= 0xFFFF)
+        {
+            Append((char)rune.Value);
+        }
+        else
+        {
+            Grow(2);
+            Append(rune);
+        }
     }
 }
 #endif

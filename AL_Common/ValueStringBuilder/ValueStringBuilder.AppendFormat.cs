@@ -11,10 +11,8 @@ using System.Runtime.CompilerServices;
 
 namespace AL_Common;
 
-internal ref partial struct ValueStringBuilder
+public ref partial struct ValueStringBuilder
 {
-    // Copied from StringBuilder, can't be done via generic extension
-    // as ValueStringBuilder is a ref struct and cannot be used in a generic.
     internal void AppendFormatHelper(IFormatProvider? provider, string format, ReadOnlySpan<object?> args)
     {
         ArgumentNullException.ThrowIfNull(format);

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace AL_Common
 {
-    internal ref partial struct ValueStringBuilder
+    public ref partial struct ValueStringBuilder
     {
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
@@ -152,7 +152,7 @@ namespace AL_Common
 
             int count = s.Length;
 
-            if (_pos > _chars.Length - count)
+            if (_pos > (_chars.Length - count))
             {
                 Grow(count);
             }
@@ -160,7 +160,7 @@ namespace AL_Common
             int remaining = _pos - index;
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             s
-#if !NETCOREAPP
+#if !NET
                 .AsSpan()
 #endif
                 .CopyTo(_chars.Slice(index));
@@ -212,7 +212,7 @@ namespace AL_Common
             }
 
             s
-#if !NETCOREAPP
+#if !NET
                 .AsSpan()
 #endif
                 .CopyTo(_chars.Slice(pos));
@@ -250,7 +250,7 @@ namespace AL_Common
             _pos += length;
         }
 
-        public void Append(ReadOnlySpan<char> value)
+        public void Append(scoped ReadOnlySpan<char> value)
         {
             int pos = _pos;
             if (pos > _chars.Length - value.Length)

@@ -1761,10 +1761,18 @@ internal static class Core
         // UriFormatException (The length of stringToEscape exceeds 32766 characters)
         // Those are both checked for above so we're good.
 
-        // @NET5: EscapeUriString() is marked obsolete and "can corrupt the Uri string in some cases".
-        // We're supposed to use EscapeDataString(), but that's not a drop-in replacement, it behaves differently.
-        // We should figure this out, but it's fine for now.
-        url = Uri.EscapeUriString(url);
+        /*
+        @NET5: We should see if we can use Uri.EscapeDataString() like we're supposed to.
+        
+        Official obsoletion message:
+        "Uri.EscapeUriString can corrupt the Uri string in some cases. Consider using Uri.EscapeDataString for
+        query string components instead."
+
+        I don't know how tf to use Uri.EscapeDataString() to get the same result as Uri.EscapeUriString(), and
+        we're even using Uri.EscapeDataString() too below for some other part of the process. But if there IS a
+        way to use it to get the same result, we should switch eventually...
+        */
+        url = EscapeUrl.EscapeUriString(url);
 
         if (!CheckUrl(url)) return;
 
