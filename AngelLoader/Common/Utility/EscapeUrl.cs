@@ -50,7 +50,7 @@ internal static class EscapeUrl
 
         // Otherwise, create a ValueStringBuilder to store the escaped data into,
         // escape the rest, and concat the result with the characters we skipped above.
-        var vsb = new AL_Common.ValueStringBuilder(stackalloc char[StackallocThreshold]);
+        var vsb = new ValueStringBuilder(stackalloc char[StackallocThreshold]);
 
         // We may throw for very large inputs (when growing the ValueStringBuilder).
         vsb.EnsureCapacity(charsToEscape.Length);
