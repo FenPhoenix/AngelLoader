@@ -3008,15 +3008,14 @@ internal static partial class FMInstallAndPlay
             return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
         }
 
+        List<ThreadablePath> paths = GetDeleteInstalledDirRelevantPaths(path, fmData.GameIndex);
+        ThreadingData threadingData = GetLowestCommonThreadingData(paths);
         try
         {
 #if TIMING_TEST
             var sw = Stopwatch.StartNew();
 #endif
 
-            List<ThreadablePath> paths = GetDeleteInstalledDirRelevantPaths(path, fmData.GameIndex);
-
-            ThreadingData threadingData = GetLowestCommonThreadingData(paths);
             Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
 
 #if TIMING_TEST
@@ -3041,7 +3040,7 @@ internal static partial class FMInstallAndPlay
 
             try
             {
-                Directory.Delete(path, recursive: true);
+                Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
                 Log("Delete of '" + path + "' succeeded after removing readonly attributes.");
                 return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
             }

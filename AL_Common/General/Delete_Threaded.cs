@@ -26,8 +26,20 @@ However, a ~30% time reduction is still worth having, even if it's less than we 
 
 public static class Delete_Threaded
 {
+    /// <summary>
+    /// If <paramref name="threadCount"/> is greater than 1, performs a threaded delete. Otherwise, just calls <see cref="Directory.Delete(string, bool)"/>.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="recursive"></param>
+    /// <param name="threadCount"></param>
     public static void Delete(string path, bool recursive, int threadCount)
     {
+        if (threadCount <= 1)
+        {
+            Directory.Delete(path, recursive);
+            return;
+        }
+
         string fullPath = Path.GetFullPath(path);
         RemoveDirectory(fullPath, recursive, threadCount);
     }
