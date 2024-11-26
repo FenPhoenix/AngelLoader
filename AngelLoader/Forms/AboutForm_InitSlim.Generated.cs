@@ -102,9 +102,9 @@ partial class AboutForm
         FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
-        Name = "AboutForm";
         StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-        Text = "About AngelLoader";
+        // Hack to prevent slow first render on some forms if Text is blank
+        this.Text = " ";
         ((System.ComponentModel.ISupportInitialize)LogoPictureBox).EndInit();
         ((System.ComponentModel.ISupportInitialize)LogoTextPictureBox).EndInit();
         OK_FLP.ResumeLayout(false);
