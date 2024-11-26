@@ -12,8 +12,8 @@ public static partial class Common
     /// </summary>
     public sealed class FileStreamFast : FileStream
     {
-        private static bool _fieldStreamBufferFieldFound;
-        private static FieldInfo? _fieldStreamBufferFieldInfo;
+        private static bool _fileStreamBufferFieldFound;
+        private static FieldInfo? _fileStreamBufferFieldInfo;
 
         private readonly bool _writeMode;
         private long _length = -1;
@@ -45,19 +45,19 @@ public static partial class Common
                 // We'd have to see if they added a way to pass in a buffer, and if not, we'd have to write totally
                 // different code to get at the buffer here for newer .NETs.
                 // typeof(FileStream) (base type) because that's the type where the buffer field is
-                _fieldStreamBufferFieldInfo = typeof(FileStream)
+                _fileStreamBufferFieldInfo = typeof(FileStream)
                     .GetField(
                         "_buffer",
                         BindingFlags.NonPublic | BindingFlags.Instance);
 
-                _fieldStreamBufferFieldFound =
-                    _fieldStreamBufferFieldInfo != null &&
-                    _fieldStreamBufferFieldInfo.FieldType == typeof(byte[]);
+                _fileStreamBufferFieldFound =
+                    _fileStreamBufferFieldInfo != null &&
+                    _fileStreamBufferFieldInfo.FieldType == typeof(byte[]);
             }
             catch
             {
-                _fieldStreamBufferFieldFound = false;
-                _fieldStreamBufferFieldInfo = null;
+                _fileStreamBufferFieldFound = false;
+                _fileStreamBufferFieldInfo = null;
             }
         }
 
@@ -87,7 +87,7 @@ public static partial class Common
         public static FileStreamFast CreateRead(string path, byte[] buffer)
         {
             FileStreamFast fs =
-                _fieldStreamBufferFieldFound
+                _fileStreamBufferFieldFound
                     ? new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false, buffer.Length)
                     : new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false);
 
@@ -101,7 +101,7 @@ public static partial class Common
             FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
 
             FileStreamFast fs =
-                _fieldStreamBufferFieldFound
+                _fileStreamBufferFieldFound
                     ? new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true, buffer.Length)
                     : new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true);
 
@@ -112,16 +112,16 @@ public static partial class Common
 
         private static void SetBuffer(FileStreamFast fs, byte[] buffer)
         {
-            if (_fieldStreamBufferFieldFound)
+            if (_fileStreamBufferFieldFound)
             {
                 try
                 {
-                    _fieldStreamBufferFieldInfo?.SetValue(fs, buffer);
+                    _fileStreamBufferFieldInfo?.SetValue(fs, buffer);
                 }
                 catch
                 {
-                    _fieldStreamBufferFieldFound = false;
-                    _fieldStreamBufferFieldInfo = null;
+                    _fileStreamBufferFieldFound = false;
+                    _fileStreamBufferFieldInfo = null;
                 }
             }
         }
