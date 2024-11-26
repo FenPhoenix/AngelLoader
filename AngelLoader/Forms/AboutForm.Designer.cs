@@ -47,8 +47,7 @@ partial class AboutForm
         // 
         // LogoPictureBox
         // 
-        LogoPictureBox.Location = new System.Drawing.Point(19, 18);
-        LogoPictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+        LogoPictureBox.Location = new System.Drawing.Point(16, 16);
         LogoPictureBox.Name = "LogoPictureBox";
         LogoPictureBox.Size = new System.Drawing.Size(48, 48);
         LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -59,8 +58,7 @@ partial class AboutForm
         // 
         VersionLabel.AutoSize = true;
         VersionLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-        VersionLabel.Location = new System.Drawing.Point(411, 30);
-        VersionLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+        VersionLabel.Location = new System.Drawing.Point(352, 26);
         VersionLabel.Name = "VersionLabel";
         VersionLabel.Size = new System.Drawing.Size(71, 21);
         VersionLabel.TabIndex = 1;
@@ -70,8 +68,7 @@ partial class AboutForm
         // 
         GitHubLinkLabel.AutoSize = true;
         GitHubLinkLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-        GitHubLinkLabel.Location = new System.Drawing.Point(84, 78);
-        GitHubLinkLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+        GitHubLinkLabel.Location = new System.Drawing.Point(72, 68);
         GitHubLinkLabel.Name = "GitHubLinkLabel";
         GitHubLinkLabel.Size = new System.Drawing.Size(268, 16);
         GitHubLinkLabel.TabIndex = 3;
@@ -84,20 +81,19 @@ partial class AboutForm
         LicenseTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
         LicenseTextBox.BackColor = System.Drawing.SystemColors.Window;
         LicenseTextBox.DarkModeReadOnlyColorsAreDefault = true;
-        LicenseTextBox.Location = new System.Drawing.Point(37, 125);
-        LicenseTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+        LicenseTextBox.Location = new System.Drawing.Point(32, 108);
         LicenseTextBox.Multiline = true;
         LicenseTextBox.Name = "LicenseTextBox";
         LicenseTextBox.ReadOnly = true;
         LicenseTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-        LicenseTextBox.Size = new System.Drawing.Size(541, 276);
+        LicenseTextBox.Size = new System.Drawing.Size(464, 240);
         LicenseTextBox.TabIndex = 4;
         // 
         // OKButton
         // 
         OKButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-        OKButton.Location = new System.Drawing.Point(519, 9);
-        OKButton.Margin = new System.Windows.Forms.Padding(4, 9, 10, 3);
+        OKButton.Location = new System.Drawing.Point(445, 8);
+        OKButton.Margin = new System.Windows.Forms.Padding(3, 8, 9, 3);
         OKButton.Name = "OKButton";
         OKButton.TabIndex = 0;
         OKButton.Text = "OK";
@@ -105,19 +101,17 @@ partial class AboutForm
         // AngelLoaderUsesLabel
         // 
         AngelLoaderUsesLabel.AutoSize = true;
-        AngelLoaderUsesLabel.Location = new System.Drawing.Point(37, 420);
-        AngelLoaderUsesLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+        AngelLoaderUsesLabel.Location = new System.Drawing.Point(32, 364);
         AngelLoaderUsesLabel.Name = "AngelLoaderUsesLabel";
-        AngelLoaderUsesLabel.Size = new System.Drawing.Size(103, 15);
+        AngelLoaderUsesLabel.Size = new System.Drawing.Size(95, 13);
         AngelLoaderUsesLabel.TabIndex = 5;
         AngelLoaderUsesLabel.Text = "AngelLoader uses:";
         // 
         // LogoTextPictureBox
         // 
-        LogoTextPictureBox.Location = new System.Drawing.Point(75, 18);
-        LogoTextPictureBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+        LogoTextPictureBox.Location = new System.Drawing.Point(64, 16);
         LogoTextPictureBox.Name = "LogoTextPictureBox";
-        LogoTextPictureBox.Size = new System.Drawing.Size(338, 58);
+        LogoTextPictureBox.Size = new System.Drawing.Size(290, 50);
         LogoTextPictureBox.TabIndex = 7;
         LogoTextPictureBox.TabStop = false;
         // 
@@ -126,29 +120,27 @@ partial class AboutForm
         OK_FLP.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
         OK_FLP.Controls.Add(OKButton);
         OK_FLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-        OK_FLP.Location = new System.Drawing.Point(0, 603);
-        OK_FLP.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+        OK_FLP.Location = new System.Drawing.Point(0, 523);
         OK_FLP.Name = "OK_FLP";
-        OK_FLP.Size = new System.Drawing.Size(617, 46);
+        OK_FLP.Size = new System.Drawing.Size(529, 40);
         OK_FLP.TabIndex = 0;
         // 
         // BuildDateLabel
         // 
         BuildDateLabel.AutoSize = true;
-        BuildDateLabel.Location = new System.Drawing.Point(411, 58);
-        BuildDateLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+        BuildDateLabel.Location = new System.Drawing.Point(352, 50);
         BuildDateLabel.Name = "BuildDateLabel";
-        BuildDateLabel.Size = new System.Drawing.Size(38, 15);
+        BuildDateLabel.Size = new System.Drawing.Size(34, 13);
         BuildDateLabel.TabIndex = 2;
         BuildDateLabel.Text = "[date]";
         // 
         // AboutForm
         // 
-        AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+        AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         BackColor = System.Drawing.SystemColors.Window;
         CancelButton = OKButton;
-        ClientSize = new System.Drawing.Size(617, 650);
+        ClientSize = new System.Drawing.Size(529, 563);
         Controls.Add(BuildDateLabel);
         Controls.Add(VersionLabel);
         Controls.Add(OK_FLP);
@@ -158,7 +150,6 @@ partial class AboutForm
         Controls.Add(GitHubLinkLabel);
         Controls.Add(LogoPictureBox);
         FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-        Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
         MaximizeBox = false;
         MinimizeBox = false;
         Name = "AboutForm";
