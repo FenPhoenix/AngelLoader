@@ -202,6 +202,10 @@ public sealed class ZipArchiveFast : IDisposable
         {
             ThrowHelper.ReadModeCapabilities();
         }
+        if (!stream.CanSeek)
+        {
+            ThrowHelper.NotSupported(SR.NotSupported_UnseekableStream);
+        }
 
         _archiveStream = stream;
         ArchiveStreamLength = _archiveStream.Length;
