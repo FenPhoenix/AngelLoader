@@ -337,17 +337,31 @@ internal static class DesignerGen
             #endregion
 
             var aes = (AssignmentExpressionSyntax?)exp.DescendantNodes().FirstOrDefault(static x => x is AssignmentExpressionSyntax);
-            if (aes?.Left is not MemberAccessExpressionSyntax left) continue;
-
-            curNode.ControlName = left.DescendantNodes().First(static x => x is IdentifierNameSyntax).ToString();
-            curNode.PropName = left.Name.ToString();
-
-            if (left.DescendantNodes().Any(
-                    n => (n is ThisExpressionSyntax && left.DescendantNodes().Take(3).Count() == 2) ||
-                         (n is not ThisExpressionSyntax && left.DescendantNodes().Take(2).Count() == 1)))
+            if (aes == null)
             {
+                continue;
+            }
+            else if (aes.Left is not MemberAccessExpressionSyntax left)
+            {
+                curNode.PropName = aes.Left.ToString();
+                if (curNode.ControlName.IsEmpty())
+                {
+                    curNode.ControlName = "this";
+                }
                 CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                 props.IsFormProperty = true;
+            }
+            else
+            {
+                curNode.ControlName = left.DescendantNodes().First(static x => x is IdentifierNameSyntax).ToString();
+                curNode.PropName = left.Name.ToString();
+                if (left.DescendantNodes().Any(
+                        n => (n is ThisExpressionSyntax && left.DescendantNodes().Take(3).Count() == 2) ||
+                             (n is not ThisExpressionSyntax && left.DescendantNodes().Take(2).Count() == 1)))
+                {
+                    CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
+                    props.IsFormProperty = true;
+                }
             }
 
             #region Set control property
