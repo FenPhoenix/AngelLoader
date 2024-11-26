@@ -360,7 +360,7 @@ internal static partial class DetectDriveData
         return buffer.ToString();
 
         // @NET5(QueryDosDeviceW): LibraryImport needs no StringBuilder param, but getting rid of it needs a bunch of cruft
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint QueryDosDeviceW(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
     }
 

@@ -13,7 +13,7 @@ internal static partial class Interop
         /// <summary>
         /// WARNING: This method does not implicitly handle long paths. Use FindFirstFile.
         /// </summary>
-        [DllImport("kernel32.dll", EntryPoint = "FindFirstFileExW", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", EntryPoint = "FindFirstFileExW", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern SafeFindHandle FindFirstFileExPrivate(string lpFileName, FINDEX_INFO_LEVELS fInfoLevelId, ref WIN32_FIND_DATA lpFindFileData, FINDEX_SEARCH_OPS fSearchOp, IntPtr lpSearchFilter, int dwAdditionalFlags);
 
         internal static SafeFindHandle FindFirstFile(string fileName, ref WIN32_FIND_DATA data)

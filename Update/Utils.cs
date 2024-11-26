@@ -72,7 +72,7 @@ internal static partial class Utils
 
     private const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
     [LibraryImport("kernel32.dll")]

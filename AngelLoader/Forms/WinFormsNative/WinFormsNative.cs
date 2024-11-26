@@ -76,7 +76,7 @@ internal static partial class Native
 
     #endregion
 
-    #region SendMessage/PostMessage
+    #region SendMessageW/PostMessageW
 
     [LibraryImport("user32.dll")]
     internal static partial IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
@@ -969,10 +969,10 @@ internal static partial class Native
         public IntPtr hbmColor;
     }
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
 
@@ -982,6 +982,6 @@ internal static partial class Native
 
     #endregion
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern bool EnableWindow(HandleRef hWnd, bool enable);
 }

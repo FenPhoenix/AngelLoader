@@ -10,7 +10,7 @@ namespace AL_Common.DeviceIoControlLib.Wrapper;
 
 public static class DeviceIoControlHelper
 {
-    [DllImport("Kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("Kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern bool DeviceIoControl(
         SafeFileHandle hDevice,
         IOControlCode IoControlCode,

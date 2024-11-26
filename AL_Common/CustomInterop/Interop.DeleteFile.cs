@@ -8,7 +8,8 @@ namespace AL_Common;
 internal static partial class Interop
 {
     internal static partial class Kernel32
-    {        /// <summary>
+    {
+        /// <summary>
         /// WARNING: This method does not implicitly handle long paths. Use DeleteFile.
         /// </summary>
         [LibraryImport("kernel32", EntryPoint = "DeleteFileW", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]

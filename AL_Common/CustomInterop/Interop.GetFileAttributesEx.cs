@@ -16,6 +16,7 @@ internal static partial class Interop
         [System.Runtime.InteropServices.DllImport(
             "kernel32.dll",
             EntryPoint = "GetFileAttributesExW",
+            ExactSpelling = true,
             SetLastError = true,
             CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]

@@ -25,10 +25,10 @@ internal static partial class Native
 
     #endregion
 
-    #region SendMessage/PostMessage
+    #region SendMessageW/PostMessageW
 
     [LibraryImport("user32.dll")]
-    internal static partial IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static partial IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     #endregion
 

@@ -32,7 +32,7 @@ public static class Logger
         internal ushort wMilliseconds;
     }
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll", ExactSpelling = true)]
     private static extern void GetLocalTime(ref SYSTEMTIME systemTime);
 
     // For logging purposes: It takes an entire 5ms to get one DateTime.Now, but I don't really need hardcore
