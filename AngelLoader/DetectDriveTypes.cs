@@ -115,7 +115,7 @@ internal static class DetectDriveData
 #endif
     }
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern SafeFileHandle CreateFileW(
         string lpFileName,
         [MarshalAs(UnmanagedType.U4)] FileAccess dwDesiredAccess,
@@ -359,7 +359,7 @@ internal static class DetectDriveData
 
         return buffer.ToString();
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint QueryDosDeviceW(string lpDeviceName, StringBuilder lpTargetPath, int ucchMax);
     }
 

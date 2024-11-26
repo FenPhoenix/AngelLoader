@@ -72,10 +72,10 @@ internal static class Utils
 
     private const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
-    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern bool QueryFullProcessImageNameW([In] SafeProcessHandle hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll", ExactSpelling = true)]
     private static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
     #endregion

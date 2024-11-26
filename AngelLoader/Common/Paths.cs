@@ -37,7 +37,7 @@ internal static class Paths
 
     // We use this pulled-out Application.StartupPath code, so we don't rely on the WinForms Application class
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
     private static extern int GetModuleFileNameW(HandleRef hModule, StringBuilder buffer, int length);
     private static string GetStartupPath()
     {

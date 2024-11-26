@@ -176,7 +176,7 @@ internal static class __Error
     private const int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
     private const int FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, BestFitMapping = false)]
+    [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
     [SecurityCritical]
     private static extern int FormatMessage(
         int dwFlags,

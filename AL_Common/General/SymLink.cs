@@ -88,7 +88,7 @@ public static partial class Common
         /// <summary>
         /// WARNING: This method does not implicitly handle long paths. Use CreateFile.
         /// </summary>
-        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", EntryPoint = "CreateFileW", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
         private static extern unsafe SafeFileHandle CreateFilePrivate(
             string lpFileName,
             int dwDesiredAccess,
@@ -189,7 +189,7 @@ public static partial class Common
             {
                 fixed (char* bufPtr = buffer)
                 {
-                    return Interop.Kernel32.GetFinalPathNameByHandle(handle, bufPtr, (uint)buffer.Length, Interop.Kernel32.FILE_NAME_NORMALIZED);
+                    return Interop.Kernel32.GetFinalPathNameByHandleW(handle, bufPtr, (uint)buffer.Length, Interop.Kernel32.FILE_NAME_NORMALIZED);
                 }
             }
 

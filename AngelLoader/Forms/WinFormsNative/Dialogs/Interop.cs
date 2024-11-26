@@ -214,7 +214,7 @@ internal static class NativeMethods
         internal uint pid;
     }
 
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("shell32.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
 }
 

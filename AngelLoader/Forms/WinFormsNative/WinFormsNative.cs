@@ -74,10 +74,10 @@ internal static class Native
 
     private static readonly HandleRef NullHandleRef = new(null, IntPtr.Zero);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     private static extern bool GetCursorPos([In, Out] POINT pt);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     private static extern int MapWindowPoints(
         HandleRef hWndFrom,
         HandleRef hWndTo,
@@ -115,18 +115,18 @@ internal static class Native
 
     #endregion
 
-    #region SendMessage/PostMessage
+    #region SendMessageW/PostMessageW
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern int SendMessageW(IntPtr hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, IntPtr lParam);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern void SendMessageW(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
 
     #endregion
@@ -170,10 +170,10 @@ internal static class Native
         internal fixed char szPath[MAX_PATH];
     }
 
-    [DllImport("Shell32.dll", SetLastError = false)]
+    [DllImport("Shell32.dll", ExactSpelling = true, SetLastError = false)]
     internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DestroyIcon(IntPtr hIcon);
 
@@ -181,7 +181,7 @@ internal static class Native
 
     #region RichTextBox
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr SetCursor(HandleRef hCursor);
 
     #region Reader mode
@@ -229,7 +229,7 @@ internal static class Native
         internal IntPtr lParam;
     }
 
-    [DllImport("comctl32.dll", EntryPoint = "#383", SetLastError = true)]
+    [DllImport("comctl32.dll", EntryPoint = "#383", ExactSpelling = true, SetLastError = true)]
     internal static extern void DoReaderMode(ref READERMODEINFO prmi);
 
     #endregion
@@ -293,10 +293,10 @@ internal static class Native
 
     #region Device context
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     private static extern IntPtr GetWindowDC(IntPtr hWnd);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
@@ -345,7 +345,7 @@ internal static class Native
 
     #region Window
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
@@ -359,14 +359,14 @@ internal static class Native
     }
 
 #if X64
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", ExactSpelling = true)]
     private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
 #else
-    [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongW", ExactSpelling = true)]
     private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
 #endif
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr WindowFromPoint(Point pt);
 
     #endregion
@@ -548,14 +548,14 @@ internal static class Native
         SIF_ALL = SIF_RANGE | SIF_PAGE | SIF_POS | SIF_TRACKPOS,
     }
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
 
-    [DllImport("user32.dll", EntryPoint = "GetScrollBarInfo", SetLastError = true)]
+    [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
     #endregion
@@ -756,21 +756,21 @@ internal static class Native
 
     #endregion
 
-    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+    [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
 
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
 
-    [DllImport("uxtheme.dll")]
+    [DllImport("uxtheme.dll", ExactSpelling = true)]
     public static extern int CloseThemeData(IntPtr hTheme);
 
-    [DllImport("uxtheme.dll")]
+    [DllImport("uxtheme.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool IsThemeActive();
 
 #if !X64
-    [DllImport("gdi32.dll", SetLastError = true)]
+    [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern IntPtr CreateSolidBrush(int crColor);
 #endif
 
@@ -778,7 +778,7 @@ internal static class Native
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-    [DllImport("dwmapi.dll")]
+    [DllImport("dwmapi.dll", ExactSpelling = true)]
     internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
@@ -787,7 +787,7 @@ internal static class Native
 
     private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
 
@@ -862,7 +862,7 @@ internal static class Native
         }
     }
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
 
@@ -935,7 +935,7 @@ internal static class Native
         internal int iPaddedBorderWidth;
     }
 
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int SystemParametersInfoW(int uiAction, int uiParam, ref NONCLIENTMETRICSW pvParam, int fWinIni);
 
     #endregion
@@ -945,7 +945,7 @@ internal static class Native
     // Licensed to the .NET Foundation under one or more agreements.
     // The .NET Foundation licenses this file to you under the MIT license.
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool SystemParametersInfoW(SystemParametersAction uiAction, uint uiParam, ref HIGHCONTRASTW pvParam, uint fWinIni);
 
@@ -1015,19 +1015,19 @@ internal static class Native
         public IntPtr hbmColor;
     }
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
 
-    [DllImport("gdi32.dll")]
+    [DllImport("gdi32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DeleteObject(IntPtr handle);
 
     #endregion
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     internal static extern bool EnableWindow(HandleRef hWnd, bool enable);
 }

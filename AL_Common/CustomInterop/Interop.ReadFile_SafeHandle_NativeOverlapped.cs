@@ -13,7 +13,7 @@ internal static partial class Interop
     internal static partial class Kernel32
     {
 #if ENABLE_UNUSED
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         internal static extern unsafe int ReadFile(
             SafeHandle handle,
             byte* bytes,
@@ -22,7 +22,7 @@ internal static partial class Interop
             NativeOverlapped* overlapped);
 #endif
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         internal static extern unsafe int ReadFile(
             SafeHandle handle,
             byte* bytes,

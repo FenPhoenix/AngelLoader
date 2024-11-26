@@ -18,7 +18,7 @@ internal static partial class Interop
         [DllImport("kernel32.dll", EntryPoint = "SetErrorMode", ExactSpelling = true, SetLastError = false)]
         private static extern uint SetErrorMode_VistaAndOlder(uint newMode);
 
-        [DllImport("kernel32.dll", EntryPoint = "SetThreadErrorMode", SetLastError = true)]
+        [DllImport("kernel32.dll", EntryPoint = "SetThreadErrorMode", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool SetErrorMode_Win7AndNewer(uint newMode, out uint oldMode);
 

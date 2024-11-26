@@ -52,7 +52,7 @@ public static class FastIO_Native
 
         #region P/Invoke
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern IntPtr FindFirstFileExW(
             string lpFileName,
             int fInfoLevelId,
@@ -61,10 +61,10 @@ public static class FastIO_Native
             IntPtr lpSearchFilter,
             int dwAdditionalFlags);
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         private static extern bool FindClose(IntPtr hFindFile);
 
         #endregion

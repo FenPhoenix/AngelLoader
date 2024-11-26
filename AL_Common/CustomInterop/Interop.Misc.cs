@@ -27,7 +27,7 @@ internal static partial class Interop
         }
     }
 
-    [DllImport("kernel32.dll", SetLastError = true)]
+    [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern unsafe bool SetFileTime(
         AL_SafeFileHandle hFile,
         FILE_TIME* creationTime,

@@ -10,7 +10,7 @@ internal static partial class Interop
     internal static partial class Kernel32
     {
 #if ENABLE_UNUSED
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
         internal static extern unsafe bool GetFileInformationByHandleEx(
             Microsoft.Win32.SafeHandles.SafeFileHandle hFile,

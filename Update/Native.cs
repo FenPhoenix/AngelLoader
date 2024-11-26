@@ -25,10 +25,10 @@ internal static class Native
 
     #endregion
 
-    #region SendMessage/PostMessage
+    #region SendMessageW/PostMessageW
 
-    [DllImport("user32.dll")]
-    internal static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", ExactSpelling = true)]
+    internal static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
     #endregion
 
@@ -59,10 +59,10 @@ internal static class Native
         internal fixed char szPath[MAX_PATH];
     }
 
-    [DllImport("Shell32.dll", SetLastError = false)]
+    [DllImport("Shell32.dll", ExactSpelling = true, SetLastError = false)]
     internal static extern int SHGetStockIconInfo(SHSTOCKICONID siid, uint uFlags, ref SHSTOCKICONINFO psii);
 
-    [DllImport("user32.dll", SetLastError = true)]
+    [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool DestroyIcon(IntPtr hIcon);
 
@@ -72,10 +72,10 @@ internal static class Native
 
     #region Device context
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     private static extern IntPtr GetWindowDC(IntPtr hWnd);
 
-    [DllImport("user32.dll")]
+    [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
@@ -104,14 +104,14 @@ internal static class Native
 
     #region Theming
 
-    [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+    [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-    [DllImport("dwmapi.dll")]
+    [DllImport("dwmapi.dll", ExactSpelling = true)]
     internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion

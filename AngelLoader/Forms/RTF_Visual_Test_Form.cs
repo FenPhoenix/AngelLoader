@@ -52,7 +52,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         }
     }
 
-    [DllImport("user32", CharSet = CharSet.Unicode)]
+    [DllImport("user32", ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern int RegisterWindowMessageW(string message);
 
     private const int HWND_BROADCAST = 0xffff;
@@ -142,7 +142,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
         if (_broadcastEnabled)
         {
-            Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+            Native.PostMessageW((IntPtr)HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
         }
     }
 
@@ -179,7 +179,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         if (_broadcastEnabled)
         {
             var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
-            Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+            Native.PostMessageW((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
         }
     }
 

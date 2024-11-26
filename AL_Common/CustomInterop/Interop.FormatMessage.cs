@@ -17,8 +17,8 @@ internal static partial class Interop
         private const int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
         private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
 
-        [DllImport("kernel32.dll", EntryPoint = "FormatMessageW", SetLastError = true)]
-        private static extern unsafe int FormatMessage(
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        private static extern unsafe int FormatMessageW(
             int dwFlags,
             IntPtr lpSource,
             uint dwMessageId,
@@ -45,7 +45,7 @@ internal static partial class Interop
             Span<char> stackBuffer = stackalloc char[256]; // arbitrary stack limit
             fixed (char* bufferPtr = stackBuffer)
             {
-                int length = FormatMessage(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr, stackBuffer.Length, IntPtr.Zero);
+                int length = FormatMessageW(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr, stackBuffer.Length, IntPtr.Zero);
                 if (length > 0)
                 {
                     return GetAndTrimString(stackBuffer[..length]);
@@ -60,7 +60,7 @@ internal static partial class Interop
                 IntPtr nativeMsgPtr = default;
                 try
                 {
-                    int length = FormatMessage(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle, unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, IntPtr.Zero);
+                    int length = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle, unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, IntPtr.Zero);
                     if (length > 0)
                     {
                         return GetAndTrimString(new ReadOnlySpan<char>((char*)nativeMsgPtr, length));

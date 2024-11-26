@@ -72,7 +72,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
         return _fileOptions = result;
 
-        [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationFile")]
+        [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationFile", ExactSpelling = true)]
         static extern int NtQueryInformationFile_Private(
             AL_SafeFileHandle FileHandle,
             out Interop.NtDll.IO_STATUS_BLOCK IoStatusBlock,
@@ -194,10 +194,10 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         internal const int GENERIC_WRITE = 0x40000000;
     }
 
-    [DllImport("kernel32", SetLastError = true)]
+    [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
     private static extern int GetFileType(SafeHandle hFile);
 
-    [DllImport("kernel32", SetLastError = true)]
+    [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern bool CloseHandle(IntPtr handle);
 
@@ -213,7 +213,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// <summary>
     /// WARNING: This method does not implicitly handle long paths. Use CreateFile.
     /// </summary>
-    [DllImport("kernel32.dll", EntryPoint = "CreateFileW", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("kernel32.dll", EntryPoint = "CreateFileW", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern unsafe AL_SafeFileHandle CreateFilePrivate(
         string lpFileName,
         int dwDesiredAccess,
@@ -294,7 +294,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
             return storageReadCapacity.DiskLength;
 
-            [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", SetLastError = true)]
+            [DllImport("kernel32.dll", EntryPoint = "GetFileInformationByHandleEx", ExactSpelling = true, SetLastError = true)]
             [return: MarshalAs(UnmanagedType.Bool)]
             static extern bool GetFileInformationByHandleEx_Private(
                 AL_SafeFileHandle hFile,
@@ -496,6 +496,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     }
 
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms680600(v=vs.85).aspx
-    [DllImport("ntdll.dll")]
+    [DllImport("ntdll.dll", ExactSpelling = true)]
     private static extern uint RtlNtStatusToDosError(int Status);
 }

@@ -17,10 +17,10 @@ internal static class NativeCommon
 
     private const uint QUERY_LIMITED_INFORMATION = 0x00001000;
 
-    [DllImport("kernel32.dll")]
+    [DllImport("kernel32.dll", ExactSpelling = true)]
     private static extern SafeProcessHandle OpenProcess(uint dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
 
-    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern unsafe bool QueryFullProcessImageNameW(SafeHandle hProcess, uint dwFlags, char* lpBuffer, ref uint lpdwSize);
 
@@ -100,13 +100,13 @@ internal static class NativeCommon
         }
     }
 
-    [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+    [DllImport("shell32.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr ILCreateFromPathW(string pszPath);
 
-    [DllImport("shell32.dll")]
+    [DllImport("shell32.dll", ExactSpelling = true)]
     private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
 
-    [DllImport("shell32.dll")]
+    [DllImport("shell32.dll", ExactSpelling = true)]
     private static extern void ILFree(IntPtr pidl);
 
     #endregion
