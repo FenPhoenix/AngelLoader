@@ -30,7 +30,7 @@ public
 #endif
         void RespondToSystemThemeChange()
 #if DEBUG
-        { }
+    { }
 #else
         ;
 #endif
@@ -74,23 +74,9 @@ public
         Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
-        if (WinVersion.SupportsDarkMode)
+        if (Visible)
         {
-            // Set title bar theme
-            int value = theme == VisualTheme.Dark ? 1 : 0;
-            int result = Native.DwmSetWindowAttribute(
-                Handle,
-                Native.DWMWA_USE_IMMERSIVE_DARK_MODE,
-                ref value,
-                Marshal.SizeOf<int>());
-            if (result != 0)
-            {
-                Native.DwmSetWindowAttribute(
-                    Handle,
-                    Native.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
-                    ref value,
-                    Marshal.SizeOf<int>());
-            }
+            SetTitleBarTheme(theme);
         }
 
         ControlUtils.SetTheme(
@@ -101,6 +87,34 @@ public
             createControlHandles: createControlHandles,
             createHandlePredicate: createHandlePredicate,
             capacity: capacity);
+    }
+
+    /*
+    On .NET 9, setting the title bar theme doesn't work if you do it before showing the form. I guess it's being
+    overridden even though this issue https://github.com/dotnet/winforms/issues/12014 has been fixed already,
+    confirmed the fix is in .NET 9 public release. So I dunno.
+    Workaround:
+    Defer setting title bar theme until first show, and once the form is shown, set it on every theme change as
+    before.
+    */
+    private void SetTitleBarTheme(VisualTheme theme)
+    {
+        if (!WinVersion.SupportsDarkMode) return;
+
+        int value = theme == VisualTheme.Dark ? 1 : 0;
+        int result = Native.DwmSetWindowAttribute(
+            Handle,
+            Native.DWMWA_USE_IMMERSIVE_DARK_MODE,
+            ref value,
+            Marshal.SizeOf<int>());
+        if (result != 0)
+        {
+            Native.DwmSetWindowAttribute(
+                Handle,
+                Native.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD,
+                ref value,
+                Marshal.SizeOf<int>());
+        }
     }
 
     #endregion
@@ -119,6 +133,8 @@ public
         // Explicitly refresh non-client area - otherwise on Win7 the non-client area doesn't refresh and we
         // end up with blacked-out title bar and borders etc.
         Native.SendMessageW(Handle, Native.WM_NCPAINT, IntPtr.Zero, IntPtr.Zero);
+
+        SetTitleBarTheme(Config.VisualTheme);
     }
 
     protected override void WndProc(ref Message m)
