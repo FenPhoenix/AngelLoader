@@ -128,7 +128,7 @@ public readonly ref struct ZipContextRentScope
 
 public sealed class ZipContext_Threaded
 {
-    internal Stream ArchiveStream = null!;
+    internal FileStreamFast ArchiveStream = null!;
     internal long ArchiveStreamLength;
 
     internal readonly SubReadStream ArchiveSubReadStream;
@@ -210,7 +210,7 @@ internal static class ZipArchiveFast_Common
     /// <summary>
     /// Reads exactly bytesToRead out of stream, unless it is out of bytes
     /// </summary>
-    private static void ReadBytes(Stream stream, byte[] buffer, int bytesToRead)
+    private static void ReadBytes(FileStreamFast stream, byte[] buffer, int bytesToRead)
     {
         int bytesLeftToRead = bytesToRead;
 
@@ -229,7 +229,7 @@ internal static class ZipArchiveFast_Common
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
-    internal static bool SeekBackwardsToSignature(Stream stream, uint signatureToFind, ZipContext context)
+    internal static bool SeekBackwardsToSignature(FileStreamFast stream, uint signatureToFind, ZipContext context)
     {
         int bufferPointer = 0;
         uint currentSignature = 0;
@@ -284,7 +284,7 @@ internal static class ZipArchiveFast_Common
     }
 
     // Returns true if we are out of bytes
-    private static bool SeekBackwardsAndRead(Stream stream, byte[] buffer, out int bufferPointer)
+    private static bool SeekBackwardsAndRead(FileStreamFast stream, byte[] buffer, out int bufferPointer)
     {
         if (stream.Position >= buffer.Length)
         {
@@ -374,7 +374,7 @@ internal static class ZipArchiveFast_Common
 
     internal static bool IsOpenable(
         ZipArchiveFastEntry entry,
-        Stream archiveStream,
+        FileStreamFast archiveStream,
         long archiveStreamLength,
         BinaryBuffer binaryReadBuffer,
         out string message)

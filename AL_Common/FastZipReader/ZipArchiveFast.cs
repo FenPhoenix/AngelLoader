@@ -21,9 +21,8 @@ public sealed class ZipArchiveFast : IDisposable
 
     private bool _isDisposed;
     private long _expectedNumberOfEntries;
-    private readonly Stream? _backingStream;
 
-    private readonly Stream _archiveStream;
+    private readonly FileStreamFast _archiveStream;
     public readonly long ArchiveStreamLength;
 
     // invalid until ReadCentralDirectory
@@ -73,7 +72,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
     /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
     public ZipArchiveFast(
-        Stream stream,
+        FileStreamFast stream,
         bool allowUnsupportedEntries,
         Encoding entryNameEncoding) :
         this(
@@ -104,7 +103,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
     [PublicAPI]
     public ZipArchiveFast(
-        Stream stream,
+        FileStreamFast stream,
         ZipContext context,
         bool allowUnsupportedEntries,
         Encoding entryNameEncoding) :
@@ -131,7 +130,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     public ZipArchiveFast(
-        Stream stream,
+        FileStreamFast stream,
         bool allowUnsupportedEntries) :
         this(
             stream: stream,
@@ -158,7 +157,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// </param>
     [PublicAPI]
     public ZipArchiveFast(
-        Stream stream,
+        FileStreamFast stream,
         ZipContext context,
         bool allowUnsupportedEntries) :
         this(
@@ -172,7 +171,7 @@ public sealed class ZipArchiveFast : IDisposable
 
     [PublicAPI]
     private ZipArchiveFast(
-        Stream stream,
+        FileStreamFast stream,
         ZipContext context,
         bool allowUnsupportedEntries,
         Encoding? entryNameEncoding,
@@ -201,36 +200,21 @@ public sealed class ZipArchiveFast : IDisposable
         // Fen's note: Inlined Init() for nullable detection purposes...
         #region Init
 
-        Stream? extraTempStream = null;
-
-        try
+        if (!stream.CanRead)
         {
-            _backingStream = null;
-
-            if (!stream.CanRead)
-            {
-                ThrowHelper.ReadModeCapabilities();
-            }
-            if (!stream.CanSeek)
-            {
-                _backingStream = stream;
-                extraTempStream = stream = new MemoryStream();
-                _backingStream.CopyTo(stream);
-                stream.Seek(0, SeekOrigin.Begin);
-            }
-
-            _archiveStream = stream;
-            ArchiveStreamLength = _archiveStream.Length;
-
-            context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
-
-            ReadEndOfCentralDirectory();
+            ThrowHelper.ReadModeCapabilities();
         }
-        catch
+        if (!stream.CanSeek)
         {
-            extraTempStream?.Dispose();
-            throw;
+            ThrowHelper.NotSupported(SR.NotSupported_UnseekableStream);
         }
+
+        _archiveStream = stream;
+        ArchiveStreamLength = _archiveStream.Length;
+
+        context.ArchiveSubReadStream.SetSuperStream(_archiveStream);
+
+        ReadEndOfCentralDirectory();
 
         #endregion
     }
@@ -516,7 +500,6 @@ public sealed class ZipArchiveFast : IDisposable
         {
             _archiveStream.Dispose();
             _context.ArchiveSubReadStream.SetSuperStream(null);
-            _backingStream?.Dispose();
 
             _isDisposed = true;
         }
