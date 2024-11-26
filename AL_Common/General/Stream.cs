@@ -85,8 +85,18 @@ public static partial class Common
     {
         if (_fileStreamBufferFieldFound == true)
         {
-            object? strategyInstance = _fileStreamStrategyFieldInfo!.GetValue(fs);
-            _bufferField?.SetValue(strategyInstance, buffer);
+            try
+            {
+                object? strategyInstance = _fileStreamStrategyFieldInfo!.GetValue(fs);
+                _bufferField?.SetValue(strategyInstance, buffer);
+            }
+            catch
+            {
+                _fileStreamBufferFieldFound = false;
+                _fileStreamStrategyFieldInfo = null;
+                _fileStreamBufferedStrategyType = null;
+                _bufferField = null;
+            }
         }
     }
 

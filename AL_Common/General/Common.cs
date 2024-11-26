@@ -79,7 +79,6 @@ public static partial class Common
     public static readonly char[] CA_CommaSemicolon = { ',', ';' };
     public static readonly char[] CA_CommaSpace = { ',', ' ' };
     public static readonly char[] CA_BS_FS = { '\\', '/' };
-    public static readonly char[] CA_BS_FS_Space = { '\\', '/', ' ' };
 
     #endregion
 
@@ -173,7 +172,7 @@ public static partial class Common
     // So implement a manual version here...
 
     [LibraryImport("kernel32.dll")]
-    internal static partial int GetACP();
+    private static partial int GetACP();
 
     public static Encoding GetLegacyDefaultEncoding()
     {
