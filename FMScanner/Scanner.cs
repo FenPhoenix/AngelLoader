@@ -1265,8 +1265,8 @@ public sealed class Scanner : IDisposable
         {
             ret = new ZipArchiveFast(
                 GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
-                 zipContext,
-                 allowUnsupportedEntries: false);
+                zipContext,
+                allowUnsupportedEntries: false);
 
             // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
             // thrown while loading them. If this passes, we're definitely good.
