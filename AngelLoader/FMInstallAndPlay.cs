@@ -2245,9 +2245,9 @@ internal static partial class FMInstallAndPlay
             ExtractableEntries entriesToExtract =
                 Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath);
 
-            int totalEntriesCount = entriesToExtract.Count;
-            int threadableEntriesCount = entriesToExtract.ThreadableEntries.Count;
-            int duplicateEntriesCount = entriesToExtract.DuplicateEntries.Count;
+            int totalEntriesCount = entriesToExtract.TotalCount;
+            int threadableEntriesCount = entriesToExtract.ThreadableCount;
+            int duplicateEntriesCount = entriesToExtract.DuplicateCount;
 
 #if TIMING_TEST
             Trace.WriteLine("Total entries count: " + totalEntriesCount);
@@ -2336,9 +2336,10 @@ internal static partial class FMInstallAndPlay
 
                 _installCts.Token.ThrowIfCancellationRequested();
 
-                for (int i = 0; i < entriesToExtract.DuplicateEntries.Count; i++)
+                List<ExtractableEntry> duplicateEntries = entriesToExtract.DuplicateEntries;
+                for (int i = 0; i < duplicateEntries.Count; i++)
                 {
-                    ExtractableEntry entry = entriesToExtract.DuplicateEntries[i];
+                    ExtractableEntry entry = duplicateEntries[i];
 
                     ZipArchiveFast_Threaded.ExtractToFile_Fast(
                         entry: entry.Entry,
@@ -2432,13 +2433,13 @@ internal static partial class FMInstallAndPlay
                 We don't need to pre-run this on this codepath, but it doesn't hurt anything and reduces code
                 duplication, plus we get the benefit of the large reduction in Directory.CreateDirectory() calls.
                 */
-                List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
-                    Zip_CreateDirsAndGetExtractableEntries_Sequential(archive.Entries, fmInstalledPath);
+                ExtractableEntries entriesToExtract =
+                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath);
 
-                int entriesCount = entriesToExtract.Count;
-                for (int i = 0; i < entriesCount; i++)
+                int entriesTotalCount = entriesToExtract.TotalCount;
+                for (int i = 0; i < entriesTotalCount; i++)
                 {
-                    (ZipArchiveFastEntry Entry, string ExtractedName) entry = entriesToExtract[i];
+                    ExtractableEntry entry = entriesToExtract.Entries[i];
 
                     archive.ExtractToFile_Fast(
                         entry: entry.Entry,
@@ -2450,7 +2451,7 @@ internal static partial class FMInstallAndPlay
 
                     _installCts.Token.ThrowIfCancellationRequested();
 
-                    int percent = GetPercentFromValue_Int(i + 1, entriesCount);
+                    int percent = GetPercentFromValue_Int(i + 1, entriesTotalCount);
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                     ReportExtractProgress(percent, newMainPercent, fmData, single);
@@ -2485,29 +2486,74 @@ internal static partial class FMInstallAndPlay
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
-    private readonly struct ExtractableEntry
+    private sealed class ExtractableEntry
     {
         internal readonly ZipArchiveFastEntry Entry;
         internal readonly string ExtractedName;
+        internal readonly bool Duplicate;
 
-        public ExtractableEntry(ZipArchiveFastEntry entry, string extractedName)
+        public ExtractableEntry(ZipArchiveFastEntry entry, string extractedName, bool duplicate)
         {
             Entry = entry;
             ExtractedName = extractedName;
+            Duplicate = duplicate;
         }
     }
 
-    private readonly ref struct ExtractableEntries
+    private sealed class ExtractableEntries
     {
-        internal readonly List<ExtractableEntry> ThreadableEntries;
-        internal readonly List<ExtractableEntry> DuplicateEntries;
+        internal readonly List<ExtractableEntry> Entries;
+        private List<ExtractableEntry>? _duplicateEntries;
+        internal readonly int ThreadableCount;
+        internal readonly int DuplicateCount;
 
-        internal int Count => ThreadableEntries.Count + DuplicateEntries.Count;
-
-        public ExtractableEntries()
+        [MemberNotNull(nameof(_duplicateEntries))]
+        private void SplitThreadableAndDuplicate()
         {
-            ThreadableEntries = new List<ExtractableEntry>(0);
-            DuplicateEntries = new List<ExtractableEntry>(0);
+            _duplicateEntries = new List<ExtractableEntry>(DuplicateCount);
+            for (int i = 0; i < Entries.Count; i++)
+            {
+                ExtractableEntry entry = Entries[i];
+                if (entry.Duplicate)
+                {
+                    _duplicateEntries.Add(entry);
+                    Entries.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
+
+        internal List<ExtractableEntry> ThreadableEntries
+        {
+            get
+            {
+                if (_duplicateEntries == null)
+                {
+                    SplitThreadableAndDuplicate();
+                }
+                return Entries;
+            }
+        }
+
+        internal List<ExtractableEntry> DuplicateEntries
+        {
+            get
+            {
+                if (_duplicateEntries == null)
+                {
+                    SplitThreadableAndDuplicate();
+                }
+                return _duplicateEntries;
+            }
+        }
+
+        internal int TotalCount => ThreadableCount + DuplicateCount;
+
+        public ExtractableEntries(List<ExtractableEntry> entries, int threadableCount, int duplicateCount)
+        {
+            Entries = entries;
+            ThreadableCount = threadableCount;
+            DuplicateCount = duplicateCount;
         }
     }
 
@@ -2520,7 +2566,10 @@ internal static partial class FMInstallAndPlay
         var sw = Stopwatch.StartNew();
 #endif
 
-        ExtractableEntries ret = new();
+        List<ExtractableEntry> returnEntries = new(entries.Count);
+
+        int threadableCount = 0;
+        int duplicateCount = 0;
 
         List<string> dirEntries = new(entries.Count);
 
@@ -2548,11 +2597,13 @@ internal static partial class FMInstallAndPlay
 
                 if (extractedNamesHash.Add(extractedName))
                 {
-                    ret.ThreadableEntries.Add(new ExtractableEntry(entry, extractedName));
+                    threadableCount++;
+                    returnEntries.Add(new ExtractableEntry(entry, extractedName, duplicate: false));
                 }
                 else
                 {
-                    ret.DuplicateEntries.Add(new ExtractableEntry(entry, extractedName));
+                    duplicateCount++;
+                    returnEntries.Add(new ExtractableEntry(entry, extractedName, duplicate: true));
                 }
             }
         }
@@ -2572,61 +2623,7 @@ internal static partial class FMInstallAndPlay
         Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries) + ": " + sw.Elapsed);
 #endif
 
-        return ret;
-    }
-
-    private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
-    Zip_CreateDirsAndGetExtractableEntries_Sequential(
-        ListFast<ZipArchiveFastEntry> entries,
-        string fmInstalledPath)
-    {
-#if TIMING_TEST
-        var sw = Stopwatch.StartNew();
-#endif
-
-        List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
-        List<string> dirEntries = new(entries.Count);
-
-        foreach (ZipArchiveFastEntry entry in entries)
-        {
-            string fileName = entry.FullName;
-
-            if (fileName.IsEmpty()) continue;
-
-            string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
-
-            if (fileName.EndsWithDirSep())
-            {
-                dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
-            }
-            else
-            {
-                if (fileName.Rel_ContainsDirSep())
-                {
-                    string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
-                    dirEntries.Add(dir);
-                }
-
-                ret.Add((entry, extractedName));
-            }
-        }
-
-        // This still results in some amount of duplicate disk hitting, but far, far less than before where
-        // we'd do it for every single entry that wasn't in the base dir.
-        // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
-        IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
-
-        foreach (string dir in dirEntriesDistinct)
-        {
-            Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
-        }
-
-#if TIMING_TEST
-        sw.Stop();
-        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries_Sequential) + ": " + sw.Elapsed);
-#endif
-
-        return ret;
+        return new ExtractableEntries(returnEntries, threadableCount, duplicateCount);
     }
 
     private static FMInstallResult
