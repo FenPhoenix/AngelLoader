@@ -2454,6 +2454,8 @@ internal static partial class FMInstallAndPlay
         var sw = Stopwatch.StartNew();
 #endif
 
+        // @MT_TASK: We should thread the entries we can, and then stick the unthreadable entries at the end and
+        //  do them sequentially.
         threadSafe = true;
 
         List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
