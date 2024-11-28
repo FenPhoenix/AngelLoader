@@ -2486,7 +2486,7 @@ internal static partial class FMInstallAndPlay
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
-    private sealed class ExtractableEntry
+    private readonly struct ExtractableEntry
     {
         internal readonly ZipArchiveFastEntry Entry;
         internal readonly string ExtractedName;
