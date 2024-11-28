@@ -2242,97 +2242,136 @@ internal static partial class FMInstallAndPlay
             // Create the entire directory tree beforehand, to avoid the possibility of race conditions during
             // file extraction. Normally we'd create each entry's directory tree on extract, which could easily
             // contain some or all of the same folders as other entries.
-            List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
-                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath, out bool threadSafe);
+            ExtractableEntries entriesToExtract =
+                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath);
 
-            if (!threadSafe)
-            {
-#if TIMING_TEST
-                Trace.WriteLine("-------------------- Fail: " + fmData.ArchiveFilePath);
-#endif
-                return InstallFMZip(
-                    fmData,
-                    mainPercent,
-                    fmCount,
-                    ioBufferPools,
-                    zipCtxPool,
-                    entriesToExtract);
-            }
-
-            int entriesCount = entriesToExtract.Count;
+            int totalEntriesCount = entriesToExtract.Count;
+            int threadableEntriesCount = entriesToExtract.ThreadableEntries.Count;
+            int duplicateEntriesCount = entriesToExtract.DuplicateEntries.Count;
 
 #if TIMING_TEST
+            Trace.WriteLine("Total entries count: " + totalEntriesCount);
+            Trace.WriteLine("Threadable entries count: " + threadableEntriesCount);
+            Trace.WriteLine("Duplicate entries count: " + duplicateEntriesCount);
+
             sw0.Stop();
             Trace.WriteLine("sw0: " + sw0.Elapsed);
 #endif
 
-            int threadCount = GetThreadCountForParallelOperation(entriesCount, threads);
+            int entryNumber = 0;
 
-#if TIMING_TEST
-            Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
-#endif
-
-            if (!TryGetParallelForData(threadCount, entriesToExtract, _installCts.Token, out var pd))
-            {
-                return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
-            }
+            var uiThrottleSW = Stopwatch.StartNew();
 
 #if TIMING_TEST
             var sw = Stopwatch.StartNew();
 #endif
 
-            var uiThrottleSW = Stopwatch.StartNew();
+            int threadCount =
+                threadableEntriesCount > 0
+                    ? GetThreadCountForParallelOperation(threadableEntriesCount, threads)
+                    : 1;
 
-            int entryNumber = 0;
+            if (threadableEntriesCount > 0)
+            {
+#if TIMING_TEST
+                Trace.WriteLine(nameof(InstallFMZip_ThreadedPerEntry) + " thread count: " + threadCount);
+#endif
 
-            Parallel.For(0, threadCount, pd.PO, _ =>
+                if (!TryGetParallelForData(threadCount, entriesToExtract.ThreadableEntries, _installCts.Token, out var pd))
+                {
+                    return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
+                }
+
+                Parallel.For(0, threadCount, pd.PO, _ =>
+                {
+                    byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
+                    byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
+
+                    try
+                    {
+                        using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                        using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
+
+                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                        while (pd.CQ.TryDequeue(out ExtractableEntry entry))
+                        {
+                            ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                                    entry: entry.Entry,
+                                    fileName: entry.ExtractedName,
+                                    overwrite: true,
+                                    unSetReadOnly: true,
+                                    context: zipCtxThreadedRentScope.Ctx,
+                                    fileStreamWriteBuffer: fileStreamWriteBuffer);
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+
+                            int percent = GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), totalEntriesCount);
+                            int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                            if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
+                            {
+                                ReportExtractProgress(percent, newMainPercent, fmData, single);
+                                uiThrottleSW.Restart();
+                            }
+
+                            pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        }
+                    }
+                    finally
+                    {
+                        ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                        ioBufferPools.FileStream.Return(fileStreamReadBuffer);
+                    }
+                });
+            }
+
+            if (duplicateEntriesCount > 0)
             {
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
                 byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
 
-                try
+                using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
+
+                _installCts.Token.ThrowIfCancellationRequested();
+
+                for (int i = 0; i < entriesToExtract.DuplicateEntries.Count; i++)
                 {
-                    using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
-                    using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
+                    ExtractableEntry entry = entriesToExtract.DuplicateEntries[i];
 
-                    pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                    ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                        entry: entry.Entry,
+                        fileName: entry.ExtractedName,
+                        overwrite: true,
+                        unSetReadOnly: true,
+                        context: zipCtxThreadedRentScope.Ctx,
+                        fileStreamWriteBuffer: fileStreamWriteBuffer);
 
-                    while (pd.CQ.TryDequeue(out (ZipArchiveFastEntry Entry, string ExtractedName) entry))
+                    _installCts.Token.ThrowIfCancellationRequested();
+
+                    int percent =
+                        GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), totalEntriesCount);
+                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                    if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
                     {
-                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                                entry: entry.Entry,
-                                fileName: entry.ExtractedName,
-                                overwrite: true,
-                                unSetReadOnly: true,
-                                context: zipCtxThreadedRentScope.Ctx,
-                                fileStreamWriteBuffer: fileStreamWriteBuffer);
-
-                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
-
-                        int percent = GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), entriesCount);
-                        int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
-
-                        if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
-                        {
-                            ReportExtractProgress(percent, newMainPercent, fmData, single);
-                            uiThrottleSW.Restart();
-                        }
-
-                        pd.PO.CancellationToken.ThrowIfCancellationRequested();
+                        ReportExtractProgress(percent, newMainPercent, fmData, single);
+                        uiThrottleSW.Restart();
                     }
+
+                    _installCts.Token.ThrowIfCancellationRequested();
                 }
-                finally
-                {
-                    ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
-                    ioBufferPools.FileStream.Return(fileStreamReadBuffer);
-                }
-            });
+            }
 
 #if TIMING_TEST
             sw.Stop();
             Trace.WriteLine($"Zip extract threaded:{NL}" +
                             "    FM: " + fmData.FM.Archive + $"{NL}" +
                             "    Thread count: " + threadCount + $"{NL}" +
+                            "    Total entries count: " + totalEntriesCount + $"{NL}" +
+                            "    Threadable entries count: " + threadableEntriesCount + $"{NL}" +
+                            "    Duplicate entries count: " + duplicateEntriesCount + $"{NL}" +
                             "    Initial read: " + sw0.Elapsed + $"{NL}" +
                             "    Full archive threaded extract: " + sw.Elapsed);
 #endif
@@ -2363,8 +2402,7 @@ internal static partial class FMInstallAndPlay
         int mainPercent,
         int fmCount,
         IOBufferPools ioBufferPools,
-        ZipContext_Pool zipCtxPool,
-        List<(ZipArchiveFastEntry Entry, string ExtractedName)>? entriesToExtract = null)
+        ZipContext_Pool zipCtxPool)
     {
         bool single = fmCount == 1;
 
@@ -2394,8 +2432,8 @@ internal static partial class FMInstallAndPlay
                 We don't need to pre-run this on this codepath, but it doesn't hurt anything and reduces code
                 duplication, plus we get the benefit of the large reduction in Directory.CreateDirectory() calls.
                 */
-                entriesToExtract ??=
-                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath, out _);
+                List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
+                    Zip_CreateDirsAndGetExtractableEntries_Sequential(archive.Entries, fmInstalledPath);
 
                 int entriesCount = entriesToExtract.Count;
                 for (int i = 0; i < entriesCount; i++)
@@ -2447,21 +2485,43 @@ internal static partial class FMInstallAndPlay
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
-    private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
+    private readonly struct ExtractableEntry
+    {
+        internal readonly ZipArchiveFastEntry Entry;
+        internal readonly string ExtractedName;
+
+        public ExtractableEntry(ZipArchiveFastEntry entry, string extractedName)
+        {
+            Entry = entry;
+            ExtractedName = extractedName;
+        }
+    }
+
+    private readonly ref struct ExtractableEntries
+    {
+        internal readonly List<ExtractableEntry> ThreadableEntries;
+        internal readonly List<ExtractableEntry> DuplicateEntries;
+
+        internal int Count => ThreadableEntries.Count + DuplicateEntries.Count;
+
+        public ExtractableEntries()
+        {
+            ThreadableEntries = new List<ExtractableEntry>(0);
+            DuplicateEntries = new List<ExtractableEntry>(0);
+        }
+    }
+
+    private static ExtractableEntries
     Zip_CreateDirsAndGetExtractableEntries(
         ListFast<ZipArchiveFastEntry> entries,
-        string fmInstalledPath,
-        out bool threadSafe)
+        string fmInstalledPath)
     {
 #if TIMING_TEST
         var sw = Stopwatch.StartNew();
 #endif
 
-        // @MT_TASK: We should thread the entries we can, and then stick the unthreadable entries at the end and
-        //  do them sequentially.
-        threadSafe = true;
+        ExtractableEntries ret = new();
 
-        List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
         List<string> dirEntries = new(entries.Count);
 
         HashSetPathI extractedNamesHash = new(entries.Count);
@@ -2474,10 +2534,66 @@ internal static partial class FMInstallAndPlay
 
             string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
-            if (!extractedNamesHash.Add(extractedName))
+            if (fileName.EndsWithDirSep())
             {
-                threadSafe = false;
+                dirEntries.Add(fileName.TrimEnd(CA_BS_FS));
             }
+            else
+            {
+                if (fileName.Rel_ContainsDirSep())
+                {
+                    string dir = fileName.Substring(0, fileName.Rel_LastIndexOfDirSep());
+                    dirEntries.Add(dir);
+                }
+
+                if (extractedNamesHash.Add(extractedName))
+                {
+                    ret.ThreadableEntries.Add(new ExtractableEntry(entry, extractedName));
+                }
+                else
+                {
+                    ret.DuplicateEntries.Add(new ExtractableEntry(entry, extractedName));
+                }
+            }
+        }
+
+        // This still results in some amount of duplicate disk hitting, but far, far less than before where
+        // we'd do it for every single entry that wasn't in the base dir.
+        // For TROTB2, it's 231 vs. ~7000 Directory.Create() calls.
+        IEnumerable<string> dirEntriesDistinct = dirEntries.Distinct(StringComparer.OrdinalIgnoreCase);
+
+        foreach (string dir in dirEntriesDistinct)
+        {
+            Directory.CreateDirectory(Path.Combine(fmInstalledPath, dir));
+        }
+
+#if TIMING_TEST
+        sw.Stop();
+        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries) + ": " + sw.Elapsed);
+#endif
+
+        return ret;
+    }
+
+    private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
+    Zip_CreateDirsAndGetExtractableEntries_Sequential(
+        ListFast<ZipArchiveFastEntry> entries,
+        string fmInstalledPath)
+    {
+#if TIMING_TEST
+        var sw = Stopwatch.StartNew();
+#endif
+
+        List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
+        List<string> dirEntries = new(entries.Count);
+
+        foreach (ZipArchiveFastEntry entry in entries)
+        {
+            string fileName = entry.FullName;
+
+            if (fileName.IsEmpty()) continue;
+
+            string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
             if (fileName.EndsWithDirSep())
             {
@@ -2507,7 +2623,7 @@ internal static partial class FMInstallAndPlay
 
 #if TIMING_TEST
         sw.Stop();
-        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries) + ": " + sw.Elapsed);
+        Trace.WriteLine(nameof(Zip_CreateDirsAndGetExtractableEntries_Sequential) + ": " + sw.Elapsed);
 #endif
 
         return ret;
