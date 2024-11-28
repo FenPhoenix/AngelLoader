@@ -2243,7 +2243,21 @@ internal static partial class FMInstallAndPlay
             // file extraction. Normally we'd create each entry's directory tree on extract, which could easily
             // contain some or all of the same folders as other entries.
             List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
-                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath);
+                Zip_CreateDirsAndGetExtractableEntries(entries, fmInstalledPath, out bool threadSafe);
+
+            if (!threadSafe)
+            {
+#if TIMING_TEST
+                Trace.WriteLine("-------------------- Fail: " + fmData.ArchiveFilePath);
+#endif
+                return InstallFMZip(
+                    fmData,
+                    mainPercent,
+                    fmCount,
+                    ioBufferPools,
+                    zipCtxPool,
+                    entriesToExtract);
+            }
 
             int entriesCount = entriesToExtract.Count;
 
@@ -2349,7 +2363,8 @@ internal static partial class FMInstallAndPlay
         int mainPercent,
         int fmCount,
         IOBufferPools ioBufferPools,
-        ZipContext_Pool zipCtxPool)
+        ZipContext_Pool zipCtxPool,
+        List<(ZipArchiveFastEntry Entry, string ExtractedName)>? entriesToExtract = null)
     {
         bool single = fmCount == 1;
 
@@ -2379,8 +2394,8 @@ internal static partial class FMInstallAndPlay
                 We don't need to pre-run this on this codepath, but it doesn't hurt anything and reduces code
                 duplication, plus we get the benefit of the large reduction in Directory.CreateDirectory() calls.
                 */
-                List<(ZipArchiveFastEntry Entry, string ExtractedName)> entriesToExtract =
-                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath);
+                entriesToExtract ??=
+                    Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath, out _);
 
                 int entriesCount = entriesToExtract.Count;
                 for (int i = 0; i < entriesCount; i++)
@@ -2433,14 +2448,21 @@ internal static partial class FMInstallAndPlay
     }
 
     private static List<(ZipArchiveFastEntry Entry, string ExtractedName)>
-    Zip_CreateDirsAndGetExtractableEntries(ListFast<ZipArchiveFastEntry> entries, string fmInstalledPath)
+    Zip_CreateDirsAndGetExtractableEntries(
+        ListFast<ZipArchiveFastEntry> entries,
+        string fmInstalledPath,
+        out bool threadSafe)
     {
 #if TIMING_TEST
         var sw = Stopwatch.StartNew();
 #endif
 
+        threadSafe = true;
+
         List<(ZipArchiveFastEntry Entry, string ExtractedName)> ret = new(entries.Count);
         List<string> dirEntries = new(entries.Count);
+
+        HashSetPathI extractedNamesHash = new(entries.Count);
 
         foreach (ZipArchiveFastEntry entry in entries)
         {
@@ -2449,6 +2471,11 @@ internal static partial class FMInstallAndPlay
             if (fileName.IsEmpty()) continue;
 
             string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+
+            if (!extractedNamesHash.Add(extractedName))
+            {
+                threadSafe = false;
+            }
 
             if (fileName.EndsWithDirSep())
             {
