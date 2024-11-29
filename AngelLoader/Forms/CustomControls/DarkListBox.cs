@@ -171,7 +171,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
     }
 
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public int SelectedIndex
     {
         get => SelectedIndices.Count == 0 ? -1 : SelectedIndices[0];

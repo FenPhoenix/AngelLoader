@@ -168,7 +168,7 @@ public class ToolStripMenuItemCustom : ToolStripMenuItem
     /// <summary>
     /// Sets the text and escapes ampersands.
     /// </summary>
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public override string? Text
     {
         get => base.Text;

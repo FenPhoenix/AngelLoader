@@ -10,7 +10,7 @@ public sealed class DarkComboBoxWithBackingItems : DarkComboBox, IListControlWit
     private bool _visibleCached = true;
 
     [PublicAPI]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public new bool Visible
     {
         get => base.Visible;

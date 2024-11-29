@@ -422,7 +422,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     private bool _fmsListOneTimeHackRefreshDone;
     ///<inheritdoc cref="DataGridView.FirstDisplayedScrollingRowIndex"/>
     [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public new int FirstDisplayedScrollingRowIndex
     {
         get => base.FirstDisplayedScrollingRowIndex;
