@@ -2251,7 +2251,7 @@ internal static partial class FMInstallAndPlay
 
 #if TIMING_TEST
             Trace.WriteLine("Total entries count: " + totalEntriesCount);
-            Trace.WriteLine("Threadable entries count: " + threadableEntriesCount);
+            Trace.WriteLine("Threadable (non-duplicate) entries count: " + nonDuplicateEntriesCount);
             Trace.WriteLine("Duplicate entries count: " + duplicateEntriesCount);
 
             sw0.Stop();
@@ -2371,7 +2371,7 @@ internal static partial class FMInstallAndPlay
                             "    FM: " + fmData.FM.Archive + $"{NL}" +
                             "    Thread count: " + threadCount + $"{NL}" +
                             "    Total entries count: " + totalEntriesCount + $"{NL}" +
-                            "    Threadable entries count: " + threadableEntriesCount + $"{NL}" +
+                            "    Threadable (non-duplicate) entries count: " + nonDuplicateEntriesCount + $"{NL}" +
                             "    Duplicate entries count: " + duplicateEntriesCount + $"{NL}" +
                             "    Initial read: " + sw0.Elapsed + $"{NL}" +
                             "    Full archive threaded extract: " + sw.Elapsed);
