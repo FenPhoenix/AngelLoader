@@ -67,9 +67,8 @@ internal static partial class Ini
 
     private static void FMData_TDMVersion_Set(FanMission fm, string val, int eqIndex)
     {
-        val = val.Substring(eqIndex + 1);
         val = val.Trim();
-        int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
+        TryParseIntFromEnd(val, eqIndex + 1, 10, out int result);
         fm.TDMVersion = result;
     }
 

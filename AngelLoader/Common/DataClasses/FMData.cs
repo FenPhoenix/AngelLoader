@@ -156,6 +156,7 @@ public sealed class FanMission
     }
 
     [FenGenNumericEmpty(0)]
+    [FenGenMaxDigits(10)]
     internal int TDMVersion;
 
     internal string Title = "";
