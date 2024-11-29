@@ -53,7 +53,7 @@ public sealed class DarkButton : Button, IDarkable
 #endif
 
     [PublicAPI]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public new string Text
     {
         get => base.Text;
@@ -65,7 +65,7 @@ public sealed class DarkButton : Button, IDarkable
     }
 
     [PublicAPI]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
     public new bool Enabled
     {
         get => base.Enabled;
