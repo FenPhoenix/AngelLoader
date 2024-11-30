@@ -277,89 +277,86 @@ public sealed class ZipArchiveFast : IDisposable
 
     private bool _entriesInitialized;
 
-    /// <summary>
-    /// The collection of entries that are currently in the ZipArchive. This may not accurately represent the actual entries that are present in the underlying file or stream.
-    /// </summary>
-    /// <exception cref="NotSupportedException">The ZipArchive does not support reading.</exception>
-    /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
-    /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
     [PublicAPI]
     public ListFast<ZipArchiveFastEntry> Entries
     {
         get
         {
-            ThrowIfDisposed();
-
             if (!_entriesInitialized)
             {
-                _context.Entries.SetRecycleState((int)_expectedNumberOfEntries);
-
-                #region Read central directory
-
-                try
-                {
-                    // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
-
-                    _archiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
-
-                    long numberOfEntries = 0;
-
-                    //read the central directory
-                    while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _context, out var currentHeader))
-                    {
-                        ZipArchiveFastEntry entry;
-                        if (_context.Entries.Count > numberOfEntries)
-                        {
-                            entry = _context.Entries[(int)numberOfEntries];
-                            if (entry == null!)
-                            {
-                                entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
-                                _context.Entries[(int)numberOfEntries] = entry;
-                            }
-                            else
-                            {
-                                entry.Set(in currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
-                            }
-                        }
-                        else
-                        {
-                            entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
-                            _context.Entries.Add(entry);
-                        }
-
-                        numberOfEntries++;
-
-                        if (currentHeader.DiskNumberStart != _numberOfThisDisk)
-                        {
-                            ThrowHelper.SplitSpanned();
-                        }
-                        else if (!_allowUnsupportedEntries)
-                        {
-                            CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
-                            if (!CompressionMethodSupported(compressionMethod))
-                            {
-                                ThrowHelper.ZipCompressionMethodException(GetUnsupportedCompressionMethodErrorMessage(compressionMethod));
-                            }
-                        }
-                    }
-
-                    if (numberOfEntries != _expectedNumberOfEntries)
-                    {
-                        ThrowHelper.InvalidData(SR.NumEntriesWrong);
-                    }
-                }
-                catch (EndOfStreamException ex)
-                {
-                    ThrowHelper.InvalidData(SR.CentralDirectoryInvalid, ex);
-                }
-
-                _entriesInitialized = true;
-
-                #endregion
+                LoadEntries();
             }
 
             return _context.Entries;
         }
+    }
+
+    private void LoadEntries()
+    {
+        _context.Entries.SetRecycleState((int)_expectedNumberOfEntries);
+
+        #region Read central directory
+
+        try
+        {
+            // assume ReadEndOfCentralDirectory has been called and has populated _centralDirectoryStart
+
+            _archiveStream.Seek(_centralDirectoryStart, SeekOrigin.Begin);
+
+            long numberOfEntries = 0;
+
+            //read the central directory
+            while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _context, out var currentHeader))
+            {
+                ZipArchiveFastEntry entry;
+                if (_context.Entries.Count > numberOfEntries)
+                {
+                    entry = _context.Entries[(int)numberOfEntries];
+                    if (entry == null!)
+                    {
+                        entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                        _context.Entries[(int)numberOfEntries] = entry;
+                    }
+                    else
+                    {
+                        entry.Set(in currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                    }
+                }
+                else
+                {
+                    entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                    _context.Entries.Add(entry);
+                }
+
+                numberOfEntries++;
+
+                if (currentHeader.DiskNumberStart != _numberOfThisDisk)
+                {
+                    ThrowHelper.SplitSpanned();
+                }
+                else if (!_allowUnsupportedEntries)
+                {
+                    CompressionMethodValues compressionMethod = (CompressionMethodValues)currentHeader.CompressionMethod;
+                    if (!CompressionMethodSupported(compressionMethod))
+                    {
+                        ThrowHelper.ZipCompressionMethodException(GetUnsupportedCompressionMethodErrorMessage(compressionMethod));
+                    }
+                }
+            }
+
+            if (numberOfEntries != _expectedNumberOfEntries)
+            {
+                ThrowHelper.InvalidData(SR.NumEntriesWrong);
+            }
+        }
+        catch (EndOfStreamException ex)
+        {
+            ThrowHelper.InvalidData(SR.CentralDirectoryInvalid, ex);
+        }
+
+        #endregion
+
+        _entriesInitialized = true;
     }
 
     // This function reads all the EOCD stuff it needs to find the offset to the start of the central directory
