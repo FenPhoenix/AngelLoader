@@ -60,7 +60,7 @@ public static class RandomAccess
         return ReadAtOffset(handle, buffer, fileOffset);
     }
 
-    private static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
+    public static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
     {
         NativeOverlapped overlapped = GetNativeOverlappedForSyncHandle(handle, fileOffset);
         fixed (byte* pinned = &MemoryMarshal.GetReference(buffer))

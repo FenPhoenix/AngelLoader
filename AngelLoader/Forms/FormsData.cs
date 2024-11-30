@@ -8,6 +8,7 @@ using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
+using static AL_Common.Common;
 
 namespace AngelLoader.Forms;
 
@@ -65,7 +66,7 @@ public sealed class MemoryImage : IDisposable
     public MemoryImage(string path)
     {
         Path = path;
-        byte[] bytes = File.ReadAllBytes(path);
+        byte[] bytes = File_ReadAllBytesFast(path);
         _memoryStream = new MemoryStream(bytes);
         Img = Image.FromStream(_memoryStream);
     }

@@ -67,6 +67,7 @@ public static class SR
     public static readonly string ObjectDisposed_FileClosed = "Cannot access a closed file.";
     public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
     public static readonly string EntryNameEncodingNotSupported = "Entry name encoding not supported.";
+    public static readonly string IO_FileTooLong2GB = "The file is too long. This operation is currently limited to supporting files less than 2 gigabytes in size.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
     public static readonly string Argument_InvalidOffLen =

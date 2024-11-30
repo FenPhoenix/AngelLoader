@@ -344,7 +344,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                         fileType == ReadmeType.RichText && inPreloadedState &&
                         (preProcessedRTF = RTFPreprocessing.GetPreProcessedRtf()) != null
                             ? preProcessedRTF.OriginalBytes
-                            : File.ReadAllBytes(path);
+                            : File_ReadAllBytesFast(path);
 
                     // We control the format of GLML-converted files, so no need to do this for those
                     if (fileType == ReadmeType.RichText && !inPreloadedState)
@@ -367,7 +367,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                 case ReadmeType.Wri:
                     ContentIsPlainText = true;
 
-                    byte[] bytes = File.ReadAllBytes(path);
+                    byte[] bytes = File_ReadAllBytesFast(path);
 
                     if (fileType == ReadmeType.Wri)
                     {

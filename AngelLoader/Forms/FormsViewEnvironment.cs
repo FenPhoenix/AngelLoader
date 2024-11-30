@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Windows.Forms;
 using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using static AL_Common.Common;
 
 namespace AngelLoader.Forms;
 
@@ -116,7 +116,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         byte[] bytes;
         try
         {
-            bytes = File.ReadAllBytes(readmeFile);
+            bytes = File_ReadAllBytesFast(readmeFile);
         }
         catch
         {
