@@ -59,8 +59,6 @@ internal static class Native
         internal int Width => right - left;
 
         internal Rectangle ToRectangle() => Rectangle.FromLTRB(left, top, right, bottom);
-
-        internal static RECT Empty => new(0, 0, 0, 0);
     }
 
     [StructLayout(LayoutKind.Sequential)]
