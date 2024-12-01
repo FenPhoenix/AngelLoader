@@ -2297,12 +2297,12 @@ internal static partial class FMInstallAndPlay
                         while (pd.CQ.TryDequeue(out ExtractableEntry entry))
                         {
                             ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                                    entry: entry.Entry,
-                                    fileName: entry.ExtractedName,
-                                    overwrite: true,
-                                    unSetReadOnly: true,
-                                    context: zipCtxThreadedRentScope.Ctx,
-                                    fileStreamWriteBuffer: fileStreamWriteBuffer);
+                                entry: entry.Entry,
+                                fileName: entry.ExtractedName,
+                                overwrite: true,
+                                unSetReadOnly: true,
+                                context: zipCtxThreadedRentScope.Ctx,
+                                fileStreamWriteBuffer: fileStreamWriteBuffer);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
 
@@ -2325,6 +2325,14 @@ internal static partial class FMInstallAndPlay
                     }
                 });
             }
+
+            /*
+            Prevent "modified in outer scope" BS
+            @MT_TASK: Does Parallel.For have a situation where its threads can still be running when the loop
+             call finishes?! Because why else tf does ReSharper keep piping up about modifying captured variables
+             after the damn loop is already finished?! WHO CARES, THE LOOP IS FINISHED! Argh!
+            */
+            int currentEntryNumber = entryNumber;
 
             if (duplicateEntriesCount > 0)
             {
@@ -2352,7 +2360,7 @@ internal static partial class FMInstallAndPlay
                     _installCts.Token.ThrowIfCancellationRequested();
 
                     int percent =
-                        GetPercentFromValue_Int(Interlocked.Increment(ref entryNumber), totalEntriesCount);
+                        GetPercentFromValue_Int(Interlocked.Increment(ref currentEntryNumber), totalEntriesCount);
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                     if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
