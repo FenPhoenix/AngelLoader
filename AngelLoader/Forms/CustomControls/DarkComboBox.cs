@@ -475,17 +475,6 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         internal IntPtr hwndCombo;
         internal IntPtr hwndItem;
         internal IntPtr hwndList;
-
-        internal COMBOBOXINFO(int size)
-        {
-            cbSize = size;
-            rcItem = Native.RECT.Empty;
-            rcButton = Native.RECT.Empty;
-            stateButton = 0;
-            hwndCombo = IntPtr.Zero;
-            hwndItem = IntPtr.Zero;
-            hwndList = IntPtr.Zero;
-        }
     }
 
     private static readonly int _comboboxInfoSize = Marshal.SizeOf<COMBOBOXINFO>();

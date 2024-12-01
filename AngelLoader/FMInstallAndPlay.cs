@@ -59,7 +59,6 @@ internal static partial class FMInstallAndPlay
     {
         UninstallSucceeded,
         UninstallFailed,
-        BackupFailed,
     }
 
     private enum ArchiveType
@@ -106,28 +105,18 @@ internal static partial class FMInstallAndPlay
     [StructLayout(LayoutKind.Auto)]
     private readonly struct FMUninstallResult
     {
-        internal readonly FMData FMData;
         internal readonly UninstallResultType ResultType;
         internal readonly string ErrorMessage;
         internal readonly Exception? Exception;
 
-        public FMUninstallResult(FMData fmData, UninstallResultType resultType)
+        public FMUninstallResult(UninstallResultType resultType)
         {
-            FMData = fmData;
             ResultType = resultType;
             ErrorMessage = "";
         }
 
-        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage)
+        public FMUninstallResult(UninstallResultType resultType, string errorMessage, Exception? exception)
         {
-            FMData = fmData;
-            ResultType = resultType;
-            ErrorMessage = errorMessage;
-        }
-
-        public FMUninstallResult(FMData fmData, UninstallResultType resultType, string errorMessage, Exception? exception)
-        {
-            FMData = fmData;
             ResultType = resultType;
             ErrorMessage = errorMessage;
             Exception = exception;
@@ -1785,7 +1774,7 @@ internal static partial class FMInstallAndPlay
                     cancelMessage: LText.Global.Cancel
                 );
 
-                List<FMInstallResult> results = new();
+                List<FMInstallResult> results = new(fmDataList.Count);
 
 #if TIMING_TEST
                 StartTiming();
@@ -3114,7 +3103,7 @@ internal static partial class FMInstallAndPlay
     {
         if (!Directory.Exists(path))
         {
-            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+            return new FMUninstallResult(UninstallResultType.UninstallSucceeded);
         }
 
         List<ThreadablePath> paths = GetDeleteInstalledDirRelevantPaths(path, fmData.GameIndex);
@@ -3131,7 +3120,7 @@ internal static partial class FMInstallAndPlay
             sw.Stop();
             Trace.WriteLine("**** " + nameof(DeleteFMInstalledDirectory) + " Delete: " + sw.Elapsed);
 #endif
-            return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+            return new FMUninstallResult(UninstallResultType.UninstallSucceeded);
         }
         catch (Exception mainEx)
         {
@@ -3151,13 +3140,13 @@ internal static partial class FMInstallAndPlay
             {
                 Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);
                 Log("Delete of '" + path + "' succeeded after removing readonly attributes.");
-                return new FMUninstallResult(fmData, UninstallResultType.UninstallSucceeded);
+                return new FMUninstallResult(UninstallResultType.UninstallSucceeded);
             }
             catch (Exception retryDeleteEx)
             {
                 string msg = ErrorText.FTDel + "FM path '" + path + "' twice, giving up...";
                 Log(msg, retryDeleteEx);
-                return new FMUninstallResult(fmData, UninstallResultType.UninstallFailed, msg, retryDeleteEx);
+                return new FMUninstallResult(UninstallResultType.UninstallFailed, msg, retryDeleteEx);
             }
         }
     }
