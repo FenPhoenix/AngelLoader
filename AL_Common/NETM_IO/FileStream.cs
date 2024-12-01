@@ -417,17 +417,46 @@ namespace AL_Common.NETM_IO
         // _strategy can be null only when ctor has thrown
         protected override void Dispose(bool disposing) => _strategy?.DisposeInternal(disposing);
 
-        public override void CopyTo(Stream destination, int bufferSize)
-        {
-            ValidateCopyToArguments(destination, bufferSize);
-            _strategy.CopyTo(destination, bufferSize);
-        }
+        // @FileStreamNET: This can't be overridden in Framework... Either it has to be removed, or new'd in which
+        //  case it wouldn't be hit if the thing was passed as a less-derived type. Ugh.
+        //public override void CopyTo(Stream destination, int bufferSize)
+        //{
+        //    ValidateCopyToArguments(destination, bufferSize);
+        //    _strategy.CopyTo(destination, bufferSize);
+        //}
 
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        // @FileStreamNET:
+        //public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
+        //{
+        //    ValidateCopyToArguments(destination, bufferSize);
+        //    return _strategy.CopyToAsync(destination, bufferSize, cancellationToken);
+        //}
+
+#if false
+        /// <summary>Validates arguments provided to the <see cref="CopyTo(Stream, int)"/> or <see cref="CopyToAsync(Stream, int, CancellationToken)"/> methods.</summary>
+        /// <param name="destination">The <see cref="Stream"/> "destination" argument passed to the copy method.</param>
+        /// <param name="bufferSize">The integer "bufferSize" argument passed to the copy method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> was null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> was not a positive value.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="destination"/> does not support writing.</exception>
+        /// <exception cref="ObjectDisposedException"><paramref name="destination"/> does not support writing or reading.</exception>
+        protected static void ValidateCopyToArguments(Stream destination, int bufferSize)
         {
-            ValidateCopyToArguments(destination, bufferSize);
-            return _strategy.CopyToAsync(destination, bufferSize, cancellationToken);
+            ArgumentNullException_NET.ThrowIfNull(destination);
+
+            ThrowIfNegativeOrZero(bufferSize);
+
+            if (!destination.CanWrite)
+            {
+                if (destination.CanRead)
+                {
+                    ThrowHelper.ThrowNotSupportedException_UnwritableStream();
+                }
+
+                ThrowHelper.ThrowObjectDisposedException_StreamClosed(destination.GetType().Name);
+            }
         }
+#endif
 
         public override bool CanSeek => _strategy.CanSeek;
 
@@ -482,30 +511,6 @@ namespace AL_Common.NETM_IO
             if ((uint)count > buffer.Length - offset)
             {
                 ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.count, ExceptionResource_NET.Argument_InvalidOffLen);
-            }
-        }
-
-        /// <summary>Validates arguments provided to the <see cref="CopyTo(Stream, int)"/> or <see cref="CopyToAsync(Stream, int, CancellationToken)"/> methods.</summary>
-        /// <param name="destination">The <see cref="Stream"/> "destination" argument passed to the copy method.</param>
-        /// <param name="bufferSize">The integer "bufferSize" argument passed to the copy method.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="destination"/> was null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> was not a positive value.</exception>
-        /// <exception cref="NotSupportedException"><paramref name="destination"/> does not support writing.</exception>
-        /// <exception cref="ObjectDisposedException"><paramref name="destination"/> does not support writing or reading.</exception>
-        protected static void ValidateCopyToArguments(Stream destination, int bufferSize)
-        {
-            ArgumentNullException_NET.ThrowIfNull(destination);
-
-            ThrowIfNegativeOrZero(bufferSize);
-
-            if (!destination.CanWrite)
-            {
-                if (destination.CanRead)
-                {
-                    ThrowHelper.ThrowNotSupportedException_UnwritableStream();
-                }
-
-                ThrowHelper.ThrowObjectDisposedException_StreamClosed(destination.GetType().Name);
             }
         }
 
