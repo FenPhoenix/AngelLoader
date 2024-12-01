@@ -1,13 +1,13 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Microsoft.Win32.SafeHandles;
+using System.IO;
 
 namespace AL_Common.NETM_IO.Strategies
 {
     internal sealed class SyncWindowsFileStreamStrategy : OSFileStreamStrategy
     {
-        internal SyncWindowsFileStreamStrategy(SafeFileHandle handle, FileAccess access) : base(handle, access)
+        internal SyncWindowsFileStreamStrategy(AL_SafeFileHandle handle, FileAccess access) : base(handle, access)
         {
         }
 

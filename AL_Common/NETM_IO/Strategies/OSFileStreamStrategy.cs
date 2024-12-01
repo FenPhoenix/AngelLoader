@@ -3,22 +3,22 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
     // this type serves some basic functionality that is common for native OS File Stream Strategies
     internal abstract class OSFileStreamStrategy : FileStreamStrategy
     {
-        protected readonly SafeFileHandle _fileHandle; // only ever null if ctor throws
+        protected readonly AL_SafeFileHandle _fileHandle; // only ever null if ctor throws
         private readonly FileAccess _access; // What file was opened for.
 
         protected long _filePosition;
         private readonly long _appendStart; // When appending, prevent overwriting file.
 
-        internal OSFileStreamStrategy(SafeFileHandle handle, FileAccess access)
+        internal OSFileStreamStrategy(AL_SafeFileHandle handle, FileAccess access)
         {
             _access = access;
 
@@ -44,7 +44,7 @@ namespace AL_Common.NETM_IO.Strategies
 
             _access = access;
 
-            _fileHandle = SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize);
+            _fileHandle = AL_SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize);
 
             try
             {
@@ -94,7 +94,7 @@ namespace AL_Common.NETM_IO.Strategies
         internal sealed override bool IsClosed => _fileHandle.IsClosed;
 
         // Flushing is the responsibility of BufferedFileStreamStrategy
-        internal sealed override SafeFileHandle SafeFileHandle
+        internal sealed override AL_SafeFileHandle AL_SafeFileHandle
         {
             get
             {
@@ -107,18 +107,6 @@ namespace AL_Common.NETM_IO.Strategies
 
                 return _fileHandle;
             }
-        }
-
-        // this method just disposes everything (no buffer, no need to flush)
-        public sealed override ValueTask DisposeAsync()
-        {
-            if (_fileHandle != null && !_fileHandle.IsClosed)
-            {
-                _fileHandle.ThreadPoolBinding?.Dispose();
-                _fileHandle.Dispose();
-            }
-
-            return ValueTask.CompletedTask;
         }
 
         // this method just disposes everything (no buffer, no need to flush)
@@ -244,51 +232,6 @@ namespace AL_Common.NETM_IO.Strategies
 
             RandomAccess.WriteAtOffset(_fileHandle, buffer, _filePosition);
             _filePosition += buffer.Length;
-        }
-
-        public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) =>
-            TaskToAsyncResult.Begin(WriteAsync(buffer, offset, count), callback, state);
-
-        public sealed override void EndWrite(IAsyncResult asyncResult) =>
-            TaskToAsyncResult.End(asyncResult);
-
-        public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-            WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, count), cancellationToken).AsTask();
-
-        public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> source, CancellationToken cancellationToken)
-        {
-            long writeOffset = CanSeek ? Interlocked.Add(ref _filePosition, source.Length) - source.Length : -1;
-            return RandomAccess.WriteAtOffsetAsync(_fileHandle, source, writeOffset, cancellationToken, this);
-        }
-
-        public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state) =>
-            TaskToAsyncResult.Begin(ReadAsync(buffer, offset, count), callback, state);
-
-        public sealed override int EndRead(IAsyncResult asyncResult) =>
-            TaskToAsyncResult.End<int>(asyncResult);
-
-        public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-            ReadAsync(new Memory<byte>(buffer, offset, count), cancellationToken).AsTask();
-
-        public sealed override ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken cancellationToken)
-        {
-            if (!CanSeek)
-            {
-                return RandomAccess.ReadAtOffsetAsync(_fileHandle, destination, fileOffset: -1, cancellationToken);
-            }
-
-            if (_fileHandle.TryGetCachedLength(out long cachedLength) && Volatile.Read(ref _filePosition) >= cachedLength)
-            {
-                // We know for sure that the file length can be safely cached and it has already been obtained.
-                // If we have reached EOF we just return here and avoid a sys-call.
-                return ValueTask.FromResult(0);
-            }
-
-            // This implementation updates the file position before the operation starts and updates it after incomplete read.
-            // This is done to keep backward compatibility for concurrent reads.
-            // It uses Interlocked as there can be multiple concurrent incomplete reads updating position at the same time.
-            long readOffset = Interlocked.Add(ref _filePosition, destination.Length) - destination.Length;
-            return RandomAccess.ReadAtOffsetAsync(_fileHandle, destination, readOffset, cancellationToken, this);
         }
     }
 }

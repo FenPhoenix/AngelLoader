@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common.NETM_IO.Strategies;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO
 {
@@ -21,31 +20,31 @@ namespace AL_Common.NETM_IO
         private readonly FileStreamStrategy _strategy;
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access) instead.")]
+        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access) instead.")]
         public FileStream_NET(IntPtr handle, FileAccess access)
             : this(handle, access, true, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
+        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
         public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle)
             : this(handle, access, ownsHandle, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access, int bufferSize) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
+        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access, int bufferSize) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
         public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize)
             : this(handle, access, ownsHandle, bufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
+        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
         public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize, bool isAsync)
         {
-            SafeFileHandle safeHandle = new SafeFileHandle(handle, ownsHandle: ownsHandle);
+            AL_SafeFileHandle safeHandle = new AL_SafeFileHandle(handle, ownsHandle: ownsHandle);
             try
             {
                 ValidateHandle(safeHandle, access, bufferSize, isAsync);
@@ -66,7 +65,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static void ValidateHandle(SafeFileHandle handle, FileAccess access, int bufferSize)
+        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, int bufferSize)
         {
             if (handle.IsInvalid)
             {
@@ -86,7 +85,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static void ValidateHandle(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
             ValidateHandle(handle, access, bufferSize);
 
@@ -100,19 +99,19 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        public FileStream_NET(SafeFileHandle handle, FileAccess access)
+        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access)
             : this(handle, access, DefaultBufferSize)
         {
         }
 
-        public FileStream_NET(SafeFileHandle handle, FileAccess access, int bufferSize)
+        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, int bufferSize)
         {
             ValidateHandle(handle, access, bufferSize);
 
             _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, bufferSize, handle.IsAsync);
         }
 
-        public FileStream_NET(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
             ValidateHandle(handle, access, bufferSize, isAsync);
 
@@ -215,7 +214,7 @@ namespace AL_Common.NETM_IO
             _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, bufferSize, options, preallocationSize);
         }
 
-        [Obsolete("FileStream.Handle has been deprecated. Use FileStream's SafeFileHandle property instead.")]
+        [Obsolete("FileStream.Handle has been deprecated. Use FileStream's AL_SafeFileHandle property instead.")]
         public virtual IntPtr Handle => _strategy.Handle;
 
         public virtual void Lock(long position, long length)
@@ -340,7 +339,7 @@ namespace AL_Common.NETM_IO
             _strategy.SetLength(value);
         }
 
-        public virtual SafeFileHandle SafeFileHandle => _strategy.SafeFileHandle;
+        public virtual AL_SafeFileHandle AL_SafeFileHandle => _strategy.AL_SafeFileHandle;
 
         /// <summary>Gets the path that was passed to the constructor.</summary>
         public virtual string Name => _strategy.Name;

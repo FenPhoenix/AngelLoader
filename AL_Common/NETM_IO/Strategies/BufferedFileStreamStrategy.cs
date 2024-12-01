@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -76,16 +75,16 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal override string Name => _strategy.Name;
 
-        internal override SafeFileHandle SafeFileHandle
+        internal override AL_SafeFileHandle AL_SafeFileHandle
         {
             get
             {
                 // BufferedFileStreamStrategy must flush before the handle is exposed
-                // so whoever uses SafeFileHandle to access disk data can see
+                // so whoever uses AL_SafeFileHandle to access disk data can see
                 // the changes that were buffered in memory so far
                 Flush();
 
-                return _strategy.SafeFileHandle;
+                return _strategy.AL_SafeFileHandle;
             }
         }
 

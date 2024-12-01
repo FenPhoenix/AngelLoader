@@ -4,11 +4,11 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -16,7 +16,7 @@ namespace AL_Common.NETM_IO.Strategies
     internal static partial class FileStreamHelpers
     {
         // Async completion/return codes used by
-        // SafeFileHandle.OverlappedValueTaskSource
+        // AL_SafeFileHandle.OverlappedValueTaskSource
         internal static class TaskSourceCodes
         {
             internal const long NoResult = 0;
@@ -27,7 +27,7 @@ namespace AL_Common.NETM_IO.Strategies
             internal const ulong ResultMask = ((ulong)uint.MaxValue) << 32;
         }
 
-        private static OSFileStreamStrategy ChooseStrategyCore(SafeFileHandle handle, FileAccess access, bool isAsync) =>
+        private static OSFileStreamStrategy ChooseStrategyCore(AL_SafeFileHandle handle, FileAccess access, bool isAsync) =>
             isAsync ?
                 new AsyncWindowsFileStreamStrategy(handle, access) :
                 new SyncWindowsFileStreamStrategy(handle, access);
@@ -37,11 +37,11 @@ namespace AL_Common.NETM_IO.Strategies
                 new AsyncWindowsFileStreamStrategy(path, mode, access, share, options, preallocationSize) :
                 new SyncWindowsFileStreamStrategy(path, mode, access, share, options, preallocationSize);
 
-        internal static void FlushToDisk(SafeFileHandle handle)
+        internal static void FlushToDisk(AL_SafeFileHandle handle)
         {
             if (!Interop.Kernel32.FlushFileBuffers(handle))
             {
-                int errorCode = Marshal.GetLastPInvokeError();
+                int errorCode = Marshal.GetLastWin32Error();
 
                 // NOTE: unlike fsync() on Unix, the FlushFileBuffers() function on Windows doesn't
                 // support flushing handles opened for read-only access and will return an error. We
@@ -54,7 +54,7 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal static long Seek(SafeFileHandle handle, long offset, SeekOrigin origin, bool closeInvalidHandle = false)
+        internal static long Seek(AL_SafeFileHandle handle, long offset, SeekOrigin origin, bool closeInvalidHandle = false)
         {
             Debug.Assert(origin >= SeekOrigin.Begin && origin <= SeekOrigin.End);
 
@@ -73,12 +73,12 @@ namespace AL_Common.NETM_IO.Strategies
             return ret;
         }
 
-        internal static void ThrowInvalidArgument(SafeFileHandle handle) =>
+        internal static void ThrowInvalidArgument(AL_SafeFileHandle handle) =>
             throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, handle.Path);
 
-        internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(SafeFileHandle handle)
+        internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
         {
-            int errorCode = Marshal.GetLastPInvokeError();
+            int errorCode = Marshal.GetLastWin32Error();
 
             // If ERROR_INVALID_HANDLE is returned, it doesn't suffice to set
             // the handle as invalid; the handle must also be closed.
@@ -105,7 +105,7 @@ namespace AL_Common.NETM_IO.Strategies
             return errorCode;
         }
 
-        internal static void Lock(SafeFileHandle handle, bool _ /*canWrite*/, long position, long length)
+        internal static void Lock(AL_SafeFileHandle handle, bool _ /*canWrite*/, long position, long length)
         {
             int positionLow = unchecked((int)(position));
             int positionHigh = unchecked((int)(position >> 32));
@@ -118,7 +118,7 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal static void Unlock(SafeFileHandle handle, long position, long length)
+        internal static void Unlock(AL_SafeFileHandle handle, long position, long length)
         {
             int positionLow = unchecked((int)(position));
             int positionHigh = unchecked((int)(position >> 32));
@@ -131,7 +131,7 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal static unsafe int ReadFileNative(SafeFileHandle handle, Span<byte> bytes, NativeOverlapped* overlapped, out int errorCode)
+        internal static unsafe int ReadFileNative(AL_SafeFileHandle handle, Span<byte> bytes, NativeOverlapped* overlapped, out int errorCode)
         {
             Debug.Assert(handle != null);
 
@@ -156,7 +156,7 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal static async Task AsyncModeCopyToAsync(SafeFileHandle handle, bool canSeek, long filePosition, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        internal static async Task AsyncModeCopyToAsync(AL_SafeFileHandle handle, bool canSeek, long filePosition, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             // For efficiency, we avoid creating a new task and associated state for each asynchronous read.
             // Instead, we create a single reusable awaitable object that will be triggered when an await completes
@@ -318,7 +318,7 @@ namespace AL_Common.NETM_IO.Strategies
             /// <summary>Cached delegate to IOCallback.</summary>
             internal static readonly IOCompletionCallback s_callback = IOCallback;
 
-            internal readonly SafeFileHandle _fileHandle;
+            internal readonly AL_SafeFileHandle _fileHandle;
 
             /// <summary>Tracked position representing the next location from which to read.</summary>
             internal long _position;
@@ -339,7 +339,7 @@ namespace AL_Common.NETM_IO.Strategies
             internal object CancellationLock => this;
 
             /// <summary>Initialize the awaitable.</summary>
-            internal AsyncCopyToAwaitable(SafeFileHandle fileHandle) => _fileHandle = fileHandle;
+            internal AsyncCopyToAwaitable(AL_SafeFileHandle fileHandle) => _fileHandle = fileHandle;
 
             /// <summary>Reset state to prepare for the next read operation.</summary>
             internal void ResetForNextOperation()

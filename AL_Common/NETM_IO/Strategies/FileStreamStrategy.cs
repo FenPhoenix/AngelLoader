@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -15,9 +14,9 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal abstract string Name { get; }
 
-        internal abstract SafeFileHandle SafeFileHandle { get; }
+        internal abstract AL_SafeFileHandle AL_SafeFileHandle { get; }
 
-        internal IntPtr Handle => SafeFileHandle.DangerousGetHandle();
+        internal IntPtr Handle => AL_SafeFileHandle.DangerousGetHandle();
 
         internal abstract bool IsClosed { get; }
 

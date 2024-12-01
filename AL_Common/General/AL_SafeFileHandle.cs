@@ -17,6 +17,8 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     internal string? Path => _path;
     private bool _lengthCanBeCached; // file has been opened for reading and not shared for writing.
 
+    public bool IsAsync => false;
+
     internal bool IsNoBuffering => (GetFileOptions() & NoBuffering) != 0;
 
     internal unsafe FileOptions GetFileOptions()

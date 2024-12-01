@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -13,7 +12,7 @@ namespace AL_Common.NETM_IO.Strategies
     // when FileStream was supposed to call base.Method() for such cases, we just call _fileStream.BaseMethod()
     // for everything else we fall back to the actual strategy (like FileStream does)
     //
-    // it's crucial to NOT use the "base" keyoword here! everything must be using _fileStream or _strategy
+    // it's crucial to NOT use the "base" keyword here! everything must be using _fileStream or _strategy
     internal sealed class DerivedFileStreamStrategy : FileStreamStrategy
     {
         private readonly FileStreamStrategy _strategy;
@@ -44,12 +43,12 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal override string Name => _strategy.Name;
 
-        internal override SafeFileHandle SafeFileHandle
+        internal override AL_SafeFileHandle AL_SafeFileHandle
         {
             get
             {
                 _fileStream.Flush(false);
-                return _strategy.SafeFileHandle;
+                return _strategy.AL_SafeFileHandle;
             }
         }
 
@@ -65,72 +64,12 @@ namespace AL_Common.NETM_IO.Strategies
 
         public override int ReadByte() => _strategy.ReadByte();
 
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => _strategy.IsAsync
-                ? _strategy.BeginRead(buffer, offset, count, callback, state)
-                : _fileStream.BaseBeginRead(buffer, offset, count, callback, state);
-
-        public override int EndRead(IAsyncResult asyncResult)
-            => _strategy.IsAsync ? _strategy.EndRead(asyncResult) : _fileStream.BaseEndRead(asyncResult);
 
         public override int Read(byte[] buffer, int offset, int count) => _strategy.Read(buffer, offset, count);
-
-        // If this is a derived type, it may have overridden Read(byte[], int, int) prior to this Read(Span<byte>)
-        // overload being introduced.  In that case, this Read(Span<byte>) overload should use the behavior
-        // of Read(byte[],int,int) overload.
-        public override int Read(Span<byte> buffer)
-            => _fileStream.BaseRead(buffer);
-
-        // If we have been inherited into a subclass, the Strategy implementation could be incorrect
-        // since it does not call through to Read() which a subclass might have overridden.
-        // To be safe we will only use this implementation in cases where we know it is safe to do so,
-        // and delegate to FileStream base class (which will call into Read/ReadAsync) when we are not sure.
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => _fileStream.BaseReadAsync(buffer, offset, count, cancellationToken);
-
-        // If this isn't a concrete FileStream, a derived type may have overridden ReadAsync(byte[],...),
-        // which was introduced first, so delegate to the base which will delegate to that.
-        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-            => _fileStream.BaseReadAsync(buffer, cancellationToken);
-
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => _strategy.IsAsync
-                ? _strategy.BeginWrite(buffer, offset, count, callback, state)
-                : _fileStream.BaseBeginWrite(buffer, offset, count, callback, state);
-
-        public override void EndWrite(IAsyncResult asyncResult)
-        {
-            if (_strategy.IsAsync)
-            {
-                _strategy.EndWrite(asyncResult);
-            }
-            else
-            {
-                _fileStream.BaseEndWrite(asyncResult);
-            }
-        }
 
         public override void WriteByte(byte value) => _strategy.WriteByte(value);
 
         public override void Write(byte[] buffer, int offset, int count) => _strategy.Write(buffer, offset, count);
-
-        // If this is a derived type, it may have overridden Write(byte[], int, int) prior to this Write(ReadOnlySpan<byte>)
-        // overload being introduced. In that case, this Write(ReadOnlySpan<byte>) overload should use the behavior
-        // of Write(byte[],int,int) overload.
-        public override void Write(ReadOnlySpan<byte> buffer)
-            => _fileStream.BaseWrite(buffer);
-
-        // If we have been inherited into a subclass, the Strategy implementation could be incorrect
-        // since it does not call through to Write() or WriteAsync() which a subclass might have overridden.
-        // To be safe we will only use this implementation in cases where we know it is safe to do so,
-        // and delegate to our base class (which will call into Write/WriteAsync) when we are not sure.
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => _fileStream.BaseWriteAsync(buffer, offset, count, cancellationToken);
-
-        // If this isn't a concrete FileStream, a derived type may have overridden WriteAsync(byte[],...),
-        // which was introduced first, so delegate to the base which will delegate to that.
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-            => _fileStream.BaseWriteAsync(buffer, cancellationToken);
 
         public override void Flush() => throw new InvalidOperationException("FileStream should never call this method.");
 
@@ -148,8 +87,6 @@ namespace AL_Common.NETM_IO.Strategies
         // case our custom CopyToAsync implementation isn't necessarily correct.
         public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
             => _fileStream.BaseCopyToAsync(destination, bufferSize, cancellationToken);
-
-        public override ValueTask DisposeAsync() => _fileStream.BaseDisposeAsync();
 
         protected sealed override void Dispose(bool disposing) => _strategy.DisposeInternal(disposing);
     }

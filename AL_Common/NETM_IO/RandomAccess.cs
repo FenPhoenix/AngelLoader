@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using AL_Common.NETM_IO.Strategies;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO
 {
@@ -20,7 +19,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.ArgumentException"><paramref name="handle" /> is invalid.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The file is closed.</exception>
         /// <exception cref="T:System.NotSupportedException">The file does not support seeking (pipe or socket).</exception>
-        public static long GetLength(SafeFileHandle handle)
+        public static long GetLength(AL_SafeFileHandle handle)
         {
             ValidateInput(handle, fileOffset: 0);
 
@@ -37,7 +36,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.ObjectDisposedException">The file is closed.</exception>
         /// <exception cref="T:System.NotSupportedException">The file does not support seeking (pipe or socket).</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="length" /> is negative.</exception>
-        public static void SetLength(SafeFileHandle handle, long length)
+        public static void SetLength(AL_SafeFileHandle handle, long length)
         {
             ValidateInput(handle, fileOffset: 0);
 
@@ -64,7 +63,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for reading.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static int Read(SafeFileHandle handle, Span<byte> buffer, long fileOffset)
+        public static int Read(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
         {
             ValidateInput(handle, fileOffset);
 
@@ -86,7 +85,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for reading.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static long Read(SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset)
+        public static long Read(AL_SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset)
         {
             ValidateInput(handle, fileOffset);
             ValidateBuffers(buffers);
@@ -110,7 +109,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for reading.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static ValueTask<int> ReadAsync(SafeFileHandle handle, Memory<byte> buffer, long fileOffset, CancellationToken cancellationToken = default)
+        public static ValueTask<int> ReadAsync(AL_SafeFileHandle handle, Memory<byte> buffer, long fileOffset, CancellationToken cancellationToken = default)
         {
             ValidateInput(handle, fileOffset);
 
@@ -138,7 +137,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for reading.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static ValueTask<long> ReadAsync(SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset, CancellationToken cancellationToken = default)
+        public static ValueTask<long> ReadAsync(AL_SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset, CancellationToken cancellationToken = default)
         {
             ValidateInput(handle, fileOffset);
             ValidateBuffers(buffers);
@@ -165,7 +164,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for writing.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static void Write(SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
+        public static void Write(AL_SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
         {
             ValidateInput(handle, fileOffset);
 
@@ -186,7 +185,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for writing.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static void Write(SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset)
+        public static void Write(AL_SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset)
         {
             ValidateInput(handle, fileOffset);
             ValidateBuffers(buffers);
@@ -210,7 +209,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for writing.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static ValueTask WriteAsync(SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset, CancellationToken cancellationToken = default)
+        public static ValueTask WriteAsync(AL_SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset, CancellationToken cancellationToken = default)
         {
             ValidateInput(handle, fileOffset);
 
@@ -238,7 +237,7 @@ namespace AL_Common.NETM_IO
         /// <exception cref="T:System.UnauthorizedAccessException"><paramref name="handle" /> was not opened for writing.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error occurred.</exception>
         /// <remarks>Position of the file is not advanced.</remarks>
-        public static ValueTask WriteAsync(SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken = default)
+        public static ValueTask WriteAsync(AL_SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken = default)
         {
             ValidateInput(handle, fileOffset);
             ValidateBuffers(buffers);
@@ -269,7 +268,7 @@ namespace AL_Common.NETM_IO
         /// or periodically if you expect to continue writing to the file over a long period of time.
         /// </para>
         /// </remarks>
-        public static void FlushToDisk(SafeFileHandle handle)
+        public static void FlushToDisk(AL_SafeFileHandle handle)
         {
             // NOTE: we need to allow unseekable handles when validating the input because the FlushFileBuffers()
             // function on Windows DOES support unseekable handles (e.g. pipe handles). The fsync() function on
@@ -281,7 +280,7 @@ namespace AL_Common.NETM_IO
             FileStreamHelpers.FlushToDisk(handle);
         }
 
-        private static void ValidateInput(SafeFileHandle handle, long fileOffset, bool allowUnseekableHandles = false)
+        private static void ValidateInput(AL_SafeFileHandle handle, long fileOffset, bool allowUnseekableHandles = false)
         {
             if (handle is null)
             {

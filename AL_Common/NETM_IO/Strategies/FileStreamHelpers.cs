@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.IO;
 using System.Runtime.Serialization;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -17,7 +17,7 @@ namespace AL_Common.NETM_IO.Strategies
         /// <summary>Caches whether Serialization Guard has been disabled for file writes</summary>
         private static int s_cachedSerializationSwitch;
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
             FileStreamStrategy strategy =
                 EnableBufferingIfNeeded(ChooseStrategyCore(handle, access, isAsync), bufferSize);
@@ -59,7 +59,7 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal static void ValidateArguments(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
         {
-            ArgumentException.ThrowIfNullOrEmpty(path);
+            ArgumentException_NET.ThrowIfNullOrEmpty(path);
 
             // don't include inheritable in our bounds check for share
             FileShare tempshare = share & ~FileShare.Inheritable;

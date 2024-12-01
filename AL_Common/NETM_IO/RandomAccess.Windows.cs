@@ -9,7 +9,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using AL_Common.NETM_IO.Strategies;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO
 {
@@ -17,7 +16,7 @@ namespace AL_Common.NETM_IO
     {
         private static readonly IOCompletionCallback s_callback = AllocateCallback();
 
-        internal static unsafe void SetFileLength(SafeFileHandle handle, long length)
+        internal static unsafe void SetFileLength(AL_SafeFileHandle handle, long length)
         {
             var eofInfo = new Interop.Kernel32.FILE_END_OF_FILE_INFO
             {
@@ -30,7 +29,7 @@ namespace AL_Common.NETM_IO
                 &eofInfo,
                 (uint)sizeof(Interop.Kernel32.FILE_END_OF_FILE_INFO)))
             {
-                int errorCode = Marshal.GetLastPInvokeError();
+                int errorCode = Marshal.GetLastWin32Error();
 
                 throw errorCode == Interop.Errors.ERROR_INVALID_PARAMETER
                     ? new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_FileLengthTooBig)
@@ -38,7 +37,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        internal static unsafe int ReadAtOffset(SafeFileHandle handle, Span<byte> buffer, long fileOffset)
+        internal static unsafe int ReadAtOffset(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
         {
             if (handle.IsAsync)
             {
@@ -66,7 +65,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static unsafe int ReadSyncUsingAsyncHandle(SafeFileHandle handle, Span<byte> buffer, long fileOffset)
+        private static unsafe int ReadSyncUsingAsyncHandle(AL_SafeFileHandle handle, Span<byte> buffer, long fileOffset)
         {
             handle.EnsureThreadPoolBindingInitialized();
 
@@ -131,7 +130,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        internal static unsafe void WriteAtOffset(SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
+        internal static unsafe void WriteAtOffset(AL_SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
         {
             if (buffer.IsEmpty)
             {
@@ -158,7 +157,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static unsafe void WriteSyncUsingAsyncHandle(SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
+        private static unsafe void WriteSyncUsingAsyncHandle(AL_SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
         {
             if (buffer.IsEmpty)
             {
@@ -227,12 +226,12 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        internal static ValueTask<int> ReadAtOffsetAsync(SafeFileHandle handle, Memory<byte> buffer, long fileOffset,
+        internal static ValueTask<int> ReadAtOffsetAsync(AL_SafeFileHandle handle, Memory<byte> buffer, long fileOffset,
             CancellationToken cancellationToken, OSFileStreamStrategy? strategy = null)
         {
             if (handle.IsAsync)
             {
-                (SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) = QueueAsyncReadFile(handle, buffer, fileOffset, cancellationToken, strategy);
+                (AL_SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) = QueueAsyncReadFile(handle, buffer, fileOffset, cancellationToken, strategy);
 
                 if (vts is not null)
                 {
@@ -266,12 +265,12 @@ namespace AL_Common.NETM_IO
             }, (handle, buffer, fileOffset, strategy), cancellationToken);
         }
 
-        private static unsafe (SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) QueueAsyncReadFile(SafeFileHandle handle, Memory<byte> buffer, long fileOffset,
+        private static unsafe (AL_SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) QueueAsyncReadFile(AL_SafeFileHandle handle, Memory<byte> buffer, long fileOffset,
             CancellationToken cancellationToken, OSFileStreamStrategy? strategy)
         {
             handle.EnsureThreadPoolBindingInitialized();
 
-            SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
+            AL_SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
             int errorCode = Interop.Errors.ERROR_SUCCESS;
             try
             {
@@ -325,12 +324,12 @@ namespace AL_Common.NETM_IO
             return (vts, -1);
         }
 
-        internal static ValueTask WriteAtOffsetAsync(SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset,
+        internal static ValueTask WriteAtOffsetAsync(AL_SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset,
             CancellationToken cancellationToken, OSFileStreamStrategy? strategy = null)
         {
             if (handle.IsAsync)
             {
-                (SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) = QueueAsyncWriteFile(handle, buffer, fileOffset, cancellationToken, strategy);
+                (AL_SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) = QueueAsyncWriteFile(handle, buffer, fileOffset, cancellationToken, strategy);
 
                 if (vts is not null)
                 {
@@ -359,12 +358,12 @@ namespace AL_Common.NETM_IO
             }, (handle, buffer, fileOffset, strategy), cancellationToken);
         }
 
-        private static unsafe (SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) QueueAsyncWriteFile(SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset,
+        private static unsafe (AL_SafeFileHandle.OverlappedValueTaskSource? vts, int errorCode) QueueAsyncWriteFile(AL_SafeFileHandle handle, ReadOnlyMemory<byte> buffer, long fileOffset,
             CancellationToken cancellationToken, OSFileStreamStrategy? strategy)
         {
             handle.EnsureThreadPoolBindingInitialized();
 
-            SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
+            AL_SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
             int errorCode = Interop.Errors.ERROR_SUCCESS;
             try
             {
@@ -408,7 +407,7 @@ namespace AL_Common.NETM_IO
             return (vts, -1);
         }
 
-        internal static long ReadScatterAtOffset(SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset)
+        internal static long ReadScatterAtOffset(AL_SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset)
         {
             long total = 0;
 
@@ -431,7 +430,7 @@ namespace AL_Common.NETM_IO
             return total;
         }
 
-        internal static void WriteGatherAtOffset(SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset)
+        internal static void WriteGatherAtOffset(AL_SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset)
         {
             // WriteFileGather does not support sync handles, so we just call WriteFile in a loop
             int bytesWritten = 0;
@@ -446,8 +445,8 @@ namespace AL_Common.NETM_IO
 
         // From https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-readfilescatter:
         // "The file handle must be created with [...] the FILE_FLAG_OVERLAPPED and FILE_FLAG_NO_BUFFERING flags."
-        private static bool CanUseScatterGatherWindowsAPIs(SafeFileHandle handle)
-            => handle.IsAsync && ((handle.GetFileOptions() & SafeFileHandle.NoBuffering) != 0);
+        private static bool CanUseScatterGatherWindowsAPIs(AL_SafeFileHandle handle)
+            => handle.IsAsync && ((handle.GetFileOptions() & AL_SafeFileHandle.NoBuffering) != 0);
 
         // From the same source:
         // "Each buffer must be at least the size of a system memory page and must be aligned on a system
@@ -546,7 +545,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static ValueTask<long> ReadScatterAtOffsetAsync(SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers,
+        private static ValueTask<long> ReadScatterAtOffsetAsync(AL_SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers,
             long fileOffset, CancellationToken cancellationToken)
         {
             if (!handle.IsAsync)
@@ -563,7 +562,7 @@ namespace AL_Common.NETM_IO
             return ReadScatterAtOffsetMultipleSyscallsAsync(handle, buffers, fileOffset, cancellationToken);
         }
 
-        private static async ValueTask<long> ReadScatterAtOffsetSingleSyscallAsync(SafeFileHandle handle, MemoryHandle[] handlesToDispose, IntPtr segmentsPtr, long fileOffset, int totalBytes, CancellationToken cancellationToken)
+        private static async ValueTask<long> ReadScatterAtOffsetSingleSyscallAsync(AL_SafeFileHandle handle, MemoryHandle[] handlesToDispose, IntPtr segmentsPtr, long fileOffset, int totalBytes, CancellationToken cancellationToken)
         {
             try
             {
@@ -575,11 +574,11 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static unsafe ValueTask<int> ReadFileScatterAsync(SafeFileHandle handle, IntPtr segmentsPtr, int bytesToRead, long fileOffset, CancellationToken cancellationToken)
+        private static unsafe ValueTask<int> ReadFileScatterAsync(AL_SafeFileHandle handle, IntPtr segmentsPtr, int bytesToRead, long fileOffset, CancellationToken cancellationToken)
         {
             handle.EnsureThreadPoolBindingInitialized();
 
-            SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
+            AL_SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
             try
             {
                 NativeOverlapped* nativeOverlapped = vts.PrepareForOperation(Memory<byte>.Empty, fileOffset);
@@ -624,7 +623,7 @@ namespace AL_Common.NETM_IO
             return new ValueTask<int>(vts, vts.Version);
         }
 
-        private static async ValueTask<long> ReadScatterAtOffsetMultipleSyscallsAsync(SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
+        private static async ValueTask<long> ReadScatterAtOffsetMultipleSyscallsAsync(AL_SafeFileHandle handle, IReadOnlyList<Memory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
         {
             long total = 0;
 
@@ -644,7 +643,7 @@ namespace AL_Common.NETM_IO
             return total;
         }
 
-        private static ValueTask WriteGatherAtOffsetAsync(SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
+        private static ValueTask WriteGatherAtOffsetAsync(AL_SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
         {
             if (!handle.IsAsync)
             {
@@ -660,7 +659,7 @@ namespace AL_Common.NETM_IO
             return WriteGatherAtOffsetMultipleSyscallsAsync(handle, buffers, fileOffset, cancellationToken);
         }
 
-        private static async ValueTask WriteGatherAtOffsetSingleSyscallAsync(SafeFileHandle handle, MemoryHandle[] handlesToDispose, IntPtr segmentsPtr, long fileOffset, int totalBytes, CancellationToken cancellationToken)
+        private static async ValueTask WriteGatherAtOffsetSingleSyscallAsync(AL_SafeFileHandle handle, MemoryHandle[] handlesToDispose, IntPtr segmentsPtr, long fileOffset, int totalBytes, CancellationToken cancellationToken)
         {
             try
             {
@@ -672,11 +671,11 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static unsafe ValueTask WriteFileGatherAsync(SafeFileHandle handle, IntPtr segmentsPtr, int bytesToWrite, long fileOffset, CancellationToken cancellationToken)
+        private static unsafe ValueTask WriteFileGatherAsync(AL_SafeFileHandle handle, IntPtr segmentsPtr, int bytesToWrite, long fileOffset, CancellationToken cancellationToken)
         {
             handle.EnsureThreadPoolBindingInitialized();
 
-            SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
+            AL_SafeFileHandle.OverlappedValueTaskSource vts = handle.GetOverlappedValueTaskSource();
             try
             {
                 NativeOverlapped* nativeOverlapped = vts.PrepareForOperation(ReadOnlyMemory<byte>.Empty, fileOffset);
@@ -697,7 +696,7 @@ namespace AL_Common.NETM_IO
                     {
                         // Error. Callback will not be invoked.
                         vts.Dispose();
-                        return ValueTask.FromException(SafeFileHandle.OverlappedValueTaskSource.GetIOError(errorCode, path: null));
+                        return ValueTask.FromException(AL_SafeFileHandle.OverlappedValueTaskSource.GetIOError(errorCode, path: null));
                     }
                 }
             }
@@ -712,7 +711,7 @@ namespace AL_Common.NETM_IO
             return new ValueTask(vts, vts.Version);
         }
 
-        private static async ValueTask WriteGatherAtOffsetMultipleSyscallsAsync(SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
+        private static async ValueTask WriteGatherAtOffsetMultipleSyscallsAsync(AL_SafeFileHandle handle, IReadOnlyList<ReadOnlyMemory<byte>> buffers, long fileOffset, CancellationToken cancellationToken)
         {
             int buffersCount = buffers.Count;
             for (int i = 0; i < buffersCount; i++)
@@ -723,9 +722,9 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static unsafe NativeOverlapped* GetNativeOverlappedForAsyncHandle(SafeFileHandle handle, long fileOffset, CallbackResetEvent resetEvent)
+        private static unsafe NativeOverlapped* GetNativeOverlappedForAsyncHandle(AL_SafeFileHandle handle, long fileOffset, CallbackResetEvent resetEvent)
         {
-            // After SafeFileHandle is bound to ThreadPool, we need to use ThreadPoolBinding
+            // After AL_SafeFileHandle is bound to ThreadPool, we need to use ThreadPoolBinding
             // to allocate a native overlapped and provide a valid callback.
             NativeOverlapped* result = handle.ThreadPoolBinding!.UnsafeAllocateNativeOverlapped(s_callback, resetEvent, null);
 
@@ -747,7 +746,7 @@ namespace AL_Common.NETM_IO
             return result;
         }
 
-        private static NativeOverlapped GetNativeOverlappedForSyncHandle(SafeFileHandle handle, long fileOffset)
+        private static NativeOverlapped GetNativeOverlappedForSyncHandle(AL_SafeFileHandle handle, long fileOffset)
         {
             Debug.Assert(!handle.IsAsync);
 
@@ -771,7 +770,7 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        internal static bool IsEndOfFile(int errorCode, SafeFileHandle handle, long fileOffset)
+        internal static bool IsEndOfFile(int errorCode, AL_SafeFileHandle handle, long fileOffset)
         {
             switch (errorCode)
             {
@@ -794,7 +793,7 @@ namespace AL_Common.NETM_IO
         // the read from offset=4097 fails with ERROR_INVALID_PARAMETER (the offset is not a multiple of sector size)
         // Based on feedback received from customers (https://github.com/dotnet/runtime/issues/62851),
         // it was decided to not throw, but just return 0.
-        private static bool IsEndOfFileForNoBuffering(SafeFileHandle fileHandle, long fileOffset)
+        private static bool IsEndOfFileForNoBuffering(AL_SafeFileHandle fileHandle, long fileOffset)
             => fileHandle.IsNoBuffering && fileHandle.CanSeek && fileOffset >= fileHandle.GetFileLength();
 
         // We need to store the reference count (see the comment in ReleaseRefCount) and an EventHandle to signal the completion.
@@ -812,7 +811,7 @@ namespace AL_Common.NETM_IO
 
             internal unsafe void ReleaseRefCount(NativeOverlapped* pOverlapped)
             {
-                // Each SafeFileHandle opened for async IO is bound to ThreadPool.
+                // Each AL_SafeFileHandle opened for async IO is bound to ThreadPool.
                 // It requires us to provide a callback even if we want to use EventHandle and use GetOverlappedResult to obtain the result.
                 // There can be a race condition between the call to GetOverlappedResult and the callback invocation,
                 // so we need to track the number of references, and when it drops to zero, then free the native overlapped.

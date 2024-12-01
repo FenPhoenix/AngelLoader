@@ -5,13 +5,12 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
     internal sealed partial class AsyncWindowsFileStreamStrategy : OSFileStreamStrategy
     {
-        internal AsyncWindowsFileStreamStrategy(SafeFileHandle handle, FileAccess access) : base(handle, access)
+        internal AsyncWindowsFileStreamStrategy(AL_SafeFileHandle handle, FileAccess access) : base(handle, access)
         {
         }
 
