@@ -25,10 +25,10 @@ namespace AL_Common.NETM_IO.Strategies
             return WrapIfDerivedType(fileStream, strategy);
         }
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize, UnixFileMode? unixCreateMode)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
         {
             FileStreamStrategy strategy =
-                EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize, unixCreateMode), bufferSize);
+                EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize), bufferSize);
 
             return WrapIfDerivedType(fileStream, strategy);
         }

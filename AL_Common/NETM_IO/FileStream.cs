@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common.NETM_IO.Strategies;
@@ -201,26 +202,17 @@ namespace AL_Common.NETM_IO
                 FileStreamHelpers.ValidateArgumentsForPreallocation(options.Mode, options.Access);
             }
 
-            if (options.UnixCreateMode.HasValue)
-            {
-                // Only allow UnixCreateMode for file modes that can create a new file.
-                if (options.Mode == FileMode.Truncate || options.Mode == FileMode.Open)
-                {
-                    throw new ArgumentException(SR.Argument_InvalidUnixCreateMode, nameof(options));
-                }
-            }
-
             FileStreamHelpers.SerializationGuard(options.Access);
 
             _strategy = FileStreamHelpers.ChooseStrategy(
-                this, path, options.Mode, options.Access, options.Share, options.BufferSize, options.Options, options.PreallocationSize, options.UnixCreateMode);
+                this, path, options.Mode, options.Access, options.Share, options.BufferSize, options.Options, options.PreallocationSize);
         }
 
         private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
         {
             FileStreamHelpers.ValidateArguments(path, mode, access, share, bufferSize, options, preallocationSize);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, bufferSize, options, preallocationSize, unixCreateMode: null);
+            _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, bufferSize, options, preallocationSize);
         }
 
         [Obsolete("FileStream.Handle has been deprecated. Use FileStream's SafeFileHandle property instead.")]
@@ -464,5 +456,69 @@ namespace AL_Common.NETM_IO
 
         internal Task BaseCopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
             => base.CopyToAsync(destination, bufferSize, cancellationToken);
+
+        /// <summary>Validates arguments provided to reading and writing methods on <see cref="Stream"/>.</summary>
+        /// <param name="buffer">The array "buffer" argument passed to the reading or writing method.</param>
+        /// <param name="offset">The integer "offset" argument passed to the reading or writing method.</param>
+        /// <param name="count">The integer "count" argument passed to the reading or writing method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> was null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="offset"/> was outside the bounds of <paramref name="buffer"/>, or
+        /// <paramref name="count"/> was negative, or the range specified by the combination of
+        /// <paramref name="offset"/> and <paramref name="count"/> exceed the length of <paramref name="buffer"/>.
+        /// </exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static void ValidateBufferArguments(byte[] buffer, int offset, int count)
+        {
+            if (buffer is null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.buffer);
+            }
+
+            if (offset < 0)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.offset, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
+            }
+
+            if ((uint)count > buffer.Length - offset)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.count, ExceptionResource_NET.Argument_InvalidOffLen);
+            }
+        }
+
+        /// <summary>Validates arguments provided to the <see cref="CopyTo(Stream, int)"/> or <see cref="CopyToAsync(Stream, int, CancellationToken)"/> methods.</summary>
+        /// <param name="destination">The <see cref="Stream"/> "destination" argument passed to the copy method.</param>
+        /// <param name="bufferSize">The integer "bufferSize" argument passed to the copy method.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> was null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> was not a positive value.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="destination"/> does not support writing.</exception>
+        /// <exception cref="ObjectDisposedException"><paramref name="destination"/> does not support writing or reading.</exception>
+        protected static void ValidateCopyToArguments(Stream destination, int bufferSize)
+        {
+            ArgumentNullException_NET.ThrowIfNull(destination);
+
+            ThrowIfNegativeOrZero(bufferSize);
+
+            if (!destination.CanWrite)
+            {
+                if (destination.CanRead)
+                {
+                    ThrowHelper.ThrowNotSupportedException_UnwritableStream();
+                }
+
+                ThrowHelper.ThrowObjectDisposedException_StreamClosed(destination.GetType().Name);
+            }
+        }
+
+        /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative or zero.</summary>
+        /// <param name="value">The argument to validate as non-zero or non-negative.</param>
+        /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
+        public static void ThrowIfNegativeOrZero(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
+        {
+            if (value <= 0)
+            {
+                ThrowHelper.ThrowNegativeOrZero(value, paramName);
+            }
+        }
     }
 }

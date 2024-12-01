@@ -14,7 +14,6 @@ namespace AL_Common.NETM_IO
         private FileOptions _options;
         private long _preallocationSize;
         private int _bufferSize = FileStream_NET.DefaultBufferSize;
-        private UnixFileMode? _unixCreateMode;
 
         /// <summary>
         /// One of the enumeration values that determines how to open or create the file.
@@ -118,33 +117,6 @@ namespace AL_Common.NETM_IO
             {
                 ArgumentOutOfRangeException.ThrowIfNegative(value);
                 _bufferSize = value;
-            }
-        }
-
-        /// <summary>
-        /// Unix file mode used when a new file is created.
-        /// </summary>
-        /// <exception cref="T:System.ArgumentException">When <paramref name="value" /> is an invalid file mode.</exception>
-        public UnixFileMode? UnixCreateMode
-        {
-            get
-            {
-                return _unixCreateMode;
-            }
-            [UnsupportedOSPlatform("windows")]
-            set
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    throw new PlatformNotSupportedException(SR.PlatformNotSupported_UnixFileMode);
-                }
-
-                if (value.HasValue && ((value & ~FileSystem.ValidUnixFileModes) != 0))
-                {
-                    throw new ArgumentException(SR.Arg_InvalidUnixFileMode, nameof(UnixCreateMode));
-                }
-
-                _unixCreateMode = value;
             }
         }
     }

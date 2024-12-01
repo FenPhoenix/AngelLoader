@@ -46,6 +46,76 @@ public static class ThrowHelper
         throw new ArgumentNullException(GetArgumentName(argument));
     }
 
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum(string paramName)
+    {
+        throw new ArgumentOutOfRangeException(paramName, SR.ArgumentOutOfRange_NeedNonNegNum);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowObjectDisposedException_FileClosed()
+    {
+        throw new ObjectDisposedException(null, SR.ObjectDisposed_FileClosed);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentException_HandleNotSync(string paramName)
+    {
+        throw new ArgumentException(SR.Arg_HandleNotSync, paramName);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentException_HandleNotAsync(string paramName)
+    {
+        throw new ArgumentException(SR.Arg_HandleNotAsync, paramName);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException(ExceptionArgument_NET argument)
+    {
+        throw new ArgumentOutOfRangeException(GetArgumentName(argument));
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException(ExceptionArgument_NET argument, ExceptionResource_NET resource)
+    {
+        throw GetArgumentOutOfRangeException(argument, resource);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException(ExceptionArgument_NET argument, int paramNumber, ExceptionResource_NET resource)
+    {
+        throw GetArgumentOutOfRangeException(argument, paramNumber, resource);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowNotSupportedException_UnseekableStream()
+    {
+        throw new NotSupportedException(SR.NotSupported_UnseekableStream);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowNotSupportedException_UnreadableStream()
+    {
+        throw new NotSupportedException(SR.NotSupported_UnreadableStream);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowNotSupportedException_UnwritableStream()
+    {
+        throw new NotSupportedException(SR.NotSupported_UnwritableStream);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowNegativeOrZero(int value, string? paramName) =>
+        throw new ArgumentOutOfRangeException(paramName, value, SR.Format(SR.ArgumentOutOfRange_Generic_MustBeNonNegativeNonZero, paramName, value));
+
+    [DoesNotReturn]
+    internal static void ThrowObjectDisposedException_StreamClosed(string? objectName)
+    {
+        throw new ObjectDisposedException(objectName, SR.ObjectDisposed_StreamClosed);
+    }
+
     private static string GetArgumentName(ExceptionArgument_NET argument)
     {
         switch (argument)

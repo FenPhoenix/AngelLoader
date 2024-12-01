@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
@@ -14,8 +15,8 @@ namespace AL_Common.NETM_IO.Strategies
         {
         }
 
-        internal AsyncWindowsFileStreamStrategy(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize, UnixFileMode? unixCreateMode)
-            : base(path, mode, access, share, options, preallocationSize, unixCreateMode)
+        internal AsyncWindowsFileStreamStrategy(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
+            : base(path, mode, access, share, options, preallocationSize)
         {
         }
 

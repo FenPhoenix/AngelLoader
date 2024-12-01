@@ -69,9 +69,14 @@ public static class SR
     public static readonly string EntryNameEncodingNotSupported = "Entry name encoding not supported.";
     public static readonly string IO_FileTooLong2GB = "The file is too long. This operation is currently limited to supporting files less than 2 gigabytes in size.";
     public static readonly string Argument_EmptyString = "The value cannot be an empty string.";
+    public static readonly string ArgumentOutOfRange_Enum = "Enum value was out of legal range.";
+    public static readonly string Argument_InvalidAppendMode = "Append access can be requested only in write-only mode.";
+    public static readonly string Argument_InvalidFileModeAndAccessCombo = "Combining FileMode: {0} with FileAccess: {1} is invalid.";
+    public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
-    public static readonly string Argument_InvalidOffLen =
- "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
+    public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
 #endif
+
+    internal static string Format(string resourceFormat, object? p1, object? p2) => string.Format(resourceFormat, p1, p2);
 }

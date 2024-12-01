@@ -38,13 +38,13 @@ namespace AL_Common.NETM_IO.Strategies
             _fileHandle = handle;
         }
 
-        internal OSFileStreamStrategy(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize, UnixFileMode? unixCreateMode)
+        internal OSFileStreamStrategy(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
         {
             string fullPath = Path.GetFullPath(path);
 
             _access = access;
 
-            _fileHandle = SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize, unixCreateMode);
+            _fileHandle = SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize);
 
             try
             {
