@@ -594,6 +594,7 @@ internal static class FMData
             "private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)",
             "{",
             "// Larger buffer size helps with perf for larger file sizes.",
+            // @FileStreamNET: Use of FileStream
             "using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, ByteSize.KB * 256);",
             "using var sw = new StreamWriter(fs, Encoding.UTF8, ByteSize.KB * 256);",
             "",

@@ -271,7 +271,7 @@ public static class Delete_Threaded
         // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365511.aspx
         // https://msdn.microsoft.com/en-us/library/windows/desktop/aa365197.aspx
 
-        return ((FileAttributes_NET)data.dwFileAttributes & FileAttributes_NET.ReparsePoint) != 0
+        return ((FileAttributes)data.dwFileAttributes & FileAttributes.ReparsePoint) != 0
                && (data.dwReserved0 & 0x20000000) != 0; // IsReparseTagNameSurrogate
     }
 

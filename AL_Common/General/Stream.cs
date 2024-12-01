@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using AL_Common.NETM_IO;
 
 namespace AL_Common;
 
@@ -13,7 +14,7 @@ public static partial class Common
     /// <summary>
     /// A file stream with performance/allocation improvements.
     /// </summary>
-    public sealed class FileStreamFast : FileStream
+    public sealed class FileStreamFast : FileStream_NET
     {
         private static bool _fileStreamBufferFieldFound;
         private static FieldInfo? _fileStreamBufferFieldInfo;

@@ -159,6 +159,7 @@ internal static partial class FMInstallAndPlay
             if (savesAndScreensFiles.Count == 0) return;
 
             using (var archive = new ZipArchive(
+                       // @FileStreamNET: Use of FileStream
                        new FileStream(
                            bakFile,
                            FileMode.Create,
@@ -226,6 +227,7 @@ internal static partial class FMInstallAndPlay
             if (filesList.Count == 0 && fmSelInfString.IsEmpty()) return;
 
             using (var archive = new ZipArchive(
+                       // @FileStreamNET: Use of FileStream
                        new FileStream(
                            bakFile,
                            FileMode.Create,

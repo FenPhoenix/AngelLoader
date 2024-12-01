@@ -322,6 +322,7 @@ public static partial class Utils
         {
             if (path.IsWhiteSpace()) return true;
 
+            // @FileStreamNET: Use of FileStream
             using FileStream fs = File.Create(
                 Path.Combine(path, Path.GetRandomFileName()),
                 1,

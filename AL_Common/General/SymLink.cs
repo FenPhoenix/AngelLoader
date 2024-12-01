@@ -124,7 +124,7 @@ public static partial class Common
             Interop.GetFindData(linkPath, isDirectory, ignoreAccessDenied: false, ref data);
 
             // The file or directory is not a reparse point.
-            if ((data.dwFileAttributes & (uint)FileAttributes_NET.ReparsePoint) == 0 ||
+            if ((data.dwFileAttributes & (uint)FileAttributes.ReparsePoint) == 0 ||
                 // Only symbolic links and mount points are supported at the moment.
                 (data.dwReserved0 != Interop.Kernel32.IOReparseOptions.IO_REPARSE_TAG_SYMLINK &&
                  data.dwReserved0 != Interop.Kernel32.IOReparseOptions.IO_REPARSE_TAG_MOUNT_POINT))
