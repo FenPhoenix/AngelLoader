@@ -59,18 +59,18 @@ namespace AL_Common.NETM_IO
         // The file is opened with ReadWrite access and cannot be opened by another
         // application until it has been closed.  An IOException is thrown if the
         // directory specified doesn't exist.
-        public static FileStream Create(string path)
+        public static FileStream_NET Create(string path)
             => Create(path, DefaultBufferSize);
 
         // Creates a file in a particular path.  If the file exists, it is replaced.
         // The file is opened with ReadWrite access and cannot be opened by another
         // application until it has been closed.  An IOException is thrown if the
         // directory specified doesn't exist.
-        public static FileStream Create(string path, int bufferSize)
-            => new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize);
+        public static FileStream_NET Create(string path, int bufferSize)
+            => new FileStream_NET(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize);
 
-        public static FileStream Create(string path, int bufferSize, FileOptions options)
-            => new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize, options);
+        public static FileStream_NET Create(string path, int bufferSize, FileOptions options)
+            => new FileStream_NET(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, bufferSize, options);
 
         // Deletes a file. The file specified by the designated path is deleted.
         // If the file does not exist, Delete succeeds without throwing
@@ -118,19 +118,19 @@ namespace AL_Common.NETM_IO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileStream" /> class with the specified path, creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size, additional file options and the allocation size.
+        /// Initializes a new instance of the <see cref="FileStream_NET" /> class with the specified path, creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size, additional file options and the allocation size.
         /// </summary>
-        /// <remarks><see cref="FileStream(string,FileStreamOptions)"/> for information about exceptions.</remarks>
-        public static FileStream Open(string path, FileStreamOptions options) => new FileStream(path, options);
+        /// <remarks><see cref="FileStream_NET(string,AL_Common.NETM_IO.FileStreamOptions)"/> for information about exceptions.</remarks>
+        public static FileStream_NET Open(string path, FileStreamOptions options) => new FileStream_NET(path, options);
 
-        public static FileStream Open(string path, FileMode mode)
+        public static FileStream_NET Open(string path, FileMode mode)
             => Open(path, mode, (mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite), FileShare.None);
 
-        public static FileStream Open(string path, FileMode mode, FileAccess access)
+        public static FileStream_NET Open(string path, FileMode mode, FileAccess access)
             => Open(path, mode, access, FileShare.None);
 
-        public static FileStream Open(string path, FileMode mode, FileAccess access, FileShare share)
-            => new FileStream(path, mode, access, share);
+        public static FileStream_NET Open(string path, FileMode mode, FileAccess access, FileShare share)
+            => new FileStream_NET(path, mode, access, share);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeFileHandle" /> class with the specified path, creation mode, read/write and sharing permission, the access other SafeFileHandles can have to the same file, additional file options and the allocation size.
@@ -611,11 +611,11 @@ namespace AL_Common.NETM_IO
         public static void SetUnixFileMode(SafeFileHandle fileHandle, UnixFileMode mode)
             => SetUnixFileModeCore(fileHandle, mode);
 
-        public static FileStream OpenRead(string path)
-            => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        public static FileStream_NET OpenRead(string path)
+            => new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        public static FileStream OpenWrite(string path)
-            => new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        public static FileStream_NET OpenWrite(string path)
+            => new FileStream_NET(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
 
         public static string ReadAllText(string path)
             => ReadAllText(path, Encoding.UTF8);
@@ -1072,7 +1072,7 @@ namespace AL_Common.NETM_IO
         // we will have asynchronous file access faked by the thread pool. We want the real thing.
         private static StreamReader AsyncStreamReader(string path, Encoding encoding)
             => new StreamReader(
-                new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan),
+                new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, DefaultBufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan),
                 encoding, detectEncodingFromByteOrderMarks: true);
 
         public static Task<string> ReadAllTextAsync(string path, CancellationToken cancellationToken = default)
@@ -1332,7 +1332,7 @@ namespace AL_Common.NETM_IO
             try
             {
                 writer = new StreamWriter(
-                    new FileStream(path, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.Read, DefaultBufferSize, FileOptions.Asynchronous),
+                    new FileStream_NET(path, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.Read, DefaultBufferSize, FileOptions.Asynchronous),
                     encoding);
             }
             catch (Exception e)

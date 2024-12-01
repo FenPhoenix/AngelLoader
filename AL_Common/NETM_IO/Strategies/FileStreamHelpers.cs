@@ -17,7 +17,7 @@ namespace AL_Common.NETM_IO.Strategies
         /// <summary>Caches whether Serialization Guard has been disabled for file writes</summary>
         private static int s_cachedSerializationSwitch;
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream fileStream, SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
             FileStreamStrategy strategy =
                 EnableBufferingIfNeeded(ChooseStrategyCore(handle, access, isAsync), bufferSize);
@@ -25,7 +25,7 @@ namespace AL_Common.NETM_IO.Strategies
             return WrapIfDerivedType(fileStream, strategy);
         }
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream fileStream, string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize, UnixFileMode? unixCreateMode)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize, UnixFileMode? unixCreateMode)
         {
             FileStreamStrategy strategy =
                 EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize, unixCreateMode), bufferSize);
@@ -36,8 +36,8 @@ namespace AL_Common.NETM_IO.Strategies
         private static FileStreamStrategy EnableBufferingIfNeeded(FileStreamStrategy strategy, int bufferSize)
             => bufferSize > 1 ? new BufferedFileStreamStrategy(strategy, bufferSize) : strategy;
 
-        private static FileStreamStrategy WrapIfDerivedType(FileStream fileStream, FileStreamStrategy strategy)
-            => fileStream.GetType() == typeof(FileStream)
+        private static FileStreamStrategy WrapIfDerivedType(FileStream_NET fileStream, FileStreamStrategy strategy)
+            => fileStream.GetType() == typeof(FileStream_NET)
                 ? strategy
                 : new DerivedFileStreamStrategy(fileStream, strategy);
 

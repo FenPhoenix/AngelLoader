@@ -10,10 +10,10 @@ namespace AL_Common.NETM_IO
     {
         private FileMode _mode = FileMode.Open;
         private FileAccess _access = FileAccess.Read;
-        private FileShare _share = FileStream.DefaultShare;
+        private FileShare _share = FileStream_NET.DefaultShare;
         private FileOptions _options;
         private long _preallocationSize;
-        private int _bufferSize = FileStream.DefaultBufferSize;
+        private int _bufferSize = FileStream_NET.DefaultBufferSize;
         private UnixFileMode? _unixCreateMode;
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace AL_Common.NETM_IO
         }
 
         /// <summary>
-        /// A bitwise combination of the enumeration values that determines how the file can be accessed by the <see cref="FileStream" /> object. This also determines the values returned by the <see cref="FileStream.CanRead" /> and <see cref="FileStream.CanWrite" /> properties of the <see cref="FileStream" /> object.
+        /// A bitwise combination of the enumeration values that determines how the file can be accessed by the <see cref="FileStream_NET" /> object. This also determines the values returned by the <see cref="FileStream_NET.CanRead" /> and <see cref="FileStream_NET.CanWrite" /> properties of the <see cref="FileStream_NET" /> object.
         /// </summary>
         /// <exception cref="T:System.ArgumentOutOfRangeException">When <paramref name="value" /> contains an invalid value.</exception>
         public FileAccess Access
@@ -107,7 +107,7 @@ namespace AL_Common.NETM_IO
         }
 
         /// <summary>
-        /// The size of the buffer used by <see cref="FileStream" /> for buffering. The default buffer size is 4096.
+        /// The size of the buffer used by <see cref="FileStream_NET" /> for buffering. The default buffer size is 4096.
         /// 0 or 1 means that buffering should be disabled. Negative values are not allowed.
         /// </summary>
         /// <exception cref="T:System.ArgumentOutOfRangeException">When <paramref name="value" /> is negative.</exception>

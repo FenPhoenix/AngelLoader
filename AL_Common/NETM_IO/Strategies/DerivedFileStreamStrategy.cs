@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32.SafeHandles;
@@ -16,9 +17,9 @@ namespace AL_Common.NETM_IO.Strategies
     internal sealed class DerivedFileStreamStrategy : FileStreamStrategy
     {
         private readonly FileStreamStrategy _strategy;
-        private readonly FileStream _fileStream;
+        private readonly FileStream_NET _fileStream;
 
-        internal DerivedFileStreamStrategy(FileStream fileStream, FileStreamStrategy strategy)
+        internal DerivedFileStreamStrategy(FileStream_NET fileStream, FileStreamStrategy strategy)
         {
             _fileStream = fileStream;
             _strategy = strategy;

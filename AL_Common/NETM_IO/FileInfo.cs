@@ -72,10 +72,10 @@ namespace AL_Common.NETM_IO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileStream" /> class with the specified creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size, additional file options and the allocation size.
+        /// Initializes a new instance of the <see cref="FileStream_NET" /> class with the specified creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size, additional file options and the allocation size.
         /// </summary>
-        /// <remarks><see cref="FileStream(string,FileStreamOptions)"/> for information about exceptions.</remarks>
-        public FileStream Open(FileStreamOptions options) => File.Open(NormalizedPath, options);
+        /// <remarks><see cref="FileStream_NET(string,AL_Common.NETM_IO.FileStreamOptions)"/> for information about exceptions.</remarks>
+        public FileStream_NET Open(FileStreamOptions options) => File.Open(NormalizedPath, options);
 
         public StreamReader OpenText()
             => new StreamReader(NormalizedPath, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
@@ -97,9 +97,9 @@ namespace AL_Common.NETM_IO
             return new FileInfo(destinationPath, isNormalized: true);
         }
 
-        public FileStream Create()
+        public FileStream_NET Create()
         {
-            FileStream fileStream = File.Create(NormalizedPath);
+            FileStream_NET fileStream = File.Create(NormalizedPath);
             Invalidate();
             return fileStream;
         }
@@ -125,20 +125,20 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        public FileStream Open(FileMode mode)
+        public FileStream_NET Open(FileMode mode)
             => Open(mode, (mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite), FileShare.None);
 
-        public FileStream Open(FileMode mode, FileAccess access)
+        public FileStream_NET Open(FileMode mode, FileAccess access)
             => Open(mode, access, FileShare.None);
 
-        public FileStream Open(FileMode mode, FileAccess access, FileShare share)
-            => new FileStream(NormalizedPath, mode, access, share);
+        public FileStream_NET Open(FileMode mode, FileAccess access, FileShare share)
+            => new FileStream_NET(NormalizedPath, mode, access, share);
 
-        public FileStream OpenRead()
-            => new FileStream(NormalizedPath, FileMode.Open, FileAccess.Read, FileShare.Read, File.DefaultBufferSize, false);
+        public FileStream_NET OpenRead()
+            => new FileStream_NET(NormalizedPath, FileMode.Open, FileAccess.Read, FileShare.Read, File.DefaultBufferSize, false);
 
-        public FileStream OpenWrite()
-            => new FileStream(NormalizedPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
+        public FileStream_NET OpenWrite()
+            => new FileStream_NET(NormalizedPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None);
 
         // Moves a given file to a new location and potentially a new file name.
         // This method does work across volumes.

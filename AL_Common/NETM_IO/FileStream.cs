@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using AL_Common.NETM_IO.Strategies;
@@ -10,7 +11,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO
 {
-    public class FileStream : Stream
+    public class FileStream_NET : System.IO.Stream
     {
         internal const int DefaultBufferSize = 4096;
         internal const FileShare DefaultShare = FileShare.Read;
@@ -20,28 +21,28 @@ namespace AL_Common.NETM_IO
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access) instead.")]
-        public FileStream(IntPtr handle, FileAccess access)
+        public FileStream_NET(IntPtr handle, FileAccess access)
             : this(handle, access, true, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream(IntPtr handle, FileAccess access, bool ownsHandle)
+        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle)
             : this(handle, access, ownsHandle, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access, int bufferSize) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize)
+        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize)
             : this(handle, access, ownsHandle, bufferSize, DefaultIsAsync)
         {
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         [Obsolete("This constructor has been deprecated. Use FileStream(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync) and optionally make a new SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize, bool isAsync)
+        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize, bool isAsync)
         {
             SafeFileHandle safeHandle = new SafeFileHandle(handle, ownsHandle: ownsHandle);
             try
@@ -98,56 +99,56 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        public FileStream(SafeFileHandle handle, FileAccess access)
+        public FileStream_NET(SafeFileHandle handle, FileAccess access)
             : this(handle, access, DefaultBufferSize)
         {
         }
 
-        public FileStream(SafeFileHandle handle, FileAccess access, int bufferSize)
+        public FileStream_NET(SafeFileHandle handle, FileAccess access, int bufferSize)
         {
             ValidateHandle(handle, access, bufferSize);
 
             _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, bufferSize, handle.IsAsync);
         }
 
-        public FileStream(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        public FileStream_NET(SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
             ValidateHandle(handle, access, bufferSize, isAsync);
 
             _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, bufferSize, isAsync);
         }
 
-        public FileStream(string path, FileMode mode)
+        public FileStream_NET(string path, FileMode mode)
             : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
-        public FileStream(string path, FileMode mode, FileAccess access)
+        public FileStream_NET(string path, FileMode mode, FileAccess access)
             : this(path, mode, access, DefaultShare, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
-        public FileStream(string path, FileMode mode, FileAccess access, FileShare share)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share)
             : this(path, mode, access, share, DefaultBufferSize, DefaultIsAsync)
         {
         }
 
-        public FileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize)
             : this(path, mode, access, share, bufferSize, DefaultIsAsync)
         {
         }
 
-        public FileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, bool useAsync)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, bool useAsync)
             : this(path, mode, access, share, bufferSize, useAsync ? FileOptions.Asynchronous : FileOptions.None)
         {
         }
 
-        public FileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options)
             : this(path, mode, access, share, bufferSize, options, 0)
         {
         }
 
-        ~FileStream()
+        ~FileStream_NET()
         {
             // Preserved for compatibility since FileStream has defined a
             // finalizer in past releases and derived classes may depend
@@ -156,10 +157,10 @@ namespace AL_Common.NETM_IO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FileStream" /> class with the specified path, creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size,  additional file options and the allocation size.
+        /// Initializes a new instance of the <see cref="FileStream_NET" /> class with the specified path, creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size,  additional file options and the allocation size.
         /// </summary>
-        /// <param name="path">A relative or absolute path for the file that the current <see cref="FileStream" /> instance will encapsulate.</param>
-        /// <param name="options">An object that describes optional <see cref="FileStream" /> parameters to use.</param>
+        /// <param name="path">A relative or absolute path for the file that the current <see cref="FileStream_NET" /> instance will encapsulate.</param>
+        /// <param name="options">An object that describes optional <see cref="FileStream_NET" /> parameters to use.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="path" /> or <paramref name="options" /> is <see langword="null" />.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="path" /> is an empty string (""), contains only white space, or contains one or more invalid characters.
         /// -or-
@@ -179,10 +180,10 @@ namespace AL_Common.NETM_IO
         ///  -or-
         /// <see cref="F:AL_Common.NETM_IO.FileOptions.Encrypted" /> is specified for <see cref="FileStreamOptions.Options" /> , but file encryption is not supported on the current platform.</exception>
         /// <exception cref="T:AL_Common.NETM_IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length. </exception>
-        public FileStream(string path, FileStreamOptions options)
+        public FileStream_NET(string path, FileStreamOptions options)
         {
-            ArgumentException.ThrowIfNullOrEmpty(path);
-            ArgumentNullException.ThrowIfNull(options);
+            ArgumentException_NET.ThrowIfNullOrEmpty(path);
+            ArgumentNullException_NET.ThrowIfNull(options);
             if ((options.Access & FileAccess.Read) != 0 && options.Mode == FileMode.Append)
             {
                 throw new ArgumentException(SR.Argument_InvalidAppendMode, nameof(options));
@@ -215,7 +216,7 @@ namespace AL_Common.NETM_IO
                 this, path, options.Mode, options.Access, options.Share, options.BufferSize, options.Options, options.PreallocationSize, options.UnixCreateMode);
         }
 
-        private FileStream(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
+        private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
         {
             FileStreamHelpers.ValidateArguments(path, mode, access, share, bufferSize, options, preallocationSize);
 
@@ -225,10 +226,6 @@ namespace AL_Common.NETM_IO
         [Obsolete("FileStream.Handle has been deprecated. Use FileStream's SafeFileHandle property instead.")]
         public virtual IntPtr Handle => _strategy.Handle;
 
-        [UnsupportedOSPlatform("ios")]
-        [UnsupportedOSPlatform("macos")]
-        [UnsupportedOSPlatform("tvos")]
-        [UnsupportedOSPlatform("freebsd")]
         public virtual void Lock(long position, long length)
         {
             if (position < 0 || length < 0)
@@ -243,10 +240,6 @@ namespace AL_Common.NETM_IO
             _strategy.Lock(position, length);
         }
 
-        [UnsupportedOSPlatform("ios")]
-        [UnsupportedOSPlatform("macos")]
-        [UnsupportedOSPlatform("tvos")]
-        [UnsupportedOSPlatform("freebsd")]
         public virtual void Unlock(long position, long length)
         {
             if (position < 0 || length < 0)
@@ -282,95 +275,11 @@ namespace AL_Common.NETM_IO
             return _strategy.Read(buffer, offset, count);
         }
 
-        public override int Read(Span<byte> buffer) => _strategy.Read(buffer);
-
-        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            ValidateBufferArguments(buffer, offset, count);
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCanceled<int>(cancellationToken);
-            }
-            else if (!_strategy.CanRead)
-            {
-                if (_strategy.IsClosed)
-                {
-                    ThrowHelper.ThrowObjectDisposedException_FileClosed();
-                }
-
-                ThrowHelper.ThrowNotSupportedException_UnreadableStream();
-            }
-
-            return _strategy.ReadAsync(buffer, offset, count, cancellationToken);
-        }
-
-        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return ValueTask.FromCanceled<int>(cancellationToken);
-            }
-            else if (!_strategy.CanRead)
-            {
-                if (_strategy.IsClosed)
-                {
-                    ThrowHelper.ThrowObjectDisposedException_FileClosed();
-                }
-
-                ThrowHelper.ThrowNotSupportedException_UnreadableStream();
-            }
-
-            return _strategy.ReadAsync(buffer, cancellationToken);
-        }
-
         public override void Write(byte[] buffer, int offset, int count)
         {
             ValidateReadWriteArgs(buffer, offset, count);
 
             _strategy.Write(buffer, offset, count);
-        }
-
-        public override void Write(ReadOnlySpan<byte> buffer) => _strategy.Write(buffer);
-
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-        {
-            ValidateBufferArguments(buffer, offset, count);
-
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCanceled(cancellationToken);
-            }
-            else if (!_strategy.CanWrite)
-            {
-                if (_strategy.IsClosed)
-                {
-                    ThrowHelper.ThrowObjectDisposedException_FileClosed();
-                }
-
-                ThrowHelper.ThrowNotSupportedException_UnwritableStream();
-            }
-
-            return _strategy.WriteAsync(buffer, offset, count, cancellationToken);
-        }
-
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return ValueTask.FromCanceled(cancellationToken);
-            }
-            else if (!_strategy.CanWrite)
-            {
-                if (_strategy.IsClosed)
-                {
-                    ThrowHelper.ThrowObjectDisposedException_FileClosed();
-                }
-
-                ThrowHelper.ThrowNotSupportedException_UnwritableStream();
-            }
-
-            return _strategy.WriteAsync(buffer, cancellationToken);
         }
 
         /// <summary>
@@ -421,7 +330,7 @@ namespace AL_Common.NETM_IO
         {
             if (value < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
             }
             else if (_strategy.IsClosed)
             {
@@ -485,7 +394,7 @@ namespace AL_Common.NETM_IO
             {
                 if (value < 0)
                 {
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
                 }
                 else if (!CanSeek)
                 {
@@ -517,19 +426,6 @@ namespace AL_Common.NETM_IO
         // _strategy can be null only when ctor has thrown
         protected override void Dispose(bool disposing) => _strategy?.DisposeInternal(disposing);
 
-        public override async ValueTask DisposeAsync()
-        {
-            await _strategy.DisposeAsync().ConfigureAwait(false);
-
-            // For compatibility, derived classes must only call base.DisposeAsync(),
-            // otherwise we would end up calling Dispose twice (one from base.DisposeAsync() and one from here).
-            if (!_strategy.IsDerived)
-            {
-                Dispose(false);
-                GC.SuppressFinalize(this);
-            }
-        }
-
         public override void CopyTo(Stream destination, int bufferSize)
         {
             ValidateCopyToArguments(destination, bufferSize);
@@ -540,52 +436,6 @@ namespace AL_Common.NETM_IO
         {
             ValidateCopyToArguments(destination, bufferSize);
             return _strategy.CopyToAsync(destination, bufferSize, cancellationToken);
-        }
-
-        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        {
-            ValidateBufferArguments(buffer, offset, count);
-
-            if (_strategy.IsClosed)
-            {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
-            }
-            else if (!CanRead)
-            {
-                ThrowHelper.ThrowNotSupportedException_UnreadableStream();
-            }
-
-            return _strategy.BeginRead(buffer, offset, count, callback, state);
-        }
-
-        public override int EndRead(IAsyncResult asyncResult)
-        {
-            ArgumentNullException.ThrowIfNull(asyncResult);
-
-            return _strategy.EndRead(asyncResult);
-        }
-
-        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        {
-            ValidateBufferArguments(buffer, offset, count);
-
-            if (_strategy.IsClosed)
-            {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
-            }
-            else if (!CanWrite)
-            {
-                ThrowHelper.ThrowNotSupportedException_UnwritableStream();
-            }
-
-            return _strategy.BeginWrite(buffer, offset, count, callback, state);
-        }
-
-        public override void EndWrite(IAsyncResult asyncResult)
-        {
-            ArgumentNullException.ThrowIfNull(asyncResult);
-
-            _strategy.EndWrite(asyncResult);
         }
 
         public override bool CanSeek => _strategy.CanSeek;
@@ -612,36 +462,7 @@ namespace AL_Common.NETM_IO
         internal Task BaseFlushAsync(CancellationToken cancellationToken)
             => base.FlushAsync(cancellationToken);
 
-        internal int BaseRead(Span<byte> buffer) => base.Read(buffer);
-
-        internal Task<int> BaseReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => base.ReadAsync(buffer, offset, count, cancellationToken);
-
-        internal ValueTask<int> BaseReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
-            => base.ReadAsync(buffer, cancellationToken);
-
-        internal void BaseWrite(ReadOnlySpan<byte> buffer) => base.Write(buffer);
-
-        internal Task BaseWriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => base.WriteAsync(buffer, offset, count, cancellationToken);
-
-        internal ValueTask BaseWriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
-            => base.WriteAsync(buffer, cancellationToken);
-
-        internal ValueTask BaseDisposeAsync()
-            => base.DisposeAsync();
-
         internal Task BaseCopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
             => base.CopyToAsync(destination, bufferSize, cancellationToken);
-
-        internal IAsyncResult BaseBeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => base.BeginRead(buffer, offset, count, callback, state);
-
-        internal int BaseEndRead(IAsyncResult asyncResult) => base.EndRead(asyncResult);
-
-        internal IAsyncResult BaseBeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => base.BeginWrite(buffer, offset, count, callback, state);
-
-        internal void BaseEndWrite(IAsyncResult asyncResult) => base.EndWrite(asyncResult);
     }
 }

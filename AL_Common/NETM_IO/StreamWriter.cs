@@ -170,7 +170,7 @@ namespace AL_Common.NETM_IO
             _charBuffer = Array.Empty<char>();
         }
 
-        private static FileStream ValidateArgsAndOpenPath(string path, Encoding encoding, FileStreamOptions options)
+        private static FileStream_NET ValidateArgsAndOpenPath(string path, Encoding encoding, FileStreamOptions options)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
             ArgumentNullException.ThrowIfNull(encoding);
@@ -180,16 +180,16 @@ namespace AL_Common.NETM_IO
                 throw new ArgumentException(SR.Argument_StreamNotWritable, nameof(options));
             }
 
-            return new FileStream(path, options);
+            return new FileStream_NET(path, options);
         }
 
-        private static FileStream ValidateArgsAndOpenPath(string path, bool append, Encoding encoding, int bufferSize)
+        private static FileStream_NET ValidateArgsAndOpenPath(string path, bool append, Encoding encoding, int bufferSize)
         {
             ArgumentException.ThrowIfNullOrEmpty(path);
             ArgumentNullException.ThrowIfNull(encoding);
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-            return new FileStream(path, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.Read, DefaultFileStreamBufferSize);
+            return new FileStream_NET(path, append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.Read, DefaultFileStreamBufferSize);
         }
 
         public override void Close()
