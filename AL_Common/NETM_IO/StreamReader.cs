@@ -141,7 +141,7 @@ namespace AL_Common.NETM_IO
         {
             if (stream == null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stream);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.stream);
             }
 
             if (!stream.CanRead)

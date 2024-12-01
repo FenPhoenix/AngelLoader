@@ -18,7 +18,7 @@ namespace AL_Common.NETM_IO
         {
             if (s is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.s);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.s);
             }
 
             _s = s;

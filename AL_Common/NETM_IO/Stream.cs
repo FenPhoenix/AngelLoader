@@ -275,7 +275,7 @@ namespace AL_Common.NETM_IO
         {
             if (asyncResult is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.asyncResult);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.asyncResult);
             }
 
             ReadWriteTask? readTask = asyncResult as ReadWriteTask;
@@ -600,7 +600,7 @@ namespace AL_Common.NETM_IO
         {
             if (asyncResult is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.asyncResult);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.asyncResult);
             }
 
             ReadWriteTask? writeTask = asyncResult as ReadWriteTask;
@@ -958,17 +958,17 @@ namespace AL_Common.NETM_IO
         {
             if (buffer is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.buffer);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.buffer);
             }
 
             if (offset < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.offset, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.offset, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             if ((uint)count > buffer.Length - offset)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.count, ExceptionResource.Argument_InvalidOffLen);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.count, ExceptionResource.Argument_InvalidOffLen);
             }
         }
 
@@ -976,12 +976,12 @@ namespace AL_Common.NETM_IO
         {
             if (minimumBytes < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.minimumBytes, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.minimumBytes, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             if (bufferLength < minimumBytes)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.minimumBytes, ExceptionResource.ArgumentOutOfRange_NotGreaterThanBufferLength);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.minimumBytes, ExceptionResource.ArgumentOutOfRange_NotGreaterThanBufferLength);
             }
         }
 
@@ -1239,7 +1239,7 @@ namespace AL_Common.NETM_IO
             {
                 if (asyncResult is null)
                 {
-                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument.asyncResult);
+                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.asyncResult);
                 }
 
                 lock (_stream)
@@ -1310,7 +1310,7 @@ namespace AL_Common.NETM_IO
             {
                 if (asyncResult is null)
                 {
-                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument.asyncResult);
+                    ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.asyncResult);
                 }
 
                 lock (_stream)

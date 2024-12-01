@@ -67,7 +67,7 @@ namespace AL_Common.NETM_IO
         public BufferedStream(Stream stream, int bufferSize)
         {
             if (stream == null)
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.stream);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.stream);
 
             if (bufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize), SR.Format(SR.ArgumentOutOfRange_MustBePositive, nameof(bufferSize)));
@@ -203,7 +203,7 @@ namespace AL_Common.NETM_IO
             set
             {
                 if (value < 0)
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
 
                 Seek(value, SeekOrigin.Begin);
             }
@@ -1230,7 +1230,7 @@ namespace AL_Common.NETM_IO
         public override void SetLength(long value)
         {
             if (value < 0)
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
 
             EnsureNotClosed();
             EnsureCanSeek();

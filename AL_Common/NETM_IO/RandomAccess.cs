@@ -285,7 +285,7 @@ namespace AL_Common.NETM_IO
         {
             if (handle is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.handle);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.handle);
             }
             else if (handle.IsInvalid)
             {
@@ -314,7 +314,7 @@ namespace AL_Common.NETM_IO
         {
             if (buffers is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.buffers);
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.buffers);
             }
         }
     }

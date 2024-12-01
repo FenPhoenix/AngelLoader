@@ -39,8 +39,8 @@ namespace AL_Common.NETM_IO
 
         public BinaryReader(Stream input, Encoding encoding, bool leaveOpen)
         {
-            ArgumentNullException.ThrowIfNull(input);
-            ArgumentNullException.ThrowIfNull(encoding);
+            ArgumentNullException_NET.ThrowIfNull(input);
+            ArgumentNullException_NET.ThrowIfNull(encoding);
 
             if (!input.CanRead)
             {
@@ -268,7 +268,7 @@ namespace AL_Common.NETM_IO
                 int n = _stream.Read(charBytes[..readLength]);
                 if (n == 0)
                 {
-                    ThrowHelper.ThrowEndOfFileException();
+                    ThrowHelper.EndOfFile();
                 }
 
                 if (currPos == 0 && n == stringLength)

@@ -421,7 +421,7 @@ namespace AL_Common.NETM_IO
         {
             if (value < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
             }
             else if (_strategy.IsClosed)
             {
@@ -485,7 +485,7 @@ namespace AL_Common.NETM_IO
             {
                 if (value < 0)
                 {
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource.ArgumentOutOfRange_NeedNonNegNum);
                 }
                 else if (!CanSeek)
                 {
