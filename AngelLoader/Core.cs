@@ -1836,6 +1836,7 @@ internal static class Core
             string helpFileUri = "file://" + Paths.DocFile;
             try
             {
+                // @FileStreamNET: Implicit use of FileStream
                 File.WriteAllText(Paths.HelpRedirectFilePath, @"<meta http-equiv=""refresh"" content=""0; URL=" + helpFileUri + section + @""" />");
                 finalUri = Paths.HelpRedirectFilePath;
             }

@@ -626,6 +626,7 @@ internal static class FMCache
             {
                 if (!f.ExtIsHtml()) continue;
 
+                // @FileStreamNET: Implicit use of FileStream
                 string html = File.ReadAllText(f);
 
                 for (int i = 0; i < entries.Count; i++)
@@ -796,6 +797,7 @@ internal static class FMCache
         {
             if (!f.ExtIsHtml()) continue;
 
+            // @FileStreamNET: Implicit use of FileStream
             string html = File.ReadAllText(f);
 
             for (int i = 0; i < entries.Length; i++)
@@ -985,6 +987,7 @@ internal static class FMCache
         {
             if (!cacheFile.ExtIsHtml()) continue;
 
+            // @FileStreamNET: Implicit use of FileStream
             string html = File.ReadAllText(cacheFile);
 
             for (int i = 0; i < tempCacheFiles.Length; i++)
@@ -1005,6 +1008,7 @@ internal static class FMCache
 
                 if (RefFileExcluded(f.Name, fi.Length)) continue;
 
+                // @FileStreamNET: Implicit use of FileStream
                 string content = File.ReadAllText(f.Name);
 
                 for (int ei = 0; ei < tempCacheFiles.Length; ei++)

@@ -1157,6 +1157,7 @@ internal static partial class FMInstallAndPlay
                     missFlagLines.Add(curLine);
                 }
 
+                // @FileStreamNET: Implicit use of FileStream
                 File.WriteAllLines(missFlagFile, missFlagLines, UTF8NoBOM);
             }
             catch (Exception ex)

@@ -254,6 +254,7 @@ public static partial class Utils
     {
         try
         {
+            // @FileStreamNET: Implicit use of FileStream
             File.WriteAllLines(file, lines);
             exception = null;
             return true;
@@ -300,6 +301,7 @@ public static partial class Utils
     {
         try
         {
+            // @FileStreamNET: Implicit use of FileStream
             File.WriteAllLines(file, lines, Encoding.Default);
             exception = null;
             return true;

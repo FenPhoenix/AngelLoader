@@ -20,6 +20,7 @@ public static partial class Common
         {
             if (!cacheFile.ExtIsHtml()) continue;
 
+            // @FileStreamNET: Implicit use of FileStream
             string content = File.ReadAllText(cacheFile);
 
             for (int i = 0; i < archiveFileNamesNameOnly.Count; i++)
