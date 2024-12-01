@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -11,59 +10,13 @@ using AL_Common.NETM_IO.Strategies;
 
 namespace AL_Common.NETM_IO
 {
-    public class FileStream_NET : System.IO.Stream
+    public class FileStream_NET : Stream
     {
         internal const int DefaultBufferSize = 4096;
         internal const FileShare DefaultShare = FileShare.Read;
         private const bool DefaultIsAsync = false;
 
         private readonly FileStreamStrategy _strategy;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access) instead.")]
-        public FileStream_NET(IntPtr handle, FileAccess access)
-            : this(handle, access, true, DefaultBufferSize, DefaultIsAsync)
-        {
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle)
-            : this(handle, access, ownsHandle, DefaultBufferSize, DefaultIsAsync)
-        {
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access, int bufferSize) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize)
-            : this(handle, access, ownsHandle, bufferSize, DefaultIsAsync)
-        {
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        [Obsolete("This constructor has been deprecated. Use FileStream(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync) and optionally make a new AL_SafeFileHandle with ownsHandle=false if needed instead.")]
-        public FileStream_NET(IntPtr handle, FileAccess access, bool ownsHandle, int bufferSize, bool isAsync)
-        {
-            AL_SafeFileHandle safeHandle = new AL_SafeFileHandle(handle, ownsHandle: ownsHandle);
-            try
-            {
-                ValidateHandle(safeHandle, access, bufferSize, isAsync);
-
-                _strategy = FileStreamHelpers.ChooseStrategy(this, safeHandle, access, bufferSize, isAsync);
-            }
-            catch
-            {
-                // We don't want to take ownership of closing passed in handles
-                // *unless* the constructor completes successfully.
-                GC.SuppressFinalize(safeHandle);
-
-                // This would also prevent Close from being called, but is unnecessary
-                // as we've removed the object from the finalizer queue.
-                //
-                // safeHandle.SetHandleAsInvalid();
-                throw;
-            }
-        }
 
         private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, int bufferSize)
         {
