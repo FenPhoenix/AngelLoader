@@ -154,8 +154,6 @@ namespace AL_Common.NETM_IO
                 FileStreamHelpers.ValidateArgumentsForPreallocation(options.Mode, options.Access);
             }
 
-            FileStreamHelpers.SerializationGuard(options.Access);
-
             _strategy = FileStreamHelpers.ChooseStrategy(
                 this, path, options.Mode, options.Access, options.Share, options.BufferSize, options.Options, options.PreallocationSize);
         }
@@ -437,35 +435,6 @@ namespace AL_Common.NETM_IO
 
         internal Task BaseCopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
             => base.CopyToAsync(destination, bufferSize, cancellationToken);
-
-        /// <summary>Validates arguments provided to reading and writing methods on <see cref="Stream"/>.</summary>
-        /// <param name="buffer">The array "buffer" argument passed to the reading or writing method.</param>
-        /// <param name="offset">The integer "offset" argument passed to the reading or writing method.</param>
-        /// <param name="count">The integer "count" argument passed to the reading or writing method.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="buffer"/> was null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="offset"/> was outside the bounds of <paramref name="buffer"/>, or
-        /// <paramref name="count"/> was negative, or the range specified by the combination of
-        /// <paramref name="offset"/> and <paramref name="count"/> exceed the length of <paramref name="buffer"/>.
-        /// </exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static void ValidateBufferArguments(byte[] buffer, int offset, int count)
-        {
-            if (buffer is null)
-            {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.buffer);
-            }
-
-            if (offset < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.offset, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
-            }
-
-            if ((uint)count > buffer.Length - offset)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.count, ExceptionResource_NET.Argument_InvalidOffLen);
-            }
-        }
 
         /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative or zero.</summary>
         /// <param name="value">The argument to validate as non-zero or non-negative.</param>

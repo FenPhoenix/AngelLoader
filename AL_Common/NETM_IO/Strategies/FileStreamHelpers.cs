@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using System.Runtime.Serialization;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -13,9 +12,6 @@ namespace AL_Common.NETM_IO.Strategies
         private const FileOptions ValidFileOptions = FileOptions.WriteThrough | FileOptions.Asynchronous | FileOptions.RandomAccess
             | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
             | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
-
-        /// <summary>Caches whether Serialization Guard has been disabled for file writes</summary>
-        private static int s_cachedSerializationSwitch;
 
         internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
         {
@@ -116,8 +112,6 @@ namespace AL_Common.NETM_IO.Strategies
             {
                 ValidateArgumentsForPreallocation(mode, access);
             }
-
-            SerializationGuard(access);
         }
 
         internal static void ValidateArgumentsForPreallocation(FileMode mode, FileAccess access)
@@ -134,14 +128,6 @@ namespace AL_Common.NETM_IO.Strategies
                 mode != FileMode.CreateNew)
             {
                 throw new ArgumentException(SR.Argument_InvalidPreallocateMode, nameof(mode));
-            }
-        }
-
-        internal static void SerializationGuard(FileAccess access)
-        {
-            if ((access & FileAccess.Write) == FileAccess.Write)
-            {
-                SerializationInfo.ThrowIfDeserializationInProgress("AllowFileWrites", ref s_cachedSerializationSwitch);
             }
         }
 
