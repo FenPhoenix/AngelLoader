@@ -430,12 +430,6 @@ namespace AL_Common.NETM_IO
             return _strategy.Seek(offset, origin);
         }
 
-        internal Task BaseFlushAsync(CancellationToken cancellationToken)
-            => base.FlushAsync(cancellationToken);
-
-        internal Task BaseCopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-            => base.CopyToAsync(destination, bufferSize, cancellationToken);
-
         /// <summary>Throws an <see cref="ArgumentOutOfRangeException"/> if <paramref name="value"/> is negative or zero.</summary>
         /// <param name="value">The argument to validate as non-zero or non-negative.</param>
         /// <param name="paramName">The name of the parameter with which <paramref name="value"/> corresponds.</param>
