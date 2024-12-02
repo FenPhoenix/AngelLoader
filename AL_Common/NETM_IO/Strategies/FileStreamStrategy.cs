@@ -8,6 +8,7 @@ namespace AL_Common.NETM_IO.Strategies
 {
     internal abstract class FileStreamStrategy : Stream
     {
+
         internal abstract bool IsAsync { get; }
 
         internal bool IsDerived { get; init; }

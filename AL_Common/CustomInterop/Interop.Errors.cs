@@ -45,8 +45,8 @@ internal static partial class Interop
         internal const int ERROR_FILE_EXISTS = 0x50;
         internal const int ERROR_INVALID_PARAMETER = 0x57;
         internal const int ERROR_BROKEN_PIPE = 0x6D;
-#if ENABLE_UNUSED
         internal const int ERROR_DISK_FULL = 0x70;
+#if ENABLE_UNUSED
         internal const int ERROR_SEM_TIMEOUT = 0x79;
         internal const int ERROR_CALL_NOT_IMPLEMENTED = 0x78;
         internal const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
@@ -69,9 +69,9 @@ internal static partial class Interop
         internal const int ERROR_ENVVAR_NOT_FOUND = 0xCB;
 #endif
         internal const int ERROR_FILENAME_EXCED_RANGE = 0xCE;
+        internal const int ERROR_FILE_TOO_LARGE = 0xDF;
 #if ENABLE_UNUSED
         internal const int ERROR_EXE_MACHINE_TYPE_MISMATCH = 0xD8;
-        internal const int ERROR_FILE_TOO_LARGE = 0xDF;
         internal const int ERROR_PIPE_BUSY = 0xE7;
         internal const int ERROR_NO_DATA = 0xE8;
 #endif

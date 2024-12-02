@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,8 +21,6 @@ namespace AL_Common.NETM_IO.Strategies
         private int _writePos;
         private int _readPos;
         private int _readLen;
-        // The last successful Task returned from ReadAsync (perf optimization for successive reads of the same size)
-        private CachedCompletedInt32Task _lastSyncCompletedReadTask;
 
         internal BufferedFileStreamStrategy(FileStreamStrategy strategy, int bufferSize)
         {
@@ -85,32 +84,6 @@ namespace AL_Common.NETM_IO.Strategies
                 Flush();
 
                 return _strategy.AL_SafeFileHandle;
-            }
-        }
-
-        public override async ValueTask DisposeAsync()
-        {
-            try
-            {
-                if (!_strategy.IsClosed)
-                {
-                    try
-                    {
-                        await FlushAsync().ConfigureAwait(false);
-                    }
-                    finally
-                    {
-                        await _strategy.DisposeAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-            finally
-            {
-                // Don't set the buffer to null, to avoid a NullReferenceException
-                // when users have a race condition in their code (i.e. they call
-                // FileStream.Close when calling another method on FileStream like Read).
-
-                _writePos = 0; // WriteByte hot path relies on this
             }
         }
 

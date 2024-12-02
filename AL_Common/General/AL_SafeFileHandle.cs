@@ -104,7 +104,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     internal bool CanSeek => !IsClosed && GetFileType() == FileTypes.FILE_TYPE_DISK;
 
-    public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+    public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
     {
         using (DisableMediaInsertionPrompt.Create())
         {
@@ -112,7 +112,44 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             // of converting DOS to NT file paths (RtlDosPathNameToRelativeNtPathName_U_WithStatus is not documented)
             AL_SafeFileHandle fileHandle = CreateFile(fullPath, mode, access, share, options);
 
+            if (preallocationSize > 0)
+            {
+                Preallocate(fullPath, preallocationSize, fileHandle);
+            }
+
             return fileHandle;
+        }
+    }
+
+    private static unsafe void Preallocate(string fullPath, long preallocationSize, AL_SafeFileHandle fileHandle)
+    {
+        var allocationInfo = new Interop.Kernel32.FILE_ALLOCATION_INFO
+        {
+            AllocationSize = preallocationSize,
+        };
+
+        if (!Interop.Kernel32.SetFileInformationByHandle(
+                fileHandle,
+                Interop.Kernel32.FileAllocationInfo,
+                &allocationInfo,
+                (uint)sizeof(Interop.Kernel32.FILE_ALLOCATION_INFO)))
+        {
+            int errorCode = Marshal.GetLastWin32Error();
+
+            // Only throw for errors that indicate there is not enough space.
+            if (errorCode == Interop.Errors.ERROR_DISK_FULL ||
+                errorCode == Interop.Errors.ERROR_FILE_TOO_LARGE)
+            {
+                fileHandle.Dispose();
+
+                // Delete the file we've created.
+                Interop.Kernel32.DeleteFile(fullPath);
+
+                throw new IOException(SR.Format(errorCode == Interop.Errors.ERROR_DISK_FULL
+                        ? SR.IO_DiskFull_Path_AllocationSize
+                        : SR.IO_FileTooLarge_Path_AllocationSize,
+                    fullPath, preallocationSize));
+            }
         }
     }
 

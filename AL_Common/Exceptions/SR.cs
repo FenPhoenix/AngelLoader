@@ -73,6 +73,8 @@ public static class SR
     public static readonly string Argument_InvalidAppendMode = "Append access can be requested only in write-only mode.";
     public static readonly string Argument_InvalidFileModeAndAccessCombo = "Combining FileMode: {0} with FileAccess: {1} is invalid.";
     public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
+    public static readonly string IO_DiskFull_Path_AllocationSize = "Failed to create '{0}' with allocation size '{1}' because the disk was full.";
+    public static readonly string IO_FileTooLarge_Path_AllocationSize = "Failed to create '{0}' with allocation size '{1}' because the file was too large.";
 #if ENABLE_UNUSED
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
