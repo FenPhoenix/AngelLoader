@@ -116,6 +116,19 @@ public static class ThrowHelper
         throw new ObjectDisposedException(objectName, SR.ObjectDisposed_StreamClosed);
     }
 
+    [DoesNotReturn]
+    internal static void ThrowInvalidOperationException(ExceptionResource_NET resource)
+    {
+        throw GetInvalidOperationException(resource);
+    }
+
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException()
+    {
+        throw GetArgumentOutOfRangeException(ExceptionArgument_NET.index,
+            ExceptionResource_NET.ArgumentOutOfRange_IndexMustBeLessOrEqual);
+    }
+
     private static string GetArgumentName(ExceptionArgument_NET argument)
     {
         switch (argument)

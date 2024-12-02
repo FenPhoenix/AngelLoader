@@ -3,8 +3,6 @@
 
 using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -64,7 +62,6 @@ namespace AL_Common.NETM_IO.Strategies
 
         public override int ReadByte() => _strategy.ReadByte();
 
-
         public override int Read(byte[] buffer, int offset, int count) => _strategy.Read(buffer, offset, count);
 
         public override void WriteByte(byte value) => _strategy.WriteByte(value);
@@ -74,19 +71,6 @@ namespace AL_Common.NETM_IO.Strategies
         public override void Flush() => throw new InvalidOperationException("FileStream should never call this method.");
 
         internal override void Flush(bool flushToDisk) => _strategy.Flush(flushToDisk);
-
-        // If we have been inherited into a subclass, the following implementation could be incorrect
-        // since it does not call through to Flush() which a subclass might have overridden.  To be safe
-        // we will only use this implementation in cases where we know it is safe to do so,
-        // and delegate to our base class (which will call into Flush) when we are not sure.
-        public override Task FlushAsync(CancellationToken cancellationToken)
-            => _fileStream.BaseFlushAsync(cancellationToken);
-
-        // We also need to take this path if this is a derived
-        // instance from FileStream, as a derived type could have overridden ReadAsync, in which
-        // case our custom CopyToAsync implementation isn't necessarily correct.
-        public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-            => _fileStream.BaseCopyToAsync(destination, bufferSize, cancellationToken);
 
         protected sealed override void Dispose(bool disposing) => _strategy.DisposeInternal(disposing);
     }

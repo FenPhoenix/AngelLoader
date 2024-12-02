@@ -119,10 +119,10 @@ namespace AL_Common.NETM_IO.Strategies
         {
             AssertBufferArguments(buffer, offset, count);
 
-            return ReadSpan(new Span<byte>(buffer, offset, count), new ArraySegment<byte>(buffer, offset, count));
+            return ReadSpan(buffer, offset, count);
         }
 
-        private int ReadSpan(Span<byte> destination, ArraySegment<byte> arraySegment)
+        private int ReadSpan(byte[] destination, int destOffset, int destLength)
         {
             Debug.Assert((_readPos == 0 && _readLen == 0 && _writePos >= 0) || (_writePos == 0 && _readPos <= _readLen),
                 "We're either reading or writing, but not both.");
@@ -146,9 +146,7 @@ namespace AL_Common.NETM_IO.Strategies
                     // which rents an array from the pool, copies the data, and then calls Read(Array). This is expensive!
                     // To avoid that (and code duplication), the Read(Array) method passes ArraySegment to this method
                     // which allows for calling Strategy.Read(Array) instead of Strategy.Read(Span).
-                    n = arraySegment.Array != null
-                        ? _strategy.Read(arraySegment.Array, arraySegment.Offset, arraySegment.Count)
-                        : _strategy.Read(destination);
+                    n = _strategy.Read(destination, destOffset, destLength);
 
                     // Throw away read buffer.
                     _readPos = 0;
@@ -197,9 +195,7 @@ namespace AL_Common.NETM_IO.Strategies
                 {
                     Debug.Assert(_readPos == _readLen, "Read buffer should be empty!");
 
-                    int moreBytesRead = arraySegment.Array != null
-                        ? _strategy.Read(arraySegment.Array, arraySegment.Offset + n, arraySegment.Count - n)
-                        : _strategy.Read(destination.Slice(n));
+                    int moreBytesRead = _strategy.Read(destination, destOffset + n, destLength - n);
 
                     n += moreBytesRead;
                     // We've just made our buffer inconsistent with our position
@@ -302,14 +298,7 @@ namespace AL_Common.NETM_IO.Strategies
                 // which rents an array from the pool, copies the data, and then calls Write(Array). This is expensive!
                 // To avoid that (and code duplication), the Write(Array) method passes ArraySegment to this method
                 // which allows for calling Strategy.Write(Array) instead of Strategy.Write(Span).
-                if (arraySegment.Array != null)
-                {
-                    _strategy.Write(arraySegment.Array, arraySegment.Offset, arraySegment.Count);
-                }
-                else
-                {
-                    _strategy.Write(source);
-                }
+                _strategy.Write(arraySegment.Array, arraySegment.Offset, arraySegment.Count);
 
                 return;
             }
@@ -390,30 +379,30 @@ namespace AL_Common.NETM_IO.Strategies
             Debug.Assert(_writePos == 0 && (!_strategy.CanSeek || (_readPos == 0 && _readLen == 0)));
         }
 
-        public override void CopyTo(Stream destination, int bufferSize)
-        {
-            EnsureNotClosed();
-            EnsureCanRead();
+        //public override void CopyTo(Stream destination, int bufferSize)
+        //{
+        //    EnsureNotClosed();
+        //    EnsureCanRead();
 
-            int readBytes = _readLen - _readPos;
-            Debug.Assert(readBytes >= 0, $"Expected a non-negative number of bytes in buffer, got {readBytes}");
+        //    int readBytes = _readLen - _readPos;
+        //    Debug.Assert(readBytes >= 0, $"Expected a non-negative number of bytes in buffer, got {readBytes}");
 
-            if (readBytes > 0)
-            {
-                // If there's any read data in the buffer, write it all to the destination stream.
-                Debug.Assert(_writePos == 0, "Write buffer must be empty if there's data in the read buffer");
-                destination.Write(_buffer!, _readPos, readBytes);
-                _readPos = _readLen = 0;
-            }
-            else if (_writePos > 0)
-            {
-                // If there's write data in the buffer, flush it back to the underlying stream, as does ReadAsync.
-                FlushWrite();
-            }
+        //    if (readBytes > 0)
+        //    {
+        //        // If there's any read data in the buffer, write it all to the destination stream.
+        //        Debug.Assert(_writePos == 0, "Write buffer must be empty if there's data in the read buffer");
+        //        destination.Write(_buffer!, _readPos, readBytes);
+        //        _readPos = _readLen = 0;
+        //    }
+        //    else if (_writePos > 0)
+        //    {
+        //        // If there's write data in the buffer, flush it back to the underlying stream, as does ReadAsync.
+        //        FlushWrite();
+        //    }
 
-            // Our buffer is now clear. Copy data directly from the source stream to the destination stream.
-            _strategy.CopyTo(destination, bufferSize);
-        }
+        //    // Our buffer is now clear. Copy data directly from the source stream to the destination stream.
+        //    _strategy.CopyTo(destination, bufferSize);
+        //}
 
         public override long Seek(long offset, SeekOrigin origin)
         {

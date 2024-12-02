@@ -1,4 +1,5 @@
 ﻿global using static AL_Common.FullyGlobal;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
@@ -312,6 +313,38 @@ public static partial class Common
         {
             pd = new ParallelForData<T>();
             return false;
+        }
+    }
+
+    public static ArraySegment<T> Slice<T>(this ArraySegment<T> arraySegment, int index)
+    {
+        arraySegment.ArraySegment_ThrowInvalidOperationIfDefault();
+
+        if ((uint)index > (uint)arraySegment.Count)
+        {
+            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException();
+        }
+
+        return new ArraySegment<T>(arraySegment.Array!, arraySegment.Offset + index, arraySegment.Count - index);
+    }
+
+    public static ArraySegment<T> Slice<T>(this ArraySegment<T> arraySegment, int index, int count)
+    {
+        arraySegment.ArraySegment_ThrowInvalidOperationIfDefault();
+
+        if ((uint)index > (uint)arraySegment.Count || (uint)count > (uint)(arraySegment.Count - index))
+        {
+            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException();
+        }
+
+        return new ArraySegment<T>(arraySegment.Array!, arraySegment.Offset + index, count);
+    }
+
+    private static void ArraySegment_ThrowInvalidOperationIfDefault<T>(this ArraySegment<T> arraySegment)
+    {
+        if (arraySegment.Array == null)
+        {
+            ThrowHelper.ThrowInvalidOperationException(ExceptionResource_NET.InvalidOperation_NullArray);
         }
     }
 
