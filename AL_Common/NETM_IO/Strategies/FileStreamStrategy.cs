@@ -20,7 +20,7 @@ namespace AL_Common.NETM_IO.Strategies
         /// <paramref name="offset"/> and <paramref name="count"/> exceed the length of <paramref name="buffer"/>.
         /// </exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static void ValidateBufferArguments(byte[] buffer, int offset, int count)
+        internal static void ValidateBufferArguments(byte[] buffer, int offset, int count)
         {
             if (buffer is null)
             {

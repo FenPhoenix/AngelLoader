@@ -3,10 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -16,17 +13,18 @@ namespace AL_Common.NETM_IO.Strategies
         private readonly FileStreamStrategy _strategy;
         private readonly int _bufferSize;
 
-        private byte[]? _buffer;
+        private readonly byte[] _buffer;
         private int _writePos;
         private int _readPos;
         private int _readLen;
 
-        internal BufferedFileStreamStrategy(FileStreamStrategy strategy, int bufferSize)
+        internal BufferedFileStreamStrategy(FileStreamStrategy strategy, byte[] buffer)
         {
-            Debug.Assert(bufferSize > 1, "Buffering must not be enabled for smaller buffer sizes");
+            Debug.Assert(buffer.Length > 1, "Buffering must not be enabled for smaller buffer sizes");
 
             _strategy = strategy;
-            _bufferSize = bufferSize;
+            _bufferSize = buffer.Length;
+            _buffer = buffer;
         }
 
         public override bool CanRead => _strategy.CanRead;
@@ -154,7 +152,6 @@ namespace AL_Common.NETM_IO.Strategies
                     return n;
                 }
 
-                EnsureBufferAllocated();
                 n = _strategy.Read(_buffer, 0, _bufferSize);
 
                 if (n == 0)
@@ -227,7 +224,6 @@ namespace AL_Common.NETM_IO.Strategies
                 FlushWrite();
             }
 
-            EnsureBufferAllocated();
             _readLen = _strategy.Read(_buffer, 0, _bufferSize);
             _readPos = 0;
 
@@ -308,7 +304,6 @@ namespace AL_Common.NETM_IO.Strategies
             }
 
             // Copy remaining bytes into buffer, to write at a later date.
-            EnsureBufferAllocated();
             source.CopyTo(_buffer.AsSpan(_writePos));
             _writePos = source.Length;
         }
@@ -332,7 +327,6 @@ namespace AL_Common.NETM_IO.Strategies
                 EnsureNotClosed();
                 EnsureCanWrite();
                 ClearReadBufferBeforeWrite();
-                EnsureBufferAllocated();
             }
             else
             {
@@ -526,25 +520,6 @@ namespace AL_Common.NETM_IO.Strategies
             {
                 ThrowHelper.ThrowNotSupportedException_UnwritableStream();
             }
-        }
-
-        [MemberNotNull(nameof(_buffer))]
-        private void EnsureBufferAllocated()
-        {
-            if (_buffer is null)
-            {
-                AllocateBuffer();
-            }
-        }
-
-        // TODO https://github.com/dotnet/roslyn/issues/47896: should be local function in EnsureBufferAllocated above.
-        [MemberNotNull(nameof(_buffer))]
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void AllocateBuffer()
-        {
-            // @FileStreamNET: We should just always have a buffer passed in through the ctor, since we're always
-            //  going to use it and we want to pass in a recycled one always.
-            Interlocked.CompareExchange(ref _buffer, GC.AllocateUninitializedArray<byte>(_bufferSize), null);
         }
 
         [Conditional("DEBUG")]

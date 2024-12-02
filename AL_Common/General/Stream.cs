@@ -14,7 +14,7 @@ public static partial class Common
     /// <summary>
     /// A file stream with performance/allocation improvements.
     /// </summary>
-    public sealed class FileStreamFast : FileStream_NET
+    public sealed class FileStreamFast : FileStream
     {
         private static bool _fileStreamBufferFieldFound;
         private static FieldInfo? _fileStreamBufferFieldInfo;

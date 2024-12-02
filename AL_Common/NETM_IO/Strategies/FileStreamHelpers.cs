@@ -13,24 +13,24 @@ namespace AL_Common.NETM_IO.Strategies
             | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
             | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, AL_SafeFileHandle handle, FileAccess access, byte[] buffer, bool isAsync)
         {
             FileStreamStrategy strategy =
-                EnableBufferingIfNeeded(ChooseStrategyCore(handle, access, isAsync), bufferSize);
+                EnableBufferingIfNeeded(ChooseStrategyCore(handle, access, isAsync), buffer);
 
             return WrapIfDerivedType(fileStream, strategy);
         }
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
+        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
         {
             FileStreamStrategy strategy =
-                EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize), bufferSize);
+                EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize), buffer);
 
             return WrapIfDerivedType(fileStream, strategy);
         }
 
-        private static FileStreamStrategy EnableBufferingIfNeeded(FileStreamStrategy strategy, int bufferSize)
-            => bufferSize > 1 ? new BufferedFileStreamStrategy(strategy, bufferSize) : strategy;
+        private static FileStreamStrategy EnableBufferingIfNeeded(FileStreamStrategy strategy, byte[] buffer)
+            => buffer.Length > 1 ? new BufferedFileStreamStrategy(strategy, buffer) : strategy;
 
         private static FileStreamStrategy WrapIfDerivedType(FileStream_NET fileStream, FileStreamStrategy strategy)
             => fileStream.GetType() == typeof(FileStream_NET)
@@ -53,7 +53,7 @@ namespace AL_Common.NETM_IO.Strategies
             e is NotSupportedException ||
             (e is ArgumentException && e is not ArgumentNullException);
 
-        internal static void ValidateArguments(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
+        internal static void ValidateArguments(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
         {
             ArgumentException_NET.ThrowIfNullOrEmpty(path);
 
@@ -83,10 +83,6 @@ namespace AL_Common.NETM_IO.Strategies
             if (AreInvalid(options))
             {
                 throw new ArgumentOutOfRangeException(nameof(options), SR.ArgumentOutOfRange_Enum);
-            }
-            else if (bufferSize < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(bufferSize));
             }
             else if (preallocationSize < 0)
             {

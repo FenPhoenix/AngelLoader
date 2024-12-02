@@ -121,6 +121,12 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         }
     }
 
+    internal bool TryGetCachedLength(out long cachedLength)
+    {
+        cachedLength = _length;
+        return _lengthCanBeCached && cachedLength >= 0;
+    }
+
     private static unsafe void Preallocate(string fullPath, long preallocationSize, AL_SafeFileHandle fileHandle)
     {
         var allocationInfo = new Interop.Kernel32.FILE_ALLOCATION_INFO

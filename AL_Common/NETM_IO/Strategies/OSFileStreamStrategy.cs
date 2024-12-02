@@ -22,8 +22,6 @@ namespace AL_Common.NETM_IO.Strategies
         {
             _access = access;
 
-            handle.EnsureThreadPoolBindingInitialized();
-
             if (handle.CanSeek)
             {
                 // given strategy was created out of existing handle, so we have to perform
@@ -112,9 +110,8 @@ namespace AL_Common.NETM_IO.Strategies
         // this method just disposes everything (no buffer, no need to flush)
         protected sealed override void Dispose(bool disposing)
         {
-            if (disposing && _fileHandle != null && !_fileHandle.IsClosed)
+            if (disposing && _fileHandle != null! && !_fileHandle.IsClosed)
             {
-                _fileHandle.ThreadPoolBinding?.Dispose();
                 _fileHandle.Dispose();
             }
         }

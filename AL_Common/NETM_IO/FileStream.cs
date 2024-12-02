@@ -18,7 +18,7 @@ namespace AL_Common.NETM_IO
 
         private readonly FileStreamStrategy _strategy;
 
-        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, int bufferSize)
+        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access)
         {
             if (handle.IsInvalid)
             {
@@ -28,19 +28,15 @@ namespace AL_Common.NETM_IO
             {
                 throw new ArgumentOutOfRangeException(nameof(access), SR.ArgumentOutOfRange_Enum);
             }
-            else if (bufferSize < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(bufferSize));
-            }
             else if (handle.IsClosed)
             {
                 ThrowHelper.ThrowObjectDisposedException_FileClosed();
             }
         }
 
-        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, bool isAsync)
         {
-            ValidateHandle(handle, access, bufferSize);
+            ValidateHandle(handle, access);
 
             if (isAsync && !handle.IsAsync)
             {
@@ -53,51 +49,51 @@ namespace AL_Common.NETM_IO
         }
 
         public FileStream_NET(AL_SafeFileHandle handle, FileAccess access)
-            : this(handle, access, DefaultBufferSize)
+            : this(handle, access, new byte[DefaultBufferSize])
         {
         }
 
-        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, int bufferSize)
+        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
         {
-            ValidateHandle(handle, access, bufferSize);
+            ValidateHandle(handle, access);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, bufferSize, handle.IsAsync);
+            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer, handle.IsAsync);
         }
 
-        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, int bufferSize, bool isAsync)
+        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer, bool isAsync)
         {
-            ValidateHandle(handle, access, bufferSize, isAsync);
+            ValidateHandle(handle, access, isAsync);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, bufferSize, isAsync);
+            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer, isAsync);
         }
 
         public FileStream_NET(string path, FileMode mode)
-            : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, DefaultBufferSize, DefaultIsAsync)
+            : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, new byte[DefaultBufferSize], DefaultIsAsync)
         {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access)
-            : this(path, mode, access, DefaultShare, DefaultBufferSize, DefaultIsAsync)
+            : this(path, mode, access, DefaultShare, new byte[DefaultBufferSize], DefaultIsAsync)
         {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share)
-            : this(path, mode, access, share, DefaultBufferSize, DefaultIsAsync)
+            : this(path, mode, access, share, new byte[DefaultBufferSize], DefaultIsAsync)
         {
         }
 
-        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize)
-            : this(path, mode, access, share, bufferSize, DefaultIsAsync)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
+            : this(path, mode, access, share, buffer, DefaultIsAsync)
         {
         }
 
-        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, bool useAsync)
-            : this(path, mode, access, share, bufferSize, useAsync ? FileOptions.Asynchronous : FileOptions.None)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, bool useAsync)
+            : this(path, mode, access, share, buffer, useAsync ? FileOptions.Asynchronous : FileOptions.None)
         {
         }
 
-        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options)
-            : this(path, mode, access, share, bufferSize, options, 0)
+        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options)
+            : this(path, mode, access, share, buffer, options, 0)
         {
         }
 
@@ -109,60 +105,11 @@ namespace AL_Common.NETM_IO
             Dispose(false);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileStream_NET" /> class with the specified path, creation mode, read/write and sharing permission, the access other FileStreams can have to the same file, the buffer size,  additional file options and the allocation size.
-        /// </summary>
-        /// <param name="path">A relative or absolute path for the file that the current <see cref="FileStream_NET" /> instance will encapsulate.</param>
-        /// <param name="options">An object that describes optional <see cref="FileStream_NET" /> parameters to use.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="path" /> or <paramref name="options" /> is <see langword="null" />.</exception>
-        /// <exception cref="T:System.ArgumentException"><paramref name="path" /> is an empty string (""), contains only white space, or contains one or more invalid characters.
-        /// -or-
-        /// <paramref name="path" /> refers to a non-file device, such as <c>CON:</c>, <c>COM1:</c>, <c>LPT1:</c>, etc. in an NTFS environment.</exception>
-        /// <exception cref="T:System.NotSupportedException"><paramref name="path" /> refers to a non-file device, such as <c>CON:</c>, <c>COM1:</c>, <c>LPT1:</c>, etc. in a non-NTFS environment.</exception>
-        /// <exception cref="T:AL_Common.NETM_IO.FileNotFoundException">The file cannot be found, such as when <see cref="FileStreamOptions.Mode" /> is <see langword="FileMode.Truncate" /> or <see langword="FileMode.Open" />, and the file specified by <paramref name="path" /> does not exist. The file must already exist in these modes.</exception>
-        /// <exception cref="T:AL_Common.NETM_IO.IOException">An I/O error, such as specifying <see langword="FileMode.CreateNew" /> when the file specified by <paramref name="path" /> already exists, occurred.
-        ///  -or-
-        ///  The stream has been closed.
-        ///  -or-
-        ///  The disk was full (when <see cref="FileStreamOptions.PreallocationSize" /> was provided and <paramref name="path" /> was pointing to a regular file).
-        ///  -or-
-        ///  The file was too large (when <see cref="FileStreamOptions.PreallocationSize" /> was provided and <paramref name="path" /> was pointing to a regular file).</exception>
-        /// <exception cref="T:System.Security.SecurityException">The caller does not have the required permission.</exception>
-        /// <exception cref="T:AL_Common.NETM_IO.DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
-        /// <exception cref="T:System.UnauthorizedAccessException">The <see cref="FileStreamOptions.Access" /> requested is not permitted by the operating system for the specified <paramref name="path" />, such as when <see cref="FileStreamOptions.Access" />  is <see cref="FileAccess.Write" /> or <see cref="FileAccess.ReadWrite" /> and the file or directory is set for read-only access.
-        ///  -or-
-        /// <see cref="F:AL_Common.NETM_IO.FileOptions.Encrypted" /> is specified for <see cref="FileStreamOptions.Options" /> , but file encryption is not supported on the current platform.</exception>
-        /// <exception cref="T:AL_Common.NETM_IO.PathTooLongException">The specified path, file name, or both exceed the system-defined maximum length. </exception>
-        public FileStream_NET(string path, FileStreamOptions options)
+        private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
         {
-            ArgumentException_NET.ThrowIfNullOrEmpty(path);
-            ArgumentNullException_NET.ThrowIfNull(options);
-            if ((options.Access & FileAccess.Read) != 0 && options.Mode == FileMode.Append)
-            {
-                throw new ArgumentException(SR.Argument_InvalidAppendMode, nameof(options));
-            }
-            else if ((options.Access & FileAccess.Write) == 0)
-            {
-                if (options.Mode == FileMode.Truncate || options.Mode == FileMode.CreateNew || options.Mode == FileMode.Create || options.Mode == FileMode.Append)
-                {
-                    throw new ArgumentException(SR.Format(SR.Argument_InvalidFileModeAndAccessCombo, options.Mode, options.Access), nameof(options));
-                }
-            }
+            FileStreamHelpers.ValidateArguments(path, mode, access, share, options, preallocationSize);
 
-            if (options.PreallocationSize > 0)
-            {
-                FileStreamHelpers.ValidateArgumentsForPreallocation(options.Mode, options.Access);
-            }
-
-            _strategy = FileStreamHelpers.ChooseStrategy(
-                this, path, options.Mode, options.Access, options.Share, options.BufferSize, options.Options, options.PreallocationSize);
-        }
-
-        private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, int bufferSize, FileOptions options, long preallocationSize)
-        {
-            FileStreamHelpers.ValidateArguments(path, mode, access, share, bufferSize, options, preallocationSize);
-
-            _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, bufferSize, options, preallocationSize);
+            _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, buffer, options, preallocationSize);
         }
 
         [Obsolete("FileStream.Handle has been deprecated. Use FileStream's AL_SafeFileHandle property instead.")]
@@ -259,7 +206,7 @@ namespace AL_Common.NETM_IO
         /// <param name="count">The maximum number of bytes to read or write.</param>
         private void ValidateReadWriteArgs(byte[] buffer, int offset, int count)
         {
-            ValidateBufferArguments(buffer, offset, count);
+            FileStreamStrategy.ValidateBufferArguments(buffer, offset, count);
             if (_strategy.IsClosed)
             {
                 ThrowHelper.ThrowObjectDisposedException_FileClosed();
