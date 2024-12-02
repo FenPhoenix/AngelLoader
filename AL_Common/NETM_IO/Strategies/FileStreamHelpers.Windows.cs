@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -54,6 +55,10 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal static void ThrowInvalidArgument(AL_SafeFileHandle handle) =>
             throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, handle.Path);
+
+        // @FileStreamNET: Handle has no path property ffs argh
+        internal static void ThrowInvalidArgument(SafeFileHandle handle) =>
+            throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, "[handle.Path]");
 
         internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
         {
