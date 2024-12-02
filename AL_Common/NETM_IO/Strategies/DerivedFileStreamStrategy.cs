@@ -52,10 +52,6 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal override bool IsClosed => _strategy.IsClosed;
 
-        internal override void Lock(long position, long length) => _strategy.Lock(position, length);
-
-        internal override void Unlock(long position, long length) => _strategy.Unlock(position, length);
-
         public override long Seek(long offset, SeekOrigin origin) => _strategy.Seek(offset, origin);
 
         public override void SetLength(long value) => _strategy.SetLength(value);

@@ -4,8 +4,6 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 using AL_Common.NETM_IO.Strategies;
 
 namespace AL_Common.NETM_IO
@@ -14,7 +12,6 @@ namespace AL_Common.NETM_IO
     {
         internal const int DefaultBufferSize = 4096;
         internal const FileShare DefaultShare = FileShare.Read;
-        private const bool DefaultIsAsync = false;
 
         private readonly FileStreamStrategy _strategy;
 
@@ -34,20 +31,6 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access, bool isAsync)
-        {
-            ValidateHandle(handle, access);
-
-            if (isAsync && !handle.IsAsync)
-            {
-                ThrowHelper.ThrowArgumentException_HandleNotAsync(nameof(handle));
-            }
-            else if (!isAsync && handle.IsAsync)
-            {
-                ThrowHelper.ThrowArgumentException_HandleNotSync(nameof(handle));
-            }
-        }
-
         public FileStream_NET(AL_SafeFileHandle handle, FileAccess access)
             : this(handle, access, new byte[DefaultBufferSize])
         {
@@ -57,38 +40,26 @@ namespace AL_Common.NETM_IO
         {
             ValidateHandle(handle, access);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer, handle.IsAsync);
-        }
-
-        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer, bool isAsync)
-        {
-            ValidateHandle(handle, access, isAsync);
-
-            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer, isAsync);
+            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer);
         }
 
         public FileStream_NET(string path, FileMode mode)
-            : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, new byte[DefaultBufferSize], DefaultIsAsync)
+            : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, new byte[DefaultBufferSize])
         {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access)
-            : this(path, mode, access, DefaultShare, new byte[DefaultBufferSize], DefaultIsAsync)
+            : this(path, mode, access, DefaultShare, new byte[DefaultBufferSize])
         {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share)
-            : this(path, mode, access, share, new byte[DefaultBufferSize], DefaultIsAsync)
+            : this(path, mode, access, share, new byte[DefaultBufferSize])
         {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
-            : this(path, mode, access, share, buffer, DefaultIsAsync)
-        {
-        }
-
-        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, bool useAsync)
-            : this(path, mode, access, share, buffer, useAsync ? FileOptions.Asynchronous : FileOptions.None)
+            : this(path, mode, access, share, buffer,FileOptions.None)
         {
         }
 
@@ -110,51 +81,6 @@ namespace AL_Common.NETM_IO
             FileStreamHelpers.ValidateArguments(path, mode, access, share, options, preallocationSize);
 
             _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, buffer, options, preallocationSize);
-        }
-
-        [Obsolete("FileStream.Handle has been deprecated. Use FileStream's AL_SafeFileHandle property instead.")]
-        public virtual IntPtr Handle => _strategy.Handle;
-
-        public virtual void Lock(long position, long length)
-        {
-            if (position < 0 || length < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(position < 0 ? nameof(position) : nameof(length));
-            }
-            else if (_strategy.IsClosed)
-            {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
-            }
-
-            _strategy.Lock(position, length);
-        }
-
-        public virtual void Unlock(long position, long length)
-        {
-            if (position < 0 || length < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(position < 0 ? nameof(position) : nameof(length));
-            }
-            else if (_strategy.IsClosed)
-            {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
-            }
-
-            _strategy.Unlock(position, length);
-        }
-
-        public override Task FlushAsync(CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCanceled(cancellationToken);
-            }
-            else if (_strategy.IsClosed)
-            {
-                ThrowHelper.ThrowObjectDisposedException_FileClosed();
-            }
-
-            return _strategy.FlushAsync(cancellationToken);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -242,9 +168,6 @@ namespace AL_Common.NETM_IO
         /// <summary>Gets the path that was passed to the constructor.</summary>
         public virtual string Name => _strategy.Name;
 
-        /// <summary>Gets a value indicating whether the stream was opened for I/O to be performed synchronously or asynchronously.</summary>
-        public virtual bool IsAsync => _strategy.IsAsync;
-
         /// <summary>Gets the length of the stream in bytes.</summary>
         public override long Length
         {
@@ -321,13 +244,6 @@ namespace AL_Common.NETM_IO
         //{
         //    ValidateCopyToArguments(destination, bufferSize);
         //    _strategy.CopyTo(destination, bufferSize);
-        //}
-
-        // @FileStreamNET:
-        //public override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-        //{
-        //    ValidateCopyToArguments(destination, bufferSize);
-        //    return _strategy.CopyToAsync(destination, bufferSize, cancellationToken);
         //}
 
 #if false

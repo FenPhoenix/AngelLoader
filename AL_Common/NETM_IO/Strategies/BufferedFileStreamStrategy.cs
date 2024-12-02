@@ -442,10 +442,6 @@ namespace AL_Common.NETM_IO.Strategies
             return newPos;
         }
 
-        internal override void Lock(long position, long length) => _strategy.Lock(position, length);
-
-        internal override void Unlock(long position, long length) => _strategy.Unlock(position, length);
-
         // Reading is done in blocks, but someone could read 1 byte from the buffer then write.
         // At that point, the underlying stream's pointer is out of sync with this stream's position.
         // All write functions should call this function to ensure that the buffered data is not lost.

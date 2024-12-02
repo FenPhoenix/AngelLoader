@@ -50,10 +50,6 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal abstract bool IsClosed { get; }
 
-        internal abstract void Lock(long position, long length);
-
-        internal abstract void Unlock(long position, long length);
-
         internal abstract void Flush(bool flushToDisk);
 
         internal void DisposeInternal(bool disposing) => Dispose(disposing);

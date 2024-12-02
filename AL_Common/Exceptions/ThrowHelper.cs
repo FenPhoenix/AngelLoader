@@ -88,6 +88,16 @@ public static class ThrowHelper
         throw GetArgumentOutOfRangeException(argument, paramNumber, resource);
     }
 
+    private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument_NET argument, int paramNumber, ExceptionResource_NET resource)
+    {
+        return new ArgumentOutOfRangeException(GetArgumentName(argument) + "[" + paramNumber.ToString() + "]", GetResourceString(resource));
+    }
+
+    private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument_NET argument, ExceptionResource_NET resource)
+    {
+        return new ArgumentOutOfRangeException(GetArgumentName(argument), GetResourceString(resource));
+    }
+
     [DoesNotReturn]
     internal static void ThrowNotSupportedException_UnseekableStream()
     {
@@ -120,6 +130,11 @@ public static class ThrowHelper
     internal static void ThrowInvalidOperationException(ExceptionResource_NET resource)
     {
         throw GetInvalidOperationException(resource);
+    }
+
+    private static InvalidOperationException GetInvalidOperationException(ExceptionResource_NET resource)
+    {
+        return new InvalidOperationException(GetResourceString(resource));
     }
 
     [DoesNotReturn]
@@ -333,6 +348,176 @@ public static class ThrowHelper
                 return "set";
             default:
                 Debug.Fail("The enum value is not defined, please check the ExceptionArgument_NET Enum.");
+                return "";
+        }
+    }
+
+    private static string GetResourceString(ExceptionResource_NET resource)
+    {
+        switch (resource)
+        {
+            case ExceptionResource_NET.ArgumentOutOfRange_IndexMustBeLessOrEqual:
+                return SR.ArgumentOutOfRange_IndexMustBeLessOrEqual;
+            case ExceptionResource_NET.ArgumentOutOfRange_IndexMustBeLess:
+                return SR.ArgumentOutOfRange_IndexMustBeLess;
+            case ExceptionResource_NET.ArgumentOutOfRange_IndexCount:
+                return SR.ArgumentOutOfRange_IndexCount;
+            case ExceptionResource_NET.ArgumentOutOfRange_IndexCountBuffer:
+                return SR.ArgumentOutOfRange_IndexCountBuffer;
+            case ExceptionResource_NET.ArgumentOutOfRange_Count:
+                return SR.ArgumentOutOfRange_Count;
+            case ExceptionResource_NET.ArgumentOutOfRange_Year:
+                return SR.ArgumentOutOfRange_Year;
+            case ExceptionResource_NET.Arg_ArrayPlusOffTooSmall:
+                return SR.Arg_ArrayPlusOffTooSmall;
+            case ExceptionResource_NET.Arg_ByteArrayTooSmallForValue:
+                return SR.Arg_ByteArrayTooSmallForValue;
+            case ExceptionResource_NET.NotSupported_ReadOnlyCollection:
+                return SR.NotSupported_ReadOnlyCollection;
+            case ExceptionResource_NET.Arg_RankMultiDimNotSupported:
+                return SR.Arg_RankMultiDimNotSupported;
+            case ExceptionResource_NET.Arg_NonZeroLowerBound:
+                return SR.Arg_NonZeroLowerBound;
+            case ExceptionResource_NET.ArgumentOutOfRange_GetCharCountOverflow:
+                return SR.ArgumentOutOfRange_GetCharCountOverflow;
+            case ExceptionResource_NET.ArgumentOutOfRange_ListInsert:
+                return SR.ArgumentOutOfRange_ListInsert;
+            case ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum:
+                return SR.ArgumentOutOfRange_NeedNonNegNum;
+            case ExceptionResource_NET.ArgumentOutOfRange_SmallCapacity:
+                return SR.ArgumentOutOfRange_SmallCapacity;
+            case ExceptionResource_NET.Argument_InvalidOffLen:
+                return SR.Argument_InvalidOffLen;
+            case ExceptionResource_NET.Argument_CannotExtractScalar:
+                return SR.Argument_CannotExtractScalar;
+            case ExceptionResource_NET.ArgumentOutOfRange_BiggerThanCollection:
+                return SR.ArgumentOutOfRange_BiggerThanCollection;
+            case ExceptionResource_NET.Serialization_MissingKeys:
+                return SR.Serialization_MissingKeys;
+            case ExceptionResource_NET.Serialization_NullKey:
+                return SR.Serialization_NullKey;
+            case ExceptionResource_NET.NotSupported_KeyCollectionSet:
+                return SR.NotSupported_KeyCollectionSet;
+            case ExceptionResource_NET.NotSupported_ValueCollectionSet:
+                return SR.NotSupported_ValueCollectionSet;
+            case ExceptionResource_NET.InvalidOperation_NullArray:
+                return SR.InvalidOperation_NullArray;
+            case ExceptionResource_NET.TaskT_TransitionToFinal_AlreadyCompleted:
+                return SR.TaskT_TransitionToFinal_AlreadyCompleted;
+            case ExceptionResource_NET.TaskCompletionSourceT_TrySetException_NullException:
+                return SR.TaskCompletionSourceT_TrySetException_NullException;
+            case ExceptionResource_NET.TaskCompletionSourceT_TrySetException_NoExceptions:
+                return SR.TaskCompletionSourceT_TrySetException_NoExceptions;
+            case ExceptionResource_NET.NotSupported_StringComparison:
+                return SR.NotSupported_StringComparison;
+            case ExceptionResource_NET.ConcurrentCollection_SyncRoot_NotSupported:
+                return SR.ConcurrentCollection_SyncRoot_NotSupported;
+            case ExceptionResource_NET.Task_MultiTaskContinuation_NullTask:
+                return SR.Task_MultiTaskContinuation_NullTask;
+            case ExceptionResource_NET.InvalidOperation_WrongAsyncResultOrEndCalledMultiple:
+                return SR.InvalidOperation_WrongAsyncResultOrEndCalledMultiple;
+            case ExceptionResource_NET.Task_MultiTaskContinuation_EmptyTaskList:
+                return SR.Task_MultiTaskContinuation_EmptyTaskList;
+            case ExceptionResource_NET.Task_Start_TaskCompleted:
+                return SR.Task_Start_TaskCompleted;
+            case ExceptionResource_NET.Task_Start_Promise:
+                return SR.Task_Start_Promise;
+            case ExceptionResource_NET.Task_Start_ContinuationTask:
+                return SR.Task_Start_ContinuationTask;
+            case ExceptionResource_NET.Task_Start_AlreadyStarted:
+                return SR.Task_Start_AlreadyStarted;
+            case ExceptionResource_NET.Task_RunSynchronously_Continuation:
+                return SR.Task_RunSynchronously_Continuation;
+            case ExceptionResource_NET.Task_RunSynchronously_Promise:
+                return SR.Task_RunSynchronously_Promise;
+            case ExceptionResource_NET.Task_RunSynchronously_TaskCompleted:
+                return SR.Task_RunSynchronously_TaskCompleted;
+            case ExceptionResource_NET.Task_RunSynchronously_AlreadyStarted:
+                return SR.Task_RunSynchronously_AlreadyStarted;
+            case ExceptionResource_NET.AsyncMethodBuilder_InstanceNotInitialized:
+                return SR.AsyncMethodBuilder_InstanceNotInitialized;
+            case ExceptionResource_NET.Task_ContinueWith_ESandLR:
+                return SR.Task_ContinueWith_ESandLR;
+            case ExceptionResource_NET.Task_ContinueWith_NotOnAnything:
+                return SR.Task_ContinueWith_NotOnAnything;
+            case ExceptionResource_NET.Task_InvalidTimerTimeSpan:
+                return SR.Task_InvalidTimerTimeSpan;
+            case ExceptionResource_NET.Task_Delay_InvalidMillisecondsDelay:
+                return SR.Task_Delay_InvalidMillisecondsDelay;
+            case ExceptionResource_NET.Task_Dispose_NotCompleted:
+                return SR.Task_Dispose_NotCompleted;
+            case ExceptionResource_NET.Task_ThrowIfDisposed:
+                return SR.Task_ThrowIfDisposed;
+            case ExceptionResource_NET.Task_WaitMulti_NullTask:
+                return SR.Task_WaitMulti_NullTask;
+            case ExceptionResource_NET.ArgumentException_OtherNotArrayOfCorrectLength:
+                return SR.ArgumentException_OtherNotArrayOfCorrectLength;
+            case ExceptionResource_NET.ArgumentNull_Array:
+                return SR.ArgumentNull_Array;
+            case ExceptionResource_NET.ArgumentNull_SafeHandle:
+                return SR.ArgumentNull_SafeHandle;
+            case ExceptionResource_NET.ArgumentOutOfRange_EndIndexStartIndex:
+                return SR.ArgumentOutOfRange_EndIndexStartIndex;
+            case ExceptionResource_NET.ArgumentOutOfRange_Enum:
+                return SR.ArgumentOutOfRange_Enum;
+            case ExceptionResource_NET.ArgumentOutOfRange_HugeArrayNotSupported:
+                return SR.ArgumentOutOfRange_HugeArrayNotSupported;
+            case ExceptionResource_NET.Argument_AddingDuplicate:
+                return SR.Argument_AddingDuplicate;
+            case ExceptionResource_NET.Argument_InvalidArgumentForComparison:
+                return SR.Argument_InvalidArgumentForComparison;
+            case ExceptionResource_NET.Arg_LowerBoundsMustMatch:
+                return SR.Arg_LowerBoundsMustMatch;
+            case ExceptionResource_NET.Arg_MustBeType:
+                return SR.Arg_MustBeType;
+            case ExceptionResource_NET.Arg_Need1DArray:
+                return SR.Arg_Need1DArray;
+            case ExceptionResource_NET.Arg_Need2DArray:
+                return SR.Arg_Need2DArray;
+            case ExceptionResource_NET.Arg_Need3DArray:
+                return SR.Arg_Need3DArray;
+            case ExceptionResource_NET.Arg_NeedAtLeast1Rank:
+                return SR.Arg_NeedAtLeast1Rank;
+            case ExceptionResource_NET.Arg_RankIndices:
+                return SR.Arg_RankIndices;
+            case ExceptionResource_NET.Arg_RanksAndBounds:
+                return SR.Arg_RanksAndBounds;
+            case ExceptionResource_NET.InvalidOperation_IComparerFailed:
+                return SR.InvalidOperation_IComparerFailed;
+            case ExceptionResource_NET.NotSupported_FixedSizeCollection:
+                return SR.NotSupported_FixedSizeCollection;
+            case ExceptionResource_NET.Rank_MultiDimNotSupported:
+                return SR.Rank_MultiDimNotSupported;
+            case ExceptionResource_NET.Arg_TypeNotSupported:
+                return SR.Arg_TypeNotSupported;
+            case ExceptionResource_NET.Argument_SpansMustHaveSameLength:
+                return SR.Argument_SpansMustHaveSameLength;
+            case ExceptionResource_NET.Argument_InvalidFlag:
+                return SR.Argument_InvalidFlag;
+            case ExceptionResource_NET.CancellationTokenSource_Disposed:
+                return SR.CancellationTokenSource_Disposed;
+            case ExceptionResource_NET.Argument_AlignmentMustBePow2:
+                return SR.Argument_AlignmentMustBePow2;
+            case ExceptionResource_NET.ArgumentOutOfRange_NotGreaterThanBufferLength:
+                return SR.ArgumentOutOfRange_NotGreaterThanBufferLength;
+            case ExceptionResource_NET.InvalidOperation_SpanOverlappedOperation:
+                return SR.InvalidOperation_SpanOverlappedOperation;
+            case ExceptionResource_NET.InvalidOperation_TimeProviderNullLocalTimeZone:
+                return SR.InvalidOperation_TimeProviderNullLocalTimeZone;
+            case ExceptionResource_NET.InvalidOperation_TimeProviderInvalidTimestampFrequency:
+                return SR.InvalidOperation_TimeProviderInvalidTimestampFrequency;
+            case ExceptionResource_NET.Format_UnexpectedClosingBrace:
+                return SR.Format_UnexpectedClosingBrace;
+            case ExceptionResource_NET.Format_UnclosedFormatItem:
+                return SR.Format_UnclosedFormatItem;
+            case ExceptionResource_NET.Format_ExpectedAsciiDigit:
+                return SR.Format_ExpectedAsciiDigit;
+            case ExceptionResource_NET.Argument_HasToBeArrayClass:
+                return SR.Argument_HasToBeArrayClass;
+            case ExceptionResource_NET.InvalidOperation_IncompatibleComparer:
+                return SR.InvalidOperation_IncompatibleComparer;
+            default:
+                Debug.Fail("The enum value is not defined, please check the ExceptionResource Enum.");
                 return "";
         }
     }

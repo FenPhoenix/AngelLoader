@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace AL_Common.NETM_IO.Strategies
 {
@@ -65,8 +64,6 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal override bool IsAsync => _fileHandle.IsAsync;
-
         public sealed override bool CanSeek => _fileHandle.CanSeek;
 
         public sealed override bool CanRead => !_fileHandle.IsClosed && (_access & FileAccess.Read) != 0;
@@ -118,8 +115,6 @@ namespace AL_Common.NETM_IO.Strategies
 
         public sealed override void Flush() { }  // no buffering = nothing to flush
 
-        public sealed override Task FlushAsync(CancellationToken cancellationToken) => Task.CompletedTask; // no buffering = nothing to flush
-
         internal sealed override void Flush(bool flushToDisk)
         {
             if (flushToDisk && CanWrite)
@@ -158,10 +153,6 @@ namespace AL_Common.NETM_IO.Strategies
             return pos;
         }
 
-        internal sealed override void Lock(long position, long length) => FileStreamHelpers.Lock(_fileHandle, CanWrite, position, length);
-
-        internal sealed override void Unlock(long position, long length) => FileStreamHelpers.Unlock(_fileHandle, position, length);
-
         public sealed override void SetLength(long value)
         {
             if (_appendStart != -1 && value < _appendStart)
@@ -192,7 +183,7 @@ namespace AL_Common.NETM_IO.Strategies
         public sealed override int Read(byte[] buffer, int offset, int count) =>
             Read(new Span<byte>(buffer, offset, count));
 
-        public sealed override int Read(Span<byte> buffer)
+        public int Read(Span<byte> buffer)
         {
             if (_fileHandle.IsClosed)
             {
@@ -216,7 +207,7 @@ namespace AL_Common.NETM_IO.Strategies
         public override void Write(byte[] buffer, int offset, int count) =>
             Write(new ReadOnlySpan<byte>(buffer, offset, count));
 
-        public sealed override void Write(ReadOnlySpan<byte> buffer)
+        public void Write(ReadOnlySpan<byte> buffer)
         {
             if (_fileHandle.IsClosed)
             {
