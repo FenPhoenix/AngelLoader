@@ -10,15 +10,6 @@ using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
 namespace AL_Common.FastZipReader;
 
-/*
-Fen's note(@NET5 vs. Framework file I/O perf hack):
-Wherever possible, we read instead of calling Seek or setting Position, because in Framework, that causes an
-expensive system call to SetFilePointer(), whereas in .NET 6+ they reworked it to not have to do that.
-Note that all the SetFilePointer() calls are in aggregate VERY expensive, so much so that reads are hugely
-faster even with their overhead. But if we are ever able to move to .NET 6+, we should change all dummy reads
-back to seeks.
-*/
-
 // All blocks.TryReadBlock do a check to see if signature is correct. Generic extra field is slightly different
 // all of the TryReadBlocks will throw if there are not enough bytes in the stream
 
@@ -241,9 +232,9 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
             return false;
         }
 
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // NumberOfDiskWithZip64EOCD
+        stream.Position += ByteLengths.Int32; // NumberOfDiskWithZip64EOCD
         ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // TotalNumberOfDisks
+        stream.Position += ByteLengths.Int32; // TotalNumberOfDisks
 
         zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator(offsetOfZip64EOCD: offsetOfZip64EOCD);
 
@@ -284,14 +275,15 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
             return false;
         }
 
-        BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer); // SizeOfThisRecord
-        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionMadeBy
-        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionNeededToExtract
+        stream.Position +=
+            ByteLengths.Int64 + // SizeOfThisRecord
+            ByteLengths.Int16 + // VersionMadeBy
+            ByteLengths.Int16;  // VersionNeededToExtract
         uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // NumberOfDiskWithStartOfCD
+        stream.Position += ByteLengths.Int32; // NumberOfDiskWithStartOfCD
         ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
         ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer); // SizeOfCentralDirectory
+        stream.Position += ByteLengths.Int64; // SizeOfCentralDirectory
         ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
 
         zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord(
@@ -384,21 +376,22 @@ public readonly ref struct ZipCentralDirectoryFileHeader
             return false;
         }
 
-        BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeBySpecification
-        BinaryRead.ReadByte(stream, context.BinaryReadBuffer); // VersionMadeByCompatibility
-        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // VersionNeededToExtract
+        stream.Position +=
+            ByteLengths.Byte +  // VersionMadeBySpecification
+            ByteLengths.Byte +  // VersionMadeByCompatibility
+            ByteLengths.Int16;  // VersionNeededToExtract
         ushort generalPurposeBitFlag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // Crc32
+        stream.Position += ByteLengths.Int32; // Crc32
         uint compressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
         uint uncompressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
         ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort fileCommentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort diskNumberStartSmall = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer); // InternalFileAttributes
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // ExternalFileAttributes
+        stream.Position += ByteLengths.Int16; // InternalFileAttributes
+        stream.Position += ByteLengths.Int32; // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
         stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
@@ -424,7 +417,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
         // stream's position to the proper place.
 
-        stream.AdvanceToPosition(endExtraFields + fileCommentLength, context);
+        stream.Position = endExtraFields + fileCommentLength;
 
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;
@@ -488,7 +481,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
         ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer); // SizeOfCentralDirectory
+        stream.Position += ByteLengths.Int32; // SizeOfCentralDirectory
         uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
         ushort commentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);

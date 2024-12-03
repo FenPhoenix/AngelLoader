@@ -37,6 +37,14 @@ public static partial class Common
         public const int GB = MB * 1024;
     }
 
+    public static class ByteLengths
+    {
+        public const int Byte = 1;
+        public const int Int16 = 2;
+        public const int Int32 = 4;
+        public const int Int64 = 8;
+    }
+
     /// <summary>
     /// Stores a filename/index pair for quick lookups into a zip file.
     /// </summary>
