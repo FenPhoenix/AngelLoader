@@ -10,7 +10,7 @@ namespace AL_Common.NETM_IO
 {
     public class FileStream_NET : Stream
     {
-        private readonly FileStreamStrategy _strategy;
+        private readonly BufferedFileStreamStrategy _strategy;
 
         private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access)
         {
@@ -109,7 +109,7 @@ namespace AL_Common.NETM_IO
         /// <param name="count">The maximum number of bytes to read or write.</param>
         private void ValidateReadWriteArgs(byte[] buffer, int offset, int count)
         {
-            FileStreamStrategy.ValidateBufferArguments(buffer, offset, count);
+            BufferedFileStreamStrategy.ValidateBufferArguments(buffer, offset, count);
             if (_strategy.IsClosed)
             {
                 ThrowHelper.ThrowObjectDisposedException_FileClosed();
@@ -213,7 +213,7 @@ namespace AL_Common.NETM_IO
         public override void WriteByte(byte value) => _strategy.WriteByte(value);
 
         // _strategy can be null only when ctor has thrown
-        protected override void Dispose(bool disposing) => _strategy?.DisposeInternal(disposing);
+        protected override void Dispose(bool disposing) => _strategy.Dispose(disposing);
 
         // @FileStreamNET: This can't be overridden in Framework... Either it has to be removed, or new'd in which
         //  case it wouldn't be hit if the thing was passed as a less-derived type. Ugh.
