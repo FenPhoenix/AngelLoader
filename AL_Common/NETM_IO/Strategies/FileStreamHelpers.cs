@@ -18,7 +18,7 @@ namespace AL_Common.NETM_IO.Strategies
             FileStreamStrategy strategy =
                 EnableBufferingIfNeeded(ChooseStrategyCore(handle, access), buffer);
 
-            return WrapIfDerivedType(fileStream, strategy);
+            return strategy;
         }
 
         internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
@@ -26,16 +26,11 @@ namespace AL_Common.NETM_IO.Strategies
             FileStreamStrategy strategy =
                 EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize), buffer);
 
-            return WrapIfDerivedType(fileStream, strategy);
+            return strategy;
         }
 
         private static FileStreamStrategy EnableBufferingIfNeeded(FileStreamStrategy strategy, byte[] buffer)
             => buffer.Length > 1 ? new BufferedFileStreamStrategy(strategy, buffer) : strategy;
-
-        private static FileStreamStrategy WrapIfDerivedType(FileStream_NET fileStream, FileStreamStrategy strategy)
-            => fileStream.GetType() == typeof(FileStream_NET)
-                ? strategy
-                : new DerivedFileStreamStrategy(fileStream, strategy);
 
         internal static bool IsIoRelatedException(Exception e) =>
             // These all derive from IOException
