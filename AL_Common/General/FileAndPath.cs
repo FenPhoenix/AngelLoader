@@ -65,12 +65,12 @@ public static partial class Common
 
     public static FileStreamFast File_OpenReadFast(string path)
     {
-        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false);
+        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
     }
 
     public static FileStreamFast File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false, bufferSize);
+        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
     }
 
     #endregion

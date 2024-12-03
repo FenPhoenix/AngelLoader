@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using AL_Common.NETM_IO;
 
 namespace AL_Common;
@@ -14,120 +13,29 @@ public static partial class Common
     /// <summary>
     /// A file stream with performance/allocation improvements.
     /// </summary>
-    public sealed class FileStreamFast : FileStream
+    public sealed class FileStreamFast : FileStream_NET
     {
-        private static bool _fileStreamBufferFieldFound;
-        private static FieldInfo? _fileStreamBufferFieldInfo;
-
-        private readonly bool _writeMode;
-        private long _length = -1;
-        public override long Length
-        {
-            get
-            {
-                if (_writeMode)
-                {
-                    return base.Length;
-                }
-                else
-                {
-                    if (_length == -1)
-                    {
-                        _length = base.Length;
-                    }
-                    return _length;
-                }
-            }
-        }
-
-        // Init reflection stuff in static ctor for thread safety
-        static FileStreamFast()
-        {
-            try
-            {
-                // @NET5(FileStream buffering): Newer .NETs (since the FileStream "strategy" additions) are totally different
-                // We'd have to see if they added a way to pass in a buffer, and if not, we'd have to write totally
-                // different code to get at the buffer here for newer .NETs.
-                // typeof(FileStream) (base type) because that's the type where the buffer field is
-                _fileStreamBufferFieldInfo = typeof(FileStream)
-                    .GetField(
-                        "_buffer",
-                        BindingFlags.NonPublic | BindingFlags.Instance);
-
-                _fileStreamBufferFieldFound =
-                    _fileStreamBufferFieldInfo != null &&
-                    _fileStreamBufferFieldInfo.FieldType == typeof(byte[]);
-            }
-            catch
-            {
-                _fileStreamBufferFieldFound = false;
-                _fileStreamBufferFieldInfo = null;
-            }
-        }
-
         public FileStreamFast(
             string path,
             FileMode mode,
             FileAccess access,
             FileShare share,
-            bool writeMode,
-            int bufferSize)
-            : base(path, mode, access, share, bufferSize)
+            byte[] buffer)
+            : base(path, mode, access, share, buffer)
         {
-            _writeMode = writeMode;
-        }
-
-        public FileStreamFast(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share,
-            bool writeMode)
-            : base(path, mode, access, share)
-        {
-            _writeMode = writeMode;
         }
 
         public static FileStreamFast CreateRead(string path, byte[] buffer)
         {
-            FileStreamFast fs =
-                _fileStreamBufferFieldFound
-                    ? new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false, buffer.Length)
-                    : new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, writeMode: false);
-
-            SetBuffer(fs, buffer);
-
+            FileStreamFast fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer);
             return fs;
         }
 
         public static FileStreamFast CreateWrite(string path, bool overwrite, byte[] buffer)
         {
             FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-
-            FileStreamFast fs =
-                _fileStreamBufferFieldFound
-                    ? new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true, buffer.Length)
-                    : new FileStreamFast(path, mode, FileAccess.Write, FileShare.Read, writeMode: true);
-
-            SetBuffer(fs, buffer);
-
+            FileStreamFast fs = new(path, mode, FileAccess.Write, FileShare.Read, buffer);
             return fs;
-        }
-
-        private static void SetBuffer(FileStreamFast fs, byte[] buffer)
-        {
-            if (_fileStreamBufferFieldFound)
-            {
-                try
-                {
-                    _fileStreamBufferFieldInfo?.SetValue(fs, buffer);
-                }
-                catch
-                {
-                    _fileStreamBufferFieldFound = false;
-                    _fileStreamBufferFieldInfo = null;
-                }
-            }
         }
     }
 

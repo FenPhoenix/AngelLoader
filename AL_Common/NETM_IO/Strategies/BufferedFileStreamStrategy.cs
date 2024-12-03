@@ -136,7 +136,7 @@ namespace AL_Common.NETM_IO.Strategies
                     FlushWrite();
                 }
 
-                if (!_strategy.CanSeek || (destination.Length >= _bufferSize))
+                if (!_strategy.CanSeek || (destLength >= _bufferSize))
                 {
                     // For async file stream strategies the call to Read(Span) is translated to Stream.Read(Span),
                     // which rents an array from the pool, copies the data, and then calls Read(Array). This is expensive!
@@ -162,9 +162,9 @@ namespace AL_Common.NETM_IO.Strategies
                 _readLen = n;
             }
             // Now copy min of count or numBytesAvailable (i.e. near EOF) to array.
-            if (n > destination.Length)
+            if (n > destLength)
             {
-                n = destination.Length;
+                n = destLength;
             }
             new ReadOnlySpan<byte>(_buffer, _readPos, n).CopyTo(destination);
             _readPos += n;
@@ -186,7 +186,7 @@ namespace AL_Common.NETM_IO.Strategies
                 // read some more from the underlying stream.  However, if we got
                 // fewer bytes from the underlying stream than we asked for (i.e. we're
                 // probably blocked), don't ask for more bytes.
-                if (n < destination.Length && !isBlocked)
+                if (n < destLength && !isBlocked)
                 {
                     Debug.Assert(_readPos == _readLen, "Read buffer should be empty!");
 

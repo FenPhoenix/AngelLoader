@@ -10,9 +10,6 @@ namespace AL_Common.NETM_IO
 {
     public class FileStream_NET : Stream
     {
-        internal const int DefaultBufferSize = 4096;
-        internal const FileShare DefaultShare = FileShare.Read;
-
         private readonly FileStreamStrategy _strategy;
 
         private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access)
@@ -31,31 +28,11 @@ namespace AL_Common.NETM_IO
             }
         }
 
-        public FileStream_NET(AL_SafeFileHandle handle, FileAccess access)
-            : this(handle, access, new byte[DefaultBufferSize])
-        {
-        }
-
         public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
         {
             ValidateHandle(handle, access);
 
             _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer);
-        }
-
-        public FileStream_NET(string path, FileMode mode)
-            : this(path, mode, mode == FileMode.Append ? FileAccess.Write : FileAccess.ReadWrite, DefaultShare, new byte[DefaultBufferSize])
-        {
-        }
-
-        public FileStream_NET(string path, FileMode mode, FileAccess access)
-            : this(path, mode, access, DefaultShare, new byte[DefaultBufferSize])
-        {
-        }
-
-        public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share)
-            : this(path, mode, access, share, new byte[DefaultBufferSize])
-        {
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
