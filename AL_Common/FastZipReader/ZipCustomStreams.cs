@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using AL_Common.NETM_IO;
 using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
@@ -14,9 +15,9 @@ internal sealed class SubReadStream : Stream
     private long _startInSuperStream;
     private long _positionInSuperStream;
     private long _endInSuperStream;
-    private FileStreamFast _superStream = null!;
+    private FileStream_NET _superStream = null!;
 
-    internal void SetSuperStream(FileStreamFast? stream) => _superStream = stream!;
+    internal void SetSuperStream(FileStream_NET? stream) => _superStream = stream!;
 
     internal void Set(long startPosition, long maxLength)
     {

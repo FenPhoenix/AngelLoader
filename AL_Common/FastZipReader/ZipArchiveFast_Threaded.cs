@@ -5,6 +5,7 @@
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
 using System.IO;
+using AL_Common.NETM_IO;
 using static AL_Common.Common;
 using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
@@ -36,7 +37,7 @@ public static class ZipArchiveFast_Threaded
         ZipContext_Threaded context,
         byte[] fileStreamWriteBuffer)
     {
-        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamWriteBuffer))
+        using (FileStream_NET destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamWriteBuffer))
         using (Stream source = OpenEntry(entry, context))
         {
             StreamCopyNoAlloc(source, destination, context.TempBuffer);

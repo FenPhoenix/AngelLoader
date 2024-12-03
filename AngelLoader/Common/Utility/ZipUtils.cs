@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using AL_Common;
 using AL_Common.FastZipReader;
+using AL_Common.NETM_IO;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
 using static AL_Common.Common;
@@ -18,7 +19,7 @@ public static partial class Utils
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
-        return new ZipArchive(FileStreamFast.CreateRead(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
+        return new ZipArchive(GetReadModeFileStreamWithCachedBuffer(fileName, buffer), ZipArchiveMode.Read, leaveOpen: false, enc);
     }
 
     internal static ZipArchiveFast GetReadModeZipArchiveCharEnc_Fast(
@@ -29,7 +30,7 @@ public static partial class Utils
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
         return new ZipArchiveFast(
-            stream: FileStreamFast.CreateRead(fileName, buffer),
+            stream: GetReadModeFileStreamWithCachedBuffer(fileName, buffer),
             context: ctx,
             allowUnsupportedEntries: true,
             entryNameEncoding: enc);
@@ -146,7 +147,7 @@ public static partial class Utils
         byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
-            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (FileStream_NET destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
             using (Stream source = entry.Open())
             {
                 StreamCopyNoAlloc(source, destination, streamCopyBuffer);
@@ -170,7 +171,7 @@ public static partial class Utils
         byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
-            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (FileStream_NET destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
             using (Stream source = entry.OpenEntryStream())
             {
                 StreamCopyNoAlloc(source, destination, streamCopyBuffer);
@@ -197,7 +198,7 @@ public static partial class Utils
         byte[] streamCopyBuffer = ioBufferPools.StreamCopy.Rent();
         try
         {
-            using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamBuffer))
+            using (FileStream_NET destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamBuffer))
             using (Stream source = reader.OpenEntryStream())
             {
                 StreamCopyNoAlloc(source, destination, streamCopyBuffer);

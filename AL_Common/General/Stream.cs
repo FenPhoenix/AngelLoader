@@ -10,33 +10,17 @@ public static partial class Common
 {
     #region Classes
 
-    /// <summary>
-    /// A file stream with performance/allocation improvements.
-    /// </summary>
-    public sealed class FileStreamFast : FileStream_NET
+    public static FileStream_NET GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
-        public FileStreamFast(
-            string path,
-            FileMode mode,
-            FileAccess access,
-            FileShare share,
-            byte[] buffer)
-            : base(path, mode, access, share, buffer)
-        {
-        }
+        FileStream_NET fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer);
+        return fs;
+    }
 
-        public static FileStreamFast CreateRead(string path, byte[] buffer)
-        {
-            FileStreamFast fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer);
-            return fs;
-        }
-
-        public static FileStreamFast CreateWrite(string path, bool overwrite, byte[] buffer)
-        {
-            FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-            FileStreamFast fs = new(path, mode, FileAccess.Write, FileShare.Read, buffer);
-            return fs;
-        }
+    public static FileStream_NET GetWriteModeFileStreamWithCachedBuffer(string path, bool overwrite, byte[] buffer)
+    {
+        FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+        FileStream_NET fs = new(path, mode, FileAccess.Write, FileShare.Read, buffer);
+        return fs;
     }
 
     #endregion

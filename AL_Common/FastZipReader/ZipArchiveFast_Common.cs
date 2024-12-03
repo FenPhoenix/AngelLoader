@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.Deflate64Managed;
+using AL_Common.NETM_IO;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 
@@ -128,7 +129,7 @@ public readonly ref struct ZipContextRentScope
 
 public sealed class ZipContext_Threaded
 {
-    internal FileStreamFast ArchiveStream = null!;
+    internal FileStream_NET ArchiveStream = null!;
     internal long ArchiveStreamLength;
 
     internal readonly SubReadStream ArchiveSubReadStream;
@@ -139,13 +140,13 @@ public sealed class ZipContext_Threaded
 
     // Take the length explicitly so that if a stream throws on Length access it'll do it somewhere else so we
     // won't have any problems in here.
-    public ZipContext_Threaded(FileStreamFast archiveStream, long archiveStreamLength)
+    public ZipContext_Threaded(FileStream_NET archiveStream, long archiveStreamLength)
     {
         ArchiveSubReadStream = new SubReadStream();
         Set(archiveStream, archiveStreamLength);
     }
 
-    public void Set(FileStreamFast archiveStream, long archiveStreamLength)
+    public void Set(FileStream_NET archiveStream, long archiveStreamLength)
     {
         ArchiveStream = archiveStream;
         ArchiveStreamLength = archiveStreamLength;
@@ -165,7 +166,7 @@ public sealed class ZipContext_Threaded_Pool
 {
     private readonly ConcurrentBag<ZipContext_Threaded> _contexts = new();
 
-    public ZipContext_Threaded Rent(FileStreamFast archiveStream, long archiveStreamLength)
+    public ZipContext_Threaded Rent(FileStream_NET archiveStream, long archiveStreamLength)
     {
         if (_contexts.TryTake(out ZipContext_Threaded item))
         {
@@ -190,7 +191,7 @@ public readonly ref struct ZipContextThreadedRentScope
     private readonly ZipContext_Threaded_Pool _pool;
     public readonly ZipContext_Threaded Ctx;
 
-    public ZipContextThreadedRentScope(ZipContext_Threaded_Pool pool, FileStreamFast fs, long fsLength)
+    public ZipContextThreadedRentScope(ZipContext_Threaded_Pool pool, FileStream_NET fs, long fsLength)
     {
         _pool = pool;
         Ctx = pool.Rent(fs, fsLength);
@@ -210,7 +211,7 @@ internal static class ZipArchiveFast_Common
     /// <summary>
     /// Reads exactly bytesToRead out of stream, unless it is out of bytes
     /// </summary>
-    private static void ReadBytes(FileStreamFast stream, byte[] buffer, int bytesToRead)
+    private static void ReadBytes(FileStream_NET stream, byte[] buffer, int bytesToRead)
     {
         int bytesLeftToRead = bytesToRead;
 
@@ -229,7 +230,7 @@ internal static class ZipArchiveFast_Common
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
-    internal static bool SeekBackwardsToSignature(FileStreamFast stream, uint signatureToFind, ZipContext context)
+    internal static bool SeekBackwardsToSignature(FileStream_NET stream, uint signatureToFind, ZipContext context)
     {
         int bufferPointer = 0;
         uint currentSignature = 0;
@@ -284,7 +285,7 @@ internal static class ZipArchiveFast_Common
     }
 
     // Returns true if we are out of bytes
-    private static bool SeekBackwardsAndRead(FileStreamFast stream, byte[] buffer, out int bufferPointer)
+    private static bool SeekBackwardsAndRead(FileStream_NET stream, byte[] buffer, out int bufferPointer)
     {
         if (stream.Position >= buffer.Length)
         {
@@ -374,7 +375,7 @@ internal static class ZipArchiveFast_Common
 
     internal static bool IsOpenable(
         ZipArchiveFastEntry entry,
-        FileStreamFast archiveStream,
+        FileStream_NET archiveStream,
         long archiveStreamLength,
         BinaryBuffer binaryReadBuffer,
         out string message)

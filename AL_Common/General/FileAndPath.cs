@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using AL_Common.NETM_IO;
 using static System.StringComparison;
 
 namespace AL_Common;
@@ -63,14 +64,14 @@ public static partial class Common
         return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path, bufferSize), new StreamReaderCustom());
     }
 
-    public static FileStreamFast File_OpenReadFast(string path)
+    public static FileStream_NET File_OpenReadFast(string path)
     {
-        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
+        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
     }
 
-    public static FileStreamFast File_OpenReadFast(string path, int bufferSize)
+    public static FileStream_NET File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStreamFast(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
+        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
     }
 
     #endregion

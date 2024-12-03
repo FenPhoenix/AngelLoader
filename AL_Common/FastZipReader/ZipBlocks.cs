@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using AL_Common.NETM_IO;
 using static AL_Common.Common;
 using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
@@ -222,7 +223,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
     }
 
     internal static bool TryReadBlock(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         out Zip64EndOfCentralDirectoryLocator zip64EOCDLocator)
     {
@@ -265,7 +266,7 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
     }
 
     internal static bool TryReadBlock(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         out Zip64EndOfCentralDirectoryRecord zip64EOCDRecord)
     {
@@ -302,7 +303,7 @@ internal readonly ref struct ZipLocalFileHeader
     private const uint SignatureConstant = 0x04034B50;
 
     // will not throw end of stream exception
-    internal static bool TrySkipBlock(FileStreamFast stream, long streamLength, BinaryBuffer binaryReadBuffer)
+    internal static bool TrySkipBlock(FileStream_NET stream, long streamLength, BinaryBuffer binaryReadBuffer)
     {
         const int offsetToFilenameLength = 22; // from the point after the signature
 
@@ -366,7 +367,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
     // if saveExtraFieldsAndComments is false, FileComment and ExtraFields will be null
     // in either case, the zip64 extra field info will be incorporated into other fields
     internal static bool TryReadBlock(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         out ZipCentralDirectoryFileHeader header)
     {
@@ -467,7 +468,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
     }
 
     internal static bool TryReadBlock(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         out ZipEndOfCentralDirectoryBlock eocdBlock)
     {

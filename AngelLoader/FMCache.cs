@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using AL_Common;
+using AL_Common.NETM_IO;
 using AngelLoader.DataClasses;
 using SharpCompress;
 using SharpCompress.Archives.Rar;
@@ -705,7 +706,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
                 List<string> archiveNonExcludedFullFileNames = new();
-                using (FileStreamFast fs = File_OpenReadFast(fmArchivePath))
+                using (FileStream_NET fs = File_OpenReadFast(fmArchivePath))
                 {
                     SevenZipArchive extractor = new(fs);
                     entriesCount = extractor.GetEntryCountOnly();
@@ -877,7 +878,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
 
-                using (FileStreamFast fs = File_OpenReadFast(fmArchivePath))
+                using (FileStream_NET fs = File_OpenReadFast(fmArchivePath))
                 {
                     int entriesCount;
                     using (var archive = RarArchive.Open(fs))

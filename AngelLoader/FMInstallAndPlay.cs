@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AL_Common.FastZipReader;
+using AL_Common.NETM_IO;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
@@ -1376,7 +1377,7 @@ internal static partial class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using FileStreamFast fs = File_OpenReadFast(misFile);
+                    using FileStream_NET fs = File_OpenReadFast(misFile);
 
                     long streamLength = fs.Length;
 
@@ -1408,7 +1409,7 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using FileStreamFast fs = File_OpenReadFast(smallestUsedMisFile);
+                using FileStream_NET fs = File_OpenReadFast(smallestUsedMisFile);
 
                 if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.Length)
                 {
@@ -2067,7 +2068,7 @@ internal static partial class FMInstallAndPlay
         try
         {
             string fileName = Path.Combine(fmData.InstalledPath, Paths.FMSelInf);
-            using FileStreamFast fs = FileStreamFast.CreateWrite(fileName, overwrite: true, fmSelInfFileStreamBuffer);
+            using FileStream_NET fs = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite: true, fmSelInfFileStreamBuffer);
             using var sw = new StreamWriter(fs);
             sw.WriteLine("Name=" + fmData.FM.InstalledDir);
             sw.WriteLine("Archive=" + fmData.FM.Archive);
@@ -2279,7 +2280,7 @@ internal static partial class FMInstallAndPlay
 
                     try
                     {
-                        using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                        using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fmDataArchivePath, fileStreamReadBuffer);
                         using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
 
                         pd.PO.CancellationToken.ThrowIfCancellationRequested();
@@ -2329,7 +2330,7 @@ internal static partial class FMInstallAndPlay
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
                 byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
 
-                using FileStreamFast fs = FileStreamFast.CreateRead(fmDataArchivePath, fileStreamReadBuffer);
+                using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fmDataArchivePath, fileStreamReadBuffer);
                 using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
 
                 _installCts.Token.ThrowIfCancellationRequested();

@@ -8,6 +8,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using AL_Common.NETM_IO;
 using JetBrains.Annotations;
 using static AL_Common.Common;
 using static AL_Common.FastZipReader.ZipArchiveFast_Common;
@@ -22,7 +23,7 @@ public sealed class ZipArchiveFast : IDisposable
     private bool _isDisposed;
     private long _expectedNumberOfEntries;
 
-    private readonly FileStreamFast _archiveStream;
+    private readonly FileStream_NET _archiveStream;
     public readonly long ArchiveStreamLength;
 
     // invalid until ReadCentralDirectory
@@ -72,7 +73,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
     /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
     public ZipArchiveFast(
-        FileStreamFast stream,
+        FileStream_NET stream,
         bool allowUnsupportedEntries,
         Encoding entryNameEncoding) :
         this(
@@ -103,7 +104,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
     [PublicAPI]
     public ZipArchiveFast(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         bool allowUnsupportedEntries,
         Encoding entryNameEncoding) :
@@ -130,7 +131,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// entries with unsupported compression methods are found.
     /// </param>
     public ZipArchiveFast(
-        FileStreamFast stream,
+        FileStream_NET stream,
         bool allowUnsupportedEntries) :
         this(
             stream: stream,
@@ -157,7 +158,7 @@ public sealed class ZipArchiveFast : IDisposable
     /// </param>
     [PublicAPI]
     public ZipArchiveFast(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         bool allowUnsupportedEntries) :
         this(
@@ -171,7 +172,7 @@ public sealed class ZipArchiveFast : IDisposable
 
     [PublicAPI]
     private ZipArchiveFast(
-        FileStreamFast stream,
+        FileStream_NET stream,
         ZipContext context,
         bool allowUnsupportedEntries,
         Encoding? entryNameEncoding,
@@ -260,7 +261,7 @@ public sealed class ZipArchiveFast : IDisposable
         byte[] buffer = bufferPool.Rent();
         try
         {
-            using FileStreamFast fs = FileStreamFast.CreateRead(fileName, buffer);
+            using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fileName, buffer);
             using ZipArchiveFast archive = new(
                 stream: fs,
                 context: zipCtx,
@@ -467,7 +468,7 @@ public sealed class ZipArchiveFast : IDisposable
         byte[] fileStreamWriteBuffer,
         byte[] streamCopyBuffer)
     {
-        using (FileStreamFast destination = FileStreamFast.CreateWrite(fileName, overwrite, fileStreamWriteBuffer))
+        using (FileStream_NET destination = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite, fileStreamWriteBuffer))
         using (Stream source = OpenEntry(entry))
         {
             StreamCopyNoAlloc(source, destination, streamCopyBuffer);
