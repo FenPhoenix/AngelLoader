@@ -9,7 +9,7 @@ using System.Threading;
 namespace AL_Common.NETM_IO.Strategies
 {
     // this type serves some basic functionality that is common for native OS File Stream Strategies
-    internal abstract class OSFileStreamStrategy : FileStreamStrategy
+    internal class OSFileStreamStrategy : FileStreamStrategy
     {
         protected readonly AL_SafeFileHandle _fileHandle; // only ever null if ctor throws
         private readonly FileAccess _access; // What file was opened for.

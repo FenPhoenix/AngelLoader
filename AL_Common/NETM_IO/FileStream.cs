@@ -32,7 +32,7 @@ namespace AL_Common.NETM_IO
         {
             ValidateHandle(handle, access);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, handle, access, buffer);
+            _strategy = FileStreamHelpers.ChooseStrategy(handle, access, buffer);
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
@@ -57,7 +57,7 @@ namespace AL_Common.NETM_IO
         {
             FileStreamHelpers.ValidateArguments(path, mode, access, share, options, preallocationSize);
 
-            _strategy = FileStreamHelpers.ChooseStrategy(this, path, mode, access, share, buffer, options, preallocationSize);
+            _strategy = FileStreamHelpers.ChooseStrategy(path, mode, access, share, buffer, options, preallocationSize);
         }
 
         public override int Read(byte[] buffer, int offset, int count)

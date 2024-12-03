@@ -38,8 +38,6 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal bool IsDerived { get; init; }
-
         internal abstract string Name { get; }
 
         internal abstract AL_SafeFileHandle AL_SafeFileHandle { get; }

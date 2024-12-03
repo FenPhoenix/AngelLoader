@@ -13,18 +13,18 @@ namespace AL_Common.NETM_IO.Strategies
             | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
             | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
+        internal static FileStreamStrategy ChooseStrategy(AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
         {
             FileStreamStrategy strategy =
-                EnableBufferingIfNeeded(ChooseStrategyCore(handle, access), buffer);
+                EnableBufferingIfNeeded(new OSFileStreamStrategy(handle, access), buffer);
 
             return strategy;
         }
 
-        internal static FileStreamStrategy ChooseStrategy(FileStream_NET fileStream, string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
+        internal static FileStreamStrategy ChooseStrategy(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
         {
             FileStreamStrategy strategy =
-                EnableBufferingIfNeeded(ChooseStrategyCore(path, mode, access, share, options, preallocationSize), buffer);
+                EnableBufferingIfNeeded(new OSFileStreamStrategy(path, mode, access, share, options, preallocationSize), buffer);
 
             return strategy;
         }

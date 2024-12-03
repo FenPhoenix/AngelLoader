@@ -11,12 +11,6 @@ namespace AL_Common.NETM_IO.Strategies
     // this type defines a set of stateless FileStream/FileStreamStrategy helper methods
     internal static partial class FileStreamHelpers
     {
-        private static OSFileStreamStrategy ChooseStrategyCore(AL_SafeFileHandle handle, FileAccess access) =>
-            new SyncWindowsFileStreamStrategy(handle, access);
-
-        private static FileStreamStrategy ChooseStrategyCore(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize) =>
-                new SyncWindowsFileStreamStrategy(path, mode, access, share, options, preallocationSize);
-
         internal static void FlushToDisk(AL_SafeFileHandle handle)
         {
             if (!Interop.Kernel32.FlushFileBuffers(handle))
@@ -55,10 +49,6 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal static void ThrowInvalidArgument(AL_SafeFileHandle handle) =>
             throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, handle.Path);
-
-        // @FileStreamNET: Handle has no path property ffs argh
-        internal static void ThrowInvalidArgument(SafeFileHandle handle) =>
-            throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, "[handle.Path]");
 
         internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
         {
