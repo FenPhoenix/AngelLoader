@@ -322,7 +322,7 @@ public static partial class Common
 
         if ((uint)index > (uint)arraySegment.Count)
         {
-            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException();
+            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(nameof(index));
         }
 
         return new ArraySegment<T>(arraySegment.Array!, arraySegment.Offset + index, arraySegment.Count - index);
@@ -334,7 +334,7 @@ public static partial class Common
 
         if ((uint)index > (uint)arraySegment.Count || (uint)count > (uint)(arraySegment.Count - index))
         {
-            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException();
+            ThrowHelper.ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(nameof(index));
         }
 
         return new ArraySegment<T>(arraySegment.Array!, arraySegment.Offset + index, count);
@@ -344,7 +344,7 @@ public static partial class Common
     {
         if (arraySegment.Array == null)
         {
-            ThrowHelper.ThrowInvalidOperationException(ExceptionResource_NET.InvalidOperation_NullArray);
+            ThrowHelper.ThrowInvalidOperationException(SR.InvalidOperation_NullArray);
         }
     }
 

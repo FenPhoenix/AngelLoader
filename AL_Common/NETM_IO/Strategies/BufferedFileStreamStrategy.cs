@@ -65,8 +65,6 @@ namespace AL_Common.NETM_IO.Strategies
             }
         }
 
-        internal override bool IsAsync => _strategy.IsAsync;
-
         internal override bool IsClosed => _strategy.IsClosed;
 
         internal override string Name => _strategy.Name;

@@ -59,7 +59,7 @@ namespace AL_Common.NETM_IO
         }
 
         public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
-            : this(path, mode, access, share, buffer,FileOptions.None)
+            : this(path, mode, access, share, buffer, FileOptions.None)
         {
         }
 
@@ -145,7 +145,7 @@ namespace AL_Common.NETM_IO
         {
             if (value < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
             else if (_strategy.IsClosed)
             {
@@ -206,7 +206,7 @@ namespace AL_Common.NETM_IO
             {
                 if (value < 0)
                 {
-                    ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.value, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
+                    ThrowHelper.ThrowArgumentOutOfRangeException(nameof(value), SR.ArgumentOutOfRange_NeedNonNegNum);
                 }
                 else if (!CanSeek)
                 {

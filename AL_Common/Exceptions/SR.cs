@@ -61,6 +61,7 @@ public static class SR
     public static readonly string IO_FileExists_Name = "The file '{0}' already exists.";
     public static readonly string Arg_ArrayPlusOffTooSmall = "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
     public static readonly string ArgumentOutOfRange_IndexMustBeLess = "Index was out of range. Must be non-negative and less than the size of the collection.";
+    public static readonly string ArgumentOutOfRange_IndexMustBeLessOrEqual = "Index was out of range. Must be non-negative and less than or equal to the size of the collection.";
     public static readonly string ObjectDisposed_StreamReaderCustomClosed = "Cannot read from a closed stream reader.";
     public static readonly string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
     public static readonly string Arg_InvalidHandle = "Invalid handle.";
@@ -80,9 +81,17 @@ public static class SR
     public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string IO_SeekAppendOverwrite = "Unable seek backward to overwrite data that previously existed in a file opened in Append mode.";
     public static readonly string IO_SetLengthAppendTruncate = "Unable to truncate data that previously existed in a file opened in Append mode.";
-#if ENABLE_UNUSED
-    public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
+    public static readonly string ArgumentOutOfRange_FileLengthTooBig = "Specified file length was too large for the file system.";
+    public static readonly string Argument_EmptyOrWhiteSpaceString = "The value cannot be an empty string or composed entirely of whitespace.";
+    public static readonly string NotSupported_UnwritableStream = "Stream does not support writing.";
+    public static readonly string ArgumentOutOfRange_Generic_MustBeNonNegativeNonZero = "{0} ('{1}') must be a non-negative and non-zero value.";
+    public static readonly string InvalidOperation_NullArray = "The underlying array is null.";
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
+#if ENABLE_UNUSED
+
+
+
+    public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
 #endif
 
     internal static string Format(string resourceFormat, object? p1, object? p2) => string.Format(resourceFormat, p1, p2);

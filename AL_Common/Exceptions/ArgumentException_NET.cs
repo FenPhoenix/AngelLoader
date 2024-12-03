@@ -11,7 +11,7 @@ public static class ArgumentException_NET
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
     /// <exception cref="ArgumentNullException"><paramref name="argument"/> is null.</exception>
     /// <exception cref="ArgumentException"><paramref name="argument"/> is empty.</exception>
-    public static void ThrowIfNullOrEmpty([NotNull] string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+    public static void ThrowIfNullOrEmpty(string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
         if (string.IsNullOrEmpty(argument))
         {
@@ -24,7 +24,7 @@ public static class ArgumentException_NET
     /// <param name="paramName">The name of the parameter with which <paramref name="argument"/> corresponds.</param>
     /// <exception cref="ArgumentNullException"><paramref name="argument"/> is null.</exception>
     /// <exception cref="ArgumentException"><paramref name="argument"/> is empty or consists only of white-space characters.</exception>
-    public static void ThrowIfNullOrWhiteSpace([NotNull] string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
+    public static void ThrowIfNullOrWhiteSpace(string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
         if (string.IsNullOrWhiteSpace(argument))
         {

@@ -1,4 +1,5 @@
-﻿// ==++==
+﻿#if false
+// ==++==
 // 
 //   Copyright (c) Microsoft Corporation.  All rights reserved.
 // 
@@ -3168,3 +3169,4 @@ namespace AL_Common
         #endregion
     }
 }
+#endif

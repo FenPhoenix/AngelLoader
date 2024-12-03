@@ -176,8 +176,9 @@ namespace AL_Common.NETM_IO.Strategies
 
         public sealed override int ReadByte()
         {
-            byte b = 0;
-            return Read(new Span<byte>(ref b)) != 0 ? b : -1;
+            Span<byte> span = stackalloc byte[1];
+            span[0] = 0;
+            return Read(span) != 0 ? span[0] : -1;
         }
 
         public sealed override int Read(byte[] buffer, int offset, int count) =>
@@ -201,8 +202,12 @@ namespace AL_Common.NETM_IO.Strategies
             return r;
         }
 
-        public sealed override void WriteByte(byte value) =>
-            Write(new ReadOnlySpan<byte>(in value));
+        public sealed override void WriteByte(byte value)
+        {
+            Span<byte> span = stackalloc byte[1];
+            span[0] = value;
+            Write(span);
+        }
 
         public override void Write(byte[] buffer, int offset, int count) =>
             Write(new ReadOnlySpan<byte>(buffer, offset, count));

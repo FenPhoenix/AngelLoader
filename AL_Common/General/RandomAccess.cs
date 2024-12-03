@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
+using AL_Common.NETM_IO.Strategies;
 
 namespace AL_Common;
 
@@ -164,4 +166,46 @@ public static class RandomAccess
     // it was decided to not throw, but just return 0.
     private static bool IsEndOfFileForNoBuffering(AL_SafeFileHandle fileHandle, long fileOffset)
         => fileHandle.IsNoBuffering && fileHandle.CanSeek && fileOffset >= fileHandle.GetFileLength();
+
+    internal static unsafe void SetFileLength(AL_SafeFileHandle handle, long length)
+    {
+        var eofInfo = new Interop.Kernel32.FILE_END_OF_FILE_INFO
+        {
+            EndOfFile = length,
+        };
+
+        if (!Interop.Kernel32.SetFileInformationByHandle(
+                handle,
+                Interop.Kernel32.FileEndOfFileInfo,
+                &eofInfo,
+                (uint)sizeof(Interop.Kernel32.FILE_END_OF_FILE_INFO)))
+        {
+            int errorCode = Marshal.GetLastWin32Error();
+
+            throw errorCode == Interop.Errors.ERROR_INVALID_PARAMETER
+                ? new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_FileLengthTooBig)
+                : Win32Marshal.GetExceptionForWin32Error(errorCode, handle.Path);
+        }
+    }
+
+    internal static unsafe void WriteAtOffset(AL_SafeFileHandle handle, ReadOnlySpan<byte> buffer, long fileOffset)
+    {
+        if (buffer.IsEmpty)
+        {
+            return;
+        }
+
+        NativeOverlapped overlapped = GetNativeOverlappedForSyncHandle(handle, fileOffset);
+        fixed (byte* pinned = &MemoryMarshal.GetReference(buffer))
+        {
+            if (Interop.Kernel32.WriteFile(handle, pinned, buffer.Length, out int numBytesWritten, &overlapped) != 0)
+            {
+                Debug.Assert(numBytesWritten == buffer.Length);
+                return;
+            }
+
+            int errorCode = FileStreamHelpers.GetLastWin32ErrorAndDisposeHandleIfInvalid(handle);
+            throw Win32Marshal.GetExceptionForWin32Error(errorCode, handle.Path);
+        }
+    }
 }

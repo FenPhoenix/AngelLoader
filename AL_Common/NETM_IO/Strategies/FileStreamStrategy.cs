@@ -24,21 +24,19 @@ namespace AL_Common.NETM_IO.Strategies
         {
             if (buffer is null)
             {
-                ThrowHelper.ThrowArgumentNullException(ExceptionArgument_NET.buffer);
+                ThrowHelper.ThrowArgumentNullException(nameof(buffer));
             }
 
             if (offset < 0)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.offset, ExceptionResource_NET.ArgumentOutOfRange_NeedNonNegNum);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(offset), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             if ((uint)count > buffer.Length - offset)
             {
-                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument_NET.count, ExceptionResource_NET.Argument_InvalidOffLen);
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(count), SR.Argument_InvalidOffLen);
             }
         }
-
-        internal abstract bool IsAsync { get; }
 
         internal bool IsDerived { get; init; }
 

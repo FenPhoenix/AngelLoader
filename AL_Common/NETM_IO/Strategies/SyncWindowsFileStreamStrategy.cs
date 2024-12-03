@@ -15,7 +15,5 @@ namespace AL_Common.NETM_IO.Strategies
             : base(path, mode, access, share, options, preallocationSize)
         {
         }
-
-        internal override bool IsAsync => false;
     }
 }

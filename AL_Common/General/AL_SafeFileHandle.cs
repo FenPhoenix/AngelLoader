@@ -17,8 +17,6 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     internal string? Path => _path;
     private bool _lengthCanBeCached; // file has been opened for reading and not shared for writing.
 
-    public bool IsAsync => false;
-
     internal bool IsNoBuffering => (GetFileOptions() & NoBuffering) != 0;
 
     internal unsafe FileOptions GetFileOptions()
@@ -103,6 +101,11 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     }
 
     internal bool CanSeek => !IsClosed && GetFileType() == FileTypes.FILE_TYPE_DISK;
+
+    public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+    {
+        return Open(fullPath, mode, access, share, options, 0);
+    }
 
     public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
     {

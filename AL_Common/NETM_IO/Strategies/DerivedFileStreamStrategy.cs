@@ -37,8 +37,6 @@ namespace AL_Common.NETM_IO.Strategies
             set => _strategy.Position = value;
         }
 
-        internal override bool IsAsync => _strategy.IsAsync;
-
         internal override string Name => _strategy.Name;
 
         internal override AL_SafeFileHandle AL_SafeFileHandle
