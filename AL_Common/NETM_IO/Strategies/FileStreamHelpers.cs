@@ -13,21 +13,6 @@ namespace AL_Common.NETM_IO.Strategies
             | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
             | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
 
-        internal static BufferedFileStreamStrategy ChooseStrategy(AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
-        {
-            BufferedFileStreamStrategy strategy = new(handle, access, buffer);
-
-            return strategy;
-        }
-
-        internal static BufferedFileStreamStrategy ChooseStrategy(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
-        {
-            BufferedFileStreamStrategy strategy =
-                new(path, mode, access, share, options, preallocationSize, buffer);
-
-            return strategy;
-        }
-
         internal static bool IsIoRelatedException(Exception e) =>
             // These all derive from IOException
             //     DirectoryNotFoundException
