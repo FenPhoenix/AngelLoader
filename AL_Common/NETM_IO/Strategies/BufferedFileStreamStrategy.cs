@@ -135,7 +135,7 @@ namespace AL_Common.NETM_IO.Strategies
 
         internal string Name => _fileHandle.Path ?? SR.IO_UnknownFileName;
 
-        internal AL_SafeFileHandle AL_SafeFileHandle
+        internal AL_SafeFileHandle SafeFileHandle
         {
             get
             {
@@ -144,15 +144,6 @@ namespace AL_Common.NETM_IO.Strategies
                 // the changes that were buffered in memory so far
                 Flush();
 
-                return Strategy_AL_SafeFileHandle;
-            }
-        }
-
-        // Flushing is the responsibility of BufferedFileStreamStrategy
-        internal AL_SafeFileHandle Strategy_AL_SafeFileHandle
-        {
-            get
-            {
                 if (CanSeek)
                 {
                     // Update the file offset before exposing it since it's possible that
@@ -200,11 +191,6 @@ namespace AL_Common.NETM_IO.Strategies
         {
             AssertBufferArguments(buffer, offset, count);
 
-            return ReadSpan(buffer, offset, count);
-        }
-
-        private int ReadSpan(byte[] destination, int destOffset, int destLength)
-        {
             Debug.Assert((_readPos == 0 && _readLen == 0 && _writePos >= 0) || (_writePos == 0 && _readPos <= _readLen),
                 "We're either reading or writing, but not both.");
 
@@ -221,13 +207,13 @@ namespace AL_Common.NETM_IO.Strategies
                     FlushWrite();
                 }
 
-                if (!CanSeek || (destLength >= _bufferSize))
+                if (!CanSeek || (count >= _bufferSize))
                 {
                     // For async file stream strategies the call to Read(Span) is translated to Stream.Read(Span),
                     // which rents an array from the pool, copies the data, and then calls Read(Array). This is expensive!
                     // To avoid that (and code duplication), the Read(Array) method passes ArraySegment to this method
                     // which allows for calling Strategy.Read(Array) instead of Strategy.Read(Span).
-                    n = Strategy_Read(destination, destOffset, destLength);
+                    n = ReadCore(buffer, offset, count);
 
                     // Throw away read buffer.
                     _readPos = 0;
@@ -235,7 +221,7 @@ namespace AL_Common.NETM_IO.Strategies
                     return n;
                 }
 
-                n = Strategy_Read(_buffer, 0, _bufferSize);
+                n = ReadCore(_buffer, 0, _bufferSize);
 
                 if (n == 0)
                 {
@@ -247,11 +233,11 @@ namespace AL_Common.NETM_IO.Strategies
                 _readLen = n;
             }
             // Now copy min of count or numBytesAvailable (i.e. near EOF) to array.
-            if (n > destLength)
+            if (n > count)
             {
-                n = destLength;
+                n = count;
             }
-            new ReadOnlySpan<byte>(_buffer, _readPos, n).CopyTo(destination);
+            new ReadOnlySpan<byte>(_buffer, _readPos, n).CopyTo(buffer);
             _readPos += n;
 
             // We may have read less than the number of bytes the user asked
@@ -271,11 +257,11 @@ namespace AL_Common.NETM_IO.Strategies
                 // read some more from the underlying stream.  However, if we got
                 // fewer bytes from the underlying stream than we asked for (i.e. we're
                 // probably blocked), don't ask for more bytes.
-                if (n < destLength && !isBlocked)
+                if (n < count && !isBlocked)
                 {
                     Debug.Assert(_readPos == _readLen, "Read buffer should be empty!");
 
-                    int moreBytesRead = Strategy_Read(destination, destOffset + n, destLength - n);
+                    int moreBytesRead = ReadCore(buffer, offset + n, count - n);
 
                     n += moreBytesRead;
                     // We've just made our buffer inconsistent with our position
@@ -288,11 +274,9 @@ namespace AL_Common.NETM_IO.Strategies
             return n;
         }
 
-        private int Strategy_Read(byte[] buffer, int offset, int count) =>
-            Strategy_Read(new Span<byte>(buffer, offset, count));
-
-        public int Strategy_Read(Span<byte> buffer)
+        private int ReadCore(byte[] buffer, int offset, int count)
         {
+            Span<byte> bufferSpan = new Span<byte>(buffer, offset, count);
             if (_fileHandle.IsClosed)
             {
                 ThrowHelper.ThrowObjectDisposedException_FileClosed();
@@ -302,7 +286,7 @@ namespace AL_Common.NETM_IO.Strategies
                 ThrowHelper.ThrowNotSupportedException_UnreadableStream();
             }
 
-            int r = RandomAccess.ReadAtOffset(_fileHandle, buffer, _filePosition);
+            int r = RandomAccess.ReadAtOffset(_fileHandle, bufferSpan, _filePosition);
             Debug.Assert(r >= 0, $"RandomAccess.ReadAtOffset returned {r}.");
             _filePosition += r;
 
@@ -328,7 +312,7 @@ namespace AL_Common.NETM_IO.Strategies
                 FlushWrite();
             }
 
-            _readLen = Strategy_Read(_buffer, 0, _bufferSize);
+            _readLen = ReadCore(_buffer, 0, _bufferSize);
             _readPos = 0;
 
             if (_readLen == 0)
@@ -398,7 +382,7 @@ namespace AL_Common.NETM_IO.Strategies
                 // which rents an array from the pool, copies the data, and then calls Write(Array). This is expensive!
                 // To avoid that (and code duplication), the Write(Array) method passes ArraySegment to this method
                 // which allows for calling Strategy.Write(Array) instead of Strategy.Write(Span).
-                Strategy_Write(arraySegment.Array!, arraySegment.Offset, arraySegment.Count);
+                WriteCore(arraySegment.Array!, arraySegment.Offset, arraySegment.Count);
 
                 return;
             }
@@ -488,43 +472,13 @@ namespace AL_Common.NETM_IO.Strategies
             }
 
             // We still need to tell the underlying strategy to flush. It's NOP for !flushToDisk or !CanWrite.
-            Strategy_Flush(flushToDisk);
-            // If the Stream was seekable, then we should have called FlushRead which resets _readPos & _readLen.
-            Debug.Assert(_writePos == 0 && (!CanSeek || (_readPos == 0 && _readLen == 0)));
-        }
-
-        internal void Strategy_Flush(bool flushToDisk)
-        {
             if (flushToDisk && CanWrite)
             {
                 FileStreamHelpers.FlushToDisk(_fileHandle);
             }
+            // If the Stream was seekable, then we should have called FlushRead which resets _readPos & _readLen.
+            Debug.Assert(_writePos == 0 && (!CanSeek || (_readPos == 0 && _readLen == 0)));
         }
-
-        //public override void CopyTo(Stream destination, int bufferSize)
-        //{
-        //    EnsureNotClosed();
-        //    EnsureCanRead();
-
-        //    int readBytes = _readLen - _readPos;
-        //    Debug.Assert(readBytes >= 0, $"Expected a non-negative number of bytes in buffer, got {readBytes}");
-
-        //    if (readBytes > 0)
-        //    {
-        //        // If there's any read data in the buffer, write it all to the destination stream.
-        //        Debug.Assert(_writePos == 0, "Write buffer must be empty if there's data in the read buffer");
-        //        destination.Write(_buffer!, _readPos, readBytes);
-        //        _readPos = _readLen = 0;
-        //    }
-        //    else if (_writePos > 0)
-        //    {
-        //        // If there's write data in the buffer, flush it back to the underlying stream, as does ReadAsync.
-        //        FlushWrite();
-        //    }
-
-        //    // Our buffer is now clear. Copy data directly from the source stream to the destination stream.
-        //    _strategy.CopyTo(destination, bufferSize);
-        //}
 
         public long Seek(long offset, SeekOrigin origin)
         {
@@ -532,7 +486,7 @@ namespace AL_Common.NETM_IO.Strategies
             if (_writePos > 0)
             {
                 FlushWrite();
-                return Strategy_Seek(offset, origin);
+                return SeekCore(offset, origin);
             }
 
             // The buffer is either empty or we have a buffered read.
@@ -546,7 +500,7 @@ namespace AL_Common.NETM_IO.Strategies
             long oldPos = Position;
             Debug.Assert(oldPos == _filePosition + (_readPos - _readLen));
 
-            long newPos = Strategy_Seek(offset, origin);
+            long newPos = SeekCore(offset, origin);
 
             // If the seek destination is still within the data currently in the buffer, we want to keep the buffer data and continue using it.
             // Otherwise we will throw away the buffer. This can only happen on read, as we flushed write data above.
@@ -559,7 +513,7 @@ namespace AL_Common.NETM_IO.Strategies
             {
                 _readPos = (int)readPos;
                 // Adjust the seek pointer of the underlying stream to reflect the amount of useful bytes in the read buffer:
-                Strategy_Seek(_readLen - _readPos, SeekOrigin.Current);
+                SeekCore(_readLen - _readPos, SeekOrigin.Current);
             }
             else
             {  // The offset of the updated seek pointer is not a legal offset. Loose the buffer.
@@ -570,14 +524,14 @@ namespace AL_Common.NETM_IO.Strategies
             return newPos;
         }
 
-        private long Strategy_Seek(long offset, SeekOrigin origin)
+        private long SeekCore(long offset, SeekOrigin origin)
         {
             long oldPos = _filePosition;
             long pos = origin switch
             {
                 SeekOrigin.Begin => offset,
                 SeekOrigin.End => Length + offset,
-                _ => _filePosition + offset // SeekOrigin.Current
+                _ => _filePosition + offset, // SeekOrigin.Current
             };
 
             if (pos >= 0)
@@ -609,7 +563,7 @@ namespace AL_Common.NETM_IO.Strategies
 
             if (_readPos - _readLen != 0)
             {
-                Strategy_Seek(_readPos - _readLen, SeekOrigin.Current);
+                SeekCore(_readPos - _readLen, SeekOrigin.Current);
             }
 
             _readPos = 0;
@@ -620,14 +574,11 @@ namespace AL_Common.NETM_IO.Strategies
         {
             Debug.Assert(_readPos == 0 && _readLen == 0, "Read buffer must be empty in FlushWrite!");
 
-            Strategy_Write(_buffer, 0, _writePos);
+            WriteCore(_buffer, 0, _writePos);
             _writePos = 0;
         }
 
-        public void Strategy_Write(byte[] buffer, int offset, int count) =>
-            Strategy_Write(new ReadOnlySpan<byte>(buffer, offset, count));
-
-        public void Strategy_Write(ReadOnlySpan<byte> buffer)
+        private void WriteCore(byte[] buffer, int offset, int count)
         {
             if (_fileHandle.IsClosed)
             {
@@ -638,8 +589,9 @@ namespace AL_Common.NETM_IO.Strategies
                 ThrowHelper.ThrowNotSupportedException_UnwritableStream();
             }
 
-            RandomAccess.WriteAtOffset(_fileHandle, buffer, _filePosition);
-            _filePosition += buffer.Length;
+            ReadOnlySpan<byte> bufferSpan = new ReadOnlySpan<byte>(buffer, offset, count);
+            RandomAccess.WriteAtOffset(_fileHandle, bufferSpan, _filePosition);
+            _filePosition += bufferSpan.Length;
         }
 
         /// <summary>

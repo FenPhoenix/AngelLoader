@@ -140,7 +140,7 @@ namespace AL_Common.NETM_IO
             _strategy.SetLength(value);
         }
 
-        public virtual AL_SafeFileHandle AL_SafeFileHandle => _strategy.AL_SafeFileHandle;
+        public virtual AL_SafeFileHandle SafeFileHandle => _strategy.SafeFileHandle;
 
         /// <summary>Gets the path that was passed to the constructor.</summary>
         public virtual string Name => _strategy.Name;
