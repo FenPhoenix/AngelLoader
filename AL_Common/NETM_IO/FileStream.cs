@@ -307,7 +307,7 @@ namespace AL_Common.NETM_IO
             {
                 n = count;
             }
-            new ReadOnlySpan<byte>(_buffer, _readPos, n).CopyTo(buffer);
+            Buffer.BlockCopy(_buffer, _readPos, buffer, 0, n);
             _readPos += n;
 
             // We may have read less than the number of bytes the user asked
@@ -380,7 +380,6 @@ namespace AL_Common.NETM_IO
 
         private int ReadCore(byte[] buffer, int offset, int count)
         {
-            Span<byte> bufferSpan = new Span<byte>(buffer, offset, count);
             if (_fileHandle.IsClosed)
             {
                 ThrowHelper.ThrowObjectDisposedException_FileClosed();
@@ -390,7 +389,7 @@ namespace AL_Common.NETM_IO
                 ThrowHelper.ThrowNotSupportedException_UnreadableStream();
             }
 
-            int r = RandomAccess.ReadAtOffset(_fileHandle, bufferSpan, _filePosition);
+            int r = RandomAccess.ReadAtOffset_Fast(_fileHandle, buffer, offset, count, _filePosition);
             Debug.Assert(r >= 0, $"RandomAccess.ReadAtOffset returned {r}.");
             _filePosition += r;
 

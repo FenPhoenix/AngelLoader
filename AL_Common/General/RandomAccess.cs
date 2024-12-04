@@ -85,6 +85,29 @@ public static class RandomAccess
         }
     }
 
+    public static unsafe int ReadAtOffset_Fast(AL_SafeFileHandle handle, byte[] buffer, int bufferOffset, int readLength, long fileOffset)
+    {
+        NativeOverlapped overlapped = GetNativeOverlappedForSyncHandle(handle, fileOffset);
+        fixed(byte* pinned = &buffer[bufferOffset])
+        {
+            if (Interop.Kernel32.ReadFile(handle, pinned, readLength, out int numBytesRead, &overlapped) != 0)
+            {
+                return numBytesRead;
+            }
+
+            int errorCode = GetLastWin32ErrorAndDisposeHandleIfInvalid(handle);
+            return errorCode switch
+            {
+                // https://docs.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile#synchronization-and-file-position:
+                // "If lpOverlapped is not NULL, then when a synchronous read operation reaches the end of a file,
+                // ReadFile returns FALSE and GetLastError returns ERROR_HANDLE_EOF"
+                Interop.Errors.ERROR_HANDLE_EOF => numBytesRead,
+                _ when IsEndOfFile(errorCode, handle, fileOffset) => 0,
+                _ => throw Win32Marshal.GetExceptionForWin32Error(errorCode, handle.Path),
+            };
+        }
+    }
+
     /// <summary>
     /// Gets the length of the file in bytes.
     /// </summary>

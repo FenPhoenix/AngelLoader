@@ -85,7 +85,7 @@ public static partial class Common
         byte[] bytes = new byte[count];
         while (count > 0)
         {
-            int n = RandomAccess.ReadAtOffset(sfh, bytes.AsSpan(index, count), index);
+            int n = RandomAccess.ReadAtOffset_Fast(sfh, bytes, index, count, index);
             if (n == 0)
             {
                 ThrowHelper.EndOfFile();
