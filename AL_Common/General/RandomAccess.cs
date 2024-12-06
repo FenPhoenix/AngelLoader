@@ -87,8 +87,13 @@ public static class RandomAccess
 
     public static unsafe int ReadAtOffset_Fast(AL_SafeFileHandle handle, byte[] buffer, int bufferOffset, int readLength, long fileOffset)
     {
+        if (bufferOffset + readLength > buffer.Length)
+        {
+            ThrowHelper.IndexOutOfRange();
+        }
+
         NativeOverlapped overlapped = GetNativeOverlappedForSyncHandle(handle, fileOffset);
-        fixed(byte* pinned = &buffer[bufferOffset])
+        fixed (byte* pinned = &buffer[bufferOffset])
         {
             if (Interop.Kernel32.ReadFile(handle, pinned, readLength, out int numBytesRead, &overlapped) != 0)
             {
