@@ -30,8 +30,6 @@ namespace AL_Common.NETM_IO
         {
             ValidateHandle(handle, access);
 
-            //_strategy = FileStreamHelpers.ChooseStrategy(handle, access, buffer);
-
             _bufferSize = buffer.Length;
             _buffer = buffer;
 
@@ -760,11 +758,6 @@ namespace AL_Common.NETM_IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void ValidateBufferArguments(byte[] buffer, int offset, int count)
         {
-            if (buffer is null)
-            {
-                ThrowHelper.ThrowArgumentNullException(nameof(buffer));
-            }
-
             if (offset < 0)
             {
                 ThrowHelper.ThrowArgumentOutOfRangeException(nameof(offset), SR.ArgumentOutOfRange_NeedNonNegNum);

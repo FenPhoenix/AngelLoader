@@ -13,11 +13,7 @@ public static class RandomAccess
 {
     private static void ValidateInput(AL_SafeFileHandle handle, long fileOffset, bool allowUnseekableHandles = false)
     {
-        if (handle is null)
-        {
-            ThrowHelper.ArgumentNullException("handle");
-        }
-        else if (handle.IsInvalid)
+        if (handle.IsInvalid)
         {
             ThrowHelper.ArgumentException(SR.Arg_InvalidHandle, nameof(handle));
         }
