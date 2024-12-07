@@ -2295,39 +2295,49 @@ public sealed class Scanner : IDisposable
 
         if (readmes.Count > 0)
         {
+            bool anyHtmlReadmes = false;
+
             string[] readmeFileNames = new string[readmes.Count];
             for (int i = 0; i < readmes.Count; i++)
             {
-                readmeFileNames[i] = readmes[i].Source;
-            }
-
-            List<string> archiveFileNames;
-            if (_fmFormat == FMFormat.SevenZip)
-            {
-                archiveFileNames = new List<string>(sevenZipEntries.Count);
-                for (int i = 0; i < sevenZipEntries.Count; i++)
+                string readme = readmes[i].Source;
+                readmeFileNames[i] = readme;
+                if (readme.ExtIsHtml())
                 {
-                    archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
-                }
-            }
-            else
-            {
-                archiveFileNames = new List<string>(rarEntries.Count);
-                for (int i = 0; i < rarEntries.Count; i++)
-                {
-                    archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
+                    anyHtmlReadmes = true;
                 }
             }
 
-            if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
+            if (anyHtmlReadmes)
             {
-                /*
-                We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
-                send a message back telling the caller to handle it.
-                We could just delete the cache directory here, but since it could be anything, we're considering
-                that a potentially unsafe action.
-                */
-                return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
+                List<string> archiveFileNames;
+                if (_fmFormat == FMFormat.SevenZip)
+                {
+                    archiveFileNames = new List<string>(sevenZipEntries.Count);
+                    for (int i = 0; i < sevenZipEntries.Count; i++)
+                    {
+                        archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
+                    }
+                }
+                else
+                {
+                    archiveFileNames = new List<string>(rarEntries.Count);
+                    for (int i = 0; i < rarEntries.Count; i++)
+                    {
+                        archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
+                    }
+                }
+
+                if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
+                {
+                    /*
+                    We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
+                    send a message back telling the caller to handle it.
+                    We could just delete the cache directory here, but since it could be anything, we're considering
+                    that a potentially unsafe action.
+                    */
+                    return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
+                }
             }
 
             try
