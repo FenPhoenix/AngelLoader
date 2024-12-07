@@ -128,8 +128,7 @@ internal static partial class PathInternal
         // In any case, all internal usages should be hitting normalize path (Path.GetFullPath) before they hit this
         // shimming method. (Or making a change that doesn't impact normalization, such as adding a filename to a
         // normalized base path.)
-        // @FileStreamNET: Span conversions
-        if (IsPartiallyQualified(path.AsSpan()) || IsDevice(path.AsSpan()))
+        if (IsPartiallyQualified(path) || IsDevice(path))
         {
             return path;
         }
@@ -146,7 +145,7 @@ internal static partial class PathInternal
     /// <summary>
     /// Returns true if the path uses any of the DOS device path syntaxes. ("\\.\", "\\?\", or "\??\")
     /// </summary>
-    internal static bool IsDevice(ReadOnlySpan<char> path)
+    internal static bool IsDevice(string path)
     {
         // If the path begins with any two separators is will be recognized and normalized and prepped with
         // "\??\" for internal usage correctly. "\??\" is recognized and handled, "/??/" is not.
@@ -164,7 +163,7 @@ internal static partial class PathInternal
     /// <summary>
     /// Returns true if the path is a device UNC (\\?\UNC\, \\.\UNC\)
     /// </summary>
-    internal static bool IsDeviceUNC(ReadOnlySpan<char> path)
+    internal static bool IsDeviceUNC(string path)
     {
         return path.Length >= UncExtendedPrefixLength
             && IsDevice(path)
@@ -179,7 +178,7 @@ internal static partial class PathInternal
     /// path matches exactly (cannot use alternate directory separators) Windows will skip normalization
     /// and path length checks.
     /// </summary>
-    internal static bool IsExtended(ReadOnlySpan<char> path)
+    internal static bool IsExtended(string path)
     {
         // While paths like "//?/C:/" will work, they're treated the same as "\\.\" paths.
         // Skipping of normalization will *only* occur if back slashes ('\') are used.
@@ -193,7 +192,7 @@ internal static partial class PathInternal
     /// <summary>
     /// Gets the length of the root of the path (drive, share, etc.).
     /// </summary>
-    internal static int GetRootLength(ReadOnlySpan<char> path)
+    internal static int GetRootLength(string path)
     {
         int pathLength = path.Length;
         int i = 0;
@@ -266,7 +265,7 @@ internal static partial class PathInternal
     /// for C: (rooted, but relative). "C:\a" is rooted and not relative (the current directory
     /// will not be used to modify the path).
     /// </remarks>
-    internal static bool IsPartiallyQualified(ReadOnlySpan<char> path)
+    internal static bool IsPartiallyQualified(string path)
     {
         if (path.Length < 2)
         {

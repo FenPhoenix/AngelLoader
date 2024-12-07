@@ -173,12 +173,11 @@ public static partial class Common
                     throw Win32Marshal.GetExceptionForLastWin32Error(linkPath);
                 }
 
-                Debug.Assert(PathInternal.IsExtended(new string(buffer, 0, (int)result).AsSpan()));
+                Debug.Assert(PathInternal.IsExtended(new string(buffer, 0, (int)result)));
                 // GetFinalPathNameByHandle always returns with extended DOS prefix even if the link target was created without one.
                 // While this does not interfere with correct behavior, it might be unexpected.
                 // Hence we trim it if the passed-in path to the link wasn't extended.
-                // @FileStreamNET: Span conversion
-                int start = PathInternal.IsExtended(linkPath.AsSpan()) ? 0 : 4;
+                int start = PathInternal.IsExtended(linkPath) ? 0 : 4;
                 return new string(buffer, start, (int)result - start);
             }
             finally
@@ -322,7 +321,7 @@ public static partial class Common
                     Span<char> targetPath = MemoryMarshal.Cast<byte, char>(bufferSpan.Slice(offset, length));
 
                     // Unlike symbolic links, mount point paths cannot be relative.
-                    Debug.Assert(!PathInternal.IsPartiallyQualified(targetPath));
+                    Debug.Assert(!PathInternal.IsPartiallyQualified(targetPath.ToString()));
                     // Mount points cannot point to a remote location.
                     Debug.Assert(!targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()));
                     return GetTargetPathWithoutNTPrefix(targetPath);

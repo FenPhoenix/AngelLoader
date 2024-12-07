@@ -315,8 +315,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             // The error is stored and in such cases exception for the first failure is going to be thrown.
             int lastError = Marshal.GetLastWin32Error();
 
-            // @FileStreamNET: Span conversion
-            if (Path is null || !PathInternal.IsDevice(Path.AsSpan()))
+            if (Path is null || !PathInternal.IsDevice(Path))
             {
                 throw Win32Marshal.GetExceptionForWin32Error(lastError, Path);
             }

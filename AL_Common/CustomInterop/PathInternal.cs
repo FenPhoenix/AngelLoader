@@ -17,8 +17,7 @@ namespace AL_Common;
 
 internal static partial class PathInternal
 {
-    internal static bool IsRoot(ReadOnlySpan<char> path)
-        => path.Length == GetRootLength(path);
+    internal static bool IsRoot(string path) => path.Length == GetRootLength(path);
 
 #if ENABLE_UNUSED
     /// <summary>
@@ -225,8 +224,7 @@ internal static partial class PathInternal
     /// </summary>
     [return: NotNullIfNotNull(nameof(path))]
     internal static string? TrimEndingDirectorySeparator(string? path) =>
-        // @FileStreamNET: Span conversion
-        EndsInDirectorySeparator(path) && !IsRoot(path.AsSpan()) ?
+        EndsInDirectorySeparator(path) && !IsRoot(path) ?
             path.Substring(0, path.Length - 1) :
             path;
 

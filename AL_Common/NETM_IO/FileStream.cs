@@ -426,14 +426,12 @@ public sealed class FileStream_NET : Stream
             {
                 if (numBytes >= source.Length)
                 {
-                    // @FileStreamNET: Span conversion
                     source.CopyTo(_buffer.AsSpan(_writePos));
                     _writePos += source.Length;
                     return;
                 }
                 else
                 {
-                    // @FileStreamNET: Span conversion
                     source[..numBytes].CopyTo(_buffer.AsSpan(_writePos));
                     _writePos += numBytes;
                     source = source[numBytes..];
@@ -467,7 +465,6 @@ public sealed class FileStream_NET : Stream
         }
 
         // Copy remaining bytes into buffer, to write at a later date.
-        // @FileStreamNET: Span conversion
         source.CopyTo(_buffer.AsSpan(_writePos));
         _writePos = source.Length;
     }
