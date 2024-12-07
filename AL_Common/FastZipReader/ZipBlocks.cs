@@ -371,29 +371,46 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         ZipContext context,
         out ZipCentralDirectoryFileHeader header)
     {
-        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
+        if (stream.Position > stream.Length - ZipContext.EntryFieldsBufferSize)
         {
             header = new ZipCentralDirectoryFileHeader();
             return false;
         }
 
-        stream.Position +=
-            ByteLengths.Byte +  // VersionMadeBySpecification
-            ByteLengths.Byte +  // VersionMadeByCompatibility
-            ByteLengths.Int16;  // VersionNeededToExtract
-        ushort generalPurposeBitFlag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // Crc32
-        uint compressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        uint uncompressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort fileCommentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort diskNumberStartSmall = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int16; // InternalFileAttributes
-        stream.Position += ByteLengths.Int32; // ExternalFileAttributes
-        uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        byte[] buffer = context.EntryFieldsBuffer;
+
+        int bytesRead = stream.ReadAll(buffer, 0, ZipContext.EntryFieldsBufferSize);
+
+        if (bytesRead < ZipContext.EntryFieldsBufferSize)
+        {
+            ThrowHelper.EndOfFile();
+        }
+
+        int bufferIndex = 0;
+
+        if (ReadUInt32_Fast(buffer, ref bufferIndex) != SignatureConstant)
+        {
+            header = new ZipCentralDirectoryFileHeader();
+            return false;
+        }
+
+        bufferIndex +=
+            ByteLengths.Byte + // VersionMadeBySpecification
+            ByteLengths.Byte + // VersionMadeByCompatibility
+            ByteLengths.Int16; // VersionNeededToExtract
+        ushort generalPurposeBitFlag = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort compressionMethod = ReadUInt16_Fast(buffer, ref bufferIndex);
+        uint lastModified = ReadUInt32_Fast(buffer, ref bufferIndex);
+        bufferIndex += ByteLengths.Int32; // Crc32
+        uint compressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
+        uint uncompressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
+        ushort filenameLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort extraFieldLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort fileCommentLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort diskNumberStartSmall = ReadUInt16_Fast(buffer, ref bufferIndex);
+        bufferIndex += ByteLengths.Int16 + // InternalFileAttributes
+                       ByteLengths.Int32;  // ExternalFileAttributes
+        uint relativeOffsetOfLocalHeaderSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
 
         stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
 

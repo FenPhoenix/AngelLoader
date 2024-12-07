@@ -519,11 +519,7 @@ namespace AL_Common.NETM_IO
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            if (origin < SeekOrigin.Begin || origin > SeekOrigin.End)
-            {
-                throw new ArgumentException(SR.Argument_InvalidSeekOrigin, nameof(origin));
-            }
-            else if (!CanSeek)
+            if (!CanSeek)
             {
                 if (IsClosed)
                 {
