@@ -292,7 +292,6 @@ public static partial class Common
                     if (!isRelative)
                     {
                         // Absolute target is in NT format and we need to clean it up before return it to the user.
-                        // @FileStreamNET: Span conversion
                         if (targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()))
                         {
                             // We need to prepend the Win32 equivalent of UNC NT prefix.
