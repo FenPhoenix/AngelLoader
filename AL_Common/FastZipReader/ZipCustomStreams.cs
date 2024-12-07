@@ -6,7 +6,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using AL_Common.NETM_IO;
-using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
 

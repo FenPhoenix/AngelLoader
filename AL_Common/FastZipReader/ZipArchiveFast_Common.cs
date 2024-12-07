@@ -345,6 +345,7 @@ internal static class ZipArchiveFast_Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static uint ReadUInt32_Fast(byte[] value, ref int startIndex) => unchecked((uint)ReadInt32_Fast(value, ref startIndex));
 
+#if false
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static long ReadInt64_Fast(byte[] value, ref int startIndex)
     {
@@ -355,6 +356,7 @@ internal static class ZipArchiveFast_Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ulong ReadUInt64_Fast(byte[] value, ref int startIndex) => unchecked((ulong)ReadInt64_Fast(value, ref startIndex));
+#endif
 
     #endregion
 

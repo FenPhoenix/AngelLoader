@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
@@ -12,9 +11,6 @@ public static class ThrowHelper
     public static void ArgumentException(string message) => throw new ArgumentException(message);
     [DoesNotReturn]
     public static void ArgumentException(string message, string paramName) => throw new ArgumentException(message, paramName);
-    [DoesNotReturn]
-    internal static void ArgumentNullException(string argument) => throw new ArgumentNullException(argument);
-
     [DoesNotReturn]
     public static void ArgumentOutOfRange(string paramName, string message) => throw new ArgumentOutOfRangeException(paramName, message);
     [DoesNotReturn]
@@ -41,12 +37,6 @@ public static class ThrowHelper
     public static void EncryptionNotSupported() => throw new NotSupportedException("Encrypted archives are not supported.");
 
     [DoesNotReturn]
-    internal static void ThrowArgumentNullException(string argument)
-    {
-        throw new ArgumentNullException(argument);
-    }
-
-    [DoesNotReturn]
     internal static void ThrowArgumentOutOfRangeException_NeedNonNegNum(string paramName)
     {
         throw new ArgumentOutOfRangeException(paramName, SR.ArgumentOutOfRange_NeedNonNegNum);
@@ -62,11 +52,6 @@ public static class ThrowHelper
     internal static void ThrowArgumentOutOfRangeException(string argument, string resource)
     {
         throw new ArgumentOutOfRangeException(argument, resource);
-    }
-
-    private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(string argument, string resource)
-    {
-        return new ArgumentOutOfRangeException(argument, resource);
     }
 
     [DoesNotReturn]
@@ -86,10 +71,6 @@ public static class ThrowHelper
     {
         throw new NotSupportedException(SR.NotSupported_UnwritableStream);
     }
-
-    [DoesNotReturn]
-    internal static void ThrowNegativeOrZero(int value, string? paramName) =>
-        throw new ArgumentOutOfRangeException(paramName, value, SR.Format(SR.ArgumentOutOfRange_Generic_MustBeNonNegativeNonZero, paramName, value));
 
     [DoesNotReturn]
     internal static void ThrowObjectDisposedException_StreamClosed(string? objectName)

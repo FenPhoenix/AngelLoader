@@ -4,105 +4,104 @@
 using System;
 using System.IO;
 
-namespace AL_Common.NETM_IO.Strategies
+namespace AL_Common.NETM_IO.Strategies;
+
+internal static partial class FileStreamHelpers
 {
-    internal static partial class FileStreamHelpers
+    // NOTE: any change to FileOptions enum needs to be matched here as it's used in the error validation
+    private const FileOptions ValidFileOptions = FileOptions.WriteThrough | FileOptions.Asynchronous | FileOptions.RandomAccess
+        | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
+        | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
+
+    internal static bool IsIoRelatedException(Exception e) =>
+        // These all derive from IOException
+        //     DirectoryNotFoundException
+        //     DriveNotFoundException
+        //     EndOfStreamException
+        //     FileLoadException
+        //     FileNotFoundException
+        //     PathTooLongException
+        //     PipeException
+        e is IOException ||
+        // Note that SecurityException is only thrown on runtimes that support CAS
+        // e is SecurityException ||
+        e is UnauthorizedAccessException ||
+        e is NotSupportedException ||
+        (e is ArgumentException && e is not ArgumentNullException);
+
+    internal static void ValidateArguments(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
     {
-        // NOTE: any change to FileOptions enum needs to be matched here as it's used in the error validation
-        private const FileOptions ValidFileOptions = FileOptions.WriteThrough | FileOptions.Asynchronous | FileOptions.RandomAccess
-            | FileOptions.DeleteOnClose | FileOptions.SequentialScan | FileOptions.Encrypted
-            | (FileOptions)0x20000000 /* NoBuffering */ | (FileOptions)0x02000000 /* BackupOrRestore */;
+        ArgumentException_NET.ThrowIfNullOrEmpty(path);
 
-        internal static bool IsIoRelatedException(Exception e) =>
-            // These all derive from IOException
-            //     DirectoryNotFoundException
-            //     DriveNotFoundException
-            //     EndOfStreamException
-            //     FileLoadException
-            //     FileNotFoundException
-            //     PathTooLongException
-            //     PipeException
-            e is IOException ||
-            // Note that SecurityException is only thrown on runtimes that support CAS
-            // e is SecurityException ||
-            e is UnauthorizedAccessException ||
-            e is NotSupportedException ||
-            (e is ArgumentException && e is not ArgumentNullException);
+        // don't include inheritable in our bounds check for share
+        FileShare tempshare = share & ~FileShare.Inheritable;
+        string? badArg = null;
 
-        internal static void ValidateArguments(string path, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
+        if (mode < FileMode.CreateNew || mode > FileMode.Append)
         {
-            ArgumentException_NET.ThrowIfNullOrEmpty(path);
+            badArg = nameof(mode);
+        }
+        else if (access < FileAccess.Read || access > FileAccess.ReadWrite)
+        {
+            badArg = nameof(access);
+        }
+        else if (tempshare < FileShare.None || tempshare > (FileShare.ReadWrite | FileShare.Delete))
+        {
+            badArg = nameof(share);
+        }
 
-            // don't include inheritable in our bounds check for share
-            FileShare tempshare = share & ~FileShare.Inheritable;
-            string? badArg = null;
+        if (badArg != null)
+        {
+            throw new ArgumentOutOfRangeException(badArg, SR.ArgumentOutOfRange_Enum);
+        }
 
-            if (mode < FileMode.CreateNew || mode > FileMode.Append)
-            {
-                badArg = nameof(mode);
-            }
-            else if (access < FileAccess.Read || access > FileAccess.ReadWrite)
-            {
-                badArg = nameof(access);
-            }
-            else if (tempshare < FileShare.None || tempshare > (FileShare.ReadWrite | FileShare.Delete))
-            {
-                badArg = nameof(share);
-            }
+        // NOTE: any change to FileOptions enum needs to be matched here in the error validation
+        if (AreInvalid(options))
+        {
+            throw new ArgumentOutOfRangeException(nameof(options), SR.ArgumentOutOfRange_Enum);
+        }
+        else if (preallocationSize < 0)
+        {
+            ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(preallocationSize));
+        }
 
-            if (badArg != null)
+        // Write access validation
+        if ((access & FileAccess.Write) == 0)
+        {
+            if (mode == FileMode.Truncate || mode == FileMode.CreateNew || mode == FileMode.Create || mode == FileMode.Append)
             {
-                throw new ArgumentOutOfRangeException(badArg, SR.ArgumentOutOfRange_Enum);
-            }
-
-            // NOTE: any change to FileOptions enum needs to be matched here in the error validation
-            if (AreInvalid(options))
-            {
-                throw new ArgumentOutOfRangeException(nameof(options), SR.ArgumentOutOfRange_Enum);
-            }
-            else if (preallocationSize < 0)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException_NeedNonNegNum(nameof(preallocationSize));
-            }
-
-            // Write access validation
-            if ((access & FileAccess.Write) == 0)
-            {
-                if (mode == FileMode.Truncate || mode == FileMode.CreateNew || mode == FileMode.Create || mode == FileMode.Append)
-                {
-                    // No write access, mode and access disagree but flag access since mode comes first
-                    throw new ArgumentException(SR.Format(SR.Argument_InvalidFileModeAndAccessCombo, mode, access), nameof(access));
-                }
-            }
-
-            if ((access & FileAccess.Read) != 0 && mode == FileMode.Append)
-            {
-                throw new ArgumentException(SR.Argument_InvalidAppendMode, nameof(access));
-            }
-
-            if (preallocationSize > 0)
-            {
-                ValidateArgumentsForPreallocation(mode, access);
+                // No write access, mode and access disagree but flag access since mode comes first
+                throw new ArgumentException(SR.Format(SR.Argument_InvalidFileModeAndAccessCombo, mode, access), nameof(access));
             }
         }
 
-        internal static void ValidateArgumentsForPreallocation(FileMode mode, FileAccess access)
+        if ((access & FileAccess.Read) != 0 && mode == FileMode.Append)
         {
-            // The user will be writing into the preallocated space.
-            if ((access & FileAccess.Write) == 0)
-            {
-                throw new ArgumentException(SR.Argument_InvalidPreallocateAccess, nameof(access));
-            }
-
-            // Only allow preallocation for newly created/overwritten files.
-            // When we fail to preallocate, we'll remove the file.
-            if (mode != FileMode.Create &&
-                mode != FileMode.CreateNew)
-            {
-                throw new ArgumentException(SR.Argument_InvalidPreallocateMode, nameof(mode));
-            }
+            throw new ArgumentException(SR.Argument_InvalidAppendMode, nameof(access));
         }
 
-        internal static bool AreInvalid(FileOptions options) => options != FileOptions.None && (options & ~ValidFileOptions) != 0;
+        if (preallocationSize > 0)
+        {
+            ValidateArgumentsForPreallocation(mode, access);
+        }
     }
+
+    private static void ValidateArgumentsForPreallocation(FileMode mode, FileAccess access)
+    {
+        // The user will be writing into the preallocated space.
+        if ((access & FileAccess.Write) == 0)
+        {
+            throw new ArgumentException(SR.Argument_InvalidPreallocateAccess, nameof(access));
+        }
+
+        // Only allow preallocation for newly created/overwritten files.
+        // When we fail to preallocate, we'll remove the file.
+        if (mode != FileMode.Create &&
+            mode != FileMode.CreateNew)
+        {
+            throw new ArgumentException(SR.Argument_InvalidPreallocateMode, nameof(mode));
+        }
+    }
+
+    private static bool AreInvalid(FileOptions options) => options != FileOptions.None && (options & ~ValidFileOptions) != 0;
 }

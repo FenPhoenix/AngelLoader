@@ -17,6 +17,10 @@ namespace AL_Common;
 
 internal static partial class PathInternal
 {
+    internal static bool IsRoot(ReadOnlySpan<char> path)
+        => path.Length == GetRootLength(path);
+
+#if ENABLE_UNUSED
     /// <summary>
     /// Returns true if the path starts in a directory separator.
     /// </summary>
@@ -25,10 +29,6 @@ internal static partial class PathInternal
     internal static string EnsureTrailingSeparator(string path)
         => EndsInDirectorySeparator(path) ? path : path + DirectorySeparatorCharAsString;
 
-    internal static bool IsRoot(ReadOnlySpan<char> path)
-        => path.Length == GetRootLength(path);
-
-#if ENABLE_UNUSED
     /// <summary>
     /// Get the common path length from the start of the string.
     /// </summary>
