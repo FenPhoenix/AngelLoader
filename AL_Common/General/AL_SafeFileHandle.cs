@@ -13,8 +13,8 @@ namespace AL_Common;
 [PublicAPI]
 public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 {
-    private string? _path;
-    internal string? Path => _path;
+    internal string? Path;
+
     private bool _lengthCanBeCached; // file has been opened for reading and not shared for writing.
 
     internal bool IsNoBuffering => (GetFileOptions() & NoBuffering) != 0;
@@ -217,7 +217,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
             __Error.WinIOError(errorCode, fullPath);
         }
 
-        fileHandle._path = fullPath;
+        fileHandle.Path = fullPath;
         fileHandle._fileOptions = options;
         fileHandle._lengthCanBeCached = (share & FileShare.Write) == 0 && (access & FileAccess.Write) == 0;
         return fileHandle;
