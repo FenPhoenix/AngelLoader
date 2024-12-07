@@ -225,6 +225,7 @@ internal static partial class PathInternal
     /// </summary>
     [return: NotNullIfNotNull(nameof(path))]
     internal static string? TrimEndingDirectorySeparator(string? path) =>
+        // @FileStreamNET: Span conversion
         EndsInDirectorySeparator(path) && !IsRoot(path.AsSpan()) ?
             path.Substring(0, path.Length - 1) :
             path;

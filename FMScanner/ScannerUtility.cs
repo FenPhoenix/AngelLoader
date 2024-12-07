@@ -130,6 +130,8 @@ internal static class Utility
 
     #region StartsWith and EndsWith
 
+    // @FileStreamNET: Span conversions - can we cache some of them caller-side?
+
     [StructLayout(LayoutKind.Auto)]
     internal readonly ref struct StringCompareReturn
     {

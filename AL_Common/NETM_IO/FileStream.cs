@@ -467,6 +467,7 @@ public sealed class FileStream_NET : Stream
         }
 
         // Copy remaining bytes into buffer, to write at a later date.
+        // @FileStreamNET: Span conversion
         source.CopyTo(_buffer.AsSpan(_writePos));
         _writePos = source.Length;
     }

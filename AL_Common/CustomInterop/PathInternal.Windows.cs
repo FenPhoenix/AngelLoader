@@ -128,6 +128,7 @@ internal static partial class PathInternal
         // In any case, all internal usages should be hitting normalize path (Path.GetFullPath) before they hit this
         // shimming method. (Or making a change that doesn't impact normalization, such as adding a filename to a
         // normalized base path.)
+        // @FileStreamNET: Span conversions
         if (IsPartiallyQualified(path.AsSpan()) || IsDevice(path.AsSpan()))
         {
             return path;

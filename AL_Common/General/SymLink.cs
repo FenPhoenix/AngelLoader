@@ -177,6 +177,7 @@ public static partial class Common
                 // GetFinalPathNameByHandle always returns with extended DOS prefix even if the link target was created without one.
                 // While this does not interfere with correct behavior, it might be unexpected.
                 // Hence we trim it if the passed-in path to the link wasn't extended.
+                // @FileStreamNET: Span conversion
                 int start = PathInternal.IsExtended(linkPath.AsSpan()) ? 0 : 4;
                 return new string(buffer, start, (int)result - start);
             }
@@ -292,6 +293,7 @@ public static partial class Common
                     if (!isRelative)
                     {
                         // Absolute target is in NT format and we need to clean it up before return it to the user.
+                        // @FileStreamNET: Span conversion
                         if (targetPath.StartsWith(PathInternal.UncNTPathPrefix.AsSpan()))
                         {
                             // We need to prepend the Win32 equivalent of UNC NT prefix.

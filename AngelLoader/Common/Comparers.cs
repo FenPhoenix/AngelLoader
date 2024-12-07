@@ -68,6 +68,7 @@ internal static class Comparers
     // From .NET Framework 4.8 source
     private static unsafe bool EqualsHelper(string strA_Str, string strB_Str, int length)
     {
+        // @FileStreamNET: Span conversions: Use &val[index]
         ReadOnlySpan<char> strA = strA_Str.AsSpan();
         ReadOnlySpan<char> strB = strB_Str.AsSpan();
 
