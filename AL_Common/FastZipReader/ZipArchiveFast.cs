@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
@@ -275,12 +274,6 @@ public sealed class ZipArchiveFast : IDisposable
 
     private bool _entriesInitialized;
 
-    /// <summary>
-    /// The collection of entries that are currently in the ZipArchive. This may not accurately represent the actual entries that are present in the underlying file or stream.
-    /// </summary>
-    /// <exception cref="NotSupportedException">The ZipArchive does not support reading.</exception>
-    /// <exception cref="ObjectDisposedException">The ZipArchive has already been closed.</exception>
-    /// <exception cref="InvalidDataException">The Zip archive is corrupt and the entries cannot be retrieved.</exception>
     [PublicAPI]
     public ListFast<ZipArchiveFastEntry> Entries
     {

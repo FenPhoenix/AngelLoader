@@ -1,6 +1,5 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
 
 using System;
 using System.IO;
@@ -232,9 +231,9 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
             return false;
         }
 
-        stream.Position += ByteLengths.Int32; // NumberOfDiskWithZip64EOCD
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithZip64EOCD
         ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // TotalNumberOfDisks
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // TotalNumberOfDisks
 
         zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator(offsetOfZip64EOCD: offsetOfZip64EOCD);
 
@@ -275,15 +274,16 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
             return false;
         }
 
-        stream.Position +=
+        stream.Seek(
             ByteLengths.Int64 + // SizeOfThisRecord
             ByteLengths.Int16 + // VersionMadeBy
-            ByteLengths.Int16;  // VersionNeededToExtract
+            ByteLengths.Int16,  // VersionNeededToExtract
+            SeekOrigin.Current);
         uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // NumberOfDiskWithStartOfCD
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithStartOfCD
         ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
         ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int64; // SizeOfCentralDirectory
+        stream.Seek(ByteLengths.Int64, SeekOrigin.Current); // SizeOfCentralDirectory
         ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
 
         zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord(
@@ -370,29 +370,46 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         ZipContext context,
         out ZipCentralDirectoryFileHeader header)
     {
-        if (BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer) != SignatureConstant)
+        if (stream.Position > stream.Length - ZipContext.EntryFieldsBufferSize)
         {
             header = new ZipCentralDirectoryFileHeader();
             return false;
         }
 
-        stream.Position +=
-            ByteLengths.Byte +  // VersionMadeBySpecification
-            ByteLengths.Byte +  // VersionMadeByCompatibility
-            ByteLengths.Int16;  // VersionNeededToExtract
-        ushort generalPurposeBitFlag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort compressionMethod = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        uint lastModified = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // Crc32
-        uint compressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        uint uncompressedSizeSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        ushort filenameLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort extraFieldLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort fileCommentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort diskNumberStartSmall = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int16; // InternalFileAttributes
-        stream.Position += ByteLengths.Int32; // ExternalFileAttributes
-        uint relativeOffsetOfLocalHeaderSmall = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
+        byte[] buffer = context.EntryFieldsBuffer;
+
+        int bytesRead = stream.ReadAll(buffer, 0, ZipContext.EntryFieldsBufferSize);
+
+        if (bytesRead < ZipContext.EntryFieldsBufferSize)
+        {
+            ThrowHelper.EndOfFile();
+        }
+
+        int bufferIndex = 0;
+
+        if (ReadUInt32_Fast(buffer, ref bufferIndex) != SignatureConstant)
+        {
+            header = new ZipCentralDirectoryFileHeader();
+            return false;
+        }
+
+        bufferIndex +=
+            ByteLengths.Byte + // VersionMadeBySpecification
+            ByteLengths.Byte + // VersionMadeByCompatibility
+            ByteLengths.Int16; // VersionNeededToExtract
+        ushort generalPurposeBitFlag = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort compressionMethod = ReadUInt16_Fast(buffer, ref bufferIndex);
+        uint lastModified = ReadUInt32_Fast(buffer, ref bufferIndex);
+        bufferIndex += ByteLengths.Int32; // Crc32
+        uint compressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
+        uint uncompressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
+        ushort filenameLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort extraFieldLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort fileCommentLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort diskNumberStartSmall = ReadUInt16_Fast(buffer, ref bufferIndex);
+        bufferIndex += ByteLengths.Int16 + // InternalFileAttributes
+                       ByteLengths.Int32;  // ExternalFileAttributes
+        uint relativeOffsetOfLocalHeaderSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
 
         stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
 
@@ -417,7 +434,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
         // stream's position to the proper place.
 
-        stream.Position = endExtraFields + fileCommentLength;
+        stream.Seek(endExtraFields + fileCommentLength, SeekOrigin.Begin);
 
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;
@@ -481,7 +498,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
         ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // SizeOfCentralDirectory
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // SizeOfCentralDirectory
         uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
         ushort commentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);

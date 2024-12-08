@@ -1,6 +1,6 @@
-FMScanner contains modified portions of code in the .NET Core 3.0 System.IO.Compression namespace, hence this explicit license is provided.
+AngelLoader contains ported and/or modified portions of code from .NET Core 3 and newer.
 
-The full source code can be obtained from: https://github.com/dotnet/corefx/tree/release/3.0/src/System.IO.Compression
+The full source code can be obtained from: https://github.com/dotnet
 ---------------------------------------------------------------------------
 
 The MIT License (MIT)

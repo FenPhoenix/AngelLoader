@@ -2240,7 +2240,7 @@ internal static partial class FMInstallAndPlay
 
 #if TIMING_TEST
             Trace.WriteLine("Total entries count: " + totalEntriesCount);
-            Trace.WriteLine("Threadable entries count: " + nonDuplicateEntriesCount);
+            Trace.WriteLine("Threadable (non-duplicate) entries count: " + nonDuplicateEntriesCount);
             Trace.WriteLine("Duplicate entries count: " + duplicateEntriesCount);
 
             sw0.Stop();
@@ -2368,7 +2368,7 @@ internal static partial class FMInstallAndPlay
                             "    FM: " + fmData.FM.Archive + $"{NL}" +
                             "    Thread count: " + threadCount + $"{NL}" +
                             "    Total entries count: " + totalEntriesCount + $"{NL}" +
-                            "    Threadable entries count: " + nonDuplicateEntriesCount + $"{NL}" +
+                            "    Threadable (non-duplicate) entries count: " + nonDuplicateEntriesCount + $"{NL}" +
                             "    Duplicate entries count: " + duplicateEntriesCount + $"{NL}" +
                             "    Initial read: " + sw0.Elapsed + $"{NL}" +
                             "    Full archive threaded extract: " + sw.Elapsed);
@@ -2432,8 +2432,8 @@ internal static partial class FMInstallAndPlay
                 ExtractableEntries entriesToExtract =
                     Zip_CreateDirsAndGetExtractableEntries(archive.Entries, fmInstalledPath);
 
-                int entriesCount = entriesToExtract.TotalCount;
-                for (int i = 0; i < entriesCount; i++)
+                int entriesTotalCount = entriesToExtract.TotalCount;
+                for (int i = 0; i < entriesTotalCount; i++)
                 {
                     ExtractableEntry entry = entriesToExtract[i];
 
@@ -2446,7 +2446,7 @@ internal static partial class FMInstallAndPlay
 
                     _installCts.Token.ThrowIfCancellationRequested();
 
-                    int percent = GetPercentFromValue_Int(i + 1, entriesCount);
+                    int percent = GetPercentFromValue_Int(i + 1, entriesTotalCount);
                     int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
 
                     ReportExtractProgress(percent, newMainPercent, fmData, single);

@@ -270,7 +270,17 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     {
         if (FullScreen)
         {
-            SplitterDistance = FullScreenCollapsePanel == Panel.Panel1 ? CollapsedSize : CrossLength - CollapsedSize;
+            SplitterDistance = FullScreenCollapsePanel == Panel.Panel1
+                ? CollapsedSize
+                /*
+                Count the splitter width to prevent the size being inaccurate immediately after un-collapse.
+                This is also just the accurate thing period, but the collapsible panel's width normally clamps
+                to CollapsedSize because of our custom-collapse code setting the panel min size to CollapsedSize
+                when custom-collapsed. When real collapsed and then real-uncollapsed, though, the inaccuracy was
+                manifesting itself and the collapsible panel was SplitterWidth pixels too short, due to us not
+                taking the splitter width into account.
+                */
+                : CrossLength - (CollapsedSize + SplitterWidth);
         }
     }
 

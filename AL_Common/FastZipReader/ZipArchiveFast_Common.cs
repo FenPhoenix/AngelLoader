@@ -66,8 +66,10 @@ public sealed class ZipContext
     internal readonly byte[] FilenameBuffer = new byte[65536];
 
     private const int _backwardsSeekingBufferSize = 32;
+    internal const int EntryFieldsBufferSize = 46;
 
     internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
+    internal readonly byte[] EntryFieldsBuffer = new byte[EntryFieldsBufferSize];
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
@@ -207,6 +209,7 @@ internal static class ZipArchiveFast_Common
     /// <summary>
     /// Reads exactly bytesToRead out of stream, unless it is out of bytes
     /// </summary>
+    // From modern .NET
     private static void ReadBytes(FileStream stream, byte[] buffer, int bytesToRead)
     {
         int bytesLeftToRead = bytesToRead;
@@ -226,6 +229,7 @@ internal static class ZipArchiveFast_Common
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
+    // From modern .NET
     internal static bool SeekBackwardsToSignature(FileStream stream, uint signatureToFind, ZipContext context)
     {
         int bufferPointer = 0;
@@ -267,6 +271,7 @@ internal static class ZipArchiveFast_Common
     }
 
     // Returns true if we are out of bytes
+    // From modern .NET
     private static bool SeekBackwardsAndRead(FileStream stream, byte[] buffer, out int bufferPointer)
     {
         if (stream.Position >= buffer.Length)
@@ -317,6 +322,45 @@ internal static class ZipArchiveFast_Common
         return Unsafe.ReadUnaligned<long>(ref value[startIndex]);
     }
 
+    #region Fast readers
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static short ReadInt16_Fast(byte[] value, ref int startIndex)
+    {
+        short ret = Unsafe.ReadUnaligned<short>(ref value[startIndex]);
+        startIndex += ByteLengths.Int16;
+        return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ushort ReadUInt16_Fast(byte[] value, ref int startIndex) => unchecked((ushort)ReadInt16_Fast(value, ref startIndex));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static int ReadInt32_Fast(byte[] value, ref int startIndex)
+    {
+        int ret = Unsafe.ReadUnaligned<int>(ref value[startIndex]);
+        startIndex += ByteLengths.Int32;
+        return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static uint ReadUInt32_Fast(byte[] value, ref int startIndex) => unchecked((uint)ReadInt32_Fast(value, ref startIndex));
+
+#if false
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static long ReadInt64_Fast(byte[] value, ref int startIndex)
+    {
+        long ret = Unsafe.ReadUnaligned<long>(ref value[startIndex]);
+        startIndex += ByteLengths.Int64;
+        return ret;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ulong ReadUInt64_Fast(byte[] value, ref int startIndex) => unchecked((ulong)ReadInt64_Fast(value, ref startIndex));
+#endif
+
+    #endregion
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static string GetUnsupportedCompressionMethodErrorMessage(CompressionMethodValues compressionMethod)
     {
@@ -330,6 +374,7 @@ internal static class ZipArchiveFast_Common
             or CompressionMethodValues.Deflate
             or CompressionMethodValues.Deflate64;
 
+    // From modern .NET
     internal static Stream GetDataDecompressor(ZipArchiveFastEntry entry, SubReadStream compressedStreamToRead)
     {
         Stream uncompressedStream;
@@ -355,6 +400,7 @@ internal static class ZipArchiveFast_Common
         return uncompressedStream;
     }
 
+    // From modern .NET
     internal static bool IsOpenable(
         ZipArchiveFastEntry entry,
         FileStream archiveStream,
