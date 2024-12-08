@@ -211,6 +211,7 @@ internal static class ZipArchiveFast_Common
     /// <summary>
     /// Reads exactly bytesToRead out of stream, unless it is out of bytes
     /// </summary>
+    // From modern .NET
     private static void ReadBytes(FileStream_NET stream, byte[] buffer, int bytesToRead)
     {
         int bytesLeftToRead = bytesToRead;
@@ -230,6 +231,7 @@ internal static class ZipArchiveFast_Common
     // assumes all bytes of signatureToFind are non zero, looks backwards from current position in stream,
     // if the signature is found then returns true and positions stream at first byte of signature
     // if the signature is not found, returns false
+    // From modern .NET
     internal static bool SeekBackwardsToSignature(FileStream_NET stream, uint signatureToFind, ZipContext context)
     {
         int bufferPointer = 0;
@@ -271,6 +273,7 @@ internal static class ZipArchiveFast_Common
     }
 
     // Returns true if we are out of bytes
+    // From modern .NET
     private static bool SeekBackwardsAndRead(FileStream_NET stream, byte[] buffer, out int bufferPointer)
     {
         if (stream.Position >= buffer.Length)
@@ -373,6 +376,7 @@ internal static class ZipArchiveFast_Common
             or CompressionMethodValues.Deflate
             or CompressionMethodValues.Deflate64;
 
+    // From modern .NET
     internal static Stream GetDataDecompressor(ZipArchiveFastEntry entry, SubReadStream compressedStreamToRead)
     {
         Stream uncompressedStream;
@@ -398,6 +402,7 @@ internal static class ZipArchiveFast_Common
         return uncompressedStream;
     }
 
+    // From modern .NET
     internal static bool IsOpenable(
         ZipArchiveFastEntry entry,
         FileStream_NET archiveStream,
