@@ -4538,19 +4538,6 @@ public sealed partial class MainForm : DarkFormBase,
         {
             MainSplitContainer.ToggleFullScreen();
             BottomSplitContainer.Panel2Collapsed = MainSplitContainer.FullScreen;
-
-            // Hack to fix broken size of panel 2 when we un-collapse it
-            if (BottomSplitContainer.FullScreen)
-            {
-                BottomSplitContainer.SplitterDistance =
-                    /*
-                    We need to +2, no idea why. If we +2 on the actual CollapsedSize value when creating it,
-                    then it's 2px too wide in the normal case. Who knows. This is why we don't use PanelXCollapsed
-                    for anything else, it just doesn't work right.
-                    */
-                    BottomSplitContainer.Width - (BottomSplitContainer.CollapsedSize + 2);
-            }
-
             ShowReadmeControls(CursorOverReadmeArea());
         }
         else if (sender == ReadmeEncodingButton)
