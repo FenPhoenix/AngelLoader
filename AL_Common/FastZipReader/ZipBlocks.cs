@@ -233,9 +233,9 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
             return false;
         }
 
-        stream.Position += ByteLengths.Int32; // NumberOfDiskWithZip64EOCD
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithZip64EOCD
         ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // TotalNumberOfDisks
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // TotalNumberOfDisks
 
         zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator(offsetOfZip64EOCD: offsetOfZip64EOCD);
 
@@ -276,15 +276,16 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
             return false;
         }
 
-        stream.Position +=
+        stream.Seek(
             ByteLengths.Int64 + // SizeOfThisRecord
             ByteLengths.Int16 + // VersionMadeBy
-            ByteLengths.Int16;  // VersionNeededToExtract
+            ByteLengths.Int16,  // VersionNeededToExtract
+            SeekOrigin.Current);
         uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // NumberOfDiskWithStartOfCD
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithStartOfCD
         ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
         ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int64; // SizeOfCentralDirectory
+        stream.Seek(ByteLengths.Int64, SeekOrigin.Current); // SizeOfCentralDirectory
         ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
 
         zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord(
@@ -435,7 +436,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         // bails out without reading all the way to the end of the ExtraField block. Thus we must force the
         // stream's position to the proper place.
 
-        stream.Position = endExtraFields + fileCommentLength;
+        stream.Seek(endExtraFields + fileCommentLength, SeekOrigin.Begin);
 
         long uncompressedSize = zip64.UncompressedSize ?? uncompressedSizeSmall;
         long compressedSize = zip64.CompressedSize ?? compressedSizeSmall;
@@ -499,7 +500,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
         ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        stream.Position += ByteLengths.Int32; // SizeOfCentralDirectory
+        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // SizeOfCentralDirectory
         uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
         ushort commentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
