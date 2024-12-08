@@ -67,9 +67,11 @@ public sealed class ZipContext
 
     private const int _backwardsSeekingBufferSize = 32;
     internal const int EntryFieldsBufferSize = 46;
+    internal const int GenericExtraFieldBufferSize = 4;
 
     internal readonly byte[] BackwardsSeekingBuffer = new byte[_backwardsSeekingBufferSize];
     internal readonly byte[] EntryFieldsBuffer = new byte[EntryFieldsBufferSize];
+    internal readonly byte[] GenericExtraFieldBuffer = new byte[GenericExtraFieldBufferSize];
 
     internal readonly BinaryBuffer BinaryReadBuffer = new();
 
