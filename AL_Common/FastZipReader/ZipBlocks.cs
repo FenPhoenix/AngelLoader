@@ -49,8 +49,17 @@ internal readonly ref struct ZipGenericExtraField
             return false;
         }
 
-        ushort tag = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        ushort dataSize = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
+        byte[] buffer = context.GenericExtraFieldBuffer;
+
+        int bytesRead = stream.ReadAll(buffer, 0, ZipContext.GenericExtraFieldBufferSize);
+        if (bytesRead < ZipContext.GenericExtraFieldBufferSize)
+        {
+            ThrowHelper.EndOfFile();
+        }
+
+        int bufferIndex = 0;
+        ushort tag = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort dataSize = ReadUInt16_Fast(buffer, ref bufferIndex);
 
         // not enough bytes to read the data
         if (endExtraField - stream.Position < dataSize)
