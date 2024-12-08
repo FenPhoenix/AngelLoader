@@ -10,8 +10,6 @@ namespace AL_Common.NETM_IO;
 
 public sealed class FileStream_NET : Stream
 {
-    //private readonly BufferedFileStreamStrategy _strategy;
-
     private readonly AL_SafeFileHandle _fileHandle; // only ever null if ctor throws
     private readonly FileAccess _access; // What file was opened for.
 
@@ -70,7 +68,6 @@ public sealed class FileStream_NET : Stream
     {
         FileStreamHelpers.ValidateArguments(path, mode, access, share, options, preallocationSize);
 
-        //_strategy = FileStreamHelpers.ChooseStrategy(path, mode, access, share, buffer, options, preallocationSize);
         _bufferSize = buffer.Length;
         _buffer = buffer;
 
