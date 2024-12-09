@@ -254,13 +254,41 @@ internal static class FMTags
         Also, this returned array is also temporary, we really just want the substrings out of the main string,
         and the Split array is just the easiest way to do it, but it's not actually necessary for the task at hand.
         */
-        string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
-        foreach (string item in tagsArray)
+
+        // Save the alloc-fest of Split() if we only have one tag item to begin with
+        if (HasMultipleTags(tagsToAdd))
+        {
+            string[] tagsArray = tagsToAdd.Split(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string item in tagsArray)
+            {
+                DoLoopBody(item, existingFMTags, addToGlobalList);
+            }
+        }
+        else
+        {
+            DoLoopBody(tagsToAdd, existingFMTags, addToGlobalList);
+        }
+
+        return;
+
+        static bool HasMultipleTags(string tagsToAdd)
+        {
+            foreach (char c in tagsToAdd)
+            {
+                if (c is ',' or ';')
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static void DoLoopBody(string item, FMCategoriesCollection existingFMTags, bool addToGlobalList)
         {
             if (!TryGetCatAndTag(item, out string cat, out string tag) ||
                 cat.IsEmpty() || tag.IsEmpty())
             {
-                continue;
+                return;
             }
 
             #region FM tags
@@ -276,7 +304,7 @@ internal static class FMTags
 
             #endregion
 
-            if (!addToGlobalList) continue;
+            if (!addToGlobalList) return;
 
             #region Global tags
 
