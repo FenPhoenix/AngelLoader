@@ -326,7 +326,7 @@ public static partial class Utils
 
             // @FileStreamNET: Use of FileStream
             using FileStream fs = File.Create(
-                Path.Combine(path, Path.GetRandomFileName()),
+                Path.Combine(path, Path_GetRandomFileName()),
                 1,
                 FileOptions.DeleteOnClose);
             return true;

@@ -684,7 +684,7 @@ public sealed class Scanner : IDisposable
 
         // Random name for solid archive temp extract operations, to prevent possible file/folder name
         // clashes in parallelized scenario.
-        string tempRandomName = Path.GetRandomFileName().Trim();
+        string tempRandomName = Path_GetRandomFileName().Trim();
 
         bool nullAlreadyAdded = false;
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
@@ -355,6 +356,74 @@ public static partial class Common
             ThrowHelper.ThrowInvalidOperationException(SR.InvalidOperation_NullArray);
         }
     }
+
+    #region Path.GetRandomFileName() from modern .NET
+
+    private static ReadOnlySpan<byte> Base32Char => "abcdefghijklmnopqrstuvwxyz012345"u8;
+
+    /// <summary>
+    /// Returns a cryptographically strong random 8.3 string that can be
+    /// used as either a folder name or a file name.
+    /// </summary>
+    public static unsafe string Path_GetRandomFileName()
+    {
+        // For generating random file names
+        // 8 random bytes provides 12 chars in our encoding for the 8.3 name.
+        const int KeyLength = 8;
+
+        byte* pKey = stackalloc byte[KeyLength];
+        Interop.GetRandomBytes(pKey, KeyLength);
+
+        Span<char> chars = stackalloc char[12];
+
+        byte b0 = pKey[0];
+        byte b1 = pKey[1];
+        byte b2 = pKey[2];
+        byte b3 = pKey[3];
+        byte b4 = pKey[4];
+
+        // write to chars[11] first in order to eliminate redundant bounds checks
+        chars[11] = (char)Base32Char[pKey[7] & 0x1F];
+
+        // Consume the 5 Least significant bits of the first 5 bytes
+        chars[0] = (char)Base32Char[b0 & 0x1F];
+        chars[1] = (char)Base32Char[b1 & 0x1F];
+        chars[2] = (char)Base32Char[b2 & 0x1F];
+        chars[3] = (char)Base32Char[b3 & 0x1F];
+        chars[4] = (char)Base32Char[b4 & 0x1F];
+
+        // Consume 3 MSB of b0, b1, MSB bits 6, 7 of b3, b4
+        chars[5] = (char)Base32Char[
+            ((b0 & 0xE0) >> 5) |
+            ((b3 & 0x60) >> 2)];
+
+        chars[6] = (char)Base32Char[
+            ((b1 & 0xE0) >> 5) |
+            ((b4 & 0x60) >> 2)];
+
+        // Consume 3 MSB bits of b2, 1 MSB bit of b3, b4
+        b2 >>= 5;
+
+        Debug.Assert((b2 & 0xF8) == 0, "Unexpected set bits");
+
+        if ((b3 & 0x80) != 0)
+            b2 |= 0x08;
+        if ((b4 & 0x80) != 0)
+            b2 |= 0x10;
+
+        chars[7] = (char)Base32Char[b2];
+
+        // Set the file extension separator
+        chars[8] = '.';
+
+        // Consume the 5 Least significant bits of the remaining 3 bytes
+        chars[9] = (char)Base32Char[pKey[5] & 0x1F];
+        chars[10] = (char)Base32Char[pKey[6] & 0x1F];
+
+        return chars.ToString();
+    }
+
+    #endregion
 
     #endregion
 }
