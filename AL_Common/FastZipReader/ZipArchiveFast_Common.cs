@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.DeflateManaged;
 using JetBrains.Annotations;
@@ -52,6 +53,24 @@ internal enum CompressionMethodValues : ushort
 
 public sealed class ZipCompressionMethodException(string message) : Exception(message);
 
+public sealed class ZipUShortBuffer
+{
+    private const ushort StartingArrayLength = 256;
+    private byte[] _array = new byte[StartingArrayLength];
+    // uint so we can hold 65536 without having to special-case 65535
+    private uint _arrayLength = StartingArrayLength;
+
+    public byte[] GetArray(ushort length)
+    {
+        if (length > _arrayLength)
+        {
+            _arrayLength = BitOperations.RoundUpToPowerOf2(length);
+            _array = new byte[_arrayLength];
+        }
+        return _array;
+    }
+}
+
 // We should try to just make the zip archive classes be like the scanner, where it's one object that just
 // has like a Reset(stream) method that loads another stream and resets all its values. That'd be much nicer.
 public sealed class ZipContext
@@ -62,8 +81,8 @@ public sealed class ZipContext
 
     public readonly byte[] FileStreamBuffer = new byte[4096];
 
-    internal readonly byte[] DataBuffer = new byte[65536];
-    internal readonly byte[] FilenameBuffer = new byte[65536];
+    internal readonly ZipUShortBuffer DataBuffer = new();
+    internal readonly ZipUShortBuffer FileNameBuffer = new();
 
     private const int _backwardsSeekingBufferSize = 32;
     internal const int EntryFieldsBufferSize = 46;

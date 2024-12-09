@@ -67,9 +67,10 @@ internal readonly ref struct ZipGenericExtraField
             return false;
         }
 
-        stream.ReadAll(context.DataBuffer, 0, dataSize);
+        byte[] dataBuffer = context.DataBuffer.GetArray(dataSize);
+        stream.ReadAll(dataBuffer, 0, dataSize);
 
-        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: context.DataBuffer);
+        field = new ZipGenericExtraField(tag: tag, dataSize: dataSize, data: dataBuffer);
 
         return true;
     }
@@ -412,7 +413,7 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         bufferIndex += ByteLengths.Int32; // Crc32
         uint compressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
         uint uncompressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
-        ushort filenameLength = ReadUInt16_Fast(buffer, ref bufferIndex);
+        ushort fileNameLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort extraFieldLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort fileCommentLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort diskNumberStartSmall = ReadUInt16_Fast(buffer, ref bufferIndex);
@@ -420,7 +421,8 @@ public readonly ref struct ZipCentralDirectoryFileHeader
                        ByteLengths.Int32;  // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
 
-        stream.ReadAll(context.FilenameBuffer, 0, filenameLength);
+        byte[] fileNameBuffer = context.FileNameBuffer.GetArray(fileNameLength);
+        stream.ReadAll(fileNameBuffer, 0, fileNameLength);
 
         bool uncompressedSizeInZip64 = uncompressedSizeSmall == Mask32Bit;
         bool compressedSizeInZip64 = compressedSizeSmall == Mask32Bit;
@@ -458,8 +460,8 @@ public readonly ref struct ZipCentralDirectoryFileHeader
             uncompressedSize: uncompressedSize,
             diskNumberStart: diskNumberStart,
             relativeOffsetOfLocalHeader: relativeOffsetOfLocalHeader,
-            filename: context.FilenameBuffer,
-            filenameLength: filenameLength
+            filename: fileNameBuffer,
+            filenameLength: fileNameLength
         );
 
         return true;
