@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -40,7 +41,8 @@ public static partial class Common
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), new StreamReaderCustom());
+        using FileStreamWithRentedBuffer fs = new(path);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
@@ -51,7 +53,8 @@ public static partial class Common
     public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
     {
         var ret = new List<string>();
-        using var sr = new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path), encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
+        using FileStreamWithRentedBuffer fs = new(path);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
@@ -64,14 +67,57 @@ public static partial class Common
         return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path, bufferSize), new StreamReaderCustom());
     }
 
-    public static FileStream_NET File_OpenReadFast(string path)
+    [StructLayout(LayoutKind.Auto)]
+    public readonly ref struct FileStreamWithRentedBuffer
     {
-        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
+        public readonly FileStream_NET FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStreamWithRentedBuffer(string path)
+        {
+            Buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+            FileStream = new FileStream_NET(
+                path, FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                Buffer,
+                FileStreamBufferSize);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
+    }
+
+    public sealed class FileStreamWithRentedBuffer_Ref : IDisposable
+    {
+        public readonly FileStream_NET FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStreamWithRentedBuffer_Ref(string path)
+        {
+            Buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+            FileStream = new FileStream_NET(
+                path,
+                FileMode.Open,
+                FileAccess.Read,
+                FileShare.Read,
+                Buffer,
+                FileStreamBufferSize);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
     }
 
     public static FileStream_NET File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[bufferSize]);
+        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[bufferSize], bufferSize);
     }
 
     #endregion

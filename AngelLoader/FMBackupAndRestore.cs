@@ -302,9 +302,9 @@ internal static partial class FMInstallAndPlay
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
             ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-            using var fs = File_OpenReadFast(fileNameOnDisk);
-            using var eo = entry.Open();
-            StreamCopyNoAlloc(fs, eo, buffer);
+            using FileStreamWithRentedBuffer fs = new(fileNameOnDisk);
+            using Stream eo = entry.Open();
+            StreamCopyNoAlloc(fs.FileStream, eo, buffer);
         }
 
         static bool IsSaveOrScreenshot(string path, Game game) =>
@@ -424,8 +424,7 @@ internal static partial class FMInstallAndPlay
             }
             else if (fmArchivePath.ExtIsRar())
             {
-                using var fs = File_OpenReadFast(fmArchivePath);
-                using var archive = RarArchive.Open(fmArchivePath);
+                using RarArchive archive = RarArchive.Open(fmArchivePath);
 
                 ICollection<RarArchiveEntry> entries = archive.Entries;
                 int entriesCount = entries.Count;
@@ -504,8 +503,8 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using var fs = File_OpenReadFast(fmArchivePath);
-                var archive = new SevenZipArchive(fs);
+                using FileStreamWithRentedBuffer fs = new(fmArchivePath);
+                SevenZipArchive archive = new(fs.FileStream);
 
                 ListFast<SevenZipArchiveEntry> entries = archive.Entries;
                 int entriesCount = entries.Count;

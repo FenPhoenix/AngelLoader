@@ -18,8 +18,8 @@ internal static class WriConversion
     {
         try
         {
-            using var fs = File_OpenReadFast(fileName);
-            (bool success, _, _) = ReadWriFileHeader(fs);
+            using FileStreamWithRentedBuffer fs = new(fileName);
+            (bool success, _, _) = ReadWriFileHeader(fs.FileStream);
             return success;
         }
         catch

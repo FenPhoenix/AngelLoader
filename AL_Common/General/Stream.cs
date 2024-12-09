@@ -12,14 +12,14 @@ public static partial class Common
 
     public static FileStream_NET GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
     {
-        FileStream_NET fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer);
+        FileStream_NET fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, buffer, buffer.Length);
         return fs;
     }
 
     public static FileStream_NET GetWriteModeFileStreamWithCachedBuffer(string path, bool overwrite, byte[] buffer)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
-        FileStream_NET fs = new(path, mode, FileAccess.Write, FileShare.Read, buffer);
+        FileStream_NET fs = new(path, mode, FileAccess.Write, FileShare.Read, buffer, buffer.Length);
         return fs;
     }
 

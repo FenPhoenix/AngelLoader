@@ -23,11 +23,11 @@ public sealed class FileStream_NET : Stream
     private int _readPos;
     private int _readLen;
 
-    public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer)
+    public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer, int bufferSize)
     {
         ValidateHandle(handle, access);
 
-        _bufferSize = buffer.Length;
+        _bufferSize = bufferSize;
         _buffer = buffer;
 
         _access = access;
@@ -46,13 +46,13 @@ public sealed class FileStream_NET : Stream
         _fileHandle = handle;
     }
 
-    public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer)
-        : this(path, mode, access, share, buffer, FileOptions.None)
+    public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, int bufferSize)
+        : this(path, mode, access, share, buffer, bufferSize, FileOptions.None)
     {
     }
 
-    public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options)
-        : this(path, mode, access, share, buffer, options, 0)
+    public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, int bufferSize, FileOptions options)
+        : this(path, mode, access, share, buffer, bufferSize, options, 0)
     {
     }
 
@@ -64,11 +64,11 @@ public sealed class FileStream_NET : Stream
         Dispose(false);
     }
 
-    private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, FileOptions options, long preallocationSize)
+    private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, int bufferSize, FileOptions options, long preallocationSize)
     {
         FileStreamHelpers.ValidateArguments(path, mode, access, share, options, preallocationSize);
 
-        _bufferSize = buffer.Length;
+        _bufferSize = bufferSize;
         _buffer = buffer;
 
         string fullPath = Path.GetFullPath(path);

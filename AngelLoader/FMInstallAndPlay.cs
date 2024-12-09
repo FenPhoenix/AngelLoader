@@ -1377,14 +1377,14 @@ internal static partial class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using FileStream_NET fs = File_OpenReadFast(misFile);
+                    using FileStreamWithRentedBuffer fs = new(misFile);
 
-                    long streamLength = fs.Length;
+                    long streamLength = fs.FileStream.Length;
 
                     if (streamLength > MAPPARAM_NewDarkLocation + MAPPARAM.Length)
                     {
-                        fs.Position = MAPPARAM_NewDarkLocation;
-                        int bytesRead = fs.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
+                        fs.FileStream.Position = MAPPARAM_NewDarkLocation;
+                        int bytesRead = fs.FileStream.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
                         if (bytesRead == MAPPARAM.Length && buffer.StartsWith(MAPPARAM))
                         {
                             return false;
@@ -1396,8 +1396,8 @@ internal static partial class FMInstallAndPlay
                     if (!atLeastOneOldDarkMissionFound &&
                         streamLength > MAPPARAM_OldDarkLocation + MAPPARAM.Length)
                     {
-                        fs.Position = MAPPARAM_OldDarkLocation;
-                        int bytesRead = fs.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
+                        fs.FileStream.Position = MAPPARAM_OldDarkLocation;
+                        int bytesRead = fs.FileStream.ReadAll(buffer.Cleared(), 0, MAPPARAM.Length);
                         if (bytesRead == MAPPARAM.Length && buffer.StartsWith(MAPPARAM))
                         {
                             atLeastOneOldDarkMissionFound = true;
@@ -1409,15 +1409,15 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using FileStream_NET fs = File_OpenReadFast(smallestUsedMisFile);
+                using FileStreamWithRentedBuffer fs = new(smallestUsedMisFile);
 
-                if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.Length)
+                if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.FileStream.Length)
                 {
                     return false;
                 }
 
-                fs.Position = DARKMISS_NewDarkLocation;
-                int bytesRead = fs.ReadAll(buffer.Cleared(), 0, _DARKMISS_Bytes.Length);
+                fs.FileStream.Position = DARKMISS_NewDarkLocation;
+                int bytesRead = fs.FileStream.ReadAll(buffer.Cleared(), 0, _DARKMISS_Bytes.Length);
 
                 return !(bytesRead == _DARKMISS_Bytes.Length && buffer.StartsWith(_DARKMISS_Bytes));
             }
@@ -2603,15 +2603,15 @@ internal static partial class FMInstallAndPlay
         {
             Directory.CreateDirectory(fmInstalledPath);
 
-            using var fs = File_OpenReadFast(fmData.ArchiveFilePath);
+            using FileStreamWithRentedBuffer fs = new(fmData.ArchiveFilePath);
             int entriesCount;
-            using (var archive = RarArchive.Open(fs))
+            using (var archive = RarArchive.Open(fs.FileStream))
             {
                 entriesCount = archive.Entries.Count;
-                fs.Position = 0;
+                fs.FileStream.Position = 0;
             }
 
-            using var reader = RarReader.Open(fs);
+            using var reader = RarReader.Open(fs.FileStream);
 
             int i = -1;
             while (reader.MoveToNextEntry())
@@ -2689,10 +2689,10 @@ internal static partial class FMInstallAndPlay
 
             int entriesCount;
 
-            using (var fs = File_OpenReadFast(fmData.ArchiveFilePath))
+            using (FileStreamWithRentedBuffer fs = new(fmData.ArchiveFilePath))
             {
-                var extractor = new SevenZipArchive(fs);
-                entriesCount = extractor.GetEntryCountOnly();
+                SevenZipArchive sevenZipArchive = new(fs.FileStream);
+                entriesCount = sevenZipArchive.GetEntryCountOnly();
             }
 
             void ReportProgress(Fen7z.ProgressReport pr)
