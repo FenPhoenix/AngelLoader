@@ -71,7 +71,7 @@ public static partial class Common
 
     public static FileStream_NET File_OpenReadFast(string path, int bufferSize)
     {
-        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[4096]);
+        return new FileStream_NET(path, FileMode.Open, FileAccess.Read, FileShare.Read, new byte[bufferSize]);
     }
 
     #endregion
