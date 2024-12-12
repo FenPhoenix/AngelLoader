@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AL_Common;
 using AL_Common.FastZipReader;
-using AL_Common.NETM_IO;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;

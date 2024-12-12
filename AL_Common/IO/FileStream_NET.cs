@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace AL_Common.NETM_IO;
+namespace AL_Common;
 
 public sealed class FileStream_NET : Stream
 {

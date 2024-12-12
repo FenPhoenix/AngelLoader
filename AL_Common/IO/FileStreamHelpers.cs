@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace AL_Common.NETM_IO;
+namespace AL_Common;
 
 internal static class FileStreamHelpers
 {
