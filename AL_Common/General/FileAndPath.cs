@@ -72,15 +72,43 @@ public static partial class Common
         public readonly FileStream_NET FileStream;
         private readonly byte[] Buffer;
 
-        public FileStreamWithRentedBuffer(string path)
+        public FileStreamWithRentedBuffer(string path, int bufferSize = FileStreamBufferSize)
         {
-            Buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+            Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             FileStream = new FileStream_NET(
-                path, FileMode.Open,
+                path,
+                FileMode.Open,
                 FileAccess.Read,
                 FileShare.Read,
                 Buffer,
-                FileStreamBufferSize);
+                bufferSize);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    public readonly ref struct FileStream_Write_WithRentedBuffer
+    {
+        public readonly FileStream_NET FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStream_Write_WithRentedBuffer(string path, bool overwrite = true, int bufferSize = FileStreamBufferSize)
+        {
+            FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
+
+            Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            FileStream = new FileStream_NET(
+                path,
+                mode,
+                FileAccess.Write,
+                FileShare.Read,
+                Buffer,
+                bufferSize);
         }
 
         public void Dispose()

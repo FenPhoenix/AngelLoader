@@ -432,8 +432,8 @@ internal static partial class Ini
     private static void WriteFMDataIni(List<FanMission> fmDataList, List<FanMission> fmDataListTDM, string fileName)
     {
         // Larger buffer size helps with perf for larger file sizes.
-        using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, ByteSize.KB * 256);
-        using var sw = new StreamWriter(fs, Encoding.UTF8, ByteSize.KB * 256);
+        using var fs = new FileStream_Write_WithRentedBuffer(fileName, bufferSize: ByteSize.KB * 256);
+        using var sw = new StreamWriter(fs.FileStream, Encoding.UTF8, ByteSize.KB * 256);
 
         static void AddFMToSW(FanMission fm, StreamWriter sw)
         {
