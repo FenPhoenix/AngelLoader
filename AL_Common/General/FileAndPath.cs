@@ -40,7 +40,7 @@ public static partial class Common
     public static List<string> File_ReadAllLines_List(string path)
     {
         var ret = new List<string>();
-        using FileStreamWithRentedBuffer fs = new(path);
+        using FileStream_Read_WithRentedBuffer fs = new(path);
         using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
@@ -52,7 +52,7 @@ public static partial class Common
     public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
     {
         var ret = new List<string>();
-        using FileStreamWithRentedBuffer fs = new(path);
+        using FileStream_Read_WithRentedBuffer fs = new(path);
         using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
@@ -67,12 +67,12 @@ public static partial class Common
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly ref struct FileStreamWithRentedBuffer
+    public readonly ref struct FileStream_Read_WithRentedBuffer
     {
         public readonly FileStream_NET FileStream;
         private readonly byte[] Buffer;
 
-        public FileStreamWithRentedBuffer(string path, int bufferSize = FileStreamBufferSize)
+        public FileStream_Read_WithRentedBuffer(string path, int bufferSize = FileStreamBufferSize)
         {
             Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             FileStream = new FileStream_NET(

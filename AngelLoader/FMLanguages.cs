@@ -270,7 +270,7 @@ internal static class FMLanguages
 
             if (archivePath.ExtIsZip())
             {
-                using FileStreamWithRentedBuffer fs = new(archivePath);
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
                 using ZipArchiveFast zipArchive = new(fs.FileStream, allowUnsupportedEntries: true);
                 ListFast<ZipArchiveFastEntry> entries = zipArchive.Entries;
                 int filesCount = entries.Count;
@@ -284,7 +284,7 @@ internal static class FMLanguages
             }
             else if (archivePath.ExtIsRar())
             {
-                using FileStreamWithRentedBuffer fs = new(archivePath);
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
                 using var rarArchive = RarArchive.Open(fs.FileStream);
                 var entries = rarArchive.Entries;
                 foreach (var entry in entries)
@@ -296,7 +296,7 @@ internal static class FMLanguages
             }
             else
             {
-                using FileStreamWithRentedBuffer fs = new(archivePath);
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
                 var sevenZipArchive = new SevenZipArchive(fs.FileStream);
                 ListFast<SevenZipArchiveEntry> entries = sevenZipArchive.Entries;
                 for (int i = 0; i < entries.Count; i++)

@@ -1376,7 +1376,7 @@ internal static partial class FMInstallAndPlay
                 // highest dark version found in the mission set.
                 foreach (string misFile in usedMisFiles)
                 {
-                    using FileStreamWithRentedBuffer fs = new(misFile);
+                    using FileStream_Read_WithRentedBuffer fs = new(misFile);
 
                     long streamLength = fs.FileStream.Length;
 
@@ -1408,7 +1408,7 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using FileStreamWithRentedBuffer fs = new(smallestUsedMisFile);
+                using FileStream_Read_WithRentedBuffer fs = new(smallestUsedMisFile);
 
                 if (DARKMISS_NewDarkLocation + _DARKMISS_Bytes.Length > fs.FileStream.Length)
                 {
@@ -2602,7 +2602,7 @@ internal static partial class FMInstallAndPlay
         {
             Directory.CreateDirectory(fmInstalledPath);
 
-            using FileStreamWithRentedBuffer fs = new(fmData.ArchiveFilePath);
+            using FileStream_Read_WithRentedBuffer fs = new(fmData.ArchiveFilePath);
             int entriesCount;
             using (var archive = RarArchive.Open(fs.FileStream))
             {
@@ -2688,7 +2688,7 @@ internal static partial class FMInstallAndPlay
 
             int entriesCount;
 
-            using (FileStreamWithRentedBuffer fs = new(fmData.ArchiveFilePath))
+            using (FileStream_Read_WithRentedBuffer fs = new(fmData.ArchiveFilePath))
             {
                 SevenZipArchive sevenZipArchive = new(fs.FileStream);
                 entriesCount = sevenZipArchive.GetEntryCountOnly();

@@ -101,7 +101,7 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using FileStreamWithRentedBuffer fs = new(camModIni);
+        using FileStream_Read_WithRentedBuffer fs = new(camModIni);
         using (var sr = new StreamReaderCustom.SRC_Wrapper(
                    stream: fs.FileStream,
                    encoding: Encoding.Default,

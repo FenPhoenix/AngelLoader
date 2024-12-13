@@ -371,7 +371,7 @@ internal static class FMCache
 
                 int extractorFilesCount;
 
-                using (FileStreamWithRentedBuffer fs = new(fmArchivePath))
+                using (FileStream_Read_WithRentedBuffer fs = new(fmArchivePath))
                 {
                     SevenZipArchive archive = new(fs.FileStream);
                     ListFast<SevenZipArchiveEntry> entries = archive.Entries;
@@ -705,7 +705,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
                 List<string> archiveNonExcludedFullFileNames = new();
-                using (FileStreamWithRentedBuffer fs = new(fmArchivePath))
+                using (FileStream_Read_WithRentedBuffer fs = new(fmArchivePath))
                 {
                     SevenZipArchive sevenZipArchive = new(fs.FileStream);
                     entriesCount = sevenZipArchive.GetEntryCountOnly();
@@ -877,7 +877,7 @@ internal static class FMCache
 
                 List<string> archiveFileNamesNameOnly = new(0);
 
-                using (FileStreamWithRentedBuffer fs = new(fmArchivePath))
+                using (FileStream_Read_WithRentedBuffer fs = new(fmArchivePath))
                 {
                     int entriesCount;
                     using (var archive = RarArchive.Open(fs.FileStream))

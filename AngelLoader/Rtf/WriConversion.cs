@@ -18,7 +18,7 @@ internal static class WriConversion
     {
         try
         {
-            using FileStreamWithRentedBuffer fs = new(fileName);
+            using FileStream_Read_WithRentedBuffer fs = new(fileName);
             (bool success, _, _) = ReadWriFileHeader(fs.FileStream);
             return success;
         }

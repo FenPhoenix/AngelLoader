@@ -302,7 +302,7 @@ internal static partial class FMInstallAndPlay
             // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
             ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
             entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
-            using FileStreamWithRentedBuffer fs = new(fileNameOnDisk);
+            using FileStream_Read_WithRentedBuffer fs = new(fileNameOnDisk);
             using Stream eo = entry.Open();
             StreamCopyNoAlloc(fs.FileStream, eo, buffer);
         }
@@ -503,7 +503,7 @@ internal static partial class FMInstallAndPlay
             }
             else
             {
-                using FileStreamWithRentedBuffer fs = new(fmArchivePath);
+                using FileStream_Read_WithRentedBuffer fs = new(fmArchivePath);
                 SevenZipArchive archive = new(fs.FileStream);
 
                 ListFast<SevenZipArchiveEntry> entries = archive.Entries;
