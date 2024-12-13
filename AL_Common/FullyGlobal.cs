@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace AL_Common;
 
@@ -14,4 +15,7 @@ public static class FullyGlobal
 
     public const int StreamCopyBufferSize = 81920;
     public const int FileStreamBufferSize = 4096;
+
+    // Immediately static init for thread safety
+    public static readonly Encoding UTF8NoBOM = new UTF8Encoding(false, true);
 }

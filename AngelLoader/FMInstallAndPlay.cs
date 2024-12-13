@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,9 +130,6 @@ internal static partial class FMInstallAndPlay
     }
 
     private static readonly byte[] _DARKMISS_Bytes = "DARKMISS"u8.ToArray();
-
-    // Immediately static init for thread safety
-    private static readonly Encoding UTF8NoBOM = new UTF8Encoding(false, true);
 
     private static CancellationTokenSource _installCts = new();
 
