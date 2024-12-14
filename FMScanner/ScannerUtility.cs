@@ -298,18 +298,32 @@ internal static class Utility
 
     #region Acronym detection
 
-    internal static void GetAcronym(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable, bool convertRomanToDecimal = false)
+    internal static void GetAcronym(string title, ListFast<char> acronymChars)
+    {
+        for (int titleIndex = 0; titleIndex < title.Length; titleIndex++)
+        {
+            char c = title[titleIndex];
+            if (char.IsAsciiDigit(c) || char.IsAsciiLetterUpper(c))
+            {
+                acronymChars.Add(c);
+            }
+        }
+    }
+
+    internal static void GetAcronym_SupportRomanNumerals(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
     {
         ListFast<char>? romanNumeralRun = null;
 
         for (int titleIndex = 0; titleIndex < title.Length; titleIndex++)
         {
             char c = title[titleIndex];
-            if (convertRomanToDecimal && CharacterIsSupportedRomanNumeral(c))
+            if (CharacterIsSupportedRomanNumeral(c))
             {
                 romanNumeralRun ??= new ListFast<char>(10);
+                romanNumeralRun.Add(c);
+
                 int romanNumeralIndex;
-                for (romanNumeralIndex = titleIndex; romanNumeralIndex < title.Length; romanNumeralIndex++)
+                for (romanNumeralIndex = titleIndex + 1; romanNumeralIndex < title.Length; romanNumeralIndex++)
                 {
                     c = title[romanNumeralIndex];
                     if (CharacterIsSupportedRomanNumeral(c))
