@@ -596,7 +596,7 @@ internal static class FMData
             "// Larger buffer size helps with perf for larger file sizes.",
             // @FileStreamNET: Use of FileStream
             "using var fs = new FileStream_Write_WithRentedBuffer(fileName, bufferSize: ByteSize.KB * 256);",
-            "using var sw = new StreamWriter(fs.FileStream, UTF8NoBOM, ByteSize.KB * 256);",
+            "using var sw = new StreamWriter(fs.FileStream, Encoding.UTF8, ByteSize.KB * 256);",
             "",
             "static void AddFMToSW(FanMission fm, StreamWriter sw)",
             "{",

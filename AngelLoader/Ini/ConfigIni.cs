@@ -1263,7 +1263,7 @@ internal static partial class Ini
 
     private static void WriteConfigIniInternal(ConfigData config, string fileName)
     {
-        using StreamWriter sw = new(fileName);
+        using StreamWriter sw = new(fileName, false, Encoding.UTF8);
 
         /*
         Doing like 'sw.Append("Value").Append('=').AppendLine(config.Value)' makes us smaller because the "Value"
