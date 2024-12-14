@@ -419,7 +419,7 @@ internal static partial class Ini
     {
         // Larger buffer size helps with perf for larger file sizes.
         using var fs = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Read, ByteSize.KB * 256);
-        using var sw = new StreamWriter(fs, UTF8NoBOM, ByteSize.KB * 256);
+        using var sw = new StreamWriter(fs, Encoding.UTF8, ByteSize.KB * 256);
 
         Span<char> numberSpan = stackalloc char[20];
 

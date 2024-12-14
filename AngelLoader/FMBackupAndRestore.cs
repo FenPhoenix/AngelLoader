@@ -242,7 +242,7 @@ internal static partial class FMInstallAndPlay
                 {
                     ZipArchiveEntry entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
                     using var eo = entry.Open();
-                    using var sw = new StreamWriter(eo, UTF8NoBOM);
+                    using var sw = new StreamWriter(eo, Encoding.UTF8);
                     sw.Write(fmSelInfString);
                 }
             }

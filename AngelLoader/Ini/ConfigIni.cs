@@ -1273,7 +1273,7 @@ internal static partial class Ini
 
     private static void WriteConfigIniInternal(ConfigData config, string fileName)
     {
-        using StreamWriter sw = new(fileName);
+        using StreamWriter sw = new(fileName, false, Encoding.UTF8);
 
         // @NET5: Write current config version header (keep it off for testing old-to-new)
 #if false
