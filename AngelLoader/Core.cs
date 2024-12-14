@@ -1039,13 +1039,12 @@ internal static class Core
 
         FMsViewList.Sort(comparer);
 
-        var tempFMs = new List<FanMission>();
-
         if (View.GetShowRecentAtTop())
         {
             // Store it so it doesn't change
             DateTime dtNow = DateTime.Now;
 
+            int recentFMCount = 0;
             for (int i = 0; i < FMsViewList.Count; i++)
             {
                 FanMission fm = FMsViewList[i];
@@ -1060,19 +1059,17 @@ internal static class Core
                     ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
                     (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
                 {
-                    tempFMs.Add(fm);
+                    fm.MarkedRecent = true;
+                    FMsViewList.Remove(fm);
+                    FMsViewList.Insert(0, fm);
+                    recentFMCount++;
                 }
             }
 
-            Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
-            tempFMs.Sort(Comparers.ColumnComparers[(int)Column.DateAdded]);
-
-            for (int i = 0; i < tempFMs.Count; i++)
+            if (recentFMCount > 0)
             {
-                FanMission fm = tempFMs[i];
-                fm.MarkedRecent = true;
-                FMsViewList.Remove(fm);
-                FMsViewList.Insert(0, fm);
+                Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
+                FMsViewList.Sort(0, recentFMCount, Comparers.ColumnComparers[(int)Column.DateAdded]);
             }
         }
         else
@@ -1087,19 +1084,16 @@ internal static class Core
 
         #region Pinned
 
-        tempFMs.Clear();
-
+        int pinnedFMCount = 0;
         for (int i = 0; i < FMsViewList.Count; i++)
         {
             FanMission fm = FMsViewList[i];
-            if (fm.Pinned) tempFMs.Add(fm);
-        }
-
-        for (int i = tempFMs.Count - 1; i >= 0; i--)
-        {
-            FanMission fm = tempFMs[i];
-            FMsViewList.Remove(fm);
-            FMsViewList.Insert(0, fm);
+            if (fm.Pinned)
+            {
+                FMsViewList.Remove(fm);
+                FMsViewList.Insert(pinnedFMCount, fm);
+                pinnedFMCount++;
+            }
         }
 
         #endregion
