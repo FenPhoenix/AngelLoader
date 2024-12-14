@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using AL_Common;
 using AngelLoader.DataClasses;
 using SpanExtensions;
@@ -59,8 +60,8 @@ internal static partial class Ini
         }
     }
 
-    private static readonly object _writeFMDataIniLock = new();
-    private static readonly object _writeConfigIniLock = new();
+    private static readonly Lock _writeFMDataIniLock = new();
+    private static readonly Lock _writeConfigIniLock = new();
 
     private static string GetBackupFileName()
     {

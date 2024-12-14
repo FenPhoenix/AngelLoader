@@ -456,7 +456,7 @@ internal static class TDM
             {
                 // @MEM: This thing allocates some enumerator-related thing. What a pain...
                 string? first = Directory.EnumerateFiles(fullDir, "*.pk4", SearchOption.TopDirectoryOnly).FirstOrDefault();
-                if (first == default)
+                if (first == null)
                 {
                     return false;
                 }
