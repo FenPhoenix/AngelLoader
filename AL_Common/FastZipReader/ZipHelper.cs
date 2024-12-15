@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.IO;
 
 namespace AL_Common.FastZipReader;
 
@@ -54,4 +55,88 @@ public static class ZipHelpers
             return _invalidDateIndicator;
         }
     }
+
+    #region Zip safety
+
+    private static string GetZipSafetyFailMessage(string fileName, string full) =>
+        $"Extracting this file would result in it being outside the intended folder (malformed/malicious filename?).{NL}" +
+        "Entry full file name: " + fileName + $"{NL}" +
+        "Path where it wanted to end up: " + full;
+
+    // @ZipSafety: Make sure all calls to this method are handling the possible exception here! (looking at you, FMBackupAndRestore)
+    // @ZipSafety: The possibility of forgetting to call this method is a problem. Architect it to reduce the likelihood somehow?
+    /// <summary>
+    /// Zip Slip prevention.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    /// <exception cref="IOException"></exception>
+    public static string GetExtractedNameOrThrowIfMalicious(string path, string fileName)
+    {
+        // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't worry about it.
+        // This is basically what ZipFileExtensions.ExtractToDirectory() does.
+
+        if (path.Length > 0 && !path[^1].IsDirSep())
+        {
+            path += "\\";
+        }
+
+        string extractedName = Path.Combine(path, fileName);
+        string full = Path.GetFullPath(extractedName);
+
+        if (full.PathStartsWithI(path))
+        {
+            return full;
+        }
+        else
+        {
+            ThrowHelper.IOException(GetZipSafetyFailMessage(fileName, full));
+            return "";
+        }
+    }
+
+    /// <summary>
+    /// Zip Slip prevention. For when you just want to ignore it and not extract the file, rather than fail the
+    /// whole operation.
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="fileName"></param>
+    /// <param name="result"></param>
+    /// <returns></returns>
+    public static bool TryGetExtractedNameOrFailIfMalicious(string path, string fileName, out string result)
+    {
+        // Path.GetFullPath() incurs a very small perf hit (60ms on a 26 second extract), so don't worry about it.
+        // This is basically what ZipFileExtensions.ExtractToDirectory() does.
+
+        try
+        {
+            if (path.Length > 0 && !path[^1].IsDirSep())
+            {
+                path += "\\";
+            }
+
+            string extractedName = Path.Combine(path, fileName);
+            string full = Path.GetFullPath(extractedName);
+
+            if (full.PathStartsWithI(path))
+            {
+                result = extractedName;
+                return true;
+            }
+            else
+            {
+                Logger.Log(GetZipSafetyFailMessage(fileName, full), stackTrace: true);
+                result = "";
+                return false;
+            }
+        }
+        catch
+        {
+            result = "";
+            return false;
+        }
+    }
+
+    #endregion
 }

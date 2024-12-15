@@ -1067,7 +1067,7 @@ internal static partial class FMInstallAndPlay
             var misNums = new List<int>(misFiles.Count);
             foreach (string mf in misFiles)
             {
-                Match m = Regex.Match(mf, "miss(?<Num>[0-9]+).mis", IgnoreCaseInvariant);
+                Match m = Regex.Match(mf, "miss(?<Num>[0-9]+).mis", Regex_IgnoreCaseInvariant);
                 if (m.Success && Int_TryParseInv(m.Groups["Num"].Value, out int result))
                 {
                     misNums.Add(result);
@@ -2537,7 +2537,7 @@ internal static partial class FMInstallAndPlay
 
             if (fileName.IsEmpty()) continue;
 
-            string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+            string extractedName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
             if (fileName.EndsWithDirSep())
             {
@@ -2615,7 +2615,7 @@ internal static partial class FMInstallAndPlay
 
                 if (!fileName.IsEmpty())
                 {
-                    string extractedName = GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
+                    string extractedName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmInstalledPath, fileName);
 
                     if (entry.IsDirectory)
                     {

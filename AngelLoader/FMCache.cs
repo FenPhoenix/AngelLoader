@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress;
 using SharpCompress.Archives.Rar;
@@ -334,7 +335,7 @@ internal static class FMCache
                 string fileNameFull;
                 try
                 {
-                    fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                    fileNameFull = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                 }
                 catch
                 {
@@ -502,7 +503,7 @@ internal static class FMCache
                 string fileNameFull;
                 try
                 {
-                    fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                    fileNameFull = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                 }
                 catch
                 {
@@ -581,7 +582,7 @@ internal static class FMCache
                     string fileNameFull;
                     try
                     {
-                        fileNameFull = GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
+                        fileNameFull = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmCachePath, fn);
                     }
                     catch
                     {
@@ -665,7 +666,7 @@ internal static class FMCache
                     string finalFileName;
                     try
                     {
-                        finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                        finalFileName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
                     }
                     catch
                     {
@@ -842,7 +843,7 @@ internal static class FMCache
                 string finalFileName;
                 try
                 {
-                    finalFileName = GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
+                    finalFileName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(fmCachePath, f.Name);
                 }
                 catch
                 {
@@ -920,7 +921,7 @@ internal static class FMCache
                                 string extractedName;
                                 try
                                 {
-                                    extractedName = GetExtractedNameOrThrowIfMalicious(cacheTempPath, fullName);
+                                    extractedName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(cacheTempPath, fullName);
                                 }
                                 catch
                                 {
