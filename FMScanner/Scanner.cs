@@ -34,7 +34,6 @@ hard to get much of a gain even from alloc reductions. Meh.
 
 //#define ScanSynchronous
 
-global using static AL_Common.FullyGlobal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
