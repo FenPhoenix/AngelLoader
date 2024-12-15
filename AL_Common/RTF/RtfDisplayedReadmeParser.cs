@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
 namespace AL_Common;

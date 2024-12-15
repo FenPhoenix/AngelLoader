@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using AL_Common;
-using static AL_Common.Common;
 
 namespace AngelLoader.Forms.CustomControls;
 

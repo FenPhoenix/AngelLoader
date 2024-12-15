@@ -2,7 +2,6 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-using static AL_Common.Common;
 
 namespace AngelLoader;
 

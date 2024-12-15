@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms.CustomControls;

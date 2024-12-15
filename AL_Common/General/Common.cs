@@ -425,4 +425,15 @@ public static partial class Common
     #endregion
 
     #endregion
+
+    /// <summary>
+    /// Shorthand for <see cref="Environment.NewLine"/>
+    /// </summary>
+    public static readonly string NL = Environment.NewLine;
+
+    public const int StreamCopyBufferSize = 81920;
+    public const int FileStreamBufferSize = 4096;
+
+    // Immediately static init for thread safety
+    public static readonly Encoding UTF8NoBOM = new UTF8Encoding(false, true);
 }

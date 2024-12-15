@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 
 namespace FMScanner;

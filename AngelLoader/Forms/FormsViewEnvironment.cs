@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
-using static AL_Common.Common;
 
 namespace AngelLoader.Forms;
 

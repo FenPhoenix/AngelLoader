@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using static AL_Common.Common;
 
 namespace AL_Common;
 

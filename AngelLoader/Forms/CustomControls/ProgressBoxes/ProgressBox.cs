@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative.Taskbar;
 using JetBrains.Annotations;

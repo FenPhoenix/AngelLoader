@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 

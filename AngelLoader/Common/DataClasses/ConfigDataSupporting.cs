@@ -6,8 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using AL_Common;
-using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Misc;

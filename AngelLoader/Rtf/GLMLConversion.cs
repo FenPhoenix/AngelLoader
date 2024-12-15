@@ -3,9 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Text;
-using AL_Common;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 
 namespace AngelLoader;
 

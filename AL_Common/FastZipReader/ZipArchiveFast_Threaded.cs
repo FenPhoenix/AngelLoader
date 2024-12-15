@@ -4,7 +4,6 @@
 // Zip Spec here: http://www.pkware.com/documents/casestudies/APPNOTE.TXT
 
 using System.IO;
-using static AL_Common.Common;
 using static AL_Common.FastZipReader.ZipArchiveFast_Common;
 
 namespace AL_Common.FastZipReader;

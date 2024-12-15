@@ -3,7 +3,6 @@ using System.Linq;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 

@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using AL_Common;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;

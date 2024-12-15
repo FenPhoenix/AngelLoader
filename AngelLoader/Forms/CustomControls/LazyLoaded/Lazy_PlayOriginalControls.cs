@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
-using AL_Common;
 using JetBrains.Annotations;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;

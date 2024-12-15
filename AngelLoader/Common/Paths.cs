@@ -6,7 +6,6 @@ using System.Security;
 using System.Text;
 using AngelLoader.DataClasses;
 using Microsoft.Win32;
-using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;

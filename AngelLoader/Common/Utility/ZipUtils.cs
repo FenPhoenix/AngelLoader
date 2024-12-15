@@ -4,11 +4,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using System.Threading;
-using AL_Common;
 using AL_Common.FastZipReader;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Readers.Rar;
-using static AL_Common.Common;
 
 namespace AngelLoader;
 

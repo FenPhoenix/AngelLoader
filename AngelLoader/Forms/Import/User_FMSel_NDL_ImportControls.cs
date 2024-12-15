@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.Forms.CustomControls;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;

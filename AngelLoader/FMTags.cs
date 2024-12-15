@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 

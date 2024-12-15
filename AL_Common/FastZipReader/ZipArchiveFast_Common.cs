@@ -5,7 +5,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
 

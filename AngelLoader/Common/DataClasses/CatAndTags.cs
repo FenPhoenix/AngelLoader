@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using static AL_Common.Common;
 
 namespace AngelLoader.DataClasses;
 

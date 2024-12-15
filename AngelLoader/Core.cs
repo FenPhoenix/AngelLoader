@@ -23,7 +23,6 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.Win32;
-using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;

@@ -2,7 +2,6 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.RTFParserCommon;
 

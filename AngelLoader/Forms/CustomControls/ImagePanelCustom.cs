@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 

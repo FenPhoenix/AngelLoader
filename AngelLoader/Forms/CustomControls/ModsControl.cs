@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 
