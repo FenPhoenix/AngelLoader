@@ -9,7 +9,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AL_Common.LanguageSupport;
 using static AngelLoader.GameSupport;

@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using AL_Common;
-
 namespace Ude.NetStandard;
 
 // TODO: Using trigrams the detector should be able to discriminate between

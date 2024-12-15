@@ -36,8 +36,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-using AL_Common;
-
 namespace Ude.NetStandard;
 
 internal sealed class SBCSGroupProber : CharsetProber

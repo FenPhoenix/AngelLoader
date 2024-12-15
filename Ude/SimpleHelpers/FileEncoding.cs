@@ -35,8 +35,6 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AL_Common;
-using static AL_Common.Common;
 
 namespace Ude.NetStandard.SimpleHelpers;
 
