@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using AL_Common;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.VisualBasic.FileIO;

@@ -5,9 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using AL_Common;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 using static AL_Common.FenGenAttributes;
 using static AngelLoader.Utils;
 

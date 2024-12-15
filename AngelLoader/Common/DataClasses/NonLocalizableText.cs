@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using AL_Common;
 
 namespace AngelLoader.DataClasses;
 

@@ -26,7 +26,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Diagnostics;
 using System.IO;
-using AL_Common;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 

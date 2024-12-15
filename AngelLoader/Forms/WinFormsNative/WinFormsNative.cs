@@ -6,7 +6,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 
 namespace AngelLoader.Forms.WinFormsNative;
 

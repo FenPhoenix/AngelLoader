@@ -7,7 +7,6 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using AL_Common.FastZipReader.DeflateManaged;
 using JetBrains.Annotations;
-using static AL_Common.Common;
 
 namespace AL_Common.FastZipReader;
 

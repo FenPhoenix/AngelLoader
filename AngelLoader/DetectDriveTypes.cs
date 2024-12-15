@@ -8,12 +8,10 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using AL_Common;
 using AL_Common.DeviceIoControlLib.Objects.Storage;
 using AL_Common.DeviceIoControlLib.Wrapper;
 using AngelLoader.DataClasses;
 using Microsoft.Win32.SafeHandles;
-using static AL_Common.Common;
 using static AngelLoader.Misc;
 
 namespace AngelLoader;

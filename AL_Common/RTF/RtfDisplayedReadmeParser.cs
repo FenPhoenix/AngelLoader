@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 using SpanExtensions;
-using static AL_Common.Common;
 using static AL_Common.RTFParserCommon;
 
 namespace AL_Common;

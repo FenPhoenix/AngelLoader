@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AL_Common;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
 

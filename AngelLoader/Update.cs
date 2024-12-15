@@ -9,8 +9,6 @@ using System.IO.Compression;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using AL_Common;
-using static AL_Common.Common;
 using static AL_Common.Logger;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;

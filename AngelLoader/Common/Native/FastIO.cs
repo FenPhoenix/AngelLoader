@@ -3,9 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using AL_Common;
 using AngelLoader.DataClasses;
-using static AL_Common.Common;
 using static AL_Common.FastIO_Native;
 
 namespace AngelLoader;
