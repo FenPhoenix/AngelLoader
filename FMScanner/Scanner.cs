@@ -1713,7 +1713,7 @@ public sealed class Scanner : IDisposable
                         string fn = rarReader.Entry.Key;
                         if (fileNamesHash.Contains(fn))
                         {
-                            string finalFileName = GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
+                            string finalFileName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
                             string dir = Path.GetDirectoryName(finalFileName)!;
                             Directory.CreateDirectory(dir);
                             rarReader.ExtractToFile_Fast(finalFileName, overwrite: true);
@@ -2815,7 +2815,7 @@ public sealed class Scanner : IDisposable
             }
 
             // PERF: 5ms over the whole 1098 set, whatever
-            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, IgnoreCaseInvariant);
+            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
             if (match.Success) continue;
 
             if (fmData.TagsString != "") fmData.TagsString += ", ";

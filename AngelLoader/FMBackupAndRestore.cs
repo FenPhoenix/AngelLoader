@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using AL_Common.FastZipReader;
 using AngelLoader.DataClasses;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -67,10 +68,10 @@ internal static partial class FMInstallAndPlay
     private const int _removeFileEqLen = 11;
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
-    [GeneratedRegex(@"^save_[0-9]{1,2}[/\\]", IgnoreCaseInvariant)]
+    [GeneratedRegex(@"^save_[0-9]{1,2}[/\\]", Regex_IgnoreCaseInvariant)]
     private static partial Regex SS2SaveDirsInZipRegex();
 
-    [GeneratedRegex(@"[/\\]save_[0-9]{1,2}[/\\]?$", IgnoreCaseInvariant)]
+    [GeneratedRegex(@"[/\\]save_[0-9]{1,2}[/\\]?$", Regex_IgnoreCaseInvariant)]
     private static partial Regex SS2SaveDirsOnDiskRegex();
 
     #endregion
@@ -626,7 +627,7 @@ internal static partial class FMInstallAndPlay
                     if (!fn.Rel_ContainsDirSep())
                     {
                         string savesFullPath = Path.Combine(fmInstalledPath, _darkSavesDir);
-                        if (!TryGetExtractedNameOrFailIfMalicious(savesFullPath, fn, out string finalFilePath))
+                        if (!ZipHelpers.TryGetExtractedNameOrFailIfMalicious(savesFullPath, fn, out string finalFilePath))
                         {
                             continue;
                         }
@@ -635,7 +636,7 @@ internal static partial class FMInstallAndPlay
                     }
                     else if (fm.Game == Game.SS2 && (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))
                     {
-                        if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFilePath))
+                        if (!ZipHelpers.TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFilePath))
                         {
                             continue;
                         }
@@ -666,7 +667,7 @@ internal static partial class FMInstallAndPlay
                              (fm.Game == Game.SS2 &&
                               (SS2SaveDirsInZipRegex().IsMatch(fn) || fn.PathStartsWithI(_ss2CurrentDirS)))))
                         {
-                            if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFileName))
+                            if (!ZipHelpers.TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, fn, out string finalFileName))
                             {
                                 continue;
                             }
@@ -738,7 +739,7 @@ internal static partial class FMInstallAndPlay
                             continue;
                         }
 
-                        if (!TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, efn, out string finalFileName))
+                        if (!ZipHelpers.TryGetExtractedNameOrFailIfMalicious(fmInstalledPath, efn, out string finalFileName))
                         {
                             continue;
                         }
