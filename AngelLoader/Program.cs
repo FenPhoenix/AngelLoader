@@ -3,7 +3,6 @@
 //#define HIGH_DPI
 //#define TRACE_WRITE_TO_FILE
 
-global using static AL_Common.FullyGlobal;
 using System;
 using System.Drawing;
 using System.Drawing.Text;

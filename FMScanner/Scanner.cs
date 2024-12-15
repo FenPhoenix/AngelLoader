@@ -12,7 +12,6 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 
 //#define ScanSynchronous
 
-global using static AL_Common.FullyGlobal;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

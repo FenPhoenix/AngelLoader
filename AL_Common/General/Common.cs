@@ -1,5 +1,4 @@
-﻿global using static AL_Common.FullyGlobal;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
