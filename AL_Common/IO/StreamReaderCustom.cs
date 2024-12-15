@@ -8,7 +8,6 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-
 #if ENABLE_UNUSED
 using System.Runtime.InteropServices;
 #endif
