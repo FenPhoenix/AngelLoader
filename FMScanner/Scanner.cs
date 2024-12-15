@@ -42,6 +42,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -5286,29 +5287,19 @@ public sealed class Scanner : IDisposable
         // string size
         static bool EndsWithSKYOBJVAR(byte[] buffer)
         {
+            const ulong SKYOBJVA_ULong = 4708032109121981267;
+
             int len = buffer.Length;
-            return buffer[len - 9] == 'S' &&
-                   buffer[len - 8] == 'K' &&
-                   buffer[len - 7] == 'Y' &&
-                   buffer[len - 6] == 'O' &&
-                   buffer[len - 5] == 'B' &&
-                   buffer[len - 4] == 'J' &&
-                   buffer[len - 3] == 'V' &&
-                   buffer[len - 2] == 'A' &&
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == SKYOBJVA_ULong &&
                    buffer[len - 1] == 'R';
         }
 
         static bool EndsWithMAPPARAM(byte[] buffer)
         {
+            const ulong MAPPARAM_ULong = 5566821054880432461;
+
             int len = buffer.Length;
-            return buffer[len - 9] == 'M' &&
-                   buffer[len - 8] == 'A' &&
-                   buffer[len - 7] == 'P' &&
-                   buffer[len - 6] == 'P' &&
-                   buffer[len - 5] == 'A' &&
-                   buffer[len - 4] == 'R' &&
-                   buffer[len - 3] == 'A' &&
-                   buffer[len - 2] == 'M';
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == MAPPARAM_ULong;
         }
 
         Stream? misStream = null;
