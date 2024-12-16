@@ -6,6 +6,28 @@ namespace AL_Common;
 public static partial class Common
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Array_IndexOfByte_Fast(byte[] array, byte value)
+    {
+#if X64
+        return array.AsSpan().IndexOf(value);
+#else
+        return Array.IndexOf(array, value);
+#endif
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex)
+    {
+#if X64
+        int index = array.AsSpan(startIndex).IndexOf(value);
+        if (index > -1) index += startIndex;
+        return index;
+#else
+        return Array.IndexOf(array, value, startIndex);
+#endif
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex, int count)
     {
 #if X64
@@ -19,6 +41,11 @@ public static partial class Common
 
     public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
     {
+#if X64
+        int index = input.AsSpan(start).IndexOf(pattern);
+        if (index > -1) index += start;
+        return index;
+#else
         byte firstByte = pattern[0];
         int index = Array.IndexOf(input, firstByte, start);
 
@@ -38,6 +65,7 @@ public static partial class Common
         }
 
         return -1;
+#endif
     }
 
     public static int FindIndexOfCharSequence(string input, string pattern, int start = 0)
@@ -66,7 +94,7 @@ public static partial class Common
     public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
     {
         byte firstByte = pattern[0];
-        int index = Array.IndexOf(input, firstByte);
+        int index = Array_IndexOfByte_Fast(input, firstByte);
         int pLen = pattern.Length;
 
         while (index > -1)
@@ -76,7 +104,7 @@ public static partial class Common
                 if (index + i >= input.Length) return;
                 if (pattern[i] != input[index + i])
                 {
-                    if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return;
+                    if ((index = Array_IndexOfByte_Fast(input, firstByte, index + i)) == -1) return;
                     break;
                 }
 

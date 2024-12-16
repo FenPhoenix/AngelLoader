@@ -192,7 +192,7 @@ internal static class RtfProcessing
         static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
         {
             byte firstByte = _lang[0];
-            int index = Array.IndexOf(input, firstByte, start);
+            int index = Array_IndexOfByte_Fast(input, firstByte, start);
 
             while (index > -1)
             {
@@ -201,7 +201,7 @@ internal static class RtfProcessing
                     if (index + i >= input.Length) return (-1, -1);
                     if (_lang[i] != input[index + i])
                     {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
+                        if ((index = Array_IndexOfByte_Fast(input, firstByte, index + i)) == -1) return (-1, -1);
                         break;
                     }
 
