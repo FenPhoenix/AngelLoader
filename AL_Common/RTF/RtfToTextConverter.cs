@@ -1848,7 +1848,7 @@ public sealed partial class RtfToTextConverter
                 break;
             }
             case SpecialType.ColorTable:
-                int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
+                int closingBraceIndex = Array_IndexOfByte_Fast(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
                 CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                 break;
             case SpecialType.FontTable:

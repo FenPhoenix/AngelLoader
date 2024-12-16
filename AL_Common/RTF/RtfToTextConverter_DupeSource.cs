@@ -200,7 +200,7 @@ public sealed partial class RtfToTextConverter
                     {
                         // We were doing a clever skip-two-char-at-a-time for the hex data, but turns out that
                         // Array.IndexOf() is the fastest thing by light-years once again. Hey, no complaints here.
-                        int closingBraceIndex = Array.IndexOf(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
+                        int closingBraceIndex = Array_IndexOfByte_Fast(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
                         CurrentPos = closingBraceIndex == -1 ? _rtfBytes.Length : closingBraceIndex;
                     }
                     break;

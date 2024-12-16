@@ -1,9 +1,23 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace AL_Common;
 
 public static partial class Common
 {
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex, int count)
+    {
+#if X64
+        int index = array.AsSpan(startIndex, count).IndexOf(value);
+        if (index > -1) index += startIndex;
+        return index;
+#else
+        return Array.IndexOf(array, value, startIndex, count);
+#endif
+    }
+
     public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
     {
         byte firstByte = pattern[0];
@@ -81,6 +95,9 @@ public static partial class Common
     public static bool Contains(this byte[] input, byte[] pattern, int length = -1)
     {
         if (length == -1) length = input.Length;
+#if X64
+        return input.AsSpan(0, length).IndexOf(pattern.AsSpan()) > -1;
+#else
 
         byte firstByte = pattern[0];
         int index = Array.IndexOf(input, firstByte, 0, length);
@@ -101,5 +118,6 @@ public static partial class Common
         }
 
         return false;
+#endif
     }
 }
