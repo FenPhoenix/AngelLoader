@@ -5,7 +5,6 @@ namespace AL_Common;
 
 public static partial class Common
 {
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex, int count)
     {
