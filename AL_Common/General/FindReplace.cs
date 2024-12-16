@@ -58,25 +58,6 @@ public static partial class Common
     public static bool Contains(this byte[] input, byte[] pattern, int length = -1)
     {
         if (length == -1) length = input.Length;
-
-        byte firstByte = pattern[0];
-        int index = Array.IndexOf(input, firstByte, 0, length);
-
-        while (index > -1)
-        {
-            for (int i = 0; i < pattern.Length; i++)
-            {
-                if (index + i >= length) return false;
-                if (pattern[i] != input[index + i])
-                {
-                    if ((index = Array.IndexOf(input, firstByte, index + i, length - (index + i))) == -1) return false;
-                    break;
-                }
-
-                if (i == pattern.Length - 1) return true;
-            }
-        }
-
-        return false;
+        return input.AsSpan(0, length).IndexOf(pattern.AsSpan()) > -1;
     }
 }
