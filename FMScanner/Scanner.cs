@@ -3821,11 +3821,10 @@ public sealed class Scanner : IDisposable
 
                 int rtfHeaderBytesLength = RTFHeaderBytes.Length;
 
-                _rtfHeaderBuffer.Clear();
-
+                int rtfBytesRead = 0;
                 if (readmeFileLen >= rtfHeaderBytesLength)
                 {
-                    readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
+                    rtfBytesRead = readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
                 }
 
                 if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
@@ -3839,7 +3838,7 @@ public sealed class Scanner : IDisposable
 
                 ReadmeInternal last = _readmeFiles[^1];
 
-                bool readmeIsRtf = _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
+                bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
                     if (_fmFormat == FMFormat.Zip)
