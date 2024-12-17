@@ -10,28 +10,26 @@ namespace AL_Common.DeviceIoControlLib.Wrapper;
 
 public static class DeviceIoControlHelper
 {
-    // Keep the old AsAny / object? stuff to prevent crashing in 32-bit mode
+    // Use manual marshalling rather than UnmanagedType.AsAny for future-proofing, and also make it even more
+    // manual to prevent crashing in 32-bit mode.
     [DllImport("Kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
-    private static extern bool DeviceIoControl(
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern unsafe bool DeviceIoControl(
         SafeFileHandle hDevice,
         IOControlCode IoControlCode,
-        [MarshalAs(UnmanagedType.AsAny)]
-        [In] object? InBuffer,
+        [In] IntPtr InBuffer,
         uint nInBufferSize,
-        [MarshalAs(UnmanagedType.AsAny)]
-        [Out] object? OutBuffer,
+        [Out] void* OutBuffer,
         uint nOutBufferSize,
-        ref uint pBytesReturned,
+        out uint pBytesReturned,
         [In] IntPtr Overlapped
     );
 
     /// <summary>
     /// Repeatedly invokes InvokeIoControl with the specified input, as long as it gets return code 234 ("More data available") from the method.
     /// </summary>
-    public static byte[] InvokeIoControlUnknownSize(SafeFileHandle handle, IOControlCode controlCode, STORAGE_PROPERTY_QUERY input, uint increment = 128, uint inputSizeOverride = 0)
+    public static unsafe byte[] InvokeIoControlUnknownSize(SafeFileHandle handle, IOControlCode controlCode, STORAGE_PROPERTY_QUERY input, uint increment = 128, uint inputSizeOverride = 0)
     {
-        uint returnedBytes = 0;
-
         uint outputLength = increment;
 
         uint inputSize = inputSizeOverride > 0
@@ -40,33 +38,48 @@ public static class DeviceIoControlHelper
 
         do
         {
-            byte[] output = new byte[outputLength];
-            bool success = DeviceIoControl(handle, controlCode, input, inputSize, output, outputLength, ref returnedBytes, IntPtr.Zero);
-
-            if (!success)
+            IntPtr inputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(input));
+            try
             {
-                int lastError = Marshal.GetLastWin32Error();
+                Marshal.StructureToPtr(input, inputPtr, true);
 
-                if (lastError == 234)
+                byte[] output = new byte[outputLength];
+                fixed (byte* outputPtr = output)
                 {
-                    // More data
-                    outputLength += increment;
-                    continue;
+                    bool success = DeviceIoControl(handle, controlCode, inputPtr, inputSize, outputPtr, outputLength, out uint returnedBytes, IntPtr.Zero);
+
+                    if (!success)
+                    {
+                        int lastError = Marshal.GetLastWin32Error();
+
+                        if (lastError == 234)
+                        {
+                            // More data
+                            outputLength += increment;
+                            continue;
+                        }
+
+                        throw new Win32Exception(lastError,
+                            "Couldn't invoke DeviceIoControl for " + controlCode + ". LastError: " +
+                            Utils.GetWin32ErrorMessage(lastError));
+                    }
+
+                    // Return the result
+                    if (output.Length == returnedBytes)
+                    {
+                        return output;
+                    }
+
+                    byte[] res = new byte[returnedBytes];
+                    Array.Copy(output, res, (int)returnedBytes);
+
+                    return res;
                 }
-
-                throw new Win32Exception(lastError, "Couldn't invoke DeviceIoControl for " + controlCode + ". LastError: " + Utils.GetWin32ErrorMessage(lastError));
             }
-
-            // Return the result
-            if (output.Length == returnedBytes)
+            finally
             {
-                return output;
+                Marshal.FreeHGlobal(inputPtr);
             }
-
-            byte[] res = new byte[returnedBytes];
-            Array.Copy(output, res, (int)returnedBytes);
-
-            return res;
         } while (true);
     }
 }
