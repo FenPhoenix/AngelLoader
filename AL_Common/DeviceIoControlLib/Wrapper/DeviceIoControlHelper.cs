@@ -8,21 +8,21 @@ using Microsoft.Win32.SafeHandles;
 
 namespace AL_Common.DeviceIoControlLib.Wrapper;
 
-public static class DeviceIoControlHelper
+public static partial class DeviceIoControlHelper
 {
     // Use manual marshalling rather than UnmanagedType.AsAny for future-proofing, and also make it even more
     // manual to prevent crashing in 32-bit mode (although we don't currently do 32-bit in .NET modern).
-    [DllImport("Kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
+    [LibraryImport("Kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern unsafe bool DeviceIoControl(
+    private static unsafe partial bool DeviceIoControl(
         SafeFileHandle hDevice,
         IOControlCode IoControlCode,
-        [In] IntPtr InBuffer,
+        IntPtr InBuffer,
         uint nInBufferSize,
-        [Out] void* OutBuffer,
+        void* OutBuffer,
         uint nOutBufferSize,
         out uint pBytesReturned,
-        [In] IntPtr Overlapped
+        IntPtr Overlapped
     );
 
     /// <summary>
