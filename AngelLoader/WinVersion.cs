@@ -67,6 +67,14 @@ internal static class WinVersion
         try
         {
             if (!Is11OrAbove) return false;
+            /*
+            @NET5: Registry check for .NET Framework version 4.8.1 - probably shouldn't have this?
+            The .NET Framework 4.8.1 release notes say "Changes to tooltip behavior are limited to Windows 11
+            systems that have .NET Framework 4.8.1 installed". I can't find any info on why the .NET Framework
+            version matters - the 4.8 and 4.8.1 ToolTip.cs files are identical. One would imagine that Framework
+            4.8.1's presence would have nothing to do with how modern .NET would behave, but we should test this
+            without the registry call on a Windows 10 install without Framework 4.8.1 and see how it behaves.
+            */
             using RegistryKey? hklm = (RegistryKey?)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
             using RegistryKey? ndpKey = hklm?.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\", writable: false);
             return ndpKey?.GetValue("Release") is >= 533320;
