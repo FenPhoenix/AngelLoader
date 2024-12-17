@@ -67,6 +67,9 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
 
     private void TrySetToolTipMaxDelay()
     {
+        // Perf - don't do reflection if it will be a no-op
+        if (WinVersion.SupportsPersistentToolTips) return;
+
         try
         {
             PropertyInfo? toolTipProperty = typeof(ToolStrip).GetProperty("ToolTip",
