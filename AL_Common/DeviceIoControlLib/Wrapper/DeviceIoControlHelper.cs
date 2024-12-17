@@ -10,13 +10,16 @@ namespace AL_Common.DeviceIoControlLib.Wrapper;
 
 public static class DeviceIoControlHelper
 {
+    // Keep the old AsAny / object? stuff to prevent crashing in 32-bit mode
     [DllImport("Kernel32.dll", ExactSpelling = true, SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern bool DeviceIoControl(
         SafeFileHandle hDevice,
         IOControlCode IoControlCode,
-        [In] STORAGE_PROPERTY_QUERY InBuffer,
+        [MarshalAs(UnmanagedType.AsAny)]
+        [In] object? InBuffer,
         uint nInBufferSize,
-        [Out] byte[] OutBuffer,
+        [MarshalAs(UnmanagedType.AsAny)]
+        [Out] object? OutBuffer,
         uint nOutBufferSize,
         ref uint pBytesReturned,
         [In] IntPtr Overlapped
