@@ -65,7 +65,7 @@ public static class DeviceIoControlHelper
                     {
                         int lastError = Marshal.GetLastWin32Error();
 
-                        if (lastError == 234)
+                        if (lastError == Interop.Errors.ERROR_MORE_DATA)
                         {
                             // More data
                             outputLength += increment;

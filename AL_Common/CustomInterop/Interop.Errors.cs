@@ -76,8 +76,8 @@ internal static partial class Interop
         internal const int ERROR_NO_DATA = 0xE8;
 #endif
         internal const int ERROR_PIPE_NOT_CONNECTED = 0xE9;
-#if ENABLE_UNUSED
         internal const int ERROR_MORE_DATA = 0xEA;
+#if ENABLE_UNUSED
         internal const int ERROR_NO_MORE_ITEMS = 0x103;
         internal const int ERROR_DIRECTORY = 0x10B;
         internal const int ERROR_NOT_OWNER = 0x120;
