@@ -16,19 +16,24 @@ public static class DeviceIoControlHelper
     [return: MarshalAs(UnmanagedType.Bool)]
     private static extern unsafe bool DeviceIoControl(
         SafeFileHandle hDevice,
-        IOControlCode IoControlCode,
-        [In] IntPtr InBuffer,
+        IOControlCode dwIoControlCode,
+        [In] IntPtr lpInBuffer,
         uint nInBufferSize,
-        [Out] void* OutBuffer,
+        [Out] void* lpOutBuffer,
         uint nOutBufferSize,
-        out uint pBytesReturned,
-        [In] IntPtr Overlapped
+        out uint lpBytesReturned,
+        [In] IntPtr lpOverlapped
     );
 
     /// <summary>
     /// Repeatedly invokes InvokeIoControl with the specified input, as long as it gets return code 234 ("More data available") from the method.
     /// </summary>
-    public static unsafe byte[] InvokeIoControlUnknownSize(SafeFileHandle handle, IOControlCode controlCode, STORAGE_PROPERTY_QUERY input, uint increment = 128, uint inputSizeOverride = 0)
+    public static unsafe byte[] InvokeIoControlUnknownSize(
+        SafeFileHandle handle,
+        IOControlCode controlCode,
+        STORAGE_PROPERTY_QUERY input,
+        uint increment = 128,
+        uint inputSizeOverride = 0)
     {
         uint outputLength = increment;
 
@@ -46,7 +51,15 @@ public static class DeviceIoControlHelper
                 byte[] output = new byte[outputLength];
                 fixed (byte* outputPtr = output)
                 {
-                    bool success = DeviceIoControl(handle, controlCode, inputPtr, inputSize, outputPtr, outputLength, out uint returnedBytes, IntPtr.Zero);
+                    bool success = DeviceIoControl(
+                        hDevice: handle,
+                        dwIoControlCode: controlCode,
+                        lpInBuffer: inputPtr,
+                        nInBufferSize: inputSize,
+                        lpOutBuffer: outputPtr,
+                        nOutBufferSize: outputLength,
+                        lpBytesReturned: out uint returnedBytes,
+                        lpOverlapped: IntPtr.Zero);
 
                     if (!success)
                     {
