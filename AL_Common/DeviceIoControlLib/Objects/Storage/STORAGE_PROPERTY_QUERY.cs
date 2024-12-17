@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 
 namespace AL_Common.DeviceIoControlLib.Objects.Storage;
@@ -7,5 +8,5 @@ public struct STORAGE_PROPERTY_QUERY
 {
     public STORAGE_PROPERTY_ID PropertyId;
     public STORAGE_QUERY_TYPE QueryType;
-    public byte[] AdditionalParameters;
+    public IntPtr AdditionalParameters;
 }
