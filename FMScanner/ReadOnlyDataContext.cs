@@ -89,7 +89,8 @@ public sealed class ReadOnlyDataContext
         {
             string lang = SupportedLanguages[i];
             Languages_FS_Lang_FS[i] = "/" + lang + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
+            // Lowercase so that the perf hack in the language detector can work
+            Languages_FS_Lang_Language_FS[i] = "/" + lang + " language/";
 
             // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
             LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);

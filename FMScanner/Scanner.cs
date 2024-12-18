@@ -51,6 +51,10 @@ public sealed class Scanner : IDisposable
 
     #region Buffers
 
+#if X64
+    private readonly FileNameCharBuffer _charBuffer = new();
+#endif
+
     private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 
     private readonly byte[] _misChunkHeaderBuffer = new byte[12];
@@ -202,6 +206,27 @@ public sealed class Scanner : IDisposable
     #endregion
 
     #region Private classes
+
+#if X64
+    private sealed class FileNameCharBuffer
+    {
+        private const uint StartingArrayLength = 256;
+        private char[] _array = new char[StartingArrayLength];
+        // ulong so we can hold uint max without having to special-case uint max-1
+        private ulong _arrayLength = StartingArrayLength;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public char[] GetArray(uint length)
+        {
+            if (length > _arrayLength)
+            {
+                _arrayLength = RoundUpToPowerOf2(length);
+                _array = new char[_arrayLength];
+            }
+            return _array;
+        }
+    }
+#endif
 
     private enum CopyReadmesToCacheResult
     {
@@ -5032,13 +5057,53 @@ public sealed class Scanner : IDisposable
                 for (int dfIndex = 0; dfIndex < dirFiles.Count; dfIndex++)
                 {
                     NameAndIndex df = dirFiles[dfIndex];
-                    // Directory separator agnostic & keeping perf reasonably high
-                    string dfName = df.Name.ToForwardSlashes();
+                    string dfName = df.Name;
 
                     // We say HasFileExtension() because we only want to count lang dirs that have files in them
-                    if (dfName.HasFileExtension() &&
-                        (dfName.ContainsI(_ctx.Languages_FS_Lang_FS[langIndex]) ||
-                         dfName.ContainsI(_ctx.Languages_FS_Lang_Language_FS[langIndex])))
+                    if (!dfName.HasFileExtension()) continue;
+
+                    string langNeedle1 = _ctx.Languages_FS_Lang_FS[langIndex];
+                    if (dfName.Length < langNeedle1.Length) continue;
+
+                    // Directory separator agnostic & keeping perf reasonably high
+                    dfName = df.Name.ToForwardSlashes();
+#if X64
+                    /*
+                    .NET Framework's string.IndexOf(OrdinalIgnoreCase) is slow, so let's do a horrific hack to
+                    speed it up by 2.5-3x. We don't need any of this on modern .NET, as its string.IndexOf(OrdinalIgnoreCase)
+                    is bonkers fast as usual.
+                    */
+
+                    ReadOnlySpan<char> langNeedle1Span = langNeedle1.AsSpan();
+                    ReadOnlySpan<char> langNeedle2Span = _ctx.Languages_FS_Lang_Language_FS[langIndex].AsSpan();
+
+                    char[] array = _charBuffer.GetArray((uint)dfName.Length);
+                    Span<char> span = array.AsSpan(0, dfName.Length);
+                    dfName.AsSpan().CopyTo(span);
+
+                    /*
+                    I thought for sure I'd have to vectorize the ASCII to-lower conversion to get any sort of
+                    performance (which I couldn't figure out how to do anyway), but it turns out this dumbass
+                    scalar loop with a branch inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase).
+                    Hey, I'll take it.
+                    */
+                    for (int i = 0; i < dfName.Length; i++)
+                    {
+                        char c = array[i];
+                        if (c.IsAsciiUpper())
+                        {
+                            c |= (char)0x20;
+                            array[i] = c;
+                        }
+                    }
+
+                    Span<char> spanSlice = span[..dfName.Length];
+                    if (spanSlice.IndexOf(langNeedle1Span) > -1 ||
+                        spanSlice.IndexOf(langNeedle2Span) > -1)
+#else
+                    if (dfName.ContainsI(_ctx.Languages_FS_Lang_FS[langIndex]) ||
+                        dfName.ContainsI(_ctx.Languages_FS_Lang_Language_FS[langIndex]))
+#endif
                     {
                         langs |= language;
                         break;

@@ -12,6 +12,16 @@
 	<WarningsAsErrors>Nullable</WarningsAsErrors>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+	<Optimize>true</Optimize>
+	<DefineConstants>TRACE;Release</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+	<Optimize>true</Optimize>
+	<DefineConstants>TRACE;Release;X64</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseRTFTest|AnyCPU'">
     <DefineConstants>TRACE;ReleaseRTFTest</DefineConstants>
     <Optimize>true</Optimize>
