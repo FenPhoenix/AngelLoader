@@ -5180,7 +5180,8 @@ public sealed class Scanner : IDisposable
         (which I couldn't figure out how to do anyway), but it turns out this dumbass scalar loop with a branch
         inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase). Hey, I'll take it.
         */
-        for (int i = 0; i < value.Length; i++)
+        // Reverse for loop to eliminate bounds checking
+        for (int i = value.Length - 1; i >= 0; i--)
         {
             char c = array[i];
             if (c.IsAsciiUpper())
