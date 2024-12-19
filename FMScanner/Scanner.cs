@@ -2615,18 +2615,30 @@ public sealed class Scanner : IDisposable
         }
 
         return null;
+    }
 
-        static bool LineContainsMonthName(string line, string[] monthNames)
+    private bool LineContainsMonthName(string line, (string Name, bool IsAscii)[] monthNames)
+    {
+        foreach (var item in monthNames)
         {
-            foreach (string item in monthNames)
+            if (item.IsAscii)
             {
-                if (line.ContainsI(item))
+                Span<char> span = GetAsciiLowercaseSpan(line);
+                if (span.IndexOf(item.Name.AsSpan()) > -1)
                 {
                     return true;
                 }
             }
-            return false;
+            else
+            {
+                if (line.ContainsI(item.Name))
+                {
+                    return true;
+                }
+            }
         }
+
+        return false;
     }
 
     // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
@@ -5068,34 +5080,10 @@ public sealed class Scanner : IDisposable
                     // Directory separator agnostic & keeping perf reasonably high
                     dfName = df.Name.ToForwardSlashes();
 #if X64
-                    /*
-                    .NET Framework's string.IndexOf(OrdinalIgnoreCase) is slow, so let's do a horrific hack to
-                    speed it up by 2.5-3x. We don't need any of this on modern .NET, as its string.IndexOf(OrdinalIgnoreCase)
-                    is bonkers fast as usual.
-                    */
-
                     ReadOnlySpan<char> langNeedle1Span = langNeedle1.AsSpan();
                     ReadOnlySpan<char> langNeedle2Span = _ctx.Languages_FS_Lang_Language_FS[langIndex].AsSpan();
 
-                    char[] array = _charBuffer.GetArray((uint)dfName.Length);
-                    Span<char> span = array.AsSpan(0, dfName.Length);
-                    dfName.AsSpan().CopyTo(span);
-
-                    /*
-                    I thought for sure I'd have to vectorize the ASCII to-lower conversion to get any sort of
-                    performance (which I couldn't figure out how to do anyway), but it turns out this dumbass
-                    scalar loop with a branch inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase).
-                    Hey, I'll take it.
-                    */
-                    for (int i = 0; i < dfName.Length; i++)
-                    {
-                        char c = array[i];
-                        if (c.IsAsciiUpper())
-                        {
-                            c |= (char)0x20;
-                            array[i] = c;
-                        }
-                    }
+                    Span<char> span = GetAsciiLowercaseSpan(dfName);
 
                     Span<char> spanSlice = span[..dfName.Length];
                     if (spanSlice.IndexOf(langNeedle1Span) > -1 ||
@@ -5170,6 +5158,36 @@ public sealed class Scanner : IDisposable
         return langs > Language.Default
             ? (Langs: langs, EnglishIsUncertain: englishIsUncertain)
             : (Langs: Language.English, EnglishIsUncertain: true);
+    }
+
+    private Span<char> GetAsciiLowercaseSpan(string value)
+    {
+        /*
+        .NET Framework's string.IndexOf(OrdinalIgnoreCase) is slow, so let's do a horrific hack to speed it up
+        by 2.5-3x. We don't need any of this on modern .NET, as its string.IndexOf(OrdinalIgnoreCase) is bonkers
+        fast as usual.
+        */
+
+        char[] array = _charBuffer.GetArray((uint)value.Length);
+        Span<char> span = array.AsSpan(0, value.Length);
+        value.AsSpan().CopyTo(span);
+
+        /*
+        I thought for sure I'd have to vectorize the ASCII to-lower conversion to get any sort of performance
+        (which I couldn't figure out how to do anyway), but it turns out this dumbass scalar loop with a branch
+        inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase). Hey, I'll take it.
+        */
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = array[i];
+            if (c.IsAsciiUpper())
+            {
+                c |= (char)0x20;
+                array[i] = c;
+            }
+        }
+
+        return span;
     }
 
 #if FMScanner_FullCode
