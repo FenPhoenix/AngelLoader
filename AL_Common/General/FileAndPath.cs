@@ -274,10 +274,16 @@ public static partial class Common
     /// <returns></returns>
     public static int Rel_LastIndexOfDirSep(this string value)
     {
-        int i1 = value.LastIndexOf('/');
-        int i2 = value.LastIndexOf('\\');
+        for (int i = value.Length - 1; i >= 0; i--)
+        {
+            char c = value[i];
+            if (c.IsDirSep())
+            {
+                return i;
+            }
+        }
 
-        return Math.Max(i1, i2);
+        return -1;
     }
 
     /// <summary>
