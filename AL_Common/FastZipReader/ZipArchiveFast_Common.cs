@@ -59,6 +59,7 @@ public sealed class ZipUShortBuffer
     // uint so we can hold 65536 without having to special-case 65535
     private uint _arrayLength = StartingArrayLength;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] GetArray(ushort length)
     {
         if (length > _arrayLength)
