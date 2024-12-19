@@ -489,17 +489,9 @@ public static partial class Common
     /// <returns></returns>
     public static bool HasFileExtension(this string value)
     {
-        if (value.EndsWithDirSep()) return false;
-
-        for (int i = value.Length - 1; i >= 0; i--)
-        {
-            if (value[i] == '.')
-            {
-                return true;
-            }
-        }
-
-        return false;
+        int lastDotIndex = value.LastIndexOf('.');
+        return lastDotIndex > value.LastIndexOf('/') ||
+               lastDotIndex > value.LastIndexOf('\\');
     }
 
     /// <summary>
