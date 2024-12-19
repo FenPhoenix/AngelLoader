@@ -2621,6 +2621,7 @@ public sealed class Scanner : IDisposable
     {
         foreach (var item in monthNames)
         {
+#if X64
             if (item.IsAscii)
             {
                 Span<char> span = GetAsciiLowercaseSpan(line);
@@ -2630,6 +2631,7 @@ public sealed class Scanner : IDisposable
                 }
             }
             else
+#endif
             {
                 if (line.ContainsI(item.Name))
                 {
@@ -5160,6 +5162,7 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
+#if X64
     private Span<char> GetAsciiLowercaseSpan(string value)
     {
         /*
@@ -5189,6 +5192,7 @@ public sealed class Scanner : IDisposable
 
         return span;
     }
+#endif
 
 #if FMScanner_FullCode
     private (bool? NewDarkRequired, Game Game)
