@@ -303,7 +303,7 @@ public sealed class FileStream_NET : Stream
         {
             n = count;
         }
-        Buffer.BlockCopy(_buffer, _readPos, buffer, 0, n);
+        Buffer.BlockCopy(_buffer, _readPos, buffer, offset, n);
         _readPos += n;
 
         // We may have read less than the number of bytes the user asked
