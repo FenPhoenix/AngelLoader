@@ -119,12 +119,12 @@ public static partial class Common
         }
     }
 
-    public sealed class FileStreamWithRentedBuffer_Ref : IDisposable
+    public sealed class FileStream_Read_WithRentedBuffer_Ref : IDisposable
     {
         public readonly FileStream_NET FileStream;
         private readonly byte[] Buffer;
 
-        public FileStreamWithRentedBuffer_Ref(string path)
+        public FileStream_Read_WithRentedBuffer_Ref(string path)
         {
             Buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
             FileStream = new FileStream_NET(

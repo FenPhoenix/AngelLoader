@@ -164,7 +164,7 @@ internal static class FMCache
                         if (archive.IsSolid)
                         {
                             archive.Dispose();
-                            using FileStreamWithRentedBuffer_Ref fs = new(fmArchivePath);
+                            using FileStream_Read_WithRentedBuffer_Ref fs = new(fmArchivePath);
                             using (var reader = RarReader.Open(fs.FileStream))
                             {
                                 await Extract_RarSolid(reader, fmCachePath, readmes, ioBufferPools, entriesCount);
