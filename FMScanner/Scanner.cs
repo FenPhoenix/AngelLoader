@@ -3438,12 +3438,12 @@ public sealed class Scanner : IDisposable
 
         if (_fmFormat == FMFormat.Zip)
         {
-            using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
+            using Stream es = _archive.OpenEntry(_archive.Entries[file.Index]);
             fmInfoXml.Load(es);
         }
         else if (_fmFormat == FMFormat.Rar)
         {
-            using var es = _rarArchive.Entries[file.Index].OpenEntryStream();
+            using Stream es = _rarArchive.Entries[file.Index].OpenEntryStream();
             fmInfoXml.Load(es);
         }
         else
@@ -3933,7 +3933,7 @@ public sealed class Scanner : IDisposable
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
-        using var es = _archive.OpenEntry(readmeEntry);
+        using Stream es = _archive.OpenEntry(readmeEntry);
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
@@ -3943,7 +3943,7 @@ public sealed class Scanner : IDisposable
     {
         _generalMemoryStream.SetLength(readmeFileLen);
         _generalMemoryStream.Position = 0;
-        using var es = readmeEntry.OpenEntryStream();
+        using Stream es = readmeEntry.OpenEntryStream();
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
@@ -5524,15 +5524,9 @@ public sealed class Scanner : IDisposable
             Stream? stream = null;
             try
             {
-                if (_fmFormat == FMFormat.Zip)
-                {
-                    stream = _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry);
-                }
-                else
-                {
-                    RarArchiveEntry? entry = GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles);
-                    stream = entry != null ? entry.OpenEntryStream() : misFileRarEntry.OpenEntryStream();
-                }
+                stream = _fmFormat == FMFormat.Zip
+                    ? _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry)
+                    : (GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles) ?? misFileRarEntry).OpenEntryStream();
 
 #if FMScanner_FullCode
                 ret.Game
