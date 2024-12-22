@@ -493,70 +493,70 @@ public sealed class ReadOnlyDataContext
 
     #region Regexes
 
-    // PERF: Making regexes compiled increases their performance by a huge amount.
-    // And as we know, regexes need all the performance help they can get.
+    // Turns out setting RegexOptions.Compiled actually makes Regexes like twice as slow (whether static or not).
+    // So, leave them uncompiled.
 
     internal readonly Regex AThiefMissionRegex =
         new Regex("^A Thief( 1| 2| Gold)? (fan|campaign)",
-            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant);
 
     internal readonly Regex AThief3MissionRegex =
         new Regex(@"^A\s+Thief(\s+|\s+:\s+|\s+-\s+)Deadly",
-            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant);
 
     internal readonly Regex OpenParenSpacesRegex =
-        new Regex(@"\(\s+", RegexOptions.Compiled);
+        new Regex(@"\(\s+");
 
     internal readonly Regex CloseParenSpacesRegex =
-        new Regex(@"\s+\)", RegexOptions.Compiled);
+        new Regex(@"\s+\)");
 
     internal readonly Regex DaySuffixesRegex =
         new Regex("[0-9](?<Suffix>(st|nd|rd|th)).+",
-            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            RegexOptions.ExplicitCapture | Regex_IgnoreCaseInvariant);
 
     internal readonly Regex AuthorEmailRegex =
-        new Regex(@"\(?\S+@\S+\.\S{2,5}\)?", RegexOptions.Compiled);
+        new Regex(@"\(?\S+@\S+\.\S{2,5}\)?");
 
 #if FMScanner_FullCode
     internal readonly Regex VersionExclude1Regex =
-        new Regex(@"\d\.\d+\+", RegexOptions.Compiled);
+        new Regex(@"\d\.\d+\+");
 
     // TODO: This one looks iffy though
     internal readonly Regex VersionFirstNumberRegex =
-        new Regex(@"[0123456789\.]+", RegexOptions.Compiled);
+        new Regex(@"[0123456789\.]+");
 
     // Much, much faster to iterate through possible regex matches, common ones first
     // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
     internal readonly Regex[] NewDarkVersionRegexes =
     {
         new Regex(@"NewDark (?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
     };
 #endif
@@ -565,19 +565,19 @@ public sealed class ReadOnlyDataContext
     {
         new Regex(
             @"(FM|mis(si|is|i)on|campaign|series) for Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?)\s+by\s*(?<Author>.+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             @"(A )?Thief( Gold|: The Dark Project|\s*2(: The Metal Age)?) (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+by (?<Author>.+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             @"A(n)? (fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+(made\s+)?by\s+(?<Author>.+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             @"A(n)? .+(-| )part\s+Thief( Gold |: The Dark Project |\s*2(: The Metal Age )?)\s+(fan(-| ?)mis((si|is|i)on)|FM|campaign)\s+((made\s+by)|by|from)\s+(?<Author>.+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
     };
 
@@ -594,19 +594,19 @@ public sealed class ReadOnlyDataContext
         new Regex(
             //language=regexp
             @"^This (level|(fan(-| |))?mis(si|is|i)on|FM) is( made)? (\(c\)|\u00A9) ?" + _copyrightSecondPart,
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             //language=regexp
             @"^The (levels?|(fan(-| |))?mis(si|is|i)ons?|FMs?)( in this (zip|archive( file)?))? (is|are)( made)? (\(c\)|\u00A9) ?" +
             _copyrightSecondPart,
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
         new Regex(
             //language=regexp
             @"^These (levels|(fan(-| |))?mis(si|is|i)ons|FMs) are( made)? (\(c\)|\u00A9) ?" +
             _copyrightSecondPart,
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled |
+            Regex_IgnoreCaseInvariant |
             RegexOptions.ExplicitCapture),
     };
 
@@ -617,145 +617,145 @@ public sealed class ReadOnlyDataContext
         new Regex(
             //language=regexp
             @"^(Copyright )?(\(c\)|\u00A9|@) ?" + _copyrightSecondPart,
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex AuthorGeneralCopyrightRegex =
         new Regex(
             //language=regexp
             @"^(Copyright )?(\(c\)|\u00A9) ?" + _copyrightSecondPart,
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
-    internal readonly Regex CopyrightAuthorYearRegex = new Regex(" [0-9]+.*$", RegexOptions.Compiled);
+    internal readonly Regex CopyrightAuthorYearRegex = new Regex(" [0-9]+.*$");
 
     internal readonly Regex TitleByAuthorRegex =
         new Regex(@"(\s+|\s*(:|-|\u2013|,)\s*)by(\s+|\s*(:|-|\u2013)\s*)(?<Author>.+)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     #region Release date detection
 
     internal readonly Regex MultipleColonsRegex =
         new Regex(@"(:\s*)+",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex MultipleDashesRegex =
         new Regex("-{2,}",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex MultipleUnicodeDashesRegex =
         new Regex(@"\u2013{2,}",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex AnyDateNumberRTLRegex =
         new Regex("(Y2K|[0-9])",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture | RegexOptions.RightToLeft);
 
     internal readonly Regex NewDarkAndNumberRegex =
         new Regex(@"New ?Dark [0-9]\.[0-9]{1,2}",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex EuropeanDateRegex =
         new Regex(@"\.*[0-9]{1,2}\s*\.\s*[0-9]{1,2}\s*\.\s*([0-9]{4}|[0-9]{2})\.*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex PeriodWithOptionalSurroundingSpacesRegex =
         new Regex(@"\s*\.\s*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex DateSeparatorsRegex =
         // Tilde: Auldale Chess Tournament saying "March ~8, 2006"
         new Regex(@"\s*(,|~|-|/|\.)\s*",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     internal readonly Regex DateOfSeparatorRegex =
         new Regex(@"\s*of\s*",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex OneOrMoreWhiteSpaceCharsRegex =
-        new Regex(@"\s+", RegexOptions.Compiled);
+        new Regex(@"\s+");
 
     internal readonly Regex FebrRegex =
         new Regex("Febr ",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex SeptRegex =
         new Regex("Sept ",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex OktRegex =
         new Regex("Okt ",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex Y2KRegex =
         new Regex("Y2K",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex JanuaryVariationsRegex =
         new Regex("Jan(vier|uar )",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex FebruaryVariationsRegex =
         new Regex("F(eburar(y| )|(é|e)vrier)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex MarchVariationsRegex =
         new Regex("M(ar(tch|s|z)|ärz)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex AprilVariationsRegex =
         new Regex("avril",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex MayVariationsRegex =
         new Regex("mai",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex JuneVariationsRegex =
         new Regex("Ju(in|ni)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex JulyVariationsRegex =
         new Regex("Ju(l(ly|i)|ille(t|r))",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex AugustVariationsRegex =
         new Regex("ao(u|û)t",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex SeptemberVariationsRegex =
         new Regex("septembre",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled);
+            Regex_IgnoreCaseInvariant);
 
     internal readonly Regex OctoberVariationsRegex =
         new Regex("O(ctobre|ktober)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex HalloweenRegex =
         new Regex("Halloween",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex ChristmasRegex =
         new Regex("Christmas",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex NovemberVariationsRegex =
         new Regex("novembre",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     internal readonly Regex DecemberVariationsRegex =
         new Regex("D((é|e)cembre|ezember)",
-            Regex_IgnoreCaseInvariant | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
 
     #endregion
 
     internal readonly Regex MultipleWhiteSpaceRegex =
-        new Regex(@"\s{2,}", RegexOptions.Compiled);
+        new Regex(@"\s{2,}");
 
     internal readonly Regex DarkMod_TDM_MapSequence_MissionLine_Regex =
-        new Regex(@"^Mission [0-9]+\:\s*.+", RegexOptions.Compiled);
+        new Regex(@"^Mission [0-9]+\:\s*.+");
 
     internal readonly Regex DarkModTxtFieldsRegex =
         new Regex("(Title:|Author:|Description:|Version:|Required TDM Version:)",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     /*
     Catches stuff like "PD" but also "CoS"
@@ -764,7 +764,7 @@ public sealed class ReadOnlyDataContext
     */
     internal readonly Regex AcronymRegex =
         new Regex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
-            RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+            RegexOptions.ExplicitCapture);
 
     #endregion
 

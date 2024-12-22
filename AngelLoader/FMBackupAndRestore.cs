@@ -69,10 +69,10 @@ internal static partial class FMInstallAndPlay
 
     // IMPORTANT: @DIRSEP: Always say [/\\] for dirsep chars, to be manually dirsep-agnostic
     private static readonly Regex _ss2SaveDirsInZipRegex = new Regex(@"^save_[0-9]{1,2}[/\\]",
-        RegexOptions.Compiled | Regex_IgnoreCaseInvariant);
+        Regex_IgnoreCaseInvariant);
 
     private static readonly Regex _ss2SaveDirsOnDiskRegex = new Regex(@"[/\\]save_[0-9]{1,2}[/\\]?$",
-        RegexOptions.Compiled | Regex_IgnoreCaseInvariant);
+        Regex_IgnoreCaseInvariant);
 
     #endregion
 
