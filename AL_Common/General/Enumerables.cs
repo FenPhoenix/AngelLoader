@@ -110,6 +110,9 @@ public static partial class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Sort(IComparer<T> comparer) => Array.Sort(ItemsArray, 0, Count, comparer);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
         {
             if (Count == _itemsArrayLength) EnsureCapacity(Count + 1);
