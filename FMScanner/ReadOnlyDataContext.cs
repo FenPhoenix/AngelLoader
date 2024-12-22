@@ -1120,12 +1120,14 @@ public sealed class ReadOnlyDataContext
             // int32 max digits minus 1 (to avoid having to check for overflow)
             const int maxDigits = 9;
 
-            int xIndex1 = x.IndexOf('_');
-            int xIndex2 = x.IndexOf(':', xIndex1);
+            // Line is guaranteed to start with "title_"
+            const int underscoreIndex = 6;
+
+            int xIndex2 = x.IndexOf(':', underscoreIndex);
 
             int xNum = 0;
-            int xEnd = Math.Min(xIndex2, xIndex1 + maxDigits);
-            for (int i = xIndex1 + 1; i < xEnd; i++)
+            int xEnd = Math.Min(xIndex2, underscoreIndex + maxDigits);
+            for (int i = underscoreIndex; i < xEnd; i++)
             {
                 char c = x[i];
                 if (c.IsAsciiNumeric())
@@ -1139,12 +1141,11 @@ public sealed class ReadOnlyDataContext
                 }
             }
 
-            int yIndex1 = y.IndexOf('_');
-            int yIndex2 = y.IndexOf(':', yIndex1);
+            int yIndex2 = y.IndexOf(':', underscoreIndex);
 
             int yNum = 0;
-            int yEnd = Math.Min(yIndex2, yIndex1 + maxDigits);
-            for (int i = yIndex1 + 1; i < yEnd; i++)
+            int yEnd = Math.Min(yIndex2, underscoreIndex + maxDigits);
+            for (int i = underscoreIndex; i < yEnd; i++)
             {
                 char c = y[i];
                 if (c.IsAsciiNumeric())
