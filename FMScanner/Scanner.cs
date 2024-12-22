@@ -1516,8 +1516,8 @@ public sealed class Scanner : IDisposable
                         // Also maybe we would need to always extract them regardless for other reasons, but yeah.
                         if (fn.IsValidReadme() && uncompressedSize > 0 &&
                             (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                              (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                               fn.PathStartsWithI(FMDirs.T3FMExtras2S))) ||
+                              (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
+                               fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
                              dirSeps == 0))
                         {
                             fileNamesList.Add(fn);
@@ -1578,7 +1578,7 @@ public sealed class Scanner : IDisposable
                         {
                             fileNamesList.Add(fn);
                         }
-                        else if (fn.PathStartsWithI(FMDirs.StringsS) &&
+                        else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
                                  fn.PathEndsWithI(FMFiles.SMissFlag))
                         {
                             fileNamesList.Add(fn);
@@ -1664,7 +1664,7 @@ public sealed class Scanner : IDisposable
                     ?? tempList.Find(static x =>
                         x.PathEqualsI(FMFiles.IntrfaceNewGameStr))
                     ?? tempList.Find(static x =>
-                        x.PathStartsWithI(FMDirs.IntrfaceS) &&
+                        x.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
                         x.PathEndsWithI(FMFiles.SNewGameStr));
 
                 if (newGameStrToUse != null)
@@ -2937,7 +2937,7 @@ public sealed class Scanner : IDisposable
         static bool MapFileExists(string path)
         {
             int lsi;
-            return path.PathStartsWithI(FMDirs.IntrfaceS) &&
+            return path.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
                    path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
                    path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
                    (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
@@ -2951,7 +2951,7 @@ public sealed class Scanner : IDisposable
         static bool AutomapFileExists(string path)
         {
             int len = path.Length;
-            return path.PathStartsWithI(FMDirs.IntrfaceS) &&
+            return path.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
                    path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
                    // We don't need to check the length because we only need length == 6 but by virtue of
                    // starting with "intrface/", our length is guaranteed to be at least 9
@@ -3005,7 +3005,7 @@ public sealed class Scanner : IDisposable
                     _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length),
                 };
 
-                if (fn.PathStartsWithI(FMDirs.T3DetectS) &&
+                if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3DetectS) &&
                     fn.Rel_CountDirSeps(FMDirs.T3DetectS.Length) == 0)
                 {
                     if (t3Found)
@@ -3046,8 +3046,8 @@ public sealed class Scanner : IDisposable
                 }
                 // We can't early-out if !t3Found here because if we find it after this point, we'll be
                 // missing however many of these we skipped before we detected Thief 3
-                else if (fn.PathStartsWithI(FMDirs.T3FMExtras1S) ||
-                         fn.PathStartsWithI(FMDirs.T3FMExtras2S))
+                else if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
+                         fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))
                 {
                     T3FMExtrasDirFiles.Add(new NameAndIndex(fn, i));
                     continue;
@@ -3057,7 +3057,7 @@ public sealed class Scanner : IDisposable
                     _baseDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
                 }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.StringsS))
+                else if (!t3Found && fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS))
                 {
                     _stringsDirFiles.Add(new NameAndIndex(fn, i));
                     if (SS2FingerprintRequiredAndNotDone() &&
@@ -3070,19 +3070,19 @@ public sealed class Scanner : IDisposable
                     }
                     continue;
                 }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.IntrfaceS))
+                else if (!t3Found && fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS))
                 {
                     _intrfaceDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
                 }
-                else if (!t3Found && fn.PathStartsWithI(FMDirs.BooksS))
+                else if (!t3Found && fn.PathStartsWithI_AsciiSecond(FMDirs.BooksS))
                 {
                     _booksDirFiles.Add(new NameAndIndex(fn, i));
                     continue;
                 }
                 else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
-                         (fn.PathStartsWithI(FMDirs.CutscenesS) ||
-                          fn.PathStartsWithI(FMDirs.Snd2S)))
+                         (fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS) ||
+                          fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S)))
                 {
                     _ss2Fingerprinted = true;
                     // Fallthrough so ScanCustomResources can use it
@@ -3100,31 +3100,31 @@ public sealed class Scanner : IDisposable
                         fmd.HasMap = true;
                     }
                     else if (fmd.HasCustomMotions == null &&
-                             fn.PathStartsWithI(FMDirs.MotionsS) &&
+                             fn.PathStartsWithI_AsciiSecond(FMDirs.MotionsS) &&
                              FileExtensionFound(fn, _ctx.MotionFileExtensions))
                     {
                         fmd.HasCustomMotions = true;
                     }
                     else if (fmd.HasMovies == null &&
-                             (fn.PathStartsWithI(FMDirs.MoviesS) || fn.PathStartsWithI(FMDirs.CutscenesS)) &&
+                             (fn.PathStartsWithI_AsciiSecond(FMDirs.MoviesS) || fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS)) &&
                              fn.HasFileExtension())
                     {
                         fmd.HasMovies = true;
                     }
                     else if (fmd.HasCustomTextures == null &&
-                             fn.PathStartsWithI(FMDirs.FamS) &&
+                             fn.PathStartsWithI_AsciiSecond(FMDirs.FamS) &&
                              FileExtensionFound(fn, _ctx.ImageFileExtensions))
                     {
                         fmd.HasCustomTextures = true;
                     }
                     else if (fmd.HasCustomObjects == null &&
-                             fn.PathStartsWithI(FMDirs.ObjS) &&
+                             fn.PathStartsWithI_AsciiSecond(FMDirs.ObjS) &&
                              fn.ExtIsBin())
                     {
                         fmd.HasCustomObjects = true;
                     }
                     else if (fmd.HasCustomCreatures == null &&
-                             fn.PathStartsWithI(FMDirs.MeshS) &&
+                             fn.PathStartsWithI_AsciiSecond(FMDirs.MeshS) &&
                              fn.ExtIsBin())
                     {
                         fmd.HasCustomCreatures = true;
@@ -3132,19 +3132,19 @@ public sealed class Scanner : IDisposable
                     else if ((fmd.HasCustomScripts == null &&
                               !fn.Rel_ContainsDirSep() &&
                               FileExtensionFound(fn, _ctx.ScriptFileExtensions)) ||
-                             (fn.PathStartsWithI(FMDirs.ScriptsS) &&
+                             (fn.PathStartsWithI_AsciiSecond(FMDirs.ScriptsS) &&
                               fn.HasFileExtension()))
                     {
                         fmd.HasCustomScripts = true;
                     }
                     else if (fmd.HasCustomSounds == null &&
-                             (fn.PathStartsWithI(FMDirs.SndS) || fn.PathStartsWithI(FMDirs.Snd2S)) &&
+                             (fn.PathStartsWithI_AsciiSecond(FMDirs.SndS) || fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S)) &&
                              fn.HasFileExtension())
                     {
                         fmd.HasCustomSounds = true;
                     }
                     else if (fmd.HasCustomSubtitles == null &&
-                             fn.PathStartsWithI(FMDirs.SubtitlesS) &&
+                             fn.PathStartsWithI_AsciiSecond(FMDirs.SubtitlesS) &&
                              fn.ExtIsSub())
                     {
                         fmd.HasCustomSubtitles = true;
@@ -4420,7 +4420,7 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < _intrfaceDirFiles.Count; i++)
             {
                 NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathStartsWithI(FMDirs.IntrfaceS) &&
+                if (item.Name.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
                     item.Name.PathEndsWithI(FMFiles.SNewGameStr))
                 {
                     newGameStrFileIndex = i;

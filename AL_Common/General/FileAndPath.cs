@@ -278,6 +278,27 @@ public static partial class Common
     }
 
     /// <summary>
+    /// Path starts-with check ignoring case and directory separator differences. Only use if <paramref name="second"/> is ASCII.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool PathStartsWithI_AsciiSecond(this string first, string second)
+    {
+        if (first.Length < second.Length) return false;
+
+        for (int i = 0; i < second.Length; i++)
+        {
+            char fc = first[i];
+            char sc = second[i];
+
+            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Path ends-with check ignoring case and directory separator differences.
     /// </summary>
     /// <param name="first"></param>
