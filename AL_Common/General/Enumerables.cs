@@ -188,6 +188,7 @@ public static partial class Common
 
         public int Capacity
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _itemsArrayLength;
             set
             {
