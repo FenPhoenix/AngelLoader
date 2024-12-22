@@ -166,6 +166,8 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<string> _titles = new(0);
     private readonly ListFast<string> _titlesTemp = new(0);
 
+    private readonly ListFast<string> titlesStrLines_Distinct = new(0);
+
     private readonly ListFast<ReadmeInternal> _readmeFiles = new(0);
 
     private bool _ss2Fingerprinted;
@@ -582,6 +584,7 @@ public sealed class Scanner : IDisposable
     {
         _titles.ClearFast();
         _titlesTemp.ClearFast();
+        titlesStrLines_Distinct.ClearFast();
 
         _titlesStrIsOEM850 = false;
         _tempLines.ClearFast();
@@ -4468,7 +4471,7 @@ public sealed class Scanner : IDisposable
         )
     GetMissionNames()
     {
-        List<string>? titlesStrLines = GetTitlesStrLines();
+        ListFast<string>? titlesStrLines = GetTitlesStrLines();
         if (titlesStrLines == null || titlesStrLines.Count == 0)
         {
             return ("", ""
@@ -4575,7 +4578,7 @@ public sealed class Scanner : IDisposable
         return ret;
     }
 
-    private List<string>? GetTitlesStrLines()
+    private ListFast<string>? GetTitlesStrLines()
     {
         ListFast<string>? titlesStrLines = null;
 
@@ -4609,24 +4612,25 @@ public sealed class Scanner : IDisposable
         #region Filter titlesStrLines
 
         // There's a way to do this with an IEqualityComparer, but no, for reasons
-        var tfLinesD = new List<string>(titlesStrLines.Count);
+        titlesStrLines_Distinct.ClearFastAndEnsureCapacity(titlesStrLines.Count);
 
-        static bool TFLinesDAny(string line, int indexOfColon, List<string> tfLinesD)
+        static bool TitlesStrLinesContainsI(string line, int indexOfColon, ListFast<string> titlesStrLinesDistinct)
         {
-            for (int i = 0; i < tfLinesD.Count; i++)
+            ReadOnlySpan<char> lineSpan = line.AsSpan()[..indexOfColon];
+            int lineSpanLength = lineSpan.Length;
+
+            for (int i = 0; i < titlesStrLinesDistinct.Count; i++)
             {
                 // Allocation avoidance
 
-                string tfLineD = tfLinesD[i];
+                string titlesStrLineDistinct = titlesStrLinesDistinct[i];
 
-                ReadOnlySpan<char> tfLineDSpan = tfLineD.AsSpan();
-                ReadOnlySpan<char> lineSpan = line.AsSpan()[..indexOfColon];
+                ReadOnlySpan<char> titlesStrLineDistinctSpan = titlesStrLineDistinct.AsSpan();
 
-                int tfLineDSpanLen = tfLineDSpan.Length;
-                int lineSpanLen = lineSpan.Length;
+                int titlesStrLineDistinctSpanLength = titlesStrLineDistinctSpan.Length;
 
-                if (tfLineDSpanLen >= lineSpanLen &&
-                    tfLineDSpan[..lineSpanLen].EqualsI(lineSpan))
+                if (titlesStrLineDistinctSpanLength >= lineSpanLength &&
+                    titlesStrLineDistinctSpan[..lineSpanLength].EqualsI(lineSpan))
                 {
                     return true;
                 }
@@ -4643,17 +4647,17 @@ public sealed class Scanner : IDisposable
                 line.StartsWithI("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
                 line.CharCountIsAtLeast('\"', 2) &&
-                !TFLinesDAny(line, indexOfColon, tfLinesD))
+                !TitlesStrLinesContainsI(line, indexOfColon, titlesStrLines_Distinct))
             {
-                tfLinesD.Add(line);
+                titlesStrLines_Distinct.Add(line);
             }
         }
 
-        tfLinesD.Sort(_ctx.TitlesStrNaturalNumericSort);
+        titlesStrLines_Distinct.Sort(_ctx.TitlesStrNaturalNumericSort);
 
         #endregion
 
-        return tfLinesD;
+        return titlesStrLines_Distinct;
     }
 
     private string CleanupTitle(string value)
