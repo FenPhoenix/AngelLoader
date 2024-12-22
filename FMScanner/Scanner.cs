@@ -218,6 +218,8 @@ public sealed class Scanner : IDisposable
     private List<NameAndIndex>? _t3GmpFiles;
     private List<NameAndIndex> T3GmpFiles => _t3GmpFiles ??= new List<NameAndIndex>(20);
 
+    private readonly ListFast<DetectedTitle> _detectedTitles = new(6);
+
     private readonly ScannerTDMContext _tdmContext;
 
     #endregion
@@ -239,7 +241,7 @@ public sealed class Scanner : IDisposable
 
     private sealed class DetectedTitle(string value, bool temporary)
     {
-        internal readonly string Value = value;
+        internal string Value = value;
         internal bool Temporary = temporary;
     }
 
@@ -601,6 +603,8 @@ public sealed class Scanner : IDisposable
 
         _t3FMExtrasDirFiles?.Clear();
         _t3GmpFiles?.Clear();
+
+        _detectedTitles.ClearFast();
     }
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
@@ -4650,17 +4654,17 @@ public sealed class Scanner : IDisposable
     {
         if (originalTitles.Count == 0) return;
 
-        List<DetectedTitle> titles = new();
+        ListFast<DetectedTitle> titles = _detectedTitles;
         foreach (string title in originalTitles)
         {
-            titles.Add(new DetectedTitle(title, temporary: false));
+            AddDetectedTitle(titles, title, temporary: false);
         }
         // Ultimate final attack against stubborn titles that just won't be caught
         foreach (ReadmeInternal readme in _readmeFiles)
         {
             if (readme.Lines.Count >= 2 && readme.Lines[1].IsWhiteSpace())
             {
-                titles.Add(new DetectedTitle(readme.Lines[0], temporary: true));
+                AddDetectedTitle(titles, readme.Lines[0], temporary: true);
             }
         }
 
@@ -4752,14 +4756,31 @@ public sealed class Scanner : IDisposable
 
         return;
 
-        static bool SwapMainTitleWithTitleAtIndex(List<DetectedTitle> titles, int index)
+        static void AddDetectedTitle(ListFast<DetectedTitle> detectedTitles, string title, bool temporary)
+        {
+            if (detectedTitles.Count < detectedTitles.Capacity)
+            {
+                DetectedTitle item = detectedTitles[detectedTitles.Count];
+                if (item != null!)
+                {
+                    item.Value = title;
+                    item.Temporary = temporary;
+                    detectedTitles.Count++;
+                    return;
+                }
+            }
+
+            detectedTitles.Add(new DetectedTitle(title, temporary));
+        }
+
+        static bool SwapMainTitleWithTitleAtIndex(ListFast<DetectedTitle> titles, int index)
         {
             (titles[0], titles[index]) = (titles[index], titles[0]);
             titles[0].Temporary = false;
             return true;
         }
 
-        static void DoServerTitleSwap(List<DetectedTitle> titles, string serverTitle)
+        static void DoServerTitleSwap(ListFast<DetectedTitle> titles, string serverTitle)
         {
             for (int i = 1; i < titles.Count; i++)
             {
