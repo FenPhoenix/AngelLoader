@@ -168,7 +168,7 @@ public sealed class Scanner : IDisposable
 
     private readonly ListFast<string> titlesStrLines_Distinct = new(0);
 
-    private readonly ListFast<ReadmeInternal> _readmeFiles = new(0);
+    private readonly ListFast<ReadmeInternal> _readmeFiles = new(10);
 
     private bool _ss2Fingerprinted;
 
@@ -331,9 +331,9 @@ public sealed class Scanner : IDisposable
         /// Check this bool to see if you want to scan the file or not. Currently false if readme is HTML or
         /// non-English.
         /// </summary>
-        internal readonly bool Scan;
-        internal readonly bool UseForDateDetect;
-        internal readonly bool IsGlml;
+        internal bool Scan;
+        internal bool UseForDateDetect;
+        internal bool IsGlml;
         internal readonly ListFast<string> Lines = new(0);
         internal string Text = "";
 
@@ -352,20 +352,77 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        internal ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        private ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
+            Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+        }
+
+        private ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        {
+            Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+        }
+
+        private void Set(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        {
+            Text = "";
+            Lines.ClearFast();
             IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
+            _lastModifiedDate = null;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
         }
 
-        internal ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        private void Set(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
+            Text = "";
+            Lines.ClearFast();
             IsGlml = isGlml;
+            _lastModifiedDateRaw = null;
             _lastModifiedDate = lastModifiedDate;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
+        }
+
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        {
+            if (readmes.Count < readmes.Capacity)
+            {
+                ReadmeInternal item = readmes[readmes.Count];
+                if (item != null!)
+                {
+                    item.Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+                    readmes.Count++;
+                    return item;
+                }
+            }
+
+            ReadmeInternal readme = new(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            readmes.Add(readme);
+            return readme;
+        }
+
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        {
+            if (readmes.Count < readmes.Capacity)
+            {
+                ReadmeInternal item = readmes[readmes.Count];
+                if (item != null!)
+                {
+                    item.Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+                    readmes.Count++;
+                    return item;
+                }
+            }
+
+            ReadmeInternal readme = new(isGlml, lastModifiedDate, scan, useForDateDetect);
+            readmes.Add(readme);
+            return readme;
+        }
+
+        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        {
+            return AddReadme(readmes, isGlml, lastModifiedDateRaw, scan, useForDateDetect);
         }
     }
 
@@ -1249,15 +1306,15 @@ public sealed class Scanner : IDisposable
             {
                 try
                 {
-                    readme = new ReadmeInternal(
+                    readme = ReadmeInternal.GetReadme(
+                        _readmeFiles,
                         isGlml: false,
                         lastModifiedDateRaw: entry.LastWriteTime,
                         scan: true,
                         useForDateDetect: true);
                     Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
-                    readme.Lines.ClearFullAndAdd(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
-                    _readmeFiles.Add(readme);
+                    readme.Lines.AddRange_Large(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                 }
                 catch
                 {
@@ -3877,34 +3934,39 @@ public sealed class Scanner : IDisposable
                 !readmeFile.Name.ExtIsHtml() &&
                 readmeFile.Name.IsEnglishReadme();
 
+            ReadmeInternal last;
+
             // We still add the readme even if we're not going to store nor scan its contents, because we still
             // may need to look at its last modified date.
             if (_fmFormat == FMFormat.Zip)
             {
-                _readmeFiles.Add(new ReadmeInternal(
+                last = ReadmeInternal.AddReadme(
+                    _readmeFiles,
                     isGlml: isGlml,
                     lastModifiedDateRaw: zipReadmeEntry!.LastWriteTime,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
-                ));
+                );
             }
             else if (_fmFormat == FMFormat.Rar)
             {
-                _readmeFiles.Add(new ReadmeInternal(
+                last = ReadmeInternal.AddReadme(
+                    _readmeFiles,
                     isGlml: isGlml,
                     lastModifiedDate: rarReadmeEntry!.LastModifiedTime ?? DateTime.MinValue,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
-                ));
+                );
             }
             else
             {
-                _readmeFiles.Add(new ReadmeInternal(
+                last = ReadmeInternal.AddReadme(
+                    _readmeFiles,
                     isGlml: isGlml,
                     lastModifiedDate: (DateTime)lastModifiedDate!,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
-                ));
+                );
             }
 
             if (!scanThisReadme) continue;
@@ -3936,8 +3998,6 @@ public sealed class Scanner : IDisposable
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
-                ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
-
                 bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && rtfHeader.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
@@ -3960,7 +4020,7 @@ public sealed class Scanner : IDisposable
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.ClearFullAndAdd(text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                            last.Lines.AddRange_Large(text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                         }
                     }
                     finally
@@ -3980,7 +4040,7 @@ public sealed class Scanner : IDisposable
                     last.Text = last.IsGlml
                         ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
                         : ReadAllTextDetectEncoding(stream);
-                    last.Lines.ClearFullAndAdd(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    last.Lines.AddRange_Large(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                 }
             }
             finally
