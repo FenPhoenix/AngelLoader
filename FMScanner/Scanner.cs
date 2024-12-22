@@ -146,7 +146,10 @@ public sealed class Scanner : IDisposable
 
     private string _fmWorkingPath = "";
 
-    private readonly List<ReadmeInternal> _readmeFiles = new();
+    private readonly ListFast<string> _titles = new(0);
+    private readonly ListFast<string> _titlesTemp = new(0);
+
+    private readonly ListFast<ReadmeInternal> _readmeFiles = new(0);
 
     private bool _ss2Fingerprinted;
 
@@ -172,9 +175,9 @@ public sealed class Scanner : IDisposable
     private List<string>? _solidExtractedFilesTempList;
     private List<string> SolidZipExtractedFilesTempList => _solidExtractedFilesTempList ??= new List<string>(50);
 
-    private readonly List<string> _tempLines = new();
+    private readonly ListFast<string> _tempLines = new(0);
     private const int _maxTopLines = 5;
-    private readonly List<string> _topLines = new(_maxTopLines);
+    private readonly ListFast<string> _topLines = new(_maxTopLines);
 
     private ListFast<char>? _title1_TempNonWhitespaceChars;
     private ListFast<char> Title1_TempNonWhitespaceChars => _title1_TempNonWhitespaceChars ??= new ListFast<char>(50);
@@ -186,20 +189,20 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<char> _altTitleAcronymChars = new(10);
     private readonly ListFast<char> _altTitleRomanToDecimalAcronymChars = new(10);
 
-    private readonly List<NameAndIndex> _baseDirFiles = new(20);
-    private readonly List<NameAndIndex> _misFiles = new(20);
-    private readonly List<NameAndIndex> _usedMisFiles = new(20);
-    private readonly List<NameAndIndex> _stringsDirFiles = new();
-    private readonly List<NameAndIndex> _intrfaceDirFiles = new();
-    private readonly List<NameAndIndex> _booksDirFiles = new();
+    private readonly ListFast<NameAndIndex> _baseDirFiles = new(20);
+    private readonly ListFast<NameAndIndex> _misFiles = new(20);
+    private readonly ListFast<NameAndIndex> _usedMisFiles = new(20);
+    private readonly ListFast<NameAndIndex> _stringsDirFiles = new(0);
+    private readonly ListFast<NameAndIndex> _intrfaceDirFiles = new(0);
+    private readonly ListFast<NameAndIndex> _booksDirFiles = new(0);
 
-    private readonly List<NameAndIndex> _readmeDirFiles = new(10);
+    private readonly ListFast<NameAndIndex> _readmeDirFiles = new(10);
 
-    private List<NameAndIndex>? _t3FMExtrasDirFiles;
-    private List<NameAndIndex> T3FMExtrasDirFiles => _t3FMExtrasDirFiles ??= new List<NameAndIndex>(10);
+    private ListFast<NameAndIndex>? _t3FMExtrasDirFiles;
+    private ListFast<NameAndIndex> T3FMExtrasDirFiles => _t3FMExtrasDirFiles ??= new ListFast<NameAndIndex>(10);
 
-    private List<NameAndIndex>? _t3GmpFiles;
-    private List<NameAndIndex> T3GmpFiles => _t3GmpFiles ??= new List<NameAndIndex>(20);
+    private ListFast<NameAndIndex>? _t3GmpFiles;
+    private ListFast<NameAndIndex> T3GmpFiles => _t3GmpFiles ??= new ListFast<NameAndIndex>(20);
 
     private readonly ListFast<DetectedTitle> _detectedTitles = new(6);
 
@@ -579,10 +582,13 @@ public sealed class Scanner : IDisposable
 
     private void ResetCachedFields()
     {
+        _titles.ClearFast();
+        _titlesTemp.ClearFast();
+
         _titlesStrIsOEM850 = false;
-        _tempLines.Clear();
-        _topLines.Clear();
-        _readmeFiles.Clear();
+        _tempLines.ClearFast();
+        _topLines.ClearFast();
+        _readmeFiles.ClearFast();
         _fmDirFileInfos.ClearFast();
         _ss2Fingerprinted = false;
         _fmWorkingPathDirName = null;
@@ -594,17 +600,17 @@ public sealed class Scanner : IDisposable
         _title1_TempNonWhitespaceChars?.ClearFast();
         _title2_TempNonWhitespaceChars?.ClearFast();
 
-        _baseDirFiles.Clear();
-        _misFiles.Clear();
-        _usedMisFiles.Clear();
-        _stringsDirFiles.Clear();
-        _intrfaceDirFiles.Clear();
-        _booksDirFiles.Clear();
+        _baseDirFiles.ClearFast();
+        _misFiles.ClearFast();
+        _usedMisFiles.ClearFast();
+        _stringsDirFiles.ClearFast();
+        _intrfaceDirFiles.ClearFast();
+        _booksDirFiles.ClearFast();
 
-        _readmeDirFiles.Clear();
+        _readmeDirFiles.ClearFast();
 
-        _t3FMExtrasDirFiles?.Clear();
-        _t3GmpFiles?.Clear();
+        _t3FMExtrasDirFiles?.ClearFast();
+        _t3GmpFiles?.ClearFast();
 
         _detectedTitles.ClearFast();
     }
@@ -825,7 +831,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private void SetOrAddTitle(List<string> titles, string value)
+    private void SetOrAddTitle(ListFast<string> titles, string value)
     {
         value = CleanupTitle(value).Trim();
 
@@ -837,7 +843,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private void SetFMTitles(ScannedFMData fmData, List<string> titles, string? serverTitle = null)
+    private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
     {
         OrderTitlesOptimally(titles, serverTitle);
         if (titles.Count > 0)
@@ -871,9 +877,9 @@ public sealed class Scanner : IDisposable
 
     private void EndTitleScan(
         bool scanTitleForAuthorPurposesOnly,
-        ScannedFMData fmData, List<string> titles, string? serverTitle = null)
+        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
     {
-        List<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
+        ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
         if (topOfReadmeTitles?.Count > 0)
         {
             for (int i = 0; i < topOfReadmeTitles.Count; i++)
@@ -1116,7 +1122,7 @@ public sealed class Scanner : IDisposable
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
                 AddReadmeFromPK4(GetZipBaseDirEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
 
-            List<string> titles = new();
+            ListFast<string> titles = _titles;
 
             // The Dark Mod apparently picks key-value pairs out of darkmod.txt ignoring linebreaks (see Lords & Legacy).
             // That's _TERRIBLE_ but we want to match behavior.
@@ -1360,11 +1366,11 @@ public sealed class Scanner : IDisposable
         return (true, null, ret);
     }
 
-    private void GetAuthor(ScannedFMData fmData, List<string> titles)
+    private void GetAuthor(ScannedFMData fmData, ListFast<string> titles)
     {
         if (fmData.Author.IsEmpty())
         {
-            List<string>? passTitles = titles.Count > 0 ? titles : null;
+            ListFast<string>? passTitles = titles.Count > 0 ? titles : null;
             string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
             fmData.Author = CleanupValue(author).Trim();
         }
@@ -1911,7 +1917,7 @@ public sealed class Scanner : IDisposable
             return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
         }
 
-        List<string> titles = new();
+        ListFast<string> titles = _titles;
 
         bool fmIsSS2 = false;
 
@@ -2525,7 +2531,7 @@ public sealed class Scanner : IDisposable
             return new ParsedDateTime(null, false);
         }
 
-        static MisFileDateTime GetMisFileDate(Scanner scanner, List<NameAndIndex> usedMisFiles)
+        static MisFileDateTime GetMisFileDate(Scanner scanner, ListFast<NameAndIndex> usedMisFiles)
         {
             if (usedMisFiles.Count > 0)
             {
@@ -2976,7 +2982,7 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-        static bool BaseDirScriptFileExtensions(List<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
+        static bool BaseDirScriptFileExtensions(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
         {
             for (int i = 0; i < baseDirFiles.Count; i++)
             {
@@ -3463,7 +3469,7 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange_Small(_misFiles);
+        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles, _misFiles.Count);
 
         #endregion
 
@@ -3929,7 +3935,7 @@ public sealed class Scanner : IDisposable
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
-                ReadmeInternal last = _readmeFiles[^1];
+                ReadmeInternal last = _readmeFiles[_readmeFiles.Count - 1];
 
                 bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
@@ -4003,7 +4009,7 @@ public sealed class Scanner : IDisposable
         return _generalMemoryStream;
     }
 
-    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, List<string>? titles = null, ReadmeInternal? singleReadme = null)
+    private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, ListFast<string>? titles = null, ReadmeInternal? singleReadme = null)
     {
         string ret = "";
 
@@ -4321,17 +4327,17 @@ public sealed class Scanner : IDisposable
     // Perception 2. :P
     // This is likely to be a bit loose with its accuracy, but since values caught here are almost certain to
     // end up as alternate titles, I can afford that.
-    private List<string>? GetTitlesFromTopOfReadmes()
+    private ListFast<string>? GetTitlesFromTopOfReadmes()
     {
         if (_readmeFiles.Count == 0) return null;
 
-        List<string>? ret = null;
+        ListFast<string>? ret = null;
 
         foreach (ReadmeInternal r in _readmeFiles)
         {
             if (!r.Scan) continue;
 
-            _topLines.Clear();
+            _topLines.ClearFast();
 
             for (int i = 0; i < r.Lines.Count; i++)
             {
@@ -4370,7 +4376,7 @@ public sealed class Scanner : IDisposable
                         if (ret == null)
                         {
                             ret = _tempLines;
-                            ret.Clear();
+                            ret.ClearFast();
                         }
                         ret.Add(titleConcat);
                     }
@@ -4483,7 +4489,7 @@ public sealed class Scanner : IDisposable
 #endif
             );
 
-        static bool NameExistsInList(List<NameAndIndex> list, string value)
+        static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
         {
             for (int i = 0; i < list.Count; i++)
             {
@@ -4574,7 +4580,7 @@ public sealed class Scanner : IDisposable
 
     private List<string>? GetTitlesStrLines()
     {
-        List<string>? titlesStrLines = null;
+        ListFast<string>? titlesStrLines = null;
 
         #region Read title(s).str file
 
@@ -4711,7 +4717,7 @@ public sealed class Scanner : IDisposable
     eg. "The Beleaguered Fence" vs. "Thomas Porter 2: Beleaguered Fence"
     We've fixed that one now, but for non-TDM the fix isn't active, so still a thought.
     */
-    private void OrderTitlesOptimally(List<string> originalTitles, string? serverTitle = null)
+    private void OrderTitlesOptimally(ListFast<string> originalTitles, string? serverTitle = null)
     {
         if (originalTitles.Count == 0) return;
 
@@ -4804,7 +4810,7 @@ public sealed class Scanner : IDisposable
             SwapMainTitleWithTitleAtIndex(titles, 1);
         }
 
-        originalTitles.Clear();
+        originalTitles.ClearFast();
         for (int i = 0; i < titles.Count; i++)
         {
             DetectedTitle title = titles[i];
@@ -4857,7 +4863,7 @@ public sealed class Scanner : IDisposable
 
     #region Author
 
-    private string GetAuthorFromTopOfReadme(ListFast<string> lines, List<string>? titles)
+    private string GetAuthorFromTopOfReadme(ListFast<string> lines, ListFast<string>? titles)
     {
         if (lines.Count == 0) return "";
 
@@ -4874,7 +4880,7 @@ public sealed class Scanner : IDisposable
 
         // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
         // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
-        _topLines.Clear();
+        _topLines.ClearFast();
 
         for (int i = 0; i < lines.Count; i++)
         {
@@ -4926,17 +4932,20 @@ public sealed class Scanner : IDisposable
         return "";
     }
 
-    private string GetAuthorFromTitleByAuthorLine(List<string>? titles)
+    private string GetAuthorFromTitleByAuthorLine(ListFast<string>? titlesIn)
     {
-        if (titles == null || titles.Count == 0) return "";
+        if (titlesIn == null || titlesIn.Count == 0) return "";
 
-        // With the new fuzzy match method, it might be possible for me to remove the need for this guard
-        for (int i = 0; i < titles.Count; i++)
+        ListFast<string> titles = _titlesTemp;
+        titles.ClearFastAndEnsureCapacity(titlesIn.Count);
+
+        for (int i = 0; i < titlesIn.Count; i++)
         {
-            if (titles[i].ContainsI(" by "))
+            string title = titlesIn[i];
+            // With the new fuzzy match method, it might be possible for me to remove the need for this guard
+            if (!title.ContainsI(" by "))
             {
-                titles.RemoveAt(i);
-                i--;
+                titles.Add(title);
             }
         }
 
@@ -5128,7 +5137,7 @@ public sealed class Scanner : IDisposable
 
         for (int dirIndex = 0; dirIndex < 3; dirIndex++)
         {
-            List<NameAndIndex> dirFiles = dirIndex switch
+            ListFast<NameAndIndex> dirFiles = dirIndex switch
             {
                 0 => _booksDirFiles,
                 1 => _intrfaceDirFiles,
@@ -5280,7 +5289,7 @@ public sealed class Scanner : IDisposable
 
         #region Choose smallest .gam file
 
-        static ZipArchiveFastEntry? GetSmallestGamEntry_Zip(ZipArchiveFast _archive, List<NameAndIndex> _baseDirFiles)
+        static ZipArchiveFastEntry? GetSmallestGamEntry_Zip(ZipArchiveFast _archive, ListFast<NameAndIndex> _baseDirFiles)
         {
             int smallestSizeIndex = -1;
             long smallestSize = long.MaxValue;
@@ -5301,7 +5310,7 @@ public sealed class Scanner : IDisposable
             return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
         }
 
-        static RarArchiveEntry? GetSmallestGamEntry_Rar(RarArchive _archive, List<NameAndIndex> _baseDirFiles)
+        static RarArchiveEntry? GetSmallestGamEntry_Rar(RarArchive _archive, ListFast<NameAndIndex> _baseDirFiles)
         {
             int smallestSizeIndex = -1;
             long smallestSize = long.MaxValue;
@@ -5676,7 +5685,7 @@ public sealed class Scanner : IDisposable
         MAPPARAM location into account.
         */
 
-        static bool SS2MisFilesPresent(List<NameAndIndex> misFiles, HashSetI ss2MisFiles)
+        static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)
         {
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
             {
@@ -6038,10 +6047,10 @@ public sealed class Scanner : IDisposable
 
     private void ReadAllLinesDetectEncoding(
         NameAndIndex item,
-        List<string> lines,
+        ListFast<string> lines,
         DetectEncodingType type = DetectEncodingType.Standard)
     {
-        lines.Clear();
+        lines.ClearFast();
 
         if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
         {
@@ -6104,9 +6113,9 @@ public sealed class Scanner : IDisposable
                     : _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
     }
 
-    private void ReadAllLinesUTF8(NameAndIndex item, List<string> lines)
+    private void ReadAllLinesUTF8(NameAndIndex item, ListFast<string> lines)
     {
-        lines.Clear();
+        lines.ClearFast();
 
         using Stream stream = _fmFormat switch
         {

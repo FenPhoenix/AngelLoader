@@ -350,6 +350,15 @@ public static partial class Common
         return false;
     }
 
+    public static bool ContainsI(this ListFast<string> value, string substring)
+    {
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].Equals(substring, OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
     #endregion
 
     #region Count chars
