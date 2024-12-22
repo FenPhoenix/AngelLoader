@@ -5869,7 +5869,9 @@ public sealed class Scanner : IDisposable
     {
         try
         {
-            return Directory.GetFiles(Path.Combine(_fmWorkingPath, path), "*", searchOption);
+            string dir = Path.Combine(_fmWorkingPath, path);
+            // Exists check is faster than letting GetFiles() fail
+            return Directory.Exists(dir) ? Directory.GetFiles(dir, "*", searchOption) : Array.Empty<string>();
         }
         catch (DirectoryNotFoundException)
         {
