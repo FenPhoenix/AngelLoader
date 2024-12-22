@@ -2947,8 +2947,7 @@ public sealed class Scanner : IDisposable
         static bool MapFileExists(string path)
         {
             int lsi;
-            return path.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                    path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
                    (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
                    (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
@@ -2961,8 +2960,7 @@ public sealed class Scanner : IDisposable
         static bool AutomapFileExists(string path)
         {
             int len = path.Length;
-            return path.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                   path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
                    // We don't need to check the length because we only need length == 6 but by virtue of
                    // starting with "intrface/", our length is guaranteed to be at least 9
                    (path[len - 6] == 'r' || path[len - 6] == 'R') &&
@@ -3007,6 +3005,10 @@ public sealed class Scanner : IDisposable
             };
             for (int i = 0; i < filesCount; i++)
             {
+                bool? pathIsIntrfaceDir = null;
+                bool? pathIsCutscenes = null;
+                bool? pathIsSnd2 = null;
+
                 string fn = _fmFormat switch
                 {
                     FMFormat.Zip => _archive.Entries[i].FullName,
@@ -3080,7 +3082,7 @@ public sealed class Scanner : IDisposable
                     }
                     continue;
                 }
-                else if (!t3Found && fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS))
+                else if (!t3Found && (pathIsIntrfaceDir ??= fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS)))
                 {
                     _intrfaceDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
@@ -3091,8 +3093,8 @@ public sealed class Scanner : IDisposable
                     continue;
                 }
                 else if (!t3Found && SS2FingerprintRequiredAndNotDone() &&
-                         (fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS) ||
-                          fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S)))
+                         ((pathIsCutscenes ??= fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS)) ||
+                          (pathIsSnd2 ??= fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S))))
                 {
                     _ss2Fingerprinted = true;
                     // Fallthrough so ScanCustomResources can use it
@@ -3101,11 +3103,15 @@ public sealed class Scanner : IDisposable
                 // Inlined for performance. We cut the time roughly in half by doing this.
                 if (!t3Found && _scanOptions.ScanCustomResources)
                 {
-                    if (fmd.HasAutomap == null && AutomapFileExists(fn))
+                    if (fmd.HasAutomap == null &&
+                        (pathIsIntrfaceDir ??= fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS)) &&
+                        AutomapFileExists(fn))
                     {
                         fmd.HasAutomap = true;
                     }
-                    else if (fmd.HasMap == null && MapFileExists(fn))
+                    else if (fmd.HasMap == null &&
+                             (pathIsIntrfaceDir ?? fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS)) &&
+                             MapFileExists(fn))
                     {
                         fmd.HasMap = true;
                     }
@@ -3116,7 +3122,8 @@ public sealed class Scanner : IDisposable
                         fmd.HasCustomMotions = true;
                     }
                     else if (fmd.HasMovies == null &&
-                             (fn.PathStartsWithI_AsciiSecond(FMDirs.MoviesS) || fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS)) &&
+                             (fn.PathStartsWithI_AsciiSecond(FMDirs.MoviesS) ||
+                             (pathIsCutscenes ?? fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS))) &&
                              fn.HasFileExtension())
                     {
                         fmd.HasMovies = true;
@@ -3148,7 +3155,8 @@ public sealed class Scanner : IDisposable
                         fmd.HasCustomScripts = true;
                     }
                     else if (fmd.HasCustomSounds == null &&
-                             (fn.PathStartsWithI_AsciiSecond(FMDirs.SndS) || fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S)) &&
+                             (fn.PathStartsWithI_AsciiSecond(FMDirs.SndS) ||
+                              (pathIsSnd2 ?? fn.PathStartsWithI_AsciiSecond(FMDirs.Snd2S))) &&
                              fn.HasFileExtension())
                     {
                         fmd.HasCustomSounds = true;
@@ -4423,8 +4431,7 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < _intrfaceDirFiles.Count; i++)
             {
                 NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                    item.Name.PathEndsWithI(FMFiles.SNewGameStr))
+                if (item.Name.PathEndsWithI(FMFiles.SNewGameStr))
                 {
                     newGameStrFileIndex = i;
                     break;
