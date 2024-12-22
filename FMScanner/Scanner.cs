@@ -2647,9 +2647,48 @@ public sealed class Scanner : IDisposable
         return false;
     }
 
-    // TODO(Scanner/StringToDate()): Shouldn't we ALWAYS check for ambiguity...?
+    private readonly struct StringToDateResult
+    {
+        internal readonly bool FunctionResult;
+        internal readonly DateTime? DateTime;
+        internal readonly bool IsAmbiguous;
+
+        public StringToDateResult(bool functionResult, DateTime? dateTime, bool isAmbiguous)
+        {
+            FunctionResult = functionResult;
+            DateTime = dateTime;
+            IsAmbiguous = isAmbiguous;
+        }
+    }
+
+    private readonly Dictionary<string, StringToDateResult> _stringToDateResultCache = new(0);
+
     private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
     {
+        string originalDateString = dateString;
+
+        #region Early return
+
+        // Believe it or not, there are quite a few instances of the exact same line across different FMs.
+        // Anything we can do to avoid all the heavy work in this function is worth doing.
+        if (_stringToDateResultCache.TryGetValue(originalDateString, out StringToDateResult stringToDateResult))
+        {
+            dateTime = stringToDateResult.DateTime;
+            isAmbiguous = stringToDateResult.IsAmbiguous;
+            return stringToDateResult.FunctionResult;
+        }
+
+        // There are two valid "word-only" dates: "Christmas Y2K" and "Halloween Y2K".
+        // But we just barely get away with still having this number check work on account of the "2" in "Y2K".
+        if (dateString.AsSpan().IndexOfAny("0123456789".AsSpan()) == -1)
+        {
+            isAmbiguous = false;
+            dateTime = null;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
+        }
+
+        #endregion
+
         // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
         // to guessing about day/month order.
         if (_ctx.EuropeanDateRegex.Match(dateString).Success)
@@ -2664,7 +2703,7 @@ public sealed class Scanner : IDisposable
             {
                 dateTime = eurDateResult;
                 isAmbiguous = eurDateResult.Month != eurDateResult.Day;
-                return true;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
             }
         }
 
@@ -2733,14 +2772,14 @@ public sealed class Scanner : IDisposable
         {
             isAmbiguous = false;
             dateTime = null;
-            return false;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
         }
 
         if (!checkForAmbiguity || !canBeAmbiguous)
         {
             isAmbiguous = false;
             dateTime = result;
-            return true;
+            return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
         }
 
         isAmbiguous = true;
@@ -2759,7 +2798,7 @@ public sealed class Scanner : IDisposable
             {
                 isAmbiguous = false;
                 dateTime = resultNotNull;
-                return true;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
             }
 
             string[] nums = dateString.Split_Char(_ctx.CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
@@ -2792,7 +2831,18 @@ public sealed class Scanner : IDisposable
         }
 
         dateTime = result;
-        return true;
+        return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+
+        static bool DoReturn(
+            Dictionary<string, StringToDateResult> cache,
+            string originalDateString,
+            bool returnValue,
+            DateTime? dateTime,
+            bool isAmbiguous)
+        {
+            cache[originalDateString] = new StringToDateResult(returnValue, dateTime, isAmbiguous);
+            return returnValue;
+        }
     }
 
     #endregion
