@@ -22,7 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-    <PackageReference Include="SpanExtensions.Net" Version="1.5.0" />
+    <PackageReference Include="SpanExtensions.Net" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
