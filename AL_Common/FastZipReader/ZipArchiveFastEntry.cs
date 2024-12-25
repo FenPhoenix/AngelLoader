@@ -48,16 +48,18 @@ public sealed class ZipArchiveFastEntry
     internal ZipArchiveFastEntry(
         ZipCentralDirectoryFileHeader cd,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool darkModMode)
     {
-        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath);
+        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath, darkModMode);
     }
 
     [MemberNotNull(nameof(FullName))]
     internal void Set(
         in ZipCentralDirectoryFileHeader cd,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool ignoreNonBaseDirFileNames)
     {
         CompressionMethod = (CompressionMethodValues)cd.CompressionMethod;
 
@@ -71,6 +73,12 @@ public sealed class ZipArchiveFastEntry
         // we don't know this yet: should be _offsetOfLocalHeader + 30 + _storedEntryNameBytes.Length + extrafieldlength
         // but entryname/extra length could be different in LH
         StoredOffsetOfCompressedData = null;
+
+        if (ignoreNonBaseDirFileNames && ContainsDirSep(cd.Filename, cd.FilenameLength))
+        {
+            FullName = "";
+            return;
+        }
 
         // .NET Framework: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
         Encoding finalEncoding;
@@ -90,5 +98,20 @@ public sealed class ZipArchiveFastEntry
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
         // backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
         FullName = finalEncoding.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
+
+        return;
+
+        static bool ContainsDirSep(byte[] bytes, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                byte b = bytes[i];
+                if (b is (byte)'/' or (byte)'\\')
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

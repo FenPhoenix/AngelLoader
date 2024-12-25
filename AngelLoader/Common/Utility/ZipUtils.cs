@@ -26,10 +26,9 @@ public static partial class Utils
     {
         // One user was getting "1 is not a supported code page" with this(?!) so fall back in that case...
         Encoding enc = GetOEMCodePageOrFallback(Encoding.UTF8);
-        return new ZipArchiveFast(
+        return ZipArchiveFast.Create_General(
             stream: GetReadModeFileStreamWithCachedBuffer(fileName, buffer),
             context: ctx,
-            allowUnsupportedEntries: true,
             entryNameEncoding: enc);
     }
 
