@@ -968,26 +968,17 @@ public sealed class Scanner : IDisposable
 
         @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
         */
-        List<ZipArchiveFastEntry>? __zipEntries = null;
-        List<ZipArchiveFastEntry> GetZipBaseDirEntries()
+        ListFast<ZipArchiveFastEntry>? __zipEntries = null;
+        ListFast<ZipArchiveFastEntry> GetZipBaseDirEntries()
         {
             if (__zipEntries == null)
             {
                 _archive?.Dispose();
-                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false);
+                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false, darkModMode: true);
                 if (zipResult.Success)
                 {
                     _archive = zipResult.Archive!;
-                    __zipEntries = new List<ZipArchiveFastEntry>();
-                    ListFast<ZipArchiveFastEntry> entries = _archive.Entries;
-                    for (int i = 0; i < entries.Count; i++)
-                    {
-                        ZipArchiveFastEntry entry = entries[i];
-                        if (!entry.FullName.Rel_ContainsDirSep())
-                        {
-                            __zipEntries.Add(entry);
-                        }
-                    }
+                    __zipEntries = _archive.Entries;
                 }
                 else
                 {
@@ -1084,7 +1075,7 @@ public sealed class Scanner : IDisposable
 
             try
             {
-                List<ZipArchiveFastEntry> entries = GetZipBaseDirEntries();
+                ListFast<ZipArchiveFastEntry> entries = GetZipBaseDirEntries();
                 for (int i = 0; i < entries.Count; i++)
                 {
                     ZipArchiveFastEntry entry = entries[i];
@@ -1264,7 +1255,7 @@ public sealed class Scanner : IDisposable
         return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
 
         (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
-        AddReadmeFromPK4(List<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
+        AddReadmeFromPK4(ListFast<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
         {
             ZipArchiveFastEntry? readme1entry = null;
             ZipArchiveFastEntry? readme2entry = null;
@@ -1325,16 +1316,16 @@ public sealed class Scanner : IDisposable
     }
 
     private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
-    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries)
+        ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
     {
         ZipArchiveFast? ret;
 
         try
         {
-            ret = new ZipArchiveFast(
-                GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
-                zipContext,
-                allowUnsupportedEntries: false);
+            ret = ZipArchiveFast.Create_Scan(
+                stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
+                context: zipContext,
+                darkMod: darkModMode);
 
             // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
             // thrown while loading them. If this passes, we're definitely good.

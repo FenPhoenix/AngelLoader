@@ -30,7 +30,6 @@ public sealed class ZipArchiveFastEntry
     /// <see cref="ZipHelpers.ZipTimeToDateTime"/>.
     /// </summary>
     // .NET Framework: LastWriteTimes for full set tested identical between ZipArchive and ZipArchiveFast
-    // .NET 9: LastWriteTimes for full set tested identical between ZipArchive and ZipArchiveFast
     public uint LastWriteTime;
 
     /// <summary>
@@ -49,16 +48,18 @@ public sealed class ZipArchiveFastEntry
     internal ZipArchiveFastEntry(
         ZipCentralDirectoryFileHeader cd,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool darkModMode)
     {
-        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath);
+        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath, darkModMode);
     }
 
     [MemberNotNull(nameof(FullName))]
     internal void Set(
         in ZipCentralDirectoryFileHeader cd,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool ignoreNonBaseDirFileNames)
     {
         CompressionMethod = (CompressionMethodValues)cd.CompressionMethod;
 
@@ -73,8 +74,13 @@ public sealed class ZipArchiveFastEntry
         // but entryname/extra length could be different in LH
         StoredOffsetOfCompressedData = null;
 
+        if (ignoreNonBaseDirFileNames && ContainsDirSep(cd.Filename, cd.FilenameLength))
+        {
+            FullName = "";
+            return;
+        }
+
         // .NET Framework: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
-        // .NET 9: Filenames for full set tested identical between ZipArchive and ZipArchiveFast
         Encoding finalEncoding;
         if (!useEntryNameEncodingCodePath)
         {
@@ -86,14 +92,26 @@ public sealed class ZipArchiveFastEntry
         }
         else
         {
-            // @NET5: .NET modern replaces "default" with UTF8:
-            // _storedEntryName = (_archive.EntryNameAndCommentEncoding ?? Encoding.UTF8).GetString(_storedEntryNameBytes);
-            // Encoding.GetEncoding(0) is the same as Encoding.Default
-            finalEncoding = entryNameEncoding ?? Encoding.UTF8;
+            finalEncoding = entryNameEncoding ?? Encoding.Default;
         }
 
         // Sacrifice a slight amount of time for safety. Zip entry names are emphatically NOT supposed to have
         // backslashes according to the spec, but they might anyway, so normalize them all to forward slashes.
         FullName = finalEncoding.GetString(cd.Filename, 0, cd.FilenameLength).ToForwardSlashes();
+
+        return;
+
+        static bool ContainsDirSep(byte[] bytes, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                byte b = bytes[i];
+                if (b is (byte)'/' or (byte)'\\')
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -30,6 +30,8 @@ public sealed class ZipArchiveFast : IDisposable
 
     private readonly bool _allowUnsupportedEntries;
 
+    private readonly bool _ignoreNonBaseDirFileNames;
+
     // Differentiate between "null encoding because the user used a ctor that doesn't take one" vs. "null encoding
     // because the user used a ctor that takes an encoding but they explicitly passed a null one", because what
     // we do when we find a null encoding is different in those two situations.
@@ -51,127 +53,55 @@ public sealed class ZipArchiveFast : IDisposable
         }
     }
 
-    /// <summary>
-    /// Initializes a new instance of ZipArchive on the given stream.
-    /// </summary>
-    /// <exception cref="ArgumentException">The stream is already closed.</exception>
-    /// <exception cref="ArgumentNullException">The stream is null.</exception>
-    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
-    /// <param name="stream">The input or output stream.</param>
-    /// <param name="allowUnsupportedEntries">
-    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
-    /// <br/>
-    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
-    /// entries with unsupported compression methods are found.
-    /// </param>
-    /// <param name="entryNameEncoding">The encoding to use when reading entry names in this archive.
-    /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
-    /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
-    public ZipArchiveFast(
-        FileStream stream,
-        bool allowUnsupportedEntries,
-        Encoding entryNameEncoding) :
-        this(
-            stream: stream,
-            context: new ZipContext(),
-            allowUnsupportedEntries: allowUnsupportedEntries,
-            entryNameEncoding: entryNameEncoding,
-            useEntryNameEncodingCodePath: true)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of ZipArchive on the given stream.
-    /// </summary>
-    /// <exception cref="ArgumentException">The stream is already closed.</exception>
-    /// <exception cref="ArgumentNullException">The stream is null.</exception>
-    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
-    /// <param name="stream">The input or output stream.</param>
-    /// <param name="context"></param>
-    /// <param name="allowUnsupportedEntries">
-    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
-    /// <br/>
-    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
-    /// entries with unsupported compression methods are found.
-    /// </param>
-    /// <param name="entryNameEncoding">The encoding to use when reading entry names in this archive.
-    /// Specify a value for this parameter only when an encoding is required for interoperability with zip archive
-    /// tools and libraries that do not support UTF-8 encoding for entry names.</param>
-    [PublicAPI]
-    public ZipArchiveFast(
+    public static ZipArchiveFast Create_General(
         FileStream stream,
         ZipContext context,
-        bool allowUnsupportedEntries,
-        Encoding entryNameEncoding) :
-        this(
+        Encoding entryNameEncoding)
+    {
+        return new ZipArchiveFast(
             stream: stream,
             context: context,
-            allowUnsupportedEntries: allowUnsupportedEntries,
+            allowUnsupportedEntries: true,
             entryNameEncoding: entryNameEncoding,
-            useEntryNameEncodingCodePath: true)
-    {
+            useEntryNameEncodingCodePath: true,
+            ignoreNonBaseDirFileNames: false);
     }
 
-    /// <summary>
-    /// Initializes a new instance of ZipArchive on the given stream.
-    /// </summary>
-    /// <exception cref="ArgumentException">The stream is already closed.</exception>
-    /// <exception cref="ArgumentNullException">The stream is null.</exception>
-    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
-    /// <param name="stream">The input or output stream.</param>
-    /// <param name="allowUnsupportedEntries">
-    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
-    /// <br/>
-    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
-    /// entries with unsupported compression methods are found.
-    /// </param>
-    public ZipArchiveFast(
-        FileStream stream,
-        bool allowUnsupportedEntries) :
-        this(
-            stream: stream,
-            context: new ZipContext(),
-            allowUnsupportedEntries: allowUnsupportedEntries,
+    public static ZipArchiveFast Create_LanguageSearch(
+        FileStream stream)
+    {
+        return new ZipArchiveFast(
+            stream,
+            new ZipContext(),
+            allowUnsupportedEntries: true,
             entryNameEncoding: null,
-            useEntryNameEncodingCodePath: false)
-    {
+            useEntryNameEncodingCodePath: false,
+            ignoreNonBaseDirFileNames: false);
     }
 
-    /// <summary>
-    /// Initializes a new instance of ZipArchive on the given stream.
-    /// </summary>
-    /// <exception cref="ArgumentException">The stream is already closed.</exception>
-    /// <exception cref="ArgumentNullException">The stream is null.</exception>
-    /// <exception cref="InvalidDataException">The contents of the stream could not be interpreted as a Zip file.</exception>
-    /// <param name="stream">The input or output stream.</param>
-    /// <param name="context"></param>
-    /// <param name="allowUnsupportedEntries">
-    /// If <see langword="true"/>, entries with unsupported compression methods will only throw when opened.
-    /// <br/>
-    /// If <see langword="false"/>, the <see cref="T:Entries"/> collection will throw immediately if any
-    /// entries with unsupported compression methods are found.
-    /// </param>
-    [PublicAPI]
-    public ZipArchiveFast(
+    public static ZipArchiveFast Create_Scan(
         FileStream stream,
         ZipContext context,
-        bool allowUnsupportedEntries) :
-        this(
+        bool darkMod)
+    {
+        var ret = new ZipArchiveFast(
             stream: stream,
             context: context,
-            allowUnsupportedEntries: allowUnsupportedEntries,
+            allowUnsupportedEntries: false,
             entryNameEncoding: null,
-            useEntryNameEncodingCodePath: false)
-    {
+            useEntryNameEncodingCodePath: false,
+            ignoreNonBaseDirFileNames: darkMod);
+        return ret;
     }
 
     [PublicAPI]
-    private ZipArchiveFast(
+    public ZipArchiveFast(
         FileStream stream,
         ZipContext context,
         bool allowUnsupportedEntries,
         Encoding? entryNameEncoding,
-        bool useEntryNameEncodingCodePath)
+        bool useEntryNameEncodingCodePath,
+        bool ignoreNonBaseDirFileNames)
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -183,6 +113,8 @@ public sealed class ZipArchiveFast : IDisposable
         {
             throw new ArgumentException(SR.EntryNameEncodingNotSupported, nameof(entryNameEncoding));
         }
+
+        _ignoreNonBaseDirFileNames = ignoreNonBaseDirFileNames;
 
         _allowUnsupportedEntries = allowUnsupportedEntries;
 
@@ -257,10 +189,9 @@ public sealed class ZipArchiveFast : IDisposable
         try
         {
             using FileStream fs = GetReadModeFileStreamWithCachedBuffer(fileName, buffer);
-            using ZipArchiveFast archive = new(
+            using ZipArchiveFast archive = Create_General(
                 stream: fs,
                 context: zipCtx,
-                allowUnsupportedEntries: true,
                 entryNameEncoding: GetOEMCodePageOrFallback(Encoding.UTF8));
 
             return archive.Entries;
@@ -310,17 +241,17 @@ public sealed class ZipArchiveFast : IDisposable
                     entry = _context.Entries[(int)numberOfEntries];
                     if (entry == null!)
                     {
-                        entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                        entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath, _ignoreNonBaseDirFileNames);
                         _context.Entries[(int)numberOfEntries] = entry;
                     }
                     else
                     {
-                        entry.Set(in currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                        entry.Set(in currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath, _ignoreNonBaseDirFileNames);
                     }
                 }
                 else
                 {
-                    entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath);
+                    entry = new ZipArchiveFastEntry(currentHeader, _entryNameEncoding, _useEntryNameEncodingCodePath, _ignoreNonBaseDirFileNames);
                     _context.Entries.Add(entry);
                 }
 

@@ -269,7 +269,7 @@ internal static class FMLanguages
 
             if (archivePath.ExtIsZip())
             {
-                using var zipArchive = new ZipArchiveFast(File.OpenRead(archivePath), allowUnsupportedEntries: true);
+                using ZipArchiveFast zipArchive = ZipArchiveFast.Create_LanguageSearch(File.OpenRead(archivePath));
                 ListFast<ZipArchiveFastEntry> entries = zipArchive.Entries;
                 int filesCount = entries.Count;
                 for (int i = 0; i < filesCount; i++)
