@@ -23,6 +23,7 @@ public sealed class FileStream_NET : Stream
     private int _readPos;
     private int _readLen;
 
+#if false
     public FileStream_NET(AL_SafeFileHandle handle, FileAccess access, byte[] buffer, int bufferSize)
     {
         ValidateHandle(handle, access);
@@ -45,6 +46,7 @@ public sealed class FileStream_NET : Stream
 
         _fileHandle = handle;
     }
+#endif
 
     public FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, int bufferSize)
         : this(path, mode, access, share, buffer, bufferSize, FileOptions.None)
@@ -56,6 +58,9 @@ public sealed class FileStream_NET : Stream
     {
     }
 
+    // Disable because we don't need it and we don't want it running when we're in a weird state and _fileHandle
+    // could be null etc.
+#if false
     ~FileStream_NET()
     {
         // Preserved for compatibility since FileStream has defined a
@@ -63,6 +68,7 @@ public sealed class FileStream_NET : Stream
         // on Dispose(false) call.
         Dispose(false);
     }
+#endif
 
     private FileStream_NET(string path, FileMode mode, FileAccess access, FileShare share, byte[] buffer, int bufferSize, FileOptions options, long preallocationSize)
     {
@@ -75,10 +81,14 @@ public sealed class FileStream_NET : Stream
 
         _access = access;
 
-        _fileHandle = AL_SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize);
-
         try
         {
+            /*
+            IMPORTANT: This MUST go inside the try block as it can throw!
+             The modern .NET version, through a complicated chain of logic, avoids this problem, but we don't.
+             The finalizer will run and _fileHandle will be null and then we crash the whole app.
+            */
+            _fileHandle = AL_SafeFileHandle.Open(fullPath, mode, access, share, options, preallocationSize);
             if (mode == FileMode.Append && CanSeek)
             {
                 _appendStart = _filePosition = GetLengthCore;
@@ -92,8 +102,12 @@ public sealed class FileStream_NET : Stream
         {
             // If anything goes wrong while setting up the stream, make sure we deterministically dispose
             // of the opened handle.
-            _fileHandle.Dispose();
-            _fileHandle = null!;
+            _fileHandle?.Dispose();
+            // If we want to enable the ctor that takes a file handle, we need to re-enable this and then re-do
+            // the logic to expect that this could null in the finalizer if we enable that too.
+#if false
+            _fileHandle = null;
+#endif
             throw;
         }
     }
