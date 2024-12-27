@@ -10,12 +10,6 @@ namespace AL_Common.DeviceIoControlLib.Wrapper;
 
 public static partial class DeviceIoControlHelper
 {
-    /*
-    @NET5/IMPORTANT/BUG: The code in this class (as contrasted with the original Framework code) is part of a
-                         setup that may be incorrect and cause crashes on some systems!
-                         We need to figure out what's the exact correct modern-.NET way to do this whole thing.
-    */
-
     // Use manual marshalling rather than UnmanagedType.AsAny for future-proofing, and also make it even more
     // manual to prevent crashing in 32-bit mode (although we don't currently do 32-bit in .NET modern).
     [LibraryImport("Kernel32.dll", SetLastError = true)]
