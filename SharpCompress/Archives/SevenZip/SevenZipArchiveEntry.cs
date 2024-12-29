@@ -5,6 +5,21 @@ namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchiveEntry
 {
+    public int Block;
+    public int IndexInBlock;
+    /*
+    @BLOCKS: Compressed size is often not even stored, even 7-Zip itself doesn't display it. It might only be
+     stored per-block or something, for the whole block... So use uncompressed as a crappy estimate because
+     7-zip won't let us have good things...
+    */
+    public long DistanceFromBlockStart_Uncompressed;
+
+    public long TotalExtractionCost
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => DistanceFromBlockStart_Uncompressed + UncompressedSize;
+    }
+
     internal bool HasStream = true;
     internal ulong MTime;
 
@@ -50,5 +65,7 @@ public sealed class SevenZipArchiveEntry
         _lastModifiedTimeSet = false;
         _lastModifiedTime = null;
         IsDirectory = false;
+        Block = 0;
+        IndexInBlock = 0;
     }
 }
