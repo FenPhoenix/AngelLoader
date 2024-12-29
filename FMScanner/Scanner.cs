@@ -11,6 +11,7 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 */
 
 //#define ScanSynchronous
+//#define StoreCurrentFM
 
 using System;
 using System.Collections.Concurrent;
@@ -43,6 +44,11 @@ namespace FMScanner;
 
 public sealed class Scanner : IDisposable
 {
+    // Only safe to enable during single-threaded scans, otherwise all threads will hammer on this!
+#if StoreCurrentFM
+    public static FMToScan _CurrentFM = null!;
+#endif
+
 #if DEBUG
     private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
@@ -855,6 +861,9 @@ public sealed class Scanner : IDisposable
 
                 try
                 {
+#if StoreCurrentFM
+                    _CurrentFM = fm;
+#endif
                     scannedFMAndError =
                         fm.IsTDM
                             ? ScanCurrentDarkModFM(fm)
