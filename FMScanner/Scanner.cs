@@ -1,5 +1,6 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
+#define INDIVIDUAL_FM_TIMING
 
 /*
 @MEM(Scanner readme line splitting):
@@ -523,6 +524,10 @@ public sealed class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
+#if INDIVIDUAL_FM_TIMING
+        TimingDataList.Clear();
+#endif
+
         if (!TryGetParallelForData(threadCount, fms, cancellationToken, out var pd))
         {
             throw new ArgumentOutOfRangeException(nameof(ParallelOptions.MaxDegreeOfParallelism));
@@ -896,6 +901,9 @@ public sealed class Scanner : IDisposable
 #if StoreCurrentFM
                     _CurrentFM = fm;
 #endif
+#if INDIVIDUAL_FM_TIMING
+                    _fmTimer.Restart();
+#endif
                     scannedFMAndError =
                         fm.IsTDM
                             ? ScanCurrentDarkModFM(fm)
@@ -914,6 +922,11 @@ public sealed class Scanner : IDisposable
                 }
                 finally
                 {
+#if INDIVIDUAL_FM_TIMING
+                    _fmTimer.Stop();
+                    TimingDataList.Add(new TimingData(fm.Path, _fmTimer.Elapsed));
+#endif
+
                     if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
                     {
                         DeleteFMWorkingPath();
@@ -931,6 +944,24 @@ public sealed class Scanner : IDisposable
             }
         }
     }
+
+#if INDIVIDUAL_FM_TIMING
+    private static readonly Stopwatch _fmTimer = new();
+
+    public sealed class TimingData
+    {
+        public readonly string Path;
+        public readonly TimeSpan Time;
+
+        public TimingData(string path, TimeSpan time)
+        {
+            Path = path;
+            Time = time;
+        }
+    }
+
+    public static List<TimingData> TimingDataList = new();
+#endif
 
     private void SetOrAddTitle(ListFast<string> titles, string value)
     {

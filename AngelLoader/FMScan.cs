@@ -1,9 +1,13 @@
 ﻿//#define TIMING_TEST
+#define INDIVIDUAL_FM_TIMING
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+#if INDIVIDUAL_FM_TIMING
+using System.Linq;
+#endif
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -301,6 +305,21 @@ internal static class FMScan
                                 progress: progress,
                                 cancellationToken: _scanCts.Token);
                         }
+
+#if INDIVIDUAL_FM_TIMING
+                        List<Scanner.TimingData> timingDataList = new();
+                        timingDataList.AddRange(Scanner.TimingDataList);
+
+                        timingDataList = timingDataList.OrderBy(static x => Path.GetFileName(x.Path)).ToList();
+
+                        using (var sw = new StreamWriter(@"C:\al_7z_scan_timings.txt"))
+                        {
+                            foreach (var item in timingDataList)
+                            {
+                                sw.WriteLine(item.Time + "=" + Path.GetFileName(item.Path));
+                            }
+                        }
+#endif
 
                         Core.View.SetProgressPercent(100);
                     }
