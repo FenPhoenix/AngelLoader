@@ -85,6 +85,9 @@ public sealed class Scanner : IDisposable
     private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
     private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
 
+    private byte[]? _gameTypeBuffer_ChunkPlusGAMEPARAM;
+    private byte[] GameTypeBuffer_ChunkPlusGAMEPARAM => _gameTypeBuffer_ChunkPlusGAMEPARAM ??= new byte[_gameTypeBufferSize + _ctx.GAMEPARAM.Length];
+
     private readonly byte[][] _zipOffsetBuffers =
     {
         new byte[SS2_NewDark_MAPPARAM_Offset],
@@ -230,6 +233,7 @@ public sealed class Scanner : IDisposable
 
     private NameAndIndex? _solidMissFlagFileToUse;
     private NameAndIndex? _solidMisFileToUse;
+    private NameAndIndex? _solidGamFileToUse;
 
     #endregion
 
@@ -698,6 +702,7 @@ public sealed class Scanner : IDisposable
 
         _solidMissFlagFileToUse = null;
         _solidMisFileToUse = null;
+        _solidGamFileToUse = null;
     }
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
@@ -1550,6 +1555,7 @@ public sealed class Scanner : IDisposable
 
                 // @BLOCKS: Recycle these later
                 ListFast<SolidEntry> misFiles = new(0);
+                ListFast<SolidEntry> gamFiles = new(0);
                 ListFast<SolidEntry> missFlagFiles = new(0);
 
                 Dictionary<int, int> blockIndexCounts = new();
@@ -1690,11 +1696,17 @@ public sealed class Scanner : IDisposable
                                  ) &&
                                  !fn.Rel_ContainsDirSep() &&
                                  (fn.ExtIsMis()
-                                 // Solid scans don't use .gam files, so shave a small amount of time off here
-                                 //|| fn.ExtIsGam()
+                                 || fn.ExtIsGam()
                                  ))
                         {
-                            misFiles.Add(solidEntry);
+                            if (fn.ExtIsMis())
+                            {
+                                misFiles.Add(solidEntry);
+                            }
+                            else
+                            {
+                                gamFiles.Add(solidEntry);
+                            }
                         }
                         else if (!fn.Rel_ContainsDirSep() &&
                                  (fn.EqualsI_Local(FMFiles.FMInfoXml) ||
@@ -1769,80 +1781,68 @@ public sealed class Scanner : IDisposable
                 // @BLOCKS: Implement solid RAR support later
                 if (_fmFormat == FMFormat.SevenZip)
                 {
-                    SolidEntry? smallestCostMissFlagFile = GetLowestExtractCostEntry(missFlagFiles);
-                    if (missFlagFiles.Count > 0 && smallestCostMissFlagFile is { } smallestCostMissFlagFileNonNull &&
-                        /*
-                        The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
-                        record). 64KB is small enough that extraction time will be negligible, but large enough to
-                        cover any missflag.str file that's likely to ever exist.
-                        */
-                        smallestCostMissFlagFileNonNull.TotalExtractionCost <= ByteSize.KB * 64)
+                    SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(gamFiles);
+                    SolidEntry? lowestCostUsedMisFile = null;
+                    SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(missFlagFiles);
+
+                    var result =
+                        GetLowestCostUsedMisFile(
+                            lowestCostMissFlagFile,
+                            misFiles,
+                            tempPath,
+                            tempRandomName,
+                            fm,
+                            cancellationToken);
+
+                    if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
                     {
-                        string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
-
-                        Fen7z.Result result = Fen7z.Extract(
-                            sevenZipWorkingPath: _sevenZipWorkingPath,
-                            sevenZipPathAndExe: _sevenZipExePath,
+                        return UnsupportedZip(
                             archivePath: fm.Path,
-                            outputPath: _fmWorkingPath,
-                            cancellationToken: cancellationToken,
-                            listFile: listFile,
-                            // @BLOCKS: Recycle list later
-                            fileNamesList: new List<string> { smallestCostMissFlagFileNonNull.FullName });
+                            fen7zResult: result.SevenZipResult,
+                            ex: null,
+                            errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                                       fm.Path + $": fm is 7z{NL}",
+                            originalIndex: fm.OriginalIndex);
+                    }
+                    else if (result.Result == GetLowestCostMisFileError.Success)
+                    {
+                        lowestCostUsedMisFile = result.MisFile;
+                    }
 
-                        if (result.ErrorOccurred)
+                    if (result.Result != GetLowestCostMisFileError.Fallback)
+                    {
+                        if (lowestCostUsedMisFile != null &&
+                            lowestCostGamFile != null)
                         {
-                            Log(fm.Path + $": fm is 7z{NL}" +
-                                "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                                result);
-
-                            return UnsupportedZip(
-                                archivePath: fm.Path,
-                                fen7zResult: result,
-                                ex: null,
-                                errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                                           fm.Path + $": fm is 7z{NL}",
-                                originalIndex: fm.OriginalIndex);
-                        }
-
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        // @BLOCKS: Recycle list later
-                        ListFast<NameAndIndex> misFileItems = new(misFiles.Count);
-
-                        for (int i = 0; i < misFiles.Count; i++)
-                        {
-                            SolidEntry item = misFiles[i];
-                            misFileItems.Add(new NameAndIndex(item.FullName, item.Index));
-                        }
-                        // @BLOCKS: Recycle list later
-                        ListFast<NameAndIndex> usedMisFileItems = new(misFiles.Count);
-
-                        NameAndIndex missFlagFile = new(smallestCostMissFlagFileNonNull.FullName, smallestCostMissFlagFileNonNull.Index);
-                        ReadAllLinesUTF8(missFlagFile, _tempLines);
-                        CacheUsedMisFiles(missFlagFile, misFileItems, usedMisFileItems, _tempLines);
-
-                        // @BLOCKS: Recycle list later
-                        ListFast<SolidEntry> finalUsedMisFilesList = new(misFiles.Count);
-
-                        foreach (NameAndIndex usedMisFile in usedMisFileItems)
-                        {
-                            foreach (SolidEntry entry in misFiles)
+                            if (lowestCostGamFile.Value.TotalExtractionCost <
+                                lowestCostUsedMisFile.Value.TotalExtractionCost)
                             {
-                                if (entry.FullName == usedMisFile.Name)
-                                {
-                                    finalUsedMisFilesList.Add(entry);
-                                }
+                                _solidGamFileToUse = new NameAndIndex(
+                                    lowestCostGamFile.Value.FullName,
+                                    lowestCostGamFile.Value.Index);
+                                entriesList.Add(lowestCostGamFile.Value);
+                            }
+                            else
+                            {
+                                _solidMisFileToUse = new NameAndIndex(
+                                    lowestCostUsedMisFile.Value.FullName,
+                                    lowestCostUsedMisFile.Value.Index);
+                                entriesList.Add(lowestCostUsedMisFile.Value);
                             }
                         }
-
-                        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(finalUsedMisFilesList);
-                        if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
+                        else if (lowestCostGamFile != null)
                         {
-                            _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
-                            _solidMisFileToUse = new NameAndIndex(lowestCostUsedMisFileNonNull.FullName, lowestCostUsedMisFileNonNull.Index);
-
-                            entriesList.Add(lowestCostUsedMisFileNonNull);
+                            _solidGamFileToUse = new NameAndIndex(
+                                lowestCostGamFile.Value.FullName,
+                                lowestCostGamFile.Value.Index);
+                            entriesList.Add(lowestCostGamFile.Value);
+                        }
+                        else if (lowestCostUsedMisFile != null)
+                        {
+                            _solidMisFileToUse = new NameAndIndex(
+                                lowestCostUsedMisFile.Value.FullName,
+                                lowestCostUsedMisFile.Value.Index);
+                            entriesList.Add(lowestCostUsedMisFile.Value);
                         }
                         else
                         {
@@ -1868,6 +1868,10 @@ public sealed class Scanner : IDisposable
                     for (int i = 0; i < misFiles.Count; i++)
                     {
                         entriesList.Add(misFiles[i]);
+                    }
+                    for (int i = 0; i < gamFiles.Count; i++)
+                    {
+                        entriesList.Add(gamFiles[i]);
                     }
                 }
 
@@ -5723,12 +5727,15 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Setup
-
         ZipArchiveFastEntry misFileZipEntry = null!;
         RarArchiveEntry misFileRarEntry = null!;
-
         string misFileOnDisk = "";
+
+        if (_solidGamFileToUse != null)
+        {
+            // @BLOCKS: Just to get it working in a quick-n-dirty way...
+            goto GamPath;
+        }
 
         if (_fmFormat == FMFormat.Zip)
         {
@@ -5742,8 +5749,6 @@ public sealed class Scanner : IDisposable
         {
             misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
         }
-
-        #endregion
 
         #region Check for SKYOBJVAR in .mis (determines OldDark/NewDark; determines game type for OldDark)
 
@@ -5909,6 +5914,8 @@ public sealed class Scanner : IDisposable
         }
 #endif
 
+        GamPath:
+
         #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
 
         static bool StreamContainsIdentString(
@@ -5947,15 +5954,21 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+        if ((_fmFormat is FMFormat.Zip or FMFormat.Rar) || _solidGamFileToUse != null)
         {
+            // @BLOCKS: Look for "GAMEPARAM" at appropriate position(s) in SS2 gam files here for the gam-only
+            //  path. Then if we don't find it we'll fall back to the fingerprinted path as before.
+
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
             // We only need the .gam file for non-solid FMs, so we can save extracting it otherwise.
             Stream? stream = null;
             try
             {
-                stream = _fmFormat == FMFormat.Zip
+                stream =
+                      _solidGamFileToUse != null
+                    ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
+                    : _fmFormat == FMFormat.Zip
                     ? _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry)
                     : (GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles) ?? misFileRarEntry).OpenEntryStream();
 
@@ -6059,16 +6072,24 @@ public sealed class Scanner : IDisposable
 #endif
             == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
         {
-            using Stream stream = _fmFormat switch
-            {
-                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
-                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
-            };
+            using Stream stream =
+                  _solidGamFileToUse != null
+                ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
+                : _fmFormat == FMFormat.Zip
+                ? _archive.OpenEntry(misFileZipEntry)
+                : _fmFormat == FMFormat.Rar
+                ? misFileRarEntry.OpenEntryStream()
+                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+
+            (byte[] identifier, byte[] buffer) =
+                _solidGamFileToUse != null
+                    ? (_ctx.GAMEPARAM, GameTypeBuffer_ChunkPlusGAMEPARAM)
+                    : (MAPPARAM, GameTypeBuffer_ChunkPlusMAPPARAM);
+
             if (StreamContainsIdentString(
                     stream,
-                    MAPPARAM,
-                    GameTypeBuffer_ChunkPlusMAPPARAM,
+                    identifier,
+                    buffer,
                     _gameTypeBufferSize))
             {
 #if FMScanner_FullCode
@@ -6502,6 +6523,107 @@ public sealed class Scanner : IDisposable
         }
 
         return smallestCostIndex == -1 ? null : list[smallestCostIndex];
+    }
+
+    private enum GetLowestCostMisFileError
+    {
+        Success,
+        SevenZipExtractError,
+        NoUsedMisFile,
+        NoMissFlagFile,
+        Fallback,
+    }
+
+    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
+    GetLowestCostUsedMisFile(
+        SolidEntry? lowestCostMissFlagFile,
+        ListFast<SolidEntry> misFiles,
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        CancellationToken cancellationToken)
+    {
+        if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
+        {
+            /*
+            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
+            record). 64KB is small enough that extraction time will be negligible, but large enough to
+            cover any missflag.str file that's likely to ever exist.
+            */
+            if (lowestCostMissFlagFileNonNull.TotalExtractionCost > ByteSize.KB * 64)
+            {
+                return (GetLowestCostMisFileError.Fallback, null, default);
+            }
+
+            string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
+
+            Fen7z.Result result = Fen7z.Extract(
+                sevenZipWorkingPath: _sevenZipWorkingPath,
+                sevenZipPathAndExe: _sevenZipExePath,
+                archivePath: fm.Path,
+                outputPath: _fmWorkingPath,
+                cancellationToken: cancellationToken,
+                listFile: listFile,
+                // @BLOCKS: Recycle list later
+                fileNamesList: new List<string> { lowestCostMissFlagFileNonNull.FullName });
+
+            if (result.ErrorOccurred)
+            {
+                Log(fm.Path + $": fm is 7z{NL}" +
+                    "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                    result);
+
+                return (GetLowestCostMisFileError.SevenZipExtractError, result, default);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // @BLOCKS: Recycle list later
+            ListFast<NameAndIndex> misFileItems = new(misFiles.Count);
+
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                misFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            }
+
+            // @BLOCKS: Recycle list later
+            ListFast<NameAndIndex> usedMisFileItems = new(misFiles.Count);
+
+            NameAndIndex missFlagFile = new(lowestCostMissFlagFileNonNull.FullName, lowestCostMissFlagFileNonNull.Index);
+            ReadAllLinesUTF8(missFlagFile, _tempLines);
+            CacheUsedMisFiles(missFlagFile, misFileItems, usedMisFileItems, _tempLines);
+
+            _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
+
+            // @BLOCKS: Recycle list later
+            ListFast<SolidEntry> finalUsedMisFilesList = new(misFiles.Count);
+
+            foreach (NameAndIndex usedMisFile in usedMisFileItems)
+            {
+                foreach (SolidEntry entry in misFiles)
+                {
+                    if (entry.FullName == usedMisFile.Name)
+                    {
+                        finalUsedMisFilesList.Add(entry);
+                    }
+                }
+            }
+
+            SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(finalUsedMisFilesList);
+            if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
+            {
+                return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
+            }
+            else
+            {
+                return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
+            }
+        }
+        else
+        {
+            return (GetLowestCostMisFileError.NoMissFlagFile, null, default);
+        }
     }
 
     #endregion

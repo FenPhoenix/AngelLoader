@@ -468,6 +468,7 @@ public sealed class ReadOnlyDataContext
     have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
     */
     internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
+    internal readonly byte[] GAMEPARAM = "GAMEPARAM"u8.ToArray();
 
     internal readonly int[] GameDetect_KeyPhraseLocations =
     {
