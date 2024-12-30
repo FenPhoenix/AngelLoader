@@ -44,12 +44,9 @@ internal sealed class ArchiveDatabase
         {
             SevenZipArchiveEntry file = _files[i];
 
-            /*
-            @BLOCKS: This logic is not correct! We need to still do the other stuff even if the file is 0 length.
-             Right now this is most likely preventing 0-length files from being added to the list.
-             Do a diff between this and new fixed logic. Also diff file count for all, between this and main branch.
-            */
-            bool emptyStream = !file.HasStream || file.UncompressedSize == 0;
+            // If the file has no stream then its uncompressed length will have been explicitly set to 0, so no
+            // need to check.
+            bool emptyStream = !file.HasStream;
 
             if (emptyStream && indexInFolder == 0)
             {
