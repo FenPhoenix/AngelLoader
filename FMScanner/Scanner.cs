@@ -16,6 +16,8 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 @BLOCKS: Could SharpCompress (full) allow us to stream 7z entries to memory?
  Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
  We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
+
+@BLOCKS: Test with 7z archives that aren't solid - just to make sure there aren't any problems
 */
 
 //#define ScanSynchronous
