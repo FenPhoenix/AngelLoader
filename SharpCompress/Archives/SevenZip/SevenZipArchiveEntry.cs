@@ -66,5 +66,6 @@ public sealed class SevenZipArchiveEntry
         IsDirectory = false;
         Block = 0;
         IndexInBlock = 0;
+        DistanceFromBlockStart_Uncompressed = 0;
     }
 }
