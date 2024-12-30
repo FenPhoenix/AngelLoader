@@ -12,6 +12,10 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 @BLOCKS: Test if every individual 7z FM is faster, not just that the aggregate is faster
 
 @BLOCKS: Tested: Solid RAR files work, just without the optimization, as designed
+
+@BLOCKS: Could SharpCompress (full) allow us to stream 7z entries to memory?
+ Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
+ We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
 */
 
 //#define ScanSynchronous
