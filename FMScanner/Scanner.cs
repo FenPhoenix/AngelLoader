@@ -1778,6 +1778,9 @@ public sealed class Scanner : IDisposable
                 //    }
                 //}
 
+                // FMScanner_FullCode wants NewDark-required value, which needs mis files, so just disable the
+                // entire optimization in that case.
+#if !FMScanner_FullCode
                 // @BLOCKS: Implement solid RAR support later
                 if (_fmFormat == FMFormat.SevenZip &&
                     (_scanOptions.ScanGameType
@@ -1890,6 +1893,7 @@ public sealed class Scanner : IDisposable
                     }
                 }
                 else
+#endif
                 {
                     FillOutNormalList();
                 }
