@@ -1779,11 +1779,46 @@ public sealed class Scanner : IDisposable
                 //}
 
                 // @BLOCKS: Implement solid RAR support later
-                if (_fmFormat == FMFormat.SevenZip)
+                if (_fmFormat == FMFormat.SevenZip &&
+                    (_scanOptions.ScanGameType
+#if FMScanner_FullCode
+                     || _scanOptions.ScanNewDarkRequired
+#endif
+                    )
+                   )
                 {
                     SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(gamFiles);
-                    SolidEntry? lowestCostUsedMisFile = null;
                     SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(missFlagFiles);
+
+                    if (lowestCostGamFile != null)
+                    {
+                        bool gamFileHasLowerCostThanAllMisFiles = false;
+                        foreach (SolidEntry misFile in misFiles)
+                        {
+                            if (misFile.TotalExtractionCost < lowestCostGamFile.Value.TotalExtractionCost)
+                            {
+                                gamFileHasLowerCostThanAllMisFiles = true;
+                                break;
+                            }
+                        }
+
+                        if (gamFileHasLowerCostThanAllMisFiles)
+                        {
+                            entriesList.Add(lowestCostGamFile.Value);
+                            _solidGamFileToUse = new NameAndIndex(
+                                lowestCostGamFile.Value.FullName,
+                                lowestCostGamFile.Value.Index);
+                            for (int i = 0; i < missFlagFiles.Count; i++)
+                            {
+                                entriesList.Add(missFlagFiles[i]);
+                            }
+
+                            // @BLOCKS: You know your code is terribly written when
+                            goto outside;
+                        }
+                    }
+
+                    SolidEntry? lowestCostUsedMisFile = null;
 
                     var result =
                         GetLowestCostUsedMisFile(
@@ -1875,6 +1910,8 @@ public sealed class Scanner : IDisposable
                     }
                 }
 
+                outside:
+
                 #region De-duplicate list
 
                 // Some files could have multiple copies in different folders, but we only want to extract
@@ -1927,7 +1964,7 @@ public sealed class Scanner : IDisposable
                 {
                     foreach (var item in tempList)
                     {
-                        if (item.FullName.PathEqualsI(FMFiles.SMissFlag))
+                        if (item.FullName.PathEndsWithI(FMFiles.SMissFlag))
                         {
                             missFlagToUse = item;
                             break;
