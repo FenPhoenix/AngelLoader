@@ -35,6 +35,7 @@ internal static class FMScan
         _timingTestStopWatch.Stop();
         // ReSharper disable RedundantNameQualifier
         Trace.WriteLine("Scan: " + _timingTestStopWatch.Elapsed);
+        Core.Dialogs.ShowAlert("Scan: " + _timingTestStopWatch.Elapsed, "", MBoxIcon.None);
     }
 #endif
 
@@ -302,9 +303,6 @@ internal static class FMScan
                         }
 
                         Core.View.SetProgressPercent(100);
-#if TIMING_TEST
-                        StopTimingAndPrintResult();
-#endif
                     }
                     catch (OperationCanceledException)
                     {
@@ -546,6 +544,9 @@ internal static class FMScan
             _scanCts.Dispose();
             Core.View.Block(false);
             Core.View.HideProgressBox();
+#if TIMING_TEST
+            StopTimingAndPrintResult();
+#endif
         }
 
         #region Local functions
