@@ -17,7 +17,10 @@ be far less memory allocated than to essentially duplicate the entire readme in 
  Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
  We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
 
-@BLOCKS: Test with 7z archives that aren't solid - just to make sure there aren't any problems
+@BLOCKS: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
+ case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
+ This is not really urgent because it's unlikely anyone will make non-solid 7z FMs, but if we felt like looking
+ into non-solid optimizations at some point we could.
 */
 
 //#define ScanSynchronous
