@@ -11,8 +11,7 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 
 @BLOCKS: Test if every individual 7z FM is faster, not just that the aggregate is faster
 
-@BLOCKS: Add "use .gam if lower cost" optimization later, after the .mis path is fully working and tested with
- the loader-friendly-packed set.
+@BLOCKS: Tested: Solid RAR files work, just without the optimization, as designed
 */
 
 //#define ScanSynchronous
@@ -1558,20 +1557,6 @@ public sealed class Scanner : IDisposable
                 ListFast<SolidEntry> gamFiles = new(0);
                 ListFast<SolidEntry> missFlagFiles = new(0);
 
-                Dictionary<int, int> blockIndexCounts = new();
-
-                static void AddBlockIndex(Dictionary<int, int> dict, int block)
-                {
-                    if (dict.ContainsKey(block))
-                    {
-                        dict[block]++;
-                    }
-                    else
-                    {
-                        dict[block] = 1;
-                    }
-                }
-
                 List<SolidEntry> tempList = SolidZipExtractedEntriesTempList;
 
                 static bool EndsWithTitleFile(SolidEntry fileName)
@@ -1636,10 +1621,8 @@ public sealed class Scanner : IDisposable
                              functionality for solid rar yet (and probably won't want to go into the guts of the
                              rar code to add it either).
                             */
-                            solidEntry = new SolidEntry(sevenZipEntry.FileName, i, uncompressedSize, 0, 0);
+                            solidEntry = new SolidEntry(rarEntry.Key, i, uncompressedSize, 0, 0);
                         }
-
-                        AddBlockIndex(blockIndexCounts, solidEntry.Block);
 
                         int dirSeps;
 
@@ -1750,33 +1733,6 @@ public sealed class Scanner : IDisposable
                         }
                     }
                 }
-
-                // @BLOCKS: Test new code with FMInfoGen folder scan
-
-                // @BLOCKS: Clean up test code later
-                //foreach (SolidEntry item in misAndGameFiles)
-                //{
-                //    if (!blockIndexCounts.TryGetValue(item.Block, out int count) || count == 1)
-                //    {
-                //        string msg = "************** ITEM NOT IN BLOCK BY ITSELF: " + $"{NL}"
-                //            + "FM: " + fm.Path + $"{NL}"
-                //            + "Entry: " + item.FullName;
-                //        Trace.WriteLine(msg);
-                //        Log(msg);
-                //    }
-                //}
-
-                //foreach (SolidEntry item in missFlagFiles)
-                //{
-                //    if (!blockIndexCounts.TryGetValue(item.Block, out int count) || count == 1)
-                //    {
-                //        string msg = "************** ITEM NOT IN BLOCK BY ITSELF: " + $"{NL}"
-                //            + "FM: " + fm.Path + $"{NL}"
-                //            + "Entry: " + item.FullName;
-                //        Trace.WriteLine(msg);
-                //        Log(msg);
-                //    }
-                //}
 
                 // FMScanner_FullCode wants NewDark-required value, which needs mis files, so just disable the
                 // entire optimization in that case.

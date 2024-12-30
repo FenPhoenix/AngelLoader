@@ -8,9 +8,8 @@ public sealed class SevenZipArchiveEntry
     public int Block;
     public int IndexInBlock;
     /*
-    @BLOCKS: Compressed size is often not even stored, even 7-Zip itself doesn't display it. It might only be
-     stored per-block or something, for the whole block... So use uncompressed as a crappy estimate because
-     7-zip won't let us have good things...
+    For solid archives, compressed size can't be known or stored for individual files; only an entire block can
+    have a total compressed size. So use a file's uncompressed size as a proxy.
     */
     public long DistanceFromBlockStart_Uncompressed;
 
