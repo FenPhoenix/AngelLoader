@@ -6001,7 +6001,13 @@ public sealed class Scanner : IDisposable
                     }
                 }
 
-                if (game != Game.SS2)
+                if (
+#if FMScanner_FullCode
+                    ret.Game
+#else
+                    game
+#endif
+                    != Game.SS2)
                 {
 #if FMScanner_FullCode
                     ret.Game
