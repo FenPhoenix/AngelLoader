@@ -1738,6 +1738,13 @@ public sealed class Scanner : IDisposable
                     }
                 }
 
+                /*
+                @BLOCKS: If a file is 0 length, it will go into block 0, even if other >0 length files are in that
+                 block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
+                 we would have to ignore any files in its block that are 0 length.
+                 We don't need to do this currently, but just a note for the future.
+                */
+
                 // FMScanner_FullCode wants NewDark-required value, which needs mis files, so just disable the
                 // entire optimization in that case.
 #if !FMScanner_FullCode
