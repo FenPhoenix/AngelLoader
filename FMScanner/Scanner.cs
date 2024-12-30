@@ -5786,8 +5786,8 @@ public sealed class Scanner : IDisposable
             const ulong SKYOBJVA_ULong = 0x41564A424F594B53;
 
             int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == SKYOBJVA_ULong &&
-                   buffer[len - 1] == 'R';
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == SKYOBJVA_ULong &&
+                   buffer[len - 1] == (byte)'R';
         }
 
         static bool EndsWithMAPPARAM(byte[] buffer)
@@ -5795,7 +5795,7 @@ public sealed class Scanner : IDisposable
             const ulong MAPPARAM_ULong = 0x4D4152415050414D;
 
             int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == MAPPARAM_ULong;
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
 
         Stream? misStream = null;
@@ -5956,9 +5956,6 @@ public sealed class Scanner : IDisposable
 
         if ((_fmFormat is FMFormat.Zip or FMFormat.Rar) || _solidGamFileToUse != null)
         {
-            // @BLOCKS: Look for "GAMEPARAM" at appropriate position(s) in SS2 gam files here for the gam-only
-            //  path. Then if we don't find it we'll fall back to the fingerprinted path as before.
-
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
             // We only need the .gam file for non-solid FMs, so we can save extracting it otherwise.
@@ -5972,18 +5969,53 @@ public sealed class Scanner : IDisposable
                     ? _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry)
                     : (GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles) ?? misFileRarEntry).OpenEntryStream();
 
+                if (_solidGamFileToUse != null)
+                {
+                    if (GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
+                        GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
+                    {
 #if FMScanner_FullCode
-                ret.Game
+                        ret.Game
 #else
-                game
+                        game
 #endif
-                    = StreamContainsIdentString(
-                        stream,
-                        _ctx.RopeyArrow,
-                        GameTypeBuffer_ChunkPlusRopeyArrow,
-                        _gameTypeBufferSize)
-                        ? Game.Thief2
-                        : Game.Thief1;
+                            = Game.SS2;
+                    }
+
+                    static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
+                    {
+                        if (stream.Length > location + _gameDetectStringBufferLength)
+                        {
+                            stream.Position = location;
+                            int bytesRead = stream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
+                            if (bytesRead == _gameDetectStringBufferLength)
+                            {
+                                const ulong GAMEPARA_Ulong = 0x41524150454D4147;
+
+                                return Unsafe.ReadUnaligned<ulong>(ref buffer[0]) == GAMEPARA_Ulong &&
+                                       buffer[^1] == (byte)'M';
+                            }
+                        }
+
+                        return false;
+                    }
+                }
+
+                if (game != Game.SS2)
+                {
+#if FMScanner_FullCode
+                    ret.Game
+#else
+                    game
+#endif
+                        = StreamContainsIdentString(
+                            stream,
+                            _ctx.RopeyArrow,
+                            GameTypeBuffer_ChunkPlusRopeyArrow,
+                            _gameTypeBufferSize)
+                            ? Game.Thief2
+                            : Game.Thief1;
+                }
             }
             finally
             {
@@ -6040,14 +6072,14 @@ public sealed class Scanner : IDisposable
         #region SS2 slow-detect fallback
 
         /*
-        Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
-        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
-        it earlier during ReadAndCacheFMData() and again here). For T2, we have a fallback scan if we don't
-        find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
-        really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has MAPPARAM
+        Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
+        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted it
+        earlier during the FM data caching and again here). For T2, we have a fallback scan if we don't find
+        SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's really
+        slow, but better slow than incorrect. This way, if a new SS2 FM is released and has the ident string
         in a different place, at least we're like 98% certain to still detect it correctly here. Then people
-        can still at least have an accurate detection while I work on a new version that takes the new
-        MAPPARAM location into account.
+        can still at least have an accurate detection while I work on a new version that takes the new ident
+        string location into account.
         */
 
         static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)

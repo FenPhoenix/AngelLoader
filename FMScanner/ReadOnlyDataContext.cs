@@ -457,6 +457,10 @@ public sealed class ReadOnlyDataContext
     internal const int NewDark_SKYOBJVAR_Offset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
     internal const int NewDark_SKYOBJVAR_Offset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
 
+    // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
+    internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
+    internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
+
     internal readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
 
     /*
