@@ -6608,19 +6608,19 @@ public sealed class Scanner : IDisposable
 
     private static SolidEntry? GetLowestExtractCostEntry(ListFast<SolidEntry> list)
     {
-        int smallestCostIndex = -1;
-        long smallestCost = long.MaxValue;
+        int lowestCostIndex = -1;
+        long lowestCost = long.MaxValue;
         for (int i = 0; i < list.Count; i++)
         {
             SolidEntry item = list[i];
-            if (item.TotalExtractionCost <= smallestCost)
+            if (item.TotalExtractionCost <= lowestCost)
             {
-                smallestCost = item.TotalExtractionCost;
-                smallestCostIndex = i;
+                lowestCost = item.TotalExtractionCost;
+                lowestCostIndex = i;
             }
         }
 
-        return smallestCostIndex == -1 ? null : list[smallestCostIndex];
+        return lowestCostIndex == -1 ? null : list[lowestCostIndex];
     }
 
     private enum GetLowestCostMisFileError
