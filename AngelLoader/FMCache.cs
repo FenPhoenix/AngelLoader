@@ -363,7 +363,7 @@ internal static class FMCache
 
         await Task.Run(() =>
         {
-            List<string> fileNamesList = new();
+            ListFast<string> fileNamesList = new(0);
             try
             {
                 Directory.CreateDirectory(fmCachePath);
@@ -703,7 +703,7 @@ internal static class FMCache
                 string[] cacheFiles = Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories);
 
                 List<string> archiveFileNamesNameOnly = new(0);
-                List<string> archiveNonExcludedFullFileNames = new();
+                ListFast<string> archiveNonExcludedFullFileNames = new(0);
                 using (FileStream_Read_WithRentedBuffer fs = new(fmArchivePath))
                 {
                     SevenZipArchive sevenZipArchive = new(fs.FileStream);

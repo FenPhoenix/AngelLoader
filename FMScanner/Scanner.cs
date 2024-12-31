@@ -202,8 +202,8 @@ public sealed class Scanner : IDisposable
     private ListFast<SolidEntry>? _solidExtractedEntriesTempList;
     private ListFast<SolidEntry> SolidZipExtractedEntriesTempList => _solidExtractedEntriesTempList ??= new ListFast<SolidEntry>(50);
 
-    private List<string>? _solidExtractedFilesList;
-    private List<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new List<string>(50);
+    private ListFast<string>? _solidExtractedFilesList;
+    private ListFast<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new ListFast<string>(50);
 
     // @BLOCKS: Lazy-load these?
     private readonly ListFast<SolidEntry> _solid_MisFiles = new(20);
@@ -213,6 +213,7 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<NameAndIndex> _solid_MisFileItems = new(20);
     private readonly ListFast<NameAndIndex> _solid_UsedMisFileItems = new(20);
     private readonly ListFast<SolidEntry> _solid_FinalUsedMisFilesList = new(20);
+    private readonly ListFast<string> _missFlagExtractList = new(1);
 
     #endregion
 
@@ -703,7 +704,7 @@ public sealed class Scanner : IDisposable
         _fmFormat = FMFormat.NotInArchive;
         _solidExtractedEntriesList?.ClearFast();
         _solidExtractedEntriesTempList?.ClearFast();
-        _solidExtractedFilesList?.Clear();
+        _solidExtractedFilesList?.ClearFast();
 
         _title1_TempNonWhitespaceChars?.ClearFast();
         _title2_TempNonWhitespaceChars?.ClearFast();
@@ -733,6 +734,7 @@ public sealed class Scanner : IDisposable
         _solid_MisFileItems.ClearFast();
         _solid_UsedMisFileItems.ClearFast();
         _solid_FinalUsedMisFilesList.ClearFast();
+        _missFlagExtractList.ClearFast();
     }
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
@@ -2062,7 +2064,7 @@ public sealed class Scanner : IDisposable
 
                 #endregion
 
-                List<string> fileNamesList = SolidExtractedFilesList;
+                ListFast<string> fileNamesList = SolidExtractedFilesList;
 
                 foreach (SolidEntry item in entriesList)
                 {
@@ -6660,6 +6662,8 @@ public sealed class Scanner : IDisposable
 
             string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
 
+            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.FullName);
+
             Fen7z.Result result = Fen7z.Extract(
                 sevenZipWorkingPath: _sevenZipWorkingPath,
                 sevenZipPathAndExe: _sevenZipExePath,
@@ -6667,8 +6671,7 @@ public sealed class Scanner : IDisposable
                 outputPath: _fmWorkingPath,
                 cancellationToken: cancellationToken,
                 listFile: listFile,
-                // @BLOCKS: Recycle list later
-                fileNamesList: new List<string> { lowestCostMissFlagFileNonNull.FullName });
+                fileNamesList: _missFlagExtractList);
 
             if (result.ErrorOccurred)
             {

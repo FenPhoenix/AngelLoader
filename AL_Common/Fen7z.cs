@@ -111,7 +111,7 @@ public static class Fen7z
         string outputPath,
         int entriesCount = 0,
         string listFile = "",
-        List<string>? fileNamesList = null,
+        ListFast<string>? fileNamesList = null,
         IProgress<ProgressReport>? progress = null)
     {
         return Extract(
@@ -149,7 +149,7 @@ public static class Fen7z
         CancellationToken cancellationToken,
         int entriesCount = 0,
         string listFile = "",
-        List<string>? fileNamesList = null,
+        ListFast<string>? fileNamesList = null,
         IProgress<ProgressReport>? progress = null)
     {
         bool selectiveFiles = !listFile.IsWhiteSpace() && fileNamesList?.Count > 0;
