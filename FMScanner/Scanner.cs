@@ -1814,9 +1814,9 @@ public sealed class Scanner : IDisposable
                         _solid_MisAndGamFiles.AddRange(_solid_MisFiles, _solid_MisFiles.Count);
                         _solid_MisAndGamFiles.Add(lowestCostGamFile.Value);
 
-                        SolidEntry? lowestCostMisOrGameFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
-                        if (lowestCostMisOrGameFile != null &&
-                            lowestCostMisOrGameFile.Value.Index == lowestCostGamFile.Value.Index)
+                        SolidEntry? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
+                        if (lowestCostMisOrGamFile != null &&
+                            lowestCostMisOrGamFile.Value.Index == lowestCostGamFile.Value.Index)
                         {
                             entriesList.Add(lowestCostGamFile.Value);
                             _solidGamFileToUse = new NameAndIndex(
