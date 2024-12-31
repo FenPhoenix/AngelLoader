@@ -1798,17 +1798,15 @@ public sealed class Scanner : IDisposable
 
                     if (lowestCostGamFile != null)
                     {
-                        bool gamFileHasLowerCostThanAllMisFiles = false;
-                        foreach (SolidEntry misFile in misFiles)
-                        {
-                            if (misFile.TotalExtractionCost < lowestCostGamFile.Value.TotalExtractionCost)
-                            {
-                                gamFileHasLowerCostThanAllMisFiles = true;
-                                break;
-                            }
-                        }
+                        // @BLOCKS: Recycle list later
+                        var misAndGamFiles = new ListFast<SolidEntry>(misFiles.Count + 1);
 
-                        if (gamFileHasLowerCostThanAllMisFiles)
+                        misAndGamFiles.AddRange(misFiles, misFiles.Count);
+                        misAndGamFiles.Add(lowestCostGamFile.Value);
+
+                        SolidEntry? lowestCostEntry = GetLowestExtractCostEntry(misAndGamFiles);
+                        if (lowestCostEntry != null &&
+                            lowestCostEntry.Value.FullName == lowestCostGamFile.Value.FullName)
                         {
                             entriesList.Add(lowestCostGamFile.Value);
                             _solidGamFileToUse = new NameAndIndex(
@@ -1955,33 +1953,36 @@ public sealed class Scanner : IDisposable
 
                 // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
                 SolidEntry? missFlagToUse = null;
-                foreach (var item in tempList)
-                {
-                    if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
-                    {
-                        missFlagToUse = item;
-                        break;
-                    }
-                }
-                if (missFlagToUse == null)
+                if (misFiles.Count > 1)
                 {
                     foreach (var item in tempList)
                     {
-                        if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                        if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
                         {
                             missFlagToUse = item;
                             break;
                         }
                     }
-                }
-                if (missFlagToUse == null)
-                {
-                    foreach (var item in tempList)
+                    if (missFlagToUse == null)
                     {
-                        if (item.FullName.PathEndsWithI(FMFiles.SMissFlag))
+                        foreach (var item in tempList)
                         {
-                            missFlagToUse = item;
-                            break;
+                            if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
+                        }
+                    }
+                    if (missFlagToUse == null)
+                    {
+                        foreach (var item in tempList)
+                        {
+                            if (item.FullName.PathEndsWithI(FMFiles.SMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
                         }
                     }
                 }
