@@ -109,6 +109,19 @@ public static partial class Common
             _itemsArrayLength = capacity;
         }
 
+        public void RemoveAt(int index)
+        {
+            if ((uint)index >= (uint)Count)
+            {
+                ThrowHelper.ArgumentOutOfRange(nameof(index), "Out of range");
+            }
+            Count--;
+            if (index < Count)
+            {
+                Array.Copy(ItemsArray, index + 1, ItemsArray, index, Count - index);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Sort(IComparer<T> comparer) => Array.Sort(ItemsArray, 0, Count, comparer);
 
