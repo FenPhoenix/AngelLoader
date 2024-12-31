@@ -1903,9 +1903,16 @@ public sealed class Scanner : IDisposable
 
                 void FillOutNormalList()
                 {
-                    for (int i = 0; i < missFlagFiles.Count; i++)
+                    if (misFiles.Count > 1)
                     {
-                        entriesList.Add(missFlagFiles[i]);
+                        for (int i = 0; i < missFlagFiles.Count; i++)
+                        {
+                            entriesList.Add(missFlagFiles[i]);
+                        }
+                    }
+                    else
+                    {
+                        _solidMissFlagFileToUse = null;
                     }
                     for (int i = 0; i < misFiles.Count; i++)
                     {
@@ -3762,7 +3769,7 @@ public sealed class Scanner : IDisposable
         }
         else
         {
-            if (_stringsDirFiles.Count > 0)
+            if (_misFiles.Count > 1 && _stringsDirFiles.Count > 0)
             {
                 // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
@@ -3818,7 +3825,7 @@ public sealed class Scanner : IDisposable
         ListFast<NameAndIndex> usedMisFiles,
         ListFast<string> missFlagLines)
     {
-        if (missFlagFile != null)
+        if (missFlagFile != null && misFiles.Count > 1)
         {
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
             {
@@ -6625,6 +6632,11 @@ public sealed class Scanner : IDisposable
         FMToScan fm,
         CancellationToken cancellationToken)
     {
+        if (misFiles.Count == 1)
+        {
+            return (GetLowestCostMisFileError.Fallback, null, misFiles[0]);
+        }
+
         if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
         {
             /*
