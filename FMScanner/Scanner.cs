@@ -1,6 +1,6 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
-#define INDIVIDUAL_FM_TIMING
+//#define INDIVIDUAL_FM_TIMING
 
 /*
 @MEM(Scanner readme line splitting):

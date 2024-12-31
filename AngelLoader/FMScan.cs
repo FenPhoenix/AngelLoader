@@ -1,5 +1,5 @@
 ﻿//#define TIMING_TEST
-#define INDIVIDUAL_FM_TIMING
+//#define INDIVIDUAL_FM_TIMING
 
 using System;
 using System.Collections.Generic;
