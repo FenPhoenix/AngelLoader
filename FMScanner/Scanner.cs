@@ -6020,7 +6020,6 @@ public sealed class Scanner : IDisposable
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            // We only need the .gam file for non-solid FMs, so we can save extracting it otherwise.
             Stream? stream = null;
             try
             {
