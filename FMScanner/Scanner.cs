@@ -234,6 +234,7 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<NameAndIndex> _baseDirFiles = new(20);
     private readonly ListFast<NameAndIndex> _misFiles = new(20);
     private readonly ListFast<NameAndIndex> _usedMisFiles = new(20);
+    private readonly ListFast<NameAndIndex> _t3UsedMisFiles = new(20);
     private readonly ListFast<NameAndIndex> _stringsDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _intrfaceDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _booksDirFiles = new(0);
@@ -249,6 +250,8 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<DetectedTitle> _detectedTitles = new(6);
 
     private readonly ScannerTDMContext _tdmContext;
+
+    private bool _missFlagAlreadyHandled;
 
     private NameAndIndex? _solidMissFlagFileToUse;
     private NameAndIndex? _solidMisFileToUse;
@@ -712,6 +715,7 @@ public sealed class Scanner : IDisposable
         _baseDirFiles.ClearFast();
         _misFiles.ClearFast();
         _usedMisFiles.ClearFast();
+        _t3UsedMisFiles.ClearFast();
         _stringsDirFiles.ClearFast();
         _intrfaceDirFiles.ClearFast();
         _booksDirFiles.ClearFast();
@@ -723,6 +727,7 @@ public sealed class Scanner : IDisposable
 
         _detectedTitles.ClearFast();
 
+        _missFlagAlreadyHandled = false;
         _solidMissFlagFileToUse = null;
         _solidMisFileToUse = null;
         _solidGamFileToUse = null;
@@ -2289,13 +2294,19 @@ public sealed class Scanner : IDisposable
             fmData.HasMovies = null;
         }
 
-        bool singleMission = _usedMisFiles.Count == 1;
+        bool singleMission =
+            fmIsT3
+                ? _t3UsedMisFiles.Count == 1
+                : _usedMisFiles.Count == 1;
 
 #if FMScanner_FullCode
         fmData.Type = singleMission ? FMType.FanMission : FMType.Campaign;
 #endif
 
-        fmData.MissionCount = _usedMisFiles.Count;
+        fmData.MissionCount =
+            fmIsT3
+                ? _t3UsedMisFiles.Count
+                : _usedMisFiles.Count;
 
         if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
         {
@@ -3731,7 +3742,7 @@ public sealed class Scanner : IDisposable
                 switch (T3GmpFiles.Count)
                 {
                     case 1:
-                        _usedMisFiles.Add(T3GmpFiles[0]);
+                        _t3UsedMisFiles.Add(T3GmpFiles[0]);
                         break;
                     case > 1:
                         for (int i = 0; i < T3GmpFiles.Count; i++)
@@ -3739,7 +3750,7 @@ public sealed class Scanner : IDisposable
                             NameAndIndex item = T3GmpFiles[i];
                             if (!item.Name.EqualsI_Local(FMFiles.EntryGmp))
                             {
-                                _usedMisFiles.Add(item);
+                                _t3UsedMisFiles.Add(item);
                             }
                         }
                         break;
@@ -3772,6 +3783,8 @@ public sealed class Scanner : IDisposable
         #endregion
 
         #region Cache list of used .mis files
+
+        if (_missFlagAlreadyHandled) return true;
 
         NameAndIndex? missFlagFile = null;
         if (_solidMissFlagFileToUse is { } solidMissFlagFileToUse)
@@ -6695,6 +6708,9 @@ public sealed class Scanner : IDisposable
 
             _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
 
+            _missFlagAlreadyHandled = true;
+
+            _usedMisFiles.ClearFast();
             foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
             {
                 foreach (SolidEntry entry in misFiles)
@@ -6704,6 +6720,7 @@ public sealed class Scanner : IDisposable
                         _solid_FinalUsedMisFilesList.Add(entry);
                     }
                 }
+                _usedMisFiles.Add(usedMisFile);
             }
 
             SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
