@@ -91,7 +91,7 @@ public static class Fen7z
     }
 
     /// <summary>
-    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility
     /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
     /// Hooray!
     /// </summary>
@@ -127,7 +127,7 @@ public static class Fen7z
     }
 
     /// <summary>
-    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility
     /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
     /// Hooray!
     /// </summary>
