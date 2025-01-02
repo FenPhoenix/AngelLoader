@@ -1,6 +1,8 @@
 ﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
 //#define FMScanner_FullCode
 //#define INDIVIDUAL_FM_TIMING
+//#define ScanSynchronous
+//#define StoreCurrentFM
 
 /*
 @MEM(Scanner readme line splitting):
@@ -26,9 +28,6 @@ be far less memory allocated than to essentially duplicate the entire readme in 
  This is not really urgent because it's unlikely anyone will make non-solid 7z FMs, but if we felt like looking
  into non-solid optimizations at some point we could.
 */
-
-//#define ScanSynchronous
-//#define StoreCurrentFM
 
 using System;
 using System.Collections.Concurrent;
@@ -2297,8 +2296,8 @@ public sealed class Scanner : IDisposable
 
         bool singleMission =
             fmIsT3
-                ? t3MisCount == 1
-                : _usedMisFiles.Count == 1;
+                ? t3MisCount <= 1
+                : _usedMisFiles.Count <= 1;
 
 #if FMScanner_FullCode
         fmData.Type = singleMission ? FMType.FanMission : FMType.Campaign;
@@ -6645,7 +6644,6 @@ public sealed class Scanner : IDisposable
         Success,
         SevenZipExtractError,
         NoUsedMisFile,
-        NoMissFlagFile,
         Fallback,
     }
 
@@ -6660,7 +6658,9 @@ public sealed class Scanner : IDisposable
     {
         if (misFiles.Count == 1)
         {
-            return (GetLowestCostMisFileError.Fallback, null, misFiles[0]);
+            SolidEntry item = misFiles[0];
+            _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            return (GetLowestCostMisFileError.Success, null, item);
         }
 
         if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
@@ -6710,35 +6710,39 @@ public sealed class Scanner : IDisposable
             CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
 
             _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
-
-            _missFlagAlreadyHandled = true;
-
-            _usedMisFiles.ClearFast();
-            foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
-            {
-                foreach (SolidEntry entry in misFiles)
-                {
-                    if (entry.FullName == usedMisFile.Name)
-                    {
-                        _solid_FinalUsedMisFilesList.Add(entry);
-                    }
-                }
-                _usedMisFiles.Add(usedMisFile);
-            }
-
-            SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
-            if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
-            {
-                return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
-            }
-            else
-            {
-                return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
-            }
         }
         else
         {
-            return (GetLowestCostMisFileError.NoMissFlagFile, null, default);
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            }
+        }
+
+        _missFlagAlreadyHandled = true;
+
+        _usedMisFiles.ClearFast();
+        foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
+        {
+            foreach (SolidEntry entry in misFiles)
+            {
+                if (entry.FullName == usedMisFile.Name)
+                {
+                    _solid_FinalUsedMisFilesList.Add(entry);
+                }
+            }
+            _usedMisFiles.Add(usedMisFile);
+        }
+
+        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
+        if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
+        {
+            return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
+        }
+        else
+        {
+            return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
         }
     }
 
