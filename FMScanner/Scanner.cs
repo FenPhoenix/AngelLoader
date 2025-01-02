@@ -234,7 +234,6 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<NameAndIndex> _baseDirFiles = new(20);
     private readonly ListFast<NameAndIndex> _misFiles = new(20);
     private readonly ListFast<NameAndIndex> _usedMisFiles = new(20);
-    private readonly ListFast<NameAndIndex> _t3UsedMisFiles = new(20);
     private readonly ListFast<NameAndIndex> _stringsDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _intrfaceDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _booksDirFiles = new(0);
@@ -715,7 +714,6 @@ public sealed class Scanner : IDisposable
         _baseDirFiles.ClearFast();
         _misFiles.ClearFast();
         _usedMisFiles.ClearFast();
-        _t3UsedMisFiles.ClearFast();
         _stringsDirFiles.ClearFast();
         _intrfaceDirFiles.ClearFast();
         _booksDirFiles.ClearFast();
@@ -2254,7 +2252,7 @@ public sealed class Scanner : IDisposable
 
         #region Cache FM data
 
-        bool success = ReadAndCacheFMData(fm.Path, fmData);
+        bool success = ReadAndCacheFMData(fm.Path, fmData, out int t3MisCount);
         if (!success)
         {
             string ext = _fmFormat switch
@@ -2296,7 +2294,7 @@ public sealed class Scanner : IDisposable
 
         bool singleMission =
             fmIsT3
-                ? _t3UsedMisFiles.Count == 1
+                ? t3MisCount == 1
                 : _usedMisFiles.Count == 1;
 
 #if FMScanner_FullCode
@@ -2305,7 +2303,7 @@ public sealed class Scanner : IDisposable
 
         fmData.MissionCount =
             fmIsT3
-                ? _t3UsedMisFiles.Count
+                ? t3MisCount
                 : _usedMisFiles.Count;
 
         if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
@@ -3332,8 +3330,10 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd)
+    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
     {
+        t3MisCount = 0;
+
         #region Add BaseDirFiles
 
         bool t3Found = false;
@@ -3742,7 +3742,7 @@ public sealed class Scanner : IDisposable
                 switch (T3GmpFiles.Count)
                 {
                     case 1:
-                        _t3UsedMisFiles.Add(T3GmpFiles[0]);
+                        t3MisCount++;
                         break;
                     case > 1:
                         for (int i = 0; i < T3GmpFiles.Count; i++)
@@ -3750,7 +3750,7 @@ public sealed class Scanner : IDisposable
                             NameAndIndex item = T3GmpFiles[i];
                             if (!item.Name.EqualsI_Local(FMFiles.EntryGmp))
                             {
-                                _t3UsedMisFiles.Add(item);
+                                t3MisCount++;
                             }
                         }
                         break;
