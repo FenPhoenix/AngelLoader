@@ -71,6 +71,16 @@ public sealed class Scanner : IDisposable
 
     #region Private fields
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool GameTypeAndEngineNeedsToBeRun()
+    {
+        return _scanOptions.ScanGameType
+#if FMScanner_FullCode
+               || _scanOptions.ScanNewDarkRequired
+#endif
+            ;
+    }
+
     #region Buffers
 
 #if X64
@@ -180,11 +190,8 @@ public sealed class Scanner : IDisposable
 
     private bool _ss2Fingerprinted;
 
-    private bool SS2FingerprintRequiredAndNotDone() => (
-#if FMScanner_FullCode
-        _scanOptions.ScanNewDarkRequired ||
-#endif
-        _scanOptions.ScanGameType) && !_ss2Fingerprinted;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool SS2FingerprintRequiredAndNotDone() => GameTypeAndEngineNeedsToBeRun() && !_ss2Fingerprinted;
 
     private byte[]? _diskFileStreamBuffer;
     private byte[] DiskFileStreamBuffer => _diskFileStreamBuffer ??= new byte[4096];
@@ -1730,21 +1737,15 @@ public sealed class Scanner : IDisposable
                          the real, larger one. So, I could just take the first one and all would be fine...
                          Unless some newer missions are depending on our previous behavior...
                         */
-                        else if ((_scanOptions.ScanGameType
-#if FMScanner_FullCode
-                                  || _scanOptions.ScanNewDarkRequired
-#endif
-                                 ) &&
-                                 !fn.Rel_ContainsDirSep() &&
-                                 (fn.ExtIsMis()
-                                 || fn.ExtIsGam()
-                                 ))
+                        else if (fn.IsBaseDirMisOrGamFile())
                         {
+                            // We always need to know about mis files to get the used ones for the titles.str
+                            // scan, but we won't extract them if we don't actually need to scan them.
                             if (fn.ExtIsMis())
                             {
                                 _solid_MisFiles.Add(solidEntry);
                             }
-                            else
+                            else if (GameTypeAndEngineNeedsToBeRun())
                             {
                                 _solid_GamFiles.Add(solidEntry);
                             }
@@ -1803,13 +1804,7 @@ public sealed class Scanner : IDisposable
                 // entire optimization in that case.
 #if !FMScanner_FullCode
                 // @BLOCKS: Implement solid RAR support later
-                if (_fmFormat == FMFormat.SevenZip &&
-                    (_scanOptions.ScanGameType
-#if FMScanner_FullCode
-                     || _scanOptions.ScanNewDarkRequired
-#endif
-                    )
-                   )
+                if (_fmFormat == FMFormat.SevenZip)
                 {
                     SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
                     SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
@@ -2073,6 +2068,11 @@ public sealed class Scanner : IDisposable
 
                 foreach (SolidEntry item in entriesList)
                 {
+                    if (!GameTypeAndEngineNeedsToBeRun() &&
+                        item.FullName.IsBaseDirMisOrGamFile())
+                    {
+                        continue;
+                    }
                     fileNamesList.Add(item.FullName);
                 }
 
@@ -2322,11 +2322,7 @@ public sealed class Scanner : IDisposable
         {
             #region NewDark/GameType checks
 
-            if (
-#if FMScanner_FullCode
-                _scanOptions.ScanNewDarkRequired ||
-#endif
-                _scanOptions.ScanGameType)
+            if (GameTypeAndEngineNeedsToBeRun())
             {
 #if FMScanner_FullCode
                 var (newDarkRequired, game)

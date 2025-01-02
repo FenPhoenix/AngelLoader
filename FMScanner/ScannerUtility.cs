@@ -124,6 +124,10 @@ internal static class Utility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsGam(this string value) => value.EndsWithI_Ascii(".gam");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsBaseDirMisOrGamFile(this string value) =>
+        !value.Rel_ContainsDirSep() && (value.ExtIsMis() || value.ExtIsGam());
+
     #endregion
 
     #region StartsWith and EndsWith
