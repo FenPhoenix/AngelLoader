@@ -17,6 +17,9 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 @BLOCKS: Could SharpCompress (full) allow us to stream 7z entries to memory?
  Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
  We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
+ UPDATE 2025-01-01: Tested this, and surprisingly we gain very little to nothing. SharpCompress is much slower
+ at decompressing than native 7z.exe, enough so that it erases most of our time gained. It's probably for the
+ best, as it made the code even more horrendously complicated than it already is.
 
 @BLOCKS: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
  case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
