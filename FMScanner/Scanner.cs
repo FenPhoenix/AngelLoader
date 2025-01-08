@@ -12,18 +12,16 @@ be far less memory allocated than to essentially duplicate the entire readme in 
 
 @RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
 
-@BLOCKS: Test if every individual 7z FM is faster, not just that the aggregate is faster
+@BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
 
-@BLOCKS: Tested: Solid RAR files work, just without the optimization, as designed
-
-@BLOCKS: Could SharpCompress (full) allow us to stream 7z entries to memory?
+@BLOCKS_NOTE: Could SharpCompress (full) allow us to stream 7z entries to memory?
  Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
  We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
  UPDATE 2025-01-01: Tested this, and surprisingly we gain very little to nothing. SharpCompress is much slower
  at decompressing than native 7z.exe, enough so that it erases most of our time gained. It's probably for the
  best, as it made the code even more horrendously complicated than it already is.
 
-@BLOCKS: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
+@BLOCKS_NOTE: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
  case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
  This is not really urgent because it's unlikely anyone will make non-solid 7z FMs, but if we felt like looking
  into non-solid optimizations at some point we could.
@@ -1548,16 +1546,12 @@ public sealed class Scanner : IDisposable
     {
         internal readonly string FullName;
         internal readonly int Index;
-        internal readonly long UncompressedSize;
-        internal readonly int Block;
         internal readonly long TotalExtractionCost;
 
-        public SolidEntry(string fullName, int index, long uncompressedSize, int block, long totalExtractionCost)
+        public SolidEntry(string fullName, int index, long totalExtractionCost)
         {
             FullName = fullName;
             Index = index;
-            UncompressedSize = uncompressedSize;
-            Block = block;
             TotalExtractionCost = totalExtractionCost;
         }
     }
@@ -1674,7 +1668,7 @@ public sealed class Scanner : IDisposable
                             if (sevenZipEntry.IsAnti) continue;
                             fn = sevenZipEntry.FileName;
                             uncompressedSize = sevenZipEntry.UncompressedSize;
-                            solidEntry = new SolidEntry(fn, i, uncompressedSize, sevenZipEntry.Block, sevenZipEntry.TotalExtractionCost);
+                            solidEntry = new SolidEntry(fn, i, sevenZipEntry.TotalExtractionCost);
                         }
                         else
                         {
@@ -1682,11 +1676,11 @@ public sealed class Scanner : IDisposable
                             fn = rarEntry.Key;
                             uncompressedSize = rarEntry.Size;
                             /*
-                            @BLOCKS: For solid rar just say cost is always 0 for now, because we don't have cost
-                             functionality for solid rar yet (and probably won't want to go into the guts of the
-                             rar code to add it either).
+                            @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have
+                             cost functionality for solid rar yet (and probably won't want to go into the guts of
+                             the rar code to add it either).
                             */
-                            solidEntry = new SolidEntry(rarEntry.Key, i, uncompressedSize, 0, 0);
+                            solidEntry = new SolidEntry(rarEntry.Key, i, 0);
                         }
 
                         int dirSeps;
@@ -1794,9 +1788,9 @@ public sealed class Scanner : IDisposable
                 }
 
                 /*
-                @BLOCKS: If a file is 0 length, it will go into block 0, even if other >0 length files are in that
-                 block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
-                 we would have to ignore any files in its block that are 0 length.
+                @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are
+                 in that block. So if we want to check if a file is in a block by itself (for extraction cost
+                 purposes), we would have to ignore any files in its block that are 0 length.
                  We don't need to do this currently, but just a note for the future.
                 */
 
