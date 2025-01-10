@@ -598,9 +598,8 @@ public static partial class Common
     {
         try
         {
-            // TODO: Apparently ReadOnly is ignored for directories
+            // IMPORTANT: ReadOnly is NOT ignored for directories despite what it says here, as I learned to my cost:
             // https://support.microsoft.com/en-us/topic/you-cannot-view-or-change-the-read-only-or-the-system-attributes-of-folders-in-windows-server-2003-in-windows-xp-in-windows-vista-or-in-windows-7-55bd5ec5-d19e-6173-0df1-8f5b49247165
-            // Says up to Win7, doesn't say anything about later versions, but have to assume it still holds...?
             _ = new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
         }
         catch (Exception ex)
