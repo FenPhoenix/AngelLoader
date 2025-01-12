@@ -538,22 +538,17 @@ internal static partial class FMInstallAndPlay
 
             GameConfigFiles.FixCharacterDetailLine(gameIndex);
 
-            // We don't need to do this here, right?
-            // In testing, it seems that with our current logic as of 2022-07-24, we don't need to call this
-            // in practice. Leave it in, but don't fail if it fails.
-            _ = SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor);
-
-            // Since we don't use the stub for the editor currently, set this here
-            // NOTE: DromEd game mode doesn't even work for me anymore. Black screen no matter what. So I can't test if we need languages.
-            GameConfigFiles.SetCamCfgLanguage(gamePath, "");
+            if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.Editor)) return false;
 
             // Why not
             GenerateMissFlagFileIfRequired(fm);
 
-            // We don't need the stub for the editor, cause we don't need to pass anything except the fm folder
+            if (!WriteStubCommFileForFM(fm, gamePath)) return false;
+
             if (!StartExeForOpenFMInEditor(
-                    editorExe,
-                    gamePath, "-fm=\"" + fm.InstalledDir + "\""))
+                    exe: editorExe,
+                    workingPath: gamePath,
+                    args: "-fm"))
             {
                 return false;
             }
