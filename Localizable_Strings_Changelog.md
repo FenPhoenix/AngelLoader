@@ -6,6 +6,10 @@ If you want to update a translation from several versions back and don't want to
 
 ## List of localization-related changes by version
 
+### v1.10.0:
+
+No localizable text changes.
+
 ### v1.9.9:
 
 No localizable text changes.
