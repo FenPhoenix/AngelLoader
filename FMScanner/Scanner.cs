@@ -4388,16 +4388,26 @@ public sealed class Scanner : IDisposable
                 }
                 else
                 {
-                    Stream stream = _fmFormat switch
+                    if (last.IsGlml)
                     {
-                        FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
-                        FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
-                        _ => readmeStream,
-                    };
-
-                    last.Text = last.IsGlml
-                        ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
-                        : ReadAllTextDetectEncoding(stream);
+                        using Stream stream = _fmFormat switch
+                        {
+                            FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
+                            FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
+                            _ => readmeStream,
+                        };
+                        last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
+                    }
+                    else
+                    {
+                        Stream stream = _fmFormat switch
+                        {
+                            FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
+                            FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
+                            _ => readmeStream,
+                        };
+                        last.Text = ReadAllTextDetectEncoding(stream);
+                    }
                     last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
