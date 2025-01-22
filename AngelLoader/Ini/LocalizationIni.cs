@@ -28,7 +28,7 @@ internal static partial class Ini
 
         #endregion
 
-        List<string> lines = AL_Common.Common.File_ReadAllLines_List(file);
+        List<string> lines = File_ReadAllLines_List(file);
         int linesLength = lines.Count;
         for (int i = 0; i < linesLength; i++)
         {
