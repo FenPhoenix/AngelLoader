@@ -43,18 +43,18 @@ internal sealed partial class MainForm : Form
     internal ScanOptions GetSelectedScanOptions() => new()
     {
         ScanTitle = ScanTitleCheckBox.Checked,
-        ScanCampaignMissionNames = ScanIncludedMissionsCheckBox.Checked,
+        //ScanCampaignMissionNames = ScanIncludedMissionsCheckBox.Checked,
         ScanAuthor = ScanAuthorCheckBox.Checked,
-        ScanVersion = ScanVersionCheckBox.Checked,
-        ScanLanguages = ScanLanguagesCheckBox.Checked,
+        //ScanVersion = ScanVersionCheckBox.Checked,
+        //ScanLanguages = ScanLanguagesCheckBox.Checked,
         ScanGameType = ScanGameTypeCheckBox.Checked,
-        ScanNewDarkRequired = ScanNewDarkRequiredCheckBox.Checked,
-        ScanNewDarkMinimumVersion = ScanNDMinVerCheckBox.Checked,
+        //ScanNewDarkRequired = ScanNewDarkRequiredCheckBox.Checked,
+        //ScanNewDarkMinimumVersion = ScanNDMinVerCheckBox.Checked,
         ScanCustomResources = ScanCustomResourcesCheckBox.Checked,
         ScanSize = ScanSizeCheckBox.Checked,
         ScanReleaseDate = ScanReleaseDateCheckBox.Checked,
         ScanTags = ScanTagsCheckBox.Checked,
-        ScanDescription = ScanDescriptionCheckBox.Checked,
+        //ScanDescription = ScanDescriptionCheckBox.Checked,
     };
 
     internal bool GetOverwriteFoldersChecked() => OverwriteFoldersCheckBox.Checked;
@@ -196,17 +196,6 @@ internal sealed partial class MainForm : Form
             var fmDataTemp = Core.FMDataFromYamlFile(f);
 
             // All because array elements can be null
-            string languages = "";
-            if (fmDataTemp.Languages.Length > 0)
-            {
-                foreach (string lang in fmDataTemp.Languages)
-                {
-                    if (lang.IsEmpty()) continue;
-
-                    if (!languages.IsEmpty()) languages += ", ";
-                    languages += lang;
-                }
-            }
 
             items.Add(
                 new ListViewItem(
@@ -215,14 +204,14 @@ internal sealed partial class MainForm : Form
                             fmDataTemp.Title,
                             Path.GetFileName(f),
                             fmDataTemp.Author,
-                            fmDataTemp.Version,
-                            languages,
+                            "<unsupported>",
+                            "<unsupported>",
                             fmDataTemp.Game.ToString(),
-                            fmDataTemp.NewDarkRequired.ToString(),
-                            fmDataTemp.NewDarkMinRequiredVersion,
+                            "<unsupported>",
+                            "<unsupported>",
                             "", //fmDataTemp.OriginalReleaseDate,
                             "", //fmDataTemp.LastUpdateDate,
-                            fmDataTemp.Type.ToString(),
+                            "<unsupported>",
                             fmDataTemp.HasCustomScripts.ToString(),
                             fmDataTemp.HasCustomTextures.ToString(),
                             fmDataTemp.HasCustomSounds.ToString(),
@@ -520,21 +509,6 @@ internal sealed partial class MainForm : Form
                 FMInfoFilesListView.SelectedItems[0].SubItems[1].Text));
 
         FMInfoTextBox.Clear();
-        if (fmData.Type == FMType.Campaign)
-        {
-            FMInfoTextBox.Text += "Missions in this campaign:\r\n";
-            foreach (string mission in fmData.IncludedMissions)
-            {
-                FMInfoTextBox.Text += mission + "\r\n";
-            }
-        }
-
-        if (!fmData.Description.IsWhiteSpace())
-        {
-            if (!FMInfoTextBox.Text.IsEmpty()) FMInfoTextBox.Text += "\r\n";
-
-            FMInfoTextBox.Text += fmData.Description.Replace("\n", "\r\n");
-        }
 
         string accFile = Path.Combine(Paths.AccuracyDataPath,
             FMInfoFilesListView.SelectedItems[0].SubItems[1].Text.FN_NoExt() +

@@ -1,7 +1,4 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
-//#define FMScanner_FullCode
-
-using System;
+﻿using System;
 using JetBrains.Annotations;
 
 namespace FMScanner;
@@ -18,14 +15,6 @@ internal enum ScanOptionsEnum
     ReleaseDate,
     Tags,
     MissionCount,
-#if FMScanner_FullCode
-    CampaignMissionNames,
-    Version,
-    Languages,
-    NewDarkRequired,
-    NewDarkMinimumVersion,
-    Description,
-#endif
 }
 
 [PublicAPI]
@@ -44,14 +33,6 @@ public sealed class ScanOptions
         if (ScanReleaseDate) ret |= ScanOptionsEnum.ReleaseDate;
         if (ScanTags) ret |= ScanOptionsEnum.Tags;
         if (ScanMissionCount) ret |= ScanOptionsEnum.MissionCount;
-#if FMScanner_FullCode
-        if (ScanCampaignMissionNames) ret |= ScanOptionsEnum.CampaignMissionNames;
-        if (ScanVersion) ret |= ScanOptionsEnum.Version;
-        if (ScanLanguages) ret |= ScanOptionsEnum.Languages;
-        if (ScanNewDarkRequired) ret |= ScanOptionsEnum.NewDarkRequired;
-        if (ScanNewDarkMinimumVersion) ret |= ScanOptionsEnum.NewDarkMinimumVersion;
-        if (ScanDescription) ret |= ScanOptionsEnum.Description;
-#endif
 
         return ret;
     }
@@ -70,16 +51,6 @@ public sealed class ScanOptions
         bool scanReleaseDate = false,
         bool scanTags = false,
         bool scanMissionCount = false
-
-#if FMScanner_FullCode
-        ,
-        bool scanCampaignMissionNames = false,
-        bool scanVersion = false,
-        bool scanLanguages = false,
-        bool scanNewDarkRequired = false,
-        bool scanNewDarkMinimumVersion = false,
-        bool scanDescription = false
-#endif
     ) =>
         new()
         {
@@ -91,14 +62,6 @@ public sealed class ScanOptions
             ScanReleaseDate = scanReleaseDate,
             ScanTags = scanTags,
             ScanMissionCount = scanMissionCount,
-#if FMScanner_FullCode
-            ScanCampaignMissionNames = scanCampaignMissionNames,
-            ScanVersion = scanVersion,
-            ScanLanguages = scanLanguages,
-            ScanNewDarkRequired = scanNewDarkRequired,
-            ScanNewDarkMinimumVersion = scanNewDarkMinimumVersion,
-            ScanDescription = scanDescription,
-#endif
         };
 
     internal ScanOptions DeepCopy() => new()
@@ -111,14 +74,6 @@ public sealed class ScanOptions
         ScanReleaseDate = ScanReleaseDate,
         ScanTags = ScanTags,
         ScanMissionCount = ScanMissionCount,
-#if FMScanner_FullCode
-        ScanCampaignMissionNames = ScanCampaignMissionNames,
-        ScanVersion = ScanVersion,
-        ScanLanguages = ScanLanguages,
-        ScanNewDarkRequired = ScanNewDarkRequired,
-        ScanNewDarkMinimumVersion = ScanNewDarkMinimumVersion,
-        ScanDescription = ScanDescription,
-#endif
     };
 
     /// <summary>
@@ -155,38 +110,6 @@ public sealed class ScanOptions
     /// <see langword="true"/> to detect the mission count.
     /// </summary>
     public bool ScanMissionCount = true;
-#if FMScanner_FullCode
-    /// <summary>
-    /// <see langword="true"/> to detect the titles of individual campaign missions.
-    /// If the mission is not a campaign, this option has no effect.
-    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-    /// </summary>
-    public bool ScanCampaignMissionNames = true;
-    /// <summary>
-    /// <see langword="true"/> to detect the mission's version.
-    /// </summary>
-    public bool ScanVersion = true;
-    /// <summary>
-    /// <see langword="true"/> to detect the languages the mission supports.
-    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-    /// </summary>
-    public bool ScanLanguages = true;
-    /// <summary>
-    /// <see langword="true"/> to detect whether the mission requires NewDark.
-    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-    /// </summary>
-    public bool ScanNewDarkRequired = true;
-    /// <summary>
-    /// <see langword="true"/> to detect the minimum NewDark version the mission requires.
-    /// If ScanNewDarkRequired is false, this option has no effect.
-    /// If the mission is for Thief: Deadly Shadows, this option has no effect.
-    /// </summary>
-    public bool ScanNewDarkMinimumVersion = true;
-    /// <summary>
-    /// <see langword="true"/> to detect the mission's fm.ini description field.
-    /// </summary>
-    public bool ScanDescription = true;
-#endif
 }
 
 [PublicAPI]
@@ -215,18 +138,6 @@ public enum Game
     /// <summary>Invalid or corrupt mission, not a mission, or mission for an unsupported game.</summary>
     Unsupported,
 }
-
-#if FMScanner_FullCode
-/// <summary>
-/// Whether the FM is a single mission or a campaign.
-/// </summary>
-[PublicAPI]
-public enum FMType
-{
-    FanMission,
-    Campaign,
-}
-#endif
 
 [PublicAPI]
 public sealed class FMToScan
@@ -302,22 +213,7 @@ public sealed class ScannedFMData
     private string _author = "";
     public string Author { get => _author; set => _author = value.Trim(); }
 
-#if FMScanner_FullCode
-    public FMType Type;
-    public string[] IncludedMissions = Array.Empty<string>();
-#endif
     public Game Game;
-#if FMScanner_FullCode
-    public string[] Languages = Array.Empty<string>();
-    public string Version = "";
-    public bool? NewDarkRequired;
-    public string NewDarkMinRequiredVersion = "";
-
-    /// <summary>
-    /// Deprecated and will always be blank. Use <see cref="LastUpdateDate"/> instead.
-    /// </summary>
-    public DateTime? OriginalReleaseDate;
-#endif
 
     private DateTime? _lastUpdateDate;
     public DateTime? LastUpdateDate
@@ -327,9 +223,6 @@ public sealed class ScannedFMData
         internal set => _lastUpdateDate = value != null && ((DateTime)value).Year > DateTime.Now.Year ? null : value;
     }
 
-#if FMScanner_FullCode
-    public string Description = "";
-#endif
     public string TagsString = "";
 
     public int? MissionCount;

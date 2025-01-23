@@ -1,4 +1,4 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
+﻿// Now just surrounds a few ctors and public API methods
 //#define FMScanner_FullCode
 //#define INDIVIDUAL_FM_TIMING
 //#define ScanSynchronous
@@ -86,16 +86,6 @@ public sealed class Scanner : IDisposable
 #endif
 
     #region Private fields
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool GameTypeAndEngineNeedsToBeRun()
-    {
-        return _scanOptions.ScanGameType
-#if FMScanner_FullCode
-               || _scanOptions.ScanNewDarkRequired
-#endif
-            ;
-    }
 
     #region Buffers
 
@@ -199,7 +189,7 @@ public sealed class Scanner : IDisposable
     private bool _ss2Fingerprinted;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool SS2FingerprintRequiredAndNotDone() => GameTypeAndEngineNeedsToBeRun() && !_ss2Fingerprinted;
+    private bool SS2FingerprintRequiredAndNotDone() => _scanOptions.ScanGameType && !_ss2Fingerprinted;
 
     private byte[]? _diskFileStreamBuffer;
     private byte[] DiskFileStreamBuffer => _diskFileStreamBuffer ??= new byte[4096];
@@ -500,9 +490,6 @@ public sealed class Scanner : IDisposable
         Title,
         Author,
         ReleaseDate,
-#if FMScanner_FullCode
-        Version,
-#endif
     }
 
     #region Constructors
@@ -1725,7 +1712,7 @@ public sealed class Scanner : IDisposable
                             {
                                 _solid_MisFiles.Add(solidEntry);
                             }
-                            else if (GameTypeAndEngineNeedsToBeRun())
+                            else if (_scanOptions.ScanGameType)
                             {
                                 _solid_GamFiles.Add(solidEntry);
                             }
@@ -1780,9 +1767,6 @@ public sealed class Scanner : IDisposable
                  We don't need to do this currently, but just a note for the future.
                 */
 
-                // FMScanner_FullCode wants NewDark-required value, which needs mis files, so just disable the
-                // entire optimization in that case.
-#if !FMScanner_FullCode
                 // @BLOCKS: Implement solid RAR support later
                 if (_fmFormat == FMFormat.SevenZip)
                 {
@@ -1884,7 +1868,6 @@ public sealed class Scanner : IDisposable
                     }
                 }
                 else
-#endif
                 {
                     FillOutNormalList();
                 }
@@ -2048,7 +2031,7 @@ public sealed class Scanner : IDisposable
 
                 foreach (SolidEntry item in entriesList)
                 {
-                    if (!GameTypeAndEngineNeedsToBeRun() &&
+                    if (!_scanOptions.ScanGameType &&
                         item.FullName.IsBaseDirMisOrGamFile())
                     {
                         continue;
@@ -2279,10 +2262,6 @@ public sealed class Scanner : IDisposable
                 ? t3MisCount <= 1
                 : _usedMisFiles.Count <= 1;
 
-#if FMScanner_FullCode
-        fmData.Type = singleMission ? FMType.FanMission : FMType.Campaign;
-#endif
-
         fmData.MissionCount =
             fmIsT3
                 ? t3MisCount
@@ -2302,24 +2281,13 @@ public sealed class Scanner : IDisposable
         {
             #region NewDark/GameType checks
 
-            if (GameTypeAndEngineNeedsToBeRun())
+            if (_scanOptions.ScanGameType)
             {
-#if FMScanner_FullCode
-                var (newDarkRequired, game)
-#else
-                Game game
-#endif
-                    = GetGameTypeAndEngine();
-#if FMScanner_FullCode
-                if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
-#endif
-                if (_scanOptions.ScanGameType)
+                Game game = GetGameTypeAndEngine();
+                fmData.Game = game;
+                if (fmData.Game == Game.Unsupported)
                 {
-                    fmData.Game = game;
-                    if (fmData.Game == Game.Unsupported)
-                    {
-                        return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
-                    }
+                    return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
                 }
             }
 
@@ -2330,9 +2298,6 @@ public sealed class Scanner : IDisposable
             #region Check info files
 
             if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor ||
-#if FMScanner_FullCode
-                _scanOptions.ScanVersion ||
-#endif
                 _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
             {
                 for (int i = 0; i < _baseDirFiles.Count; i++)
@@ -2340,19 +2305,12 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
                     {
-                        var (title, author
-#if FMScanner_FullCode
-                            , version
-#endif
-                            , releaseDate) = ReadFMInfoXml(f);
+                        var (title, author, releaseDate) = ReadFMInfoXml(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
                         {
                             fmData.Author = author;
                         }
-#if FMScanner_FullCode
-                        if (_scanOptions.ScanVersion) fmData.Version = version;
-#endif
                         if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
                         break;
                     }
@@ -2366,19 +2324,12 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMIni))
                     {
-                        var (title, author
-#if FMScanner_FullCode
-                            , description
-#endif
-                            , lastUpdateDate, tags) = ReadFMIni(f);
+                        var (title, author, lastUpdateDate, tags) = ReadFMIni(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
                         }
-#if FMScanner_FullCode
-                        if (_scanOptions.ScanDescription) fmData.Description = description;
-#endif
                         if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
                         if (_scanOptions.ScanTags) fmData.TagsString = tags;
                         break;
@@ -2427,21 +2378,6 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-#if FMScanner_FullCode
-        if (!fmIsT3)
-        {
-            // This is here because it needs to come after the readmes are cached
-            #region NewDark minimum required version
-
-            if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
-            {
-                fmData.NewDarkMinRequiredVersion = GetNewDarkVersion();
-            }
-
-            #endregion
-        }
-#endif
-
         #region Set release date
 
         if (_scanOptions.ScanReleaseDate && fmData.LastUpdateDate == null)
@@ -2456,33 +2392,14 @@ public sealed class Scanner : IDisposable
         // SS2 doesn't have a missions list or a titles list file
         if (!fmIsT3 && !fmIsSS2)
         {
-            if (_scanOptions.ScanTitle
-#if FMScanner_FullCode
-                || _scanOptions.ScanCampaignMissionNames
-#endif
-               )
+            if (_scanOptions.ScanTitle)
             {
-                var (titleFrom0, titleFromN
-#if FMScanner_FullCode
-                        , cNames
-#endif
-                        )
-                    = GetMissionNames();
+                var (titleFrom0, titleFromN) = GetMissionNames();
                 if (_scanOptions.ScanTitle)
                 {
                     SetOrAddTitle(titles, titleFrom0);
                     SetOrAddTitle(titles, titleFromN);
                 }
-#if FMScanner_FullCode
-                if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
-                {
-                    for (int i = 0; i < cNames.Count; i++)
-                    {
-                        cNames[i] = CleanupTitle(cNames[i]);
-                    }
-                    fmData.IncludedMissions = cNames.ToArray();
-                }
-#endif
             }
         }
 
@@ -2506,49 +2423,15 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-#if FMScanner_FullCode
-        #region Version
-
-        if (_scanOptions.ScanVersion && fmData.Version.IsEmpty()) fmData.Version = GetVersion();
-
-        #endregion
-#endif
-
         // Again, I don't know enough about Thief 3 to know how to detect its languages
         if (!fmIsT3)
         {
             #region Languages
 
-            if (
-#if FMScanner_FullCode
-                _scanOptions.ScanLanguages ||
-#endif
-                _scanOptions.ScanTags)
+            if (_scanOptions.ScanTags)
             {
                 var getLangs = GetLanguages();
                 if (getLangs.Langs > Language.Default) SetLangTags(fmData, getLangs.Langs, getLangs.EnglishIsUncertain);
-#if FMScanner_FullCode
-                if (!_scanOptions.ScanLanguages)
-                {
-                    fmData.Languages = Array.Empty<string>();
-                }
-                else
-                {
-                    var langsList = new List<string>(SupportedLanguageCount);
-
-                    for (int i = 0; i < SupportedLanguageCount; i++)
-                    {
-                        Language language = LanguageIndexToLanguage((LanguageIndex)i);
-                        if (getLangs.Langs.HasFlagFast(language))
-                        {
-                            langsList.Add(SupportedLanguages[i]);
-                        }
-                    }
-
-                    fmData.Languages = langsList.ToArray();
-                    Array.Sort(fmData.Languages);
-                }
-#endif
             }
 
             #endregion
@@ -3877,18 +3760,11 @@ public sealed class Scanner : IDisposable
 
     #region Read FM info files
 
-    private (string Title, string Author
-#if FMScanner_FullCode
-        , string Version
-#endif
-        , DateTime? ReleaseDate)
+    private (string Title, string Author, DateTime? ReleaseDate)
     ReadFMInfoXml(NameAndIndex file)
     {
         string title = "";
         string author = "";
-#if FMScanner_FullCode
-        string version = "";
-#endif
         DateTime? releaseDate = null;
 
         var fmInfoXml = new XmlDocument();
@@ -3924,14 +3800,6 @@ public sealed class Scanner : IDisposable
             if (xAuthor.Count > 0) author = xAuthor[0].GetPlainInnerText();
         }
 
-#if FMScanner_FullCode
-        if (_scanOptions.ScanVersion)
-        {
-            using XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
-            if (xVersion.Count > 0) version = xVersion[0].GetPlainInnerText();
-        }
-#endif
-
         using XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
         if (xReleaseDate.Count > 0)
         {
@@ -3942,27 +3810,16 @@ public sealed class Scanner : IDisposable
         // These files also specify languages and whether the mission has custom stuff, but we're not going
         // to trust what we're told - we're going to detect that stuff by looking at what's actually there.
 
-        return (title, author
-#if FMScanner_FullCode
-            , version
-#endif
-            , releaseDate);
+        return (title, author, releaseDate);
     }
 
-    private (string Title, string Author
-#if FMScanner_FullCode
-        , string Description
-#endif
-        , DateTime? LastUpdateDate, string Tags)
+    private (string Title, string Author, DateTime? LastUpdateDate, string Tags)
     ReadFMIni(NameAndIndex file)
     {
         var ret = (
             Title: "",
-            Author: ""
-#if FMScanner_FullCode
-            , Description: ""
-#endif
-            , LastUpdateDate: (DateTime?)null,
+            Author: "",
+            LastUpdateDate: (DateTime?)null,
             Tags: ""
         );
 
@@ -3972,98 +3829,32 @@ public sealed class Scanner : IDisposable
 
         if (_tempLines.Count == 0)
         {
-            return ("", ""
-#if FMScanner_FullCode
-                , ""
-#endif
-                , null, "");
+            return ("", "", null, "");
         }
 
         (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = ("", "", "", "");
 
         #region Deserialize ini
 
-        bool inDescr = false;
-
         foreach (string line in _tempLines)
         {
             if (line.StartsWithI_Local("NiceName="))
             {
-                inDescr = false;
                 fmIni.NiceName = line.Substring(9).Trim();
             }
             else if (line.StartsWithI_Local("ReleaseDate="))
             {
-                inDescr = false;
                 fmIni.ReleaseDate = line.Substring(12).Trim();
             }
             else if (line.StartsWithI_Local("Tags="))
             {
-                inDescr = false;
                 fmIni.Tags = line.Substring(5).Trim();
             }
-            // Sometimes Descr values are literally multi-line. DON'T. DO. THAT. Use \n.
-            // But I have to deal with it anyway.
-            else if (line.StartsWithI_Local("Descr="))
-            {
-                inDescr = true;
-#if FMScanner_FullCode
-                if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
-#endif
-            }
-            else if (inDescr)
-            {
-#if FMScanner_FullCode
-                if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
-#endif
-            }
-        }
-
-#if FMScanner_FullCode
-        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
-#endif
-
-        #endregion
-
-        #endregion
-
-#if FMScanner_FullCode
-        #region Fixup description
-
-        // Descr can be multiline, and you're supposed to use \n for linebreaks, but sometimes this value
-        // is multiple actual lines. Despite this being a horrific violation of the .ini format, we still
-        // have to handle it.
-
-        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
-        {
-            fmIni.Descr = fmIni.Descr
-                .Replace(@"\t", "\t")
-                .Replace(@"\r\n", "\r\n")
-                .Replace(@"\r", "\r\n")
-                .Replace(@"\n", "\r\n")
-                .Replace(@"\""", "\"");
-
-            if (fmIni.Descr[0] == '\"' && fmIni.Descr[^1] == '\"' &&
-                CountChars(fmIni.Descr, '\"') == 2)
-            {
-                fmIni.Descr = fmIni.Descr.Trim(CA_DoubleQuote);
-            }
-            if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[^1] == RightDoubleQuote &&
-                CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
-            {
-                fmIni.Descr = fmIni.Descr.Trim(_ctx.CA_UnicodeQuotes);
-            }
-
-            fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
-
-            // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
-            // senseless. It can easily be converted later.
-            fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
-            if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = "";
         }
 
         #endregion
-#endif
+
+        #endregion
 
         #region Get author from tags
 
@@ -4116,10 +3907,6 @@ public sealed class Scanner : IDisposable
                 ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
             }
         }
-
-#if FMScanner_FullCode
-        if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
-#endif
 
         /*
            Notes:
@@ -4554,13 +4341,6 @@ public sealed class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI_Local("Release version") ||
                     lineStartTrimmed.StartsWithI_Local("Release: version") ||
                     lineStartTrimmed.StartsWithI_Local("Released for"):
-#if FMScanner_FullCode
-                case SpecialLogic.Version when
-                    lineStartTrimmed.StartsWithI_Local("Version History") ||
-                    lineStartTrimmed.ContainsI("NewDark") ||
-                    lineStartTrimmed.ContainsI("64 Cubed") ||
-                    _ctx.VersionExclude1Regex.Match(lineStartTrimmed).Success:
-#endif
                 case SpecialLogic.Author when
                     lineStartTrimmed.StartsWithI_Local("Authors note"):
                     continue;
@@ -4635,12 +4415,6 @@ public sealed class Scanner : IDisposable
             }
             else
             {
-#if FMScanner_FullCode
-                // Don't detect "Version "; too many false positives
-                // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
-                if (specialLogic == SpecialLogic.Version) continue;
-#endif
-
                 foreach (string key in keys)
                 {
                     if (!lineStartTrimmed.StartsWithI_Local(key)) continue;
@@ -4855,30 +4629,17 @@ public sealed class Scanner : IDisposable
         return "";
     }
 
-    private (string TitleFrom0, string TitleFromN
-#if FMScanner_FullCode
-        , List<string>? CampaignMissionNames
-#endif
-        )
+    private (string TitleFrom0, string TitleFromN)
     GetMissionNames()
     {
         ListFast<string>? titlesStrLines = GetTitlesStrLines();
         if (titlesStrLines == null || titlesStrLines.Count == 0)
         {
-            return ("", ""
-#if FMScanner_FullCode
-                    , null
-#endif
-                );
+            return ("", "");
         }
 
         var ret =
-            (TitleFrom0: "",
-                TitleFromN: ""
-#if FMScanner_FullCode
-                , CampaignMissionNames: (List<string>?)null
-#endif
-            );
+            (TitleFrom0: "", TitleFromN: "");
 
         static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
         {
@@ -4889,12 +4650,8 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-#if FMScanner_FullCode
-        var titles = new List<string>(titlesStrLines.Count);
-#else
         int titleFromTitlesFoundCount = 0;
         string firstTitleFromTitles = "";
-#endif
         for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
         {
             string titleNum = "";
@@ -4915,15 +4672,11 @@ public sealed class Scanner : IDisposable
 
                 if (umfDotIndex > 4 && umf.StartsWithI_Local("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
                 {
-#if FMScanner_FullCode
-                    titles.Add(title);
-#else
                     if (titleFromTitlesFoundCount == 0)
                     {
                         firstTitleFromTitles = title;
                     }
                     titleFromTitlesFoundCount++;
-#endif
                 }
             }
 
@@ -4938,33 +4691,14 @@ public sealed class Scanner : IDisposable
                 NameExistsInList(_misFiles, missNumMis))
             {
                 ret.TitleFromN = title;
-#if FMScanner_FullCode
-                if (!_scanOptions.ScanCampaignMissionNames)
-#endif
-                {
-                    break;
-                }
+                break;
             }
         }
 
-#if FMScanner_FullCode
-        if (titles.Count > 0)
-        {
-            if (_scanOptions.ScanTitle && titles.Count == 1)
-            {
-                ret.TitleFromN = titles[0];
-            }
-            else if (_scanOptions.ScanCampaignMissionNames)
-            {
-                ret.CampaignMissionNames = titles;
-            }
-        }
-#else
         if (_scanOptions.ScanTitle && titleFromTitlesFoundCount == 1)
         {
             ret.TitleFromN = firstTitleFromTitles;
         }
-#endif
 
         return ret;
     }
@@ -5491,60 +5225,6 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-#if FMScanner_FullCode
-    private string GetVersion()
-    {
-        string version = GetValueFromReadme(SpecialLogic.Version, _ctx.SA_VersionDetect);
-
-        if (version.IsEmpty()) return "";
-
-        Debug.WriteLine(@"GetVersion() top:");
-        Debug.WriteLine(version);
-
-        const string numbers = "0123456789.";
-        if (numbers.Any(x => version[0] == x))
-        {
-            int indexSpace = version.IndexOf(' ');
-            int indexTab = version.IndexOf('\t');
-
-            int index = indexSpace > -1 && indexTab > -1
-                ? Math.Min(indexSpace, indexTab)
-                : Math.Max(indexSpace, indexTab);
-
-            if (index > -1)
-            {
-                version = version.Substring(0, index);
-            }
-        }
-        else // Starts with non-numbers
-        {
-            // Find index of the first numeric character
-            Match match = _ctx.VersionFirstNumberRegex.Match(version);
-            if (match.Success)
-            {
-                version = version.Substring(match.Index);
-
-                int indexSpace = version.IndexOf(' ');
-                int indexTab = version.IndexOf('\t');
-
-                int index = indexSpace > -1 && indexTab > -1
-                    ? Math.Min(indexSpace, indexTab)
-                    : Math.Max(indexSpace, indexTab);
-
-                if (index > -1)
-                {
-                    version = version.Substring(0, index);
-                }
-            }
-        }
-
-        Debug.WriteLine(@"GetVersion() bottom:");
-        Debug.WriteLine(version);
-
-        return version;
-    }
-#endif
-
     private (Language Langs, bool EnglishIsUncertain)
     GetLanguages()
     {
@@ -5657,18 +5337,9 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
-#if FMScanner_FullCode
-    private (bool? NewDarkRequired, Game Game)
-#else
-    private Game
-#endif
-    GetGameTypeAndEngine()
+    private Game GetGameTypeAndEngine()
     {
-#if FMScanner_FullCode
-        var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
-#else
         Game game = Game.Null;
-#endif
 
         #region Choose smallest .gam file
 
@@ -5805,9 +5476,6 @@ public sealed class Scanner : IDisposable
         through the stream sequentially until we hit each one.
         */
 
-#if FMScanner_FullCode
-        bool foundAtNewDarkLocation = false;
-#endif
         bool foundAtOldDarkThief2Location = false;
 
         // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
@@ -5841,11 +5509,7 @@ public sealed class Scanner : IDisposable
 
             for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
-                if (
-#if FMScanner_FullCode
-                    !_scanOptions.ScanNewDarkRequired &&
-#endif
-                    (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
+                if ((_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
                      _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2))
                 {
                     break;
@@ -5886,11 +5550,7 @@ public sealed class Scanner : IDisposable
                     fine currently.
                     SS2 .mis files don't have DARKMISS in them at all.
                     */
-#if FMScanner_FullCode
-                    return (null, Game.SS2);
-#else
                     return Game.SS2;
-#endif
                 }
                 else if ((_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location ||
                           _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
@@ -5902,10 +5562,6 @@ public sealed class Scanner : IDisposable
                     if (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
                         _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2)
                     {
-#if FMScanner_FullCode
-                        ret.NewDarkRequired = true;
-                        foundAtNewDarkLocation = true;
-#endif
                         break;
                     }
                     else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location)
@@ -5915,10 +5571,6 @@ public sealed class Scanner : IDisposable
                     }
                 }
             }
-
-#if FMScanner_FullCode
-            if (!foundAtNewDarkLocation) ret.NewDarkRequired = false;
-#endif
         }
         finally
         {
@@ -5929,21 +5581,8 @@ public sealed class Scanner : IDisposable
 
         if (foundAtOldDarkThief2Location)
         {
-#if FMScanner_FullCode
-            return (
-                _scanOptions.ScanNewDarkRequired ? false : null,
-                _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
-#else
             return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
-#endif
         }
-
-#if FMScanner_FullCode
-        if (!_scanOptions.ScanGameType)
-        {
-            return (ret.NewDarkRequired, Game.Null);
-        }
-#endif
 
         GamPath:
 
@@ -6004,12 +5643,7 @@ public sealed class Scanner : IDisposable
                     if (GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
                         GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
                     {
-#if FMScanner_FullCode
-                        ret.Game
-#else
-                        game
-#endif
-                            = Game.SS2;
+                        game = Game.SS2;
                     }
 
                     static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
@@ -6031,26 +5665,15 @@ public sealed class Scanner : IDisposable
                     }
                 }
 
-                if (
-#if FMScanner_FullCode
-                    ret.Game
-#else
-                    game
-#endif
-                    != Game.SS2)
+                if (game != Game.SS2)
                 {
-#if FMScanner_FullCode
-                    ret.Game
-#else
-                    game
-#endif
-                        = StreamContainsIdentString(
-                            stream,
-                            _ctx.RopeyArrow,
-                            GameTypeBuffer_ChunkPlusRopeyArrow,
-                            _gameTypeBufferSize)
-                            ? Game.Thief2
-                            : Game.Thief1;
+                    game = StreamContainsIdentString(
+                        stream,
+                        _ctx.RopeyArrow,
+                        GameTypeBuffer_ChunkPlusRopeyArrow,
+                        _gameTypeBufferSize)
+                        ? Game.Thief2
+                        : Game.Thief1;
                 }
             }
             finally
@@ -6086,14 +5709,9 @@ public sealed class Scanner : IDisposable
                 try
                 {
                     int objMapBytesRead = fs.ReadAll(content, 0, length);
-#if FMScanner_FullCode
-                    ret.Game
-#else
-                    game
-#endif
-                        = content.Contains(_ctx.RopeyArrow, objMapBytesRead)
-                            ? Game.Thief2
-                            : Game.Thief1;
+                    game = content.Contains(_ctx.RopeyArrow, objMapBytesRead)
+                        ? Game.Thief2
+                        : Game.Thief1;
                 }
                 finally
                 {
@@ -6132,13 +5750,7 @@ public sealed class Scanner : IDisposable
         }
 
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if (
-#if FMScanner_FullCode
-            ret.Game
-#else
-            game
-#endif
-            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+        if (game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
         {
             using Stream stream =
                   _solidGamFileToUse != null
@@ -6160,67 +5772,14 @@ public sealed class Scanner : IDisposable
                     buffer,
                     _gameTypeBufferSize))
             {
-#if FMScanner_FullCode
-                ret.Game
-#else
-                game
-#endif
-                    = Game.SS2;
+                game = Game.SS2;
             }
         }
 
         #endregion
 
-#if FMScanner_FullCode
-        return ret;
-#else
         return game;
-#endif
     }
-
-#if FMScanner_FullCode
-
-    private string GetNewDarkVersion()
-    {
-        foreach (ReadmeInternal readme in _readmeFiles)
-        {
-            if (!readme.Scan) continue;
-
-            string ndv = GetNewDarkVersionFromText(readme.Text);
-            if (!ndv.IsEmpty()) return ndv;
-        }
-
-        return "";
-    }
-
-    private string GetNewDarkVersionFromText(string text)
-    {
-        string version = "";
-
-        for (int i = 0; i < _ctx.NewDarkVersionRegexes.Length; i++)
-        {
-            Match match = _ctx.NewDarkVersionRegexes[i].Match(text);
-            if (match.Success)
-            {
-                version = match.Groups["Version"].Value;
-                break;
-            }
-        }
-
-        if (version.IsEmpty()) return "";
-
-        string ndv = version.Trim(_ctx.CA_Period);
-        int index = ndv.IndexOf('.');
-        if (index > -1 && ndv.Substring(index + 1).Length < 2)
-        {
-            ndv += "0";
-        }
-
-        // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
-        // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
-        return Float_TryParseInv(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
-    }
-#endif
 
     private void DeleteFMWorkingPath()
     {
@@ -6242,30 +5801,6 @@ public sealed class Scanner : IDisposable
     }
 
     #region Helpers
-
-#if FMScanner_FullCode
-
-    // So we don't bloat up AL_Common with this when we don't use it there
-
-    /// <summary>
-    /// Returns the number of times a character appears in a string.
-    /// Avoids whatever silly overhead junk Count(predicate) is doing.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="character"></param>
-    /// <returns></returns>
-    private static int CountChars(string value, char character)
-    {
-        int count = 0;
-        for (int i = 0; i < value.Length; i++)
-        {
-            if (value[i] == character) count++;
-        }
-
-        return count;
-    }
-
-#endif
 
     /// <summary>
     /// Deletes a directory after first setting everything in it, and itself, to non-read-only.

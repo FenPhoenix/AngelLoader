@@ -1,7 +1,4 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
-//#define FMScanner_FullCode
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -270,10 +267,6 @@ public sealed class ReadOnlyDataContext
         #endregion
     };
 
-#if FMScanner_FullCode
-    internal readonly string[] SA_VersionDetect = { "Version" };
-#endif
-
     #endregion
 
     #region Extension and file pattern arrays
@@ -521,50 +514,6 @@ public sealed class ReadOnlyDataContext
 
     internal readonly Regex AuthorEmailRegex =
         new Regex(@"\(?\S+@\S+\.\S{2,5}\)?");
-
-#if FMScanner_FullCode
-    internal readonly Regex VersionExclude1Regex =
-        new Regex(@"\d\.\d+\+");
-
-    // TODO: This one looks iffy though
-    internal readonly Regex VersionFirstNumberRegex =
-        new Regex(@"[0123456789\.]+");
-
-    // Much, much faster to iterate through possible regex matches, common ones first
-    // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
-    internal readonly Regex[] NewDarkVersionRegexes =
-    {
-        new Regex(@"NewDark (?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(
-            @"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-        new Regex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch",
-            Regex_IgnoreCaseInvariant |
-            RegexOptions.ExplicitCapture),
-    };
-#endif
 
     internal readonly Regex[] AuthorRegexes =
     {
