@@ -2582,532 +2582,75 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        if (readmes.Count > 0)
+        if (readmes.Count == 0) return CopyReadmesToCacheResult.Success;
+
+        bool anyHtmlReadmes = false;
+
+        string[] readmeFileNames = new string[readmes.Count];
+        for (int i = 0; i < readmes.Count; i++)
         {
-            bool anyHtmlReadmes = false;
-
-            string[] readmeFileNames = new string[readmes.Count];
-            for (int i = 0; i < readmes.Count; i++)
+            string readme = readmes[i].Source;
+            readmeFileNames[i] = readme;
+            if (readme.ExtIsHtml())
             {
-                string readme = readmes[i].Source;
-                readmeFileNames[i] = readme;
-                if (readme.ExtIsHtml())
+                anyHtmlReadmes = true;
+            }
+        }
+
+        if (anyHtmlReadmes)
+        {
+            List<string> archiveFileNames;
+            if (_fmFormat == FMFormat.SevenZip)
+            {
+                archiveFileNames = new List<string>(sevenZipEntries.Count);
+                for (int i = 0; i < sevenZipEntries.Count; i++)
                 {
-                    anyHtmlReadmes = true;
+                    archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
+                }
+            }
+            else
+            {
+                archiveFileNames = new List<string>(rarEntries.Count);
+                for (int i = 0; i < rarEntries.Count; i++)
+                {
+                    archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
                 }
             }
 
-            if (anyHtmlReadmes)
+            if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
             {
-                List<string> archiveFileNames;
-                if (_fmFormat == FMFormat.SevenZip)
-                {
-                    archiveFileNames = new List<string>(sevenZipEntries.Count);
-                    for (int i = 0; i < sevenZipEntries.Count; i++)
-                    {
-                        archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
-                    }
-                }
-                else
-                {
-                    archiveFileNames = new List<string>(rarEntries.Count);
-                    for (int i = 0; i < rarEntries.Count; i++)
-                    {
-                        archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
-                    }
-                }
-
-                if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
-                {
-                    /*
-                    We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
-                    send a message back telling the caller to handle it.
-                    We could just delete the cache directory here, but since it could be anything, we're considering
-                    that a potentially unsafe action.
-                    */
-                    return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
-                }
+                /*
+                We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
+                send a message back telling the caller to handle it.
+                We could just delete the cache directory here, but since it could be anything, we're considering
+                that a potentially unsafe action.
+                */
+                return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
             }
+        }
 
+        try
+        {
+            foreach (var (source, dest) in readmes)
+            {
+                File.Copy(source, dest, overwrite: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log("Exception copying files to cache during scan", ex);
             try
             {
-                foreach (var (source, dest) in readmes)
-                {
-                    File.Copy(source, dest, overwrite: true);
-                }
+                DeleteDirectory(cachePath);
             }
-            catch (Exception ex)
+            catch (Exception ex2)
             {
-                Log("Exception copying files to cache during scan", ex);
-                try
-                {
-                    DeleteDirectory(cachePath);
-                }
-                catch (Exception ex2)
-                {
-                    Log("Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
-                }
+                Log("Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
             }
         }
 
         return CopyReadmesToCacheResult.Success;
     }
-
-    #region Dates
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ParsedDateTime
-    {
-        private readonly bool _isAmbiguous;
-        internal readonly DateTime? Date;
-
-        [MemberNotNullWhen(true, nameof(Date))]
-        internal bool IsAmbiguous => Date != null && _isAmbiguous;
-
-        internal ParsedDateTime(DateTime? date, bool isAmbiguous)
-        {
-            _isAmbiguous = isAmbiguous;
-            Date = date;
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct MisFileDateTime
-    {
-        private readonly bool _succeeded;
-        internal readonly DateTime? Date;
-
-        [MemberNotNullWhen(true, nameof(Date))]
-        internal bool Succeeded => Date != null && _succeeded;
-
-        internal MisFileDateTime(bool succeeded, DateTime? date)
-        {
-            _succeeded = succeeded;
-            Date = date;
-        }
-    }
-
-    private DateTime? GetReleaseDate()
-    {
-        MisFileDateTime misFileDateTime = new(false, null);
-
-        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
-
-        if (parsedDateTime.IsAmbiguous)
-        {
-            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
-
-            for (int i = 0; i < _readmeFiles.Count; i++)
-            {
-                ReadmeInternal readme = _readmeFiles[i];
-                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
-
-                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-
-            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
-            if (misFileDateTime.Succeeded)
-            {
-                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
-
-                if (misFileLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-        }
-
-        if (parsedDateTime.Date != null) return parsedDateTime.Date;
-
-        for (int i = 0; i < _readmeFiles.Count; i++)
-        {
-            ReadmeInternal readme = _readmeFiles[i];
-            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
-            {
-                return readme.LastModifiedDate;
-            }
-        }
-
-        return misFileDateTime.Succeeded
-            ? misFileDateTime.Date.Value
-            : GetMisFileDate(this, _usedMisFiles).Date;
-
-        ParsedDateTime GetReadmeParsedDateTime()
-        {
-            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
-
-            // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_LatestUpdateDateDetect);
-            DateTime? dt = null;
-            bool dtIsAmbiguous = false;
-            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
-
-            if (ds.IsEmpty() || dt == null)
-            {
-                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_ReleaseDateDetect);
-            }
-
-            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
-
-            if (topDT != null && dt != null)
-            {
-                // TODO: We don't check the ambiguous date against the file(s) in this case
-                // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
-                // like we needed to.
-                if (!topDtIsAmbiguous && dtIsAmbiguous)
-                {
-                    return new ParsedDateTime(topDT, false);
-                }
-                else if (!dtIsAmbiguous && topDtIsAmbiguous)
-                {
-                    return new ParsedDateTime(dt, false);
-                }
-                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
-                {
-                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
-                }
-                else
-                {
-                    return new ParsedDateTime(dt, dtIsAmbiguous);
-                }
-            }
-            else if (topDT != null)
-            {
-                return new ParsedDateTime(topDT, topDtIsAmbiguous);
-            }
-            else if (dt != null)
-            {
-                return new ParsedDateTime(dt, dtIsAmbiguous);
-            }
-
-            return new ParsedDateTime(null, false);
-        }
-
-        static MisFileDateTime GetMisFileDate(Scanner scanner, ListFast<NameAndIndex> usedMisFiles)
-        {
-            if (usedMisFiles.Count > 0)
-            {
-                DateTime misFileDate;
-                if (scanner._fmFormat == FMFormat.Zip)
-                {
-                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-                }
-                else if (scanner._fmFormat.IsSolidArchive() ||
-                         scanner._fmDirFileInfos.Count > 0)
-                {
-                    misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
-                }
-                else
-                {
-                    var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                }
-
-                return misFileDate.Year > 1998
-                    ? new MisFileDateTime(true, misFileDate)
-                    : new MisFileDateTime(false, null);
-            }
-
-            return new MisFileDateTime(false, null);
-        }
-
-        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
-        {
-            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
-            {
-                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
-                    fileLastModifiedDate.Day == readmeParsedDate.Day)
-                {
-                    return readmeParsedDate;
-                }
-                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
-                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
-                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
-                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
-                {
-                    return new DateTime(
-                        year: readmeParsedDate.Year,
-                        month: readmeParsedDate.Day,
-                        day: readmeParsedDate.Month,
-                        hour: readmeParsedDate.Hour,
-                        minute: readmeParsedDate.Minute,
-                        second: readmeParsedDate.Second,
-                        millisecond: readmeParsedDate.Millisecond,
-                        kind: readmeParsedDate.Kind
-                    );
-                }
-            }
-
-            return null;
-        }
-    }
-
-    private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
-    {
-        // Always false for now, because we only return dates that have month names in them currently
-        // (was I concerned about number-only dates having not enough context to be sure they're dates?)
-        isAmbiguous = false;
-
-        if (_readmeFiles.Count == 0) return null;
-
-        foreach (ReadmeInternal r in _readmeFiles)
-        {
-            if (!r.Scan) continue;
-
-            int topLineCount = 0;
-            for (int i = 0; i < r.Lines.Count; i++)
-            {
-                string lineT = r.Lines[i].Trim();
-
-                if (lineT.IsWhiteSpace()) continue;
-
-                if (LineContainsMonthName(lineT, _ctx.MonthNames))
-                {
-                    if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
-                    {
-                        return result;
-                    }
-                }
-
-                topLineCount++;
-                if (topLineCount == _maxTopLines) break;
-            }
-        }
-
-        return null;
-    }
-
-    private bool LineContainsMonthName(string line, (string Name, bool IsAscii)[] monthNames)
-    {
-        foreach (var item in monthNames)
-        {
-#if X64
-            if (item.IsAscii)
-            {
-                Span<char> span = GetAsciiLowercaseSpan(line);
-                if (span.IndexOf(item.Name.AsSpan()) > -1)
-                {
-                    return true;
-                }
-            }
-            else
-#endif
-            {
-                if (line.ContainsI(item.Name))
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private readonly struct StringToDateResult
-    {
-        internal readonly bool FunctionResult;
-        internal readonly DateTime? DateTime;
-        internal readonly bool IsAmbiguous;
-
-        public StringToDateResult(bool functionResult, DateTime? dateTime, bool isAmbiguous)
-        {
-            FunctionResult = functionResult;
-            DateTime = dateTime;
-            IsAmbiguous = isAmbiguous;
-        }
-    }
-
-    private readonly Dictionary<string, StringToDateResult> _stringToDateResultCache = new(0);
-
-    private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
-    {
-        string originalDateString = dateString;
-
-        #region Early return
-
-        // Believe it or not, there are quite a few instances of the exact same line across different FMs.
-        // Anything we can do to avoid all the heavy work in this function is worth doing.
-        if (_stringToDateResultCache.TryGetValue(originalDateString, out StringToDateResult stringToDateResult))
-        {
-            dateTime = stringToDateResult.DateTime;
-            isAmbiguous = stringToDateResult.IsAmbiguous;
-            return stringToDateResult.FunctionResult;
-        }
-
-        // There are two valid "word-only" dates: "Christmas Y2K" and "Halloween Y2K".
-        // But we just barely get away with still having this number check work on account of the "2" in "Y2K".
-        if (dateString.AsSpan().IndexOfAny("0123456789".AsSpan()) == -1)
-        {
-            isAmbiguous = false;
-            dateTime = null;
-            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
-        }
-
-        #endregion
-
-        // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
-        // to guessing about day/month order.
-        if (_ctx.EuropeanDateRegex.Match(dateString).Success)
-        {
-            string dateStringTemp = _ctx.PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(_ctx.CA_Period);
-            if (DateTime.TryParseExact(
-                    dateStringTemp,
-                    _ctx.DateFormatsEuropean,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime eurDateResult))
-            {
-                dateTime = eurDateResult;
-                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
-                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-            }
-        }
-
-        dateString = _ctx.DateSeparatorsRegex.Replace(dateString, " ");
-        dateString = _ctx.DateOfSeparatorRegex.Replace(dateString, " ");
-        dateString = _ctx.OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
-
-        dateString = _ctx.FebrRegex.Replace(dateString, "Feb ");
-        dateString = _ctx.SeptRegex.Replace(dateString, "Sep ");
-        dateString = _ctx.OktRegex.Replace(dateString, "Oct ");
-
-        dateString = _ctx.HalloweenRegex.Replace(dateString, "Oct 31");
-        dateString = _ctx.ChristmasRegex.Replace(dateString, "Dec 25");
-
-        // Cute...
-        dateString = _ctx.Y2KRegex.Replace(dateString, "2000");
-
-        dateString = _ctx.JanuaryVariationsRegex.Replace(dateString, "Jan");
-        dateString = _ctx.FebruaryVariationsRegex.Replace(dateString, "Feb");
-        dateString = _ctx.MarchVariationsRegex.Replace(dateString, "Mar");
-        dateString = _ctx.AprilVariationsRegex.Replace(dateString, "Apr");
-        dateString = _ctx.MayVariationsRegex.Replace(dateString, "May");
-        dateString = _ctx.JuneVariationsRegex.Replace(dateString, "Jun");
-        dateString = _ctx.JulyVariationsRegex.Replace(dateString, "Jul");
-        dateString = _ctx.AugustVariationsRegex.Replace(dateString, "Aug");
-        dateString = _ctx.SeptemberVariationsRegex.Replace(dateString, "Sep");
-        dateString = _ctx.OctoberVariationsRegex.Replace(dateString, "Oct");
-        dateString = _ctx.NovemberVariationsRegex.Replace(dateString, "Nov");
-        dateString = _ctx.DecemberVariationsRegex.Replace(dateString, "Dec");
-
-        dateString = dateString.Trim(_ctx.CA_Period);
-        dateString = dateString.Trim(_ctx.CA_Parens);
-        dateString = dateString.Trim();
-
-        // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-        Match match = _ctx.DaySuffixesRegex.Match(dateString);
-        if (match.Success)
-        {
-            Group suffix = match.Groups["Suffix"];
-            dateString = dateString.Substring(0, suffix.Index) +
-                         dateString.Substring(suffix.Index + suffix.Length);
-        }
-
-        // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
-        // want to fail, and not assume the current year.
-        bool success = false;
-        bool canBeAmbiguous = false;
-        DateTime? result = null!;
-        foreach (var item in _ctx.DateFormats)
-        {
-            success = DateTime.TryParseExact(
-                dateString,
-                item.Format,
-                DateTimeFormatInfo.InvariantInfo,
-                DateTimeStyles.None,
-                out DateTime result_);
-            if (success)
-            {
-                canBeAmbiguous = item.CanBeAmbiguous;
-                result = result_;
-                break;
-            }
-        }
-
-        if (!success)
-        {
-            isAmbiguous = false;
-            dateTime = null;
-            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
-        }
-
-        if (!checkForAmbiguity || !canBeAmbiguous)
-        {
-            isAmbiguous = false;
-            dateTime = result;
-            return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-        }
-
-        isAmbiguous = true;
-        foreach (char c in dateString)
-        {
-            if (c.IsAsciiAlpha())
-            {
-                isAmbiguous = false;
-                break;
-            }
-        }
-
-        if (isAmbiguous)
-        {
-            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
-            {
-                isAmbiguous = false;
-                dateTime = resultNotNull;
-                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-            }
-
-            string[] nums = dateString.Split_Char(_ctx.CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
-            if (nums.Length == 3)
-            {
-                bool unambiguousYearFound = false;
-                bool unambiguousDayFound = false;
-
-                foreach (string num in nums)
-                {
-                    if (Int_TryParseInv(num, out int numInt))
-                    {
-                        switch (numInt)
-                        {
-                            case 0 or (> 31 and <= 9999):
-                                unambiguousYearFound = true;
-                                break;
-                            case > 12 and <= 31:
-                                unambiguousDayFound = true;
-                                break;
-                        }
-                    }
-                }
-
-                if (unambiguousYearFound && unambiguousDayFound)
-                {
-                    isAmbiguous = false;
-                }
-            }
-        }
-
-        dateTime = result;
-        return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-
-        static bool DoReturn(
-            Dictionary<string, StringToDateResult> cache,
-            string originalDateString,
-            bool returnValue,
-            DateTime? dateTime,
-            bool isAmbiguous)
-        {
-            cache[originalDateString] = new StringToDateResult(returnValue, dateTime, isAmbiguous);
-            return returnValue;
-        }
-    }
-
-    #endregion
 
     #region Set tags
 
@@ -4192,6 +3735,8 @@ public sealed class Scanner : IDisposable
         }
     }
 
+    #region Get value from readme
+
     private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, ListFast<string>? titles = null, ReadmeInternal? singleReadme = null)
     {
         string ret = "";
@@ -4490,6 +4035,8 @@ public sealed class Scanner : IDisposable
 
         return value;
     }
+
+    #endregion
 
     #region Title(s) and mission names
 
@@ -5352,7 +4899,7 @@ public sealed class Scanner : IDisposable
 
         if (_solidGamFileToUse == null)
         {
-            NameAndIndex smallestUsedMisFile = GetSmallestMisFile();
+            NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
             if (_fmFormat == FMFormat.Zip)
             {
                 misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
@@ -5377,86 +4924,6 @@ public sealed class Scanner : IDisposable
         if (game != Game.Null) return game;
 
         return Game.Thief1;
-    }
-
-    private NameAndIndex GetSmallestMisFile()
-    {
-        if (_solidMisFileToUse is { } solidMisFileToUse)
-        {
-            return solidMisFileToUse;
-        }
-        else if (_usedMisFiles.Count == 1)
-        {
-            return _usedMisFiles[0];
-        }
-        // We know we have at least 1 used mis file at this point because we early-return way before this if
-        // we don't
-        else
-        {
-            int smallestSizeIndex = -1;
-            long smallestSize = long.MaxValue;
-            for (int i = 0; i < _usedMisFiles.Count; i++)
-            {
-                NameAndIndex mis = _usedMisFiles[i];
-                long length = _fmFormat == FMFormat.Zip
-                    ? _archive.Entries[mis.Index].Length
-                    : _fmFormat == FMFormat.Rar
-                        ? _rarArchive.Entries[mis.Index].Size
-                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
-                            ? _fmDirFileInfos[mis.Index].Length
-                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
-
-                if (length <= smallestSize)
-                {
-                    smallestSize = length;
-                    smallestSizeIndex = i;
-                }
-            }
-
-            return _usedMisFiles[smallestSizeIndex];
-        }
-    }
-
-    private ZipArchiveFastEntry? GetSmallestGamEntry_Zip()
-    {
-        int smallestSizeIndex = -1;
-        long smallestSize = long.MaxValue;
-        for (int i = 0; i < _baseDirFiles.Count; i++)
-        {
-            NameAndIndex item = _baseDirFiles[i];
-            if (item.Name.ExtIsGam())
-            {
-                ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
-                if (gamFile.Length <= smallestSize)
-                {
-                    smallestSize = gamFile.Length;
-                    smallestSizeIndex = item.Index;
-                }
-            }
-        }
-
-        return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
-    }
-
-    private RarArchiveEntry? GetSmallestGamEntry_Rar()
-    {
-        int smallestSizeIndex = -1;
-        long smallestSize = long.MaxValue;
-        for (int i = 0; i < _baseDirFiles.Count; i++)
-        {
-            NameAndIndex item = _baseDirFiles[i];
-            if (item.Name.ExtIsGam())
-            {
-                RarArchiveEntry gamFile = _rarArchive.Entries[item.Index];
-                if (gamFile.Size <= smallestSize)
-                {
-                    smallestSize = gamFile.Size;
-                    smallestSizeIndex = item.Index;
-                }
-            }
-        }
-
-        return smallestSizeIndex == -1 ? null : _rarArchive.Entries[smallestSizeIndex];
     }
 
     private Game GameType_DoQuickCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
@@ -5559,8 +5026,8 @@ public sealed class Scanner : IDisposable
             // brute-force straight through.
             using Stream stream =
                 _fmFormat == FMFormat.Zip
-                    ? _archive.OpenEntry(GetSmallestGamEntry_Zip() ?? misFileZipEntry)
-                    : (GetSmallestGamEntry_Rar() ?? misFileRarEntry).OpenEntryStream();
+                    ? _archive.OpenEntry(GameType_GetSmallestGamEntry_Zip() ?? misFileZipEntry)
+                    : (GameType_GetSmallestGamEntry_Rar() ?? misFileRarEntry).OpenEntryStream();
 
             return GameType_StreamContainsIdentString(
                 stream,
@@ -5711,6 +5178,86 @@ public sealed class Scanner : IDisposable
         }
     }
 
+    private NameAndIndex GameType_GetSmallestMisFile()
+    {
+        if (_solidMisFileToUse is { } solidMisFileToUse)
+        {
+            return solidMisFileToUse;
+        }
+        else if (_usedMisFiles.Count == 1)
+        {
+            return _usedMisFiles[0];
+        }
+        // We know we have at least 1 used mis file at this point because we early-return way before this if
+        // we don't
+        else
+        {
+            int smallestSizeIndex = -1;
+            long smallestSize = long.MaxValue;
+            for (int i = 0; i < _usedMisFiles.Count; i++)
+            {
+                NameAndIndex mis = _usedMisFiles[i];
+                long length = _fmFormat == FMFormat.Zip
+                    ? _archive.Entries[mis.Index].Length
+                    : _fmFormat == FMFormat.Rar
+                        ? _rarArchive.Entries[mis.Index].Size
+                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
+                            ? _fmDirFileInfos[mis.Index].Length
+                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
+
+                if (length <= smallestSize)
+                {
+                    smallestSize = length;
+                    smallestSizeIndex = i;
+                }
+            }
+
+            return _usedMisFiles[smallestSizeIndex];
+        }
+    }
+
+    private ZipArchiveFastEntry? GameType_GetSmallestGamEntry_Zip()
+    {
+        int smallestSizeIndex = -1;
+        long smallestSize = long.MaxValue;
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            NameAndIndex item = _baseDirFiles[i];
+            if (item.Name.ExtIsGam())
+            {
+                ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
+                if (gamFile.Length <= smallestSize)
+                {
+                    smallestSize = gamFile.Length;
+                    smallestSizeIndex = item.Index;
+                }
+            }
+        }
+
+        return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
+    }
+
+    private RarArchiveEntry? GameType_GetSmallestGamEntry_Rar()
+    {
+        int smallestSizeIndex = -1;
+        long smallestSize = long.MaxValue;
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            NameAndIndex item = _baseDirFiles[i];
+            if (item.Name.ExtIsGam())
+            {
+                RarArchiveEntry gamFile = _rarArchive.Entries[item.Index];
+                if (gamFile.Size <= smallestSize)
+                {
+                    smallestSize = gamFile.Size;
+                    smallestSizeIndex = item.Index;
+                }
+            }
+        }
+
+        return smallestSizeIndex == -1 ? null : _rarArchive.Entries[smallestSizeIndex];
+    }
+
     private static bool GameType_StreamContainsIdentString(
         Stream stream,
         byte[] identString,
@@ -5745,6 +5292,462 @@ public sealed class Scanner : IDisposable
         }
 
         return false;
+    }
+
+    #endregion
+
+    #region Dates
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ParsedDateTime
+    {
+        private readonly bool _isAmbiguous;
+        internal readonly DateTime? Date;
+
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal bool IsAmbiguous => Date != null && _isAmbiguous;
+
+        internal ParsedDateTime(DateTime? date, bool isAmbiguous)
+        {
+            _isAmbiguous = isAmbiguous;
+            Date = date;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct MisFileDateTime
+    {
+        private readonly bool _succeeded;
+        internal readonly DateTime? Date;
+
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal bool Succeeded => Date != null && _succeeded;
+
+        internal MisFileDateTime(bool succeeded, DateTime? date)
+        {
+            _succeeded = succeeded;
+            Date = date;
+        }
+    }
+
+    private DateTime? GetReleaseDate()
+    {
+        MisFileDateTime misFileDateTime = new(false, null);
+
+        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
+
+        if (parsedDateTime.IsAmbiguous)
+        {
+            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
+
+            for (int i = 0; i < _readmeFiles.Count; i++)
+            {
+                ReadmeInternal readme = _readmeFiles[i];
+                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
+
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+
+            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
+            if (misFileDateTime.Succeeded)
+            {
+                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
+
+                if (misFileLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+        }
+
+        if (parsedDateTime.Date != null) return parsedDateTime.Date;
+
+        for (int i = 0; i < _readmeFiles.Count; i++)
+        {
+            ReadmeInternal readme = _readmeFiles[i];
+            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
+            {
+                return readme.LastModifiedDate;
+            }
+        }
+
+        return misFileDateTime.Succeeded
+            ? misFileDateTime.Date.Value
+            : GetMisFileDate(this, _usedMisFiles).Date;
+
+        ParsedDateTime GetReadmeParsedDateTime()
+        {
+            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
+
+            // Search for updated dates FIRST, because they'll be the correct ones!
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_LatestUpdateDateDetect);
+            DateTime? dt = null;
+            bool dtIsAmbiguous = false;
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (ds.IsEmpty() || dt == null)
+            {
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_ReleaseDateDetect);
+            }
+
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (topDT != null && dt != null)
+            {
+                // TODO: We don't check the ambiguous date against the file(s) in this case
+                // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
+                // like we needed to.
+                if (!topDtIsAmbiguous && dtIsAmbiguous)
+                {
+                    return new ParsedDateTime(topDT, false);
+                }
+                else if (!dtIsAmbiguous && topDtIsAmbiguous)
+                {
+                    return new ParsedDateTime(dt, false);
+                }
+                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
+                {
+                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
+                }
+                else
+                {
+                    return new ParsedDateTime(dt, dtIsAmbiguous);
+                }
+            }
+            else if (topDT != null)
+            {
+                return new ParsedDateTime(topDT, topDtIsAmbiguous);
+            }
+            else if (dt != null)
+            {
+                return new ParsedDateTime(dt, dtIsAmbiguous);
+            }
+
+            return new ParsedDateTime(null, false);
+        }
+
+        static MisFileDateTime GetMisFileDate(Scanner scanner, ListFast<NameAndIndex> usedMisFiles)
+        {
+            if (usedMisFiles.Count > 0)
+            {
+                DateTime misFileDate;
+                if (scanner._fmFormat == FMFormat.Zip)
+                {
+                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
+                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
+                }
+                else if (scanner._fmFormat.IsSolidArchive() ||
+                         scanner._fmDirFileInfos.Count > 0)
+                {
+                    misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
+                }
+                else
+                {
+                    var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
+                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
+                }
+
+                return misFileDate.Year > 1998
+                    ? new MisFileDateTime(true, misFileDate)
+                    : new MisFileDateTime(false, null);
+            }
+
+            return new MisFileDateTime(false, null);
+        }
+
+        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
+        {
+            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
+            {
+                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
+                    fileLastModifiedDate.Day == readmeParsedDate.Day)
+                {
+                    return readmeParsedDate;
+                }
+                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
+                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
+                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
+                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
+                {
+                    return new DateTime(
+                        year: readmeParsedDate.Year,
+                        month: readmeParsedDate.Day,
+                        day: readmeParsedDate.Month,
+                        hour: readmeParsedDate.Hour,
+                        minute: readmeParsedDate.Minute,
+                        second: readmeParsedDate.Second,
+                        millisecond: readmeParsedDate.Millisecond,
+                        kind: readmeParsedDate.Kind
+                    );
+                }
+            }
+
+            return null;
+        }
+    }
+
+    private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
+    {
+        // Always false for now, because we only return dates that have month names in them currently
+        // (was I concerned about number-only dates having not enough context to be sure they're dates?)
+        isAmbiguous = false;
+
+        if (_readmeFiles.Count == 0) return null;
+
+        foreach (ReadmeInternal r in _readmeFiles)
+        {
+            if (!r.Scan) continue;
+
+            int topLineCount = 0;
+            for (int i = 0; i < r.Lines.Count; i++)
+            {
+                string lineT = r.Lines[i].Trim();
+
+                if (lineT.IsWhiteSpace()) continue;
+
+                if (LineContainsMonthName(lineT, _ctx.MonthNames))
+                {
+                    if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
+                    {
+                        return result;
+                    }
+                }
+
+                topLineCount++;
+                if (topLineCount == _maxTopLines) break;
+            }
+        }
+
+        return null;
+    }
+
+    private bool LineContainsMonthName(string line, (string Name, bool IsAscii)[] monthNames)
+    {
+        foreach (var item in monthNames)
+        {
+#if X64
+            if (item.IsAscii)
+            {
+                Span<char> span = GetAsciiLowercaseSpan(line);
+                if (span.IndexOf(item.Name.AsSpan()) > -1)
+                {
+                    return true;
+                }
+            }
+            else
+#endif
+            {
+                if (line.ContainsI(item.Name))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private readonly struct StringToDateResult
+    {
+        internal readonly bool FunctionResult;
+        internal readonly DateTime? DateTime;
+        internal readonly bool IsAmbiguous;
+
+        public StringToDateResult(bool functionResult, DateTime? dateTime, bool isAmbiguous)
+        {
+            FunctionResult = functionResult;
+            DateTime = dateTime;
+            IsAmbiguous = isAmbiguous;
+        }
+    }
+
+    private readonly Dictionary<string, StringToDateResult> _stringToDateResultCache = new(0);
+
+    private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
+    {
+        string originalDateString = dateString;
+
+        #region Early return
+
+        // Believe it or not, there are quite a few instances of the exact same line across different FMs.
+        // Anything we can do to avoid all the heavy work in this function is worth doing.
+        if (_stringToDateResultCache.TryGetValue(originalDateString, out StringToDateResult stringToDateResult))
+        {
+            dateTime = stringToDateResult.DateTime;
+            isAmbiguous = stringToDateResult.IsAmbiguous;
+            return stringToDateResult.FunctionResult;
+        }
+
+        // There are two valid "word-only" dates: "Christmas Y2K" and "Halloween Y2K".
+        // But we just barely get away with still having this number check work on account of the "2" in "Y2K".
+        if (dateString.AsSpan().IndexOfAny("0123456789".AsSpan()) == -1)
+        {
+            isAmbiguous = false;
+            dateTime = null;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
+        }
+
+        #endregion
+
+        // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
+        // to guessing about day/month order.
+        if (_ctx.EuropeanDateRegex.Match(dateString).Success)
+        {
+            string dateStringTemp = _ctx.PeriodWithOptionalSurroundingSpacesRegex.Replace(dateString, ".").Trim(_ctx.CA_Period);
+            if (DateTime.TryParseExact(
+                    dateStringTemp,
+                    _ctx.DateFormatsEuropean,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime eurDateResult))
+            {
+                dateTime = eurDateResult;
+                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+            }
+        }
+
+        dateString = _ctx.DateSeparatorsRegex.Replace(dateString, " ");
+        dateString = _ctx.DateOfSeparatorRegex.Replace(dateString, " ");
+        dateString = _ctx.OneOrMoreWhiteSpaceCharsRegex.Replace(dateString, " ");
+
+        dateString = _ctx.FebrRegex.Replace(dateString, "Feb ");
+        dateString = _ctx.SeptRegex.Replace(dateString, "Sep ");
+        dateString = _ctx.OktRegex.Replace(dateString, "Oct ");
+
+        dateString = _ctx.HalloweenRegex.Replace(dateString, "Oct 31");
+        dateString = _ctx.ChristmasRegex.Replace(dateString, "Dec 25");
+
+        // Cute...
+        dateString = _ctx.Y2KRegex.Replace(dateString, "2000");
+
+        dateString = _ctx.JanuaryVariationsRegex.Replace(dateString, "Jan");
+        dateString = _ctx.FebruaryVariationsRegex.Replace(dateString, "Feb");
+        dateString = _ctx.MarchVariationsRegex.Replace(dateString, "Mar");
+        dateString = _ctx.AprilVariationsRegex.Replace(dateString, "Apr");
+        dateString = _ctx.MayVariationsRegex.Replace(dateString, "May");
+        dateString = _ctx.JuneVariationsRegex.Replace(dateString, "Jun");
+        dateString = _ctx.JulyVariationsRegex.Replace(dateString, "Jul");
+        dateString = _ctx.AugustVariationsRegex.Replace(dateString, "Aug");
+        dateString = _ctx.SeptemberVariationsRegex.Replace(dateString, "Sep");
+        dateString = _ctx.OctoberVariationsRegex.Replace(dateString, "Oct");
+        dateString = _ctx.NovemberVariationsRegex.Replace(dateString, "Nov");
+        dateString = _ctx.DecemberVariationsRegex.Replace(dateString, "Dec");
+
+        dateString = dateString.Trim(_ctx.CA_Period);
+        dateString = dateString.Trim(_ctx.CA_Parens);
+        dateString = dateString.Trim();
+
+        // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+        Match match = _ctx.DaySuffixesRegex.Match(dateString);
+        if (match.Success)
+        {
+            Group suffix = match.Groups["Suffix"];
+            dateString = dateString.Substring(0, suffix.Index) +
+                         dateString.Substring(suffix.Index + suffix.Length);
+        }
+
+        // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+        // want to fail, and not assume the current year.
+        bool success = false;
+        bool canBeAmbiguous = false;
+        DateTime? result = null!;
+        foreach (var item in _ctx.DateFormats)
+        {
+            success = DateTime.TryParseExact(
+                dateString,
+                item.Format,
+                DateTimeFormatInfo.InvariantInfo,
+                DateTimeStyles.None,
+                out DateTime result_);
+            if (success)
+            {
+                canBeAmbiguous = item.CanBeAmbiguous;
+                result = result_;
+                break;
+            }
+        }
+
+        if (!success)
+        {
+            isAmbiguous = false;
+            dateTime = null;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
+        }
+
+        if (!checkForAmbiguity || !canBeAmbiguous)
+        {
+            isAmbiguous = false;
+            dateTime = result;
+            return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+        }
+
+        isAmbiguous = true;
+        foreach (char c in dateString)
+        {
+            if (c.IsAsciiAlpha())
+            {
+                isAmbiguous = false;
+                break;
+            }
+        }
+
+        if (isAmbiguous)
+        {
+            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
+            {
+                isAmbiguous = false;
+                dateTime = resultNotNull;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+            }
+
+            string[] nums = dateString.Split_Char(_ctx.CA_DateSeparators, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
+            if (nums.Length == 3)
+            {
+                bool unambiguousYearFound = false;
+                bool unambiguousDayFound = false;
+
+                foreach (string num in nums)
+                {
+                    if (Int_TryParseInv(num, out int numInt))
+                    {
+                        switch (numInt)
+                        {
+                            case 0 or (> 31 and <= 9999):
+                                unambiguousYearFound = true;
+                                break;
+                            case > 12 and <= 31:
+                                unambiguousDayFound = true;
+                                break;
+                        }
+                    }
+                }
+
+                if (unambiguousYearFound && unambiguousDayFound)
+                {
+                    isAmbiguous = false;
+                }
+            }
+        }
+
+        dateTime = result;
+        return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+
+        static bool DoReturn(
+            Dictionary<string, StringToDateResult> cache,
+            string originalDateString,
+            bool returnValue,
+            DateTime? dateTime,
+            bool isAmbiguous)
+        {
+            cache[originalDateString] = new StringToDateResult(returnValue, dateTime, isAmbiguous);
+            return returnValue;
+        }
     }
 
     #endregion
