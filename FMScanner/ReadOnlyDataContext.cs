@@ -449,7 +449,11 @@ public sealed class ReadOnlyDataContext
     internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
     internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
 
-    internal readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
+    internal const ulong OBJ_MAP_First = 0x50414D5F4A424F00;
+    internal const uint OBJ_MAP_Second = 0x00000000;
+
+    internal const ulong SymName_First = 0x6D614E6D79532450;
+    internal const uint SymName_Second = 0x00000065;
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is

@@ -5553,84 +5553,45 @@ public sealed class Scanner : IDisposable
 
     private Game GameType_DoMainCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
     {
-        if (_fmFormat.IsStreamableArchive() || _solidGamFileToUse != null)
+        if (_fmFormat.IsStreamableArchive())
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            Stream? stream = null;
-            try
-            {
-                stream =
-                      _solidGamFileToUse != null
-                    ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
-                    : _fmFormat == FMFormat.Zip
+            using Stream stream =
+                _fmFormat == FMFormat.Zip
                     ? _archive.OpenEntry(GetSmallestGamEntry_Zip() ?? misFileZipEntry)
                     : (GetSmallestGamEntry_Rar() ?? misFileRarEntry).OpenEntryStream();
 
-                if (_solidGamFileToUse != null)
-                {
-                    if (GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
-                        GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
-                    {
-                        return Game.SS2;
-                    }
+            return GameType_StreamContainsIdentString(
+                stream,
+                _ctx.RopeyArrow,
+                GameTypeBuffer_ChunkPlusRopeyArrow,
+                _gameTypeBufferSize)
+                ? Game.Thief2
+                : Game.Null;
+        }
+        else if (_solidGamFileToUse != null)
+        {
+            string gamFileOnDisk = Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name);
+            using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(gamFileOnDisk, DiskFileStreamBuffer);
 
-                    stream.Position = 0;
-                }
-
-                return GameType_StreamContainsIdentString(
-                    stream,
-                    _ctx.RopeyArrow,
-                    GameTypeBuffer_ChunkPlusRopeyArrow,
-                    _gameTypeBufferSize)
-                    ? Game.Thief2
-                    : Game.Null;
-            }
-            finally
+            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
+                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
             {
-                stream?.Dispose();
+                return Game.SS2;
             }
+
+            fs.Position = 0;
+
+            return ChunkContainsPhrase(fs, SymName_First, SymName_Second, _ctx.RopeyArrow) ? Game.Thief2 : Game.Null;
         }
         else
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
             using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
-
-            uint tocOffset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-
-            fs.Position = tocOffset;
-
-            uint invCount = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-            for (int i = 0; i < invCount; i++)
-            {
-                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
-                uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-                int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-
-                // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
-                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
-
-                // Put us past the name (12), version high (4), version low (4), and the zero (4).
-                // Length starts AFTER this 24-byte header! (thanks JayRude)
-                fs.Position = offset + 24;
-
-                byte[] content = _sevenZipContext.ByteArrayPool.Rent(length);
-                try
-                {
-                    int objMapBytesRead = fs.ReadAll(content, 0, length);
-                    return content.Contains(_ctx.RopeyArrow, objMapBytesRead)
-                        ? Game.Thief2
-                        : Game.Null;
-                }
-                finally
-                {
-                    _sevenZipContext.ByteArrayPool.Return(content);
-                }
-            }
+            return ChunkContainsPhrase(fs, OBJ_MAP_First, OBJ_MAP_Second, _ctx.RopeyArrow) ? Game.Thief2 : Game.Null;
         }
-
-        return Game.Null;
 
         static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
         {
@@ -5648,6 +5609,49 @@ public sealed class Scanner : IDisposable
             }
 
             return false;
+        }
+
+        bool ChunkContainsPhrase(FileStream_NET fs, ulong chunkNameFirst, uint chunkNameSecond, byte[] searchPhrase)
+        {
+            uint tocOffset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+
+            fs.Position = tocOffset;
+
+            uint invCount = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+            for (int i = 0; i < invCount; i++)
+            {
+                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
+                uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+                int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+
+                // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
+                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond)) continue;
+
+                // Put us past the name (12), version high (4), version low (4), and the zero (4).
+                // Length starts AFTER this 24-byte header! (thanks JayRude)
+                fs.Position = offset + 24;
+
+                byte[] content = _sevenZipContext.ByteArrayPool.Rent(length);
+                try
+                {
+                    int chunkBytesRead = fs.ReadAll(content, 0, length);
+                    return content.Contains(searchPhrase, chunkBytesRead);
+                }
+                finally
+                {
+                    _sevenZipContext.ByteArrayPool.Return(content);
+                }
+            }
+
+            return false;
+
+            static bool HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond)
+            {
+                ulong first = Unsafe.ReadUnaligned<ulong>(ref header[0]);
+                if (first != chunkNameFirst) return false;
+                uint second = Unsafe.ReadUnaligned<uint>(ref header[8]);
+                return second == chunkNameSecond;
+            }
         }
     }
 
