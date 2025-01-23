@@ -440,15 +440,10 @@ public sealed class ReadOnlyDataContext
     internal const int SS2_NewDark_MAPPARAM_Location = 696;
     internal const int T2_OldDark_SKYOBJVAR_Location = 772;
     internal const int SS2_OldDark_MAPPARAM_Location = 916;
-    // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
-    internal const int NewDark_SKYOBJVAR_Location1 = 7217;
-    internal const int NewDark_SKYOBJVAR_Location2 = 3093;
 
     internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
-    internal const int NewDark_SKYOBJVAR_Offset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
-    internal const int NewDark_SKYOBJVAR_Offset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
 
     // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
     internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
@@ -472,8 +467,6 @@ public sealed class ReadOnlyDataContext
         SS2_NewDark_MAPPARAM_Location,
         T2_OldDark_SKYOBJVAR_Location,
         SS2_OldDark_MAPPARAM_Location,
-        NewDark_SKYOBJVAR_Location1,
-        NewDark_SKYOBJVAR_Location2,
     };
 
     internal readonly int[] GameDetect_KeyPhraseZipOffsets =
@@ -481,8 +474,6 @@ public sealed class ReadOnlyDataContext
         SS2_NewDark_MAPPARAM_Offset,
         T2_OldDark_SKYOBJVAR_Offset,
         SS2_OldDark_MAPPARAM_Offset,
-        NewDark_SKYOBJVAR_Offset1,
-        NewDark_SKYOBJVAR_Offset2,
     };
 
     // ReSharper restore IdentifierTypo

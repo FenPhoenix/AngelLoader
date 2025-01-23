@@ -120,8 +120,6 @@ public sealed class Scanner : IDisposable
         new byte[SS2_NewDark_MAPPARAM_Offset],
         new byte[T2_OldDark_SKYOBJVAR_Offset],
         new byte[SS2_OldDark_MAPPARAM_Offset],
-        new byte[NewDark_SKYOBJVAR_Offset1],
-        new byte[NewDark_SKYOBJVAR_Offset2],
     };
 
     // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
@@ -1668,42 +1666,6 @@ public sealed class Scanner : IDisposable
                         {
                             entriesList.Add(solidEntry);
                         }
-                        /*
-                        @SharpCompress(.mis and gam file perf thoughts):
-                        -We extract all .mis files because we don't know which will be used until we read missflag.str.
-                         But we should see if there's some heuristic we could use. We could guess on a single .mis file
-                         to extract, and then if we're wrong we go back and extract what we know to be a used .mis file.
-                         If we could do something better than blind guess-and-hope, that would be good.
-
-                        @SharpCompress(.mis and gam file extracting tests):
-                        -With only blindly getting the first .mis file we find, it's ~18.5s
-                        -With getting only .mis files but not .gam files, it's ~22s
-                        -With getting all .mis and .gam files, it's ~22.3s
-
-                        So if we're somehow able to only get the first .mis file, we come out noticeably ahead,
-                        at least for the full scan.
-
-                        -Many unused .mis files are ~177KB (180745, 180749, 181428 and similar)
-                        -Many, but not all, unused .mis files are extremely smaller than the other ones, <1MB
-                        -But at least one is 12MB so whatever
-                        -Checking the miss** dirs in the intrface dir is a good heuristic, but not perfect
-                         (TM20AC_TPOAIR.zip has an "unused" miss20.mis but it has an intrface subdir)
-                         But also, that "unused" miss20.mis is still valid and correct, containing "RopeyArrow",
-                         and "SKYOBJVAR" is at the expected NewDark place
-                        -We should create 7z files from the known unused-mis-containing zip set to test accuracy
-                         with.
-                        It's nasty business, but 22.3 to 18.5 is a good savings if we can do it...
-                        -UPDATE 2023/3/26:
-                         The intrface miss** dir heuristic is not good after all, there's tons of FMs with valid
-                         mis files that don't have a matching intrface subdir.
-                        -UPDATE 2024/2/6:
-                         Turns out DarkLoader actually just uses the first .mis file and doesn't check it for
-                         used or anything. I completely misunderstood and wrongly assumed right from the start.
-                         In fact, that's probably why unused .mis files exist: Authors probably put a small dummy
-                         .mis file as the first one so that DarkLoader would scan it and be faster than scanning
-                         the real, larger one. So, I could just take the first one and all would be fine...
-                         Unless some newer missions are depending on our previous behavior...
-                        */
                         else if (fn.IsBaseDirMisOrGamFile())
                         {
                             // We always need to know about mis files to get the used ones for the titles.str
@@ -2279,12 +2241,11 @@ public sealed class Scanner : IDisposable
 
         if (!fmIsT3)
         {
-            #region NewDark/GameType checks
+            #region Game type checks
 
             if (_scanOptions.ScanGameType)
             {
-                Game game = GetGameTypeAndEngine();
-                fmData.Game = game;
+                fmData.Game = GetGameType();
                 if (fmData.Game == Game.Unsupported)
                 {
                     return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
@@ -2430,8 +2391,8 @@ public sealed class Scanner : IDisposable
 
             if (_scanOptions.ScanTags)
             {
-                var getLangs = GetLanguages();
-                if (getLangs.Langs > Language.Default) SetLangTags(fmData, getLangs.Langs, getLangs.EnglishIsUncertain);
+                (Language langs, bool englishIsUncertain) = GetLanguages();
+                if (langs > Language.Default) SetLangTags(fmData, langs, englishIsUncertain);
             }
 
             #endregion
@@ -3909,12 +3870,9 @@ public sealed class Scanner : IDisposable
         }
 
         /*
-           Notes:
-            - fm.ini can specify a readme file, but it may not be the one we're looking for, as far as
-              detecting values goes. Reading all .txt and .rtf files is slightly slower but more accurate.
-
-            - Although fm.ini wasn't used before NewDark, its presence doesn't necessarily mean the mission
-              is NewDark-only. Sturmdrang Peak has it but doesn't require NewDark, for instance.
+        Notes:
+        -fm.ini can specify a readme file, but it may not be the one we're looking for, as far as
+         detecting values goes. Reading all .txt and .rtf files is slightly slower but more accurate.
         */
 
         return ret;
@@ -5337,7 +5295,7 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
-    private Game GetGameTypeAndEngine()
+    private Game GetGameType()
     {
         Game game = Game.Null;
 
@@ -5452,7 +5410,7 @@ public sealed class Scanner : IDisposable
             misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
         }
 
-        #region Check for SKYOBJVAR in .mis (determines OldDark/NewDark; determines game type for OldDark)
+        #region Check for SKYOBJVAR in .mis (determines game type for OldDark)
 
         /*
         SKYOBJVAR location key (byte position in file):
@@ -5466,7 +5424,6 @@ public sealed class Scanner : IDisposable
         or 7292.
         System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
         696 = NewDark, 916 = OldDark.
-        (but we don't detect OldDark/NewDark for SS2 yet, see below)
 
         * We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky
           location, and it's faster and more reliable to simply carry on with the secondary check than to
@@ -5475,8 +5432,6 @@ public sealed class Scanner : IDisposable
         For folder scans, we can seek to these positions directly, but for zip scans, we have to read
         through the stream sequentially until we hit each one.
         */
-
-        bool foundAtOldDarkThief2Location = false;
 
         // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
         // string size
@@ -5509,12 +5464,6 @@ public sealed class Scanner : IDisposable
 
             for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
-                if ((_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                     _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2))
-                {
-                    break;
-                }
-
                 byte[] buffer;
 
                 if (_fmFormat.IsStreamableArchive())
@@ -5536,39 +5485,12 @@ public sealed class Scanner : IDisposable
                      _ctx.GameDetect_KeyPhraseLocations[i] == SS2_OldDark_MAPPARAM_Location) &&
                     EndsWithMAPPARAM(buffer))
                 {
-                    /*
-                    TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
-                    How to detect NewDark/OldDark for SS2:
-                    If MAPPARAM is at either OldDark location or NewDark location, then loop through all
-                    .mis files and check for MAPPARAM at NewDark location in each. If any found at NewDark
-                    location, we're NewDark. Unfortunately we have to do that because SS2 missions sometimes
-                    combine OldDark and NewDark .mis files.
-                    So we're leaving this disabled for now because adding a .mis read loop in here would be
-                    a pain, but there's how we would add it.
-                    Also, we can detect NewDark for T1/T2 by checking for DARKMISS at byte 612 if we wanted
-                    (DARKMISS at byte 612 = NewDark) although our SKYOBJVAR position checking method works
-                    fine currently.
-                    SS2 .mis files don't have DARKMISS in them at all.
-                    */
                     return Game.SS2;
                 }
-                else if ((_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location ||
-                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2) &&
+                else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location &&
                          EndsWithSKYOBJVAR(buffer))
                 {
-                    // Zip reading is going to check the NewDark locations the other way round, but fortunately
-                    // they're interchangeable in meaning so we don't have to do anything
-                    if (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                        _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2)
-                    {
-                        break;
-                    }
-                    else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location)
-                    {
-                        foundAtOldDarkThief2Location = true;
-                        break;
-                    }
+                    return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
                 }
             }
         }
@@ -5578,11 +5500,6 @@ public sealed class Scanner : IDisposable
         }
 
         #endregion
-
-        if (foundAtOldDarkThief2Location)
-        {
-            return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
-        }
 
         GamPath:
 
