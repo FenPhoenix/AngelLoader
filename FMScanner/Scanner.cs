@@ -3201,57 +3201,6 @@ public sealed class Scanner : IDisposable
 
         bool t3Found = false;
 
-        static bool MapFileExists(string path)
-        {
-            int lsi;
-            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                   path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
-                   (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
-                   (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
-                   (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
-                   (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
-                   (path[lsi + 5] == '0') &&
-                   path.LastIndexOf('.') > lsi;
-        }
-
-        static bool AutomapFileExists(string path)
-        {
-            int len = path.Length;
-            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
-                   // We don't need to check the length because we only need length == 6 but by virtue of
-                   // starting with "intrface/", our length is guaranteed to be at least 9
-                   (path[len - 6] == 'r' || path[len - 6] == 'R') &&
-                   (path[len - 5] == 'a' || path[len - 5] == 'A') &&
-                   path[len - 4] == '.' &&
-                   (path[len - 3] == 'b' || path[len - 3] == 'B') &&
-                   (path[len - 2] == 'i' || path[len - 2] == 'I') &&
-                   (path[len - 1] == 'n' || path[len - 1] == 'N');
-        }
-
-        static bool FileExtensionFound(string fn, string[] extensions)
-        {
-            foreach (string extension in extensions)
-            {
-                if (Utility.EndsWithI_Local(fn.AsSpan(), extension))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        static bool BaseDirScriptFileExtensions(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
-        {
-            for (int i = 0; i < baseDirFiles.Count; i++)
-            {
-                if (scriptFileExtensions.ContainsI(Path.GetExtension(baseDirFiles[i].Name)))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
             int filesCount = _fmFormat switch
@@ -3702,6 +3651,61 @@ public sealed class Scanner : IDisposable
         #endregion
 
         return true;
+
+        #region Local functions
+
+        static bool MapFileExists(string path)
+        {
+            int lsi;
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                   path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
+                   (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
+                   (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
+                   (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
+                   (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
+                   (path[lsi + 5] == '0') &&
+                   path.LastIndexOf('.') > lsi;
+        }
+
+        static bool AutomapFileExists(string path)
+        {
+            int len = path.Length;
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceSLen) &&
+                   // We don't need to check the length because we only need length == 6 but by virtue of
+                   // starting with "intrface/", our length is guaranteed to be at least 9
+                   (path[len - 6] == 'r' || path[len - 6] == 'R') &&
+                   (path[len - 5] == 'a' || path[len - 5] == 'A') &&
+                   path[len - 4] == '.' &&
+                   (path[len - 3] == 'b' || path[len - 3] == 'B') &&
+                   (path[len - 2] == 'i' || path[len - 2] == 'I') &&
+                   (path[len - 1] == 'n' || path[len - 1] == 'N');
+        }
+
+        static bool FileExtensionFound(string fn, string[] extensions)
+        {
+            foreach (string extension in extensions)
+            {
+                if (Utility.EndsWithI_Local(fn.AsSpan(), extension))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool BaseDirScriptFileExtensions(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
+        {
+            for (int i = 0; i < baseDirFiles.Count; i++)
+            {
+                if (scriptFileExtensions.ContainsI(Path.GetExtension(baseDirFiles[i].Name)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        #endregion
     }
 
     private static void CacheUsedMisFiles(
