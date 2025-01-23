@@ -449,7 +449,7 @@ public sealed class ReadOnlyDataContext
     internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
     internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
 
-    internal const ulong OBJ_MAP_First = 0x50414D5F4A424F00;
+    internal const ulong OBJ_MAP_First = 0x0050414D5F4A424F;
     internal const uint OBJ_MAP_Second = 0x00000000;
 
     internal const ulong SymName_First = 0x6D614E6D79532450;
