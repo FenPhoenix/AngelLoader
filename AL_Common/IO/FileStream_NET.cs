@@ -220,7 +220,7 @@ public sealed class FileStream_NET : Stream
         }
     }
 
-    /// <summary>Gets or sets the position within the current stream</summary>
+    /// <summary>Gets or sets the position within the current stream.</summary>
     public override long Position
     {
         get
