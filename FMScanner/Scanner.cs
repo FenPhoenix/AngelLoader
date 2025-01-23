@@ -5295,123 +5295,126 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
+    #region Game type
+
     private Game GetGameType()
     {
-        Game game = Game.Null;
-
-        #region Choose smallest .gam file
-
-        static ZipArchiveFastEntry? GetSmallestGamEntry_Zip(ZipArchiveFast _archive, ListFast<NameAndIndex> _baseDirFiles)
-        {
-            int smallestSizeIndex = -1;
-            long smallestSize = long.MaxValue;
-            for (int i = 0; i < _baseDirFiles.Count; i++)
-            {
-                NameAndIndex item = _baseDirFiles[i];
-                if (item.Name.ExtIsGam())
-                {
-                    ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
-                    if (gamFile.Length <= smallestSize)
-                    {
-                        smallestSize = gamFile.Length;
-                        smallestSizeIndex = item.Index;
-                    }
-                }
-            }
-
-            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
-        }
-
-        static RarArchiveEntry? GetSmallestGamEntry_Rar(RarArchive _archive, ListFast<NameAndIndex> _baseDirFiles)
-        {
-            int smallestSizeIndex = -1;
-            long smallestSize = long.MaxValue;
-            for (int i = 0; i < _baseDirFiles.Count; i++)
-            {
-                NameAndIndex item = _baseDirFiles[i];
-                if (item.Name.ExtIsGam())
-                {
-                    RarArchiveEntry gamFile = _archive.Entries[item.Index];
-                    if (gamFile.Size <= smallestSize)
-                    {
-                        smallestSize = gamFile.Size;
-                        smallestSizeIndex = item.Index;
-                    }
-                }
-            }
-
-            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
-        }
-
-        #endregion
-
-        #region Choose smallest .mis file
-
-        NameAndIndex smallestUsedMisFile;
-        {
-            if (_solidMisFileToUse is { } solidMisFileToUse)
-            {
-                smallestUsedMisFile = solidMisFileToUse;
-            }
-            else if (_usedMisFiles.Count == 1)
-            {
-                smallestUsedMisFile = _usedMisFiles[0];
-            }
-            // We know we have at least 1 used mis file at this point because we early-return way before this if
-            // we don't
-            else
-            {
-                int smallestSizeIndex = -1;
-                long smallestSize = long.MaxValue;
-                for (int i = 0; i < _usedMisFiles.Count; i++)
-                {
-                    NameAndIndex mis = _usedMisFiles[i];
-                    long length = _fmFormat == FMFormat.Zip
-                        ? _archive.Entries[mis.Index].Length
-                        : _fmFormat == FMFormat.Rar
-                            ? _rarArchive.Entries[mis.Index].Size
-                            : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
-                                ? _fmDirFileInfos[mis.Index].Length
-                                : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
-
-                    if (length <= smallestSize)
-                    {
-                        smallestSize = length;
-                        smallestSizeIndex = i;
-                    }
-                }
-
-                smallestUsedMisFile = _usedMisFiles[smallestSizeIndex];
-            }
-        }
-
-        #endregion
-
+        Game game;
         ZipArchiveFastEntry misFileZipEntry = null!;
         RarArchiveEntry misFileRarEntry = null!;
         string misFileOnDisk = "";
 
-        if (_solidGamFileToUse != null)
+        if (_solidGamFileToUse == null)
         {
-            // @BLOCKS: Just to get it working in a quick-n-dirty way...
-            goto GamPath;
+            NameAndIndex smallestUsedMisFile = GetSmallestMisFile();
+            if (_fmFormat == FMFormat.Zip)
+            {
+                misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
+            }
+            else if (_fmFormat == FMFormat.Rar)
+            {
+                misFileRarEntry = _rarArchive.Entries[smallestUsedMisFile.Index];
+            }
+            else
+            {
+                misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
+            }
+
+            game = GameType_DoQuickCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+            if (game != Game.Null) return game;
         }
 
-        if (_fmFormat == FMFormat.Zip)
+        game = GameType_DoMainCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+        if (game != Game.Null) return game;
+
+        game = GameType_DoSS2FallbackCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+        if (game != Game.Null) return game;
+
+        return Game.Thief1;
+    }
+
+    private NameAndIndex GetSmallestMisFile()
+    {
+        if (_solidMisFileToUse is { } solidMisFileToUse)
         {
-            misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
+            return solidMisFileToUse;
         }
-        else if (_fmFormat == FMFormat.Rar)
+        else if (_usedMisFiles.Count == 1)
         {
-            misFileRarEntry = _rarArchive.Entries[smallestUsedMisFile.Index];
+            return _usedMisFiles[0];
         }
+        // We know we have at least 1 used mis file at this point because we early-return way before this if
+        // we don't
         else
         {
-            misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
+            int smallestSizeIndex = -1;
+            long smallestSize = long.MaxValue;
+            for (int i = 0; i < _usedMisFiles.Count; i++)
+            {
+                NameAndIndex mis = _usedMisFiles[i];
+                long length = _fmFormat == FMFormat.Zip
+                    ? _archive.Entries[mis.Index].Length
+                    : _fmFormat == FMFormat.Rar
+                        ? _rarArchive.Entries[mis.Index].Size
+                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
+                            ? _fmDirFileInfos[mis.Index].Length
+                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
+
+                if (length <= smallestSize)
+                {
+                    smallestSize = length;
+                    smallestSizeIndex = i;
+                }
+            }
+
+            return _usedMisFiles[smallestSizeIndex];
+        }
+    }
+
+    private ZipArchiveFastEntry? GetSmallestGamEntry_Zip()
+    {
+        int smallestSizeIndex = -1;
+        long smallestSize = long.MaxValue;
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            NameAndIndex item = _baseDirFiles[i];
+            if (item.Name.ExtIsGam())
+            {
+                ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
+                if (gamFile.Length <= smallestSize)
+                {
+                    smallestSize = gamFile.Length;
+                    smallestSizeIndex = item.Index;
+                }
+            }
         }
 
-        #region Check for SKYOBJVAR in .mis (determines game type for OldDark)
+        return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
+    }
 
+    private RarArchiveEntry? GetSmallestGamEntry_Rar()
+    {
+        int smallestSizeIndex = -1;
+        long smallestSize = long.MaxValue;
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            NameAndIndex item = _baseDirFiles[i];
+            if (item.Name.ExtIsGam())
+            {
+                RarArchiveEntry gamFile = _rarArchive.Entries[item.Index];
+                if (gamFile.Size <= smallestSize)
+                {
+                    smallestSize = gamFile.Size;
+                    smallestSizeIndex = item.Index;
+                }
+            }
+        }
+
+        return smallestSizeIndex == -1 ? null : _rarArchive.Entries[smallestSizeIndex];
+    }
+
+    private Game GameType_DoQuickCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    {
         /*
         SKYOBJVAR location key (byte position in file):
             No SKYOBJVAR           - OldDark Thief 1/G
@@ -5432,25 +5435,6 @@ public sealed class Scanner : IDisposable
         For folder scans, we can seek to these positions directly, but for zip scans, we have to read
         through the stream sequentially until we hit each one.
         */
-
-        // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
-        // string size
-        static bool EndsWithSKYOBJVAR(byte[] buffer)
-        {
-            const ulong SKYOBJVA_ULong = 0x41564A424F594B53;
-
-            int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == SKYOBJVA_ULong &&
-                   buffer[len - 1] == (byte)'R';
-        }
-
-        static bool EndsWithMAPPARAM(byte[] buffer)
-        {
-            const ulong MAPPARAM_ULong = 0x4D4152415050414D;
-
-            int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
-        }
 
         Stream? misStream = null;
         try
@@ -5490,57 +5474,39 @@ public sealed class Scanner : IDisposable
                 else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location &&
                          EndsWithSKYOBJVAR(buffer))
                 {
-                    return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
+                    return Game.Thief2;
                 }
             }
+
+            return Game.Null;
         }
         finally
         {
             misStream?.Dispose();
         }
 
-        #endregion
-
-        GamPath:
-
-        #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
-
-        static bool StreamContainsIdentString(
-            Stream stream,
-            byte[] identString,
-            byte[] chunk,
-            int bufferSize)
+        // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
+        // string size
+        static bool EndsWithSKYOBJVAR(byte[] buffer)
         {
-            // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
-            // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
-            // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
-            int boundaryLen = identString.Length;
+            const ulong SKYOBJVA_ULong = 0x41564A424F594B53;
 
-            chunk.Clear();
-
-            int bytesRead;
-            while ((bytesRead = stream.ReadAll(chunk, boundaryLen, bufferSize)) != 0)
-            {
-                // Zero out all bytes after the end of the read data if there are any, in the ludicrously
-                // unlikely case that the end of this read data combines with the data that was already in
-                // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
-                if (bytesRead < bufferSize)
-                {
-                    Array.Clear(chunk, boundaryLen + bytesRead, bufferSize - (boundaryLen + bytesRead));
-                }
-
-                if (chunk.Contains(identString)) return true;
-
-                // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++)
-                {
-                    chunk[si] = chunk[ei];
-                }
-            }
-
-            return false;
+            int len = buffer.Length;
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == SKYOBJVA_ULong &&
+                   buffer[len - 1] == (byte)'R';
         }
 
+        static bool EndsWithMAPPARAM(byte[] buffer)
+        {
+            const ulong MAPPARAM_ULong = 0x4D4152415050414D;
+
+            int len = buffer.Length;
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
+        }
+    }
+
+    private Game GameType_DoMainCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    {
         if (_fmFormat.IsStreamableArchive() || _solidGamFileToUse != null)
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
@@ -5552,46 +5518,25 @@ public sealed class Scanner : IDisposable
                       _solidGamFileToUse != null
                     ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
                     : _fmFormat == FMFormat.Zip
-                    ? _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry)
-                    : (GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles) ?? misFileRarEntry).OpenEntryStream();
+                    ? _archive.OpenEntry(GetSmallestGamEntry_Zip() ?? misFileZipEntry)
+                    : (GetSmallestGamEntry_Rar() ?? misFileRarEntry).OpenEntryStream();
 
                 if (_solidGamFileToUse != null)
                 {
                     if (GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
                         GAMEPARAM_At_Location(stream, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
                     {
-                        game = Game.SS2;
-                    }
-
-                    static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
-                    {
-                        if (stream.Length > location + _gameDetectStringBufferLength)
-                        {
-                            stream.Position = location;
-                            int bytesRead = stream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
-                            if (bytesRead == _gameDetectStringBufferLength)
-                            {
-                                const ulong GAMEPARA_Ulong = 0x41524150454D4147;
-
-                                return Unsafe.ReadUnaligned<ulong>(ref buffer[0]) == GAMEPARA_Ulong &&
-                                       buffer[^1] == (byte)'M';
-                            }
-                        }
-
-                        return false;
+                        return Game.SS2;
                     }
                 }
 
-                if (game != Game.SS2)
-                {
-                    game = StreamContainsIdentString(
-                        stream,
-                        _ctx.RopeyArrow,
-                        GameTypeBuffer_ChunkPlusRopeyArrow,
-                        _gameTypeBufferSize)
-                        ? Game.Thief2
-                        : Game.Thief1;
-                }
+                return GameType_StreamContainsIdentString(
+                    stream,
+                    _ctx.RopeyArrow,
+                    GameTypeBuffer_ChunkPlusRopeyArrow,
+                    _gameTypeBufferSize)
+                    ? Game.Thief2
+                    : Game.Null;
             }
             finally
             {
@@ -5626,22 +5571,40 @@ public sealed class Scanner : IDisposable
                 try
                 {
                     int objMapBytesRead = fs.ReadAll(content, 0, length);
-                    game = content.Contains(_ctx.RopeyArrow, objMapBytesRead)
+                    return content.Contains(_ctx.RopeyArrow, objMapBytesRead)
                         ? Game.Thief2
-                        : Game.Thief1;
+                        : Game.Null;
                 }
                 finally
                 {
                     _sevenZipContext.ByteArrayPool.Return(content);
                 }
-                break;
             }
         }
 
-        #endregion
+        return Game.Null;
 
-        #region SS2 slow-detect fallback
+        static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
+        {
+            if (stream.Length > location + _gameDetectStringBufferLength)
+            {
+                stream.Position = location;
+                int bytesRead = stream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
+                if (bytesRead == _gameDetectStringBufferLength)
+                {
+                    const ulong GAMEPARA_Ulong = 0x41524150454D4147;
 
+                    return Unsafe.ReadUnaligned<ulong>(ref buffer[0]) == GAMEPARA_Ulong &&
+                           buffer[^1] == (byte)'M';
+                }
+            }
+
+            return false;
+        }
+    }
+
+    private Game GameType_DoSS2FallbackCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    {
         /*
         Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
         NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted it
@@ -5653,21 +5616,8 @@ public sealed class Scanner : IDisposable
         string location into account.
         */
 
-        static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)
-        {
-            for (int mfI = 0; mfI < misFiles.Count; mfI++)
-            {
-                if (ss2MisFiles.Contains(misFiles[mfI].Name))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if (game == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+        if ((_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
         {
             using Stream stream =
                   _solidGamFileToUse != null
@@ -5683,20 +5633,69 @@ public sealed class Scanner : IDisposable
                     ? (_ctx.GAMEPARAM, GameTypeBuffer_ChunkPlusGAMEPARAM)
                     : (MAPPARAM, GameTypeBuffer_ChunkPlusMAPPARAM);
 
-            if (StreamContainsIdentString(
+            if (GameType_StreamContainsIdentString(
                     stream,
                     identifier,
                     buffer,
                     _gameTypeBufferSize))
             {
-                game = Game.SS2;
+                return Game.SS2;
             }
         }
 
-        #endregion
+        return Game.Null;
 
-        return game;
+        static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)
+        {
+            for (int mfI = 0; mfI < misFiles.Count; mfI++)
+            {
+                if (ss2MisFiles.Contains(misFiles[mfI].Name))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
+
+    private static bool GameType_StreamContainsIdentString(
+        Stream stream,
+        byte[] identString,
+        byte[] chunk,
+        int bufferSize)
+    {
+        // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+        // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+        // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+        int boundaryLen = identString.Length;
+
+        chunk.Clear();
+
+        int bytesRead;
+        while ((bytesRead = stream.ReadAll(chunk, boundaryLen, bufferSize)) != 0)
+        {
+            // Zero out all bytes after the end of the read data if there are any, in the ludicrously
+            // unlikely case that the end of this read data combines with the data that was already in
+            // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
+            if (bytesRead < bufferSize)
+            {
+                Array.Clear(chunk, boundaryLen + bytesRead, bufferSize - (boundaryLen + bytesRead));
+            }
+
+            if (chunk.Contains(identString)) return true;
+
+            // Copy the last boundaryLen bytes from chunk and put them at the beginning
+            for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++)
+            {
+                chunk[si] = chunk[ei];
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
 
     private void DeleteFMWorkingPath()
     {
