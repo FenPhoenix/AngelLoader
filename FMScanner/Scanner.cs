@@ -1949,11 +1949,8 @@ public sealed class Scanner : IDisposable
         sevenZipSize = 0;
 
         /*
-        Rather than extracting everything, we only extract files we might need. We may still end up
-        extracting more than we need, but it's WAY less than just dumbly doing the whole thing. Over
-        my limited set of 45 7z files, this makes us about 4x faster on average. Certain individual
-        FMs may still be about as slow depending on their structure and content, but meh. Improvement
-        is improvement.
+        We try to extract the absolute minimum, but if we can't determine for sure if our extraction cost is
+        acceptable, then we fall back to the older method of extracting everything we might possibly need.
 
         IMPORTANT(Scanner partial solid archive extract):
         The logic for deciding which files to extract (taking files and then de-duping the list) needs
@@ -3194,6 +3191,8 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    // @BLOCKS: Could we merge the solid-extract loop into here, and just extract in between the main loop and
+    //  the missflag read?
     private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
     {
         t3MisCount = 0;
