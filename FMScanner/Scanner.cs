@@ -5528,6 +5528,8 @@ public sealed class Scanner : IDisposable
                     {
                         return Game.SS2;
                     }
+
+                    stream.Position = 0;
                 }
 
                 return GameType_StreamContainsIdentString(
