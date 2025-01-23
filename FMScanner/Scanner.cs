@@ -56,6 +56,24 @@ using static FMScanner.ReadOnlyDataContext;
 
 namespace FMScanner;
 
+internal enum FMFormat
+{
+    NotInArchive,
+    Zip,
+    SevenZip,
+    Rar,
+    RarSolid,
+}
+
+file static class FMFormatExtensions
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsStreamableArchive(this FMFormat fmFormat) => fmFormat is FMFormat.Zip or FMFormat.Rar;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsSolidArchive(this FMFormat fmFormat) => fmFormat is FMFormat.SevenZip or FMFormat.RarSolid;
+}
+
 public sealed class Scanner : IDisposable
 {
     // Only safe to enable during single-threaded scans, otherwise all threads will hammer on this!
@@ -121,7 +139,8 @@ public sealed class Scanner : IDisposable
     private const int _gameDetectStringBufferLength = 9;
     private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
 
-    // ReSharper restore IdentifierTypo
+    private byte[]? _streamCopyBuffer;
+    private byte[] StreamCopyBuffer => _streamCopyBuffer ??= new byte[81920];
 
     #endregion
 
@@ -165,15 +184,6 @@ public sealed class Scanner : IDisposable
 
     private RtfToTextConverter? _rtfConverter;
     private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
-
-    private enum FMFormat
-    {
-        NotInArchive,
-        Zip,
-        SevenZip,
-        Rar,
-        RarSolid,
-    }
 
     private FMFormat _fmFormat = FMFormat.NotInArchive;
 
@@ -1518,30 +1528,6 @@ public sealed class Scanner : IDisposable
         return (true, null, ret);
     }
 
-    private void GetAuthor(ScannedFMData fmData, ListFast<string> titles)
-    {
-        if (fmData.Author.IsEmpty())
-        {
-            ListFast<string>? passTitles = titles.Count > 0 ? titles : null;
-            string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
-            fmData.Author = CleanupValue(author).Trim();
-        }
-
-        if (!fmData.Author.IsEmpty())
-        {
-            Match match = _ctx.AuthorEmailRegex.Match(fmData.Author);
-            if (match.Success)
-            {
-                fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
-            }
-
-            if (fmData.Author.StartsWithI_Local("By "))
-            {
-                fmData.Author = fmData.Author.Substring(2).Trim();
-            }
-        }
-    }
-
     private readonly struct SolidEntry
     {
         internal readonly string FullName;
@@ -1595,7 +1581,7 @@ public sealed class Scanner : IDisposable
 
         bool needsHtmlRefExtract = false;
 
-        if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
+        if (_fmFormat.IsSolidArchive())
         {
             #region Partial solid archive extract
 
@@ -2928,8 +2914,7 @@ public sealed class Scanner : IDisposable
                     misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
                         scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
-                else if (scanner._fmFormat == FMFormat.SevenZip ||
-                         scanner._fmFormat == FMFormat.RarSolid ||
+                else if (scanner._fmFormat.IsSolidArchive() ||
                          scanner._fmDirFileInfos.Count > 0)
                 {
                     misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
@@ -3395,13 +3380,11 @@ public sealed class Scanner : IDisposable
                 bool? pathIsCutscenes = null;
                 bool? pathIsSnd2 = null;
 
-                string fn = _fmFormat switch
-                {
-                    FMFormat.Zip => _archive.Entries[i].FullName,
-                    FMFormat.SevenZip or FMFormat.RarSolid => _fmDirFileInfos[i].FullName,
-                    FMFormat.Rar => _rarArchive.Entries[i].Key,
-                    _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length),
-                };
+                string fn =
+                    _fmFormat == FMFormat.Zip ? _archive.Entries[i].FullName :
+                    _fmFormat.IsSolidArchive() ? _fmDirFileInfos[i].FullName :
+                    _fmFormat == FMFormat.Rar ? _rarArchive.Entries[i].Key :
+                    _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
                 if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3DetectS) &&
                     fn.Rel_CountDirSeps(FMDirs.T3DetectSLen) == 0)
@@ -4347,7 +4330,7 @@ public sealed class Scanner : IDisposable
                     rtfBytesRead = readmeStream.ReadAll(_rtfHeaderBuffer, 0, rtfHeaderBytesLength);
                 }
 
-                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+                if (_fmFormat.IsStreamableArchive())
                 {
                     readmeStream.Dispose();
                 }
@@ -4416,26 +4399,6 @@ public sealed class Scanner : IDisposable
                 readmeStream?.Dispose();
             }
         }
-    }
-
-    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
-    {
-        _generalMemoryStream.SetLength(readmeFileLen);
-        _generalMemoryStream.Position = 0;
-        using Stream es = _archive.OpenEntry(readmeEntry);
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
-    }
-
-    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
-    {
-        _generalMemoryStream.SetLength(readmeFileLen);
-        _generalMemoryStream.Position = 0;
-        using Stream es = readmeEntry.OpenEntryStream();
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
     }
 
     private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, ListFast<string>? titles = null, ReadmeInternal? singleReadme = null)
@@ -5292,6 +5255,30 @@ public sealed class Scanner : IDisposable
 
     #region Author
 
+    private void GetAuthor(ScannedFMData fmData, ListFast<string> titles)
+    {
+        if (fmData.Author.IsEmpty())
+        {
+            ListFast<string>? passTitles = titles.Count > 0 ? titles : null;
+            string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
+            fmData.Author = CleanupValue(author).Trim();
+        }
+
+        if (!fmData.Author.IsEmpty())
+        {
+            Match match = _ctx.AuthorEmailRegex.Match(fmData.Author);
+            if (match.Success)
+            {
+                fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
+            }
+
+            if (fmData.Author.StartsWithI_Local("By "))
+            {
+                fmData.Author = fmData.Author.Substring(2).Trim();
+            }
+        }
+    }
+
     private string GetAuthorFromTopOfReadme(ListFast<string> lines, ListFast<string>? titles)
     {
         if (lines.Count == 0) return "";
@@ -5670,39 +5657,6 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
-#if X64
-    private Span<char> GetAsciiLowercaseSpan(string value)
-    {
-        /*
-        .NET Framework's string.IndexOf(OrdinalIgnoreCase) is slow, so let's do a horrific hack to speed it up
-        by 2.5-3x. We don't need any of this on modern .NET, as its string.IndexOf(OrdinalIgnoreCase) is bonkers
-        fast as usual.
-        */
-
-        char[] array = _charBuffer.GetArray((uint)value.Length);
-        Span<char> span = array.AsSpan(0, value.Length);
-        value.AsSpan().CopyTo(span);
-
-        /*
-        I thought for sure I'd have to vectorize the ASCII to-lower conversion to get any sort of performance
-        (which I couldn't figure out how to do anyway), but it turns out this dumbass scalar loop with a branch
-        inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase). Hey, I'll take it.
-        */
-        // Reverse for loop to eliminate bounds checking
-        for (int i = value.Length - 1; i >= 0; i--)
-        {
-            char c = array[i];
-            if (c.IsAsciiUpper())
-            {
-                c |= (char)0x20;
-                array[i] = c;
-            }
-        }
-
-        return span;
-    }
-#endif
-
 #if FMScanner_FullCode
     private (bool? NewDarkRequired, Game Game)
 #else
@@ -5899,7 +5853,7 @@ public sealed class Scanner : IDisposable
 
                 byte[] buffer;
 
-                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+                if (_fmFormat.IsStreamableArchive())
                 {
                     buffer = _zipOffsetBuffers[i];
                     int length = _ctx.GameDetect_KeyPhraseZipOffsets[i];
@@ -6031,7 +5985,7 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-        if ((_fmFormat is FMFormat.Zip or FMFormat.Rar) || _solidGamFileToUse != null)
+        if (_fmFormat.IsStreamableArchive() || _solidGamFileToUse != null)
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
@@ -6274,7 +6228,7 @@ public sealed class Scanner : IDisposable
         {
             // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
             // That means our working path is NOT temporary!!!
-            if ((_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid) &&
+            if (_fmFormat.IsSolidArchive() &&
                 !_fmWorkingPath.IsEmpty() &&
                 Directory.Exists(_fmWorkingPath))
             {
@@ -6331,13 +6285,6 @@ public sealed class Scanner : IDisposable
             Directory.Delete(directory, recursive: true);
         }
     }
-
-    #region Stream copy with buffer
-
-    private byte[]? _streamCopyBuffer;
-    private byte[] StreamCopyBuffer => _streamCopyBuffer ??= new byte[81920];
-
-    #endregion
 
     #region Generic dir/file functions
 
@@ -6541,7 +6488,7 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+        if (_fmFormat.IsStreamableArchive())
         {
             Stream? entryStream = null;
             try
@@ -6744,6 +6691,59 @@ public sealed class Scanner : IDisposable
         {
             return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
         }
+    }
+
+#if X64
+    private Span<char> GetAsciiLowercaseSpan(string value)
+    {
+        /*
+        .NET Framework's string.IndexOf(OrdinalIgnoreCase) is slow, so let's do a horrific hack to speed it up
+        by 2.5-3x. We don't need any of this on modern .NET, as its string.IndexOf(OrdinalIgnoreCase) is bonkers
+        fast as usual.
+        */
+
+        char[] array = _charBuffer.GetArray((uint)value.Length);
+        Span<char> span = array.AsSpan(0, value.Length);
+        value.AsSpan().CopyTo(span);
+
+        /*
+        I thought for sure I'd have to vectorize the ASCII to-lower conversion to get any sort of performance
+        (which I couldn't figure out how to do anyway), but it turns out this dumbass scalar loop with a branch
+        inside is still crazy fast compared to the old string.IndexOf(OrdinalIgnoreCase). Hey, I'll take it.
+        */
+        // Reverse for loop to eliminate bounds checking
+        for (int i = value.Length - 1; i >= 0; i--)
+        {
+            char c = array[i];
+            if (c.IsAsciiUpper())
+            {
+                c |= (char)0x20;
+                array[i] = c;
+            }
+        }
+
+        return span;
+    }
+#endif
+
+    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
+    {
+        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.Position = 0;
+        using Stream es = _archive.OpenEntry(readmeEntry);
+        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        _generalMemoryStream.Position = 0;
+        return _generalMemoryStream;
+    }
+
+    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
+    {
+        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.Position = 0;
+        using Stream es = readmeEntry.OpenEntryStream();
+        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
+        _generalMemoryStream.Position = 0;
+        return _generalMemoryStream;
     }
 
     #endregion
