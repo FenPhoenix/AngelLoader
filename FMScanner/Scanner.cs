@@ -1591,8 +1591,8 @@ public sealed class Scanner : IDisposable
 
                 static bool EndsWithTitleFile(SolidEntry fileName)
                 {
-                    return fileName.FullName.PathEndsWithI("/titles.str") ||
-                           fileName.FullName.PathEndsWithI("/title.str");
+                    return fileName.FullName.PathEndsWithI_AsciiSecond("/titles.str") ||
+                           fileName.FullName.PathEndsWithI_AsciiSecond("/title.str");
                 }
 
                 Directory.CreateDirectory(_fmWorkingPath);
@@ -1687,11 +1687,11 @@ public sealed class Scanner : IDisposable
                             entriesList.Add(solidEntry);
                         }
                         else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
-                                 fn.PathEndsWithI(FMFiles.SMissFlag))
+                                 fn.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
                         {
                             _solid_MissFlagFiles.Add(solidEntry);
                         }
-                        else if (fn.PathEndsWithI(FMFiles.SNewGameStr))
+                        else if (fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
                         {
                             entriesList.Add(solidEntry);
                         }
@@ -1759,7 +1759,7 @@ public sealed class Scanner : IDisposable
                     }
                 }
 
-                PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI(FMFiles.SMissFlag));
+                PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag));
 
                 // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
                 SolidEntry? missFlagToUse = null;
@@ -1788,7 +1788,7 @@ public sealed class Scanner : IDisposable
                     {
                         foreach (var item in tempList)
                         {
-                            if (item.FullName.PathEndsWithI(FMFiles.SMissFlag))
+                            if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
                             {
                                 missFlagToUse = item;
                                 break;
@@ -1802,7 +1802,7 @@ public sealed class Scanner : IDisposable
                     entriesList.Add(missFlagToUseNonNull);
                 }
 
-                PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI(FMFiles.SNewGameStr));
+                PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
 
                 SolidEntry? newGameStrToUse = null;
                 foreach (var item in tempList)
@@ -1829,7 +1829,7 @@ public sealed class Scanner : IDisposable
                     foreach (var item in tempList)
                     {
                         if (item.FullName.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                            item.FullName.PathEndsWithI(FMFiles.SNewGameStr))
+                            item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
                         {
                             newGameStrToUse = item;
                             break;
@@ -3301,10 +3301,10 @@ public sealed class Scanner : IDisposable
                 {
                     _stringsDirFiles.Add(new NameAndIndex(fn, i));
                     if (SS2FingerprintRequiredAndNotDone() &&
-                        (fn.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                         fn.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                        (fn.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint1) ||
+                         fn.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint2) ||
+                         fn.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint3) ||
+                         fn.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint4)))
                     {
                         _ss2Fingerprinted = true;
                     }
@@ -3472,10 +3472,10 @@ public sealed class Scanner : IDisposable
                 {
                     _stringsDirFiles.Add(new NameAndIndex(f.Substring(_fmWorkingPath.Length)));
                     if (SS2FingerprintRequiredAndNotDone() &&
-                        (f.PathEndsWithI(FMFiles.SS2Fingerprint1) ||
-                         f.PathEndsWithI(FMFiles.SS2Fingerprint2) ||
-                         f.PathEndsWithI(FMFiles.SS2Fingerprint3) ||
-                         f.PathEndsWithI(FMFiles.SS2Fingerprint4)))
+                        (f.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint1) ||
+                         f.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint2) ||
+                         f.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint3) ||
+                         f.PathEndsWithI_AsciiSecond(FMFiles.SS2Fingerprint4)))
                     {
                         _ss2Fingerprinted = true;
                     }
@@ -3656,7 +3656,7 @@ public sealed class Scanner : IDisposable
                     for (int i = 0; i < _stringsDirFiles.Count; i++)
                     {
                         NameAndIndex item = _stringsDirFiles[i];
-                        if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
+                        if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
                         {
                             missFlagFile = _stringsDirFiles[i];
                             break;
@@ -4559,7 +4559,7 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < _intrfaceDirFiles.Count; i++)
             {
                 NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathEndsWithI(FMFiles.SNewGameStr))
+                if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
                 {
                     newGameStrFileIndex = i;
                     break;

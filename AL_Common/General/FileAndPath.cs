@@ -391,6 +391,27 @@ public static partial class Common
         return true;
     }
 
+    /// <summary>
+    /// Path ends-with check ignoring case and directory separator differences. Only use if <paramref name="second"/> is ASCII.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool PathEndsWithI_AsciiSecond(this string first, string second)
+    {
+        if (first.Length < second.Length) return false;
+
+        for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
+        {
+            char fc = first[fi];
+            char sc = second[si];
+
+            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
+        }
+
+        return true;
+    }
+
     #region Disabled until needed
 
 #if false
