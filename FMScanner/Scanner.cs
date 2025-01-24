@@ -265,7 +265,7 @@ public sealed class Scanner : IDisposable
 
     #region Private classes
 
-    private readonly struct ArchiveEntry
+    private readonly ref struct ArchiveEntry
     {
         private readonly Scanner _scanner;
         private readonly ZipArchiveFastEntry _zipEntry = null!;
@@ -5120,40 +5120,31 @@ public sealed class Scanner : IDisposable
     private Game GetGameType()
     {
         Game game;
-        ZipArchiveFastEntry misFileZipEntry = null!;
-        RarArchiveEntry misFileRarEntry = null!;
+        ArchiveEntry entry = default;
         string misFileOnDisk = "";
 
         if (_solidGamFileToUse == null)
         {
             NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
-            if (_fmFormat == FMFormat.Zip)
-            {
-                misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
-            }
-            else if (_fmFormat == FMFormat.Rar)
-            {
-                misFileRarEntry = _rarArchive.Entries[smallestUsedMisFile.Index];
-            }
-            else
+            if (!TryGetArchiveEntry(smallestUsedMisFile, out entry))
             {
                 misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
             }
 
-            game = GameType_DoQuickCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+            game = GameType_DoQuickCheck(entry, misFileOnDisk);
             if (game != Game.Null) return game;
         }
 
-        game = GameType_DoMainCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+        game = GameType_DoMainCheck(entry, misFileOnDisk);
         if (game != Game.Null) return game;
 
-        game = GameType_DoSS2FallbackCheck(misFileZipEntry, misFileRarEntry, misFileOnDisk);
+        game = GameType_DoSS2FallbackCheck(entry, misFileOnDisk);
         if (game != Game.Null) return game;
 
         return Game.Thief1;
     }
 
-    private Game GameType_DoQuickCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    private Game GameType_DoQuickCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
     {
         /*
         SKYOBJVAR location key (byte position in file):
@@ -5179,12 +5170,9 @@ public sealed class Scanner : IDisposable
         Stream? misStream = null;
         try
         {
-            misStream = _fmFormat switch
-            {
-                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
-                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
-            };
+            misStream = _fmFormat.IsStreamableArchive()
+                ? misFileEntry.Open()
+                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
 
             for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
@@ -5245,16 +5233,16 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoMainCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    private Game GameType_DoMainCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
     {
         if (_fmFormat.IsStreamableArchive())
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            using Stream stream =
-                _fmFormat == FMFormat.Zip
-                    ? _archive.OpenEntry(GameType_GetSmallestGamEntry_Zip() ?? misFileZipEntry)
-                    : (GameType_GetSmallestGamEntry_Rar() ?? misFileRarEntry).OpenEntryStream();
+            ArchiveEntry entry = GameType_TryGetSmallestGamFileEntry(out ArchiveEntry gamFileEntry)
+                ? gamFileEntry
+                : misFileEntry;
+            using Stream stream = entry.Open();
 
             return GameType_StreamContainsIdentString(
                 stream,
@@ -5349,7 +5337,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoSS2FallbackCheck(ZipArchiveFastEntry misFileZipEntry, RarArchiveEntry misFileRarEntry, string misFileOnDisk)
+    private Game GameType_DoSS2FallbackCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
     {
         /*
         Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
@@ -5368,10 +5356,8 @@ public sealed class Scanner : IDisposable
             using Stream stream =
                   _solidGamFileToUse != null
                 ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
-                : _fmFormat == FMFormat.Zip
-                ? _archive.OpenEntry(misFileZipEntry)
-                : _fmFormat == FMFormat.Rar
-                ? misFileRarEntry.OpenEntryStream()
+                : _fmFormat.IsStreamableArchive()
+                ? misFileEntry.Open()
                 : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
 
             (byte[] identifier, byte[] buffer) =
@@ -5443,46 +5429,36 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private ZipArchiveFastEntry? GameType_GetSmallestGamEntry_Zip()
+    private bool GameType_TryGetSmallestGamFileEntry(out ArchiveEntry result)
     {
-        int smallestSizeIndex = -1;
+        bool found = false;
         long smallestSize = long.MaxValue;
+        ArchiveEntry smallest = default;
         for (int i = 0; i < _baseDirFiles.Count; i++)
         {
             NameAndIndex item = _baseDirFiles[i];
             if (item.Name.ExtIsGam())
             {
-                ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
-                if (gamFile.Length <= smallestSize)
+                TryGetArchiveEntry(item, out ArchiveEntry gamFile);
+                if (gamFile.UncompressedSize <= smallestSize)
                 {
-                    smallestSize = gamFile.Length;
-                    smallestSizeIndex = item.Index;
+                    found = true;
+                    smallestSize = gamFile.UncompressedSize;
+                    smallest = gamFile;
                 }
             }
         }
 
-        return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
-    }
-
-    private RarArchiveEntry? GameType_GetSmallestGamEntry_Rar()
-    {
-        int smallestSizeIndex = -1;
-        long smallestSize = long.MaxValue;
-        for (int i = 0; i < _baseDirFiles.Count; i++)
+        if (found)
         {
-            NameAndIndex item = _baseDirFiles[i];
-            if (item.Name.ExtIsGam())
-            {
-                RarArchiveEntry gamFile = _rarArchive.Entries[item.Index];
-                if (gamFile.Size <= smallestSize)
-                {
-                    smallestSize = gamFile.Size;
-                    smallestSizeIndex = item.Index;
-                }
-            }
+            result = smallest;
+            return true;
         }
-
-        return smallestSizeIndex == -1 ? null : _rarArchive.Entries[smallestSizeIndex];
+        else
+        {
+            result = default;
+            return false;
+        }
     }
 
     private static bool GameType_StreamContainsIdentString(
