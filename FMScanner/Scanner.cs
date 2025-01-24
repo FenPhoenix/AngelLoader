@@ -265,6 +265,71 @@ public sealed class Scanner : IDisposable
 
     #region Private classes
 
+    private readonly struct ArchiveEntry
+    {
+        private readonly Scanner _scanner;
+        private readonly ZipArchiveFastEntry _zipEntry = null!;
+        private readonly RarArchiveEntry _rarEntry = null!;
+
+        public ArchiveEntry(Scanner scanner, ZipArchiveFastEntry entry)
+        {
+            _scanner = scanner;
+            _zipEntry = entry;
+            _rarEntry = null!;
+            LastModifiedDateRaw = entry.LastWriteTime;
+        }
+
+        public ArchiveEntry(Scanner scanner, RarArchiveEntry entry)
+        {
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = entry;
+            LastModifiedDate = entry.LastModifiedTime ?? DateTime.MinValue;
+        }
+
+        internal Stream Open() =>
+            _zipEntry != null!
+                ? _scanner._archive.OpenEntry(_zipEntry)
+                : _rarEntry.OpenEntryStream();
+
+        internal Stream ReturnGlobalMemoryStreamWithSeekableEntryData()
+        {
+            return _scanner.CreateSeekableStreamFromArchiveEntry(this, (int)UncompressedSize);
+        }
+
+        internal string FullName
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _zipEntry != null! ? _zipEntry.FullName : _rarEntry.Key;
+        }
+
+        internal long UncompressedSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _zipEntry != null! ? _zipEntry.Length : _rarEntry.Size;
+        }
+
+        internal readonly uint LastModifiedDateRaw;
+
+        internal readonly DateTime LastModifiedDate;
+    }
+
+    private bool TryGetArchiveEntry(NameAndIndex item, out ArchiveEntry archiveEntry)
+    {
+        switch (_fmFormat)
+        {
+            case FMFormat.Zip:
+                archiveEntry = new ArchiveEntry(this, _archive.Entries[item.Index]);
+                return true;
+            case FMFormat.Rar:
+                archiveEntry = new ArchiveEntry(this, _rarArchive.Entries[item.Index]);
+                return true;
+            default:
+                archiveEntry = default;
+                return false;
+        }
+    }
+
 #if X64
     private sealed class FileNameCharBuffer
     {
@@ -3716,29 +3781,17 @@ public sealed class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            ZipArchiveFastEntry? zipReadmeEntry = null;
-            RarArchiveEntry? rarReadmeEntry = null;
-
             int readmeFileLen;
             string readmeFileOnDisk = "";
             bool isGlml;
             DateTime? lastModifiedDate = null;
 
-            if (_fmFormat == FMFormat.Zip)
+            if (TryGetArchiveEntry(readmeFile, out ArchiveEntry readmeEntry))
             {
-                zipReadmeEntry = _archive.Entries[readmeFile.Index];
-                readmeFileLen = (int)zipReadmeEntry.Length;
+                readmeFileLen = (int)readmeEntry.UncompressedSize;
                 if (readmeFileLen == 0) continue;
 
-                isGlml = zipReadmeEntry.FullName.ExtIsGlml();
-            }
-            else if (_fmFormat == FMFormat.Rar)
-            {
-                rarReadmeEntry = _rarArchive.Entries[readmeFile.Index];
-                readmeFileLen = (int)rarReadmeEntry.Size;
-                if (readmeFileLen == 0) continue;
-
-                isGlml = rarReadmeEntry.Key.ExtIsGlml();
+                isGlml = readmeEntry.FullName.ExtIsGlml();
             }
             else
             {
@@ -3798,12 +3851,13 @@ public sealed class Scanner : IDisposable
 
             // We still add the readme even if we're not going to store nor scan its contents, because we still
             // may need to look at its last modified date.
+            // @BLOCKS: Explicit archive type switch here, due to difficulty with date raw/not-raw optimization
             if (_fmFormat == FMFormat.Zip)
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
                     isGlml: isGlml,
-                    lastModifiedDateRaw: zipReadmeEntry!.LastWriteTime,
+                    lastModifiedDateRaw: readmeEntry.LastModifiedDateRaw,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -3813,7 +3867,7 @@ public sealed class Scanner : IDisposable
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
                     isGlml: isGlml,
-                    lastModifiedDate: rarReadmeEntry!.LastModifiedTime ?? DateTime.MinValue,
+                    lastModifiedDate: readmeEntry.LastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -3836,12 +3890,9 @@ public sealed class Scanner : IDisposable
             {
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                readmeStream = _fmFormat switch
-                {
-                    FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
-                    FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
-                    _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer),
-                };
+                readmeStream = _fmFormat.IsStreamableArchive()
+                    ? readmeEntry.Open()
+                    : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
 
                 int rtfHeaderBytesLength = RTFHeaderBytes.Length;
 
@@ -3863,13 +3914,9 @@ public sealed class Scanner : IDisposable
                 bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
-                    if (_fmFormat == FMFormat.Zip)
+                    if (_fmFormat.IsStreamableArchive())
                     {
-                        readmeStream = _archive.OpenEntry(zipReadmeEntry!);
-                    }
-                    else if (_fmFormat == FMFormat.Rar)
-                    {
-                        readmeStream = rarReadmeEntry!.OpenEntryStream();
+                        readmeStream = readmeEntry.Open();
                     }
 
                     // @MEM(RTF pooled byte arrays): This pool barely helps us
@@ -3894,22 +3941,16 @@ public sealed class Scanner : IDisposable
                 {
                     if (last.IsGlml)
                     {
-                        using Stream stream = _fmFormat switch
-                        {
-                            FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
-                            FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
-                            _ => readmeStream,
-                        };
+                        using Stream stream = _fmFormat.IsStreamableArchive()
+                            ? readmeEntry.Open()
+                            : readmeStream;
                         last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
                     }
                     else
                     {
-                        Stream stream = _fmFormat switch
-                        {
-                            FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
-                            FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
-                            _ => readmeStream,
-                        };
+                        Stream stream = _fmFormat.IsStreamableArchive()
+                            ? readmeEntry.ReturnGlobalMemoryStreamWithSeekableEntryData()
+                            : readmeStream;
                         last.Text = ReadAllTextDetectEncoding(stream);
                     }
                     last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
@@ -6294,21 +6335,22 @@ public sealed class Scanner : IDisposable
     }
 #endif
 
-    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry entry, int length)
+    private MemoryStream CreateSeekableStreamFromArchiveEntry(ArchiveEntry entry, int length)
     {
         _generalMemoryStream.SetLength(length);
         _generalMemoryStream.Position = 0;
-        using Stream es = _archive.OpenEntry(entry);
+        using Stream es = entry.Open();
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
     }
 
-    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry entry, int length)
+    // @BLOCKS: Remove this later
+    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry entry, int length)
     {
         _generalMemoryStream.SetLength(length);
         _generalMemoryStream.Position = 0;
-        using Stream es = entry.OpenEntryStream();
+        using Stream es = _archive.OpenEntry(entry);
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
