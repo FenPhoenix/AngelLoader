@@ -1934,6 +1934,8 @@ public sealed class Scanner : IDisposable
         return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
     }
 
+    #region Solid archive partial extract
+
     private (ScannedFMDataAndError? Error,
         ListFast<SevenZipArchiveEntry> sevenZipEntries,
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
@@ -2467,6 +2469,132 @@ public sealed class Scanner : IDisposable
             }
         }
     }
+
+    private static SolidEntry? GetLowestExtractCostEntry(ListFast<SolidEntry> list)
+    {
+        int lowestCostIndex = -1;
+        long lowestCost = long.MaxValue;
+        for (int i = 0; i < list.Count; i++)
+        {
+            SolidEntry item = list[i];
+            if (item.TotalExtractionCost <= lowestCost)
+            {
+                lowestCost = item.TotalExtractionCost;
+                lowestCostIndex = i;
+            }
+        }
+
+        return lowestCostIndex == -1 ? null : list[lowestCostIndex];
+    }
+
+    private enum GetLowestCostMisFileError
+    {
+        Success,
+        SevenZipExtractError,
+        NoUsedMisFile,
+        Fallback,
+    }
+
+    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
+    GetLowestCostUsedMisFile(
+        SolidEntry? lowestCostMissFlagFile,
+        ListFast<SolidEntry> misFiles,
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        CancellationToken cancellationToken)
+    {
+        if (misFiles.Count == 1)
+        {
+            SolidEntry item = misFiles[0];
+            _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            return (GetLowestCostMisFileError.Success, null, item);
+        }
+
+        if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
+        {
+            /*
+            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
+            record). 64KB is small enough that extraction time will be negligible, but large enough to
+            cover any missflag.str file that's likely to ever exist.
+            */
+            if (lowestCostMissFlagFileNonNull.TotalExtractionCost > ByteSize.KB * 64)
+            {
+                return (GetLowestCostMisFileError.Fallback, null, default);
+            }
+
+            string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
+
+            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.FullName);
+
+            Fen7z.Result result = Fen7z.Extract(
+                sevenZipWorkingPath: _sevenZipWorkingPath,
+                sevenZipPathAndExe: _sevenZipExePath,
+                archivePath: fm.Path,
+                outputPath: _fmWorkingPath,
+                cancellationToken: cancellationToken,
+                listFile: listFile,
+                fileNamesList: _missFlagExtractList);
+
+            if (result.ErrorOccurred)
+            {
+                Log(fm.Path + $": fm is 7z{NL}" +
+                    "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                    result);
+
+                return (GetLowestCostMisFileError.SevenZipExtractError, result, default);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                _solid_MisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            }
+
+            NameAndIndex missFlagFile = new(lowestCostMissFlagFileNonNull.FullName, lowestCostMissFlagFileNonNull.Index);
+            ReadAllLinesUTF8(missFlagFile, _tempLines);
+            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
+
+            _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
+        }
+        else
+        {
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            }
+        }
+
+        _missFlagAlreadyHandled = true;
+
+        _usedMisFiles.ClearFast();
+        foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
+        {
+            foreach (SolidEntry entry in misFiles)
+            {
+                if (entry.FullName == usedMisFile.Name)
+                {
+                    _solid_FinalUsedMisFilesList.Add(entry);
+                }
+            }
+            _usedMisFiles.Add(usedMisFile);
+        }
+
+        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
+        if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
+        {
+            return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
+        }
+        else
+        {
+            return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
+        }
+    }
+
+    #endregion
 
     #region Fail return functions
 
@@ -6074,130 +6202,6 @@ public sealed class Scanner : IDisposable
     #endregion
 
     #endregion
-
-    private static SolidEntry? GetLowestExtractCostEntry(ListFast<SolidEntry> list)
-    {
-        int lowestCostIndex = -1;
-        long lowestCost = long.MaxValue;
-        for (int i = 0; i < list.Count; i++)
-        {
-            SolidEntry item = list[i];
-            if (item.TotalExtractionCost <= lowestCost)
-            {
-                lowestCost = item.TotalExtractionCost;
-                lowestCostIndex = i;
-            }
-        }
-
-        return lowestCostIndex == -1 ? null : list[lowestCostIndex];
-    }
-
-    private enum GetLowestCostMisFileError
-    {
-        Success,
-        SevenZipExtractError,
-        NoUsedMisFile,
-        Fallback,
-    }
-
-    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
-    GetLowestCostUsedMisFile(
-        SolidEntry? lowestCostMissFlagFile,
-        ListFast<SolidEntry> misFiles,
-        string tempPath,
-        string tempRandomName,
-        FMToScan fm,
-        CancellationToken cancellationToken)
-    {
-        if (misFiles.Count == 1)
-        {
-            SolidEntry item = misFiles[0];
-            _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
-            return (GetLowestCostMisFileError.Success, null, item);
-        }
-
-        if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
-        {
-            /*
-            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
-            record). 64KB is small enough that extraction time will be negligible, but large enough to
-            cover any missflag.str file that's likely to ever exist.
-            */
-            if (lowestCostMissFlagFileNonNull.TotalExtractionCost > ByteSize.KB * 64)
-            {
-                return (GetLowestCostMisFileError.Fallback, null, default);
-            }
-
-            string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
-
-            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.FullName);
-
-            Fen7z.Result result = Fen7z.Extract(
-                sevenZipWorkingPath: _sevenZipWorkingPath,
-                sevenZipPathAndExe: _sevenZipExePath,
-                archivePath: fm.Path,
-                outputPath: _fmWorkingPath,
-                cancellationToken: cancellationToken,
-                listFile: listFile,
-                fileNamesList: _missFlagExtractList);
-
-            if (result.ErrorOccurred)
-            {
-                Log(fm.Path + $": fm is 7z{NL}" +
-                    "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                    result);
-
-                return (GetLowestCostMisFileError.SevenZipExtractError, result, default);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            for (int i = 0; i < misFiles.Count; i++)
-            {
-                SolidEntry item = misFiles[i];
-                _solid_MisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
-            }
-
-            NameAndIndex missFlagFile = new(lowestCostMissFlagFileNonNull.FullName, lowestCostMissFlagFileNonNull.Index);
-            ReadAllLinesUTF8(missFlagFile, _tempLines);
-            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
-
-            _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
-        }
-        else
-        {
-            for (int i = 0; i < misFiles.Count; i++)
-            {
-                SolidEntry item = misFiles[i];
-                _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
-            }
-        }
-
-        _missFlagAlreadyHandled = true;
-
-        _usedMisFiles.ClearFast();
-        foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
-        {
-            foreach (SolidEntry entry in misFiles)
-            {
-                if (entry.FullName == usedMisFile.Name)
-                {
-                    _solid_FinalUsedMisFilesList.Add(entry);
-                }
-            }
-            _usedMisFiles.Add(usedMisFile);
-        }
-
-        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
-        if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
-        {
-            return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
-        }
-        else
-        {
-            return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
-        }
-    }
 
 #if X64
     private Span<char> GetAsciiLowercaseSpan(string value)
