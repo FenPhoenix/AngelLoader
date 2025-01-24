@@ -1861,7 +1861,7 @@ public sealed class Scanner : IDisposable
         {
             if (_scanOptions.ScanTitle)
             {
-                var (titleFrom0, titleFromN) = GetMissionNames();
+                var (titleFrom0, titleFromN) = GetTitleFromMissionNames();
                 if (_scanOptions.ScanTitle)
                 {
                     SetOrAddTitle(titles, titleFrom0);
@@ -4309,7 +4309,7 @@ public sealed class Scanner : IDisposable
     }
 
     private (string TitleFrom0, string TitleFromN)
-    GetMissionNames()
+    GetTitleFromMissionNames()
     {
         ListFast<string>? titlesStrLines = GetTitlesStrLines();
         if (titlesStrLines == null || titlesStrLines.Count == 0)
@@ -4317,17 +4317,7 @@ public sealed class Scanner : IDisposable
             return ("", "");
         }
 
-        var ret =
-            (TitleFrom0: "", TitleFromN: "");
-
-        static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Name.ContainsI(value)) return true;
-            }
-            return false;
-        }
+        var ret = (TitleFrom0: "", TitleFromN: "");
 
         int titleFromTitlesFoundCount = 0;
         string firstTitleFromTitles = "";
@@ -4380,6 +4370,15 @@ public sealed class Scanner : IDisposable
         }
 
         return ret;
+
+        static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Name.ContainsI(value)) return true;
+            }
+            return false;
+        }
     }
 
     private ListFast<string>? GetTitlesStrLines()
