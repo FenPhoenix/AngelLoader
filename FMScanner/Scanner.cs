@@ -265,6 +265,26 @@ public sealed class Scanner : IDisposable
 
     #region Private classes
 
+    private readonly ref struct StreamScope
+    {
+        private readonly Scanner _scanner;
+        internal readonly Stream Stream;
+
+        public StreamScope(Scanner scanner, Stream stream)
+        {
+            _scanner = scanner;
+            Stream = stream;
+        }
+
+        public void Dispose()
+        {
+            if (Stream != _scanner._generalMemoryStream)
+            {
+                Stream.Dispose();
+            }
+        }
+    }
+
     private readonly ref struct ArchiveEntry
     {
         private readonly Scanner _scanner;
@@ -6197,80 +6217,42 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        if (_fmFormat.IsStreamableArchive())
-        {
-            Stream? entryStream = null;
-            try
-            {
-                long entryLength;
-                if (_fmFormat == FMFormat.Zip)
-                {
-                    ZipArchiveFastEntry entry = _archive.Entries[item.Index];
-                    entryStream = _archive.OpenEntry(entry);
-                    entryLength = entry.Length;
-                }
-                else
-                {
-                    RarArchiveEntry entry = _rarArchive.Entries[item.Index];
-                    entryStream = entry.OpenEntryStream();
-                    entryLength = entry.Size;
-                }
+        using StreamScope streamScope = new(
+            this,
+            TryGetArchiveEntry(item, out ArchiveEntry entry)
+                ? entry.ReturnGlobalMemoryStreamWithSeekableEntryData()
+                : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name),
+                    DiskFileStreamBuffer)
+        );
 
-                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
-                // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-                _generalMemoryStream.SetLength(entryLength);
-                _generalMemoryStream.Position = 0;
-
-                StreamCopyNoAlloc(entryStream, _generalMemoryStream, StreamCopyBuffer);
-                _generalMemoryStream.Position = 0;
-
-                Encoding encoding = DetectEncoding(_generalMemoryStream);
-                _generalMemoryStream.Position = 0;
-
-                using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false,
-                    _streamReaderCustom, disposeStream: false);
-                while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-            }
-            finally
-            {
-                entryStream?.Dispose();
-            }
-        }
-        else
-        {
-            using FileStream_NET stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
-            Encoding encoding = DetectEncoding(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-
-            using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
-            while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-        }
-
-        return;
-
-        Encoding DetectEncoding(Stream stream) =>
+        Encoding encoding =
             type == DetectEncodingType.NewGameStr &&
-            TryDetectNewGameStrEncoding(stream, out Encoding? newGameStrEncoding)
+            TryDetectNewGameStrEncoding(streamScope.Stream, out Encoding? newGameStrEncoding)
                 ? newGameStrEncoding
                 : type == DetectEncodingType.TitlesStr &&
-                  TryDetectTitlesStrEncoding(stream, out Encoding? titlesStrEncoding)
+                  TryDetectTitlesStrEncoding(streamScope.Stream, out Encoding? titlesStrEncoding)
                     ? titlesStrEncoding
-                    : _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
+                    : _fileEncoding.DetectFileEncoding(streamScope.Stream) ?? Encoding.GetEncoding(1252);
+
+        streamScope.Stream.Seek(0, SeekOrigin.Begin);
+
+        using var sr = new StreamReaderCustom.SRC_Wrapper(streamScope.Stream, encoding, false, _streamReaderCustom, disposeStream: false);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
     private void ReadAllLinesUTF8(NameAndIndex item, ListFast<string> lines)
     {
         lines.ClearFast();
 
-        using Stream stream = _fmFormat switch
-        {
-            FMFormat.Zip => _archive.OpenEntry(_archive.Entries[item.Index]),
-            FMFormat.Rar => _rarArchive.Entries[item.Index].OpenEntryStream(),
-            _ => GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer),
-        };
+        using StreamScope streamScope = new(
+            this,
+            TryGetArchiveEntry(item, out ArchiveEntry entry)
+                ? entry.ReturnGlobalMemoryStreamWithSeekableEntryData()
+                : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name),
+                    DiskFileStreamBuffer)
+        );
 
-        // Stupid micro-optimization: Don't call Dispose() method on stream twice
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(streamScope.Stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
