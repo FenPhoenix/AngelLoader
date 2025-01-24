@@ -601,93 +601,158 @@ public sealed class Scanner : IDisposable
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, bool forceFullIfNew, string name, bool isArchive)
+    Scan(string fmPath, string tempPath, bool forceFullIfNew, string name, bool isArchive)
     {
-        List<FMToScan> missions = new()
+        List<FMToScan> fms = new()
         {
-            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
-                isArchive: isArchive, originalIndex: 0),
+            new FMToScan(
+                path: fmPath,
+                forceFullScan: forceFullIfNew,
+                displayName: name,
+                isTDM: false,
+                isArchive: isArchive,
+                originalIndex: 0),
         };
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            _scanOptions,
+            null,
+            CancellationToken.None,
+            ref fmNumber,
+            fmsCount)[0];
     }
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
+    Scan(string fmPath, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
     {
-        List<FMToScan> missions = new()
+        List<FMToScan> fms = new()
         {
-            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
-                isArchive: isArchive, originalIndex: 0),
+            new FMToScan(
+                path: fmPath,
+                forceFullScan: forceFullIfNew,
+                displayName: name,
+                isTDM: false,
+                isArchive: isArchive,
+                originalIndex: 0),
         };
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            scanOptions,
+            null,
+            CancellationToken.None,
+            ref fmNumber,
+            fmsCount)[0];
     }
-
-#endif
 
     // Debug should also use this - scan on UI thread so breaks will actually break where they're supposed to
     [PublicAPI]
     public List<ScannedFMDataAndError>
-    Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-         IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    Scan(List<FMToScan> fms, string tempPath, ScanOptions scanOptions, IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            scanOptions,
+            progress,
+            cancellationToken,
+            ref fmNumber,
+            fmsCount);
     }
+
+#endif
 
     #endregion
 
     #region Scan asynchronous
 
-#if FMScanner_FullCode
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
-    }
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
-    }
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
-              CancellationToken cancellationToken)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
-    }
-
-#endif
-
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>> ScanAsync(
-        List<FMToScan> missions,
+        List<FMToScan> fms,
         string tempPath,
         ScanOptions scanOptions,
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                scanOptions,
+                progress,
+                cancellationToken,
+                ref fmNumber,
+                fmsCount),
+            cancellationToken);
     }
+
+#if FMScanner_FullCode
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                _scanOptions,
+                null,
+                CancellationToken.None,
+                ref fmNumber,
+                fmsCount)
+        );
+    }
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath, ScanOptions scanOptions)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                scanOptions,
+                null,
+                CancellationToken.None,
+                ref fmNumber,
+                fmsCount)
+        );
+    }
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath, IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                _scanOptions,
+                progress,
+                cancellationToken,
+                ref fmNumber,
+                fmsCount),
+            cancellationToken);
+    }
+
+#endif
 
     #endregion
 
@@ -1854,24 +1919,18 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Title and IncludedMissions
-
-        // SS2 doesn't have a missions list or a titles list file
-        if (!fmIsT3 && !fmIsSS2)
-        {
-            if (_scanOptions.ScanTitle)
-            {
-                var (titleFrom0, titleFromN) = GetTitleFromMissionNames();
-                if (_scanOptions.ScanTitle)
-                {
-                    SetOrAddTitle(titles, titleFrom0);
-                    SetOrAddTitle(titles, titleFromN);
-                }
-            }
-        }
+        #region Title
 
         if (_scanOptions.ScanTitle)
         {
+            // SS2 doesn't have a missions list or a titles list file
+            if (!fmIsT3 && !fmIsSS2)
+            {
+                (string titleFrom0, string titleFromN) = GetTitleFromMissionNames();
+                SetOrAddTitle(titles, titleFrom0);
+                SetOrAddTitle(titles, titleFromN);
+            }
+
             SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect));
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
@@ -6235,21 +6294,21 @@ public sealed class Scanner : IDisposable
     }
 #endif
 
-    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry entry, int length)
     {
-        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.SetLength(length);
         _generalMemoryStream.Position = 0;
-        using Stream es = _archive.OpenEntry(readmeEntry);
+        using Stream es = _archive.OpenEntry(entry);
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
     }
 
-    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
+    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry entry, int length)
     {
-        _generalMemoryStream.SetLength(readmeFileLen);
+        _generalMemoryStream.SetLength(length);
         _generalMemoryStream.Position = 0;
-        using Stream es = readmeEntry.OpenEntryStream();
+        using Stream es = entry.OpenEntryStream();
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;

@@ -281,7 +281,7 @@ internal static class FMScan
                                 tdmContext: tdmContext);
 
                             fmDataList = await scanner.ScanAsync(
-                                missions: fms,
+                                fms: fms,
                                 tempPath: Paths.FMScannerTemp,
                                 scanOptions: scanOptions,
                                 progress: progress,
@@ -294,8 +294,8 @@ internal static class FMScan
                             );
 
                             fmDataList = Scanner.ScanThreaded(
-                                Paths.SevenZipPath,
-                                Paths.SevenZipExe,
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
                                 fullScanOptions: GetDefaultScanOptions(),
                                 tdmContext: tdmContext,
                                 threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData.Threads),
