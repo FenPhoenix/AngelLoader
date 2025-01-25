@@ -5632,8 +5632,7 @@ public sealed class Scanner : IDisposable
                     misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
                         scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
                 }
-                else if (scanner._fmFormat.IsSolidArchive() ||
-                         scanner._fmDirFileInfos.Count > 0)
+                else if (scanner._fmDirFileInfos.Count > 0)
                 {
                     misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
                 }
