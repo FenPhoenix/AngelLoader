@@ -263,7 +263,53 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    #region Enums
+
+    private enum CopyReadmesToCacheResult
+    {
+        Success,
+        NeedsHtmlRefExtract,
+    }
+
+    private enum DetectEncodingType
+    {
+        Standard,
+        TitlesStr,
+        NewGameStr,
+    }
+
+    private enum SpecialLogic
+    {
+        Title,
+        Author,
+        ReleaseDate,
+    }
+
+    private enum GetLowestCostMisFileError
+    {
+        Success,
+        SevenZipExtractError,
+        NoUsedMisFile,
+        Fallback,
+    }
+
+    #endregion
+
     #region Private classes
+
+    private readonly struct SolidEntry
+    {
+        internal readonly string FullName;
+        internal readonly int Index;
+        internal readonly long TotalExtractionCost;
+
+        public SolidEntry(string fullName, int index, long totalExtractionCost)
+        {
+            FullName = fullName;
+            Index = index;
+            TotalExtractionCost = totalExtractionCost;
+        }
+    }
 
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct StreamScope
@@ -421,19 +467,6 @@ public sealed class Scanner : IDisposable
         }
     }
 #endif
-
-    private enum CopyReadmesToCacheResult
-    {
-        Success,
-        NeedsHtmlRefExtract,
-    }
-
-    private enum DetectEncodingType
-    {
-        Standard,
-        TitlesStr,
-        NewGameStr,
-    }
 
     private sealed class DetectedTitle(string value, bool temporary)
     {
@@ -627,13 +660,6 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    private enum SpecialLogic
-    {
-        Title,
-        Author,
-        ReleaseDate,
-    }
-
     #region Constructors
 
 #if FMScanner_FullCode
@@ -667,6 +693,8 @@ public sealed class Scanner : IDisposable
     }
 
     #endregion
+
+    #region Public API
 
     [PublicAPI]
     public static List<ScannedFMDataAndError>
@@ -900,6 +928,8 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    #endregion
+
     private void ResetCachedFields()
     {
         _titles.ClearFast();
@@ -950,6 +980,8 @@ public sealed class Scanner : IDisposable
         _solid_FinalUsedMisFilesList.ClearFast();
         _missFlagExtractList.ClearFast();
     }
+
+    #region Pre-scan
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
     GetInitialScanData(string tempPath, ScanOptions scanOptions, int fmsCount, int listCapacity)
@@ -1178,6 +1210,8 @@ public sealed class Scanner : IDisposable
         }
     }
 
+    #endregion
+
 #if INDIVIDUAL_FM_TIMING
     private static readonly Stopwatch _fmTimer = new();
 
@@ -1195,73 +1229,6 @@ public sealed class Scanner : IDisposable
 
     public static List<TimingData> TimingDataList = new();
 #endif
-
-    private void SetOrAddTitle(ListFast<string> titles, string value)
-    {
-        value = CleanupTitle(value).Trim();
-
-        if (value.IsEmpty()) return;
-
-        if (!titles.ContainsI(value))
-        {
-            titles.Add(value);
-        }
-    }
-
-    private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
-    {
-        OrderTitlesOptimally(titles, serverTitle);
-        if (titles.Count > 0)
-        {
-            fmData.Title = titles[0];
-            if (titles.Count > 1)
-            {
-                fmData.AlternateTitles = new string[titles.Count - 1];
-                for (int i = 1; i < titles.Count; i++)
-                {
-                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
-                }
-            }
-        }
-    }
-
-    private bool SetupAuthorRequiredTitleScan()
-    {
-        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
-        // titles in that case, but we shouldn't actually set the title in the return object because the
-        // caller didn't request it.
-        bool scanTitleForAuthorPurposesOnly = false;
-        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
-        {
-            _scanOptions.ScanTitle = true;
-            scanTitleForAuthorPurposesOnly = true;
-        }
-
-        return scanTitleForAuthorPurposesOnly;
-    }
-
-    private void EndTitleScan(
-        bool scanTitleForAuthorPurposesOnly,
-        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
-    {
-        ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
-        if (topOfReadmeTitles?.Count > 0)
-        {
-            for (int i = 0; i < topOfReadmeTitles.Count; i++)
-            {
-                SetOrAddTitle(titles, topOfReadmeTitles[i]);
-            }
-        }
-
-        if (!scanTitleForAuthorPurposesOnly)
-        {
-            SetFMTitles(fmData, titles, serverTitle);
-        }
-        else
-        {
-            _scanOptions.ScanTitle = false;
-        }
-    }
 
     private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
@@ -1620,120 +1587,6 @@ public sealed class Scanner : IDisposable
                     readme = null;
                 }
             }
-        }
-    }
-
-    private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
-    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
-    {
-        ZipArchiveFast? ret;
-
-        try
-        {
-            ret = ZipArchiveFast.Create_Scan(
-                stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
-                context: zipContext,
-                darkMod: darkModMode);
-
-            // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
-            // thrown while loading them. If this passes, we're definitely good.
-            int entriesCount = ret.Entries.Count;
-            if (checkForZeroEntries && entriesCount == 0)
-            {
-                Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
-            }
-        }
-        catch (Exception ex)
-        {
-            #region Notes about semi-broken zips
-            /*
-            Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
-
-            Known semi-broken files:
-            Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
-            1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
-
-            Both files are byte-identical but just with different names.
-
-            Note that my version of the second file (same name) is not broken, I got it from
-            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-            scanner with.
-
-            These files throw with "The archive entry was compressed using an unsupported compression method."
-            They throw on both ZipArchiveFast() and regular built-in ZipArchive().
-
-            The compression method for each file in the archive is:
-
-            MISS15.MIS:                6
-            UGUEST.TXT:                6
-            INTRFACE/NEWGAME.STR:      1
-            INTRFACE/UGUEST/GOALS.STR: 1
-            STRINGS/MISSFLAG.STR:      1
-            STRINGS/TITLES.STR:        6
-
-            1 = Shrink
-            6 = Implode
-
-            (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-
-           .NET zip (all versions AFAIK) only supports Deflate.
-
-            There also seem to be other errors, involving "headers" and "data past the end of archive".
-            I don't really know enough about the zip format to understand these that much.
-
-            7z.exe can handle these files, so we could use that as a fallback, but:
-
-            7z.exe reports:
-
-            ERRORS:
-            Headers Error
-
-            WARNINGS:
-            There are data after the end of archive
-
-            And it considers the error to be "fatal" even though it succeeds in this case (the
-            extracted dir diffs identical with the extracted dir of the working one).
-            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-            not result in intact files on disk) error. If we just match by "Headers error" and/or
-            "data past end" who knows if sometimes those might actually result in bad output and not
-            others. I don't know. So we're going to continue to fail in this case, but at least tell
-            the user what's wrong and give them an actionable suggestion.
-            */
-            #endregion
-            if (ex is ZipCompressionMethodException zipEx)
-            {
-                Log(fm.Path + $": fm is zip.{NL}" +
-                    $"UNSUPPORTED COMPRESSION METHOD{NL}" +
-                    "Zip contains one or more files compressed with an unsupported method. " +
-                    $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
-                    "Returning 'Unknown' game type.", zipEx);
-                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
-            }
-            else
-            {
-                Log(fm.Path + ": fm is zip, exception in " +
-                    nameof(ZipArchiveFast) +
-                    " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
-            }
-        }
-
-        return (true, null, ret);
-    }
-
-    private readonly struct SolidEntry
-    {
-        internal readonly string FullName;
-        internal readonly int Index;
-        internal readonly long TotalExtractionCost;
-
-        public SolidEntry(string fullName, int index, long totalExtractionCost)
-        {
-            FullName = fullName;
-            Index = index;
-            TotalExtractionCost = totalExtractionCost;
         }
     }
 
@@ -2691,14 +2544,6 @@ public sealed class Scanner : IDisposable
         return lowestCostIndex == -1 ? null : list[lowestCostIndex];
     }
 
-    private enum GetLowestCostMisFileError
-    {
-        Success,
-        SevenZipExtractError,
-        NoUsedMisFile,
-        Fallback,
-    }
-
     private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
     GetLowestCostUsedMisFile(
         SolidEntry? lowestCostMissFlagFile,
@@ -2797,82 +2642,6 @@ public sealed class Scanner : IDisposable
             return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
         }
     }
-
-    #endregion
-
-    #region Fail return functions
-
-    private static ScannedFMDataAndError UnsupportedTDM(
-        string archivePath,
-        Fen7z.Result? fen7zResult,
-        Exception? ex,
-        string errorInfo,
-        int originalIndex) =>
-        new(originalIndex)
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Unsupported,
-                MissionCount = 0,
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo,
-        };
-
-    private static ScannedFMDataAndError UnsupportedZip(
-        string archivePath,
-        Fen7z.Result? fen7zResult,
-        Exception? ex,
-        string errorInfo,
-        int originalIndex) =>
-        new(originalIndex)
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Unsupported,
-                MissionCount = 0,
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo,
-        };
-
-    private static ScannedFMDataAndError UnknownZip(
-        string archivePath,
-        Fen7z.Result? fen7zResult,
-        Exception? ex,
-        string errorInfo,
-        int originalIndex) =>
-        new(originalIndex)
-        {
-            ScannedFMData = new ScannedFMData
-            {
-                ArchiveName = Path.GetFileName(archivePath),
-                Game = Game.Null,
-                MissionCount = 0,
-            },
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo,
-        };
-
-    private static ScannedFMDataAndError UnsupportedDir(
-        Fen7z.Result? fen7zResult,
-        Exception? ex,
-        string errorInfo,
-        int originalIndex) =>
-        new(originalIndex)
-        {
-            ScannedFMData = null,
-            Fen7zResult = fen7zResult,
-            Exception = ex,
-            ErrorInfo = errorInfo,
-        };
-
-    #endregion
 
     private CopyReadmesToCacheResult CopyReadmesToCacheDir(
         FMToScan fm,
@@ -2984,85 +2753,79 @@ public sealed class Scanner : IDisposable
         return CopyReadmesToCacheResult.Success;
     }
 
-    #region Set tags
+    #endregion
 
-    private void SetLangTags(ScannedFMData fmData, Language langs, bool englishIsUncertain)
-    {
-        if (langs == Language.Default) return;
+    #region Fail return functions
 
-        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
-        for (int i = 0; i < SupportedLanguageCount; i++)
+    private static ScannedFMDataAndError UnsupportedTDM(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            LanguageIndex languageIndex = (LanguageIndex)i;
-
-            if (!langs.HasFlagFast(LanguageIndexToLanguage(languageIndex)))
+            ScannedFMData = new ScannedFMData
             {
-                continue;
-            }
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Unsupported,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
-            string lang = SupportedLanguages[i];
-
-            Debug.Assert(lang == lang.ToLowerInvariant(),
-                "lang != lang.ToLowerInvariant() - lang is not lowercase");
-
-            if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
-
-            if (fmData.TagsString.Contains(lang, Ordinal))
-            {
-                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + _ctx.LanguagesC[i]);
-            }
-
-            // PERF: 5ms over the whole 1098 set, whatever
-            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
-            if (match.Success) continue;
-
-            if (fmData.TagsString != "") fmData.TagsString += ", ";
-            fmData.TagsString += "language:" + _ctx.LanguagesC[i];
-        }
-    }
-
-    private void AddCampaignTag(ScannedFMData fmData) => SetMiscTag(fmData, "campaign");
-
-    private void SetMiscTag(ScannedFMData fmData, string tag)
-    {
-        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
-
-        List<string> list = fmData.TagsString.Split_Char(CA_CommaSemicolon, StringSplitOptions.None, _sevenZipContext.IntArrayPool).ToList();
-        bool tagFound = false;
-        for (int i = 0; i < list.Count; i++)
+    private static ScannedFMDataAndError UnsupportedZip(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            list[i] = list[i].Trim();
-            if (list[i].IsEmpty())
+            ScannedFMData = new ScannedFMData
             {
-                list.RemoveAt(i);
-                i--;
-            }
-            else if (list[i].EqualsI_Local(tag))
-            {
-                if (tagFound)
-                {
-                    list.RemoveAt(i);
-                    i--;
-                }
-                else
-                {
-                    list[i] = tag;
-                    tagFound = true;
-                }
-            }
-        }
-        if (tagFound) return;
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Unsupported,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
-        list.Add(tag);
-
-        string tagsString = "";
-        for (int i = 0; i < list.Count; i++)
+    private static ScannedFMDataAndError UnknownZip(
+        string archivePath,
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
         {
-            if (i > 0) tagsString += ", ";
-            tagsString += list[i];
-        }
-        fmData.TagsString = tagsString;
-    }
+            ScannedFMData = new ScannedFMData
+            {
+                ArchiveName = Path.GetFileName(archivePath),
+                Game = Game.Null,
+                MissionCount = 0,
+            },
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
+
+    private static ScannedFMDataAndError UnsupportedDir(
+        Fen7z.Result? fen7zResult,
+        Exception? ex,
+        string errorInfo,
+        int originalIndex) =>
+        new(originalIndex)
+        {
+            ScannedFMData = null,
+            Fen7zResult = fen7zResult,
+            Exception = ex,
+            ErrorInfo = errorInfo,
+        };
 
     #endregion
 
@@ -3395,7 +3158,7 @@ public sealed class Scanner : IDisposable
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), _ctx.SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
-                            BaseDirScriptFileExtensions(_baseDirFiles, _ctx.ScriptFileExtensions) ||
+                            BaseDirScriptFileExtensionFound(_baseDirFiles, _ctx.ScriptFileExtensions) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
                              FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), _ctx.SA_AllFiles));
 
@@ -3568,7 +3331,7 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-        static bool BaseDirScriptFileExtensions(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
+        static bool BaseDirScriptFileExtensionFound(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
         {
             for (int i = 0; i < baseDirFiles.Count; i++)
             {
@@ -3651,14 +3414,10 @@ public sealed class Scanner : IDisposable
 
         XmlDocument fmInfoXml = new();
 
-        #region Load XML
-
         using (Stream es = GetEntry(file).Open())
         {
             fmInfoXml.Load(es);
         }
-
-        #endregion
 
         if (_scanOptions.ScanTitle)
         {
@@ -4279,6 +4038,73 @@ public sealed class Scanner : IDisposable
     #endregion
 
     #region Title(s) and mission names
+
+    private void SetOrAddTitle(ListFast<string> titles, string value)
+    {
+        value = CleanupTitle(value).Trim();
+
+        if (value.IsEmpty()) return;
+
+        if (!titles.ContainsI(value))
+        {
+            titles.Add(value);
+        }
+    }
+
+    private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
+    {
+        OrderTitlesOptimally(titles, serverTitle);
+        if (titles.Count > 0)
+        {
+            fmData.Title = titles[0];
+            if (titles.Count > 1)
+            {
+                fmData.AlternateTitles = new string[titles.Count - 1];
+                for (int i = 1; i < titles.Count; i++)
+                {
+                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
+                }
+            }
+        }
+    }
+
+    private bool SetupAuthorRequiredTitleScan()
+    {
+        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
+        // titles in that case, but we shouldn't actually set the title in the return object because the
+        // caller didn't request it.
+        bool scanTitleForAuthorPurposesOnly = false;
+        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
+        {
+            _scanOptions.ScanTitle = true;
+            scanTitleForAuthorPurposesOnly = true;
+        }
+
+        return scanTitleForAuthorPurposesOnly;
+    }
+
+    private void EndTitleScan(
+        bool scanTitleForAuthorPurposesOnly,
+        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
+    {
+        ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
+        if (topOfReadmeTitles?.Count > 0)
+        {
+            for (int i = 0; i < topOfReadmeTitles.Count; i++)
+            {
+                SetOrAddTitle(titles, topOfReadmeTitles[i]);
+            }
+        }
+
+        if (!scanTitleForAuthorPurposesOnly)
+        {
+            SetFMTitles(fmData, titles, serverTitle);
+        }
+        else
+        {
+            _scanOptions.ScanTitle = false;
+        }
+    }
 
     // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
     // Perception 2. :P
@@ -5015,6 +4841,8 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    #region Languages
+
     private (Language Langs, bool EnglishIsUncertain)
     GetLanguages()
     {
@@ -5126,6 +4954,8 @@ public sealed class Scanner : IDisposable
             ? (Langs: langs, EnglishIsUncertain: englishIsUncertain)
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
+
+    #endregion
 
     #region Game type
 
@@ -5945,6 +5775,90 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    #region Set tags
+
+    private void SetLangTags(ScannedFMData fmData, Language langs, bool englishIsUncertain)
+    {
+        if (langs == Language.Default) return;
+
+        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            LanguageIndex languageIndex = (LanguageIndex)i;
+
+            if (!langs.HasFlagFast(LanguageIndexToLanguage(languageIndex)))
+            {
+                continue;
+            }
+
+            string lang = SupportedLanguages[i];
+
+            Debug.Assert(lang == lang.ToLowerInvariant(),
+                "lang != lang.ToLowerInvariant() - lang is not lowercase");
+
+            if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
+
+            if (fmData.TagsString.Contains(lang, Ordinal))
+            {
+                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + _ctx.LanguagesC[i]);
+            }
+
+            // PERF: 5ms over the whole 1098 set, whatever
+            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
+            if (match.Success) continue;
+
+            if (fmData.TagsString != "") fmData.TagsString += ", ";
+            fmData.TagsString += "language:" + _ctx.LanguagesC[i];
+        }
+    }
+
+    private void AddCampaignTag(ScannedFMData fmData) => SetMiscTag(fmData, "campaign");
+
+    private void SetMiscTag(ScannedFMData fmData, string tag)
+    {
+        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
+
+        List<string> list = fmData.TagsString.Split_Char(CA_CommaSemicolon, StringSplitOptions.None, _sevenZipContext.IntArrayPool).ToList();
+        bool tagFound = false;
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i] = list[i].Trim();
+            if (list[i].IsEmpty())
+            {
+                list.RemoveAt(i);
+                i--;
+            }
+            else if (list[i].EqualsI_Local(tag))
+            {
+                if (tagFound)
+                {
+                    list.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    list[i] = tag;
+                    tagFound = true;
+                }
+            }
+        }
+        if (tagFound) return;
+
+        list.Add(tag);
+
+        string tagsString = "";
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (i > 0) tagsString += ", ";
+            tagsString += list[i];
+        }
+        fmData.TagsString = tagsString;
+    }
+
+    #endregion
+
+    #region Helpers
+
     private void DeleteFMWorkingPath()
     {
         try
@@ -5963,8 +5877,6 @@ public sealed class Scanner : IDisposable
             // Don't care
         }
     }
-
-    #region Helpers
 
     /// <summary>
     /// Deletes a directory after first setting everything in it, and itself, to non-read-only.
@@ -5985,8 +5897,6 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    #region Generic dir/file functions
-
     private string[] EnumFiles(string path, SearchOption searchOption)
     {
         try
@@ -6000,8 +5910,6 @@ public sealed class Scanner : IDisposable
             return Array.Empty<string>();
         }
     }
-
-    #endregion
 
     #region Read plaintext
 
@@ -6261,6 +6169,106 @@ public sealed class Scanner : IDisposable
             ? new Entry(this, _fmDirFileInfos[item.Index])
             : new Entry(this, item.Name),
     };
+
+    private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
+    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
+    {
+        ZipArchiveFast? ret;
+
+        try
+        {
+            ret = ZipArchiveFast.Create_Scan(
+                stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
+                context: zipContext,
+                darkMod: darkModMode);
+
+            // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
+            // thrown while loading them. If this passes, we're definitely good.
+            int entriesCount = ret.Entries.Count;
+            if (checkForZeroEntries && entriesCount == 0)
+            {
+                Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
+                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
+            }
+        }
+        catch (Exception ex)
+        {
+            #region Notes about semi-broken zips
+            /*
+            Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+
+            Known semi-broken files:
+            Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+            1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+            Both files are byte-identical but just with different names.
+
+            Note that my version of the second file (same name) is not broken, I got it from
+            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+            scanner with.
+
+            These files throw with "The archive entry was compressed using an unsupported compression method."
+            They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+            The compression method for each file in the archive is:
+
+            MISS15.MIS:                6
+            UGUEST.TXT:                6
+            INTRFACE/NEWGAME.STR:      1
+            INTRFACE/UGUEST/GOALS.STR: 1
+            STRINGS/MISSFLAG.STR:      1
+            STRINGS/TITLES.STR:        6
+
+            1 = Shrink
+            6 = Implode
+
+            (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+           .NET zip (all versions AFAIK) only supports Deflate.
+
+            There also seem to be other errors, involving "headers" and "data past the end of archive".
+            I don't really know enough about the zip format to understand these that much.
+
+            7z.exe can handle these files, so we could use that as a fallback, but:
+
+            7z.exe reports:
+
+            ERRORS:
+            Headers Error
+
+            WARNINGS:
+            There are data after the end of archive
+
+            And it considers the error to be "fatal" even though it succeeds in this case (the
+            extracted dir diffs identical with the extracted dir of the working one).
+            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+            not result in intact files on disk) error. If we just match by "Headers error" and/or
+            "data past end" who knows if sometimes those might actually result in bad output and not
+            others. I don't know. So we're going to continue to fail in this case, but at least tell
+            the user what's wrong and give them an actionable suggestion.
+            */
+            #endregion
+            if (ex is ZipCompressionMethodException zipEx)
+            {
+                Log(fm.Path + $": fm is zip.{NL}" +
+                    $"UNSUPPORTED COMPRESSION METHOD{NL}" +
+                    "Zip contains one or more files compressed with an unsupported method. " +
+                    $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
+                    "Returning 'Unknown' game type.", zipEx);
+                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
+            }
+            else
+            {
+                Log(fm.Path + ": fm is zip, exception in " +
+                    nameof(ZipArchiveFast) +
+                    " construction or entries getting. Returning 'Unsupported' game type.", ex);
+                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
+            }
+        }
+
+        return (true, null, ret);
+    }
 
     #endregion
 
