@@ -4,9 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-#if ENABLE_UNUSED
-using System.Runtime.InteropServices;
-#endif
 using System.Text;
 
 namespace AL_Common;
