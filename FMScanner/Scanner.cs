@@ -2195,45 +2195,48 @@ public sealed class Scanner : IDisposable
 
             PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag));
 
-            // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
-            SolidEntry? missFlagToUse = null;
-            if (_solid_MisFiles.Count > 1)
+            if (!_missFlagAlreadyHandled)
             {
-                foreach (var item in tempList)
-                {
-                    if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
-                    {
-                        missFlagToUse = item;
-                        break;
-                    }
-                }
-                if (missFlagToUse == null)
+                // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
+                SolidEntry? missFlagToUse = null;
+                if (_solid_MisFiles.Count > 1)
                 {
                     foreach (var item in tempList)
                     {
-                        if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                        if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
                         {
                             missFlagToUse = item;
                             break;
                         }
                     }
-                }
-                if (missFlagToUse == null)
-                {
-                    foreach (var item in tempList)
+                    if (missFlagToUse == null)
                     {
-                        if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                        foreach (var item in tempList)
                         {
-                            missFlagToUse = item;
-                            break;
+                            if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
+                        }
+                    }
+                    if (missFlagToUse == null)
+                    {
+                        foreach (var item in tempList)
+                        {
+                            if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            if (missFlagToUse is { } missFlagToUseNonNull)
-            {
-                entriesList.Add(missFlagToUseNonNull);
+                if (missFlagToUse is { } missFlagToUseNonNull)
+                {
+                    entriesList.Add(missFlagToUseNonNull);
+                }
             }
 
             PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
