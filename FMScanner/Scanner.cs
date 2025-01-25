@@ -1373,7 +1373,7 @@ public sealed class Scanner : IDisposable
 
                     using Stream es = _archive.OpenEntry(entry);
                     // Stupid micro-optimization: Don't call Dispose() method on stream twice
-                    using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+                    using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, _streamReaderCustom);
 
                     bool inBlockComment = false;
                     while (sr.Reader.ReadLine() is { } line)
@@ -6009,13 +6009,13 @@ public sealed class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
         stream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom, disposeStream: false);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
     private string ReadAllTextUTF8(Stream stream)
     {
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
@@ -6198,7 +6198,7 @@ public sealed class Scanner : IDisposable
 
         streamScope.Stream.Seek(0, SeekOrigin.Begin);
 
-        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, encoding, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, encoding, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
@@ -6209,7 +6209,7 @@ public sealed class Scanner : IDisposable
         Entry entry = GetEntry(item);
         using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
 
-        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, Encoding.UTF8, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
