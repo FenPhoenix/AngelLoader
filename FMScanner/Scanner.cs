@@ -285,38 +285,104 @@ public sealed class Scanner : IDisposable
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct ArchiveEntry
     {
-        private readonly Scanner _scanner;
-        private readonly ZipArchiveFastEntry _zipEntry = null!;
-        private readonly RarArchiveEntry _rarEntry = null!;
+        private enum EntryType : byte
+        {
+            Zip,
+            Rar,
+            FileInfoCached,
+            OnDisk,
+        }
 
-        internal readonly string FullName;
-        internal readonly uint LastModifiedDateRaw;
-        internal readonly DateTime LastModifiedDate;
+        private readonly EntryType _entryType;
+
+        private readonly Scanner _scanner;
+        private readonly ZipArchiveFastEntry _zipEntry;
+        private readonly RarArchiveEntry _rarEntry;
+        private readonly FileInfoCustom _fileInfo;
+        private readonly string _fileName;
+
+        private string FullName => _entryType switch
+        {
+            EntryType.FileInfoCached => Path.Combine(_scanner._fmWorkingPath, _fileInfo.FullName),
+            EntryType.OnDisk => _fileName,
+            _ => "",
+        };
+
+        internal uint LastModifiedDateRaw => _entryType switch
+        {
+            EntryType.Zip => _zipEntry.LastWriteTime,
+            _ => 0,
+        };
+
+        internal DateTime LastModifiedDate => _entryType switch
+        {
+            EntryType.Rar => _rarEntry.LastModifiedTime ?? DateTime.MinValue,
+            EntryType.FileInfoCached => _fileInfo.LastWriteTime,
+            EntryType.OnDisk => new FileInfo(_fileName).LastWriteTime,
+            _ => default,
+        };
+
+        internal long UncompressedSize
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _entryType switch
+            {
+                EntryType.Zip => _zipEntry.Length,
+                EntryType.Rar => _rarEntry.Size,
+                EntryType.FileInfoCached => _fileInfo.Length,
+                _ => new FileInfo(_fileName).Length,
+            };
+        }
 
         public ArchiveEntry(Scanner scanner, ZipArchiveFastEntry entry)
         {
+            _entryType = EntryType.Zip;
             _scanner = scanner;
             _zipEntry = entry;
             _rarEntry = null!;
-            FullName = entry.FullName;
-            LastModifiedDateRaw = entry.LastWriteTime;
+            _fileInfo = null!;
+            _fileName = "";
         }
 
         public ArchiveEntry(Scanner scanner, RarArchiveEntry entry)
         {
+            _entryType = EntryType.Rar;
             _scanner = scanner;
             _zipEntry = null!;
             _rarEntry = entry;
-            FullName = entry.Key;
-            LastModifiedDate = entry.LastModifiedTime ?? DateTime.MinValue;
+            _fileInfo = null!;
+            _fileName = "";
         }
 
-        internal Stream Open() =>
-            _zipEntry != null!
-                ? _scanner._archive.OpenEntry(_zipEntry)
-                : _rarEntry.OpenEntryStream();
+        public ArchiveEntry(Scanner scanner, FileInfoCustom fi)
+        {
+            _entryType = EntryType.FileInfoCached;
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = null!;
+            _fileInfo = fi;
+            _fileName = "";
+        }
+
+        public ArchiveEntry(Scanner scanner, string fileName)
+        {
+            _entryType = EntryType.OnDisk;
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = null!;
+            _fileInfo = null!;
+            _fileName = fileName;
+        }
+
+        internal Stream Open() => _entryType switch
+        {
+            EntryType.Zip => _scanner._archive.OpenEntry(_zipEntry),
+            EntryType.Rar => _rarEntry.OpenEntryStream(),
+            _ => GetReadModeFileStreamWithCachedBuffer(FullName, _scanner.DiskFileStreamBuffer),
+        };
 
         internal Stream ReturnGlobalMemoryStreamWithSeekableEntryData()
         {
@@ -327,29 +393,16 @@ public sealed class Scanner : IDisposable
             _scanner._generalMemoryStream.Position = 0;
             return _scanner._generalMemoryStream;
         }
-
-        internal long UncompressedSize
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _zipEntry != null! ? _zipEntry.Length : _rarEntry.Size;
-        }
     }
 
-    private bool TryGetArchiveEntry(NameAndIndex item, out ArchiveEntry archiveEntry)
+    private ArchiveEntry GetArchiveEntry(NameAndIndex item) => _fmFormat switch
     {
-        switch (_fmFormat)
-        {
-            case FMFormat.Zip:
-                archiveEntry = new ArchiveEntry(this, _archive.Entries[item.Index]);
-                return true;
-            case FMFormat.Rar:
-                archiveEntry = new ArchiveEntry(this, _rarArchive.Entries[item.Index]);
-                return true;
-            default:
-                archiveEntry = default;
-                return false;
-        }
-    }
+        FMFormat.Zip => new ArchiveEntry(this, _archive.Entries[item.Index]),
+        FMFormat.Rar => new ArchiveEntry(this, _rarArchive.Entries[item.Index]),
+        _ => _fmDirFileInfos.Count > 0
+            ? new ArchiveEntry(this, _fmDirFileInfos[item.Index])
+            : new ArchiveEntry(this, item.Name),
+    };
 
 #if X64
     private sealed class FileNameCharBuffer
@@ -3591,18 +3644,13 @@ public sealed class Scanner : IDisposable
         string author = "";
         DateTime? releaseDate = null;
 
-        var fmInfoXml = new XmlDocument();
+        XmlDocument fmInfoXml = new();
 
         #region Load XML
 
-        if (TryGetArchiveEntry(file, out ArchiveEntry entry))
+        using (Stream es = GetArchiveEntry(file).Open())
         {
-            using Stream es = entry.Open();
             fmInfoXml.Load(es);
-        }
-        else
-        {
-            fmInfoXml.Load(Path.Combine(_fmWorkingPath, file.Name));
         }
 
         #endregion
@@ -3798,57 +3846,11 @@ public sealed class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            int readmeFileLen;
-            string readmeFileOnDisk = "";
-            bool isGlml;
-            DateTime? lastModifiedDate = null;
+            ArchiveEntry readmeEntry = GetArchiveEntry(readmeFile);
+            int readmeFileLen = (int)readmeEntry.UncompressedSize;
+            if (readmeFileLen == 0) continue;
 
-            if (TryGetArchiveEntry(readmeFile, out ArchiveEntry readmeEntry))
-            {
-                readmeFileLen = (int)readmeEntry.UncompressedSize;
-                if (readmeFileLen == 0) continue;
-
-                isGlml = readmeEntry.FullName.ExtIsGlml();
-            }
-            else
-            {
-                FileInfoCustom readmeFI;
-
-                if (_fmDirFileInfos.Count > 0)
-                {
-                    readmeFI = _fmDirFileInfos[readmeFile.Index];
-                    if (readmeFI.Length == 0) continue;
-
-                    readmeFileOnDisk = Path.Combine(_fmWorkingPath, readmeFile.Name);
-                }
-                else
-                {
-                    /*
-                    If the readme was 0 length, it won't have been extracted, so in that case just skip this
-                    one and move on.
-                    */
-                    try
-                    {
-                        string fullReadmeFileName = Path.Combine(_fmWorkingPath, readmeFile.Name);
-
-                        FileInfo fi = new(fullReadmeFileName);
-                        if (fi.Length == 0) continue;
-
-                        readmeFI = new FileInfoCustom(fi);
-
-                        readmeFileOnDisk = fullReadmeFileName;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-
-                readmeFileLen = (int)readmeFI.Length;
-
-                isGlml = readmeFI.FullName.ExtIsGlml();
-                lastModifiedDate = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
-            }
+            bool isGlml = readmeFile.Name.ExtIsGlml();
 
             // Files containing these phrases are almost certain to be script info files, whose dates will be the
             // release date of their respective script package, and so should be ignored when detecting the FM's
@@ -3879,22 +3881,12 @@ public sealed class Scanner : IDisposable
                     useForDateDetect: useThisReadmeForDateDetect
                 );
             }
-            else if (_fmFormat == FMFormat.Rar)
-            {
-                last = ReadmeInternal.AddReadme(
-                    _readmeFiles,
-                    isGlml: isGlml,
-                    lastModifiedDate: readmeEntry.LastModifiedDate,
-                    scan: scanThisReadme,
-                    useForDateDetect: useThisReadmeForDateDetect
-                );
-            }
             else
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
                     isGlml: isGlml,
-                    lastModifiedDate: (DateTime)lastModifiedDate!,
+                    lastModifiedDate: readmeEntry.LastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -3907,9 +3899,7 @@ public sealed class Scanner : IDisposable
             {
                 // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
                 // alone.
-                readmeStream = _fmFormat.IsStreamableArchive()
-                    ? readmeEntry.Open()
-                    : GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer);
+                readmeStream = readmeEntry.Open();
 
                 int rtfHeaderBytesLength = RTFHeaderBytes.Length;
 
@@ -5137,31 +5127,27 @@ public sealed class Scanner : IDisposable
     private Game GetGameType()
     {
         Game game;
-        ArchiveEntry entry = default;
-        string misFileOnDisk = "";
+        ArchiveEntry misFileEntry = default;
 
         if (_solidGamFileToUse == null)
         {
             NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
-            if (!TryGetArchiveEntry(smallestUsedMisFile, out entry))
-            {
-                misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
-            }
+            misFileEntry = GetArchiveEntry(smallestUsedMisFile);
 
-            game = GameType_DoQuickCheck(entry, misFileOnDisk);
+            game = GameType_DoQuickCheck(misFileEntry);
             if (game != Game.Null) return game;
         }
 
-        game = GameType_DoMainCheck(entry, misFileOnDisk);
+        game = GameType_DoMainCheck(misFileEntry);
         if (game != Game.Null) return game;
 
-        game = GameType_DoSS2FallbackCheck(entry, misFileOnDisk);
+        game = GameType_DoSS2FallbackCheck(misFileEntry);
         if (game != Game.Null) return game;
 
         return Game.Thief1;
     }
 
-    private Game GameType_DoQuickCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
+    private Game GameType_DoQuickCheck(ArchiveEntry misFileEntry)
     {
         /*
         SKYOBJVAR location key (byte position in file):
@@ -5187,9 +5173,7 @@ public sealed class Scanner : IDisposable
         Stream? misStream = null;
         try
         {
-            misStream = _fmFormat.IsStreamableArchive()
-                ? misFileEntry.Open()
-                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            misStream = misFileEntry.Open();
 
             for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
@@ -5250,7 +5234,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoMainCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
+    private Game GameType_DoMainCheck(ArchiveEntry misFileEntry)
     {
         if (_fmFormat.IsStreamableArchive())
         {
@@ -5288,7 +5272,7 @@ public sealed class Scanner : IDisposable
         {
             // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
             // OBJ_MAP chunk and search it for the string. Phew.
-            using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            using Stream fs = misFileEntry.Open();
             return ChunkContainsPhrase(fs, OBJ_MAP_First, OBJ_MAP_Second, _ctx.RopeyArrow) ? Game.Thief2 : Game.Null;
         }
 
@@ -5310,30 +5294,30 @@ public sealed class Scanner : IDisposable
             return false;
         }
 
-        bool ChunkContainsPhrase(FileStream_NET fs, ulong chunkNameFirst, uint chunkNameSecond, byte[] searchPhrase)
+        bool ChunkContainsPhrase(Stream stream, ulong chunkNameFirst, uint chunkNameSecond, byte[] searchPhrase)
         {
-            uint tocOffset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+            uint tocOffset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
-            fs.Position = tocOffset;
+            stream.Position = tocOffset;
 
-            uint invCount = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+            uint invCount = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
             for (int i = 0; i < invCount; i++)
             {
-                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
-                uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-                int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+                int bytesRead = stream.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
+                uint offset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
+                int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
                 if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond)) continue;
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
-                fs.Position = offset + 24;
+                stream.Position = offset + 24;
 
                 byte[] content = _sevenZipContext.ByteArrayPool.Rent(length);
                 try
                 {
-                    int chunkBytesRead = fs.ReadAll(content, 0, length);
+                    int chunkBytesRead = stream.ReadAll(content, 0, length);
                     return content.Contains(searchPhrase, chunkBytesRead);
                 }
                 finally
@@ -5354,7 +5338,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoSS2FallbackCheck(ArchiveEntry misFileEntry, string misFileOnDisk)
+    private Game GameType_DoSS2FallbackCheck(ArchiveEntry misFileEntry)
     {
         /*
         Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
@@ -5371,11 +5355,9 @@ public sealed class Scanner : IDisposable
         if ((_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
         {
             using Stream stream =
-                  _solidGamFileToUse != null
-                ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
-                : _fmFormat.IsStreamableArchive()
-                ? misFileEntry.Open()
-                : GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+                _solidGamFileToUse != null
+                    ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
+                    : misFileEntry.Open();
 
             (byte[] identifier, byte[] buffer) =
                 _solidGamFileToUse != null
@@ -5456,11 +5438,12 @@ public sealed class Scanner : IDisposable
             NameAndIndex item = _baseDirFiles[i];
             if (item.Name.ExtIsGam())
             {
-                TryGetArchiveEntry(item, out ArchiveEntry gamFile);
-                if (gamFile.UncompressedSize <= smallestSize)
+                ArchiveEntry gamFile = GetArchiveEntry(item);
+                long gamSize = gamFile.UncompressedSize;
+                if (gamSize <= smallestSize)
                 {
                     found = true;
-                    smallestSize = gamFile.UncompressedSize;
+                    smallestSize = gamSize;
                     smallest = gamFile;
                 }
             }
@@ -6214,13 +6197,8 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        using StreamScope streamScope = new(
-            this,
-            TryGetArchiveEntry(item, out ArchiveEntry entry)
-                ? entry.ReturnGlobalMemoryStreamWithSeekableEntryData()
-                : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name),
-                    DiskFileStreamBuffer)
-        );
+        ArchiveEntry entry = GetArchiveEntry(item);
+        using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
 
         Encoding encoding =
             type == DetectEncodingType.NewGameStr &&
@@ -6241,13 +6219,8 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        using StreamScope streamScope = new(
-            this,
-            TryGetArchiveEntry(item, out ArchiveEntry entry)
-                ? entry.ReturnGlobalMemoryStreamWithSeekableEntryData()
-                : GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name),
-                    DiskFileStreamBuffer)
-        );
+        ArchiveEntry entry = GetArchiveEntry(item);
+        using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
 
         using var sr = new StreamReaderCustom.SRC_Wrapper(streamScope.Stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
