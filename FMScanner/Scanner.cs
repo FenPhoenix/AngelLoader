@@ -305,10 +305,13 @@ public sealed class Scanner : IDisposable
         private readonly FileInfoCustom _fileInfo;
         private readonly string _fileName;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetFullFileName(string fileName) => Path.Combine(_scanner._fmWorkingPath, fileName);
+
         private string FullName => _entryType switch
         {
-            EntryType.FileInfoCached => Path.Combine(_scanner._fmWorkingPath, _fileInfo.FullName),
-            EntryType.OnDisk => _fileName,
+            EntryType.FileInfoCached => GetFullFileName(_fileInfo.FullName),
+            EntryType.OnDisk => GetFullFileName(_fileName),
             _ => "",
         };
 
@@ -322,7 +325,7 @@ public sealed class Scanner : IDisposable
         {
             EntryType.Rar => _rarEntry.LastModifiedTime ?? DateTime.MinValue,
             EntryType.FileInfoCached => _fileInfo.LastWriteTime,
-            EntryType.OnDisk => new FileInfo(_fileName).LastWriteTime,
+            EntryType.OnDisk => new FileInfo(GetFullFileName(_fileName)).LastWriteTime,
             _ => default,
         };
 
@@ -331,7 +334,7 @@ public sealed class Scanner : IDisposable
             EntryType.Zip => _zipEntry.Length,
             EntryType.Rar => _rarEntry.Size,
             EntryType.FileInfoCached => _fileInfo.Length,
-            _ => new FileInfo(_fileName).Length,
+            _ => new FileInfo(GetFullFileName(_fileName)).Length,
         };
 
         public Entry(Scanner scanner, ZipArchiveFastEntry entry)
@@ -3871,10 +3874,15 @@ public sealed class Scanner : IDisposable
             }
             else
             {
+                DateTime lastModifiedDate =
+                    _fmFormat == FMFormat.NotInArchive
+                        ? new DateTimeOffset(readmeEntry.LastModifiedDate).DateTime
+                        : readmeEntry.LastModifiedDate;
+
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
                     isGlml: isGlml,
-                    lastModifiedDate: readmeEntry.LastModifiedDate,
+                    lastModifiedDate: lastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
