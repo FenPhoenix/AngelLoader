@@ -265,6 +265,7 @@ public sealed class Scanner : IDisposable
 
     #region Private classes
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct StreamScope
     {
         private readonly Scanner _scanner;
@@ -286,7 +287,7 @@ public sealed class Scanner : IDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ArchiveEntry
+    private readonly ref struct Entry
     {
         private enum EntryType : byte
         {
@@ -325,19 +326,15 @@ public sealed class Scanner : IDisposable
             _ => default,
         };
 
-        internal long UncompressedSize
+        internal long UncompressedSize => _entryType switch
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _entryType switch
-            {
-                EntryType.Zip => _zipEntry.Length,
-                EntryType.Rar => _rarEntry.Size,
-                EntryType.FileInfoCached => _fileInfo.Length,
-                _ => new FileInfo(_fileName).Length,
-            };
-        }
+            EntryType.Zip => _zipEntry.Length,
+            EntryType.Rar => _rarEntry.Size,
+            EntryType.FileInfoCached => _fileInfo.Length,
+            _ => new FileInfo(_fileName).Length,
+        };
 
-        public ArchiveEntry(Scanner scanner, ZipArchiveFastEntry entry)
+        public Entry(Scanner scanner, ZipArchiveFastEntry entry)
         {
             _entryType = EntryType.Zip;
             _scanner = scanner;
@@ -347,7 +344,7 @@ public sealed class Scanner : IDisposable
             _fileName = "";
         }
 
-        public ArchiveEntry(Scanner scanner, RarArchiveEntry entry)
+        public Entry(Scanner scanner, RarArchiveEntry entry)
         {
             _entryType = EntryType.Rar;
             _scanner = scanner;
@@ -357,7 +354,7 @@ public sealed class Scanner : IDisposable
             _fileName = "";
         }
 
-        public ArchiveEntry(Scanner scanner, FileInfoCustom fi)
+        public Entry(Scanner scanner, FileInfoCustom fi)
         {
             _entryType = EntryType.FileInfoCached;
             _scanner = scanner;
@@ -367,7 +364,7 @@ public sealed class Scanner : IDisposable
             _fileName = "";
         }
 
-        public ArchiveEntry(Scanner scanner, string fileName)
+        public Entry(Scanner scanner, string fileName)
         {
             _entryType = EntryType.OnDisk;
             _scanner = scanner;
@@ -394,15 +391,6 @@ public sealed class Scanner : IDisposable
             return _scanner._generalMemoryStream;
         }
     }
-
-    private ArchiveEntry GetArchiveEntry(NameAndIndex item) => _fmFormat switch
-    {
-        FMFormat.Zip => new ArchiveEntry(this, _archive.Entries[item.Index]),
-        FMFormat.Rar => new ArchiveEntry(this, _rarArchive.Entries[item.Index]),
-        _ => _fmDirFileInfos.Count > 0
-            ? new ArchiveEntry(this, _fmDirFileInfos[item.Index])
-            : new ArchiveEntry(this, item.Name),
-    };
 
 #if X64
     private sealed class FileNameCharBuffer
@@ -1599,7 +1587,7 @@ public sealed class Scanner : IDisposable
             {
                 try
                 {
-                    ArchiveEntry entry = new(this, zipEntry);
+                    Entry entry = new(this, zipEntry);
                     readme = ReadmeInternal.GetReadme(
                         _readmeFiles,
                         isGlml: false,
@@ -3648,7 +3636,7 @@ public sealed class Scanner : IDisposable
 
         #region Load XML
 
-        using (Stream es = GetArchiveEntry(file).Open())
+        using (Stream es = GetEntry(file).Open())
         {
             fmInfoXml.Load(es);
         }
@@ -3846,7 +3834,7 @@ public sealed class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            ArchiveEntry readmeEntry = GetArchiveEntry(readmeFile);
+            Entry readmeEntry = GetEntry(readmeFile);
             int readmeFileLen = (int)readmeEntry.UncompressedSize;
             if (readmeFileLen == 0) continue;
 
@@ -5127,12 +5115,12 @@ public sealed class Scanner : IDisposable
     private Game GetGameType()
     {
         Game game;
-        ArchiveEntry misFileEntry = default;
+        Entry misFileEntry = default;
 
         if (_solidGamFileToUse == null)
         {
             NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
-            misFileEntry = GetArchiveEntry(smallestUsedMisFile);
+            misFileEntry = GetEntry(smallestUsedMisFile);
 
             game = GameType_DoQuickCheck(misFileEntry);
             if (game != Game.Null) return game;
@@ -5147,7 +5135,7 @@ public sealed class Scanner : IDisposable
         return Game.Thief1;
     }
 
-    private Game GameType_DoQuickCheck(ArchiveEntry misFileEntry)
+    private Game GameType_DoQuickCheck(Entry misFileEntry)
     {
         /*
         SKYOBJVAR location key (byte position in file):
@@ -5234,13 +5222,13 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoMainCheck(ArchiveEntry misFileEntry)
+    private Game GameType_DoMainCheck(Entry misFileEntry)
     {
         if (_fmFormat.IsStreamableArchive())
         {
             // For zips, since we can't seek within the stream, the fastest way to find our string is just to
             // brute-force straight through.
-            ArchiveEntry entry = GameType_TryGetSmallestGamFileEntry(out ArchiveEntry gamFileEntry)
+            Entry entry = GameType_TryGetSmallestGamFileEntry(out Entry gamFileEntry)
                 ? gamFileEntry
                 : misFileEntry;
             using Stream stream = entry.Open();
@@ -5338,7 +5326,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private Game GameType_DoSS2FallbackCheck(ArchiveEntry misFileEntry)
+    private Game GameType_DoSS2FallbackCheck(Entry misFileEntry)
     {
         /*
         Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
@@ -5428,17 +5416,17 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private bool GameType_TryGetSmallestGamFileEntry(out ArchiveEntry result)
+    private bool GameType_TryGetSmallestGamFileEntry(out Entry result)
     {
         bool found = false;
         long smallestSize = long.MaxValue;
-        ArchiveEntry smallest = default;
+        Entry smallest = default;
         for (int i = 0; i < _baseDirFiles.Count; i++)
         {
             NameAndIndex item = _baseDirFiles[i];
             if (item.Name.ExtIsGam())
             {
-                ArchiveEntry gamFile = GetArchiveEntry(item);
+                Entry gamFile = GetEntry(item);
                 long gamSize = gamFile.UncompressedSize;
                 if (gamSize <= smallestSize)
                 {
@@ -6197,7 +6185,7 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        ArchiveEntry entry = GetArchiveEntry(item);
+        Entry entry = GetEntry(item);
         using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
 
         Encoding encoding =
@@ -6211,7 +6199,7 @@ public sealed class Scanner : IDisposable
 
         streamScope.Stream.Seek(0, SeekOrigin.Begin);
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(streamScope.Stream, encoding, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, encoding, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
@@ -6219,10 +6207,10 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        ArchiveEntry entry = GetArchiveEntry(item);
+        Entry entry = GetEntry(item);
         using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(streamScope.Stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
@@ -6262,6 +6250,15 @@ public sealed class Scanner : IDisposable
         return span;
     }
 #endif
+
+    private Entry GetEntry(NameAndIndex item) => _fmFormat switch
+    {
+        FMFormat.Zip => new Entry(this, _archive.Entries[item.Index]),
+        FMFormat.Rar => new Entry(this, _rarArchive.Entries[item.Index]),
+        _ => _fmDirFileInfos.Count > 0
+            ? new Entry(this, _fmDirFileInfos[item.Index])
+            : new Entry(this, item.Name),
+    };
 
     #endregion
 
