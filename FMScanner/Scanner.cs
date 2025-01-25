@@ -180,7 +180,7 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<string> _titles = new(0);
     private readonly ListFast<string> _titlesTemp = new(0);
 
-    private readonly ListFast<string> titlesStrLines_Distinct = new(0);
+    private readonly ListFast<string> _titlesStrLines_Distinct = new(0);
 
     private readonly ListFast<ReadmeInternal> _readmeFiles = new(10);
 
@@ -846,7 +846,7 @@ public sealed class Scanner : IDisposable
     {
         _titles.ClearFast();
         _titlesTemp.ClearFast();
-        titlesStrLines_Distinct.ClearFast();
+        _titlesStrLines_Distinct.ClearFast();
 
         _titlesStrIsOEM850 = false;
         _tempLines.ClearFast();
@@ -4532,7 +4532,7 @@ public sealed class Scanner : IDisposable
         #region Filter titlesStrLines
 
         // There's a way to do this with an IEqualityComparer, but no, for reasons
-        titlesStrLines_Distinct.ClearFastAndEnsureCapacity(titlesStrLines.Count);
+        _titlesStrLines_Distinct.ClearFastAndEnsureCapacity(titlesStrLines.Count);
 
         static bool TitlesStrLinesContainsI(string line, int indexOfColon, ListFast<string> titlesStrLinesDistinct)
         {
@@ -4579,17 +4579,17 @@ public sealed class Scanner : IDisposable
                 line.StartsWithI_Local("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
                 line.CharCountIsAtLeast('\"', 2) &&
-                !TitlesStrLinesContainsI(line, indexOfColon, titlesStrLines_Distinct))
+                !TitlesStrLinesContainsI(line, indexOfColon, _titlesStrLines_Distinct))
             {
-                titlesStrLines_Distinct.Add(line);
+                _titlesStrLines_Distinct.Add(line);
             }
         }
 
-        titlesStrLines_Distinct.Sort(_ctx.TitlesStrNaturalNumericSort);
+        _titlesStrLines_Distinct.Sort(_ctx.TitlesStrNaturalNumericSort);
 
         #endregion
 
-        return titlesStrLines_Distinct;
+        return _titlesStrLines_Distinct;
     }
 
     private string CleanupTitle(string value)
