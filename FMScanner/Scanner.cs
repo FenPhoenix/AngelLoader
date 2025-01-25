@@ -320,7 +320,12 @@ public sealed class Scanner : IDisposable
 
         internal Stream ReturnGlobalMemoryStreamWithSeekableEntryData()
         {
-            return _scanner.CreateSeekableStreamFromArchiveEntry(this, (int)UncompressedSize);
+            _scanner._generalMemoryStream.SetLength(UncompressedSize);
+            _scanner._generalMemoryStream.Position = 0;
+            using Stream es = Open();
+            StreamCopyNoAlloc(es, _scanner._generalMemoryStream, _scanner.StreamCopyBuffer);
+            _scanner._generalMemoryStream.Position = 0;
+            return _scanner._generalMemoryStream;
         }
 
         internal long UncompressedSize
@@ -1548,7 +1553,7 @@ public sealed class Scanner : IDisposable
                         lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
                         useForDateDetect: true);
-                    Stream readmeStream = CreateSeekableStreamFromArchiveEntry(entry, (int)entry.UncompressedSize);
+                    Stream readmeStream = entry.ReturnGlobalMemoryStreamWithSeekableEntryData();
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
                     readme.Lines.AddRange_Large(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
@@ -6284,16 +6289,6 @@ public sealed class Scanner : IDisposable
         return span;
     }
 #endif
-
-    private MemoryStream CreateSeekableStreamFromArchiveEntry(ArchiveEntry entry, int length)
-    {
-        _generalMemoryStream.SetLength(length);
-        _generalMemoryStream.Position = 0;
-        using Stream es = entry.Open();
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
-    }
 
     #endregion
 
