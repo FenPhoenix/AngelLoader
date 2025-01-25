@@ -1,4 +1,4 @@
-﻿//#define TIMING_TEST
+﻿#define TIMING_TEST
 //#define INDIVIDUAL_FM_TIMING
 
 using System;

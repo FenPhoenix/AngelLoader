@@ -329,6 +329,12 @@ public sealed class Scanner : IDisposable
             _ => default,
         };
 
+        internal DateTime LastModifiedDate_UtcProcessed => _entryType switch
+        {
+            EntryType.Zip => new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(LastModifiedDateRaw)).DateTime,
+            _ => new DateTimeOffset(LastModifiedDate).DateTime,
+        };
+
         internal long UncompressedSize => _entryType switch
         {
             EntryType.Zip => _zipEntry.Length,
@@ -523,6 +529,7 @@ public sealed class Scanner : IDisposable
         internal string Text = "";
 
         private uint? _lastModifiedDateRaw;
+        private bool _lastModifiedDateConvertedToOffset;
         private DateTime? _lastModifiedDate;
         internal DateTime LastModifiedDate
         {
@@ -533,7 +540,12 @@ public sealed class Scanner : IDisposable
                     _lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime((uint)_lastModifiedDateRaw)).DateTime;
                     _lastModifiedDateRaw = null;
                 }
-                return (DateTime)_lastModifiedDate!;
+                else if (!_lastModifiedDateConvertedToOffset)
+                {
+                    _lastModifiedDate = new DateTimeOffset(_lastModifiedDate!.Value).DateTime;
+                    _lastModifiedDateConvertedToOffset = true;
+                }
+                return _lastModifiedDate!.Value;
             }
         }
 
@@ -554,6 +566,7 @@ public sealed class Scanner : IDisposable
             IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
             _lastModifiedDate = null;
+            _lastModifiedDateConvertedToOffset = false;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
         }
@@ -565,6 +578,7 @@ public sealed class Scanner : IDisposable
             IsGlml = isGlml;
             _lastModifiedDateRaw = null;
             _lastModifiedDate = lastModifiedDate;
+            _lastModifiedDateConvertedToOffset = false;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
         }
@@ -3874,15 +3888,10 @@ public sealed class Scanner : IDisposable
             }
             else
             {
-                DateTime lastModifiedDate =
-                    _fmFormat == FMFormat.NotInArchive
-                        ? new DateTimeOffset(readmeEntry.LastModifiedDate).DateTime
-                        : readmeEntry.LastModifiedDate;
-
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
                     isGlml: isGlml,
-                    lastModifiedDate: lastModifiedDate,
+                    lastModifiedDate: readmeEntry.LastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -5551,7 +5560,7 @@ public sealed class Scanner : IDisposable
                 }
             }
 
-            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
+            misFileDateTime = GetMisFileDate(_usedMisFiles);
             if (misFileDateTime.Succeeded)
             {
                 DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
@@ -5577,7 +5586,7 @@ public sealed class Scanner : IDisposable
 
         return misFileDateTime.Succeeded
             ? misFileDateTime.Date.Value
-            : GetMisFileDate(this, _usedMisFiles).Date;
+            : GetMisFileDate(_usedMisFiles).Date;
 
         ParsedDateTime GetReadmeParsedDateTime()
         {
@@ -5630,25 +5639,11 @@ public sealed class Scanner : IDisposable
             return new ParsedDateTime(null, false);
         }
 
-        static MisFileDateTime GetMisFileDate(Scanner scanner, ListFast<NameAndIndex> usedMisFiles)
+        MisFileDateTime GetMisFileDate(ListFast<NameAndIndex> usedMisFiles)
         {
             if (usedMisFiles.Count > 0)
             {
-                DateTime misFileDate;
-                if (scanner._fmFormat == FMFormat.Zip)
-                {
-                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-                }
-                else if (scanner._fmDirFileInfos.Count > 0)
-                {
-                    misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
-                }
-                else
-                {
-                    var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                }
+                DateTime misFileDate = GetEntry(usedMisFiles[0]).LastModifiedDate_UtcProcessed;
 
                 return misFileDate.Year > 1998
                     ? new MisFileDateTime(true, misFileDate)
