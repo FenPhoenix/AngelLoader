@@ -291,11 +291,16 @@ public sealed class Scanner : IDisposable
         private readonly ZipArchiveFastEntry _zipEntry = null!;
         private readonly RarArchiveEntry _rarEntry = null!;
 
+        internal readonly string FullName;
+        internal readonly uint LastModifiedDateRaw;
+        internal readonly DateTime LastModifiedDate;
+
         public ArchiveEntry(Scanner scanner, ZipArchiveFastEntry entry)
         {
             _scanner = scanner;
             _zipEntry = entry;
             _rarEntry = null!;
+            FullName = entry.FullName;
             LastModifiedDateRaw = entry.LastWriteTime;
         }
 
@@ -304,6 +309,7 @@ public sealed class Scanner : IDisposable
             _scanner = scanner;
             _zipEntry = null!;
             _rarEntry = entry;
+            FullName = entry.Key;
             LastModifiedDate = entry.LastModifiedTime ?? DateTime.MinValue;
         }
 
@@ -317,21 +323,11 @@ public sealed class Scanner : IDisposable
             return _scanner.CreateSeekableStreamFromArchiveEntry(this, (int)UncompressedSize);
         }
 
-        internal string FullName
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _zipEntry != null! ? _zipEntry.FullName : _rarEntry.Key;
-        }
-
         internal long UncompressedSize
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => _zipEntry != null! ? _zipEntry.Length : _rarEntry.Size;
         }
-
-        internal readonly uint LastModifiedDateRaw;
-
-        internal readonly DateTime LastModifiedDate;
     }
 
     private bool TryGetArchiveEntry(NameAndIndex item, out ArchiveEntry archiveEntry)
@@ -1541,17 +1537,18 @@ public sealed class Scanner : IDisposable
 
             return (readmeInternal1, readmeInternal2);
 
-            void CreateReadme(ZipArchiveFastEntry entry, out ReadmeInternal? readme)
+            void CreateReadme(ZipArchiveFastEntry zipEntry, out ReadmeInternal? readme)
             {
                 try
                 {
+                    ArchiveEntry entry = new(this, zipEntry);
                     readme = ReadmeInternal.GetReadme(
                         _readmeFiles,
                         isGlml: false,
-                        lastModifiedDateRaw: entry.LastWriteTime,
+                        lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
                         useForDateDetect: true);
-                    Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
+                    Stream readmeStream = CreateSeekableStreamFromArchiveEntry(entry, (int)entry.UncompressedSize);
                     readme.Text = ReadAllTextDetectEncoding(readmeStream);
                     readme.Lines.AddRange_Large(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
@@ -3593,14 +3590,9 @@ public sealed class Scanner : IDisposable
 
         #region Load XML
 
-        if (_fmFormat == FMFormat.Zip)
+        if (TryGetArchiveEntry(file, out ArchiveEntry entry))
         {
-            using Stream es = _archive.OpenEntry(_archive.Entries[file.Index]);
-            fmInfoXml.Load(es);
-        }
-        else if (_fmFormat == FMFormat.Rar)
-        {
-            using Stream es = _rarArchive.Entries[file.Index].OpenEntryStream();
+            using Stream es = entry.Open();
             fmInfoXml.Load(es);
         }
         else
@@ -6298,17 +6290,6 @@ public sealed class Scanner : IDisposable
         _generalMemoryStream.SetLength(length);
         _generalMemoryStream.Position = 0;
         using Stream es = entry.Open();
-        StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
-    }
-
-    // @BLOCKS: Remove this later
-    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry entry, int length)
-    {
-        _generalMemoryStream.SetLength(length);
-        _generalMemoryStream.Position = 0;
-        using Stream es = _archive.OpenEntry(entry);
         StreamCopyNoAlloc(es, _generalMemoryStream, StreamCopyBuffer);
         _generalMemoryStream.Position = 0;
         return _generalMemoryStream;
