@@ -507,6 +507,7 @@ public sealed class Scanner : IDisposable
             }
         }
 
+        // @BLOCKS: Manual type switch
         internal FileInfoCustom(FileInfo fileInfo) => Set(fileInfo);
 
         /*
@@ -1195,9 +1196,9 @@ public sealed class Scanner : IDisposable
                     TimingDataList.Add(new TimingData(fm.Path, _fmTimer.Elapsed));
 #endif
 
-                    if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
+                    if (fm.IsArchive)
                     {
-                        DeleteFMWorkingPath();
+                        DeleteFMWorkingPathIfRequired();
                     }
                 }
 
@@ -1634,7 +1635,7 @@ public sealed class Scanner : IDisposable
 
         if (_fmFormat.IsSolidArchive())
         {
-            (ScannedFMDataAndError? partialExtractError, sevenZipEntries, rarEntries) =
+            (ScannedFMDataAndError? partialExtractError, ListFast<SolidEntry> entries) =
                 DoPartialSolidExtract(
                     tempPath,
                     tempRandomName,
@@ -1653,7 +1654,7 @@ public sealed class Scanner : IDisposable
             {
                 try
                 {
-                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
+                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, entries);
                     if (result == CopyReadmesToCacheResult.NeedsHtmlRefExtract)
                     {
                         needsHtmlRefExtract = true;
@@ -1996,9 +1997,7 @@ public sealed class Scanner : IDisposable
 
     #region Solid archive partial extract
 
-    private (ScannedFMDataAndError? Error,
-        ListFast<SevenZipArchiveEntry> sevenZipEntries,
-        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
+    private (ScannedFMDataAndError? Error, ListFast<SolidEntry> Entries)
     DoPartialSolidExtract(
         string tempPath,
         string tempRandomName,
@@ -2019,13 +2018,13 @@ public sealed class Scanner : IDisposable
         to match the logic for using them. If we change the usage logic, we need to change this too!
         */
 
+        // Stupid micro-optimization:
+        // Init them both just once, avoiding repeated null checks on the properties
+        ListFast<SolidEntry> entriesList = SolidExtractedEntriesList;
+        ListFast<SolidEntry> tempList = SolidZipExtractedEntriesTempList;
+
         try
         {
-            // Stupid micro-optimization:
-            // Init them both just once, avoiding repeated null checks on the properties
-            ListFast<SolidEntry> entriesList = SolidExtractedEntriesList;
-            ListFast<SolidEntry> tempList = SolidZipExtractedEntriesTempList;
-
             static bool EndsWithTitleFile(SolidEntry fileName)
             {
                 return fileName.FullName.PathEndsWithI_AsciiSecond("/titles.str") ||
@@ -2070,6 +2069,7 @@ public sealed class Scanner : IDisposable
                     SolidEntry solidEntry;
                     string fn;
                     long uncompressedSize;
+                    // @BLOCKS: Manual type switch
                     if (_fmFormat == FMFormat.SevenZip)
                     {
                         sevenZipEntry = sevenZipEntries[i];
@@ -2167,7 +2167,7 @@ public sealed class Scanner : IDisposable
                     cancellationToken,
                     out ScannedFMDataAndError? solidCostError))
             {
-                return (solidCostError, sevenZipEntries, rarEntries);
+                return (solidCostError, entriesList);
             }
 
             #region De-duplicate list
@@ -2342,7 +2342,7 @@ public sealed class Scanner : IDisposable
                         ex: null,
                         errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                                    fm.Path + $": fm is 7z{NL}",
-                        originalIndex: fm.OriginalIndex), sevenZipEntries, rarEntries);
+                        originalIndex: fm.OriginalIndex), entriesList);
                 }
             }
             else
@@ -2386,10 +2386,10 @@ public sealed class Scanner : IDisposable
                     errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                                fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction",
                     originalIndex: fm.OriginalIndex),
-                sevenZipEntries, rarEntries);
+                entriesList);
         }
 
-        return (null, sevenZipEntries, rarEntries);
+        return (null, entriesList);
     }
 
     private bool TryAddLowestCostSolidFiles(
@@ -2647,10 +2647,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private CopyReadmesToCacheResult CopyReadmesToCacheDir(
-        FMToScan fm,
-        ListFast<SevenZipArchiveEntry> sevenZipEntries,
-        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<SolidEntry> entries)
     {
         string cachePath = fm.CachePath;
 
@@ -2704,22 +2701,10 @@ public sealed class Scanner : IDisposable
 
         if (anyHtmlReadmes)
         {
-            List<string> archiveFileNames;
-            if (_fmFormat == FMFormat.SevenZip)
+            List<string> archiveFileNames = new List<string>(entries.Count);
+            for (int i = 0; i < entries.Count; i++)
             {
-                archiveFileNames = new List<string>(sevenZipEntries.Count);
-                for (int i = 0; i < sevenZipEntries.Count; i++)
-                {
-                    archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
-                }
-            }
-            else
-            {
-                archiveFileNames = new List<string>(rarEntries.Count);
-                for (int i = 0; i < rarEntries.Count; i++)
-                {
-                    archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
-                }
+                archiveFileNames.Add(Path.GetFileName(entries[i].FullName));
             }
 
             if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
@@ -2845,6 +2830,7 @@ public sealed class Scanner : IDisposable
 
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
+            // @BLOCKS: Manual type switch
             int filesCount = _fmFormat switch
             {
                 FMFormat.Zip => _archive.Entries.Count,
@@ -2857,6 +2843,7 @@ public sealed class Scanner : IDisposable
                 bool? pathIsCutscenes = null;
                 bool? pathIsSnd2 = null;
 
+                // @BLOCKS: Manual type switch
                 string fn =
                     _fmFormat == FMFormat.Zip ? _archive.Entries[i].FullName :
                     _fmFormat.IsSolidArchive() ? _fmDirFileInfos[i].FullName :
@@ -5247,15 +5234,8 @@ public sealed class Scanner : IDisposable
             long smallestSize = long.MaxValue;
             for (int i = 0; i < _usedMisFiles.Count; i++)
             {
-                NameAndIndex mis = _usedMisFiles[i];
-                long length = _fmFormat == FMFormat.Zip
-                    ? _archive.Entries[mis.Index].Length
-                    : _fmFormat == FMFormat.Rar
-                        ? _rarArchive.Entries[mis.Index].Size
-                        : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
-                            ? _fmDirFileInfos[mis.Index].Length
-                            : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
-
+                Entry misFile = GetEntry(_usedMisFiles[i]);
+                long length = misFile.UncompressedSize;
                 if (length <= smallestSize)
                 {
                     smallestSize = length;
@@ -5863,7 +5843,7 @@ public sealed class Scanner : IDisposable
 
     #region Helpers
 
-    private void DeleteFMWorkingPath()
+    private void DeleteFMWorkingPathIfRequired()
     {
         try
         {
