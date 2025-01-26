@@ -309,6 +309,9 @@ public sealed class Scanner : IDisposable
             Index = index;
             TotalExtractionCost = totalExtractionCost;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -2156,14 +2159,13 @@ public sealed class Scanner : IDisposable
                 }
             }
 
-            ScannedFMDataAndError? solidCostError = AddLowestCostSolidFiles(
-                entriesList,
-                tempPath,
-                tempRandomName,
-                fm,
-                cancellationToken);
-
-            if (solidCostError != null)
+            if (!TryAddLowestCostSolidFiles(
+                    entriesList,
+                    tempPath,
+                    tempRandomName,
+                    fm,
+                    cancellationToken,
+                    out ScannedFMDataAndError? solidCostError))
             {
                 return (solidCostError, sevenZipEntries, rarEntries);
             }
@@ -2390,143 +2392,142 @@ public sealed class Scanner : IDisposable
         return (null, sevenZipEntries, rarEntries);
     }
 
-    private ScannedFMDataAndError?
-    AddLowestCostSolidFiles(ListFast<SolidEntry> entriesList, string tempPath, string tempRandomName, FMToScan fm, CancellationToken cancellationToken)
+    private bool TryAddLowestCostSolidFiles(
+        ListFast<SolidEntry> entriesList,
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        CancellationToken cancellationToken,
+        [NotNullWhen(false)] out ScannedFMDataAndError? error)
     {
+        error = null;
+
         /*
         @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are
-        in that block. So if we want to check if a file is in a block by itself (for extraction cost
-        purposes), we would have to ignore any files in its block that are 0 length.
-        We don't need to do this currently, but just a note for the future.
+        in that block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
+        we would have to ignore any files in its block that are 0 length. We don't need to do this currently,
+        but just a note for the future.
         */
 
         // @BLOCKS: Implement solid RAR support later
-        if (_fmFormat == FMFormat.SevenZip)
+        if (_fmFormat != FMFormat.SevenZip)
         {
-            SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
-            SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
+            return FillOutNormalList();
+        }
 
-            if (lowestCostGamFile != null)
+        SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
+
+        #region Fast gam file size check
+
+        /*
+        Quick check to see if the .gam file is smaller than ANY of the .mis files (used or unused).
+        If it is, we don't have to do the expensive used .mis file check that has to extract missflag.str
+        separately etc. Of course we'll still have to extract missflag.str later anyway, but it will at least
+        be part of the main extract without requiring a separate 7z.exe call.
+        */
+        if (lowestCostGamFile != null)
+        {
+            _solid_MisAndGamFiles.AddRange(_solid_MisFiles, _solid_MisFiles.Count);
+            _solid_MisAndGamFiles.Add(lowestCostGamFile.Value);
+
+            SolidEntry? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
+            if (lowestCostMisOrGamFile != null &&
+                lowestCostMisOrGamFile.Value.Index == lowestCostGamFile.Value.Index)
             {
-                _solid_MisAndGamFiles.AddRange(_solid_MisFiles, _solid_MisFiles.Count);
-                _solid_MisAndGamFiles.Add(lowestCostGamFile.Value);
+                _solidGamFileToUse = CreateAndAdd(lowestCostGamFile);
 
-                SolidEntry? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
-                if (lowestCostMisOrGamFile != null &&
-                    lowestCostMisOrGamFile.Value.Index == lowestCostGamFile.Value.Index)
-                {
-                    entriesList.Add(lowestCostGamFile.Value);
-                    _solidGamFileToUse = new NameAndIndex(
-                        lowestCostGamFile.Value.FullName,
-                        lowestCostGamFile.Value.Index);
-                    for (int i = 0; i < _solid_MissFlagFiles.Count; i++)
-                    {
-                        entriesList.Add(_solid_MissFlagFiles[i]);
-                    }
+                entriesList.AddRange(_solid_MissFlagFiles);
 
-                    return null;
-                }
+                return true;
             }
+        }
 
-            SolidEntry? lowestCostUsedMisFile = null;
+        #endregion
 
-            var result =
-                GetLowestCostUsedMisFile(
-                    lowestCostMissFlagFile,
-                    _solid_MisFiles,
-                    tempPath,
-                    tempRandomName,
-                    fm,
-                    cancellationToken);
+        SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
 
-            if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
+        var result =
+            GetLowestCostUsedMisFile(
+                lowestCostMissFlagFile,
+                _solid_MisFiles,
+                tempPath,
+                tempRandomName,
+                fm,
+                cancellationToken);
+
+        SolidEntry? lowestCostUsedMisFile = null;
+
+        if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
+        {
+            error = UnsupportedZip(
+                archivePath: fm.Path,
+                fen7zResult: result.SevenZipResult,
+                ex: null,
+                errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                           fm.Path + $": fm is 7z{NL}",
+                originalIndex: fm.OriginalIndex);
+
+            return false;
+        }
+        else if (result.Result == GetLowestCostMisFileError.Fallback)
+        {
+            return FillOutNormalList();
+        }
+        else if (result.Result == GetLowestCostMisFileError.Success)
+        {
+            lowestCostUsedMisFile = result.MisFile;
+        }
+
+        if (lowestCostGamFile is { } gamNonNull &&
+            lowestCostUsedMisFile is { } usedMisNonNull)
+        {
+            if (gamNonNull.TotalExtractionCost <
+                usedMisNonNull.TotalExtractionCost)
             {
-                return UnsupportedZip(
-                    archivePath: fm.Path,
-                    fen7zResult: result.SevenZipResult,
-                    ex: null,
-                    errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + $": fm is 7z{NL}",
-                    originalIndex: fm.OriginalIndex);
-            }
-            else if (result.Result == GetLowestCostMisFileError.Success)
-            {
-                lowestCostUsedMisFile = result.MisFile;
-            }
-
-            if (result.Result != GetLowestCostMisFileError.Fallback)
-            {
-                if (lowestCostUsedMisFile != null &&
-                    lowestCostGamFile != null)
-                {
-                    if (lowestCostGamFile.Value.TotalExtractionCost <
-                        lowestCostUsedMisFile.Value.TotalExtractionCost)
-                    {
-                        _solidGamFileToUse = new NameAndIndex(
-                            lowestCostGamFile.Value.FullName,
-                            lowestCostGamFile.Value.Index);
-                        entriesList.Add(lowestCostGamFile.Value);
-                    }
-                    else
-                    {
-                        _solidMisFileToUse = new NameAndIndex(
-                            lowestCostUsedMisFile.Value.FullName,
-                            lowestCostUsedMisFile.Value.Index);
-                        entriesList.Add(lowestCostUsedMisFile.Value);
-                    }
-                }
-                else if (lowestCostGamFile != null)
-                {
-                    _solidGamFileToUse = new NameAndIndex(
-                        lowestCostGamFile.Value.FullName,
-                        lowestCostGamFile.Value.Index);
-                    entriesList.Add(lowestCostGamFile.Value);
-                }
-                else if (lowestCostUsedMisFile != null)
-                {
-                    _solidMisFileToUse = new NameAndIndex(
-                        lowestCostUsedMisFile.Value.FullName,
-                        lowestCostUsedMisFile.Value.Index);
-                    entriesList.Add(lowestCostUsedMisFile.Value);
-                }
-                else
-                {
-                    FillOutNormalList();
-                }
+                _solidGamFileToUse = CreateAndAdd(gamNonNull);
             }
             else
             {
-                FillOutNormalList();
+                _solidMisFileToUse = CreateAndAdd(usedMisNonNull);
             }
+        }
+        else if (lowestCostGamFile != null)
+        {
+            _solidGamFileToUse = CreateAndAdd(lowestCostGamFile);
+        }
+        else if (lowestCostUsedMisFile != null)
+        {
+            _solidMisFileToUse = CreateAndAdd(lowestCostUsedMisFile);
         }
         else
         {
-            FillOutNormalList();
+            return FillOutNormalList();
         }
 
-        return null;
+        return true;
 
-        void FillOutNormalList()
+        NameAndIndex CreateAndAdd(SolidEntry? entry)
+        {
+            SolidEntry value = entry!.Value;
+            entriesList.Add(value);
+            return value.ToNameAndIndex();
+        }
+
+        bool FillOutNormalList()
         {
             if (_solid_MisFiles.Count > 1)
             {
-                for (int i = 0; i < _solid_MissFlagFiles.Count; i++)
-                {
-                    entriesList.Add(_solid_MissFlagFiles[i]);
-                }
+                entriesList.AddRange(_solid_MissFlagFiles);
             }
             else
             {
                 _solidMissFlagFileToUse = null;
             }
-            for (int i = 0; i < _solid_MisFiles.Count; i++)
-            {
-                entriesList.Add(_solid_MisFiles[i]);
-            }
-            for (int i = 0; i < _solid_GamFiles.Count; i++)
-            {
-                entriesList.Add(_solid_GamFiles[i]);
-            }
+
+            entriesList.AddRange(_solid_MisFiles);
+            entriesList.AddRange(_solid_GamFiles);
+
+            return true;
         }
     }
 
@@ -2559,7 +2560,7 @@ public sealed class Scanner : IDisposable
         if (misFiles.Count == 1)
         {
             SolidEntry item = misFiles[0];
-            _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+            _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
             return (GetLowestCostMisFileError.Success, null, item);
         }
 
@@ -2602,21 +2603,21 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < misFiles.Count; i++)
             {
                 SolidEntry item = misFiles[i];
-                _solid_MisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+                _solid_MisFileItems.Add(item.ToNameAndIndex());
             }
 
-            NameAndIndex missFlagFile = new(lowestCostMissFlagFileNonNull.FullName, lowestCostMissFlagFileNonNull.Index);
+            NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull.ToNameAndIndex();
             ReadAllLinesUTF8(missFlagFile, _tempLines);
             CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
 
-            _solidMissFlagFileToUse = new NameAndIndex(missFlagFile.Name, missFlagFile.Index);
+            _solidMissFlagFileToUse = missFlagFile;
         }
         else
         {
             for (int i = 0; i < misFiles.Count; i++)
             {
                 SolidEntry item = misFiles[i];
-                _solid_UsedMisFileItems.Add(new NameAndIndex(item.FullName, item.Index));
+                _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
             }
         }
 

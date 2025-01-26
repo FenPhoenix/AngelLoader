@@ -133,6 +133,18 @@ public static partial class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange(ListFast<T> items)
+        {
+            EnsureCapacity(Count + items.Count);
+            // We usually add small enough arrays that a loop is faster
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemsArray[Count + i] = items[i];
+            }
+            Count += items.Count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void AddRange(ListFast<T> items, int count)
         {
             EnsureCapacity(Count + count);
