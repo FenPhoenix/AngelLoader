@@ -6102,7 +6102,7 @@ public sealed class Scanner : IDisposable
         lines.ClearFast();
 
         Entry entry = GetEntry(item);
-        using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
+        using StreamScope streamScope = new(this, entry.Open());
 
         using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, Encoding.UTF8, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
