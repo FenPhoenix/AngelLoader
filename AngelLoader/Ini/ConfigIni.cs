@@ -913,6 +913,11 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_ShowPresetTags_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.ShowPresetTags = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     [StructLayout(LayoutKind.Auto)]
@@ -1120,6 +1125,8 @@ internal static partial class Ini
         { "IOThreadsMode", new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
         { "CustomIOThreadCount", new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
         { "DriveMultithreadingLevel", new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
+
+        { "ShowPresetTags", new Config_DelegatePointerWrapper(&Config_ShowPresetTags_Set) },
 
         #region Backward compatibility
 
@@ -1535,5 +1542,7 @@ internal static partial class Ini
             sw.Append(item.Key).Append(':').Append(item.Value);
         }
         sw.AppendLine();
+
+        sw.Append("ShowPresetTags=").AppendLine(config.ShowPresetTags);
     }
 }

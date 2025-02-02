@@ -465,6 +465,8 @@ public sealed class ConfigData
         }
     }
 
+    internal bool ShowPresetTags = true;
+
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
     internal bool ForceWindowed;

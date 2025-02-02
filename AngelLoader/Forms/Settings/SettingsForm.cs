@@ -661,6 +661,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
 
+            OtherPage.AlwaysShowPresetTagsCheckBox.Checked = config.ShowPresetTags;
+
             #endregion
 
             #region Thief Buddy page
@@ -1149,6 +1151,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
                 OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
 
+                OtherPage.TagsGroupBox.Text = LText.SettingsWindow.Other_Tags;
+                OtherPage.AlwaysShowPresetTagsCheckBox.Text = LText.SettingsWindow.Other_AlwaysShowPresetTags;
+                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox,LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
+
                 #endregion
 
                 #region Thief Buddy page
@@ -1547,6 +1553,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OutConfig.ConfirmPlayOnDCOrEnter = OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked;
 
             OutConfig.EnableFuzzySearch = OtherPage.EnableFuzzySearchCheckBox.Checked;
+
+            OutConfig.ShowPresetTags = OtherPage.AlwaysShowPresetTagsCheckBox.Checked;
 
             #endregion
 

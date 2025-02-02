@@ -45,6 +45,8 @@ sealed partial class OtherPage
         this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
+        this.TagsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+        this.AlwaysShowPresetTagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.PagePanel.SuspendLayout();
         this.FilteringGroupBox.SuspendLayout();
         this.InstallingFMsGroupBox.SuspendLayout();
@@ -52,12 +54,14 @@ sealed partial class OtherPage
         this.WebSearchGroupBox.SuspendLayout();
         this.UninstallingFMsGroupBox.SuspendLayout();
         this.FMSettingsGroupBox.SuspendLayout();
+        this.TagsGroupBox.SuspendLayout();
         this.SuspendLayout();
         // 
         // PagePanel
         // 
         this.PagePanel.AutoScroll = true;
         this.PagePanel.AutoScrollMinSize = new System.Drawing.Size(432, 0);
+        this.PagePanel.Controls.Add(this.TagsGroupBox);
         this.PagePanel.Controls.Add(this.FilteringGroupBox);
         this.PagePanel.Controls.Add(this.InstallingFMsGroupBox);
         this.PagePanel.Controls.Add(this.PlayFMOnDCOrEnterGroupBox);
@@ -65,7 +69,7 @@ sealed partial class OtherPage
         this.PagePanel.Controls.Add(this.UninstallingFMsGroupBox);
         this.PagePanel.Controls.Add(this.FMSettingsGroupBox);
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.PagePanel.Size = new System.Drawing.Size(440, 897);
+        this.PagePanel.Size = new System.Drawing.Size(440, 985);
         this.PagePanel.TabIndex = 0;
         // 
         // FilteringGroupBox
@@ -375,12 +379,32 @@ sealed partial class OtherPage
         this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
         this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
         // 
+        // TagsGroupBox
+        // 
+        this.TagsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.TagsGroupBox.Controls.Add(this.AlwaysShowPresetTagsCheckBox);
+        this.TagsGroupBox.Location = new System.Drawing.Point(8, 876);
+        this.TagsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+        this.TagsGroupBox.Size = new System.Drawing.Size(424, 56);
+        this.TagsGroupBox.TabIndex = 6;
+        this.TagsGroupBox.TabStop = false;
+        // 
+        // AlwaysShowPresetTagsCheckBox
+        // 
+        this.AlwaysShowPresetTagsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.AlwaysShowPresetTagsCheckBox.Checked = true;
+        this.AlwaysShowPresetTagsCheckBox.Location = new System.Drawing.Point(16, 16);
+        this.AlwaysShowPresetTagsCheckBox.Size = new System.Drawing.Size(400, 32);
+        this.AlwaysShowPresetTagsCheckBox.TabIndex = 0;
+        // 
         // OtherPage
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.Controls.Add(this.PagePanel);
-        this.Size = new System.Drawing.Size(440, 897);
+        this.Size = new System.Drawing.Size(440, 985);
         this.PagePanel.ResumeLayout(false);
         this.FilteringGroupBox.ResumeLayout(false);
         this.InstallingFMsGroupBox.ResumeLayout(false);
@@ -392,6 +416,7 @@ sealed partial class OtherPage
         this.UninstallingFMsGroupBox.ResumeLayout(false);
         this.UninstallingFMsGroupBox.PerformLayout();
         this.FMSettingsGroupBox.ResumeLayout(false);
+        this.TagsGroupBox.ResumeLayout(false);
         this.ResumeLayout(false);
     }
 }

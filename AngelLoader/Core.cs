@@ -546,6 +546,9 @@ internal static class Core
         bool fuzzySearchChanged =
             !startup && Config.EnableFuzzySearch != outConfig.EnableFuzzySearch;
 
+        bool showPresetTagsChanged =
+            !startup && Config.ShowPresetTags != outConfig.ShowPresetTags;
+
         #endregion
 
         #region Set config data
@@ -671,6 +674,8 @@ internal static class Core
 
         Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
 
+        Config.ShowPresetTags = outConfig.ShowPresetTags;
+
         #endregion
 
         #region Thief Buddy page
@@ -792,6 +797,11 @@ internal static class Core
         if (fuzzySearchChanged)
         {
             sortAndSetFilter = true;
+        }
+
+        if (showPresetTagsChanged)
+        {
+            FMTags.RebuildGlobalTags();
         }
 
         // Do this BEFORE the view refresh!

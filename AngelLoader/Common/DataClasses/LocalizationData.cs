@@ -910,6 +910,10 @@ internal sealed class LText_Class
             "the FM title \"King's Story\". With this option disabled, the filter would match exact text only.")]
         internal readonly string Other_EnableFuzzySearch = "Enable fuzzy search for title and author";
         [FenGenBlankLine]
+        internal readonly string Other_Tags = "Tags";
+        internal readonly string Other_AlwaysShowPresetTags = "Always show preset tags";
+        internal readonly string Other_AlwaysShowPresetTags_ToolTip = "When enabled, there will always be a preset collection of tags to choose from, even if no FMs have any tags.";
+        [FenGenBlankLine]
         internal readonly string ThiefBuddy_ThiefBuddyOptions = "Thief Buddy options";
         internal readonly string ThiefBuddy_StatusInstalled = "Thief Buddy is installed.";
         internal readonly string ThiefBuddy_StatusNotInstalled = "Thief Buddy is not installed.";

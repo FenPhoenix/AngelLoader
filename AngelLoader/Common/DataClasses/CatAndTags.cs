@@ -247,12 +247,14 @@ internal static class PresetTags
     internal static readonly int Count = _fmSelPresetTags.Length;
 
     /// <summary>
-    /// Deep-copies the set of preset tags to a <see cref="FMCategoriesCollection"/>.
+    /// Deep-copies the set of preset tags to a <see cref="FMCategoriesCollection"/>, if showing preset tags is enabled. Otherwise, just clears the destination collection.
     /// </summary>
     /// <param name="dest">The <see cref="FMCategoriesCollection"/> to copy the preset tags to.</param>
     internal static void DeepCopyTo(FMCategoriesCollection dest)
     {
         dest.Clear();
+
+        if (!Global.Config.ShowPresetTags) return;
 
         foreach (KeyValuePair<string, string[]> presetTag in _fmSelPresetTags)
         {
