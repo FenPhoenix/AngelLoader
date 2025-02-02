@@ -1691,6 +1691,10 @@ public sealed partial class MainForm : DarkFormBase,
                 await FMDelete.HandleDelete();
                 SetAvailableAndFinishedFMCount();
             }
+            else if (TagsTabPage.TagsTreeFocused)
+            {
+                TagsTabPage.HandleTagDelete();
+            }
         }
         else if (e.KeyCode == Keys.F5)
         {

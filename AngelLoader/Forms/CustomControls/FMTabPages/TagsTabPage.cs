@@ -123,6 +123,10 @@ public sealed class TagsTabPage : Lazy_TabsBase
         return _constructed && AddTagLLDropDown != null! && AddTagLLDropDown.Visible;
     }
 
+    internal bool TagsTreeFocused => _constructed && _page.TagsTreeView.Focused;
+
+    internal void HandleTagDelete() => RemoveTagOperation();
+
     internal void HideAndClearAddTagLLDropDown()
     {
         if (_constructed && AddTagLLDropDown != null!)
