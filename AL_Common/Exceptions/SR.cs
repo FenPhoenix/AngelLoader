@@ -76,7 +76,6 @@ public static class SR
     public static readonly string IO_FileTooLarge_Path_AllocationSize = "Failed to create '{0}' with allocation size '{1}' because the file was too large.";
     public static readonly string Argument_InvalidPreallocateAccess = "Preallocation size can be requested only in write mode.";
     public static readonly string Argument_InvalidPreallocateMode = "Preallocation size can be requested only for new files.";
-    public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string IO_SeekAppendOverwrite = "Unable seek backward to overwrite data that previously existed in a file opened in Append mode.";
     public static readonly string IO_SetLengthAppendTruncate = "Unable to truncate data that previously existed in a file opened in Append mode.";
     public static readonly string ArgumentOutOfRange_FileLengthTooBig = "Specified file length was too large for the file system.";
@@ -84,6 +83,7 @@ public static class SR
     public static readonly string InvalidOperation_NullArray = "The underlying array is null.";
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
 #if ENABLE_UNUSED
+    public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
     public static readonly string ArgumentOutOfRange_Generic_MustBeNonNegativeNonZero = "{0} ('{1}') must be a non-negative and non-zero value.";
     public static readonly string Argument_EmptyOrWhiteSpaceString = "The value cannot be an empty string or composed entirely of whitespace.";

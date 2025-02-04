@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -124,6 +123,7 @@ internal static class FileStreamHelpers
         }
     }
 
+#if false
     internal static long Seek(AL_SafeFileHandle handle, long offset, SeekOrigin origin, bool closeInvalidHandle = false)
     {
         Debug.Assert(origin >= SeekOrigin.Begin && origin <= SeekOrigin.End);
@@ -142,6 +142,7 @@ internal static class FileStreamHelpers
 
         return ret;
     }
+#endif
 
     internal static void ThrowInvalidArgument(AL_SafeFileHandle handle) =>
         throw Win32Marshal.GetExceptionForWin32Error(Interop.Errors.ERROR_INVALID_PARAMETER, handle.Path);

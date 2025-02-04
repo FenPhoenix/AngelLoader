@@ -122,6 +122,7 @@ public sealed class FileStream_NET : Stream
 
     private bool IsClosed => _fileHandle.IsClosed;
 
+#if false
     public AL_SafeFileHandle SafeFileHandle
     {
         get
@@ -144,6 +145,7 @@ public sealed class FileStream_NET : Stream
 
     /// <summary>Gets the path that was passed to the constructor.</summary>
     public string Name => _fileHandle.Path ?? SR.IO_UnknownFileName;
+#endif
 
     /// <summary>Sets the length of this stream to the given value.</summary>
     /// <param name="value">The new length of the stream.</param>
@@ -722,6 +724,7 @@ public sealed class FileStream_NET : Stream
         }
     }
 
+#if false
     private void EnsureCanSeek()
     {
         if (!CanSeek)
@@ -729,6 +732,7 @@ public sealed class FileStream_NET : Stream
             ThrowHelper.ThrowNotSupportedException_UnseekableStream();
         }
     }
+#endif
 
     private void EnsureCanRead()
     {
@@ -777,6 +781,7 @@ public sealed class FileStream_NET : Stream
         }
     }
 
+#if false
     private static void ValidateHandle(AL_SafeFileHandle handle, FileAccess access)
     {
         if (handle.IsInvalid)
@@ -792,6 +797,7 @@ public sealed class FileStream_NET : Stream
             ThrowHelper.ThrowObjectDisposedException_FileClosed();
         }
     }
+#endif
 
     /// <summary>Validates arguments to Read and Write and throws resulting exceptions.</summary>
     /// <param name="buffer">The buffer to read from or write to.</param>

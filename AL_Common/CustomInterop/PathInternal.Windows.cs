@@ -45,8 +45,8 @@ internal static partial class PathInternal
     internal const char VolumeSeparatorChar = ':';
 #if ENABLE_UNUSED
     internal const char PathSeparator = ';';
-#endif
     internal const string DirectorySeparatorCharAsString = "\\";
+#endif
 
     internal const string NTPathPrefix = @"\??\";
     internal const string ExtendedPathPrefix = @"\\?\";
