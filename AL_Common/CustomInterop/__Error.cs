@@ -46,30 +46,7 @@ internal static class __Error
             return path;
         }
 
-        bool safeToReturn = false;
-        try
-        {
-            if (!isInvalidPath)
-            {
-                safeToReturn = true;
-            }
-        }
-        catch (SecurityException)
-        {
-        }
-        catch (ArgumentException)
-        {
-            // ? and * characters cause ArgumentException to be thrown from HasIllegalCharacters
-            // inside FileIOPermission.AddPathList
-        }
-        catch (NotSupportedException)
-        {
-            // paths like "!Bogus\\dir:with/junk_.in it" can cause NotSupportedException to be thrown
-            // from Security.Util.StringExpressionSet.CanonicalizePath when ':' is found in the path
-            // beyond string index position 1.
-        }
-
-        if (!safeToReturn)
+        if (isInvalidPath)
         {
             path = path[^1] == Path.DirectorySeparatorChar
                 ? SR.IO_NoPermissionToDirectoryName
@@ -177,7 +154,6 @@ internal static class __Error
     private const int FORMAT_MESSAGE_ARGUMENT_ARRAY = 0x00002000;
 
     [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
-    [SecurityCritical]
     private static extern int FormatMessage(
         int dwFlags,
         IntPtr lpSource,
@@ -188,7 +164,6 @@ internal static class __Error
         IntPtr va_list_arguments);
 
     // Gets an error message for a Win32 error code.
-    [SecurityCritical]
     private static string GetMessage(int errorCode)
     {
         StringBuilder sb = new(512);
