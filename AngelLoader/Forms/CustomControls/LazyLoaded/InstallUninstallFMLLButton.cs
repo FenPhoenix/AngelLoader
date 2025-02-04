@@ -100,44 +100,47 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
         }
     }
 
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        var container = _owner.BottomLeftFLP;
+
+        Button = new DarkButton
+        {
+            Tag = LoadType.Lazy,
+
+            AutoSize = true,
+            Margin = new Padding(6, 3, 0, 3),
+            Padding = new Padding(30, 0, 6, 0),
+            MinimumSize = new Size(0, 36),
+            TabIndex = 58,
+            Enabled = _enabled,
+
+            DarkModeEnabled = _darkModeEnabled,
+        };
+
+        Button.Click += _owner.Async_EventHandler_Main;
+        Button.PaintCustom += InstallUninstallButton_Paint;
+
+        container.Controls.Add(Button);
+        container.Controls.SetChildIndex(Button, 2);
+
+        _constructed = true;
+    }
+
     internal void SetVisible(bool enabled)
     {
         if (enabled)
         {
-            if (!_constructed)
-            {
-                var container = _owner.BottomLeftFLP;
-
-                Button = new DarkButton
-                {
-                    Tag = LoadType.Lazy,
-
-                    AutoSize = true,
-                    Margin = new Padding(6, 3, 0, 3),
-                    Padding = new Padding(30, 0, 6, 0),
-                    MinimumSize = new Size(0, 36),
-                    TabIndex = 58,
-                    Enabled = _enabled,
-
-                    DarkModeEnabled = _darkModeEnabled,
-                };
-
-                Button.Click += _owner.Async_EventHandler_Main;
-                Button.PaintCustom += InstallUninstallButton_Paint;
-
-                container.Controls.Add(Button);
-                container.Controls.SetChildIndex(Button, 2);
-
-                _constructed = true;
-            }
-
+            Construct();
             Button.Show();
             // We have to always localize here because that sets our max fixed width
             Localize();
         }
-        else
+        else if (_constructed)
         {
-            if (_constructed) Button.Hide();
+            Button.Hide();
         }
     }
 

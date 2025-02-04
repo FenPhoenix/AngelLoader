@@ -70,9 +70,9 @@ internal sealed class ExitLLButton : IDarkable
             Construct();
             Button.Show();
         }
-        else
+        else if (_constructed)
         {
-            if (_constructed) Button.Hide();
+            Button.Hide();
         }
     }
 }

@@ -77,10 +77,8 @@ internal sealed class Lazy_UpdateNotification : IDarkable
             Button.Visible = true;
             _owner.SetFilterBarWidth();
         }
-        else
+        else if (_constructed)
         {
-            if (!_constructed) return;
-
             Button.Visible = false;
             _owner.SetFilterBarWidth();
         }

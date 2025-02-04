@@ -78,9 +78,9 @@ internal sealed class Lazy_WebSearchButton : IDarkable
             Construct();
             Button.Show();
         }
-        else
+        else if (_constructed)
         {
-            if (_constructed) Button.Hide();
+            Button.Hide();
         }
     }
 

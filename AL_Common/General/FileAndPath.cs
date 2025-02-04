@@ -697,9 +697,13 @@ public static partial class Common
         Debug.Assert((b2 & 0xF8) == 0, "Unexpected set bits");
 
         if ((b3 & 0x80) != 0)
+        {
             b2 |= 0x08;
+        }
         if ((b4 & 0x80) != 0)
+        {
             b2 |= 0x10;
+        }
 
         chars[7] = (char)Base32Char[b2];
 
