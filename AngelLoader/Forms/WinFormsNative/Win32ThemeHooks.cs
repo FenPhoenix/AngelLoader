@@ -1,14 +1,14 @@
 ﻿/*
 Here's the deal with this thing:
 
--On Framework, we need EasyHook.
+-On Framework x86, we need EasyHook.
+-On Framework x64, we can use CoreHook (and do).
 -On .NET modern, we need CoreHook.
 -On .NET modern, they've added the [SuppressGCTransition] attribute to the internal GetSysColor() extern function,
  which improves performance but causes an ExecutionEngineException when hooked. Even when we use our own defined
  p/invoke for it without the attribute, it still happens somehow. I don't know how this kind of thing works so
- whatever.
--We include our own custom version of System.Drawing.Primitives.dll without the [SuppressGCTransition] attribute
- on GetSysColor().
+ whatever. Therefore, on .NET modern, we include our own custom version of System.Drawing.Primitives.dll without
+ the [SuppressGCTransition] attribute on GetSysColor().
 */
 
 using System;
