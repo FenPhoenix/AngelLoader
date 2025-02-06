@@ -403,6 +403,8 @@ internal static class FindFMs
 
         #endregion
 
+        // @ARCHIVE_MERGE: Here's where archives get merged into the list, and separate extensions added as
+        //  separate items.
         MergeNewArchiveFMs(fmArchivesAndDatesDict, instDirNameContext);
 
         int fmDataIniListCount = FMDataIniList.Count;
@@ -430,7 +432,13 @@ internal static class FindFMs
             }
         }
 
-        SetArchiveNames(fmArchivesAndDatesDict, instDirNameContext);
+        /*
+        @ARCHIVE_MERGE: Here we set archive names for new installed FMs, which sounds kind of not related, but
+         we can end up searching for archives (any extension). Also, installed FMs normally have the fmsel.inf
+         file which lists an archive with an explicit extension (.zip for example). So if we wanted to switch an
+         entry from .zip to .7z, we would also have to change that file. And that would mess up FMSel of course...
+        */
+        SetArchiveNamesForNewlyFoundInstalledFMs(fmArchivesAndDatesDict, instDirNameContext);
 
         EnsureUniqueInstalledNames();
 
@@ -612,7 +620,9 @@ internal static class FindFMs
 
     #region Set names
 
-    private static void SetArchiveNames(DictionaryI<ExpandableDate_FromTicks> fmArchives, InstDirNameContext instDirNameContext)
+    private static void SetArchiveNamesForNewlyFoundInstalledFMs(
+        DictionaryI<ExpandableDate_FromTicks> fmArchives,
+        InstDirNameContext instDirNameContext)
     {
         DictionaryI<FanMission>? archivesDict = null;
         DictionaryI<FanMission> GetArchivesDict()
@@ -639,45 +649,44 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniList[i];
 
-            if (fm.Archive.IsEmpty())
+            if (!fm.Archive.IsEmpty()) continue;
+
+            if (fm.InstalledDir.IsEmpty())
             {
-                if (fm.InstalledDir.IsEmpty())
-                {
-                    FMDataIniList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
+                FMDataIniList.RemoveAt(i);
+                i--;
+                continue;
+            }
 
-                // @PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
-                string? archiveName = null;
-                // Skip the expensive archive name search if we're marked as having no archive
-                if (!fm.NoArchive)
-                {
-                    lastResortLinkupContext ??= new LastResortLinkupContext(instDirNameContext);
-                    archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupContext);
-                }
-                if (archiveName.IsEmpty()) continue;
+            // @PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
+            string? archiveName = null;
+            // Skip the expensive archive name search if we're marked as having no archive
+            if (!fm.NoArchive)
+            {
+                lastResortLinkupContext ??= new LastResortLinkupContext(instDirNameContext);
+                archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupContext);
+            }
+            if (archiveName.IsEmpty()) continue;
 
-                // NOTE: I guess this removes duplicates, which is why it has to do the search?
-                if (GetArchivesDict().TryGetValue(archiveName, out FanMission existingFM))
+            // NOTE: I guess this removes duplicates, which is why it has to do the search?
+            if (GetArchivesDict().TryGetValue(archiveName, out FanMission existingFM))
+            {
+                existingFM.InstalledDir = fm.InstalledDir;
+                existingFM.Installed = true;
+                existingFM.Game = fm.Game;
+                existingFM.DateAdded ??= fm.DateAdded;
+                FMDataIniList.RemoveAt(i);
+                i--;
+            }
+            else
+            {
+                fm.Archive = archiveName;
+                if (fm.NoArchive)
                 {
-                    existingFM.InstalledDir = fm.InstalledDir;
-                    existingFM.Installed = true;
-                    existingFM.Game = fm.Game;
-                    existingFM.DateAdded ??= fm.DateAdded;
-                    FMDataIniList.RemoveAt(i);
-                    i--;
+                    string? fmselInf = GetFMSelInfPath(fm);
+                    if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
                 }
-                else
-                {
-                    fm.Archive = archiveName;
-                    if (fm.NoArchive)
-                    {
-                        string? fmselInf = GetFMSelInfPath(fm);
-                        if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
-                    }
-                    fm.NoArchive = false;
-                }
+                fm.NoArchive = false;
             }
         }
     }
