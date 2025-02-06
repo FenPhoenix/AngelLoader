@@ -437,6 +437,10 @@ internal static class FindFMs
          we can end up searching for archives (any extension). Also, installed FMs normally have the fmsel.inf
          file which lists an archive with an explicit extension (.zip for example). So if we wanted to switch an
          entry from .zip to .7z, we would also have to change that file. And that would mess up FMSel of course...
+
+        @ARCHIVE_MERGE(Backup/restore): Zips and 7zs may well have different timestamps for their entries (zips
+         having 2 second granularity). Switching an FM from zip to 7z might therefore screw up a differential
+         backup.
         */
         SetArchiveNamesForNewlyFoundInstalledFMs(fmArchivesAndDatesDict, instDirNameContext);
 
