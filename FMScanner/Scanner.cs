@@ -314,6 +314,10 @@ public sealed class Scanner : IDisposable
         internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
     }
 
+    /// <summary>
+    /// Abstracts over disposable streams vs. the reusable cached MemoryStream. The passed stream won't be disposed
+    /// if it's the cached MemoryStream.
+    /// </summary>
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct StreamScope
     {
@@ -3684,6 +3688,14 @@ public sealed class Scanner : IDisposable
                 }
                 else
                 {
+                    /*
+                    @PERF_TODO: For seekable streams, we keep the stream open and just seek to the beginning.
+                     This is a performance optimization, but it also creates a mess, as we now can't cleanly have
+                     a using. How much performance this actually gains us is questionable; it'll be some, but I
+                     doubt it's deal-breaking (but need to measure).
+                     We may be able to have an abstracted "return to start" method where the stream is either
+                     reopened or actually just has its position reset to start.
+                    */
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
