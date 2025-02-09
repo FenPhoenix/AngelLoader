@@ -1335,7 +1335,7 @@ public sealed class Scanner : IDisposable
                 {
                     Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
                     return UnsupportedTDM(
-                        archivePath: fm.Path,
+                        fmDirName: FMWorkingPathDirName,
                         fen7zResult: null,
                         ex: null,
                         errorInfo: "FM directory: " + fm.Path,
@@ -2761,7 +2761,7 @@ public sealed class Scanner : IDisposable
     #region Fail return functions
 
     private static ScannedFMDataAndError UnsupportedTDM(
-        string archivePath,
+        string fmDirName,
         Fen7z.Result? fen7zResult,
         Exception? ex,
         string errorInfo,
@@ -2770,7 +2770,7 @@ public sealed class Scanner : IDisposable
         {
             ScannedFMData = new ScannedFMData
             {
-                ArchiveName = Path.GetFileName(archivePath),
+                ArchiveName = fmDirName,
                 Game = Game.Unsupported,
                 MissionCount = 0,
             },
