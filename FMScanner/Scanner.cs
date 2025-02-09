@@ -579,7 +579,6 @@ public sealed class Scanner : IDisposable
         /// </summary>
         internal bool Scan;
         internal bool UseForDateDetect;
-        internal bool IsGlml;
         internal readonly ListFast<string> Lines = new(0);
         internal string Text = "";
 
@@ -604,21 +603,20 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        private ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        private ReadmeInternal(uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
-            Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            Set(lastModifiedDateRaw, scan, useForDateDetect);
         }
 
-        private ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        private ReadmeInternal(DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
-            Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+            Set(lastModifiedDate, scan, useForDateDetect);
         }
 
-        private void Set(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        private void Set(uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             Text = "";
             Lines.ClearFast();
-            IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
             _lastModifiedDate = null;
             _lastModifiedDateConvertedToOffset = false;
@@ -626,11 +624,10 @@ public sealed class Scanner : IDisposable
             UseForDateDetect = useForDateDetect;
         }
 
-        private void Set(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        private void Set(DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             Text = "";
             Lines.ClearFast();
-            IsGlml = isGlml;
             _lastModifiedDateRaw = null;
             _lastModifiedDate = lastModifiedDate;
             _lastModifiedDateConvertedToOffset = false;
@@ -638,45 +635,45 @@ public sealed class Scanner : IDisposable
             UseForDateDetect = useForDateDetect;
         }
 
-        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             if (readmes.Count < readmes.Capacity)
             {
                 ReadmeInternal item = readmes[readmes.Count];
                 if (item != null!)
                 {
-                    item.Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+                    item.Set(lastModifiedDateRaw, scan, useForDateDetect);
                     readmes.Count++;
                     return item;
                 }
             }
 
-            ReadmeInternal readme = new(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            ReadmeInternal readme = new(lastModifiedDateRaw, scan, useForDateDetect);
             readmes.Add(readme);
             return readme;
         }
 
-        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             if (readmes.Count < readmes.Capacity)
             {
                 ReadmeInternal item = readmes[readmes.Count];
                 if (item != null!)
                 {
-                    item.Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+                    item.Set(lastModifiedDate, scan, useForDateDetect);
                     readmes.Count++;
                     return item;
                 }
             }
 
-            ReadmeInternal readme = new(isGlml, lastModifiedDate, scan, useForDateDetect);
+            ReadmeInternal readme = new(lastModifiedDate, scan, useForDateDetect);
             readmes.Add(readme);
             return readme;
         }
 
-        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
-            return AddReadme(readmes, isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            return AddReadme(readmes, lastModifiedDateRaw, scan, useForDateDetect);
         }
     }
 
@@ -1596,7 +1593,6 @@ public sealed class Scanner : IDisposable
                     Entry entry = new(this, zipEntry);
                     readme = ReadmeInternal.GetReadme(
                         _readmeFiles,
-                        isGlml: false,
                         lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
                         useForDateDetect: true);
@@ -3623,8 +3619,6 @@ public sealed class Scanner : IDisposable
             int readmeFileLen = (int)readmeEntry.UncompressedSize;
             if (readmeFileLen == 0) continue;
 
-            bool isGlml = readmeFile.Name.ExtIsGlml();
-
             // Files containing these phrases are almost certain to be script info files, whose dates will be the
             // release date of their respective script package, and so should be ignored when detecting the FM's
             // release date
@@ -3648,7 +3642,6 @@ public sealed class Scanner : IDisposable
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
-                    isGlml: isGlml,
                     lastModifiedDateRaw: readmeEntry.LastModifiedDateRaw,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
@@ -3658,7 +3651,6 @@ public sealed class Scanner : IDisposable
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
-                    isGlml: isGlml,
                     lastModifiedDate: readmeEntry.LastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
@@ -3670,8 +3662,6 @@ public sealed class Scanner : IDisposable
             Stream? readmeStream = null;
             try
             {
-                // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
-                // alone.
                 readmeStream = readmeEntry.Open();
 
                 int rtfHeaderBytesLength = RTFHeaderBytes.Length;
@@ -3721,7 +3711,7 @@ public sealed class Scanner : IDisposable
                         _sevenZipContext.ByteArrayPool.Return(rtfBytes);
                     }
                 }
-                else if (last.IsGlml)
+                else if (readmeFile.Name.ExtIsGlml())
                 {
                     using Stream stream = _fmFormat.IsStreamableArchive()
                         ? readmeEntry.Open()
