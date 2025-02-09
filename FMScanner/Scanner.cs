@@ -439,14 +439,28 @@ public sealed class Scanner : IDisposable
             _ => GetReadModeFileStreamWithCachedBuffer(FullName, _scanner.DiskFileStreamBuffer),
         };
 
-        internal Stream ReturnGlobalMemoryStreamWithSeekableEntryData()
+        internal StreamScope OpenSeekable()
         {
-            _scanner._generalMemoryStream.SetLength(UncompressedSize);
-            _scanner._generalMemoryStream.Position = 0;
-            using Stream es = Open();
-            StreamCopyNoAlloc(es, _scanner._generalMemoryStream, _scanner.StreamCopyBuffer);
-            _scanner._generalMemoryStream.Position = 0;
-            return _scanner._generalMemoryStream;
+            Stream entryStream = Open();
+            if (entryStream.CanSeek)
+            {
+                return new StreamScope(_scanner, entryStream);
+            }
+            else
+            {
+                try
+                {
+                    _scanner._generalMemoryStream.SetLength(UncompressedSize);
+                    _scanner._generalMemoryStream.Position = 0;
+                    StreamCopyNoAlloc(entryStream, _scanner._generalMemoryStream, _scanner.StreamCopyBuffer);
+                    _scanner._generalMemoryStream.Position = 0;
+                    return new StreamScope(_scanner, _scanner._generalMemoryStream);
+                }
+                finally
+                {
+                    entryStream.Dispose();
+                }
+            }
         }
     }
 
@@ -1582,8 +1596,8 @@ public sealed class Scanner : IDisposable
                         lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
                         useForDateDetect: true);
-                    Stream readmeStream = entry.ReturnGlobalMemoryStreamWithSeekableEntryData();
-                    readme.Text = ReadAllTextDetectEncoding(readmeStream);
+                    using StreamScope streamScope = entry.OpenSeekable();
+                    readme.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                     readme.Lines.AddRange_Large(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
                 catch
@@ -3710,10 +3724,11 @@ public sealed class Scanner : IDisposable
                     }
                     else
                     {
-                        Stream stream = _fmFormat.IsStreamableArchive()
-                            ? readmeEntry.ReturnGlobalMemoryStreamWithSeekableEntryData()
-                            : readmeStream;
-                        last.Text = ReadAllTextDetectEncoding(stream);
+                        using StreamScope streamScope =
+                            _fmFormat.IsStreamableArchive()
+                                ? readmeEntry.OpenSeekable()
+                                : new StreamScope(this, readmeStream);
+                        last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                     }
                     last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
@@ -6083,7 +6098,7 @@ public sealed class Scanner : IDisposable
         lines.ClearFast();
 
         Entry entry = GetEntry(item);
-        using StreamScope streamScope = new(this, entry.ReturnGlobalMemoryStreamWithSeekableEntryData());
+        using StreamScope streamScope = entry.OpenSeekable();
 
         Encoding encoding =
             type == DetectEncodingType.NewGameStr &&
