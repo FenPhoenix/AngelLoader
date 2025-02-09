@@ -3560,8 +3560,6 @@ public sealed class Scanner : IDisposable
 
         ReadAllLinesDetectEncoding(file, _tempLines);
 
-        if (_tempLines.Count == 0) return ret;
-
         for (int i = 0; i < _tempLines.Count; i++)
         {
             string lineT = _tempLines[i].Trim();
@@ -4113,8 +4111,6 @@ public sealed class Scanner : IDisposable
     // end up as alternate titles, I can afford that.
     private ListFast<string>? GetTitlesFromTopOfReadmes()
     {
-        if (_readmeFiles.Count == 0) return null;
-
         ListFast<string>? ret = null;
 
         foreach (ReadmeInternal r in _readmeFiles)
@@ -5519,8 +5515,6 @@ public sealed class Scanner : IDisposable
         // Always false for now, because we only return dates that have month names in them currently
         // (was I concerned about number-only dates having not enough context to be sure they're dates?)
         isAmbiguous = false;
-
-        if (_readmeFiles.Count == 0) return null;
 
         foreach (ReadmeInternal r in _readmeFiles)
         {
