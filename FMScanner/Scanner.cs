@@ -3693,8 +3693,6 @@ public sealed class Scanner : IDisposable
                      This is a performance optimization, but it also creates a mess, as we now can't cleanly have
                      a using. How much performance this actually gains us is questionable; it'll be some, but I
                      doubt it's deal-breaking (but need to measure).
-                     We may be able to have an abstracted "return to start" method where the stream is either
-                     reopened or actually just has its position reset to start.
                     */
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
@@ -3702,22 +3700,20 @@ public sealed class Scanner : IDisposable
                 bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && _rtfHeaderBuffer.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
-                    if (_fmFormat.IsStreamableArchive())
-                    {
-                        readmeStream = readmeEntry.Open();
-                    }
+                    using Stream stream = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.Open()
+                        : readmeStream;
 
                     // @MEM(RTF pooled byte arrays): This pool barely helps us
                     // Most of the arrays are used only once, a handful are used twice.
                     byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
                     try
                     {
-                        int bytesRead = readmeStream.ReadAll(rtfBytes, 0, readmeFileLen);
+                        int bytesRead = stream.ReadAll(rtfBytes, 0, readmeFileLen);
                         (bool success, string text) = RtfConverter.Convert(new ArrayWithLength<byte>(rtfBytes, bytesRead));
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.AddRange_Large(text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                         }
                     }
                     finally
@@ -3725,25 +3721,22 @@ public sealed class Scanner : IDisposable
                         _sevenZipContext.ByteArrayPool.Return(rtfBytes);
                     }
                 }
+                else if (last.IsGlml)
+                {
+                    using Stream stream = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.Open()
+                        : readmeStream;
+                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
+                }
                 else
                 {
-                    if (last.IsGlml)
-                    {
-                        using Stream stream = _fmFormat.IsStreamableArchive()
-                            ? readmeEntry.Open()
-                            : readmeStream;
-                        last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
-                    }
-                    else
-                    {
-                        using StreamScope streamScope =
-                            _fmFormat.IsStreamableArchive()
-                                ? readmeEntry.OpenSeekable()
-                                : new StreamScope(this, readmeStream);
-                        last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
-                    }
-                    last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    using StreamScope streamScope = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.OpenSeekable()
+                        : new StreamScope(this, readmeStream);
+                    last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                 }
+
+                last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
             }
             finally
             {
