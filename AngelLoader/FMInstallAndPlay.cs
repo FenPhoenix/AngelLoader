@@ -2317,38 +2317,44 @@ internal static partial class FMInstallAndPlay
             {
                 byte[] fileStreamReadBuffer = ioBufferPools.FileStream.Rent();
                 byte[] fileStreamWriteBuffer = ioBufferPools.FileStream.Rent();
-
-                using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fmDataArchivePath, fileStreamReadBuffer);
-                using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
-
-                _installCts.Token.ThrowIfCancellationRequested();
-
-                List<ExtractableEntry> duplicateEntries = entriesToExtract.DuplicateEntries;
-                for (int i = 0; i < duplicateEntries.Count; i++)
+                try
                 {
-                    ExtractableEntry entry = duplicateEntries[i];
-
-                    ZipArchiveFast_Threaded.ExtractToFile_Fast(
-                        entry: entry.Entry,
-                        fileName: entry.ExtractedName,
-                        overwrite: true,
-                        unSetReadOnly: true,
-                        context: zipCtxThreadedRentScope.Ctx,
-                        fileStreamWriteBuffer: fileStreamWriteBuffer);
+                    using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fmDataArchivePath, fileStreamReadBuffer);
+                    using ZipContextThreadedRentScope zipCtxThreadedRentScope = new(zipCtxThreadedPool, fs, fs.Length);
 
                     _installCts.Token.ThrowIfCancellationRequested();
 
-                    int percent =
-                        GetPercentFromValue_Int(Interlocked.Increment(ref currentEntryNumber), totalEntriesCount);
-                    int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
-
-                    if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
+                    List<ExtractableEntry> duplicateEntries = entriesToExtract.DuplicateEntries;
+                    for (int i = 0; i < duplicateEntries.Count; i++)
                     {
-                        ReportExtractProgress(percent, newMainPercent, fmData, single);
-                        uiThrottleSW.Restart();
-                    }
+                        ExtractableEntry entry = duplicateEntries[i];
 
-                    _installCts.Token.ThrowIfCancellationRequested();
+                        ZipArchiveFast_Threaded.ExtractToFile_Fast(
+                            entry: entry.Entry,
+                            fileName: entry.ExtractedName,
+                            overwrite: true,
+                            unSetReadOnly: true,
+                            context: zipCtxThreadedRentScope.Ctx,
+                            fileStreamWriteBuffer: fileStreamWriteBuffer);
+
+                        _installCts.Token.ThrowIfCancellationRequested();
+
+                        int percent = GetPercentFromValue_Int(Interlocked.Increment(ref currentEntryNumber), totalEntriesCount);
+                        int newMainPercent = mainPercent + (percent / fmCount).ClampToZero();
+
+                        if (uiThrottleSW.Elapsed.TotalMilliseconds > 4)
+                        {
+                            ReportExtractProgress(percent, newMainPercent, fmData, single);
+                            uiThrottleSW.Restart();
+                        }
+
+                        _installCts.Token.ThrowIfCancellationRequested();
+                    }
+                }
+                finally
+                {
+                    ioBufferPools.FileStream.Return(fileStreamWriteBuffer);
+                    ioBufferPools.FileStream.Return(fileStreamReadBuffer);
                 }
             }
 
