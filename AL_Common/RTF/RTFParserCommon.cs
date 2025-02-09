@@ -65,9 +65,8 @@ public static partial class RTFParserCommon
     #region Charset to code page
 
     private const int _charSetToCodePageLength = 256;
-    private static readonly int[] _charSetToCodePage = InitializeCharSetToCodePage();
 
-    private static int[] InitializeCharSetToCodePage()
+    private static readonly int[] _charSetToCodePage = RunFunc(static () =>
     {
         int[] charSetToCodePage = InitializedArray(_charSetToCodePageLength, -1);
 
@@ -115,7 +114,7 @@ public static partial class RTFParserCommon
         charSetToCodePage[255] = 850;  // OEM
 
         return charSetToCodePage;
-    }
+    });
 
     #endregion
 
@@ -123,9 +122,8 @@ public static partial class RTFParserCommon
 
     public const int MaxLangNumDigits = 5;
     public const int MaxLangNumIndex = 16385;
-    public static readonly int[] LangToCodePage = InitializeLangToCodePage();
 
-    private static int[] InitializeLangToCodePage()
+    public static readonly int[] LangToCodePage = RunFunc(static () =>
     {
         int[] langToCodePage = InitializedArray(MaxLangNumIndex + 1, -1);
 
@@ -203,7 +201,7 @@ public static partial class RTFParserCommon
         langToCodePage[1033] = 1252;
 
         return langToCodePage;
-    }
+    });
 
     #endregion
 
@@ -686,7 +684,7 @@ public static partial class RTFParserCommon
             new Symbol("row", 0, false, KeywordType.Character, '\n'),
         };
 
-        private static Symbol?[] InitControlSymbolArray()
+        private readonly Symbol?[] ControlSymbols = RunFunc(static () =>
         {
             Symbol?[] ret = new Symbol?[256];
             ret['\''] = new Symbol("'", 0, false, KeywordType.Special, (int)SpecialType.HexEncodedChar);
@@ -723,9 +721,7 @@ public static partial class RTFParserCommon
             ret['\r'] = new Symbol("\r", 0, false, KeywordType.Character, '\n');
             ret['\n'] = new Symbol("\n", 0, false, KeywordType.Character, '\n');
             return ret;
-        }
-
-        private readonly Symbol?[] ControlSymbols = InitControlSymbolArray();
+        });
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Symbol? LookUpControlSymbol(char ch) => ControlSymbols[ch];

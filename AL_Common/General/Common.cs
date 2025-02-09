@@ -102,5 +102,8 @@ public static partial class Common
 
     public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static T RunFunc<T>(Func<T> initFunc) => initFunc.Invoke();
+
     #endregion
 }

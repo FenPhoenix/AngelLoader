@@ -1550,7 +1550,7 @@ public sealed partial class RtfToTextConverter
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     };
 
-    private static bool[] InitIsNonPlainTextBytes()
+    private readonly bool[] IsNonPlainText = RunFunc(static () =>
     {
         bool[] ret = new bool[256];
         ret['\\'] = true;
@@ -1560,9 +1560,7 @@ public sealed partial class RtfToTextConverter
         ret['\n'] = true;
         ret['\0'] = true;
         return ret;
-    }
-
-    private readonly bool[] IsNonPlainText = InitIsNonPlainTextBytes();
+    });
 
     #endregion
 

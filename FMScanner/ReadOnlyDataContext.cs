@@ -17,13 +17,78 @@ public sealed class ReadOnlyDataContext
         internal readonly char Ascii = ascii;
     }
 
-    internal readonly string[] FMFiles_TitlesStrLocations;
+    internal readonly string[] FMFiles_TitlesStrLocations = RunFunc(static () =>
+    {
+        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
+        string[] ret = new string[(SupportedLanguageCount * 2) + 2];
 
-    internal readonly string[] Languages_FS_Lang_FS;
-    internal readonly string[] Languages_FS_Lang_Language_FS;
-    internal readonly string[] LanguagesC;
+        // Do not change search order: strings/english, strings, strings/[any other language]
+        ret[0] = "strings/english/titles.str";
+        ret[1] = "strings/english/title.str";
+        ret[2] = "strings/titles.str";
+        ret[3] = "strings/title.str";
 
-    internal readonly byte[] RomanNumeralToDecimalTable;
+        for (int i = 1; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            ret[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            ret[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] Languages_FS_Lang_FS = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            ret[i] = "/" + lang + "/";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] Languages_FS_Lang_Language_FS = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+
+            // Lowercase so that the perf hack in the language detector can work
+            ret[i] = "/" + lang + " language/";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] LanguagesC = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+
+            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
+            ret[i] = (char)(lang[0] - 32) + lang.Substring(1);
+        }
+
+        return ret;
+    });
+
+    internal readonly byte[] RomanNumeralToDecimalTable = RunFunc(static () =>
+    {
+        byte[] ret = new byte['X' + 1];
+        ret['I'] = 1;
+        ret['V'] = 5;
+        ret['X'] = 10;
+        return ret;
+    });
 
     // Used for SS2 fingerprinting for the game type scan fallback
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -53,57 +118,6 @@ public sealed class ReadOnlyDataContext
         "shodan.mis",
         "station.mis",
     };
-
-    public ReadOnlyDataContext()
-    {
-        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
-        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
-        LanguagesC = new string[SupportedLanguageCount];
-
-        #region FMFiles_TitlesStrLocations
-
-        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
-        FMFiles_TitlesStrLocations = new string[(SupportedLanguageCount * 2) + 2];
-
-        // Do not change search order: strings/english, strings, strings/[any other language]
-        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
-        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
-        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
-        FMFiles_TitlesStrLocations[3] = "strings/title.str";
-
-        for (int i = 1; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
-        }
-
-        #endregion
-
-        #region Languages
-
-        for (int i = 0; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            Languages_FS_Lang_FS[i] = "/" + lang + "/";
-            // Lowercase so that the perf hack in the language detector can work
-            Languages_FS_Lang_Language_FS[i] = "/" + lang + " language/";
-
-            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
-            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
-        }
-
-        #endregion
-
-        #region Roman numeral table
-
-        RomanNumeralToDecimalTable = new byte['X' + 1];
-        RomanNumeralToDecimalTable['I'] = 1;
-        RomanNumeralToDecimalTable['V'] = 5;
-        RomanNumeralToDecimalTable['X'] = 10;
-
-        #endregion
-    }
 
     internal readonly TitlesStrNaturalNumericSortComparer TitlesStrNaturalNumericSort = new();
 
@@ -735,7 +749,7 @@ public sealed class ReadOnlyDataContext
 
     // 1/0 for true/false, to enable branchless occurrence counting
 
-    private static byte[] InitSuspected1252Bytes()
+    internal readonly byte[] Suspected1252Bytes = RunFunc(static () =>
     {
         byte[] ret = new byte[256];
 
@@ -790,9 +804,9 @@ public sealed class ReadOnlyDataContext
         ret[0xFF] = 1;
 
         return ret;
-    }
+    });
 
-    private static byte[] InitSuspected850Bytes()
+    internal readonly byte[] Suspected850Bytes = RunFunc(static () =>
     {
         byte[] ret = new byte[256];
 
@@ -828,11 +842,7 @@ public sealed class ReadOnlyDataContext
         ret[0xD7] = 1;
 
         return ret;
-    }
-
-    internal readonly byte[] Suspected1252Bytes = InitSuspected1252Bytes();
-
-    internal readonly byte[] Suspected850Bytes = InitSuspected850Bytes();
+    });
 
     internal readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
@@ -1052,7 +1062,7 @@ public sealed class ReadOnlyDataContext
         internal const string TDM_MapSequence = "tdm_mapsequence.txt";
     }
 
-    private static bool[] InitNewGameStrDisallowedTitleFirstChars()
+    internal readonly bool[] NewGameStrDisallowedTitleFirstChars = RunFunc(static () =>
     {
         bool[] ret = new bool[256];
 
@@ -1074,9 +1084,7 @@ public sealed class ReadOnlyDataContext
         ret[')'] = true;
 
         return ret;
-    }
-
-    internal readonly bool[] NewGameStrDisallowedTitleFirstChars = InitNewGameStrDisallowedTitleFirstChars();
+    });
 
     #region Comparer classes
 

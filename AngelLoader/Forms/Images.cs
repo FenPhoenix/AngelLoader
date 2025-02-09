@@ -867,11 +867,9 @@ public static class Images
         public readonly PerGameSizedImage Alternate = alternate;
     }
 
-    private static readonly PerGameImage[] _perGameImageGetters = InitPerGameImageGetters();
-
-    private static PerGameImage[] InitPerGameImageGetters()
+    private static readonly PerGameImage[] _perGameImageGetters = RunFunc(static () =>
     {
-        var ret = new PerGameImage[SupportedGameCount];
+        PerGameImage[] ret = new PerGameImage[SupportedGameCount];
 
         // @GENGAMES (Images.InitPerGameImageGetters()) - Begin
         var t1Primary = new PerGameSizedImage(large: Thief1_21, small: Thief1_16);
@@ -890,7 +888,7 @@ public static class Images
         // @GENGAMES (Images.InitPerGameImageGetters()) - End
 
         return ret;
-    }
+    });
 
     public static PerGameImage GetPerGameImage(GameIndex gameIndex) => _perGameImageGetters[(int)gameIndex];
 
