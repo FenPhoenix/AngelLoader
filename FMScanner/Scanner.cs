@@ -445,16 +445,14 @@ public sealed class Scanner : IDisposable
 
         internal StreamScope OpenSeekable()
         {
-            Stream entryStream = null!;
-            try
+            Stream entryStream = Open();
+            if (entryStream.CanSeek)
             {
-                entryStream = Open();
-
-                if (entryStream.CanSeek)
-                {
-                    return new StreamScope(_scanner, entryStream);
-                }
-                else
+                return new StreamScope(_scanner, entryStream);
+            }
+            else
+            {
+                try
                 {
                     _scanner._generalMemoryStream.SetLength(UncompressedSize);
                     _scanner._generalMemoryStream.Position = 0;
@@ -462,10 +460,10 @@ public sealed class Scanner : IDisposable
                     _scanner._generalMemoryStream.Position = 0;
                     return new StreamScope(_scanner, _scanner._generalMemoryStream);
                 }
-            }
-            finally
-            {
-                entryStream.Dispose();
+                finally
+                {
+                    entryStream.Dispose();
+                }
             }
         }
     }
