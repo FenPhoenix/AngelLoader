@@ -1052,6 +1052,32 @@ public sealed class ReadOnlyDataContext
         internal const string TDM_MapSequence = "tdm_mapsequence.txt";
     }
 
+    private static bool[] InitNewGameStrDisallowedTitleFirstChars()
+    {
+        bool[] ret = new bool[256];
+
+        ret['{'] = true;
+        ret['}'] = true;
+        ret['-'] = true;
+        ret['_'] = true;
+        ret[':'] = true;
+        ret[';'] = true;
+        ret['!'] = true;
+        ret['@'] = true;
+        ret['#'] = true;
+        ret['$'] = true;
+        ret['%'] = true;
+        ret['^'] = true;
+        ret['&'] = true;
+        ret['*'] = true;
+        ret['('] = true;
+        ret[')'] = true;
+
+        return ret;
+    }
+
+    internal readonly bool[] NewGameStrDisallowedTitleFirstChars = InitNewGameStrDisallowedTitleFirstChars();
+
     #region Comparer classes
 
     /// <summary>

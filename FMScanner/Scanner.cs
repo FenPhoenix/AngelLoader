@@ -4216,10 +4216,7 @@ public sealed class Scanner : IDisposable
 
                 // Do our best to ignore things that aren't titles
                 if (// first chars
-                    title[0] != '{' && title[0] != '}' && title[0] != '-' && title[0] != '_' &&
-                    title[0] != ':' && title[0] != ';' && title[0] != '!' && title[0] != '@' &&
-                    title[0] != '#' && title[0] != '$' && title[0] != '%' && title[0] != '^' &&
-                    title[0] != '&' && title[0] != '*' && title[0] != '(' && title[0] != ')' &&
+                    !CharIsDisallowed(title[0], _ctx) &&
                     // entire titles
                     !title.EqualsI_Local("Play") && !title.EqualsI_Local("Start") &&
                     !title.EqualsI_Local("Begin") && !title.EqualsI_Local("Begin...") &&
@@ -4235,6 +4232,12 @@ public sealed class Scanner : IDisposable
         }
 
         return "";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool CharIsDisallowed(char ch, ReadOnlyDataContext ctx)
+        {
+            return ch < 256 && ctx.NewGameStrDisallowedTitleFirstChars[ch];
+        }
     }
 
     private (string TitleFrom0, string TitleFromN)
