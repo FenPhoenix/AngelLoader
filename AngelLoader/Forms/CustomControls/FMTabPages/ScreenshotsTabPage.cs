@@ -21,7 +21,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 
     private readonly List<string> ScreenshotFileNames = new();
     private string CurrentScreenshotFileName = "";
-    private MemoryImage? _currentScreenshotStream;
+    private MemoryImage? _currentScreenshotImage;
     private readonly Timer CopiedMessageFadeoutTimer = new();
     private bool _forceUpdateArmed;
 
@@ -200,7 +200,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
     {
         if (!_constructed) return;
         _page.ScreenshotsPictureBox.SetImage(null);
-        _currentScreenshotStream?.Dispose();
+        _currentScreenshotImage?.Dispose();
     }
 
     /*
@@ -221,7 +221,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         if (_forceUpdateArmed ||
             (!CurrentScreenshotFileName.IsEmpty() &&
              // @TDM_CASE when FM is TDM
-             _currentScreenshotStream?.Path.EqualsI(CurrentScreenshotFileName) != true))
+             _currentScreenshotImage?.Path.EqualsI(CurrentScreenshotFileName) != true))
         {
             try
             {
@@ -236,7 +236,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #if TESTING
                             System.Diagnostics.Trace.WriteLine("Preload succeeded");
 #endif
-                            _currentScreenshotStream = mi;
+                            _currentScreenshotImage = mi;
                         }
                         else
                         {
@@ -245,8 +245,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #endif
                             Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
                             SetCurrentScreenshotFileName();
-                            _currentScreenshotStream?.Dispose();
-                            _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                            _currentScreenshotImage?.Dispose();
+                            _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
                         }
                     }
                     catch
@@ -256,8 +256,8 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #endif
                         Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
                         SetCurrentScreenshotFileName();
-                        _currentScreenshotStream?.Dispose();
-                        _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                        _currentScreenshotImage?.Dispose();
+                        _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
                     }
                 }
                 else
@@ -265,10 +265,10 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #if TESTING
                     System.Diagnostics.Trace.WriteLine("Didn't preload");
 #endif
-                    _currentScreenshotStream?.Dispose();
-                    _currentScreenshotStream = new MemoryImage(CurrentScreenshotFileName);
+                    _currentScreenshotImage?.Dispose();
+                    _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
                 }
-                _page.ScreenshotsPictureBox.SetImage(_currentScreenshotStream.Img, GetGamma());
+                _page.ScreenshotsPictureBox.SetImage(_currentScreenshotImage.Img, GetGamma());
             }
             catch
             {
@@ -457,7 +457,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
     {
         if (disposing)
         {
-            _currentScreenshotStream?.Dispose();
+            _currentScreenshotImage?.Dispose();
             CopiedMessageFadeoutTimer.Dispose();
         }
         base.Dispose(disposing);
