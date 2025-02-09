@@ -5147,7 +5147,10 @@ public sealed class Scanner : IDisposable
                 int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
-                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond)) continue;
+                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
+                {
+                    continue;
+                }
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
