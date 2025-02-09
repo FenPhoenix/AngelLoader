@@ -1262,7 +1262,7 @@ public sealed class Scanner : IDisposable
         @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
         */
         ListFast<ZipArchiveFastEntry>? __zipEntries = null;
-        ListFast<ZipArchiveFastEntry> GetZipBaseDirEntries()
+        ListFast<ZipArchiveFastEntry> GetZipEntries()
         {
             if (__zipEntries == null)
             {
@@ -1368,7 +1368,7 @@ public sealed class Scanner : IDisposable
 
             try
             {
-                ListFast<ZipArchiveFastEntry> entries = GetZipBaseDirEntries();
+                ListFast<ZipArchiveFastEntry> entries = GetZipEntries();
                 for (int i = 0; i < entries.Count; i++)
                 {
                     ZipArchiveFastEntry entry = entries[i];
@@ -1462,7 +1462,7 @@ public sealed class Scanner : IDisposable
             // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
             // copying or who knows what with the on-disk ones.
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
-                AddReadmeFromPK4(GetZipBaseDirEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
+                AddReadmesFromPK4(GetZipEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
 
             ListFast<string> titles = _titles;
 
@@ -1548,7 +1548,7 @@ public sealed class Scanner : IDisposable
         return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
 
         (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
-        AddReadmeFromPK4(ListFast<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
+        AddReadmesFromPK4(ListFast<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
         {
             ZipArchiveFastEntry? readme1entry = null;
             ZipArchiveFastEntry? readme2entry = null;
