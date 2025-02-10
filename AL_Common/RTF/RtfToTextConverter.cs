@@ -1802,7 +1802,7 @@ public sealed partial class RtfToTextConverter
                         ? HandleSkippableHexData(param)
                         : ChangeDestination((DestinationType)symbol.Index);
                 case KeywordType.Special:
-                    var specialType = (SpecialType)symbol.Index;
+                    SpecialType specialType = (SpecialType)symbol.Index;
                     return DispatchSpecialKeyword(specialType, symbol, param);
                 default:
                     return RtfError.OK;
@@ -1817,7 +1817,7 @@ public sealed partial class RtfToTextConverter
                         ? HandleSkippableHexData(param)
                         : RtfError.OK;
                 case KeywordType.Special:
-                    var specialType = (SpecialType)symbol.Index;
+                    SpecialType specialType = (SpecialType)symbol.Index;
                     return specialType == SpecialType.SkipNumberOfBytes
                         ? DispatchSpecialKeyword(specialType, symbol, param)
                         : RtfError.OK;

@@ -391,7 +391,7 @@ public class DarkButton : Button, IDarkable
 
         if (fillColor != null)
         {
-            using var b = new SolidBrush((Color)fillColor);
+            using SolidBrush b = new((Color)fillColor);
             g.FillRectangle(b, rect);
         }
         else
@@ -403,7 +403,7 @@ public class DarkButton : Button, IDarkable
         if (ButtonStyle == DarkButtonStyle.Normal)
         {
             // Again, match us visually to size and position of classic mode
-            var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height);
+            Rectangle borderRect = new(rect.Left, rect.Top, rect.Width - 1, rect.Height);
 
             g.DrawRectangle(borderPen, borderRect);
         }
@@ -454,7 +454,7 @@ public class DarkButton : Button, IDarkable
         // @DarkModeNote(DarkButton/TextRect):
         // But actually we only know it's accurate for left-alignment, test if it is for all other alignments
         // as well...
-        var textRect = new Rectangle(
+        Rectangle textRect = new(
             rect.Left + textOffsetX + padding.Left + 3,
             rect.Top + textOffsetY + padding.Top + 3,
             (rect.Width - padding.Horizontal) - 6,
@@ -481,8 +481,8 @@ public class DarkButton : Button, IDarkable
 
             if (parent != null)
             {
-                using var pen = new Pen(parent.BackColor);
-                var bgRect = new Rectangle(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
+                using Pen pen = new(parent.BackColor);
+                Rectangle bgRect = new(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
                 g.DrawRectangle(pen, bgRect);
             }
         }

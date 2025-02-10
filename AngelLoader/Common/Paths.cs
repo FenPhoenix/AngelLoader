@@ -42,11 +42,11 @@ internal static class Paths
     private static extern int GetModuleFileNameW(HandleRef hModule, StringBuilder buffer, int length);
     private static string GetStartupPath()
     {
-        var nullHandleRef = new HandleRef(null, IntPtr.Zero);
+        HandleRef nullHandleRef = new(null, IntPtr.Zero);
         const int MAX_UNICODESTRING_LEN = short.MaxValue;
         const int ERROR_INSUFFICIENT_BUFFER = 122;
 
-        var buffer = new StringBuilder(MAX_PATH);
+        StringBuilder buffer = new(MAX_PATH);
         int noOfTimes = 1;
         int length;
         while (((length = GetModuleFileNameW(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&

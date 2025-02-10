@@ -132,7 +132,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     private static unsafe void Preallocate(string fullPath, long preallocationSize, AL_SafeFileHandle fileHandle)
     {
-        var allocationInfo = new Interop.Kernel32.FILE_ALLOCATION_INFO
+        Interop.Kernel32.FILE_ALLOCATION_INFO allocationInfo = new()
         {
             AllocationSize = preallocationSize,
         };

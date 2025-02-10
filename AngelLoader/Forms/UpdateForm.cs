@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
+using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.WinFormsNative;
 using static AngelLoader.Global;
 
@@ -206,7 +207,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
             }
             changelogFullText += "}";
 
-            using var ms = new MemoryStream(Encoding.ASCII.GetBytes(changelogFullText));
+            using MemoryStream ms = new(Encoding.ASCII.GetBytes(changelogFullText));
             SetReleaseNotes(ms);
         }
         finally
@@ -269,7 +270,7 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
     {
         base.OnPaint(e);
 
-        var tb = ReleaseNotesRichTextBox;
+        RichTextBoxCustom tb = ReleaseNotesRichTextBox;
 
         e.Graphics.DrawRectangle(
             pen: Config.DarkMode ? DarkColors.GreySelectionPen : SystemPens.ControlLight,

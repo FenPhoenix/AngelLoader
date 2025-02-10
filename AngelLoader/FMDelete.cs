@@ -95,7 +95,7 @@ internal static class FMDelete
 
     private static void DeleteFMsFromDB_Internal(List<FanMission> fmsToDelete)
     {
-        var iniDict = new DictionaryI<List<FanMission>>(FMDataIniList.Count);
+        DictionaryI<List<FanMission>> iniDict = new(FMDataIniList.Count);
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
@@ -165,7 +165,7 @@ internal static class FMDelete
     {
         var retFail = (false, new List<string>());
 
-        var finalArchives = new List<string>(archives.Count);
+        List<string> finalArchives = new(archives.Count);
         if (archives.Count > 1)
         {
             (bool accepted, List<string> selectedItems) = Core.Dialogs.ShowListDialog(
@@ -194,13 +194,13 @@ internal static class FMDelete
     // * NIGHTMARE REALM *
     internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         int origCount = fms.Count;
 
         bool single = origCount == 1;
 
-        var unavailableFMs = new List<FanMission>(fms.Count);
+        List<FanMission> unavailableFMs = new(fms.Count);
 
         MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 

@@ -167,7 +167,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
         }
         else
         {
-            var item = new FMTagsCollection();
+            FMTagsCollection item = new();
             filteredTags.Add(cat, item);
             if (!isCategory)
             {

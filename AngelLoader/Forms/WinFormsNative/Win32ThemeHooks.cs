@@ -453,7 +453,7 @@ internal static class Win32ThemeHooks
         for (int i = 0; i < _renderedControlCount; i++)
         {
             Native.CloseThemeData(_hThemes[i]);
-            using var c = new Control();
+            using Control c = new();
             _hThemes[i] = Native.OpenThemeData(c.Handle, _clSids[i]);
         }
     }

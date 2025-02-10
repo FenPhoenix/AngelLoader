@@ -1170,7 +1170,7 @@ public sealed class Scanner : IDisposable
         // If there was an error then we already added null to the list. DON'T add any extra items!
         if (!nullAlreadyAdded)
         {
-            var scannedFMAndError = new ScannedFMDataAndError(fm.OriginalIndex);
+            ScannedFMDataAndError scannedFMAndError = new(fm.OriginalIndex);
             ScanOptions? _tempScanOptions = null;
             try
             {
@@ -1375,8 +1375,7 @@ public sealed class Scanner : IDisposable
                     if (entry.FullName != FMFiles.TDM_MapSequence) continue;
 
                     using Stream es = _archive.OpenEntry(entry);
-                    // Stupid micro-optimization: Don't call Dispose() method on stream twice
-                    using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, _streamReaderCustom);
+                    using StreamReaderCustom.SRC_Wrapper sr = new(es, Encoding.UTF8, _streamReaderCustom);
 
                     bool inBlockComment = false;
                     while (sr.Reader.ReadLine() is { } line)
@@ -1708,7 +1707,7 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        var fmData = new ScannedFMData
+        ScannedFMData fmData = new()
         {
             ArchiveName = _fmFormat > FMFormat.NotInArchive
                 ? Path.GetFileName(fm.Path)
@@ -2063,7 +2062,7 @@ public sealed class Scanner : IDisposable
 
                 if (_fmFormat == FMFormat.SevenZip)
                 {
-                    var sevenZipArchive = new SevenZipArchive(fs, _sevenZipContext);
+                    SevenZipArchive sevenZipArchive = new(fs, _sevenZipContext);
                     sevenZipEntries = sevenZipArchive.Entries;
                     entriesCount = sevenZipEntries.Count;
                 }
@@ -2217,7 +2216,7 @@ public sealed class Scanner : IDisposable
                 SolidEntry? missFlagToUse = null;
                 if (_solid_MisFiles.Count > 1)
                 {
-                    foreach (var item in tempList)
+                    foreach (SolidEntry item in tempList)
                     {
                         if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
                         {
@@ -2227,7 +2226,7 @@ public sealed class Scanner : IDisposable
                     }
                     if (missFlagToUse == null)
                     {
-                        foreach (var item in tempList)
+                        foreach (SolidEntry item in tempList)
                         {
                             if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
                             {
@@ -2238,7 +2237,7 @@ public sealed class Scanner : IDisposable
                     }
                     if (missFlagToUse == null)
                     {
-                        foreach (var item in tempList)
+                        foreach (SolidEntry item in tempList)
                         {
                             if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
                             {
@@ -2258,7 +2257,7 @@ public sealed class Scanner : IDisposable
             PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
 
             SolidEntry? newGameStrToUse = null;
-            foreach (var item in tempList)
+            foreach (SolidEntry item in tempList)
             {
                 if (item.FullName.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
                 {
@@ -2268,7 +2267,7 @@ public sealed class Scanner : IDisposable
             }
             if (newGameStrToUse == null)
             {
-                foreach (var item in tempList)
+                foreach (SolidEntry item in tempList)
                 {
                     if (item.FullName.PathEqualsI(FMFiles.IntrfaceNewGameStr))
                     {
@@ -2279,7 +2278,7 @@ public sealed class Scanner : IDisposable
             }
             if (newGameStrToUse == null)
             {
-                foreach (var item in tempList)
+                foreach (SolidEntry item in tempList)
                 {
                     if (item.FullName.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
                         item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
@@ -2363,7 +2362,7 @@ public sealed class Scanner : IDisposable
             {
                 HashSetI fileNamesHash = fileNamesList.ToHashSetI();
 
-                using var rarReader = RarReader.Open(_rarStream);
+                using RarReader rarReader = RarReader.Open(_rarStream);
 
                 while (rarReader.MoveToNextEntry())
                 {
@@ -5914,13 +5913,13 @@ public sealed class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
         stream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, _streamReaderCustom);
+        using StreamReaderCustom.SRC_Wrapper sr = new(stream, encoding, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
     private string ReadAllTextUTF8(Stream stream)
     {
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, _streamReaderCustom);
+        using StreamReaderCustom.SRC_Wrapper sr = new(stream, Encoding.UTF8, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 

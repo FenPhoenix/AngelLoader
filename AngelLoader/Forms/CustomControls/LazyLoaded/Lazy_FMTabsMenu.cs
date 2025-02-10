@@ -24,10 +24,10 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
 
                 _menu = new DarkContextMenu(_owner);
 
-                var menuItems = new ToolStripItem[FMTabCount];
+                ToolStripItem[] menuItems = new ToolStripItem[FMTabCount];
                 for (int i = 0; i < menuItems.Length; i++)
                 {
-                    var item = new ToolStripMenuItemCustom
+                    ToolStripMenuItemCustom item = new()
                     {
                         CheckOnClick = true,
                         Checked = _checkedStates[i],

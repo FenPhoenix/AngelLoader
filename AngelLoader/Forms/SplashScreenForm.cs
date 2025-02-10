@@ -100,7 +100,7 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
                 : Preload.About,
             200, 48);
 
-        using var pen = new Pen(
+        using Pen pen = new(
             _theme == VisualTheme.Dark
                 ? Color.FromArgb(81, 81, 81) // LightBorder
                 : SystemColors.ControlDark);
@@ -150,8 +150,8 @@ public sealed partial class SplashScreenForm : Form, ISplashScreen
         if (_checkMessageWidth > Width) return;
         int checkPos = (Width / 2) + (_checkMessageWidth / 2);
 
-        using var checkMarkPen = new Pen(_foreColorCached, 1.6f);
-        var outlineBoxRect = new Rectangle(checkPos, _messageRectY + 4, 12, 12);
+        using Pen checkMarkPen = new(_foreColorCached, 1.6f);
+        Rectangle outlineBoxRect = new(checkPos, _messageRectY + 4, 12, 12);
         ControlUtils.DrawCheckMark(_graphicsContext.G, checkMarkPen, outlineBoxRect);
     }
 

@@ -140,7 +140,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
     {
         get
         {
-            var ret = new Control[_backingTabList.Count];
+            Control[] ret = new Control[_backingTabList.Count];
             for (int i = 0; i < ret.Length; i++)
             {
                 ret[i] = _backingTabList[i].TabPage;
@@ -209,14 +209,14 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
             if (Parent != null)
             {
                 // Fill background behind the control (shows up behind tabs)
-                using var b = new SolidBrush(Parent.BackColor);
+                using SolidBrush b = new(Parent.BackColor);
                 g.FillRectangle(b, ClientRectangle);
             }
 
             if (TabPages.Count > 0)
             {
                 Rectangle firstTabRect = GetTabRect(0);
-                var pageRect = new Rectangle(
+                Rectangle pageRect = new(
                     ClientRectangle.X,
                     ClientRectangle.Y + firstTabRect.Y + firstTabRect.Height,
                     (ClientRectangle.Width - firstTabRect.X) - 1,
@@ -279,7 +279,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 
                         int leftMargin = tabRect.Width - textWidth;
 
-                        var imgPoint = new Point(
+                        Point imgPoint = new(
                             tabRect.Left + 1 + ((leftMargin / 2) - (image.Width / 2)),
                             focused ? 2 : 4
                         );
@@ -312,7 +312,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
                         TextFormatFlags.NoPrefix |
                         TextFormatFlags.NoClipping;
 
-                    var textRect =
+                    Rectangle textRect =
                         thisTabHasImage
                             ? new Rectangle(
                                 tabRect.X - 2,

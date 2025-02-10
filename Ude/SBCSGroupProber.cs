@@ -58,7 +58,7 @@ internal sealed class SBCSGroupProber : CharsetProber
         _probers[7] = new SingleByteCharSetProber(new Win1253Model());
         _probers[8] = new SingleByteCharSetProber(new Latin5BulgarianModel());
         _probers[9] = new SingleByteCharSetProber(new Win1251BulgarianModel());
-        var hebrewProber = new HebrewProber();
+        HebrewProber hebrewProber = new();
         _probers[10] = hebrewProber;
         // Logical
         _probers[11] = new SingleByteCharSetProber(new Win1255Model(), false, hebrewProber);

@@ -145,7 +145,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
         {
             string category = _list[i];
             FMTagsCollection srcTags = _dict[category];
-            var destTags = new FMTagsCollection(srcTags.Count);
+            FMTagsCollection destTags = new(srcTags.Count);
             for (int j = 0; j < srcTags.Count; j++)
             {
                 destTags.Add(srcTags[j]);

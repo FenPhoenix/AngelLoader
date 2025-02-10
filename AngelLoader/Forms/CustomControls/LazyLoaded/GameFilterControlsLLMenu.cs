@@ -46,7 +46,7 @@ internal sealed class GameFilterControlsLLMenu : IDarkable
 
         for (int i = 0; i < SupportedGameCount; i++)
         {
-            var item = new ToolStripMenuItemCustom
+            ToolStripMenuItemCustom item = new()
             {
                 CheckOnClick = true,
                 Tag = i,

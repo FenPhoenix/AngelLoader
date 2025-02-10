@@ -132,7 +132,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
                 }
             }
 
-            var guid = new Guid(Guids.IShellItem);
+            Guid guid = new(Guids.IShellItem);
 
             HResult result = NativeMethods.SHCreateItemFromParsingName(
                 InitialDirectory,

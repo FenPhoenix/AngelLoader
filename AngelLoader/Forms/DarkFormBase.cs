@@ -135,7 +135,7 @@ public
                 or Native.WM_ERASEBKGND
             ))
         {
-            using (var gc = new Native.GraphicsContext(Handle))
+            using (Native.GraphicsContext gc = new(Handle))
             {
                 gc.G.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, new Rectangle(0, 0, Width, Height));
             }

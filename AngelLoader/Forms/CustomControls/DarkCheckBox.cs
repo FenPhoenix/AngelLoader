@@ -350,7 +350,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         Color? parentBackColor = Parent?.BackColor;
         if (parentBackColor != null)
         {
-            using var b =
+            using SolidBrush b =
                 usingLightMode
                     ? new SolidBrush((Color)parentBackColor)
                     : new SolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
@@ -361,7 +361,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
             g.FillRectangle(DarkColors.GreyBackgroundBrush, rect);
         }
 
-        var outlineBoxRect = new Rectangle(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
+        Rectangle outlineBoxRect = new(0, (rect.Height / 2) - (_checkBoxSize / 2), _checkBoxSize, _checkBoxSize);
 
         if (CheckState == CheckState.Checked)
         {
@@ -373,12 +373,12 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
                 usingLightMode
                     ? SystemColors.Window
                     : DarkColors.Fen_DarkBackground;
-            using var checkMarkPen = new Pen(penColor, 1.6f);
+            using Pen checkMarkPen = new(penColor, 1.6f);
             ControlUtils.DrawCheckMark(g, checkMarkPen, outlineBoxRect);
         }
         else if (CheckState == CheckState.Indeterminate)
         {
-            var boxRect =
+            Rectangle boxRect =
                 usingLightMode
                     ? new Rectangle(
                         4,
@@ -412,7 +412,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
             TextFormatFlags.NoClipping |
             TextFormatFlags.WordBreak;
 
-        var textRect = new Rectangle(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
+        Rectangle textRect = new(_checkBoxSize + 4, 0, rect.Width - _checkBoxSize, rect.Height);
         TextRenderer.DrawText(g, Text, Font, textRect, DarkModeForeColor ?? textColor, textFormatFlags);
 
         if (Focused && ShowFocusCues)

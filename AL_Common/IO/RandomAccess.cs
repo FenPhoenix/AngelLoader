@@ -192,7 +192,7 @@ public static class RandomAccess
 
     internal static unsafe void SetFileLength(AL_SafeFileHandle handle, long length)
     {
-        var eofInfo = new Interop.Kernel32.FILE_END_OF_FILE_INFO
+        Interop.Kernel32.FILE_END_OF_FILE_INFO eofInfo = new()
         {
             EndOfFile = length,
         };

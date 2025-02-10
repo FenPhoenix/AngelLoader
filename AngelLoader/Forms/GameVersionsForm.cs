@@ -19,7 +19,7 @@ public sealed class GameVersionsForm : DarkFormBase
         #region Init
 
         OKButton = new StandardButton();
-        var okFLP = new FlowLayoutPanel();
+        FlowLayoutPanel okFLP = new();
         okFLP.SuspendLayout();
 
         SuspendLayout();
@@ -59,8 +59,8 @@ public sealed class GameVersionsForm : DarkFormBase
             i < SupportedGameCount;
             i++, lblY += 24, tbY += 24)
         {
-            var label = new DarkLabel();
-            var textBox = new DarkTextBox();
+            DarkLabel label = new();
+            DarkTextBox textBox = new();
 
             label.AutoSize = true;
             label.Location = new Point(11, lblY);

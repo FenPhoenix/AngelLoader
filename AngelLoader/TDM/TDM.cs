@@ -38,7 +38,7 @@ internal static class TDM
             string missionsFile = Path.Combine(fmsPath, Paths.MissionsTdmInfo);
 
             List<string>? lines = null;
-            using (var cts = new CancellationTokenSource(5000))
+            using (CancellationTokenSource cts = new(5000))
             {
                 bool timedOut;
                 while (!(timedOut = cts.IsCancellationRequested))
@@ -268,7 +268,7 @@ internal static class TDM
         }
         else if (File.Exists(file))
         {
-            using var cts = new CancellationTokenSource(5000);
+            using CancellationTokenSource cts = new(5000);
 
             List<string>? lines;
             while (!TryReadAllLines(file, out lines, log: false))
@@ -302,7 +302,7 @@ internal static class TDM
 
         List<TDM_LocalFMData> localFMDataList = ParseMissionsInfoFile();
         // @TDM_CASE: Case sensitive dictionary
-        var tdmFMsDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
+        Dictionary<string, FanMission> tdmFMsDict = new(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {
             tdmFMsDict[fm.TDMInstalledDir] = fm;
@@ -363,7 +363,7 @@ internal static class TDM
             List<string> fileTdmFMIds_Zips = FastIO.GetFilesTopOnly(fmsPath, "*.zip", returnFullPaths: false);
             HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
 
-            var finalFilesList = new List<string>(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count + fileTdmFMIds_Zips.Count);
+            List<string> finalFilesList = new(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count + fileTdmFMIds_Zips.Count);
 
             finalFilesList.AddRange(fileTdmFMIds_Dirs);
 
@@ -405,7 +405,7 @@ internal static class TDM
 
             List<TDM_LocalFMData> localDataList = ParseMissionsInfoFile();
             // @TDM_CASE: Case-sensitive dictionary
-            var internalTDMDict = new Dictionary<string, FanMission>(FMDataIniListTDM.Count);
+            Dictionary<string, FanMission> internalTDMDict = new(FMDataIniListTDM.Count);
             foreach (FanMission fm in FMDataIniListTDM)
             {
                 if (!fm.MarkedUnavailable)
@@ -483,7 +483,7 @@ internal static class TDM
         try
         {
             string lastInstallIni = Path.Combine(gamePath, ".zipsync", "lastinstall.ini");
-            using var sr = new StreamReader(lastInstallIni, Encoding.UTF8);
+            using StreamReader sr = new(lastInstallIni, Encoding.UTF8);
 
             bool inVersion = false;
             while (sr.ReadLine() is { } line)

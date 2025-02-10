@@ -2,6 +2,7 @@
 
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -25,7 +26,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         {
             Config.VisualTheme = dark ? VisualTheme.Dark : VisualTheme.Classic;
 
-            using var f = new RTF_Visual_Test_Form();
+            using RTF_Visual_Test_Form f = new();
             f.ShowDialogDark();
             Environment.Exit(1);
         }
@@ -74,7 +75,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
         ConfigFile = Path.Combine(ConfigDir, "Config.ini");
 
-        var rtfFiles = Directory
+        List<string> rtfFiles = Directory
             .GetFiles(FMsCacheDir, "*", SearchOption.AllDirectories)
             .Where(static x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
 
@@ -86,11 +87,11 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
             int headerLen = RTFHeaderBytes.Length;
 
-            using (var fs = File.OpenRead(file))
+            using (FileStream fs = File.OpenRead(file))
             {
                 if (fs.Length >= headerLen)
                 {
-                    using var br = new BinaryReader(fs, Encoding.ASCII);
+                    using BinaryReader br = new(fs, Encoding.ASCII);
                     _ = br.BaseStream.ReadAll(rtfHeaderBuffer, 0, headerLen);
                 }
             }
@@ -119,7 +120,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         {
             if (File.Exists(ConfigFile))
             {
-                using var sr = new StreamReader(ConfigFile);
+                using StreamReader sr = new(ConfigFile);
                 string? indexStr = sr.ReadLine();
                 if (indexStr != null && Int_TryParseInv(indexStr, out int index))
                 {
@@ -159,7 +160,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         else if (m.Msg == WM_CHANGERICHTEXTBOXSCROLLINFO && MsgAppNum(ref m) != AppNum())
         {
             _broadcastEnabled = false;
-            var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
             si.nPos = m.LParam.ToInt32();
             ControlUtils.RepositionScroll(RTFBox.Handle, si, Native.SB_VERT);
             _broadcastEnabled = true;
@@ -178,7 +179,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
     {
         if (_broadcastEnabled)
         {
-            var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
             Native.PostMessageW((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
         }
     }

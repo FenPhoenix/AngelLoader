@@ -268,7 +268,7 @@ public sealed partial class MainForm : DarkFormBase,
 #if DateAccTest
     private void RunDateAccTest()
     {
-        using var sw = new System.IO.StreamWriter(@"C:\al_dates_new.txt");
+        using System.IO.StreamWriter sw = new(@"C:\al_dates_new.txt");
         foreach (FanMission fm in FMDataIniList)
         {
             sw.WriteLine(fm.GetId());
@@ -322,7 +322,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         static bool TryGetHWndFromMousePos(Message msg, out IntPtr result, [NotNullWhen(true)] out Control? control)
         {
-            var pos = new Point(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
+            Point pos = new(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
             result = Native.WindowFromPoint(pos);
             control = Control.FromHandle(result);
             return control != null;
@@ -786,7 +786,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             #region Game tabs
 
-            var tab = new DarkTabPageCustom
+            DarkTabPageCustom tab = new()
             {
                 GameIndex = (GameIndex)i,
                 ImageIndex = i,
@@ -797,7 +797,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region Game filter buttons
 
-            var button = new ToolStripButtonCustom
+            ToolStripButtonCustom button = new()
             {
                 AutoSize = false,
                 CheckOnClick = true,
@@ -908,13 +908,13 @@ public sealed partial class MainForm : DarkFormBase,
 
         #region FM tabs
 
-        var fmTabsDict = new Dictionary<int, TabPage>();
+        Dictionary<int, TabPage> fmTabsDict = new();
         for (int i = 0; i < FMTabCount; i++)
         {
             fmTabsDict.Add(Config.FMTabsData.Tabs[i].DisplayIndex, _fmTabPages[i]);
         }
 
-        var fmTabs = new TabPage[FMTabCount];
+        TabPage[] fmTabs = new TabPage[FMTabCount];
         for (int i = 0; i < FMTabCount; i++)
         {
             fmTabs[i] = fmTabsDict[i];
@@ -1121,7 +1121,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (!Config.AskedToScanForMisCounts)
         {
-            var fmsNeedingMisCountScan = new List<FanMission>();
+            List<FanMission> fmsNeedingMisCountScan = new();
 
             for (int i = 0; i < FMsViewList.Count; i++)
             {
@@ -1340,8 +1340,8 @@ public sealed partial class MainForm : DarkFormBase,
 #endif
                     if (Native.TryGetRealWindowBounds(this, out Rectangle rect))
                     {
-                        var unsnappedLocation = new Point(rect.Left, rect.Top);
-                        var unsnappedSize = new Size(rect.Width, rect.Height);
+                        Point unsnappedLocation = new(rect.Left, rect.Top);
+                        Size unsnappedSize = new(rect.Width, rect.Height);
 
 #if SAVE_NON_AERO_SNAPPED_BOUNDS
                         _nominalWindowLocation = unsnappedLocation;
@@ -2159,7 +2159,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             Cursor = Cursors.WaitCursor;
 
-            using var f = new GameVersionsForm();
+            using GameVersionsForm f = new();
             f.ShowDialogDark(this);
         }
         finally
@@ -2172,7 +2172,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void AboutMenuItem_Click(object sender, EventArgs e)
     {
-        using var f = new AboutForm();
+        using AboutForm f = new();
         f.ShowDialogDark(this);
     }
 
@@ -2328,7 +2328,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void SetGameTabImages()
     {
-        var gameTabImages = new Image[SupportedGameCount];
+        Image[] gameTabImages = new Image[SupportedGameCount];
         for (int i = 0; i < SupportedGameCount; i++)
         {
             gameTabImages[i] = Images.GetPerGameImage((GameIndex)i).Primary.Small();
@@ -2633,7 +2633,7 @@ public sealed partial class MainForm : DarkFormBase,
             DateTime? toDate = lastPlayed ? FMsDGV.Filter.LastPlayedTo : FMsDGV.Filter.ReleaseDateTo;
             string title = lastPlayed ? LText.DateFilterBox.LastPlayedTitleText : LText.DateFilterBox.ReleaseDateTitleText;
 
-            using (var f = new FilterDateForm(title, fromDate, toDate))
+            using (FilterDateForm f = new(title, fromDate, toDate))
             {
                 f.Location = ControlUtils.ClampFormToScreenBounds(
                     parent: this,
@@ -2654,7 +2654,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender == FilterByTagsButton)
         {
-            using var tf = new FilterTagsForm(GlobalTags, FMsDGV.Filter.Tags);
+            using FilterTagsForm tf = new(GlobalTags, FMsDGV.Filter.Tags);
             if (tf.ShowDialogDark(this) != DialogResult.OK) return;
 
             tf.TagsFilter.DeepCopyTo(FMsDGV.Filter.Tags);
@@ -2662,7 +2662,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
         else if (sender == FilterByRatingButton)
         {
-            using (var f = new FilterRatingForm(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, Config.RatingDisplayStyle))
+            using (FilterRatingForm f = new(FMsDGV.Filter.RatingFrom, FMsDGV.Filter.RatingTo, Config.RatingDisplayStyle))
             {
                 f.Location = ControlUtils.ClampFormToScreenBounds(
                     parent: this,
@@ -2806,7 +2806,7 @@ public sealed partial class MainForm : DarkFormBase,
                         Cursor = Cursors.WaitCursor;
                     }
 
-                    var scanOptions = sender switch
+                    FMScanner.ScanOptions scanOptions = sender switch
                     {
                         Lazy_TabsBase.ScanSender.Title => FMScanner.ScanOptions.FalseDefault(scanTitle: true),
                         Lazy_TabsBase.ScanSender.Author => FMScanner.ScanOptions.FalseDefault(scanAuthor: true),
@@ -2908,7 +2908,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FilterBarScrollButtons_VisibleChanged(object sender, EventArgs e)
     {
-        var senderButton = (Button)sender;
+        Button senderButton = (Button)sender;
         DarkArrowButton otherButton = senderButton == FilterBarScrollLeftButton
             ? FilterBarScrollRightButton
             : FilterBarScrollLeftButton;
@@ -3043,7 +3043,7 @@ public sealed partial class MainForm : DarkFormBase,
                             // for this one filter.
                             bool buttonWasChecked = toolStripButton.Checked;
                             toolStripButton.Checked = false;
-                            var filterControl = (HideableFilterControls)s.Tag;
+                            HideableFilterControls filterControl = (HideableFilterControls)s.Tag;
                             switch (filterControl)
                             {
                                 case HideableFilterControls.ReleaseDate:
@@ -3543,8 +3543,8 @@ public sealed partial class MainForm : DarkFormBase,
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(destGroup.Splitter.Handle);
-                using var b = new SolidBrush(GetOverlayColor());
+                using Native.GraphicsContext gc = new(destGroup.Splitter.Handle);
+                using SolidBrush b = new(GetOverlayColor());
                 int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
                 gc.G.FillRectangle(
                     b,
@@ -3560,8 +3560,8 @@ public sealed partial class MainForm : DarkFormBase,
             if (!_inTabDragArea)
             {
                 _inTabDragArea = true;
-                using var gc = new Native.GraphicsContext(destGroup.Splitter.Panel2.Handle);
-                using var b = new SolidBrush(GetOverlayColor());
+                using Native.GraphicsContext gc = new(destGroup.Splitter.Panel2.Handle);
+                using SolidBrush b = new(GetOverlayColor());
                 gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
             }
         }
@@ -3731,14 +3731,14 @@ public sealed partial class MainForm : DarkFormBase,
                     type == ZoomFMsDGVType.ZoomToHeightOnly && zoomFontSize != null ? (float)zoomFontSize :
                     _fmsListDefaultFontSizeInPoints).ClampToFMsDGVFontSizeMinMax();
 
-            var newF = new Font(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
+            Font newF = new(f.FontFamily, fontSize, f.Style, f.Unit, f.GdiCharSet, f.GdiVerticalFont);
 
             int rowHeight = type == ZoomFMsDGVType.ResetZoom ? _fmsListDefaultRowHeight : newF.Height + 9;
 
             bool heightOnly = type == ZoomFMsDGVType.ZoomToHeightOnly;
 
             // Must be done first, else we get wrong values
-            var widthMul = new List<double>(ColumnCount);
+            List<double> widthMul = new(ColumnCount);
             foreach (DataGridViewColumn c in FMsDGV.Columns)
             {
                 Size size = c.HeaderCell.Size;
@@ -3754,7 +3754,7 @@ public sealed partial class MainForm : DarkFormBase,
 
             // Save previous selection
             int mainRowIndex = FMsDGV.MainSelectedRow?.Index ?? -1;
-            var selRows = FMsDGV.SelectedRows;
+            DataGridViewSelectedRowCollection selRows = FMsDGV.SelectedRows;
             int[] selIndices = new int[selRows.Count];
             for (int i = 0; i < selRows.Count; i++)
             {
@@ -4655,7 +4655,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (GameSupportsMods(gameIndex))
         {
-            using var f = new OriginalGameModsForm(gameIndex);
+            using OriginalGameModsForm f = new(gameIndex);
             if (f.ShowDialogDark(this) != DialogResult.OK) return;
             Config.SetNewMantling(gameIndex, f.NewMantling);
             Config.SetDisabledMods(gameIndex, f.DisabledMods);
@@ -5541,14 +5541,14 @@ public sealed partial class MainForm : DarkFormBase,
     public (bool Success, bool NoUpdatesFound, AppUpdate.UpdateInfo? UpdateInfo)
     ShowUpdateAvailableDialog()
     {
-        using var f = new UpdateForm();
+        using UpdateForm f = new();
         return (f.ShowDialogDark(this) == DialogResult.OK, f.NoUpdatesFound, f.UpdateInfo);
     }
 
     public (bool Accepted, FMScanner.ScanOptions ScanOptions, bool NoneSelected)
     ShowScanAllFMsWindow(bool selected)
     {
-        using var f = new ScanAllFMsForm(selected);
+        using ScanAllFMsForm f = new(selected);
         return (f.ShowDialogDark(this) == DialogResult.OK, f.ScanOptions, f.NoneSelected);
     }
 
@@ -5565,7 +5565,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool BackupPathSetRequested)
     ShowDarkLoaderImportWindow()
     {
-        using var f = new ImportFromDarkLoaderForm();
+        using ImportFromDarkLoaderForm f = new();
         return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
                 IniFile: f.DarkLoaderIniFile,
                 ImportFMData: f.ImportFMData,
@@ -5594,7 +5594,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool ImportSize)
     ShowImportFromMultipleInisWindow(ImportType importType)
     {
-        using var f = new ImportFromMultipleInisForm(importType);
+        using ImportFromMultipleInisForm f = new(importType);
         return (Accepted: f.ShowDialogDark(this) == DialogResult.OK,
                 IniFiles: f.IniFiles,
                 ImportTitle: f.ImportTitle,
@@ -5615,7 +5615,7 @@ public sealed partial class MainForm : DarkFormBase,
         reshow:
         ImportType importType;
         DialogResult result;
-        using (var f = new AskToImportForm())
+        using (AskToImportForm f = new())
         {
             result = f.ShowDialogDark(this);
             importType = f.SelectedImportType;

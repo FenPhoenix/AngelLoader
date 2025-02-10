@@ -102,7 +102,7 @@ internal static class ControlUtils
 
     internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
     {
-        var sii = new Native.SHSTOCKICONINFO();
+        Native.SHSTOCKICONINFO sii = new();
         try
         {
             Native.SHSTOCKICONID sysIcon = icon switch

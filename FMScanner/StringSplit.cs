@@ -43,8 +43,8 @@ internal static class StringSplit
             return Array.Empty<string>();
         }
 
-        var sepListRA = new RentedArray<int>(arrayPool.Rent(str.Length), str.Length);
-        var lengthListRA = new RentedArray<int>(arrayPool.Rent(str.Length), str.Length);
+        RentedArray<int> sepListRA = new(arrayPool.Rent(str.Length), str.Length);
+        RentedArray<int> lengthListRA = new(arrayPool.Rent(str.Length), str.Length);
         try
         {
             int numReplaces = MakeSeparatorList(str, separator, ref sepListRA, ref lengthListRA);
@@ -82,7 +82,7 @@ internal static class StringSplit
             return Array.Empty<string>();
         }
 
-        var sepListRA = new RentedArray<int>(arrayPool.Rent(str.Length), str.Length);
+        RentedArray<int> sepListRA = new(arrayPool.Rent(str.Length), str.Length);
         try
         {
             int numReplaces = MakeSeparatorList(str, separator, ref sepListRA);

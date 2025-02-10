@@ -122,7 +122,7 @@ internal static class RtfProcessing
         const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
 
         // Size us large enough that we don't reallocate
-        var colorEntriesBytesList = new ListFast<byte>(
+        ListFast<byte> colorEntriesBytesList = new(
             _colortbl.Length +
             (maxColorEntryStringLength * colorTable?.Count ?? 0)
             + 2);
@@ -248,7 +248,7 @@ internal static class RtfProcessing
             #region Precheck for \colortbl
 
 #if PROCESS_README_TIME_TEST
-            var preCheckForColorTableTimer = new System.Diagnostics.Stopwatch();
+            System.Diagnostics.Stopwatch preCheckForColorTableTimer = new();
             preCheckForColorTableTimer.Start();
 #endif
 
@@ -256,7 +256,7 @@ internal static class RtfProcessing
 
 #if PROCESS_README_TIME_TEST
             preCheckForColorTableTimer.Stop();
-            var preCheckForColorTableTimerElapsed = preCheckForColorTableTimer.Elapsed;
+            TimeSpan preCheckForColorTableTimerElapsed = preCheckForColorTableTimer.Elapsed;
             totalTime = totalTime.Add(preCheckForColorTableTimerElapsed);
             System.Diagnostics.Trace.WriteLine(nameof(preCheckForColorTableTimer) + " took:\r\n" + preCheckForColorTableTimerElapsed);
 #endif
@@ -267,7 +267,7 @@ internal static class RtfProcessing
         #region Precheck for \lang fixing work required
 
 #if PROCESS_README_TIME_TEST
-        var preCheckForLangsTimer = new System.Diagnostics.Stopwatch();
+        System.Diagnostics.Stopwatch preCheckForLangsTimer = new();
         preCheckForLangsTimer.Start();
 #endif
 
@@ -310,7 +310,7 @@ internal static class RtfProcessing
 
 #if PROCESS_README_TIME_TEST
         preCheckForLangsTimer.Stop();
-        var preCheckForLangsTimerElapsed = preCheckForLangsTimer.Elapsed;
+        TimeSpan preCheckForLangsTimerElapsed = preCheckForLangsTimer.Elapsed;
         totalTime = totalTime.Add(preCheckForLangsTimerElapsed);
         System.Diagnostics.Trace.WriteLine(nameof(preCheckForLangsTimer) + " took:\r\n" + preCheckForLangsTimerElapsed);
 #endif
@@ -320,7 +320,7 @@ internal static class RtfProcessing
         #region Parse
 
 #if PROCESS_README_TIME_TEST
-        var parseTimer = new System.Diagnostics.Stopwatch();
+        System.Diagnostics.Stopwatch parseTimer = new();
         parseTimer.Start();
 #endif
 
@@ -332,7 +332,7 @@ internal static class RtfProcessing
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
-        var parseTimerElapsed = parseTimer.Elapsed;
+        TimeSpan parseTimerElapsed = parseTimer.Elapsed;
         totalTime = totalTime.Add(parseTimerElapsed);
         System.Diagnostics.Trace.WriteLine(nameof(parseTimer) + " took:\r\n" + parseTimerElapsed);
 #endif

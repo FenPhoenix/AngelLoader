@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
+using Ude.NetStandard.SimpleHelpers;
 using static AL_Common.Logger;
 using static AngelLoader.Misc;
 using static AngelLoader.Utils;
@@ -419,17 +420,17 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                 this.SuspendDrawing();
             }
 
-            using var ms = new MemoryStream(_currentReadmeBytes);
+            using MemoryStream ms = new(_currentReadmeBytes);
 
             if (encoding == null)
             {
-                var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
+                FileEncoding fe = new();
                 encoding = fe.DetectFileEncoding(ms) ?? Encoding.Default;
                 retEncoding = encoding;
                 ms.Position = 0;
             }
 
-            using var sr = new StreamReader(ms, encoding);
+            using StreamReader sr = new(ms, encoding);
             Text = sr.ReadToEnd();
 
             return retEncoding;

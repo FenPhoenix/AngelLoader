@@ -40,9 +40,9 @@ public static partial class Common
     // you get with the built-in methods
     public static List<string> File_ReadAllLines_List(string path)
     {
-        var ret = new List<string>();
+        List<string> ret = new();
         using FileStream_Read_WithRentedBuffer fs = new(path);
-        using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, new StreamReaderCustom());
+        using StreamReaderCustom.SRC_Wrapper sr = new(fs.FileStream, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);
@@ -52,9 +52,9 @@ public static partial class Common
 
     public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
     {
-        var ret = new List<string>();
+        List<string> ret = new();
         using FileStream_Read_WithRentedBuffer fs = new(path);
-        using var sr = new StreamReaderCustom.SRC_Wrapper(fs.FileStream, encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
+        using StreamReaderCustom.SRC_Wrapper sr = new(fs.FileStream, encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
         while (sr.Reader.ReadLine() is { } str)
         {
             ret.Add(str);

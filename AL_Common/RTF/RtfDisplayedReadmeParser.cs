@@ -160,7 +160,7 @@ public sealed partial class RtfDisplayedReadmeParser
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
             case KeywordType.Special:
-                var specialType = (SpecialType)symbol.Index;
+                SpecialType specialType = (SpecialType)symbol.Index;
                 return !_ctx.GroupStack.CurrentSkipDest ||
                        specialType == SpecialType.SkipNumberOfBytes
                     ? DispatchSpecialKeyword(specialType, symbol, param)
@@ -279,7 +279,7 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         ClearColorTable(RtfError.OK);
 
-        var _colorTableSB = new StringBuilder(4096);
+        StringBuilder _colorTableSB = new(4096);
 
         while (true)
         {

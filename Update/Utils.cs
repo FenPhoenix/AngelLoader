@@ -84,7 +84,7 @@ internal static class Utils
     {
         string angelLoaderExe = Path.Combine(Application.StartupPath, "AngelLoader.exe");
 
-        var buffer = new StringBuilder(1024);
+        StringBuilder buffer = new(1024);
 
         bool alIsRunning;
         do
@@ -131,7 +131,7 @@ internal static class Utils
         {
             buffer.Clear();
 
-            using var hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
+            using SafeProcessHandle hProc = OpenProcess(QUERY_LIMITED_INFORMATION, false, procId);
             if (!hProc.IsInvalid)
             {
                 int size = buffer.Capacity;
@@ -159,7 +159,7 @@ internal static class Utils
     {
         try
         {
-            using var sr = new StreamReader(path);
+            using StreamReader sr = new(path);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();
@@ -214,7 +214,7 @@ internal static class Utils
     {
         title ??= LText.AlertMessages.Alert;
 
-        using var d = new DarkTaskDialog(
+        using DarkTaskDialog d = new(
             message: message,
             title: title,
             icon: icon,
@@ -230,7 +230,7 @@ internal static class Utils
         MessageBoxIcon icon = MessageBoxIcon.Error) => view.Invoke(() =>
     {
         title ??= LText.AlertMessages.Error;
-        using var d = new DarkErrorDialog(message, title, icon);
+        using DarkErrorDialog d = new(message, title, icon);
         d.ShowDialog(view);
     });
 
@@ -243,7 +243,7 @@ internal static class Utils
         string noText,
         DialogResult defaultButton) => (DialogResult)view.Invoke(() =>
     {
-        using var d = new DarkTaskDialog(
+        using DarkTaskDialog d = new(
             message: message,
             title: title,
             icon: icon,

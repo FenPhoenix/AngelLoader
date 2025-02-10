@@ -86,7 +86,7 @@ public sealed class ZipArchiveFast : IDisposable
         ZipContext context,
         bool darkMod)
     {
-        var ret = new ZipArchiveFast(
+        ZipArchiveFast ret = new(
             stream: stream,
             context: context,
             allowUnsupportedEntries: false,
@@ -235,7 +235,10 @@ public sealed class ZipArchiveFast : IDisposable
             long numberOfEntries = 0;
 
             //read the central directory
-            while (ZipCentralDirectoryFileHeader.TryReadBlock(_archiveStream, _context, out var currentHeader))
+            while (ZipCentralDirectoryFileHeader.TryReadBlock(
+                       _archiveStream,
+                       _context,
+                       out ZipCentralDirectoryFileHeader currentHeader))
             {
                 ZipArchiveFastEntry entry;
                 if (_context.Entries.Count > numberOfEntries)

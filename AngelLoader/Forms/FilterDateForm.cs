@@ -88,7 +88,7 @@ public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
     private void CheckBoxes_CheckedChanged(object sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
-        var s = (CheckBox)sender;
+        CheckBox s = (CheckBox)sender;
         ShowDate(s == FromCheckBox ? DateType.From : DateType.To, s.Checked);
     }
 

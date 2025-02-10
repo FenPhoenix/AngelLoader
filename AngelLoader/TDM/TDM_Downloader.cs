@@ -67,7 +67,7 @@ internal static class TDM_Downloader
             using Stream dataStream = await Task.FromResult(File.OpenRead(Path.Combine(_testingPath, "_altdm__available_missions.xml")));
 #endif
 
-            var xmlDoc = new XmlDocument();
+            XmlDocument xmlDoc = new();
 
             xmlDoc.Load(dataStream);
 
@@ -86,7 +86,7 @@ internal static class TDM_Downloader
 
             XmlNodeList missionNodes = availableMissionsNode.ChildNodes;
 
-            var fmsList = new List<TDM_ServerFMData>(missionNodes.Count);
+            List<TDM_ServerFMData> fmsList = new(missionNodes.Count);
 
             foreach (XmlNode mn in missionNodes)
             {

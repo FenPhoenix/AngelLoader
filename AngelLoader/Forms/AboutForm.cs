@@ -32,7 +32,7 @@ public sealed partial class AboutForm : DarkFormBase
                 y = 388;
             }
 
-            var label = new DarkLinkLabel
+            DarkLinkLabel label = new()
             {
                 AutoSize = true,
                 Location = new Point(x, y),

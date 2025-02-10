@@ -35,7 +35,7 @@ internal static class FastIO
 
         string whichLoop = loop == 0 ? "First loop" : "Second loop";
 
-        var ex = new Win32Exception(err);
+        Win32Exception ex = new(err);
         throw new Win32Exception(err,
             whichLoop + $"{NL}" +
             "System error code: " + err.ToStrInv() + $"{NL}" +

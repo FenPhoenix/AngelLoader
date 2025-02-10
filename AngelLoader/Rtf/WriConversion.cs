@@ -77,7 +77,7 @@ internal static class WriConversion
             bool success;
             uint plainTextStart, plainTextEnd;
 
-            using (var ms = new MemoryStream(bytes))
+            using (MemoryStream ms = new(bytes))
             {
                 (success, plainTextStart, plainTextEnd) = ReadWriFileHeader(ms);
             }
@@ -88,7 +88,7 @@ internal static class WriConversion
                 // encoding. It's probably a reasonable assumption for .wri files anyway.
                 Encoding enc1252 = Encoding.GetEncoding(1252);
                 byte[] tempByte = new byte[1];
-                var sb = new StringBuilder(bytes.Length);
+                StringBuilder sb = new(bytes.Length);
                 for (uint i = plainTextStart; i < plainTextEnd; i++)
                 {
                     byte b = bytes[i];

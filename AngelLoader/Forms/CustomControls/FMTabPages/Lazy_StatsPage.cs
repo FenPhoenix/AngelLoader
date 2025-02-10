@@ -23,7 +23,7 @@ public sealed partial class Lazy_StatsPage : UserControl
              i < Misc.CustomResourcesCount - 1;
              i++, tabIndex++, y += 16)
         {
-            var cb = new DarkCheckBox
+            DarkCheckBox cb = new()
             {
                 AutoCheck = false,
                 AutoSize = true,

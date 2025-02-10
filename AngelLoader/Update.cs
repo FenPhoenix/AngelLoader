@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static AL_Common.Logger;
@@ -93,10 +94,10 @@ public static class AppUpdate
             try
             {
                 string localZipFile;
-                var progress = new Progress<ProgressPercents>(ReportProgress);
+                Progress<ProgressPercents> progress = new(ReportProgress);
                 try
                 {
-                    using var request = await GlobalHttpClient.Instance.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
+                    using HttpResponseMessage request = await GlobalHttpClient.Instance.GetAsync(updateInfo.DownloadUri, _updatingCTS.Token);
 
                     if (!request.IsSuccessStatusCode)
                     {
@@ -121,7 +122,7 @@ public static class AppUpdate
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
-                    using var zipLocalStream = File.Create(localZipFile);
+                    using FileStream zipLocalStream = File.Create(localZipFile);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -143,11 +144,11 @@ public static class AppUpdate
                         message2: LText.Update.UnpackingUpdate
                     );
 
-                    using var fs = File.OpenRead(localZipFile);
+                    using FileStream fs = File.OpenRead(localZipFile);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
-                    using var archive = new ZipArchive(fs, ZipArchiveMode.Read);
+                    using ZipArchive archive = new(fs, ZipArchiveMode.Read);
 
                     _updatingCTS.Token.ThrowIfCancellationRequested();
 
@@ -270,7 +271,7 @@ public static class AppUpdate
     internal static void StartCheckIfUpdateAvailableThread()
     {
         // ReSharper disable once AsyncVoidLambda
-        var thread = new Thread(static async () =>
+        Thread thread = new(static async () =>
         {
             // Don't need to pass a cancellation token because this is an open-ended "finish whenever" thing
             // and it exits with the app if the app closes.
@@ -300,7 +301,7 @@ public static class AppUpdate
                 return CheckUpdateResult.NoUpdateAvailable;
             }
 
-            using var request = await GlobalHttpClient.Instance.GetAsync(_latestVersionFile, cancellationToken);
+            using HttpResponseMessage request = await GlobalHttpClient.Instance.GetAsync(_latestVersionFile, cancellationToken);
 
             if (!request.IsSuccessStatusCode)
             {
@@ -383,7 +384,7 @@ public static class AppUpdate
 
             UpdateInfoInternal? updateFile = null;
 
-            using var request = await GlobalHttpClient.Instance.GetAsync(_versionsFile, _detailsDownloadCTS.Token);
+            using HttpResponseMessage request = await GlobalHttpClient.Instance.GetAsync(_versionsFile, _detailsDownloadCTS.Token);
 
             _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
@@ -393,7 +394,7 @@ public static class AppUpdate
 
             _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
-            using (var sr = new StreamReader(versionFileStream))
+            using (StreamReader sr = new(versionFileStream))
             {
                 _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 
@@ -440,7 +441,7 @@ public static class AppUpdate
 
                 if (changelogUri != null && downloadUri != null)
                 {
-                    using var changelogRequest = await GlobalHttpClient.Instance.GetAsync(changelogUri, _detailsDownloadCTS.Token);
+                    using HttpResponseMessage changelogRequest = await GlobalHttpClient.Instance.GetAsync(changelogUri, _detailsDownloadCTS.Token);
 
                     _detailsDownloadCTS.Token.ThrowIfCancellationRequested();
 

@@ -21,7 +21,7 @@ public sealed class DarkFlowLayoutPanel : FlowLayoutPanel, IDarkable
 
     protected override void OnPaint(PaintEventArgs e)
     {
-        using var brush = new SolidBrush(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
+        using SolidBrush brush = new(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
         e.Graphics.FillRectangle(brush, ClientRectangle);
     }
 }

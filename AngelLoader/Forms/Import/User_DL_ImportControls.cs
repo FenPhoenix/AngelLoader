@@ -20,7 +20,7 @@ public sealed partial class User_DL_ImportControls : UserControl
 
     private void DarkLoaderIniBrowseButton_Click(object sender, EventArgs e)
     {
-        using var d = new OpenFileDialog();
+        using OpenFileDialog d = new();
         d.Title = LText.Importing.ChooseDarkLoaderIni_DialogTitle;
         d.Filter = LText.BrowseDialogs.IniFiles + "|*.ini|" + LText.BrowseDialogs.AllFiles + "|*.*";
         if (d.ShowDialogDark(FindForm()) != DialogResult.OK) return;

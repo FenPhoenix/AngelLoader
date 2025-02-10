@@ -157,7 +157,7 @@ public sealed class ImagePanelCustom : Panel, IDarkable
             _image.Height,
             _image.PixelFormat);
 
-        using var g = Graphics.FromImage(bmp);
+        using Graphics g = Graphics.FromImage(bmp);
 
         DrawImageOnGraphics(g, _image);
 

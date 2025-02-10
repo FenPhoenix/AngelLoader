@@ -42,7 +42,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
     private (Native.DATETIMEPICKERINFO DateTimePickerInfo, Rectangle ButtonRectangle)
     GetDTPInfoAndButtonRect()
     {
-        var dtpInfo = new Native.DATETIMEPICKERINFO { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
+        Native.DATETIMEPICKERINFO dtpInfo = new() { cbSize = Marshal.SizeOf(typeof(Native.DATETIMEPICKERINFO)) };
         Native.SendMessageW(Handle, Native.DTM_GETDATETIMEPICKERINFO, IntPtr.Zero, ref dtpInfo);
 
         return (dtpInfo, dtpInfo.rcButton.ToRectangle());
@@ -60,7 +60,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
         if (newMouseOverButton != _mouseOverButton)
         {
             _mouseOverButton = newMouseOverButton;
-            using var gc = new Native.GraphicsContext(Handle);
+            using Native.GraphicsContext gc = new(Handle);
             DrawButton(gc.G);
         }
     }
@@ -74,7 +74,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
         if (_mouseOverButton)
         {
             _mouseOverButton = false;
-            using var gc = new Native.GraphicsContext(Handle);
+            using Native.GraphicsContext gc = new(Handle);
             DrawButton(gc.G);
         }
     }
@@ -110,7 +110,7 @@ public sealed class DarkDateTimePicker : DateTimePicker, IDarkable
     {
         if (g == null)
         {
-            using var gc = new Native.GraphicsContext(Handle);
+            using Native.GraphicsContext gc = new(Handle);
             PaintCustomInternal(gc.G);
         }
         else if (offset != null)

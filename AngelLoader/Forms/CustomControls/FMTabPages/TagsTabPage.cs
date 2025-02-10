@@ -272,25 +272,25 @@ public sealed class TagsTabPage : Lazy_TabsBase
     {
         GlobalTags.SortAndMoveMiscToEnd();
 
-        var addTagMenuItems = new ToolStripItem[GlobalTags.Count];
+        ToolStripItem[] addTagMenuItems = new ToolStripItem[GlobalTags.Count];
         for (int i = 0; i < GlobalTags.Count; i++)
         {
             CatAndTagsList item = GlobalTags[i];
 
             if (item.Tags.Count == 0)
             {
-                var catItem = new ToolStripMenuItemWithBackingText(item.Category + ":");
+                ToolStripMenuItemWithBackingText catItem = new(item.Category + ":");
                 catItem.Click += AddTagMenuEmptyItem_Click;
                 addTagMenuItems[i] = catItem;
             }
             else
             {
-                var catItem = new ToolStripMenuItemWithBackingText(item.Category);
+                ToolStripMenuItemWithBackingText catItem = new(item.Category);
                 addTagMenuItems[i] = catItem;
 
                 if (item.Category != PresetTags.MiscCategory)
                 {
-                    var customItem = new ToolStripMenuItemWithBackingText(LText.TagsTab.CustomTagInCategory);
+                    ToolStripMenuItemWithBackingText customItem = new(LText.TagsTab.CustomTagInCategory);
                     customItem.Click += AddTagMenuCustomItem_Click;
                     catItem.DropDownItems.Add(customItem);
                     catItem.DropDownItems.Add(new ToolStripSeparator());
@@ -298,7 +298,7 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
                 foreach (string tag in item.Tags)
                 {
-                    var tagItem = new ToolStripMenuItemWithBackingText(tag);
+                    ToolStripMenuItemWithBackingText tagItem = new(tag);
 
                     tagItem.Click += item.Category == PresetTags.MiscCategory
                         ? AddTagMenuMiscItem_Click

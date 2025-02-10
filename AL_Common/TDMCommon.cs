@@ -98,7 +98,7 @@ public static partial class Common
             value = value.RemoveExtension();
         }
 
-        var sb = new StringBuilder(value.Length);
+        StringBuilder sb = new(value.Length);
         for (int i = 0; i < value.Length; i++)
         {
             char c = value[i];

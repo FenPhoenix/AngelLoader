@@ -1614,7 +1614,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (EventsDisabled > 0) return;
 
-        var s = (DarkRadioButtonCustom)sender;
+        DarkRadioButtonCustom s = (DarkRadioButtonCustom)sender;
         if (!s.Checked) return;
 
         using (new DisableEvents(this))
@@ -1681,7 +1681,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void ExePathTextBoxes_Leave(object sender, EventArgs e)
     {
-        var exePathTextBox = (DarkTextBox)sender;
+        DarkTextBox exePathTextBox = (DarkTextBox)sender;
         ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
         ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
     }
@@ -1737,7 +1737,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void BackupPathTextBox_Leave(object sender, EventArgs e)
     {
-        var s = (DarkTextBox)sender;
+        DarkTextBox s = (DarkTextBox)sender;
         ShowPathError(s, BackupPathInvalid_Settings(s.Text, GameExeTextBoxes));
     }
 
@@ -1764,7 +1764,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         DarkTextBox tb = PathsPage.BackupPathTextBox;
 
-        using (var d = new VistaFolderBrowserDialog())
+        using (VistaFolderBrowserDialog d = new())
         {
             d.Title = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
             d.InitialDirectory = SanitizePathForDialog(tb.Text);
@@ -1778,7 +1778,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private (DialogResult Result, string FileName)
     BrowseForExeFile(string initialPath, string title)
     {
-        using var dialog = new OpenFileDialog();
+        using OpenFileDialog dialog = new();
         dialog.Title = title;
         dialog.InitialDirectory = initialPath;
         dialog.Filter = LText.BrowseDialogs.ExeFiles + "|*.exe";
@@ -1807,7 +1807,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void AddFMArchivePathButton_Click(object sender, EventArgs e)
     {
-        using var d = new VistaFolderBrowserDialog();
+        using VistaFolderBrowserDialog d = new();
 
         d.Title = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
 
@@ -2089,7 +2089,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
     {
-        var s = (RadioButton)sender;
+        DarkRadioButton s = (DarkRadioButton)sender;
         AppearancePage.DateCustomFormatPanel.Enabled = s.Checked;
         if (s.Checked) UpdateCustomExampleDate();
     }

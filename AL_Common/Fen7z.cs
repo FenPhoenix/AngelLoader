@@ -177,9 +177,9 @@ public static class Fen7z
 
         string errorText = "";
 
-        var report = new ProgressReport();
+        ProgressReport report = new();
 
-        var p = new Process { EnableRaisingEvents = true };
+        Process p = new() { EnableRaisingEvents = true };
         try
         {
             p.StartInfo.FileName = sevenZipPathAndExe;
@@ -200,7 +200,7 @@ public static class Fen7z
 
             p.OutputDataReceived += (sender, e) =>
             {
-                var proc = (Process)sender;
+                Process proc = (Process)sender;
                 if (!canceled && cancellationToken.IsCancellationRequested)
                 {
                     canceled = true;

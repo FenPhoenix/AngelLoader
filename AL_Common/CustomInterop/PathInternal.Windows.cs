@@ -363,7 +363,7 @@ internal static partial class PathInternal
             return path;
         }
 
-        var builder = new System.Text.StringBuilder(MaxShortPath);
+        System.Text.StringBuilder builder = new(MaxShortPath);
 
         int start = 0;
         if (IsDirectorySeparator(path[start]))

@@ -125,7 +125,7 @@ internal static partial class FMInstallAndPlay
 
         if (backupSavesAndScreensOnly)
         {
-            var savesAndScreensFiles = new List<string>();
+            List<string> savesAndScreensFiles = new();
 
             if (Directory.Exists(savesPath))
             {
@@ -157,7 +157,7 @@ internal static partial class FMInstallAndPlay
 
             if (savesAndScreensFiles.Count == 0) return;
 
-            using (var archive = new ZipArchive(
+            using (ZipArchive archive = new(
                        // @FileStreamNET: Use of FileStream
                        new FileStream(
                            bakFile,
@@ -225,7 +225,7 @@ internal static partial class FMInstallAndPlay
 
             if (filesList.Count == 0 && fmSelInfString.IsEmpty()) return;
 
-            using (var archive = new ZipArchive(
+            using (ZipArchive archive = new(
                        // @FileStreamNET: Use of FileStream
                        new FileStream(
                            bakFile,
@@ -242,8 +242,8 @@ internal static partial class FMInstallAndPlay
                 if (!fmSelInfString.IsEmpty())
                 {
                     ZipArchiveEntry entry = archive.CreateEntry(Paths.FMSelInf, CompressionLevel.Fastest);
-                    using var eo = entry.Open();
-                    using var sw = new StreamWriter(eo, Encoding.UTF8);
+                    using Stream eo = entry.Open();
+                    using StreamWriter sw = new(eo, Encoding.UTF8);
                     sw.Write(fmSelInfString);
                 }
             }
@@ -322,9 +322,9 @@ internal static partial class FMInstallAndPlay
             byte[] fileStreamBuffer,
             bool useOnlySize = false)
         {
-            var changedList = new HashSetPathI();
-            var addedList = new HashSetPathI();
-            var fullList = new HashSetPathI();
+            HashSetPathI changedList = new();
+            HashSetPathI addedList = new();
+            HashSetPathI fullList = new();
 
             FanMission fm = fmData.FM;
             string fmArchivePath = fmData.ArchiveFilePath;
@@ -338,7 +338,7 @@ internal static partial class FMInstallAndPlay
 
                 int entriesCount = entries.Count;
 
-                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+                HashSetPathI entriesFullNamesHash = new(entriesCount);
 
                 for (int i = 0; i < entriesCount; i++)
                 {
@@ -374,7 +374,7 @@ internal static partial class FMInstallAndPlay
                     {
                         try
                         {
-                            var fi = new FileInfo(fileInInstalledDir);
+                            FileInfo fi = new(fileInInstalledDir);
 
                             if (useOnlySize)
                             {
@@ -428,7 +428,7 @@ internal static partial class FMInstallAndPlay
                 ICollection<RarArchiveEntry> entries = archive.Entries;
                 int entriesCount = entries.Count;
 
-                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+                HashSetPathI entriesFullNamesHash = new(entriesCount);
 
                 foreach (RarArchiveEntry entry in entries)
                 {
@@ -452,7 +452,7 @@ internal static partial class FMInstallAndPlay
                     {
                         try
                         {
-                            var fi = new FileInfo(fileInInstalledDir);
+                            FileInfo fi = new(fileInInstalledDir);
 
                             if (useOnlySize)
                             {
@@ -508,7 +508,7 @@ internal static partial class FMInstallAndPlay
                 ListFast<SevenZipArchiveEntry> entries = archive.Entries;
                 int entriesCount = entries.Count;
 
-                var entriesFullNamesHash = new HashSetPathI(entriesCount);
+                HashSetPathI entriesFullNamesHash = new(entriesCount);
 
                 for (int i = 0; i < entriesCount; i++)
                 {
@@ -536,7 +536,7 @@ internal static partial class FMInstallAndPlay
                     {
                         try
                         {
-                            var fi = new FileInfo(fileInInstalledDir);
+                            FileInfo fi = new(fileInInstalledDir);
 
                             if (useOnlySize)
                             {
@@ -602,7 +602,7 @@ internal static partial class FMInstallAndPlay
 
         if (ct.IsCancellationRequested) return;
 
-        var fileExcludes = new HashSetPathI();
+        HashSetPathI fileExcludes = new();
 
         string thisFMInstallsBasePath = Config.GetFMInstallPath(fmData.GameIndex);
         string fmInstalledPath = Path.Combine(thisFMInstallsBasePath, fm.InstalledDir);
@@ -688,11 +688,11 @@ internal static partial class FMInstallAndPlay
                     // Null check required because GetEntry() can return null
                     if (fmSelInf != null)
                     {
-                        using var eo = fmSelInf.Open();
+                        using Stream eo = fmSelInf.Open();
 
                         if (ct.IsCancellationRequested) return;
 
-                        using var sr = new StreamReader(eo);
+                        using StreamReader sr = new(eo);
 
                         if (ct.IsCancellationRequested) return;
 
@@ -800,7 +800,7 @@ internal static partial class FMInstallAndPlay
                 // we can cache just the FM name with backup extension, so it's better than nothing.
                 string fmArchivePlusBackupExt = fmArchiveNoExt + Paths.FMBackupSuffix;
                 string fmInstalledDirPlusBackupExt = fm.InstalledDir + Paths.FMBackupSuffix;
-                var bakFiles = new List<FileInfo>();
+                List<FileInfo> bakFiles = new();
 
                 void AddBakFilesFrom(string path)
                 {

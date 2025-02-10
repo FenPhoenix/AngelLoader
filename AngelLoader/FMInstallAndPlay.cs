@@ -152,7 +152,7 @@ internal static partial class FMInstallAndPlay
 
     internal static async Task InstallOrUninstall(FanMission[] fms)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         AssertR(fms.Length > 0, nameof(fms) + ".Length == 0");
         FanMission firstFM = fms[0];
@@ -189,7 +189,7 @@ internal static partial class FMInstallAndPlay
 
             string currentFMFile = Path.Combine(gamePath, Paths.TDMCurrentFMFile);
             if (deselect && fm != null) fm.Installed = false;
-            using var sw = new StreamWriter(currentFMFile);
+            using StreamWriter sw = new(currentFMFile);
             // TDM doesn't write a newline, so let's match it
             sw.Write(!deselect && fm != null ? fm.TDMInstalledDir : "");
             Core.View.RefreshAllSelectedFMs_UpdateInstallState();
@@ -205,7 +205,7 @@ internal static partial class FMInstallAndPlay
 
     internal static async Task InstallIfNeededAndPlay(FanMission fm, bool askConfIfRequired = false, bool playMP = false)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         if (!fm.Game.ConvertsToKnownAndSupported(out GameIndex gameIndex))
         {
@@ -283,7 +283,7 @@ internal static partial class FMInstallAndPlay
 
     internal static bool PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         try
         {
@@ -355,7 +355,7 @@ internal static partial class FMInstallAndPlay
 
     private static async Task<bool> PlayFM(FanMission fm, GameIndex gameIndex, bool playMP = false)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         (bool success, string gameExe, string gamePath) =
             CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
@@ -495,7 +495,7 @@ internal static partial class FMInstallAndPlay
 
     internal static bool OpenFMInEditor(FanMission fm)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         try
         {
@@ -634,7 +634,7 @@ internal static partial class FMInstallAndPlay
         {
             // IMPORTANT (Stub comm file encoding):
             // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
-            using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
+            using StreamWriter sw = new(Paths.StubCommFilePath, append: false, UTF8NoBOM);
             sw.WriteLine("PlayOriginalGame=True");
             if (GameIsDark(gameIndex) && !origDisabledMods.IsEmpty())
             {
@@ -698,7 +698,7 @@ internal static partial class FMInstallAndPlay
         {
             // IMPORTANT (Stub comm file encoding):
             // Encoding MUST be UTF8 with no byte order mark (BOM) or the C++ stub won't read it.
-            using var sw = new StreamWriter(Paths.StubCommFilePath, append: false, UTF8NoBOM);
+            using StreamWriter sw = new(Paths.StubCommFilePath, append: false, UTF8NoBOM);
             sw.WriteLine("PlayOriginalGame=False");
             sw.WriteLine("SelectedFMName=" + fm.InstalledDir);
             if (GameIsDark(fm.Game))
@@ -1059,7 +1059,7 @@ internal static partial class FMInstallAndPlay
             if (MissFlagFilesExist()) return MissFlagError.None;
 
             List<string> misFiles = FastIO.GetFilesTopOnly(fmInstalledPath, "miss*.mis");
-            var misNums = new List<int>(misFiles.Count);
+            List<int> misNums = new(misFiles.Count);
             foreach (string mf in misFiles)
             {
                 Match m = Regex.Match(mf, "miss(?<Num>[0-9]+).mis", Regex_IgnoreCaseInvariant);
@@ -1128,7 +1128,7 @@ internal static partial class FMInstallAndPlay
 
                 int lastMisNum = misNums[^1];
 
-                var missFlagLines = new List<string>();
+                List<string> missFlagLines = new();
                 for (int i = 1; i <= lastMisNum; i++)
                 {
                     string curLine = "miss_" + i.ToStrInv() + ": ";
@@ -1214,7 +1214,7 @@ internal static partial class FMInstallAndPlay
             return false;
         }
 
-        var usedMisFileInfos = new List<FileInfo>(misFileInfos.Count);
+        List<FileInfo> usedMisFileInfos = new(misFileInfos.Count);
 
         if (fm.Game != Game.SS2)
         {
@@ -1433,7 +1433,7 @@ internal static partial class FMInstallAndPlay
 
             const string key_default_game_palette = "default_game_palette";
 
-            using var sr = new StreamReader(file);
+            using StreamReader sr = new(file);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();
@@ -1695,13 +1695,13 @@ internal static partial class FMInstallAndPlay
 
     internal static async Task<bool> Install(params FanMission[] fms)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
         return await InstallInternal(false, false, fms);
     }
 
     private static async Task<bool> InstallInternal(bool fromPlay, bool suppressConfirmation, params FanMission[] fms)
     {
-        var fmDataList = new List<FMData>(fms.Length);
+        List<FMData> fmDataList = new(fms.Length);
 
         bool single = fms.Length == 1;
 
@@ -1984,7 +1984,7 @@ internal static partial class FMInstallAndPlay
             List<FMInstallResult> results = new();
 
 #if TIMING_TEST
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
 #endif
 
             Core.View.SetProgressBoxState_Single(
@@ -2057,7 +2057,7 @@ internal static partial class FMInstallAndPlay
         {
             string fileName = Path.Combine(fmData.InstalledPath, Paths.FMSelInf);
             using FileStream_NET fs = GetWriteModeFileStreamWithCachedBuffer(fileName, overwrite: true, fmSelInfFileStreamBuffer);
-            using var sw = new StreamWriter(fs);
+            using StreamWriter sw = new(fs);
             sw.WriteLine("Name=" + fmData.FM.InstalledDir);
             sw.WriteLine("Archive=" + fmData.FM.Archive);
         }
@@ -2095,7 +2095,7 @@ internal static partial class FMInstallAndPlay
                     GetLowestCommonThreadingData(threadablePaths.FilterToPostInstallWorkRelevant(fmData));
 
 #if TIMING_TEST
-                var audioConvertSW = Stopwatch.StartNew();
+                Stopwatch audioConvertSW = Stopwatch.StartNew();
 #endif
 
                 // Dark engine games can't play MP3s, so they must be converted in all cases.
@@ -2193,7 +2193,7 @@ internal static partial class FMInstallAndPlay
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
 #if TIMING_TEST
-        var overallSW = Stopwatch.StartNew();
+        Stopwatch overallSW = Stopwatch.StartNew();
 #endif
 
         try
@@ -2207,7 +2207,7 @@ internal static partial class FMInstallAndPlay
             _installCts.Token.ThrowIfCancellationRequested();
 
 #if TIMING_TEST
-            var sw0 = Stopwatch.StartNew();
+            Stopwatch sw0 = Stopwatch.StartNew();
 #endif
 
             ListFast<ZipArchiveFastEntry> entries =
@@ -2239,10 +2239,10 @@ internal static partial class FMInstallAndPlay
 
             int entryNumber = 0;
 
-            var uiThrottleSW = Stopwatch.StartNew();
+            Stopwatch uiThrottleSW = Stopwatch.StartNew();
 
 #if TIMING_TEST
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
 #endif
 
             int threadCount =
@@ -2403,7 +2403,7 @@ internal static partial class FMInstallAndPlay
         string fmInstalledPath = fmData.InstalledPath.TrimEnd(CA_BS_FS) + "\\";
 
 #if TIMING_TEST
-        var sw = Stopwatch.StartNew();
+        Stopwatch sw = Stopwatch.StartNew();
 #endif
         try
         {
@@ -2522,7 +2522,7 @@ internal static partial class FMInstallAndPlay
         string fmInstalledPath)
     {
 #if TIMING_TEST
-        var sw = Stopwatch.StartNew();
+        Stopwatch sw = Stopwatch.StartNew();
 #endif
         // Expect the common case of no duplicate entries
         List<ExtractableEntry> nonDuplicateEntries = new(entries.Count);
@@ -2599,13 +2599,13 @@ internal static partial class FMInstallAndPlay
 
             using FileStream_Read_WithRentedBuffer fs = new(fmData.ArchiveFilePath);
             int entriesCount;
-            using (var archive = RarArchive.Open(fs.FileStream))
+            using (RarArchive archive = RarArchive.Open(fs.FileStream))
             {
                 entriesCount = archive.Entries.Count;
                 fs.FileStream.Position = 0;
             }
 
-            using var reader = RarReader.Open(fs.FileStream);
+            using RarReader reader = RarReader.Open(fs.FileStream);
 
             int i = -1;
             while (reader.MoveToNextEntry())
@@ -2699,7 +2699,7 @@ internal static partial class FMInstallAndPlay
                 }
             }
 
-            var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+            Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
 
             Fen7z.Result result = Fen7z.Extract(
                 Paths.SevenZipPath,
@@ -2786,11 +2786,11 @@ internal static partial class FMInstallAndPlay
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         var fail = (false, false);
 
-        var fmDataList = new List<FMData>(fms.Length);
+        List<FMData> fmDataList = new(fms.Length);
 
         bool single = fms.Length == 1;
 
@@ -2952,7 +2952,7 @@ internal static partial class FMInstallAndPlay
                 DarkLoaderBackupContext ctx = new();
 
 #if TIMING_TEST
-                var totalDeleteSW = Stopwatch.StartNew();
+                Stopwatch totalDeleteSW = Stopwatch.StartNew();
 #endif
 
                 for (int i = 0; i < fmDataList.Count; i++)
@@ -3110,7 +3110,7 @@ internal static partial class FMInstallAndPlay
         try
         {
 #if TIMING_TEST
-            var sw = Stopwatch.StartNew();
+            Stopwatch sw = Stopwatch.StartNew();
 #endif
 
             Delete_Threaded.Delete(path, recursive: true, threadingData.Threads);

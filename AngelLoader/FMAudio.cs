@@ -38,7 +38,7 @@ internal static class FMAudio
 
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         List<ValidAudioConvertibleFM> validFMs;
         {
@@ -409,7 +409,7 @@ internal static class FMAudio
         {
             int ret = 0;
 
-            using var p = new Process();
+            using Process p = new();
             p.EnableRaisingEvents = true;
             p.StartInfo.FileName = Paths.FFprobeExe;
             p.StartInfo.RedirectStandardOutput = true;

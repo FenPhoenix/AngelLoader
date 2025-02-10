@@ -202,7 +202,7 @@ public static partial class Utils
         bool atLeastOneSolidArchiveInSet)
     {
         List<ThreadablePath> ret = new(usedArchivePaths.Count + SupportedGameCount + 2);
-        foreach (var item in usedArchivePaths)
+        foreach (string item in usedArchivePaths)
         {
             ret.Add(new ThreadablePath(
                 item,

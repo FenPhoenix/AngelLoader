@@ -1157,7 +1157,7 @@ internal static partial class Ini
     {
         try
         {
-            using var sr = new StreamReader(path);
+            using StreamReader sr = new(path);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();

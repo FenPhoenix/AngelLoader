@@ -107,7 +107,7 @@ internal static partial class PathInternal
     /// <param name="rootLength">The length of the root of the given path</param>
     internal static string RemoveRelativeSegments(string path, int rootLength)
     {
-        var sb = new StringBuilder(260 /* PathInternal.MaxShortPath */);
+        StringBuilder sb = new(260 /* PathInternal.MaxShortPath */);
 
         if (RemoveRelativeSegments(path.AsSpan(), rootLength, sb))
         {

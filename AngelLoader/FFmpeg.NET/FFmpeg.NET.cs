@@ -43,7 +43,7 @@ internal static class Engine
     {
         if (!File.Exists(Paths.FFmpegExe))
         {
-            var ex = new ArgumentException("FFmpeg executable not found", Paths.FFmpegExe);
+            ArgumentException ex = new("FFmpeg executable not found", Paths.FFmpegExe);
             LogInfo("", ex, input, output, convertType);
             throw ex;
         }

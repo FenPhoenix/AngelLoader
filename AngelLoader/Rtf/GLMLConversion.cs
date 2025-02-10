@@ -47,11 +47,11 @@ internal static class GLMLConversion
 
         // In quick testing, smallest final rtf size was ~8K chars and largest was ~38K chars. Preallocating
         // 16K chars reduces GC time substantially. 40K or something may be fine but this works for now.
-        var sb = new StringBuilder(ByteSize.KB * 16);
+        StringBuilder sb = new(ByteSize.KB * 16);
 
         // 16 chars is the default starting capacity. The longest known tag name is "FMSTRUCTURE" at 11 chars,
         // so that's more than enough. We're passing 16 explicitly just in case it ever changes under the hood.
-        var subSB = new StringBuilder(16);
+        StringBuilder subSB = new(16);
 
         sb.Append(rtfHeader);
 

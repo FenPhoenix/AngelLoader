@@ -79,7 +79,7 @@ internal sealed partial class RichTextBoxCustom
 
     private void ResetScrollInfo()
     {
-        var si = new Native.SCROLLINFO();
+        Native.SCROLLINFO si = new();
         si.cbSize = (uint)Marshal.SizeOf(si);
         si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
         si.nPos = 0;
@@ -202,7 +202,7 @@ internal sealed partial class RichTextBoxCustom
         // bounds to get the scrolling sensitivity
         // Fen's note: This new Rectangle's dimensions are different, so don't try to get rid of this one and
         // replace it with the global one, or scroll will break.
-        var scrollBounds = new Rectangle(_cursorScrollBounds.Left, _cursorScrollBounds.Top, _cursorScrollBounds.Right, _cursorScrollBounds.Bottom);
+        Rectangle scrollBounds = new(_cursorScrollBounds.Left, _cursorScrollBounds.Top, _cursorScrollBounds.Right, _cursorScrollBounds.Bottom);
 
         IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
 
@@ -210,7 +210,7 @@ internal sealed partial class RichTextBoxCustom
         {
             Marshal.StructureToPtr(scrollBounds, rectPtr, true);
 
-            var readerInfo = new Native.READERMODEINFO
+            Native.READERMODEINFO readerInfo = new()
             {
                 hwnd = Handle,
                 fFlags = Native.ReaderModeFlags.VerticalOnly,

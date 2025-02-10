@@ -183,9 +183,9 @@ public sealed class PatchTabPage : Lazy_TabsBase
     // @ViewBusinessLogic(PatchAddDMLButton_Click)
     private void PatchAddDMLButton_Click(object sender, EventArgs e)
     {
-        var dmlFiles = new List<string>();
+        List<string> dmlFiles = new();
 
-        using (var d = new OpenFileDialog())
+        using (OpenFileDialog d = new())
         {
             d.Title = LText.PatchTab.AddDMLPatchDialogTitle;
             d.Multiselect = true;

@@ -112,7 +112,7 @@ internal static class TDMWatchers
 
         if (!File.Exists(file)) return;
 
-        using var cts = new CancellationTokenSource(5000);
+        using CancellationTokenSource cts = new(5000);
 
         List<string>? lines;
         while (!TryReadAllLines(file, out lines, log: false))

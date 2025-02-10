@@ -292,13 +292,13 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
         Color? parentBackColor = Parent?.BackColor;
         if (parentBackColor != null)
         {
-            using var b = new SolidBrush((Color)parentBackColor);
+            using SolidBrush b = new((Color)parentBackColor);
             g.FillRectangle(b, ClientRectangle);
         }
 
         g.SmoothingMode = SmoothingMode.HighQuality;
 
-        var boxRect = new Rectangle(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
+        Rectangle boxRect = new(0, (ClientRectangle.Height / 2) - (_radioButtonSize / 2), _radioButtonSize, _radioButtonSize);
 
         if (Checked)
         {
@@ -342,7 +342,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
             TextFormatFlags.NoPrefix |
             TextFormatFlags.WordBreak;
 
-        var textRect = new Rectangle(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
+        Rectangle textRect = new(_radioButtonSize + 4, 0, ClientRectangle.Width - _radioButtonSize, ClientRectangle.Height);
         TextRenderer.DrawText(g, Text, Font, textRect, textColor, textFormatFlags);
 
         if (Focused && ShowFocusCues)

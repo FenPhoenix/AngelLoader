@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -95,7 +96,7 @@ internal static class FMCache
             }
             else
             {
-                var readmes = new List<string>();
+                List<string> readmes = new();
 
                 string fmCachePath = Path.Combine(Paths.FMsCache, fm.InstalledDir);
 
@@ -165,7 +166,7 @@ internal static class FMCache
                         {
                             archive.Dispose();
                             using FileStream_Read_WithRentedBuffer_Ref fs = new(fmArchivePath);
-                            using (var reader = RarReader.Open(fs.FileStream))
+                            using (RarReader reader = RarReader.Open(fs.FileStream))
                             {
                                 await Extract_RarSolid(reader, fmCachePath, readmes, ioBufferPools, entriesCount);
                             }
@@ -228,7 +229,7 @@ internal static class FMCache
                 Path.Combine(basePath, _t3ReadmeDir2),
             };
 
-            var readmes = new List<string>();
+            List<string> readmes = new();
 
             for (int i = 0; i < readmePaths.Length; i++)
             {
@@ -414,7 +415,7 @@ internal static class FMCache
                     Core.View.SetProgressPercent(pr.PercentOfBytes);
                 }
 
-                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+                Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
 
                 string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
@@ -462,7 +463,7 @@ internal static class FMCache
     {
         try
         {
-            foreach (var entry in archive.Entries)
+            foreach (RarArchiveEntry entry in archive.Entries)
             {
                 string fn = entry.Key;
                 string? t3ReadmeDir = null;
@@ -619,7 +620,7 @@ internal static class FMCache
         {
             using ZipArchive archive = GetReadModeZipArchiveCharEnc(fmArchivePath, fileStreamReadBuffer);
 
-            var entries = archive.Entries;
+            ReadOnlyCollection<ZipArchiveEntry> entries = archive.Entries;
 
             foreach (string f in Directory.GetFiles(fmCachePath, "*", SearchOption.AllDirectories))
             {
@@ -645,9 +646,9 @@ internal static class FMCache
                     if (RefFileExcluded(f.Name, re.Length)) continue;
 
                     string content;
-                    using (var es = re.Open())
+                    using (Stream es = re.Open())
                     {
-                        using var sr = new StreamReader(es);
+                        using StreamReader sr = new(es);
                         content = sr.ReadToEnd();
                     }
 
@@ -732,7 +733,7 @@ internal static class FMCache
                     message1: LText.ProgressBox.CachingHTMLReferencedFiles,
                     percent: 0);
 
-                var progress = new Progress<Fen7z.ProgressReport>(ReportProgress);
+                Progress<Fen7z.ProgressReport> progress = new(ReportProgress);
 
                 string listFile = Path.Combine(Paths.SevenZipListTemp, fmCachePath.GetDirNameFast() + ".7zl");
 
@@ -819,9 +820,9 @@ internal static class FMCache
                 if (RefFileExcluded(f.Name, re.Size)) continue;
 
                 string content;
-                using (var es = re.OpenEntryStream())
+                using (Stream es = re.OpenEntryStream())
                 {
-                    using var sr = new StreamReader(es);
+                    using StreamReader sr = new(es);
                     content = sr.ReadToEnd();
                 }
 
@@ -879,7 +880,7 @@ internal static class FMCache
                 using (FileStream_Read_WithRentedBuffer fs = new(fmArchivePath))
                 {
                     int entriesCount;
-                    using (var archive = RarArchive.Open(fs.FileStream))
+                    using (RarArchive archive = RarArchive.Open(fs.FileStream))
                     {
                         LazyReadOnlyCollection<RarArchiveEntry> entries = archive.Entries;
                         entriesCount = entries.Count;

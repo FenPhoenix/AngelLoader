@@ -59,8 +59,8 @@ internal static class Program
     private static void Main(string[] args)
     {
 #if TRACE_WRITE_TO_FILE
-        using var fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
-        using var fl = new System.Diagnostics.TextWriterTraceListener(fs);
+        using FileStream fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
+        using System.Diagnostics.TextWriterTraceListener fl = new(fs);
         System.Diagnostics.Trace.Listeners.Add(fl);
 #endif
 

@@ -52,7 +52,7 @@ internal static partial class NonLocalizableText
             object[] attrs = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(TargetFrameworkAttribute), false);
             if (attrs.Length == 1)
             {
-                var fn = new FrameworkName(((TargetFrameworkAttribute)attrs[0]).FrameworkName);
+                FrameworkName fn = new(((TargetFrameworkAttribute)attrs[0]).FrameworkName);
                 string dotNetName = fn.Identifier.ContainsI("Framework")
                     ? ".NET Framework " + fn.Version
                     : ".NET " + fn.Version;

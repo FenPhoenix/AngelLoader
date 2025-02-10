@@ -76,7 +76,7 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
 
         g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
-        var borderRect = new Rectangle(
+        Rectangle borderRect = new(
             0,
             stringSize.Height / 2,
             rect.Width - 1,
@@ -84,13 +84,13 @@ public sealed class DarkGroupBox : GroupBox, IDarkable
         );
         g.DrawRectangle(DarkColors.LighterBorderPen, borderRect);
 
-        var textRect = new Rectangle(
+        Rectangle textRect = new(
             rect.Left + _padding,
             rect.Top,
             rect.Width - (_padding * 2),
             stringSize.Height);
 
-        var modRect = new Rectangle(
+        Rectangle modRect = new(
             textRect.Left + 1,
             textRect.Top,
             Math.Min(textRect.Width, stringSize.Width) - 3, textRect.Height);

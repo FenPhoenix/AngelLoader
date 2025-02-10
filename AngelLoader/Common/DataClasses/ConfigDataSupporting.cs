@@ -286,7 +286,7 @@ internal sealed class FMTabsData
     {
         #region Fallback if multiple tabs have the same display index
 
-        var displayIndexesSet = new HashSet<int>();
+        HashSet<int> displayIndexesSet = new();
         foreach (FMTabData tab in Tabs)
         {
             if (!displayIndexesSet.Add(tab.DisplayIndex))
