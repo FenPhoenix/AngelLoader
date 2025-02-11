@@ -4809,8 +4809,8 @@ public sealed partial class MainForm : DarkFormBase,
     }
 
     /*
-    @PERF_TODO(Context menu sel state update): Since this runs always on selection change...
-    ... we might not need to call it on FM load.
+    @PERF_TODO(Context menu sel state update): Since this runs always on selection change,  we might not need to
+     call it on FM load.
     NOTE(Context menu sel state update):
     Keep this light and fast, because it gets called like 3 times every selection due to the @SEL_SYNC_HACK
     for preventing "multi-select starts from top row even though our selection is not actually at the top row"
