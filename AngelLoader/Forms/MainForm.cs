@@ -5630,9 +5630,10 @@ public sealed partial class MainForm : DarkFormBase,
     #endregion
 
     #region FM selected stats
-
-    // @PERF_TODO/@MEM(FM selected stats): Combine these methods into one to make only one call to RefreshFMStatsLabel()
-    // (there are currently two on startup)
+    /*
+    @PERF_TODO/@MEM(FM selected stats): Combine these methods into one to make only one call to RefreshFMStatsLabel()
+     (there are currently two on startup)
+    */
 
     private int _fmsSelectedCount = -1;
     private int _fmsAvailableCount = -1;
