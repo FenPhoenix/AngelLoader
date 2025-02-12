@@ -2969,7 +2969,7 @@ public sealed class Scanner : IDisposable
                     }
                     else if (fmd.HasMovies == null &&
                              (fn.PathStartsWithI_AsciiSecond(FMDirs.MoviesS) ||
-                             (pathIsCutscenes ?? fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS))) &&
+                              (pathIsCutscenes ?? fn.PathStartsWithI_AsciiSecond(FMDirs.CutscenesS))) &&
                              fn.HasFileExtension())
                     {
                         fmd.HasMovies = true;
