@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define ALWAYS_USE_APP_STARTUP_PATH
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -51,6 +53,9 @@ internal static class Paths
                     if they run or compile the code. So only do the hardcoded path if my personal environment
                     var is set. Obviously don't add this var yourself.
                     */
+#if ALWAYS_USE_APP_STARTUP_PATH
+                    return AppContext.BaseDirectory;
+#endif
                     string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
                     _startupPath = val?.EqualsTrue() == true ? @"C:\AngelLoader" : AppContext.BaseDirectory;
                 }

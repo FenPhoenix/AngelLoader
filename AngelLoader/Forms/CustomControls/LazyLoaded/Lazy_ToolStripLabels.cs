@@ -54,7 +54,7 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
 
         if (!_constructed[li])
         {
-            var _label = new ToolStripLabel
+            ToolStripLabel _label = new()
             {
                 ForeColor = LabelForeColor,
                 Margin = new Padding(4, 5, 0, 2),

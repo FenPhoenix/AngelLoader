@@ -37,19 +37,31 @@ internal sealed class ArchiveDatabase
     {
         int folderIndex = 0;
         int indexInFolder = 0;
+
+        long distanceFromBlockStart = 0;
+
         for (int i = 0; i < _files.Count; i++)
         {
             SevenZipArchiveEntry file = _files[i];
 
+            // If the file has no stream then its uncompressed length will have been explicitly set to 0, so no
+            // need to check.
             bool emptyStream = !file.HasStream;
 
             if (emptyStream && indexInFolder == 0)
             {
+                distanceFromBlockStart = 0;
+
+                file.Block = 0;
+                file.IndexInBlock = 0;
+                file.DistanceFromBlockStart_Uncompressed = 0;
                 continue;
             }
 
             if (indexInFolder == 0)
             {
+                distanceFromBlockStart = 0;
+
                 // v3.13 incorrectly worked with empty folders
                 // v4.07: Loop for skipping empty folders
                 for (; ; )
@@ -61,7 +73,17 @@ internal sealed class ArchiveDatabase
 
                     if (_numUnpackStreamsVector![folderIndex] != 0)
                     {
+                        file.Block = folderIndex;
+                        file.IndexInBlock = indexInFolder;
+                        file.DistanceFromBlockStart_Uncompressed = 0;
                         break;
+                    }
+                    else
+                    {
+                        file.Block = folderIndex;
+                        file.IndexInBlock = indexInFolder;
+                        file.DistanceFromBlockStart_Uncompressed = 0;
+                        distanceFromBlockStart = file.UncompressedSize;
                     }
 
                     folderIndex++;
@@ -70,15 +92,31 @@ internal sealed class ArchiveDatabase
 
             if (emptyStream)
             {
+                file.Block = 0;
+                file.IndexInBlock = 0;
+                file.DistanceFromBlockStart_Uncompressed = 0;
                 continue;
             }
 
+            file.IndexInBlock = indexInFolder - 1;
             indexInFolder++;
 
             if (indexInFolder >= _numUnpackStreamsVector![folderIndex])
             {
+                file.Block = folderIndex;
+                file.IndexInBlock = indexInFolder - 1;
+                file.DistanceFromBlockStart_Uncompressed = distanceFromBlockStart;
+                distanceFromBlockStart += file.UncompressedSize;
+
                 folderIndex++;
                 indexInFolder = 0;
+            }
+            else
+            {
+                file.Block = folderIndex;
+                file.IndexInBlock = indexInFolder - 1;
+                file.DistanceFromBlockStart_Uncompressed = distanceFromBlockStart;
+                distanceFromBlockStart += file.UncompressedSize;
             }
         }
     }

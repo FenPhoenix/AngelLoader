@@ -123,6 +123,10 @@ internal static class Utility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool ExtIsGam(this string value) => value.EndsWithI(".gam");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsBaseDirMisOrGamFile(this string value) =>
+        !value.Rel_ContainsDirSep() && (value.ExtIsMis() || value.ExtIsGam());
+
     #endregion
 
     #region StartsWith and EndsWith
@@ -216,7 +220,7 @@ internal static class Utility
         bool surroundedByParens = false;
         do
         {
-            var stack = new Stack<int>();
+            Stack<int> stack = new();
             for (int i = 0; i < value.Length; i++)
             {
                 switch (value[i])
@@ -520,8 +524,8 @@ internal static class Utility
     internal static string GLMLToPlainText(string glml, ListFast<char> charBuffer)
     {
         // @MEM: We could cache these, and maybe even as ListFast<char>s to avoid the cruft of StringBuilder appending?
-        var sb = new StringBuilder(glml.Length);
-        var subSB = new StringBuilder(16);
+        StringBuilder sb = new(glml.Length);
+        StringBuilder subSB = new(16);
 
         const char unicodeUnknownChar = '\u25A1';
 

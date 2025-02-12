@@ -1,7 +1,4 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
-//#define FMScanner_FullCode
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -20,13 +17,78 @@ public sealed partial class ReadOnlyDataContext
         internal readonly char Ascii = ascii;
     }
 
-    internal readonly string[] FMFiles_TitlesStrLocations;
+    internal readonly string[] FMFiles_TitlesStrLocations = RunFunc(static () =>
+    {
+        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
+        string[] ret = new string[(SupportedLanguageCount * 2) + 2];
 
-    internal readonly string[] Languages_FS_Lang_FS;
-    internal readonly string[] Languages_FS_Lang_Language_FS;
-    internal readonly string[] LanguagesC;
+        // Do not change search order: strings/english, strings, strings/[any other language]
+        ret[0] = "strings/english/titles.str";
+        ret[1] = "strings/english/title.str";
+        ret[2] = "strings/titles.str";
+        ret[3] = "strings/title.str";
 
-    internal readonly byte[] RomanNumeralToDecimalTable;
+        for (int i = 1; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            ret[(i - 1) + 4] = "strings/" + lang + "/titles.str";
+            ret[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] Languages_FS_Lang_FS = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+            ret[i] = "/" + lang + "/";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] Languages_FS_Lang_Language_FS = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+
+            // Lowercase so that the perf hack in the language detector can work
+            ret[i] = "/" + lang + " language/";
+        }
+
+        return ret;
+    });
+
+    internal readonly string[] LanguagesC = RunFunc(static () =>
+    {
+        string[] ret = new string[SupportedLanguageCount];
+
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            string lang = SupportedLanguages[i];
+
+            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
+            ret[i] = (char)(lang[0] - 32) + lang.Substring(1);
+        }
+
+        return ret;
+    });
+
+    internal readonly byte[] RomanNumeralToDecimalTable = RunFunc(static () =>
+    {
+        byte[] ret = new byte['X' + 1];
+        ret['I'] = 1;
+        ret['V'] = 5;
+        ret['X'] = 10;
+        return ret;
+    });
 
     // Used for SS2 fingerprinting for the game type scan fallback
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
@@ -56,56 +118,6 @@ public sealed partial class ReadOnlyDataContext
         "shodan.mis",
         "station.mis",
     };
-
-    public ReadOnlyDataContext()
-    {
-        Languages_FS_Lang_FS = new string[SupportedLanguageCount];
-        Languages_FS_Lang_Language_FS = new string[SupportedLanguageCount];
-        LanguagesC = new string[SupportedLanguageCount];
-
-        #region FMFiles_TitlesStrLocations
-
-        // 2 entries per language, plus an additional 2 for the no-language-dir titles files
-        FMFiles_TitlesStrLocations = new string[(SupportedLanguageCount * 2) + 2];
-
-        // Do not change search order: strings/english, strings, strings/[any other language]
-        FMFiles_TitlesStrLocations[0] = "strings/english/titles.str";
-        FMFiles_TitlesStrLocations[1] = "strings/english/title.str";
-        FMFiles_TitlesStrLocations[2] = "strings/titles.str";
-        FMFiles_TitlesStrLocations[3] = "strings/title.str";
-
-        for (int i = 1; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            FMFiles_TitlesStrLocations[(i - 1) + 4] = "strings/" + lang + "/titles.str";
-            FMFiles_TitlesStrLocations[(i - 1) + 4 + (SupportedLanguageCount - 1)] = "strings/" + lang + "/title.str";
-        }
-
-        #endregion
-
-        #region Languages
-
-        for (int i = 0; i < SupportedLanguageCount; i++)
-        {
-            string lang = SupportedLanguages[i];
-            Languages_FS_Lang_FS[i] = "/" + lang + "/";
-            Languages_FS_Lang_Language_FS[i] = "/" + lang + " Language/";
-
-            // Lowercase to first-char-uppercase: Cheesy hack because it wasn't designed this way.
-            LanguagesC[i] = (char)(lang[0] - 32) + lang.Substring(1);
-        }
-
-        #endregion
-
-        #region Roman numeral table
-
-        RomanNumeralToDecimalTable = new byte['X' + 1];
-        RomanNumeralToDecimalTable['I'] = 1;
-        RomanNumeralToDecimalTable['V'] = 5;
-        RomanNumeralToDecimalTable['X'] = 10;
-
-        #endregion
-    }
 
     internal readonly TitlesStrNaturalNumericSortComparer TitlesStrNaturalNumericSort = new();
 
@@ -265,10 +277,6 @@ public sealed partial class ReadOnlyDataContext
 
         #endregion
     };
-
-#if FMScanner_FullCode
-    internal readonly string[] SA_VersionDetect = { "Version" };
-#endif
 
     #endregion
 
@@ -442,17 +450,20 @@ public sealed partial class ReadOnlyDataContext
     internal const int SS2_NewDark_MAPPARAM_Location = 696;
     internal const int T2_OldDark_SKYOBJVAR_Location = 772;
     internal const int SS2_OldDark_MAPPARAM_Location = 916;
-    // Neither of these clash with SS2's SKYOBJVAR locations (3168, 7292).
-    internal const int NewDark_SKYOBJVAR_Location1 = 7217;
-    internal const int NewDark_SKYOBJVAR_Location2 = 3093;
 
     internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
-    internal const int NewDark_SKYOBJVAR_Offset1 = 2177;  // (((3093+9)-144)-76)-705 = 2177
-    internal const int NewDark_SKYOBJVAR_Offset2 = 4124;  // ((((7217+9)-2177)-144)-76)-705 = 4124
 
-    internal readonly byte[] OBJ_MAP = "OBJ_MAP"u8.ToArray();
+    // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
+    internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
+    internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
+
+    internal const ulong OBJ_MAP_First = 0x0050414D5F4A424F;
+    internal const uint OBJ_MAP_Second = 0x00000000;
+
+    internal const ulong SymName_First = 0x6D614E6D79532450;
+    internal const uint SymName_Second = 0x00000065;
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
@@ -463,14 +474,13 @@ public sealed partial class ReadOnlyDataContext
     have different ids. So unfortunately if we want to stay accurate we have to stay with just "RopeyArrow".
     */
     internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
+    internal readonly byte[] GAMEPARAM = "GAMEPARAM"u8.ToArray();
 
     internal readonly int[] GameDetect_KeyPhraseLocations =
     {
         SS2_NewDark_MAPPARAM_Location,
         T2_OldDark_SKYOBJVAR_Location,
         SS2_OldDark_MAPPARAM_Location,
-        NewDark_SKYOBJVAR_Location1,
-        NewDark_SKYOBJVAR_Location2,
     };
 
     internal readonly int[] GameDetect_KeyPhraseZipOffsets =
@@ -478,8 +488,6 @@ public sealed partial class ReadOnlyDataContext
         SS2_NewDark_MAPPARAM_Offset,
         T2_OldDark_SKYOBJVAR_Offset,
         SS2_OldDark_MAPPARAM_Offset,
-        NewDark_SKYOBJVAR_Offset1,
-        NewDark_SKYOBJVAR_Offset2,
     };
 
     // ReSharper restore IdentifierTypo
@@ -507,57 +515,6 @@ public sealed partial class ReadOnlyDataContext
 
     [GeneratedRegex(@"\(?\S+@\S+\.\S{2,5}\)?")]
     internal static partial Regex AuthorEmailRegex();
-
-#if FMScanner_FullCode
-    [GeneratedRegex(@"\d\.\d+\+")]
-    internal static partial Regex VersionExclude1Regex();
-
-    // TODO: This one looks iffy though
-    [GeneratedRegex(@"[0123456789\.]+")]
-    internal static partial Regex VersionFirstNumberRegex();
-
-    [GeneratedRegex(@"NewDark (?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion1();
-
-    [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? v?(\.| )?(?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion2();
-
-    [GeneratedRegex(@"(New ?Dark|""New ?Dark"").? .?(Version|Patch) .?(?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion3();
-
-    [GeneratedRegex(@"(Dark ?Engine) (Version.?|v)?(\.| )?(?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion4();
-
-    [GeneratedRegex(@"((?<!(Love |Being |Penitent |Counter-|Requiem for a |Space ))Thief|(?<!Being )Thief ?(2|II)|The Metal Age) v?(\.| )?(?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion5();
-
-    [GeneratedRegex(@"\D(?<Version>\d\.\d+) (version of |.?)New ?Dark(?! ?\d\.\d+)|Thief Gold( Patch)? (?<Version>(?!1\.33|1\.37)\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion6();
-
-    [GeneratedRegex(@"Version (?<Version>\d\.\d+) of (Thief ?(2|II))", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion7();
-
-    [GeneratedRegex(@"(New ?Dark|""New ?Dark"") (is )?required (.? )v?(\.| )?(?<Version>\d\.\d+)", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion8();
-
-    [GeneratedRegex(@"(?<Version>(?!1\.3(3|7))\d\.\d+) Patch", Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture)]
-    internal static partial Regex NewDarkVersion9();
-
-    // Much, much faster to iterate through possible regex matches, common ones first
-    // TODO: These are still kinda slow comparatively. Profile to see if any are bottlenecks
-    internal readonly Regex[] NewDarkVersionRegexes =
-    {
-        NewDarkVersion1(),
-        NewDarkVersion2(),
-        NewDarkVersion3(),
-        NewDarkVersion4(),
-        NewDarkVersion5(),
-        NewDarkVersion6(),
-        NewDarkVersion7(),
-        NewDarkVersion8(),
-        NewDarkVersion9(),
-    };
-#endif
 
     #region Author
 
@@ -782,7 +739,7 @@ public sealed partial class ReadOnlyDataContext
 
     // 1/0 for true/false, to enable branchless occurrence counting
 
-    private static byte[] InitSuspected1252Bytes()
+    internal readonly byte[] Suspected1252Bytes = RunFunc(static () =>
     {
         byte[] ret = new byte[256];
 
@@ -837,9 +794,9 @@ public sealed partial class ReadOnlyDataContext
         ret[0xFF] = 1;
 
         return ret;
-    }
+    });
 
-    private static byte[] InitSuspected850Bytes()
+    internal readonly byte[] Suspected850Bytes = RunFunc(static () =>
     {
         byte[] ret = new byte[256];
 
@@ -875,11 +832,7 @@ public sealed partial class ReadOnlyDataContext
         ret[0xD7] = 1;
 
         return ret;
-    }
-
-    internal readonly byte[] Suspected1252Bytes = InitSuspected1252Bytes();
-
-    internal readonly byte[] Suspected850Bytes = InitSuspected850Bytes();
+    });
 
     internal readonly byte[][] TitlesStrOEM850KeyPhrases =
     {
@@ -1096,6 +1049,30 @@ public sealed partial class ReadOnlyDataContext
         internal const string TDM_ReadmeTxt = "readme.txt";
         internal const string TDM_MapSequence = "tdm_mapsequence.txt";
     }
+
+    internal readonly bool[] NewGameStrDisallowedTitleFirstChars = RunFunc(static () =>
+    {
+        bool[] ret = new bool[256];
+
+        ret['{'] = true;
+        ret['}'] = true;
+        ret['-'] = true;
+        ret['_'] = true;
+        ret[':'] = true;
+        ret[';'] = true;
+        ret['!'] = true;
+        ret['@'] = true;
+        ret['#'] = true;
+        ret['$'] = true;
+        ret['%'] = true;
+        ret['^'] = true;
+        ret['&'] = true;
+        ret['*'] = true;
+        ret['('] = true;
+        ret[')'] = true;
+
+        return ret;
+    });
 
     #region Comparer classes
 

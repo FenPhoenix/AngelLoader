@@ -38,7 +38,12 @@ public sealed class StreamReaderCustom
         public SRC_Wrapper(Stream stream, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, Encoding.UTF8, true, encodingCruftEnabled: false, disposeStream: true);
+            sr.Init(
+                stream: stream,
+                encoding: Encoding.UTF8,
+                detectEncodingFromByteOrderMarks: true,
+                encodingCruftEnabled: false,
+                disposeStream: true);
         }
 
 #if ENABLE_UNUSED
@@ -66,21 +71,29 @@ public sealed class StreamReaderCustom
         public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true, disposeStream: true);
+            sr.Init(
+                stream: stream,
+                encoding: encoding,
+                detectEncodingFromByteOrderMarks: detectEncodingFromByteOrderMarks,
+                encodingCruftEnabled: true,
+                disposeStream: true);
         }
 
         /// <summary>
-        /// If <paramref name="disposeStream"/> is <see langword="true"/>, the stream will be disposed when this struct is disposed.
+        /// The stream will NOT be disposed when this struct is disposed.
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="encoding"></param>
-        /// <param name="detectEncodingFromByteOrderMarks"></param>
         /// <param name="sr"></param>
-        /// <param name="disposeStream"></param>
-        public SRC_Wrapper(Stream stream, Encoding encoding, bool detectEncodingFromByteOrderMarks, StreamReaderCustom sr, bool disposeStream)
+        public SRC_Wrapper(Stream stream, Encoding encoding, StreamReaderCustom sr)
         {
             Reader = sr;
-            sr.Init(stream, encoding, detectEncodingFromByteOrderMarks, encodingCruftEnabled: true, disposeStream: disposeStream);
+            sr.Init(
+                stream: stream,
+                encoding: encoding,
+                detectEncodingFromByteOrderMarks: false,
+                encodingCruftEnabled: true,
+                disposeStream: false);
         }
 
         public void Dispose() => Reader.DeInit();

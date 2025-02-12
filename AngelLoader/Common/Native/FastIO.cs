@@ -24,7 +24,7 @@ internal static class FastIO
         searchPattern ??= "<null>";
         path ??= "<null>";
 
-        var ex = new Win32Exception(err);
+        Win32Exception ex = new(err);
         throw new Win32Exception(err,
             "System error code: " + err.ToStrInv() + $"{NL}" +
             ex.Message + $"{NL}" +
@@ -40,7 +40,7 @@ internal static class FastIO
         bool returnFullPaths = true,
         int preallocate = 16)
     {
-        var ret = new List<string>(preallocate);
+        List<string> ret = new(preallocate);
         GetFilesTopOnlyInternal(
             path,
             searchPattern,
@@ -60,7 +60,7 @@ internal static class FastIO
         bool returnFullPaths = true,
         int preallocate = 16)
     {
-        var ret = new List<string>(preallocate);
+        List<string> ret = new(preallocate);
         GetFilesTopOnlyInternal(
             path,
             searchPattern,

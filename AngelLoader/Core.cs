@@ -221,7 +221,7 @@ internal static class Core
 
         // We can't show the splash screen until we know our theme, which we have to get from the config
         // file, so we can't show it any earlier than this.
-        using var splashScreen = new SplashScreen(ViewEnv.GetSplashScreen());
+        using SplashScreen splashScreen = new(ViewEnv.GetSplashScreen());
 
         splashScreen.Show(Config.VisualTheme);
 
@@ -568,6 +568,9 @@ internal static class Core
         bool fuzzySearchChanged =
             !startup && Config.EnableFuzzySearch != outConfig.EnableFuzzySearch;
 
+        bool showPresetTagsChanged =
+            !startup && Config.ShowPresetTags != outConfig.ShowPresetTags;
+
         #endregion
 
         #region Set config data
@@ -693,6 +696,8 @@ internal static class Core
 
         Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
 
+        Config.ShowPresetTags = outConfig.ShowPresetTags;
+
         #endregion
 
         #region Thief Buddy page
@@ -816,6 +821,11 @@ internal static class Core
             sortAndSetFilter = true;
         }
 
+        if (showPresetTagsChanged)
+        {
+            FMTags.RebuildGlobalTags();
+        }
+
         // Do this BEFORE the view refresh!
         // Prevents the Installed TDM FM from losing its Installed=true state until the next refresh.
         TDM.UpdateTDMDataFromDisk(refresh: true);
@@ -913,7 +923,7 @@ internal static class Core
                 Config.T2MPDetected = gameExeSpecified && !GetT2MultiplayerExe_FromDisk().IsEmpty();
             }
 
-            var hash = new HashSetPathI();
+            HashSetPathI hash = new();
             List<Mod>? mods = null;
 
             if (!gamePath.IsEmpty() && data.AllLines != null && Directory.Exists(gamePath))
@@ -939,7 +949,7 @@ internal static class Core
             List<Mod> configMods = Config.GetMods(gameIndex);
             if (configMods.Count > 0)
             {
-                var tempList = new List<Mod>(configMods.Count);
+                List<Mod> tempList = new(configMods.Count);
 
                 for (int i = 0; i < configMods.Count; i++)
                 {
@@ -1133,7 +1143,7 @@ internal static class Core
             List<FanMission> fmsViewListUnscanned = FindFMs.Find();
 
             // @TDM_CASE: Case-sensitive dictionary
-            var tdmFMsDict = new Dictionary<string, int>(FMDataIniListTDM.Count);
+            Dictionary<string, int> tdmFMsDict = new(FMDataIniListTDM.Count);
             foreach (FanMission fm in FMDataIniListTDM)
             {
                 if (!fm.MarkedUnavailable)
@@ -1193,7 +1203,7 @@ internal static class Core
             return false;
         }
 
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         try
         {
@@ -1222,7 +1232,7 @@ internal static class Core
             return false;
         }
 
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         try
         {
@@ -1314,9 +1324,9 @@ internal static class Core
 #if ENABLE_README_TESTS
     internal static async void SafeReadmeIdenticalityTest()
     {
-        using (var sw = new StreamWriter(@"C:\readme_test_old.txt"))
+        using (StreamWriter sw = new(@"C:\readme_test_old.txt"))
         {
-            var langs = Config.LanguageNames.Keys.ToList();
+            List<string> langs = Config.LanguageNames.Keys.ToList();
             langs.Sort(StringComparer.Ordinal);
 
             foreach (string lang in langs)
@@ -1324,7 +1334,7 @@ internal static class Core
                 Config.Language = lang;
                 foreach (FanMission fm in FMDataIniList)
                 {
-                    var cache = await FMCache.GetCacheableData(fm, false);
+                    FMCache.CacheData cache = await FMCache.GetCacheableData(fm, false);
                     string safeReadme = DetectSafeReadme(cache.Readmes, fm.Title);
                     await sw.WriteLineAsync(safeReadme);
                 }
@@ -1335,16 +1345,16 @@ internal static class Core
 
     internal static async Task ReadmeEncodingIdenticalityTest()
     {
-        var fe = new Ude.NetStandard.SimpleHelpers.FileEncoding();
-        using (var sw = new StreamWriter(@"C:\_readme_encoding_test_new.txt"))
+        Ude.NetStandard.SimpleHelpers.FileEncoding fe = new();
+        using (StreamWriter sw = new(@"C:\_readme_encoding_test_new.txt"))
         {
-            var fms = new List<FanMission>(FMsViewList);
+            List<FanMission> fms = new(FMsViewList);
             fms = fms.OrderBy(static x => x.InstalledDir, StringComparer.OrdinalIgnoreCase).ToList();
 
             foreach (FanMission fm in fms)
             {
                 bool wroteFMName = false;
-                var cache = await FMCache.GetCacheableData(fm, false);
+                FMCache.CacheData cache = await FMCache.GetCacheableData(fm, false);
                 string oldFMSelectedReadme = fm.SelectedReadme;
                 foreach (string readme in cache.Readmes)
                 {
@@ -1358,7 +1368,7 @@ internal static class Core
                             wroteFMName = true;
                         }
                         sw.WriteLine(readme);
-                        using var fs = File.OpenRead(readmePath);
+                        using FileStream fs = File.OpenRead(readmePath);
                         Encoding? encoding = fe.DetectFileEncoding(fs);
                         if (encoding != null)
                         {
@@ -1489,7 +1499,7 @@ internal static class Core
             // a language code.
             bool langCodesExist = TryGetLanguageCodes(Config.Language, out string[] langCodes);
 
-            var safeReadmes = new List<string>(readmeFiles.Count);
+            List<string> safeReadmes = new(readmeFiles.Count);
             foreach (string rf in readmeFiles)
             {
                 string fn_orig = Path.GetFileNameWithoutExtension(rf);

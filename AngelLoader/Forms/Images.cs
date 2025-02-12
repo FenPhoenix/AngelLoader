@@ -867,20 +867,18 @@ public static class Images
         public readonly PerGameSizedImage Alternate = alternate;
     }
 
-    private static readonly PerGameImage[] _perGameImageGetters = InitPerGameImageGetters();
-
-    private static PerGameImage[] InitPerGameImageGetters()
+    private static readonly PerGameImage[] _perGameImageGetters = RunFunc(static () =>
     {
-        var ret = new PerGameImage[SupportedGameCount];
+        PerGameImage[] ret = new PerGameImage[SupportedGameCount];
 
         // @GENGAMES (Images.InitPerGameImageGetters()) - Begin
-        var t1Primary = new PerGameSizedImage(large: Thief1_21, small: Thief1_16);
-        var t1Secondary = new PerGameSizedImage(large: Thief1_21_DGV, small: Thief1_16);
+        PerGameSizedImage t1Primary = new(large: Thief1_21, small: Thief1_16);
+        PerGameSizedImage t1Secondary = new(large: Thief1_21_DGV, small: Thief1_16);
 
-        var t2 = new PerGameSizedImage(large: Thief2_21, small: Thief2_16);
-        var t3 = new PerGameSizedImage(large: Thief3_21, small: Thief3_16);
-        var ss2 = new PerGameSizedImage(large: Shock2_21, small: Shock2_16);
-        var tdm = new PerGameSizedImage(large: TDM_21, small: TDM_16);
+        PerGameSizedImage t2 = new(large: Thief2_21, small: Thief2_16);
+        PerGameSizedImage t3 = new(large: Thief3_21, small: Thief3_16);
+        PerGameSizedImage ss2 = new(large: Shock2_21, small: Shock2_16);
+        PerGameSizedImage tdm = new(large: TDM_21, small: TDM_16);
 
         ret[(int)GameIndex.Thief1] = new PerGameImage(t1Primary, t1Secondary);
         ret[(int)GameIndex.Thief2] = new PerGameImage(t2, t2);
@@ -890,7 +888,7 @@ public static class Images
         // @GENGAMES (Images.InitPerGameImageGetters()) - End
 
         return ret;
-    }
+    });
 
     public static PerGameImage GetPerGameImage(GameIndex gameIndex) => _perGameImageGetters[(int)gameIndex];
 
@@ -1078,13 +1076,13 @@ public static class Images
     // It just bugs out in various different ways. So we just paint on an image and set their image to that.
     public static Bitmap GetZoomImage(Rectangle rect, Zoom zoomType)
     {
-        var ret = new Bitmap(rect.Width, rect.Height);
+        Bitmap ret = new(rect.Width, rect.Height);
 
-        using var g = Graphics.FromImage(ret);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
-        var gp = GetZoomImageGraphicsPath(zoomType);
+        GraphicsPath gp = GetZoomImageGraphicsPath(zoomType);
 
         FitRectInBounds(
             g,
@@ -1209,12 +1207,12 @@ public static class Images
             ? _refresh_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh)
             : _refresh ??= Resources.Refresh;
 
-    private static Image? __refresh_Disabled;
-    private static Image? __refresh_Disabled_Dark;
+    private static Image? _refresh_Disabled;
+    private static Image? _refresh_Disabled_Dark;
     public static Image Refresh_Disabled =>
         Config.DarkMode
-            ? __refresh_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh, DarkModeImageConversion.Matrix.DarkDisabled)
-            : __refresh_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.Refresh);
+            ? _refresh_Disabled_Dark ??= DarkModeImageConversion.CreateDarkModeVersion(Resources.Refresh, DarkModeImageConversion.Matrix.DarkDisabled)
+            : _refresh_Disabled ??= ToolStripRenderer.CreateDisabledImage(Resources.Refresh);
 
     private static Bitmap? _updateIcon;
     private static Bitmap? _updateIcon_Dark;
@@ -1281,11 +1279,11 @@ public static class Images
         Bitmap?[] finishedOnBitmaps = new Bitmap?[DifficultyCount];
         try
         {
-            var list = new List<Bitmap>(4);
+            List<Bitmap> list = new(4);
 
             for (uint ai = 1; ai < FinishedOnIconsArray.Length; ai++)
             {
-                var canvas = new Bitmap(138, 32, PixelFormat.Format32bppPArgb);
+                Bitmap canvas = new(138, 32, PixelFormat.Format32bppPArgb);
                 Difficulty difficulty = (Difficulty)ai;
 
                 list.Clear();
@@ -1310,7 +1308,7 @@ public static class Images
 
                 int x = (138 / 2) - (totalWidth / 2);
 
-                using var g = Graphics.FromImage(canvas);
+                using Graphics g = Graphics.FromImage(canvas);
                 for (int i = 0; i < list.Count; i++)
                 {
                     Bitmap subImage = list[i];
@@ -1340,9 +1338,9 @@ public static class Images
         {
             for (int bi = 0; bi < RatingIconsArray.Length; bi++)
             {
-                var canvas = new Bitmap(110, 32, PixelFormat.Format32bppPArgb);
+                Bitmap canvas = new(110, 32, PixelFormat.Format32bppPArgb);
 
-                using var g = Graphics.FromImage(canvas);
+                using Graphics g = Graphics.FromImage(canvas);
 
                 g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1401,9 +1399,9 @@ public static class Images
             }
         }
 
-        var bmp = new Bitmap(width, height, PixelFormat.Format32bppPArgb);
+        Bitmap bmp = new(width, height, PixelFormat.Format32bppPArgb);
 
-        using var g = Graphics.FromImage(bmp);
+        using Graphics g = Graphics.FromImage(bmp);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1427,7 +1425,7 @@ public static class Images
                 _finishedCheckInnerTypes[i] = gp.PathTypes[j];
             }
 
-            using var innerGP = new GraphicsPath(
+            using GraphicsPath innerGP = new(
                 _finishedCheckInnerPoints,
                 _finishedCheckInnerTypes);
 
@@ -1447,8 +1445,8 @@ public static class Images
 
     private static Bitmap CreateGreenCheckCircleImage()
     {
-        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(21, 21, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1471,8 +1469,8 @@ public static class Images
 
     private static Bitmap CreateUpdateIcon()
     {
-        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(21, 21, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1493,8 +1491,8 @@ public static class Images
 
     private static Bitmap CreateDeleteFromDBImage()
     {
-        var ret = new Bitmap(16, 16, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(16, 16, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1515,8 +1513,8 @@ public static class Images
 
     private static Bitmap CreateCalendarImage(bool lastPlayed)
     {
-        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(21, 21, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.None;
 
@@ -1571,11 +1569,11 @@ public static class Images
 
     private static Bitmap CreateRatingExampleRectangle()
     {
-        var ret = new Bitmap(79, 23, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(79, 23, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
         g.FillRectangle(Config.DarkMode ? DarkColors.Fen_DarkBackgroundBrush : SystemBrushes.Window, 1, 1, 77, 21);
 
-        var borderRect = new Rectangle(0, 0, 78, 22);
+        Rectangle borderRect = new(0, 0, 78, 22);
 
         Pen pen = Config.DarkMode ? DarkColors.Fen_DGVCellBordersPen : SystemPens.ControlDark;
         g.DrawRectangle(pen, borderRect);
@@ -1587,7 +1585,7 @@ public static class Images
     {
         Bitmap ret = CreateRatingExampleRectangle();
 
-        using var g = Graphics.FromImage(ret);
+        using Graphics g = Graphics.FromImage(ret);
 
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1615,7 +1613,7 @@ public static class Images
 
             ret = CreateRatingExampleRectangle();
 
-            using var g = Graphics.FromImage(ret);
+            using Graphics g = Graphics.FromImage(ret);
 
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -1644,8 +1642,8 @@ public static class Images
         PointF[] points = new PointF[11];
         byte[] types = new byte[11];
 
-        var bmp = new Bitmap(px, px, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(bmp);
+        Bitmap bmp = new(px, px, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(bmp);
         g.SmoothingMode = SmoothingMode.AntiAlias;
 
         FitRectInBounds(g, gp.GetBounds(), new RectangleF(0, 0, px, px));
@@ -1667,7 +1665,7 @@ public static class Images
             Array.Copy(gp.PathPoints, pos, points, 0, elemCount);
             Array.Copy(gp.PathTypes, pos, types, 0, elemCount);
 
-            using var individualGP = new GraphicsPath(points, types);
+            using GraphicsPath individualGP = new(points, types);
             g.FillPath(brushes[i], individualGP);
         }
 
@@ -1679,7 +1677,7 @@ public static class Images
         int index = (int)zoomType;
         if (_zoomImageGPaths[index] == null)
         {
-            var gp = new GraphicsPath();
+            GraphicsPath gp = new();
             gp.AddPath(MagnifierEmptyGPath, true);
             gp.AddPath(MakeGraphicsPath(_zoomTypePoints[index], _zoomTypeTypes[index]), true);
 
@@ -1722,7 +1720,7 @@ public static class Images
     private static GraphicsPath MakeGraphicsPath(float[] points, byte[] types)
     {
         int pointsCount = points.Length;
-        var rawPoints = new PointF[pointsCount / 2];
+        PointF[] rawPoints = new PointF[pointsCount / 2];
         for (int i = 0, j = 0; i < pointsCount; i += 2, j++)
         {
             rawPoints[j] = new PointF(points[i], points[i + 1]);
@@ -1810,15 +1808,15 @@ public static class Images
 
     internal static void PaintPlusButton(Button button, PaintEventArgs e)
     {
-        var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
-        var vRect = new Rectangle(button.ClientRectangle.Width / 2, (button.ClientRectangle.Height / 2) - 4, 2, 10);
+        Rectangle hRect = new((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
+        Rectangle vRect = new(button.ClientRectangle.Width / 2, (button.ClientRectangle.Height / 2) - 4, 2, 10);
         (_plusRects[0], _plusRects[1]) = (hRect, vRect);
         e.Graphics.FillRectangles(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, _plusRects);
     }
 
     internal static void PaintMinusButton(Button button, PaintEventArgs e)
     {
-        var hRect = new Rectangle((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
+        Rectangle hRect = new((button.ClientRectangle.Width / 2) - 4, button.ClientRectangle.Height / 2, 10, 2);
         e.Graphics.FillRectangle(button.Enabled ? BlackForegroundBrush : SystemBrushes.ControlDark, hRect);
     }
 
@@ -2157,10 +2155,10 @@ public static class Images
     {
         AssertR(da != DateAccuracy.Null, "da is null");
 
-        var ret = new Bitmap(21, 21, PixelFormat.Format32bppPArgb);
-        using var g = Graphics.FromImage(ret);
+        Bitmap ret = new(21, 21, PixelFormat.Format32bppPArgb);
+        using Graphics g = Graphics.FromImage(ret);
 
-        var brush = da switch
+        Brush brush = da switch
         {
             DateAccuracy.Red => Brushes.Red,
             DateAccuracy.Yellow => Brushes.Yellow,

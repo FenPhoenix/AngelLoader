@@ -184,7 +184,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
 
         Point mousePos = Controls[0].ClientCursorPos();
 
-        var upArea = new Rectangle(0, 0, clipRect.Width, clipRect.Height / 2);
+        Rectangle upArea = new(0, 0, clipRect.Width, clipRect.Height / 2);
         bool upHot = upArea.Contains(mousePos);
 
         Pen upPen = upHot
@@ -201,7 +201,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
             pen: upPen
         );
 
-        var downArea = new Rectangle(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
+        Rectangle downArea = new(0, clipRect.Height / 2, clipRect.Width, clipRect.Height / 2);
         bool downHot = downArea.Contains(mousePos);
 
         Pen downPen = downHot
@@ -226,7 +226,7 @@ public sealed class DarkNumericUpDown : NumericUpDown, IDarkable
         if (!_darkModeEnabled) return;
 
         Pen borderPen = Focused && TabStop ? DarkColors.BlueHighlightPen : DarkColors.GreySelectionPen;
-        var borderRect = new Rectangle(ClientRectangle.Left, ClientRectangle.Top, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
+        Rectangle borderRect = new(ClientRectangle.Left, ClientRectangle.Top, ClientRectangle.Width - 1, ClientRectangle.Height - 1);
 
         e.Graphics.DrawRectangle(borderPen, borderRect);
     }

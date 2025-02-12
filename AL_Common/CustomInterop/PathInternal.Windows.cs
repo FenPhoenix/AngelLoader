@@ -45,7 +45,6 @@ internal static partial class PathInternal
     internal const char VolumeSeparatorChar = ':';
 #if ENABLE_UNUSED
     internal const char PathSeparator = ';';
-
     internal const string DirectorySeparatorCharAsString = "\\";
 
     internal const string NTPathPrefix = @"\??\";
@@ -362,7 +361,7 @@ internal static partial class PathInternal
             return path;
         }
 
-        var builder = new System.Text.StringBuilder(MaxShortPath);
+        System.Text.StringBuilder builder = new(MaxShortPath);
 
         int start = 0;
         if (IsDirectorySeparator(path[start]))

@@ -72,7 +72,7 @@ internal sealed class Dialogs : IDialogs
         bool viewLogButtonVisible = false) =>
         ((MBoxButton, bool))InvokeIfViewExists(() =>
         {
-            using var d = new DarkTaskDialog(
+            using DarkTaskDialog d = new(
                 message: message,
                 title: title,
                 icon: GetIcon(icon),
@@ -106,7 +106,7 @@ internal sealed class Dialogs : IDialogs
         bool multiSelectionAllowed) =>
         ((bool, List<string>))InvokeIfViewExists(() =>
         {
-            using var d = new MessageBoxCustomForm(
+            using MessageBoxCustomForm d = new(
                 messageTop: messageTop,
                 messageBottom: messageBottom,
                 title: title,
@@ -154,7 +154,7 @@ internal sealed class Dialogs : IDialogs
     // Private method, not invoked because all calls are
     private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MBoxIcon icon)
     {
-        using var d = new DarkErrorDialog(message, title, GetIcon(icon));
+        using DarkErrorDialog d = new(message, title, GetIcon(icon));
         if (owner != null)
         {
             d.ShowDialogDark(owner);
@@ -176,7 +176,7 @@ internal sealed class Dialogs : IDialogs
         string title,
         MBoxIcon icon = MBoxIcon.Warning) => InvokeIfViewExists(() =>
     {
-        using var d = new DarkTaskDialog(
+        using DarkTaskDialog d = new(
             message: message,
             title: title,
             icon: GetIcon(icon),

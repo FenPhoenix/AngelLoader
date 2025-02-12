@@ -190,7 +190,7 @@ internal static class ControlUtils
 
     internal static Native.SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
     {
-        var si = new Native.SCROLLINFO();
+        Native.SCROLLINFO si = new();
         si.cbSize = (uint)Marshal.SizeOf(si);
         si.fMask = (uint)Native.ScrollInfoMask.SIF_ALL;
         Native.GetScrollInfo(handle, direction, ref si);
@@ -203,7 +203,7 @@ internal static class ControlUtils
 
         // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
         // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-        var ptrWParam = new IntPtr(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
+        IntPtr ptrWParam = new(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
 
         IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
         Native.SendMessageW(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, IntPtr.Zero);
@@ -238,7 +238,7 @@ internal static class ControlUtils
 
     internal static void SetMessageBoxIcon(PictureBox pictureBox, MessageBoxIcon icon)
     {
-        var sii = new Native.SHSTOCKICONINFO();
+        Native.SHSTOCKICONINFO sii = new();
         try
         {
             Native.SHSTOCKICONID sysIcon = icon switch
@@ -363,7 +363,7 @@ internal static class ControlUtils
         {
             if (_toolTipsReflectable == null)
             {
-                using var testToolTip = new ToolTip();
+                using ToolTip testToolTip = new();
 
                 const BindingFlags bindingFlags =
                     BindingFlags.Public |
@@ -578,7 +578,7 @@ internal static class ControlUtils
 
             foreach (CatAndTagsList item in categories)
             {
-                var categoryNode = new TreeNode(item.Category);
+                TreeNode categoryNode = new(item.Category);
                 foreach (string tag in item.Tags)
                 {
                     categoryNode.Nodes.Add(tag);

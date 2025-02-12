@@ -22,7 +22,7 @@ internal static class FMArchives
     internal static List<string> GetFMArchivePaths()
     {
         // Always return a COPY of the paths list, so the caller can modify it safely if it wants
-        var paths = new List<string>(Config.FMArchivePaths.Count);
+        List<string> paths = new(Config.FMArchivePaths.Count);
         foreach (string path in Config.FMArchivePaths)
         {
             paths.Add(path);
@@ -114,7 +114,7 @@ internal static class FMArchives
     {
         if (fmArchive.IsEmpty()) return new List<string>();
 
-        var list = new List<string>(archivePaths.Count);
+        List<string> list = new(archivePaths.Count);
 
         foreach (string path in archivePaths)
         {

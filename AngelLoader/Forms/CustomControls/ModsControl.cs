@@ -272,7 +272,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
     {
         string[] disabledMods = DisabledModsTextBox.Text.Split('+', StringSplitOptions.RemoveEmptyEntries);
 
-        var modNames = new DictionaryI<int>(CheckItems.Length);
+        DictionaryI<int> modNames = new(CheckItems.Length);
 
         for (int i = 0; i < CheckItems.Length; i++)
         {
@@ -333,7 +333,7 @@ public sealed partial class ModsControl : UserControl, IEventDisabler
                     .ToHashSetI();
             }
 
-            var checkItems = new CheckItem[mods.Count];
+            CheckItem[] checkItems = new CheckItem[mods.Count];
 
             for (int i = 0; i < mods.Count; i++)
             {

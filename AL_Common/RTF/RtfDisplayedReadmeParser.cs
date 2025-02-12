@@ -161,7 +161,7 @@ public sealed partial class RtfDisplayedReadmeParser
                         ? ChangeDestination((DestinationType)symbol.Index)
                         : RtfError.OK;
             case KeywordType.Special:
-                var specialType = (SpecialType)symbol.Index;
+                SpecialType specialType = (SpecialType)symbol.Index;
                 return !_ctx.GroupStack.CurrentSkipDest ||
                        specialType == SpecialType.SkipNumberOfBytes
                     ? DispatchSpecialKeyword(specialType, symbol, param)

@@ -116,8 +116,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     /// <returns></returns>
     internal FanMission[] GetSelectedFMs()
     {
-        var selRows = SelectedRows;
-        var ret = new FanMission[selRows.Count];
+        DataGridViewSelectedRowCollection selRows = SelectedRows;
+        FanMission[] ret = new FanMission[selRows.Count];
         for (int i = 0; i < selRows.Count; i++)
         {
             ret[i] = GetFMFromIndex(selRows[i].Index);
@@ -142,9 +142,9 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     /// <returns></returns>
     internal FanMission[] GetSelectedFMs_InOrder()
     {
-        var selRows = GetOrderedRowsArray();
+        DataGridViewRow[] selRows = GetOrderedRowsArray();
 
-        var ret = new FanMission[selRows.Length];
+        FanMission[] ret = new FanMission[selRows.Length];
         for (int i = 0; i < selRows.Length; i++)
         {
             ret[i] = GetFMFromIndex(selRows[i].Index);
@@ -161,7 +161,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     {
         DataGridViewRow[] selRows = GetOrderedRowsArray();
 
-        var ret = new List<FanMission>(selRows.Length);
+        List<FanMission> ret = new(selRows.Length);
         foreach (DataGridViewRow selRow in selRows)
         {
             ret.Add(GetFMFromIndex(selRow.Index));
@@ -210,7 +210,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     internal SelectedFM GetFMPosInfoFromIndex(int index)
     {
-        var ret = new SelectedFM { InstalledName = "", IndexFromTop = 0 };
+        SelectedFM ret = new() { InstalledName = "", IndexFromTop = 0 };
 
         // TODO/BUG: GetFMPosInfoFromIndex(): This is a leftover from when this just got the selection, instead of an explicit index.
         // I'm pretty sure this never gets hit in practice, but the Delete code ends up calling this and
@@ -735,7 +735,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
             // If we wanted to match classic mode, this is what we would use to start with
             /*
-            var selectionRect = new Rectangle(
+            Rectangle selectionRect = new(
                 e.CellBounds.X + 2,
                 e.CellBounds.Y + 2,
                 e.CellBounds.Width - 2,

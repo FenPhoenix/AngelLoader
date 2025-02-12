@@ -1,6 +1,9 @@
 /*
 @SharpCompress: There's plenty of performance optimization we could still do here.
 Lots of byte[] allocations, stream recreations, etc. However, we're already pretty fast, so it's not urgent.
+
+@SharpCompress: Note that this custom version is broken for actually extracting files, and I haven't been able to
+ figure out where the breakage is. But it's fine for just getting entries, which is all we do with it.
 */
 
 using System.IO;

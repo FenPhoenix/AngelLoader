@@ -129,7 +129,7 @@ internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
 
         if (!_darkModeEnabled || base.BorderStyle == BorderStyle.None) return;
 
-        using var gc = new Native.GraphicsContext(hWnd);
+        using Native.GraphicsContext gc = new(hWnd);
         gc.G.DrawRectangle(DarkColors.LighterBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
         gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
     }

@@ -65,7 +65,7 @@ internal static class GameConfigFiles
                      List<string> FMSelectorLines, bool AlwaysShowLoader, List<string>? AllLines)
     GetInfoFromCamModIni(string gamePath, bool langOnly, bool returnAllLines)
     {
-        var fmSelectorLines = new List<string>();
+        List<string> fmSelectorLines = new();
         bool alwaysShowLoader = false;
 
         // @BetterErrors: Throw up dialog if not found, cause that means we're OldDark or broken.
@@ -93,8 +93,9 @@ internal static class GameConfigFiles
         We could throw up an error dialog, but we're still in a weird state after. We currently just let
         it crash (we have no exception catching for this!).
         */
-        using (var sr = new StreamReaderCustom.SRC_Wrapper(
-                   stream: File.OpenRead(camModIni),
+        using FileStream_Read_WithRentedBuffer fs = new(camModIni);
+        using (StreamReaderCustom.SRC_Wrapper sr = new(
+                   stream: fs.FileStream,
                    encoding: GetLegacyDefaultEncoding(),
                    detectEncodingFromByteOrderMarks: true,
                    sr: new StreamReaderCustom()))
@@ -459,7 +460,8 @@ internal static class GameConfigFiles
         }
     }
 
-    // @BetterErrors(SetCamCfgLanguage): Pop up actual dialogs here if we fail, because we do NOT want scraps of the wrong language left
+    // @BetterErrors(SetCamCfgLanguage): Pop up actual dialogs here if we fail, because we do NOT want scraps of
+    //  the wrong language left
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal static void SetCamCfgLanguage(string gamePath, string lang)
     {
@@ -515,8 +517,8 @@ internal static class GameConfigFiles
 
         static string FindPreviousSelector(List<string> lines, string stubPath, string gamePath)
         {
-            var selectorsList = new List<string>();
-            var commentedSelectorsList = new List<string>();
+            List<string> selectorsList = new();
+            List<string> commentedSelectorsList = new();
 
             for (int i = 0; i < lines.Count; i++)
             {
@@ -610,7 +612,7 @@ internal static class GameConfigFiles
             // the regular cam_mod.ini reader method. Don't panic.
 
             // If the loader is now something other than us, then leave it be and don't change anything
-            var tempSelectorsList = new List<string>();
+            List<string> tempSelectorsList = new();
             for (int i = 0; i < lines.Count; i++)
             {
                 string lt = lines[i].Trim();
@@ -894,7 +896,7 @@ internal static class GameConfigFiles
     internal static (bool Success, List<Mod> Mods)
     GetGameMods(List<string> lines)
     {
-        var list = new List<Mod>();
+        List<Mod> list = new();
 
         int modPathLastIndex = -1;
         int uberModPathLastIndex = -1;
@@ -984,7 +986,7 @@ internal static class GameConfigFiles
     {
         if (Directory.Exists(fullPath)) return true;
 
-        var paths = new List<string>();
+        List<string> paths = new();
 
         // Paranoid fallback exit condition
         int dirSepCount = fullPath.Rel_CountDirSeps() + 5;
@@ -1108,7 +1110,7 @@ internal static class GameConfigFiles
         {
             try
             {
-                using var sr = new StreamReader(dlFile);
+                using StreamReader sr = new(dlFile);
                 string? line1 = sr.ReadLine();
                 string? line2 = sr.ReadLine();
                 string? line3 = sr.ReadLine();

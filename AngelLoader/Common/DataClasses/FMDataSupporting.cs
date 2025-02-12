@@ -22,16 +22,13 @@ internal sealed class ExpandableDate
     {
         get
         {
-            if (_expanded)
+            if (!_expanded)
             {
-                return _dateTime;
-            }
-            else
-            {
-                _dateTime = ConvertHexUnixDateToDateTime(UnixDateString.AsSpan());
+                _dateTime = ConvertHexUnixDateToDateTime(UnixDateString);
                 _expanded = true;
-                return _dateTime;
             }
+
+            return _dateTime;
         }
         set
         {

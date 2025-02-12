@@ -287,13 +287,13 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
         g.FillRectangle(fillColorBrush, rect);
 
-        var borderRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+        Rectangle borderRect = new(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
         g.DrawRectangle(borderPen, borderRect);
 
         const int arrowWidth = 9;
         const int arrowHeight = 4;
 
-        var arrowRect = new Rectangle(
+        Rectangle arrowRect = new(
             rect.Width - arrowWidth - (_padding / 2),
             (rect.Height / 2) - (arrowHeight / 2),
             arrowWidth,
@@ -311,7 +311,7 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
         const int padding = 1;
 
-        var textRect = new Rectangle(rect.Left + padding,
+        Rectangle textRect = new(rect.Left + padding,
             rect.Top + padding,
             rect.Width - (arrowWidth + 4) - (_padding / 2) - (padding * 2),
             rect.Height - (padding * 2));
@@ -377,7 +377,7 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
 
             const int padding = -1;
 
-            var textRect = new Rectangle(rect.Left + padding,
+            Rectangle textRect = new(rect.Left + padding,
                 rect.Top + padding,
                 rect.Width - (padding * 2),
                 rect.Height - (padding * 2));

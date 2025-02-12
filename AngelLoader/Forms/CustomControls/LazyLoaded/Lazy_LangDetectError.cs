@@ -62,9 +62,9 @@ internal sealed class Lazy_LangDetectError : IDarkable
             _pictureBox.Show();
             Localize();
         }
-        else
+        else if (_constructed)
         {
-            if (_constructed) _pictureBox.Hide();
+            _pictureBox.Hide();
         }
     }
 

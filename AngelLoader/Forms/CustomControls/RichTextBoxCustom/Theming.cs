@@ -109,14 +109,14 @@ internal sealed partial class RichTextBoxCustom
             {
                 if (preProcessedRtf != null)
                 {
-                    using var ms = new MemoryStream(preProcessedRtf.ProcessedBytes);
+                    using MemoryStream ms = new(preProcessedRtf.ProcessedBytes);
                     // @NET5: On modern .NET, RichTextBox now throws if the rtf is broken.
                     LoadFile(ms, RichTextBoxStreamType.RichText);
                 }
                 else
                 {
                     byte[] bytes = RtfProcessing.GetProcessedRTFBytes(_currentReadmeBytes, _darkModeEnabled);
-                    using var ms = new MemoryStream(bytes);
+                    using MemoryStream ms = new(bytes);
                     LoadFile(ms, RichTextBoxStreamType.RichText);
 
 #if BYTE_IDENTICALITY_TEST

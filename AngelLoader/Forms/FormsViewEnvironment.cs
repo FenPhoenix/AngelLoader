@@ -36,7 +36,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
     public (bool Accepted, ConfigData OutConfig, bool AskForImport)
     ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state)
     {
-        using var f = new SettingsForm(view, inConfig, state);
+        using SettingsForm f = new(view, inConfig, state);
         return (f.ShowDialogDark() == DialogResult.OK, f.OutConfig, f.AskForImport);
     }
 

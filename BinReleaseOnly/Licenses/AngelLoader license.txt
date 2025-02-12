@@ -3,7 +3,7 @@ The full source code can be obtained from: https://github.com/FenPhoenix/AngelLo
 
 MIT License
 
-Copyright (c) 2018-2024 Brian Tobin (FenPhoenix)
+Copyright (c) 2018-2025 Brian Tobin (FenPhoenix)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

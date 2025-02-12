@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using static System.StringComparison;
 
@@ -38,40 +39,26 @@ public static partial class Common
     // you get with the built-in methods
     public static List<string> File_ReadAllLines_List(string path)
     {
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
-        try
+        List<string> ret = new();
+        using FileStream_Read_WithRentedBuffer fs = new(path);
+        using StreamReaderCustom.SRC_Wrapper sr = new(fs.FileStream, new StreamReaderCustom());
+        while (sr.Reader.ReadLine() is { } str)
         {
-            var ret = new List<string>();
-            using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(path, buffer), new StreamReaderCustom());
-            while (sr.Reader.ReadLine() is { } str)
-            {
-                ret.Add(str);
-            }
-            return ret;
+            ret.Add(str);
         }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer);
-        }
+        return ret;
     }
 
     public static List<string> File_ReadAllLines_List(string path, Encoding encoding, bool detectEncodingFromByteOrderMarks)
     {
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
-        try
+        List<string> ret = new();
+        using FileStream_Read_WithRentedBuffer fs = new(path);
+        using StreamReaderCustom.SRC_Wrapper sr = new(fs.FileStream, encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
+        while (sr.Reader.ReadLine() is { } str)
         {
-            var ret = new List<string>();
-            using var sr = new StreamReaderCustom.SRC_Wrapper(GetReadModeFileStreamWithCachedBuffer(path, buffer), encoding, detectEncodingFromByteOrderMarks, new StreamReaderCustom());
-            while (sr.Reader.ReadLine() is { } str)
-            {
-                ret.Add(str);
-            }
-            return ret;
+            ret.Add(str);
         }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer);
-        }
+        return ret;
     }
 
     public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path, int bufferSize)
@@ -79,19 +66,65 @@ public static partial class Common
         return new StreamReaderCustom.SRC_Wrapper(File_OpenReadFast(path, bufferSize), new StreamReaderCustom());
     }
 
-    public static FileStream File_OpenReadFast(string path)
+    [StructLayout(LayoutKind.Auto)]
+    public readonly ref struct FileStream_Read_WithRentedBuffer
     {
-        return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        public readonly FileStream FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStream_Read_WithRentedBuffer(string path, int bufferSize = FileStreamBufferSize)
+        {
+            Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            FileStream = GetReadModeFileStreamWithCachedBuffer(path, Buffer);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    public readonly ref struct FileStream_Write_WithRentedBuffer
+    {
+        public readonly FileStream FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStream_Write_WithRentedBuffer(string path, bool overwrite = true, int bufferSize = FileStreamBufferSize)
+        {
+            Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            FileStream = GetWriteModeFileStreamWithCachedBuffer(path, overwrite, Buffer);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
+    }
+
+    public sealed class FileStream_Read_WithRentedBuffer_Ref : IDisposable
+    {
+        public readonly FileStream FileStream;
+        private readonly byte[] Buffer;
+
+        public FileStream_Read_WithRentedBuffer_Ref(string path)
+        {
+            Buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
+            FileStream = GetReadModeFileStreamWithCachedBuffer(path, Buffer);
+        }
+
+        public void Dispose()
+        {
+            FileStream.Dispose();
+            ArrayPool<byte>.Shared.Return(Buffer);
+        }
     }
 
     public static FileStream File_OpenReadFast(string path, int bufferSize)
     {
         return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
-    }
-
-    public static StreamReaderCustom.SRC_Wrapper File_OpenTextFast(string path)
-    {
-        return new StreamReaderCustom.SRC_Wrapper(File.OpenRead(path), new StreamReaderCustom());
     }
 
     #endregion
@@ -325,6 +358,27 @@ public static partial class Common
         return true;
     }
 
+    /// <summary>
+    /// Path ends-with check ignoring case and directory separator differences. Only use if <paramref name="second"/> is ASCII.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool PathEndsWithI_AsciiSecond(this string first, string second)
+    {
+        if (first.Length < second.Length) return false;
+
+        for (int fi = first.Length - second.Length, si = 0; fi < first.Length; fi++, si++)
+        {
+            char fc = first[fi];
+            char sc = second[si];
+
+            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
+        }
+
+        return true;
+    }
+
     #region Disabled until needed
 
 #if false
@@ -512,9 +566,8 @@ public static partial class Common
     {
         try
         {
-            // TODO: Apparently ReadOnly is ignored for directories
+            // IMPORTANT: ReadOnly is NOT ignored for directories despite what it says here, as I learned to my cost:
             // https://support.microsoft.com/en-us/topic/you-cannot-view-or-change-the-read-only-or-the-system-attributes-of-folders-in-windows-server-2003-in-windows-xp-in-windows-vista-or-in-windows-7-55bd5ec5-d19e-6173-0df1-8f5b49247165
-            // Says up to Win7, doesn't say anything about later versions, but have to assume it still holds...?
             _ = new DirectoryInfo(dirOnDiskFullPath).Attributes &= ~FileAttributes.ReadOnly;
         }
         catch (Exception ex)

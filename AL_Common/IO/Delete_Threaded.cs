@@ -184,7 +184,7 @@ public static class Delete_Threaded
 
         if (deleteInfo.Files.Count > 0)
         {
-            if (!Common.TryGetParallelForData(threadCount, deleteInfo.Files, CancellationToken.None, out var filesPD))
+            if (!TryGetParallelForData(threadCount, deleteInfo.Files, CancellationToken.None, out var filesPD))
             {
                 return false;
             }

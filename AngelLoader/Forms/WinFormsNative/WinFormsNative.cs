@@ -737,7 +737,7 @@ internal static partial class Native
 
     internal static List<IntPtr> GetProcessWindowHandles()
     {
-        var handles = new List<IntPtr>();
+        List<IntPtr> handles = new();
 
         using Process currentProcess = Process.GetCurrentProcess();
         IntPtr callback = Marshal.GetFunctionPointerForDelegate<EnumThreadDelegate>(Callback);
@@ -902,7 +902,7 @@ internal static partial class Native
 
     public static NONCLIENTMETRICSW GetNonClientMetrics()
     {
-        var metrics = new NONCLIENTMETRICSW { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
+        NONCLIENTMETRICSW metrics = new() { cbSize = Marshal.SizeOf(typeof(NONCLIENTMETRICSW)) };
         SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, 0, ref metrics, 0);
         return metrics;
     }

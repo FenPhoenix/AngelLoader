@@ -209,9 +209,11 @@ public static partial class RTFParserCommon
 
         string gperfFormatFile = Path.Combine(genDir, "gperfFormatFile.txt");
 
-        var outLines = new List<string>();
-        outLines.Add("struct Symbol { char *name; int dummy; };");
-        outLines.Add("%%");
+        List<string> outLines = new()
+        {
+            "struct Symbol { char *name; int dummy; };",
+            "%%",
+        };
 
         for (int i = 0; i < _symbolList.Length; i++)
         {

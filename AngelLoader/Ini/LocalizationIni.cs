@@ -32,7 +32,7 @@ internal static partial class Ini
         int linesLength = lines.Count;
         for (int i = 0; i < linesLength; i++)
         {
-            var lineT = lines[i].AsMemory();
+            ReadOnlyMemory<char> lineT = lines[i].AsMemory();
             if (lineT.Length > 0 && lineT.Span[0] == '[' && sections.TryGetValue(lineT, out var fields))
             {
                 while (i < linesLength - 1)

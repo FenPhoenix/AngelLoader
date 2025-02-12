@@ -1,5 +1,8 @@
-﻿// Uncomment this define in all files it appears in to get all features (we use it for testing)
+﻿// Now just surrounds a few ctors and public API methods
 //#define FMScanner_FullCode
+//#define INDIVIDUAL_FM_TIMING
+//#define ScanSynchronous
+//#define StoreCurrentFM
 
 /*
 @NET5/@MEM(Scanner readme line splitting):
@@ -30,9 +33,21 @@ as those are the large majority of the string allocs. But we're already pretty b
 hard to get much of a gain even from alloc reductions. Meh.
 
 @RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
-*/
 
-//#define ScanSynchronous
+@BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
+
+@BLOCKS_NOTE: Could SharpCompress (full) allow us to stream 7z entries to memory?
+ Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
+ We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
+ UPDATE 2025-01-01: Tested this, and surprisingly we gain very little to nothing. SharpCompress is much slower
+ at decompressing than native 7z.exe, enough so that it erases most of our time gained. It's probably for the
+ best, as it made the code even more horrendously complicated than it already is.
+
+@BLOCKS_NOTE: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
+ case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
+ This is not really urgent because it's unlikely anyone will make non-solid 7z FMs, but if we felt like looking
+ into non-solid optimizations at some point we could.
+*/
 
 using System;
 using System.Collections.Concurrent;
@@ -64,8 +79,31 @@ using static FMScanner.ReadOnlyDataContext;
 
 namespace FMScanner;
 
+internal enum FMFormat
+{
+    NotInArchive,
+    Zip,
+    SevenZip,
+    Rar,
+    RarSolid,
+}
+
+file static class FMFormatExtensions
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsStreamableArchive(this FMFormat fmFormat) => fmFormat is FMFormat.Zip or FMFormat.Rar;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool IsSolidArchive(this FMFormat fmFormat) => fmFormat is FMFormat.SevenZip or FMFormat.RarSolid;
+}
+
 public sealed class Scanner : IDisposable
 {
+    // Only safe to enable during single-threaded scans, otherwise all threads will hammer on this!
+#if StoreCurrentFM
+    public static FMToScan _CurrentFM = null!;
+#endif
+
 #if DEBUG
     private readonly Stopwatch _overallTimer = new Stopwatch();
 #endif
@@ -91,21 +129,20 @@ public sealed class Scanner : IDisposable
     private byte[]? _gameTypeBuffer_ChunkPlusMAPPARAM;
     private byte[] GameTypeBuffer_ChunkPlusMAPPARAM => _gameTypeBuffer_ChunkPlusMAPPARAM ??= new byte[_gameTypeBufferSize + MAPPARAM.Length];
 
+    private byte[]? _gameTypeBuffer_ChunkPlusGAMEPARAM;
+    private byte[] GameTypeBuffer_ChunkPlusGAMEPARAM => _gameTypeBuffer_ChunkPlusGAMEPARAM ??= new byte[_gameTypeBufferSize + _ctx.GAMEPARAM.Length];
+
     private readonly byte[][] _zipOffsetBuffers =
     {
         new byte[SS2_NewDark_MAPPARAM_Offset],
         new byte[T2_OldDark_SKYOBJVAR_Offset],
         new byte[SS2_OldDark_MAPPARAM_Offset],
-        new byte[NewDark_SKYOBJVAR_Offset1],
-        new byte[NewDark_SKYOBJVAR_Offset2],
     };
 
     // MAPPARAM is 8 bytes, so for that we just check the first 8 bytes and ignore the last, rather than
     // complicating things any further than they already are.
     private const int _gameDetectStringBufferLength = 9;
     private readonly byte[] _gameDetectStringBuffer = new byte[_gameDetectStringBufferLength];
-
-    // ReSharper restore IdentifierTypo
 
     #endregion
 
@@ -150,15 +187,6 @@ public sealed class Scanner : IDisposable
     private RtfToTextConverter? _rtfConverter;
     private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
 
-    private enum FMFormat
-    {
-        NotInArchive,
-        Zip,
-        SevenZip,
-        Rar,
-        RarSolid,
-    }
-
     private FMFormat _fmFormat = FMFormat.NotInArchive;
 
     private string _fmWorkingPath = "";
@@ -166,17 +194,14 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<string> _titles = new(0);
     private readonly ListFast<string> _titlesTemp = new(0);
 
-    private readonly ListFast<string> titlesStrLines_Distinct = new(0);
+    private readonly ListFast<string> _titlesStrLines_Distinct = new(0);
 
     private readonly ListFast<ReadmeInternal> _readmeFiles = new(10);
 
     private bool _ss2Fingerprinted;
 
-    private bool SS2FingerprintRequiredAndNotDone() => (
-#if FMScanner_FullCode
-        _scanOptions.ScanNewDarkRequired ||
-#endif
-        _scanOptions.ScanGameType) && !_ss2Fingerprinted;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool SS2FingerprintRequiredAndNotDone() => _scanOptions.ScanGameType && !_ss2Fingerprinted;
 
     private byte[]? _diskFileStreamBuffer;
     private byte[] DiskFileStreamBuffer => _diskFileStreamBuffer ??= new byte[4096];
@@ -187,12 +212,29 @@ public sealed class Scanner : IDisposable
     private string? _fmWorkingPathDirName;
     private string FMWorkingPathDirName => _fmWorkingPathDirName ??= FMWorkingPathDirInfo.Name;
 
-    // 50 entries is more than we're ever likely to need in this list, but still small enough not to be wasteful.
-    private List<string>? _solidExtractedFilesList;
-    private List<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new List<string>(50);
+    #region Solid entry lists
 
-    private List<string>? _solidExtractedFilesTempList;
-    private List<string> SolidZipExtractedFilesTempList => _solidExtractedFilesTempList ??= new List<string>(50);
+    // 50 entries is more than we're ever likely to need in these lists, but still small enough not to be wasteful.
+    private ListFast<SolidEntry>? _solidExtractedEntriesList;
+    private ListFast<SolidEntry> SolidExtractedEntriesList => _solidExtractedEntriesList ??= new ListFast<SolidEntry>(50);
+
+    private ListFast<SolidEntry>? _solidExtractedEntriesTempList;
+    private ListFast<SolidEntry> SolidZipExtractedEntriesTempList => _solidExtractedEntriesTempList ??= new ListFast<SolidEntry>(50);
+
+    private ListFast<string>? _solidExtractedFilesList;
+    private ListFast<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new ListFast<string>(50);
+
+    // @BLOCKS: Lazy-load these?
+    private readonly ListFast<SolidEntry> _solid_MisFiles = new(20);
+    private readonly ListFast<SolidEntry> _solid_GamFiles = new(10);
+    private readonly ListFast<SolidEntry> _solid_MissFlagFiles = new(3);
+    private readonly ListFast<SolidEntry> _solid_MisAndGamFiles = new(21);
+    private readonly ListFast<NameAndIndex> _solid_MisFileItems = new(20);
+    private readonly ListFast<NameAndIndex> _solid_UsedMisFileItems = new(20);
+    private readonly ListFast<SolidEntry> _solid_FinalUsedMisFilesList = new(20);
+    private readonly ListFast<string> _missFlagExtractList = new(1);
+
+    #endregion
 
     private readonly ListFast<string> _tempLines = new(0);
     private const int _maxTopLines = 5;
@@ -227,9 +269,15 @@ public sealed class Scanner : IDisposable
 
     private readonly ScannerTDMContext _tdmContext;
 
+    private bool _missFlagAlreadyHandled;
+
+    private NameAndIndex? _solidMissFlagFileToUse;
+    private NameAndIndex? _solidMisFileToUse;
+    private NameAndIndex? _solidGamFileToUse;
+
     #endregion
 
-    #region Private classes
+    #region Enums
 
     private enum CopyReadmesToCacheResult
     {
@@ -242,6 +290,196 @@ public sealed class Scanner : IDisposable
         Standard,
         TitlesStr,
         NewGameStr,
+    }
+
+    private enum SpecialLogic
+    {
+        Title,
+        Author,
+        ReleaseDate,
+    }
+
+    private enum GetLowestCostMisFileError
+    {
+        Success,
+        SevenZipExtractError,
+        NoUsedMisFile,
+        Fallback,
+    }
+
+    #endregion
+
+    #region Private classes
+
+    private readonly struct SolidEntry
+    {
+        internal readonly string FullName;
+        internal readonly int Index;
+        internal readonly long TotalExtractionCost;
+
+        public SolidEntry(string fullName, int index, long totalExtractionCost)
+        {
+            FullName = fullName;
+            Index = index;
+            TotalExtractionCost = totalExtractionCost;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
+    }
+
+    /// <summary>
+    /// Abstracts over disposable streams vs. the reusable cached MemoryStream. The passed stream won't be disposed
+    /// if it's the cached MemoryStream.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StreamScope
+    {
+        private readonly Scanner _scanner;
+        internal readonly Stream Stream;
+
+        public StreamScope(Scanner scanner, Stream stream)
+        {
+            _scanner = scanner;
+            Stream = stream;
+        }
+
+        public void Dispose()
+        {
+            if (Stream != _scanner._generalMemoryStream)
+            {
+                Stream.Dispose();
+            }
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct Entry
+    {
+        private enum EntryType : byte
+        {
+            Zip,
+            Rar,
+            FileInfoCached,
+            OnDisk,
+        }
+
+        private readonly EntryType _entryType;
+
+        private readonly Scanner _scanner;
+        private readonly ZipArchiveFastEntry _zipEntry;
+        private readonly RarArchiveEntry _rarEntry;
+        private readonly FileInfoCustom _fileInfo;
+        private readonly string _fileName;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private string GetFullFileName(string fileName) => Path.Combine(_scanner._fmWorkingPath, fileName);
+
+        private string FullName => _entryType switch
+        {
+            EntryType.FileInfoCached => GetFullFileName(_fileInfo.FullName),
+            EntryType.OnDisk => GetFullFileName(_fileName),
+            _ => "",
+        };
+
+        internal uint LastModifiedDateRaw => _entryType switch
+        {
+            EntryType.Zip => _zipEntry.LastWriteTime,
+            _ => 0,
+        };
+
+        internal DateTime LastModifiedDate => _entryType switch
+        {
+            EntryType.Rar => _rarEntry.LastModifiedTime ?? DateTime.MinValue,
+            EntryType.FileInfoCached => _fileInfo.LastWriteTime,
+            EntryType.OnDisk => new FileInfo(GetFullFileName(_fileName)).LastWriteTime,
+            _ => default,
+        };
+
+        internal DateTime LastModifiedDate_UtcProcessed => _entryType switch
+        {
+            EntryType.Zip => new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(LastModifiedDateRaw)).DateTime,
+            _ => new DateTimeOffset(LastModifiedDate).DateTime,
+        };
+
+        internal long UncompressedSize => _entryType switch
+        {
+            EntryType.Zip => _zipEntry.Length,
+            EntryType.Rar => _rarEntry.Size,
+            EntryType.FileInfoCached => _fileInfo.Length,
+            _ => new FileInfo(GetFullFileName(_fileName)).Length,
+        };
+
+        public Entry(Scanner scanner, ZipArchiveFastEntry entry)
+        {
+            _entryType = EntryType.Zip;
+            _scanner = scanner;
+            _zipEntry = entry;
+            _rarEntry = null!;
+            _fileInfo = null!;
+            _fileName = "";
+        }
+
+        public Entry(Scanner scanner, RarArchiveEntry entry)
+        {
+            _entryType = EntryType.Rar;
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = entry;
+            _fileInfo = null!;
+            _fileName = "";
+        }
+
+        public Entry(Scanner scanner, FileInfoCustom fi)
+        {
+            _entryType = EntryType.FileInfoCached;
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = null!;
+            _fileInfo = fi;
+            _fileName = "";
+        }
+
+        public Entry(Scanner scanner, string fileName)
+        {
+            _entryType = EntryType.OnDisk;
+            _scanner = scanner;
+            _zipEntry = null!;
+            _rarEntry = null!;
+            _fileInfo = null!;
+            _fileName = fileName;
+        }
+
+        internal Stream Open() => _entryType switch
+        {
+            EntryType.Zip => _scanner._archive.OpenEntry(_zipEntry),
+            EntryType.Rar => _rarEntry.OpenEntryStream(),
+            _ => GetReadModeFileStreamWithCachedBuffer(FullName, _scanner.DiskFileStreamBuffer),
+        };
+
+        internal StreamScope OpenSeekable()
+        {
+            Stream entryStream = Open();
+            if (entryStream.CanSeek)
+            {
+                return new StreamScope(_scanner, entryStream);
+            }
+            else
+            {
+                try
+                {
+                    _scanner._generalMemoryStream.SetLength(UncompressedSize);
+                    _scanner._generalMemoryStream.Position = 0;
+                    entryStream.CopyTo(_scanner._generalMemoryStream);
+                    _scanner._generalMemoryStream.Position = 0;
+                    return new StreamScope(_scanner, _scanner._generalMemoryStream);
+                }
+                finally
+                {
+                    entryStream.Dispose();
+                }
+            }
+        }
     }
 
     private sealed class DetectedTitle(string value, bool temporary)
@@ -280,6 +518,7 @@ public sealed class Scanner : IDisposable
             }
         }
 
+        // @BLOCKS: Manual type switch
         internal FileInfoCustom(FileInfo fileInfo) => Set(fileInfo);
 
         /*
@@ -333,11 +572,11 @@ public sealed class Scanner : IDisposable
         /// </summary>
         internal bool Scan;
         internal bool UseForDateDetect;
-        internal bool IsGlml;
         internal readonly ListFast<string> Lines = new(0);
         internal string Text = "";
 
         private uint? _lastModifiedDateRaw;
+        private bool _lastModifiedDateConvertedToOffset;
         private DateTime? _lastModifiedDate;
         internal DateTime LastModifiedDate
         {
@@ -348,95 +587,90 @@ public sealed class Scanner : IDisposable
                     _lastModifiedDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime((uint)_lastModifiedDateRaw)).DateTime;
                     _lastModifiedDateRaw = null;
                 }
-                return (DateTime)_lastModifiedDate!;
+                else if (!_lastModifiedDateConvertedToOffset)
+                {
+                    _lastModifiedDate = new DateTimeOffset(_lastModifiedDate!.Value).DateTime;
+                    _lastModifiedDateConvertedToOffset = true;
+                }
+                return _lastModifiedDate!.Value;
             }
         }
 
-        private ReadmeInternal(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        private ReadmeInternal(uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
-            Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            Set(lastModifiedDateRaw, scan, useForDateDetect);
         }
 
-        private ReadmeInternal(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        private ReadmeInternal(DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
-            Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+            Set(lastModifiedDate, scan, useForDateDetect);
         }
 
-        private void Set(bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        private void Set(uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             Text = "";
             Lines.ClearFast();
-            IsGlml = isGlml;
             _lastModifiedDateRaw = lastModifiedDateRaw;
             _lastModifiedDate = null;
+            _lastModifiedDateConvertedToOffset = false;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
         }
 
-        private void Set(bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        private void Set(DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             Text = "";
             Lines.ClearFast();
-            IsGlml = isGlml;
             _lastModifiedDateRaw = null;
             _lastModifiedDate = lastModifiedDate;
+            _lastModifiedDateConvertedToOffset = false;
             Scan = scan;
             UseForDateDetect = useForDateDetect;
         }
 
-        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
             if (readmes.Count < readmes.Capacity)
             {
                 ReadmeInternal item = readmes[readmes.Count];
                 if (item != null!)
                 {
-                    item.Set(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+                    item.Set(lastModifiedDateRaw, scan, useForDateDetect);
                     readmes.Count++;
                     return item;
                 }
             }
 
-            ReadmeInternal readme = new(isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            ReadmeInternal readme = new(lastModifiedDateRaw, scan, useForDateDetect);
             readmes.Add(readme);
             return readme;
         }
 
-        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, bool isGlml, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal AddReadme(ListFast<ReadmeInternal> readmes, DateTime lastModifiedDate, bool scan, bool useForDateDetect)
         {
             if (readmes.Count < readmes.Capacity)
             {
                 ReadmeInternal item = readmes[readmes.Count];
                 if (item != null!)
                 {
-                    item.Set(isGlml, lastModifiedDate, scan, useForDateDetect);
+                    item.Set(lastModifiedDate, scan, useForDateDetect);
                     readmes.Count++;
                     return item;
                 }
             }
 
-            ReadmeInternal readme = new(isGlml, lastModifiedDate, scan, useForDateDetect);
+            ReadmeInternal readme = new(lastModifiedDate, scan, useForDateDetect);
             readmes.Add(readme);
             return readme;
         }
 
-        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, bool isGlml, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
+        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
         {
-            return AddReadme(readmes, isGlml, lastModifiedDateRaw, scan, useForDateDetect);
+            return AddReadme(readmes, lastModifiedDateRaw, scan, useForDateDetect);
         }
     }
 
     #endregion
-
-    private enum SpecialLogic
-    {
-        Title,
-        Author,
-        ReleaseDate,
-#if FMScanner_FullCode
-        Version,
-#endif
-    }
 
     #region Constructors
 
@@ -474,6 +708,8 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
+    #region Public API
+
     [PublicAPI]
     public static List<ScannedFMDataAndError>
     ScanThreaded(
@@ -488,6 +724,10 @@ public sealed class Scanner : IDisposable
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
+#if INDIVIDUAL_FM_TIMING
+        TimingDataList.Clear();
+#endif
+
         if (!TryGetParallelForData(threadCount, fms, cancellationToken, out var pd))
         {
             throw new ArgumentOutOfRangeException(nameof(ParallelOptions.MaxDegreeOfParallelism));
@@ -547,93 +787,160 @@ public sealed class Scanner : IDisposable
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, bool forceFullIfNew, string name, bool isArchive)
+    Scan(string fmPath, string tempPath, bool forceFullIfNew, string name, bool isArchive)
     {
-        List<FMToScan> missions = new()
+        List<FMToScan> fms = new()
         {
-            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
-                isArchive: isArchive, originalIndex: 0),
+            new FMToScan(
+                path: fmPath,
+                forceFullScan: forceFullIfNew,
+                displayName: name,
+                isTDM: false,
+                isArchive: isArchive,
+                originalIndex: 0),
         };
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            _scanOptions,
+            null,
+            CancellationToken.None,
+            ref fmNumber,
+            fmsCount)[0];
     }
 
     [PublicAPI]
     public ScannedFMDataAndError
-    Scan(string mission, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
+    Scan(string fmPath, string tempPath, ScanOptions scanOptions, bool forceFullIfNew, string name, bool isArchive)
     {
-        List<FMToScan> missions = new()
+        List<FMToScan> fms = new()
         {
-            new FMToScan(path: mission, forceFullScan: forceFullIfNew, displayName: name, isTDM: false,
-                isArchive: isArchive, originalIndex: 0),
+            new FMToScan(
+                path: fmPath,
+                forceFullScan: forceFullIfNew,
+                displayName: name,
+                isTDM: false,
+                isArchive: isArchive,
+                originalIndex: 0),
         };
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount)[0];
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            scanOptions,
+            null,
+            CancellationToken.None,
+            ref fmNumber,
+            fmsCount)[0];
     }
-
-#endif
 
     // Debug should also use this - scan on UI thread so breaks will actually break where they're supposed to
     [PublicAPI]
     public List<ScannedFMDataAndError>
-    Scan(List<FMToScan> missions, string tempPath, ScanOptions scanOptions,
-         IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    Scan(List<FMToScan> fms, string tempPath, ScanOptions scanOptions, IProgress<ProgressReport> progress, CancellationToken cancellationToken)
     {
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount);
+        int fmsCount = fms.Count;
+        return ScanMany_SingleThread(
+            fms,
+            tempPath,
+            scanOptions,
+            progress,
+            cancellationToken,
+            ref fmNumber,
+            fmsCount);
     }
+
+#endif
 
     #endregion
 
     #region Scan asynchronous
 
-#if FMScanner_FullCode
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
-    }
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath, ScanOptions scanOptions)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, null, CancellationToken.None, ref fmNumber, fmsCount));
-    }
-
-    [PublicAPI]
-    public Task<List<ScannedFMDataAndError>>
-    ScanAsync(List<FMToScan> missions, string tempPath, IProgress<ProgressReport> progress,
-              CancellationToken cancellationToken)
-    {
-        int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, _scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
-    }
-
-#endif
-
     [PublicAPI]
     public Task<List<ScannedFMDataAndError>> ScanAsync(
-        List<FMToScan> missions,
+        List<FMToScan> fms,
         string tempPath,
         ScanOptions scanOptions,
         IProgress<ProgressReport> progress,
         CancellationToken cancellationToken)
     {
         int fmNumber = 0;
-        int fmsCount = missions.Count;
-        return Task.Run(() => ScanMany_SingleThread(missions, tempPath, scanOptions, progress, cancellationToken, ref fmNumber, fmsCount));
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                scanOptions,
+                progress,
+                cancellationToken,
+                ref fmNumber,
+                fmsCount),
+            cancellationToken);
     }
+
+#if FMScanner_FullCode
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                _scanOptions,
+                null,
+                CancellationToken.None,
+                ref fmNumber,
+                fmsCount)
+        );
+    }
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath, ScanOptions scanOptions)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                scanOptions,
+                null,
+                CancellationToken.None,
+                ref fmNumber,
+                fmsCount)
+        );
+    }
+
+    [PublicAPI]
+    public Task<List<ScannedFMDataAndError>>
+    ScanAsync(List<FMToScan> fms, string tempPath, IProgress<ProgressReport> progress, CancellationToken cancellationToken)
+    {
+        int fmNumber = 0;
+        int fmsCount = fms.Count;
+        return Task.Run(
+            () => ScanMany_SingleThread(
+                fms,
+                tempPath,
+                _scanOptions,
+                progress,
+                cancellationToken,
+                ref fmNumber,
+                fmsCount),
+            cancellationToken);
+    }
+
+#endif
+
+    #endregion
 
     #endregion
 
@@ -641,7 +948,7 @@ public sealed class Scanner : IDisposable
     {
         _titles.ClearFast();
         _titlesTemp.ClearFast();
-        titlesStrLines_Distinct.ClearFast();
+        _titlesStrLines_Distinct.ClearFast();
 
         _titlesStrIsOEM850 = false;
         _tempLines.ClearFast();
@@ -652,8 +959,9 @@ public sealed class Scanner : IDisposable
         _fmWorkingPathDirName = null;
         _fmWorkingPathDirInfo = null;
         _fmFormat = FMFormat.NotInArchive;
-        _solidExtractedFilesList?.Clear();
-        _solidExtractedFilesTempList?.Clear();
+        _solidExtractedEntriesList?.ClearFast();
+        _solidExtractedEntriesTempList?.ClearFast();
+        _solidExtractedFilesList?.ClearFast();
 
         _title1_TempNonWhitespaceChars?.ClearFast();
         _title2_TempNonWhitespaceChars?.ClearFast();
@@ -671,7 +979,23 @@ public sealed class Scanner : IDisposable
         _t3GmpFiles?.ClearFast();
 
         _detectedTitles.ClearFast();
+
+        _missFlagAlreadyHandled = false;
+        _solidMissFlagFileToUse = null;
+        _solidMisFileToUse = null;
+        _solidGamFileToUse = null;
+
+        _solid_MisFiles.ClearFast();
+        _solid_GamFiles.ClearFast();
+        _solid_MissFlagFiles.ClearFast();
+        _solid_MisAndGamFiles.ClearFast();
+        _solid_MisFileItems.ClearFast();
+        _solid_UsedMisFileItems.ClearFast();
+        _solid_FinalUsedMisFilesList.ClearFast();
+        _missFlagExtractList.ClearFast();
     }
+
+    #region Pre-scan
 
     private (List<ScannedFMDataAndError> ScannedFMDataList, ProgressReport ProgressReport)
     GetInitialScanData(string tempPath, ScanOptions scanOptions, int fmsCount, int listCapacity)
@@ -841,7 +1165,7 @@ public sealed class Scanner : IDisposable
         // If there was an error then we already added null to the list. DON'T add any extra items!
         if (!nullAlreadyAdded)
         {
-            var scannedFMAndError = new ScannedFMDataAndError(fm.OriginalIndex);
+            ScannedFMDataAndError scannedFMAndError = new(fm.OriginalIndex);
             ScanOptions? _tempScanOptions = null;
             try
             {
@@ -853,6 +1177,12 @@ public sealed class Scanner : IDisposable
 
                 try
                 {
+#if StoreCurrentFM
+                    _CurrentFM = fm;
+#endif
+#if INDIVIDUAL_FM_TIMING
+                    _fmTimer.Restart();
+#endif
                     scannedFMAndError =
                         fm.IsTDM
                             ? ScanCurrentDarkModFM(fm)
@@ -871,9 +1201,14 @@ public sealed class Scanner : IDisposable
                 }
                 finally
                 {
-                    if (fm.IsArchive && (fm.Path.ExtIs7z() || fm.Path.ExtIsRar()))
+#if INDIVIDUAL_FM_TIMING
+                    _fmTimer.Stop();
+                    TimingDataList.Add(new TimingData(fm.Path, _fmTimer.Elapsed));
+#endif
+
+                    if (fm.IsArchive)
                     {
-                        DeleteFMWorkingPath();
+                        DeleteFMWorkingPathIfRequired();
                     }
                 }
 
@@ -889,72 +1224,25 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private void SetOrAddTitle(ListFast<string> titles, string value)
+    #endregion
+
+#if INDIVIDUAL_FM_TIMING
+    private static readonly Stopwatch _fmTimer = new();
+
+    public sealed class TimingData
     {
-        value = CleanupTitle(value).Trim();
+        public readonly string Path;
+        public readonly TimeSpan Time;
 
-        if (value.IsEmpty()) return;
-
-        if (!titles.ContainsI(value))
+        public TimingData(string path, TimeSpan time)
         {
-            titles.Add(value);
+            Path = path;
+            Time = time;
         }
     }
 
-    private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
-    {
-        OrderTitlesOptimally(titles, serverTitle);
-        if (titles.Count > 0)
-        {
-            fmData.Title = titles[0];
-            if (titles.Count > 1)
-            {
-                fmData.AlternateTitles = new string[titles.Count - 1];
-                for (int i = 1; i < titles.Count; i++)
-                {
-                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
-                }
-            }
-        }
-    }
-
-    private bool SetupAuthorRequiredTitleScan()
-    {
-        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
-        // titles in that case, but we shouldn't actually set the title in the return object because the
-        // caller didn't request it.
-        bool scanTitleForAuthorPurposesOnly = false;
-        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
-        {
-            _scanOptions.ScanTitle = true;
-            scanTitleForAuthorPurposesOnly = true;
-        }
-
-        return scanTitleForAuthorPurposesOnly;
-    }
-
-    private void EndTitleScan(
-        bool scanTitleForAuthorPurposesOnly,
-        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
-    {
-        ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
-        if (topOfReadmeTitles?.Count > 0)
-        {
-            for (int i = 0; i < topOfReadmeTitles.Count; i++)
-            {
-                SetOrAddTitle(titles, topOfReadmeTitles[i]);
-            }
-        }
-
-        if (!scanTitleForAuthorPurposesOnly)
-        {
-            SetFMTitles(fmData, titles, serverTitle);
-        }
-        else
-        {
-            _scanOptions.ScanTitle = false;
-        }
-    }
+    public static List<TimingData> TimingDataList = new();
+#endif
 
     private ScannedFMDataAndError ScanCurrentDarkModFM(FMToScan fm)
     {
@@ -969,7 +1257,7 @@ public sealed class Scanner : IDisposable
         @TDM_CASE: TDM uses OS case-sensitivity for darkmod.txt name
         */
         ListFast<ZipArchiveFastEntry>? __zipEntries = null;
-        ListFast<ZipArchiveFastEntry> GetZipBaseDirEntries()
+        ListFast<ZipArchiveFastEntry> GetZipEntries()
         {
             if (__zipEntries == null)
             {
@@ -1042,7 +1330,7 @@ public sealed class Scanner : IDisposable
                 {
                     Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
                     return UnsupportedTDM(
-                        archivePath: fm.Path,
+                        fmDirName: FMWorkingPathDirName,
                         fen7zResult: null,
                         ex: null,
                         errorInfo: "FM directory: " + fm.Path,
@@ -1075,15 +1363,14 @@ public sealed class Scanner : IDisposable
 
             try
             {
-                ListFast<ZipArchiveFastEntry> entries = GetZipBaseDirEntries();
+                ListFast<ZipArchiveFastEntry> entries = GetZipEntries();
                 for (int i = 0; i < entries.Count; i++)
                 {
                     ZipArchiveFastEntry entry = entries[i];
                     if (entry.FullName != FMFiles.TDM_MapSequence) continue;
 
                     using Stream es = _archive.OpenEntry(entry);
-                    // Stupid micro-optimization: Don't call Dispose() method on stream twice
-                    using var sr = new StreamReaderCustom.SRC_Wrapper(es, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+                    using StreamReaderCustom.SRC_Wrapper sr = new(es, Encoding.UTF8, _streamReaderCustom);
 
                     bool inBlockComment = false;
                     while (sr.Reader.ReadLine() is { } line)
@@ -1169,7 +1456,7 @@ public sealed class Scanner : IDisposable
             // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
             // copying or who knows what with the on-disk ones.
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
-                AddReadmeFromPK4(GetZipBaseDirEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
+                AddReadmesFromPK4(GetZipEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
 
             ListFast<string> titles = _titles;
 
@@ -1255,7 +1542,7 @@ public sealed class Scanner : IDisposable
         return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
 
         (ReadmeInternal? DarkModTxtIndex, ReadmeInternal? ReadmeTxtIndex)
-        AddReadmeFromPK4(ListFast<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
+        AddReadmesFromPK4(ListFast<ZipArchiveFastEntry> baseDirEntries, string readme1Name, string readme2Name)
         {
             ZipArchiveFastEntry? readme1entry = null;
             ZipArchiveFastEntry? readme2entry = null;
@@ -1293,148 +1580,24 @@ public sealed class Scanner : IDisposable
 
             return (readmeInternal1, readmeInternal2);
 
-            void CreateReadme(ZipArchiveFastEntry entry, out ReadmeInternal? readme)
+            void CreateReadme(ZipArchiveFastEntry zipEntry, out ReadmeInternal? readme)
             {
                 try
                 {
+                    Entry entry = new(this, zipEntry);
                     readme = ReadmeInternal.GetReadme(
                         _readmeFiles,
-                        isGlml: false,
-                        lastModifiedDateRaw: entry.LastWriteTime,
+                        lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
                         useForDateDetect: true);
-                    Stream readmeStream = CreateSeekableStreamFromZipEntry(entry, (int)entry.Length);
-                    readme.Text = ReadAllTextDetectEncoding(readmeStream);
+                    using StreamScope streamScope = entry.OpenSeekable();
+                    readme.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                     readme.Lines.AddRange_Large(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                 }
                 catch
                 {
                     readme = null;
                 }
-            }
-        }
-    }
-
-    private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
-        ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
-    {
-        ZipArchiveFast? ret;
-
-        try
-        {
-            ret = ZipArchiveFast.Create_Scan(
-                stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
-                context: zipContext,
-                darkMod: darkModMode);
-
-            // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
-            // thrown while loading them. If this passes, we're definitely good.
-            int entriesCount = ret.Entries.Count;
-            if (checkForZeroEntries && entriesCount == 0)
-            {
-                Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
-            }
-        }
-        catch (Exception ex)
-        {
-            #region Notes about semi-broken zips
-            /*
-            Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
-
-            Known semi-broken files:
-            Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
-            1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
-
-            Both files are byte-identical but just with different names.
-
-            Note that my version of the second file (same name) is not broken, I got it from
-            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-            scanner with.
-
-            These files throw with "The archive entry was compressed using an unsupported compression method."
-            They throw on both ZipArchiveFast() and regular built-in ZipArchive().
-
-            The compression method for each file in the archive is:
-
-            MISS15.MIS:                6
-            UGUEST.TXT:                6
-            INTRFACE/NEWGAME.STR:      1
-            INTRFACE/UGUEST/GOALS.STR: 1
-            STRINGS/MISSFLAG.STR:      1
-            STRINGS/TITLES.STR:        6
-
-            1 = Shrink
-            6 = Implode
-
-            (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
-
-           .NET zip (all versions AFAIK) only supports Deflate.
-
-            There also seem to be other errors, involving "headers" and "data past the end of archive".
-            I don't really know enough about the zip format to understand these that much.
-
-            7z.exe can handle these files, so we could use that as a fallback, but:
-
-            7z.exe reports:
-
-            ERRORS:
-            Headers Error
-
-            WARNINGS:
-            There are data after the end of archive
-
-            And it considers the error to be "fatal" even though it succeeds in this case (the
-            extracted dir diffs identical with the extracted dir of the working one).
-            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-            not result in intact files on disk) error. If we just match by "Headers error" and/or
-            "data past end" who knows if sometimes those might actually result in bad output and not
-            others. I don't know. So we're going to continue to fail in this case, but at least tell
-            the user what's wrong and give them an actionable suggestion.
-            */
-            #endregion
-            if (ex is ZipCompressionMethodException zipEx)
-            {
-                Log(fm.Path + $": fm is zip.{NL}" +
-                    $"UNSUPPORTED COMPRESSION METHOD{NL}" +
-                    "Zip contains one or more files compressed with an unsupported method. " +
-                    $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
-                    "Returning 'Unknown' game type.", zipEx);
-                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
-            }
-            else
-            {
-                Log(fm.Path + ": fm is zip, exception in " +
-                    nameof(ZipArchiveFast) +
-                    " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
-            }
-        }
-
-        return (true, null, ret);
-    }
-
-    private void GetAuthor(ScannedFMData fmData, ListFast<string> titles)
-    {
-        if (fmData.Author.IsEmpty())
-        {
-            ListFast<string>? passTitles = titles.Count > 0 ? titles : null;
-            string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
-            fmData.Author = CleanupValue(author).Trim();
-        }
-
-        if (!fmData.Author.IsEmpty())
-        {
-            Match match = AuthorEmailRegex().Match(fmData.Author);
-            if (match.Success)
-            {
-                fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
-            }
-
-            if (fmData.Author.StartsWithI("By "))
-            {
-                fmData.Author = fmData.Author.Substring(2).Trim();
             }
         }
     }
@@ -1451,8 +1614,6 @@ public sealed class Scanner : IDisposable
         // one on the string when we remove this from the start of it
 
         if (!_fmWorkingPath.EndsWithDirSep()) _fmWorkingPath += "\\";
-
-        ulong sevenZipSize = 0;
 
         #region Setup
 
@@ -1478,343 +1639,30 @@ public sealed class Scanner : IDisposable
 
         bool needsHtmlRefExtract = false;
 
-        if (_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid)
+        ulong sevenZipSize = 0;
+
+        if (_fmFormat.IsSolidArchive())
         {
-            #region Partial solid archive extract
+            (ScannedFMDataAndError? partialExtractError, ListFast<SolidEntry> entries) =
+                DoPartialSolidExtract(
+                    tempPath,
+                    tempRandomName,
+                    fm,
+                    sevenZipEntries,
+                    rarEntries,
+                    cancellationToken,
+                    out sevenZipSize);
 
-            /*
-            Rather than extracting everything, we only extract files we might need. We may still end up
-            extracting more than we need, but it's WAY less than just dumbly doing the whole thing. Over
-            my limited set of 45 7z files, this makes us about 4x faster on average. Certain individual
-            FMs may still be about as slow depending on their structure and content, but meh. Improvement
-            is improvement.
-
-            IMPORTANT(Scanner partial solid archive extract):
-            The logic for deciding which files to extract (taking files and then de-duping the list) needs
-            to match the logic for using them. If we change the usage logic, we need to change this too!
-            */
-
-            try
+            if (partialExtractError != null)
             {
-                // Stupid micro-optimization:
-                // Init them both just once, avoiding repeated null checks on the properties
-                var fileNamesList = SolidExtractedFilesList;
-                var tempList = SolidZipExtractedFilesTempList;
-
-                static bool EndsWithTitleFile(string fileName)
-                {
-                    return fileName.PathEndsWithI("/titles.str") ||
-                           fileName.PathEndsWithI("/title.str");
-                }
-
-                Directory.CreateDirectory(_fmWorkingPath);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
-                /*
-                We use SharpCompress for getting the file names and metadata, as that doesn't involve any
-                decompression and won't trigger any out-of-memory errors. We use this so we can get last write
-                times in DateTime format and not have to parse possible localized text dates out of the output
-                stream.
-                */
-                using (FileStream fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
-                {
-                    sevenZipSize = (ulong)fs.Length;
-                    int entriesCount;
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (_fmFormat == FMFormat.SevenZip)
-                    {
-                        var sevenZipArchive = new SevenZipArchive(fs, _sevenZipContext);
-                        sevenZipEntries = sevenZipArchive.Entries;
-                        entriesCount = sevenZipEntries.Count;
-                    }
-                    else
-                    {
-                        entriesCount = rarEntries.Count;
-                    }
-
-                    _fmDirFileInfos.SetRecycleState(entriesCount);
-
-                    for (int i = 0; i < entriesCount; i++)
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        SevenZipArchiveEntry sevenZipEntry = null!;
-                        RarArchiveEntry rarEntry = null!;
-                        string fn;
-                        long uncompressedSize;
-                        if (_fmFormat == FMFormat.SevenZip)
-                        {
-                            sevenZipEntry = sevenZipEntries[i];
-                            if (sevenZipEntry.IsAnti) continue;
-                            fn = sevenZipEntry.FileName;
-                            uncompressedSize = sevenZipEntry.UncompressedSize;
-                        }
-                        else
-                        {
-                            rarEntry = rarEntries[i];
-                            fn = rarEntry.Key;
-                            uncompressedSize = rarEntry.Size;
-                        }
-
-                        int dirSeps;
-
-                        // Always extract readmes no matter what, so our cache copying is always correct.
-                        // Also maybe we would need to always extract them regardless for other reasons, but yeah.
-                        if (fn.IsValidReadme() && uncompressedSize > 0 &&
-                            (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                              (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
-                               fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
-                             dirSeps == 0))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-                        /*
-                        @SharpCompress(.mis and gam file perf thoughts):
-                        -We extract all .mis files because we don't know which will be used until we read missflag.str.
-                         But we should see if there's some heuristic we could use. We could guess on a single .mis file
-                         to extract, and then if we're wrong we go back and extract what we know to be a used .mis file.
-                         If we could do something better than blind guess-and-hope, that would be good.
-
-                        @SharpCompress(.mis and gam file extracting tests):
-                        -With only blindly getting the first .mis file we find, it's ~18.5s
-                        -With getting only .mis files but not .gam files, it's ~22s
-                        -With getting all .mis and .gam files, it's ~22.3s
-
-                        So if we're somehow able to only get the first .mis file, we come out noticeably ahead,
-                        at least for the full scan.
-
-                        -Many unused .mis files are ~177KB (180745, 180749, 181428 and similar)
-                        -Many, but not all, unused .mis files are extremely smaller than the other ones, <1MB
-                        -But at least one is 12MB so whatever
-                        -Checking the miss** dirs in the intrface dir is a good heuristic, but not perfect
-                         (TM20AC_TPOAIR.zip has an "unused" miss20.mis but it has an intrface subdir)
-                         But also, that "unused" miss20.mis is still valid and correct, containing "RopeyArrow",
-                         and "SKYOBJVAR" is at the expected NewDark place
-                        -We should create 7z files from the known unused-mis-containing zip set to test accuracy
-                         with.
-                        It's nasty business, but 22.3 to 18.5 is a good savings if we can do it...
-                        -UPDATE 2023/3/26:
-                         The intrface miss** dir heuristic is not good after all, there's tons of FMs with valid
-                         mis files that don't have a matching intrface subdir.
-                        -UPDATE 2024/2/6:
-                         Turns out DarkLoader actually just uses the first .mis file and doesn't check it for
-                         used or anything. I completely misunderstood and wrongly assumed right from the start.
-                         In fact, that's probably why unused .mis files exist: Authors probably put a small dummy
-                         .mis file as the first one so that DarkLoader would scan it and be faster than scanning
-                         the real, larger one. So, I could just take the first one and all would be fine...
-                         Unless some newer missions are depending on our previous behavior...
-                        */
-                        else if ((_scanOptions.ScanGameType
-#if FMScanner_FullCode
-                                  || _scanOptions.ScanNewDarkRequired
-#endif
-                                 ) &&
-                                 !fn.Rel_ContainsDirSep() &&
-                                 (fn.ExtIsMis()
-                                 // Solid scans don't use .gam files, so shave a small amount of time off here
-                                 //|| fn.ExtIsGam()
-                                 ))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-                        else if (!fn.Rel_ContainsDirSep() &&
-                                 (fn.EqualsI(FMFiles.FMInfoXml) ||
-                                  fn.EqualsI(FMFiles.FMIni) ||
-                                  fn.EqualsI(FMFiles.ModIni)))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-                        else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
-                                 fn.PathEndsWithI(FMFiles.SMissFlag))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-                        else if (fn.PathEndsWithI(FMFiles.SNewGameStr))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-                        else if (EndsWithTitleFile(fn))
-                        {
-                            fileNamesList.Add(fn);
-                        }
-
-                        FileInfoCustom fileInfoCustom = _fmDirFileInfos[i];
-                        if (fileInfoCustom != null!)
-                        {
-                            if (_fmFormat == FMFormat.SevenZip)
-                            {
-                                fileInfoCustom.Set(sevenZipEntry);
-                            }
-                            else
-                            {
-                                fileInfoCustom.Set(rarEntry);
-                            }
-                        }
-                        else
-                        {
-                            fileInfoCustom = _fmFormat == FMFormat.SevenZip
-                                ? new FileInfoCustom(sevenZipEntry)
-                                : new FileInfoCustom(rarEntry);
-                            _fmDirFileInfos[i] = fileInfoCustom;
-                        }
-                    }
-                }
-
-                #region De-duplicate list
-
-                // Some files could have multiple copies in different folders, but we only want to extract
-                // the one we're going to use. We separate out this more complex and self-dependent logic
-                // here. Doing this nonsense is still faster than extracting to disk.
-
-                static void PopulateTempList(
-                    List<string> fileNamesList,
-                    List<string> tempList,
-                    Func<string, bool> predicate)
-                {
-                    tempList.Clear();
-
-                    for (int i = 0; i < fileNamesList.Count; i++)
-                    {
-                        string fileName = fileNamesList[i];
-                        if (predicate(fileName))
-                        {
-                            tempList.Add(fileName);
-                            fileNamesList.RemoveAt(i);
-                            i--;
-                        }
-                    }
-                }
-
-                PopulateTempList(fileNamesList, tempList, static x => x.PathEndsWithI(FMFiles.SMissFlag));
-
-                // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
-                // (from the normal logic way down there somewhere)
-                string? missFlagToUse =
-                    tempList.Find(static x =>
-                        x.PathEqualsI(FMFiles.StringsMissFlag))
-                    ?? tempList.Find(static x =>
-                        x.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                    ?? tempList.Find(static x =>
-                        x.PathEndsWithI(FMFiles.SMissFlag));
-
-                if (missFlagToUse != null)
-                {
-                    fileNamesList.Add(missFlagToUse);
-                }
-
-                PopulateTempList(fileNamesList, tempList, static x => x.PathEndsWithI(FMFiles.SNewGameStr));
-
-                string? newGameStrToUse =
-                    tempList.Find(static x =>
-                        x.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-                    ?? tempList.Find(static x =>
-                        x.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                    ?? tempList.Find(static x =>
-                        x.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                        x.PathEndsWithI(FMFiles.SNewGameStr));
-
-                if (newGameStrToUse != null)
-                {
-                    fileNamesList.Add(newGameStrToUse);
-                }
-
-                PopulateTempList(fileNamesList, tempList, EndsWithTitleFile);
-
-                foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
-                {
-                    string? titlesFileToUse = tempList.Find(x => x.PathEqualsI(titlesFileLocation));
-                    if (titlesFileToUse != null)
-                    {
-                        fileNamesList.Add(titlesFileToUse);
-                        break;
-                    }
-                }
-
-                #endregion
-
-                if (_fmFormat == FMFormat.SevenZip)
-                {
-                    string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
-
-                    Fen7z.Result result = Fen7z.Extract(
-                        sevenZipWorkingPath: _sevenZipWorkingPath,
-                        sevenZipPathAndExe: _sevenZipExePath,
-                        archivePath: fm.Path,
-                        outputPath: _fmWorkingPath,
-                        cancellationToken: cancellationToken,
-                        listFile: listFile,
-                        fileNamesList: fileNamesList);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (result.ErrorOccurred)
-                    {
-                        Log(fm.Path + $": fm is 7z{NL}" +
-                            "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                            result);
-
-                        return UnsupportedZip(
-                            archivePath: fm.Path,
-                            fen7zResult: result,
-                            ex: null,
-                            errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                                       fm.Path + $": fm is 7z{NL}",
-                            originalIndex: fm.OriginalIndex);
-                    }
-                }
-                else
-                {
-                    HashSetI fileNamesHash = fileNamesList.ToHashSetI();
-
-                    using var rarReader = RarReader.Open(_rarStream);
-
-                    while (rarReader.MoveToNextEntry())
-                    {
-                        string fn = rarReader.Entry.Key;
-                        if (fileNamesHash.Contains(fn))
-                        {
-                            string finalFileName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
-                            string dir = Path.GetDirectoryName(finalFileName)!;
-                            Directory.CreateDirectory(dir);
-                            rarReader.ExtractToFile_Fast(finalFileName, overwrite: true);
-                        }
-                    }
-                }
+                return partialExtractError;
             }
-            catch (Exception ex) when (ex is not OperationCanceledException)
-            {
-                string fmType = _fmFormat switch
-                {
-                    FMFormat.SevenZip => "7z",
-                    FMFormat.RarSolid => "rar (solid)",
-                    _ => "rar",
-                };
-                string exType = _fmFormat switch
-                {
-                    FMFormat.SevenZip => "7z.exe",
-                    FMFormat.RarSolid => "rar (solid)",
-                    _ => "rar",
-                };
-                Log(fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction", ex);
-                return UnsupportedZip(
-                    archivePath: fm.Path,
-                    fen7zResult: null,
-                    ex: ex,
-                    errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction",
-                    originalIndex: fm.OriginalIndex
-                );
-            }
-
-            #endregion
 
             if (!fm.CachePath.IsEmpty())
             {
                 try
                 {
-                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, sevenZipEntries, rarEntries);
+                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, entries);
                     if (result == CopyReadmesToCacheResult.NeedsHtmlRefExtract)
                     {
                         needsHtmlRefExtract = true;
@@ -1854,7 +1702,7 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        var fmData = new ScannedFMData
+        ScannedFMData fmData = new()
         {
             ArchiveName = _fmFormat > FMFormat.NotInArchive
                 ? Path.GetFileName(fm.Path)
@@ -1912,7 +1760,7 @@ public sealed class Scanner : IDisposable
 
         #region Cache FM data
 
-        bool success = ReadAndCacheFMData(fm.Path, fmData);
+        bool success = ReadAndCacheFMData(fm.Path, fmData, out int t3MisCount);
         if (!success)
         {
             string ext = _fmFormat switch
@@ -1952,13 +1800,15 @@ public sealed class Scanner : IDisposable
             fmData.HasMovies = null;
         }
 
-        bool singleMission = _usedMisFiles.Count == 1;
+        bool singleMission =
+            fmIsT3
+                ? t3MisCount <= 1
+                : _usedMisFiles.Count <= 1;
 
-#if FMScanner_FullCode
-        fmData.Type = singleMission ? FMType.FanMission : FMType.Campaign;
-#endif
-
-        fmData.MissionCount = _usedMisFiles.Count;
+        fmData.MissionCount =
+            fmIsT3
+                ? t3MisCount
+                : _usedMisFiles.Count;
 
         if (_scanOptions.GetOptionsEnum() == ScanOptionsEnum.MissionCount)
         {
@@ -1972,30 +1822,14 @@ public sealed class Scanner : IDisposable
 
         if (!fmIsT3)
         {
-            #region NewDark/GameType checks
+            #region Game type checks
 
-            if (
-#if FMScanner_FullCode
-                _scanOptions.ScanNewDarkRequired ||
-#endif
-                _scanOptions.ScanGameType)
+            if (_scanOptions.ScanGameType)
             {
-#if FMScanner_FullCode
-                var (newDarkRequired, game)
-#else
-                Game game
-#endif
-                    = GetGameTypeAndEngine();
-#if FMScanner_FullCode
-                if (_scanOptions.ScanNewDarkRequired) fmData.NewDarkRequired = newDarkRequired;
-#endif
-                if (_scanOptions.ScanGameType)
+                fmData.Game = GetGameType();
+                if (fmData.Game == Game.Unsupported)
                 {
-                    fmData.Game = game;
-                    if (fmData.Game == Game.Unsupported)
-                    {
-                        return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
-                    }
+                    return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData };
                 }
             }
 
@@ -2006,9 +1840,6 @@ public sealed class Scanner : IDisposable
             #region Check info files
 
             if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor ||
-#if FMScanner_FullCode
-                _scanOptions.ScanVersion ||
-#endif
                 _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
             {
                 for (int i = 0; i < _baseDirFiles.Count; i++)
@@ -2016,19 +1847,12 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI(FMFiles.FMInfoXml))
                     {
-                        var (title, author
-#if FMScanner_FullCode
-                            , version
-#endif
-                            , releaseDate) = ReadFMInfoXml(f);
+                        var (title, author, releaseDate) = ReadFMInfoXml(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
                         {
                             fmData.Author = author;
                         }
-#if FMScanner_FullCode
-                        if (_scanOptions.ScanVersion) fmData.Version = version;
-#endif
                         if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
                         break;
                     }
@@ -2042,19 +1866,12 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI(FMFiles.FMIni))
                     {
-                        var (title, author
-#if FMScanner_FullCode
-                            , description
-#endif
-                            , lastUpdateDate, tags) = ReadFMIni(f);
+                        var (title, author, lastUpdateDate, tags) = ReadFMIni(f);
                         if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
                         }
-#if FMScanner_FullCode
-                        if (_scanOptions.ScanDescription) fmData.Description = description;
-#endif
                         if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
                         if (_scanOptions.ScanTags) fmData.TagsString = tags;
                         break;
@@ -2103,21 +1920,6 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-#if FMScanner_FullCode
-        if (!fmIsT3)
-        {
-            // This is here because it needs to come after the readmes are cached
-            #region NewDark minimum required version
-
-            if (fmData.NewDarkRequired == true && _scanOptions.ScanNewDarkMinimumVersion)
-            {
-                fmData.NewDarkMinRequiredVersion = GetNewDarkVersion();
-            }
-
-            #endregion
-        }
-#endif
-
         #region Set release date
 
         if (_scanOptions.ScanReleaseDate && fmData.LastUpdateDate == null)
@@ -2127,43 +1929,18 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Title and IncludedMissions
-
-        // SS2 doesn't have a missions list or a titles list file
-        if (!fmIsT3 && !fmIsSS2)
-        {
-            if (_scanOptions.ScanTitle
-#if FMScanner_FullCode
-                || _scanOptions.ScanCampaignMissionNames
-#endif
-               )
-            {
-                var (titleFrom0, titleFromN
-#if FMScanner_FullCode
-                        , cNames
-#endif
-                        )
-                    = GetMissionNames();
-                if (_scanOptions.ScanTitle)
-                {
-                    SetOrAddTitle(titles, titleFrom0);
-                    SetOrAddTitle(titles, titleFromN);
-                }
-#if FMScanner_FullCode
-                if (_scanOptions.ScanCampaignMissionNames && cNames != null && cNames.Count > 0)
-                {
-                    for (int i = 0; i < cNames.Count; i++)
-                    {
-                        cNames[i] = CleanupTitle(cNames[i]);
-                    }
-                    fmData.IncludedMissions = cNames.ToArray();
-                }
-#endif
-            }
-        }
+        #region Title
 
         if (_scanOptions.ScanTitle)
         {
+            // SS2 doesn't have a missions list or a titles list file
+            if (!fmIsT3 && !fmIsSS2)
+            {
+                (string titleFrom0, string titleFromN) = GetTitleFromMissionNames();
+                SetOrAddTitle(titles, titleFrom0);
+                SetOrAddTitle(titles, titleFromN);
+            }
+
             SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect));
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
@@ -2182,49 +1959,15 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-#if FMScanner_FullCode
-        #region Version
-
-        if (_scanOptions.ScanVersion && fmData.Version.IsEmpty()) fmData.Version = GetVersion();
-
-        #endregion
-#endif
-
         // Again, I don't know enough about Thief 3 to know how to detect its languages
         if (!fmIsT3)
         {
             #region Languages
 
-            if (
-#if FMScanner_FullCode
-                _scanOptions.ScanLanguages ||
-#endif
-                _scanOptions.ScanTags)
+            if (_scanOptions.ScanTags)
             {
-                var getLangs = GetLanguages();
-                if (getLangs.Langs > Language.Default) SetLangTags(fmData, getLangs.Langs, getLangs.EnglishIsUncertain);
-#if FMScanner_FullCode
-                if (!_scanOptions.ScanLanguages)
-                {
-                    fmData.Languages = Array.Empty<string>();
-                }
-                else
-                {
-                    var langsList = new List<string>(SupportedLanguageCount);
-
-                    for (int i = 0; i < SupportedLanguageCount; i++)
-                    {
-                        Language language = LanguageIndexToLanguage((LanguageIndex)i);
-                        if (getLangs.Langs.HasFlagFast(language))
-                        {
-                            langsList.Add(SupportedLanguages[i]);
-                        }
-                    }
-
-                    fmData.Languages = langsList.ToArray();
-                    Array.Sort(fmData.Languages);
-                }
-#endif
+                (Language langs, bool englishIsUncertain) = GetLanguages();
+                if (langs > Language.Default) SetLangTags(fmData, langs, englishIsUncertain);
             }
 
             #endregion
@@ -2260,10 +2003,759 @@ public sealed class Scanner : IDisposable
         return new ScannedFMDataAndError(fm.OriginalIndex) { ScannedFMData = fmData, NeedsHtmlRefExtract = needsHtmlRefExtract };
     }
 
+    #region Solid archive partial extract
+
+    private (ScannedFMDataAndError? Error, ListFast<SolidEntry> Entries)
+    DoPartialSolidExtract(
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        ListFast<SevenZipArchiveEntry> sevenZipEntries,
+        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries,
+        CancellationToken cancellationToken,
+        out ulong sevenZipSize)
+    {
+        sevenZipSize = 0;
+
+        /*
+        We try to extract the absolute minimum, but if we can't determine for sure if our extraction cost is
+        acceptable, then we fall back to the older method of extracting everything we might possibly need.
+
+        IMPORTANT(Scanner partial solid archive extract):
+        The logic for deciding which files to extract (taking files and then de-duping the list) needs
+        to match the logic for using them. If we change the usage logic, we need to change this too!
+        */
+
+        // Stupid micro-optimization:
+        // Init them both just once, avoiding repeated null checks on the properties
+        ListFast<SolidEntry> entriesList = SolidExtractedEntriesList;
+        ListFast<SolidEntry> tempList = SolidZipExtractedEntriesTempList;
+
+        try
+        {
+            static bool EndsWithTitleFile(SolidEntry fileName)
+            {
+                return fileName.FullName.PathEndsWithI_AsciiSecond("/titles.str") ||
+                       fileName.FullName.PathEndsWithI_AsciiSecond("/title.str");
+            }
+
+            Directory.CreateDirectory(_fmWorkingPath);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            /*
+            We use SharpCompress for getting the file names and metadata, as that doesn't involve any
+            decompression and won't trigger any out-of-memory errors. We use this so we can get last write
+            times in DateTime format and not have to parse possible localized text dates out of the output
+            stream.
+            */
+            using (FileStream fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
+            {
+                sevenZipSize = (ulong)fs.Length;
+                int entriesCount;
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (_fmFormat == FMFormat.SevenZip)
+                {
+                    SevenZipArchive sevenZipArchive = new(fs, _sevenZipContext);
+                    sevenZipEntries = sevenZipArchive.Entries;
+                    entriesCount = sevenZipEntries.Count;
+                }
+                else
+                {
+                    entriesCount = rarEntries.Count;
+                }
+
+                _fmDirFileInfos.SetRecycleState(entriesCount);
+
+                for (int i = 0; i < entriesCount; i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    SevenZipArchiveEntry sevenZipEntry = null!;
+                    RarArchiveEntry rarEntry = null!;
+                    SolidEntry solidEntry;
+                    string fn;
+                    long uncompressedSize;
+                    // @BLOCKS: Manual type switch
+                    if (_fmFormat == FMFormat.SevenZip)
+                    {
+                        sevenZipEntry = sevenZipEntries[i];
+                        if (sevenZipEntry.IsAnti) continue;
+                        fn = sevenZipEntry.FileName;
+                        uncompressedSize = sevenZipEntry.UncompressedSize;
+                        solidEntry = new SolidEntry(fn, i, sevenZipEntry.TotalExtractionCost);
+                    }
+                    else
+                    {
+                        rarEntry = rarEntries[i];
+                        fn = rarEntry.Key;
+                        uncompressedSize = rarEntry.Size;
+                        /*
+                        @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have
+                         cost functionality for solid rar yet (and probably won't want to go into the guts of
+                         the rar code to add it either).
+                        */
+                        solidEntry = new SolidEntry(rarEntry.Key, i, 0);
+                    }
+
+                    int dirSeps;
+
+                    // Always extract readmes no matter what, so our cache copying is always correct.
+                    // Also maybe we would need to always extract them regardless for other reasons, but yeah.
+                    if (fn.IsValidReadme() && uncompressedSize > 0 &&
+                        (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                          (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
+                           fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
+                         dirSeps == 0))
+                    {
+                        entriesList.Add(solidEntry);
+                    }
+                    else if (fn.IsBaseDirMisOrGamFile())
+                    {
+                        // We always need to know about mis files to get the used ones for the titles.str
+                        // scan, but we won't extract them if we don't actually need to scan them.
+                        if (fn.ExtIsMis())
+                        {
+                            _solid_MisFiles.Add(solidEntry);
+                        }
+                        else if (_scanOptions.ScanGameType)
+                        {
+                            _solid_GamFiles.Add(solidEntry);
+                        }
+                    }
+                    else if (!fn.Rel_ContainsDirSep() &&
+                             (fn.EqualsI(FMFiles.FMInfoXml) ||
+                              fn.EqualsI(FMFiles.FMIni) ||
+                              fn.EqualsI(FMFiles.ModIni)))
+                    {
+                        entriesList.Add(solidEntry);
+                    }
+                    else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
+                             fn.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                    {
+                        _solid_MissFlagFiles.Add(solidEntry);
+                    }
+                    else if (fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
+                    {
+                        entriesList.Add(solidEntry);
+                    }
+                    else if (EndsWithTitleFile(solidEntry))
+                    {
+                        entriesList.Add(solidEntry);
+                    }
+
+                    FileInfoCustom fileInfoCustom = _fmDirFileInfos[i];
+                    if (fileInfoCustom != null!)
+                    {
+                        if (_fmFormat == FMFormat.SevenZip)
+                        {
+                            fileInfoCustom.Set(sevenZipEntry);
+                        }
+                        else
+                        {
+                            fileInfoCustom.Set(rarEntry);
+                        }
+                    }
+                    else
+                    {
+                        fileInfoCustom = _fmFormat == FMFormat.SevenZip
+                            ? new FileInfoCustom(sevenZipEntry)
+                            : new FileInfoCustom(rarEntry);
+                        _fmDirFileInfos[i] = fileInfoCustom;
+                    }
+                }
+            }
+
+            if (!TryAddLowestCostSolidFiles(
+                    entriesList,
+                    tempPath,
+                    tempRandomName,
+                    fm,
+                    cancellationToken,
+                    out ScannedFMDataAndError? solidCostError))
+            {
+                return (solidCostError, entriesList);
+            }
+
+            #region De-duplicate list
+
+            // Some files could have multiple copies in different folders, but we only want to extract
+            // the one we're going to use. We separate out this more complex and self-dependent logic
+            // here. Doing this nonsense is still faster than extracting to disk.
+
+            static void PopulateTempList(
+                ListFast<SolidEntry> fileNamesList,
+                ListFast<SolidEntry> tempList,
+                Func<SolidEntry, bool> predicate)
+            {
+                tempList.ClearFast();
+
+                for (int i = 0; i < fileNamesList.Count; i++)
+                {
+                    SolidEntry fileName = fileNamesList[i];
+                    if (predicate(fileName))
+                    {
+                        tempList.Add(fileName);
+                        fileNamesList.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag));
+
+            if (!_missFlagAlreadyHandled)
+            {
+                // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
+                SolidEntry? missFlagToUse = null;
+                if (_solid_MisFiles.Count > 1)
+                {
+                    foreach (SolidEntry item in tempList)
+                    {
+                        if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
+                        {
+                            missFlagToUse = item;
+                            break;
+                        }
+                    }
+                    if (missFlagToUse == null)
+                    {
+                        foreach (SolidEntry item in tempList)
+                        {
+                            if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
+                        }
+                    }
+                    if (missFlagToUse == null)
+                    {
+                        foreach (SolidEntry item in tempList)
+                        {
+                            if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                            {
+                                missFlagToUse = item;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (missFlagToUse is { } missFlagToUseNonNull)
+                {
+                    entriesList.Add(missFlagToUseNonNull);
+                }
+            }
+
+            PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
+
+            SolidEntry? newGameStrToUse = null;
+            foreach (SolidEntry item in tempList)
+            {
+                if (item.FullName.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
+                {
+                    newGameStrToUse = item;
+                    break;
+                }
+            }
+            if (newGameStrToUse == null)
+            {
+                foreach (SolidEntry item in tempList)
+                {
+                    if (item.FullName.PathEqualsI(FMFiles.IntrfaceNewGameStr))
+                    {
+                        newGameStrToUse = item;
+                        break;
+                    }
+                }
+            }
+            if (newGameStrToUse == null)
+            {
+                foreach (SolidEntry item in tempList)
+                {
+                    if (item.FullName.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
+                        item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
+                    {
+                        newGameStrToUse = item;
+                        break;
+                    }
+                }
+            }
+
+            if (newGameStrToUse is { } newGameStrToUseNonNull)
+            {
+                entriesList.Add(newGameStrToUseNonNull);
+            }
+
+            PopulateTempList(entriesList, tempList, EndsWithTitleFile);
+
+            foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
+            {
+                SolidEntry? titlesFileToUse = null;
+                foreach (SolidEntry item in tempList)
+                {
+                    if (item.FullName.PathEqualsI(titlesFileLocation))
+                    {
+                        titlesFileToUse = item;
+                        break;
+                    }
+                }
+                if (titlesFileToUse is { } titlesFileToUseNonNull)
+                {
+                    entriesList.Add(titlesFileToUseNonNull);
+                    break;
+                }
+            }
+
+            #endregion
+
+            ListFast<string> fileNamesList = SolidExtractedFilesList;
+
+            foreach (SolidEntry item in entriesList)
+            {
+                if (!_scanOptions.ScanGameType &&
+                    item.FullName.IsBaseDirMisOrGamFile())
+                {
+                    continue;
+                }
+                fileNamesList.Add(item.FullName);
+            }
+
+            if (_fmFormat == FMFormat.SevenZip)
+            {
+                string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
+
+                Fen7z.Result result = Fen7z.Extract(
+                    sevenZipWorkingPath: _sevenZipWorkingPath,
+                    sevenZipPathAndExe: _sevenZipExePath,
+                    archivePath: fm.Path,
+                    outputPath: _fmWorkingPath,
+                    cancellationToken: cancellationToken,
+                    listFile: listFile,
+                    fileNamesList: fileNamesList);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                if (result.ErrorOccurred)
+                {
+                    Log(fm.Path + $": fm is 7z{NL}" +
+                        "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                        result);
+
+                    return (UnsupportedZip(
+                        archivePath: fm.Path,
+                        fen7zResult: result,
+                        ex: null,
+                        errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                                   fm.Path + $": fm is 7z{NL}",
+                        originalIndex: fm.OriginalIndex), entriesList);
+                }
+            }
+            else
+            {
+                HashSetI fileNamesHash = fileNamesList.ToHashSetI();
+
+                using RarReader rarReader = RarReader.Open(_rarStream);
+
+                while (rarReader.MoveToNextEntry())
+                {
+                    string fn = rarReader.Entry.Key;
+                    if (fileNamesHash.Contains(fn))
+                    {
+                        string finalFileName = ZipHelpers.GetExtractedNameOrThrowIfMalicious(_fmWorkingPath, fn);
+                        string dir = Path.GetDirectoryName(finalFileName)!;
+                        Directory.CreateDirectory(dir);
+                        rarReader.ExtractToFile_Fast(finalFileName, overwrite: true);
+                    }
+                }
+            }
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            string fmType = _fmFormat switch
+            {
+                FMFormat.SevenZip => "7z",
+                FMFormat.RarSolid => "rar (solid)",
+                _ => "rar",
+            };
+            string exType = _fmFormat switch
+            {
+                FMFormat.SevenZip => "7z.exe",
+                FMFormat.RarSolid => "rar (solid)",
+                _ => "rar",
+            };
+            Log(fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction", ex);
+            return (UnsupportedZip(
+                    archivePath: fm.Path,
+                    fen7zResult: null,
+                    ex: ex,
+                    errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction",
+                    originalIndex: fm.OriginalIndex),
+                entriesList);
+        }
+
+        return (null, entriesList);
+    }
+
+    private bool TryAddLowestCostSolidFiles(
+        ListFast<SolidEntry> entriesList,
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        CancellationToken cancellationToken,
+        [NotNullWhen(false)] out ScannedFMDataAndError? error)
+    {
+        error = null;
+
+        /*
+        @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are
+        in that block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
+        we would have to ignore any files in its block that are 0 length. We don't need to do this currently,
+        but just a note for the future.
+        */
+
+        // @BLOCKS: Implement solid RAR support later
+        if (_fmFormat != FMFormat.SevenZip)
+        {
+            return FillOutNormalList();
+        }
+
+        SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
+
+        #region Fast gam file size check
+
+        /*
+        Quick check to see if the .gam file is smaller than ANY of the .mis files (used or unused).
+        If it is, we don't have to do the expensive used .mis file check that has to extract missflag.str
+        separately etc. Of course we'll still have to extract missflag.str later anyway, but it will at least
+        be part of the main extract without requiring a separate 7z.exe call.
+        */
+        if (lowestCostGamFile != null)
+        {
+            _solid_MisAndGamFiles.AddRange(_solid_MisFiles, _solid_MisFiles.Count);
+            _solid_MisAndGamFiles.Add(lowestCostGamFile.Value);
+
+            SolidEntry? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
+            if (lowestCostMisOrGamFile != null &&
+                lowestCostMisOrGamFile.Value.Index == lowestCostGamFile.Value.Index)
+            {
+                _solidGamFileToUse = CreateAndAdd(lowestCostGamFile);
+
+                entriesList.AddRange(_solid_MissFlagFiles);
+
+                return true;
+            }
+        }
+
+        #endregion
+
+        SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
+
+        var result =
+            GetLowestCostUsedMisFile(
+                lowestCostMissFlagFile,
+                _solid_MisFiles,
+                tempPath,
+                tempRandomName,
+                fm,
+                cancellationToken);
+
+        SolidEntry? lowestCostUsedMisFile = null;
+
+        if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
+        {
+            error = UnsupportedZip(
+                archivePath: fm.Path,
+                fen7zResult: result.SevenZipResult,
+                ex: null,
+                errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                           fm.Path + $": fm is 7z{NL}",
+                originalIndex: fm.OriginalIndex);
+
+            return false;
+        }
+        else if (result.Result == GetLowestCostMisFileError.Fallback)
+        {
+            return FillOutNormalList();
+        }
+        else if (result.Result == GetLowestCostMisFileError.Success)
+        {
+            lowestCostUsedMisFile = result.MisFile;
+        }
+
+        if (lowestCostGamFile is { } gamNonNull &&
+            lowestCostUsedMisFile is { } usedMisNonNull)
+        {
+            if (gamNonNull.TotalExtractionCost <
+                usedMisNonNull.TotalExtractionCost)
+            {
+                _solidGamFileToUse = CreateAndAdd(gamNonNull);
+            }
+            else
+            {
+                _solidMisFileToUse = CreateAndAdd(usedMisNonNull);
+            }
+        }
+        else if (lowestCostGamFile != null)
+        {
+            _solidGamFileToUse = CreateAndAdd(lowestCostGamFile);
+        }
+        else if (lowestCostUsedMisFile != null)
+        {
+            _solidMisFileToUse = CreateAndAdd(lowestCostUsedMisFile);
+        }
+        else
+        {
+            return FillOutNormalList();
+        }
+
+        return true;
+
+        NameAndIndex CreateAndAdd(SolidEntry? entry)
+        {
+            SolidEntry value = entry!.Value;
+            entriesList.Add(value);
+            return value.ToNameAndIndex();
+        }
+
+        bool FillOutNormalList()
+        {
+            if (_solid_MisFiles.Count > 1)
+            {
+                entriesList.AddRange(_solid_MissFlagFiles);
+            }
+            else
+            {
+                _solidMissFlagFileToUse = null;
+            }
+
+            entriesList.AddRange(_solid_MisFiles);
+            entriesList.AddRange(_solid_GamFiles);
+
+            return true;
+        }
+    }
+
+    private static SolidEntry? GetLowestExtractCostEntry(ListFast<SolidEntry> list)
+    {
+        int lowestCostIndex = -1;
+        long lowestCost = long.MaxValue;
+        for (int i = 0; i < list.Count; i++)
+        {
+            SolidEntry item = list[i];
+            if (item.TotalExtractionCost <= lowestCost)
+            {
+                lowestCost = item.TotalExtractionCost;
+                lowestCostIndex = i;
+            }
+        }
+
+        return lowestCostIndex == -1 ? null : list[lowestCostIndex];
+    }
+
+    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
+    GetLowestCostUsedMisFile(
+        SolidEntry? lowestCostMissFlagFile,
+        ListFast<SolidEntry> misFiles,
+        string tempPath,
+        string tempRandomName,
+        FMToScan fm,
+        CancellationToken cancellationToken)
+    {
+        if (misFiles.Count == 1)
+        {
+            SolidEntry item = misFiles[0];
+            _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
+            return (GetLowestCostMisFileError.Success, null, item);
+        }
+
+        if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
+        {
+            /*
+            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
+            record). 64KB is small enough that extraction time will be negligible, but large enough to
+            cover any missflag.str file that's likely to ever exist.
+            */
+            if (lowestCostMissFlagFileNonNull.TotalExtractionCost > ByteSize.KB * 64)
+            {
+                return (GetLowestCostMisFileError.Fallback, null, default);
+            }
+
+            string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
+
+            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.FullName);
+
+            Fen7z.Result result = Fen7z.Extract(
+                sevenZipWorkingPath: _sevenZipWorkingPath,
+                sevenZipPathAndExe: _sevenZipExePath,
+                archivePath: fm.Path,
+                outputPath: _fmWorkingPath,
+                cancellationToken: cancellationToken,
+                listFile: listFile,
+                fileNamesList: _missFlagExtractList);
+
+            if (result.ErrorOccurred)
+            {
+                Log(fm.Path + $": fm is 7z{NL}" +
+                    "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                    result);
+
+                return (GetLowestCostMisFileError.SevenZipExtractError, result, default);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                _solid_MisFileItems.Add(item.ToNameAndIndex());
+            }
+
+            NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull.ToNameAndIndex();
+            ReadAllLinesUTF8(missFlagFile, _tempLines);
+            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
+
+            _solidMissFlagFileToUse = missFlagFile;
+        }
+        else
+        {
+            for (int i = 0; i < misFiles.Count; i++)
+            {
+                SolidEntry item = misFiles[i];
+                _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
+            }
+        }
+
+        _missFlagAlreadyHandled = true;
+
+        _usedMisFiles.ClearFast();
+        foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
+        {
+            foreach (SolidEntry entry in misFiles)
+            {
+                if (entry.FullName == usedMisFile.Name)
+                {
+                    _solid_FinalUsedMisFilesList.Add(entry);
+                }
+            }
+            _usedMisFiles.Add(usedMisFile);
+        }
+
+        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
+        if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
+        {
+            return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
+        }
+        else
+        {
+            return (GetLowestCostMisFileError.NoUsedMisFile, null, default);
+        }
+    }
+
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<SolidEntry> entries)
+    {
+        string cachePath = fm.CachePath;
+
+        Directory.CreateDirectory(cachePath);
+
+        var readmes = new List<(string Source, string Dest)>();
+
+        foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
+        {
+            if (f.IsValidReadme())
+            {
+                readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
+            }
+        }
+
+        for (int i = 0; i < 2; i++)
+        {
+            string readmeDir = i == 0 ? FMDirs.T3FMExtras1S : FMDirs.T3FMExtras2S;
+            string readmePathFull = Path.Combine(_fmWorkingPath, readmeDir);
+
+            if (Directory.Exists(readmePathFull))
+            {
+                string cachePathReadmeDir = Path.Combine(cachePath, readmeDir);
+
+                Directory.CreateDirectory(cachePathReadmeDir);
+
+                foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
+                {
+                    if (f.IsValidReadme())
+                    {
+                        readmes.Add((f, Path.Combine(cachePathReadmeDir, Path.GetFileName(f))));
+                    }
+                }
+            }
+        }
+
+        if (readmes.Count == 0) return CopyReadmesToCacheResult.Success;
+
+        bool anyHtmlReadmes = false;
+
+        string[] readmeFileNames = new string[readmes.Count];
+        for (int i = 0; i < readmes.Count; i++)
+        {
+            string readme = readmes[i].Source;
+            readmeFileNames[i] = readme;
+            if (readme.ExtIsHtml())
+            {
+                anyHtmlReadmes = true;
+            }
+        }
+
+        if (anyHtmlReadmes)
+        {
+            List<string> archiveFileNames = new List<string>(entries.Count);
+            for (int i = 0; i < entries.Count; i++)
+            {
+                archiveFileNames.Add(Path.GetFileName(entries[i].FullName));
+            }
+
+            if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
+            {
+                /*
+                We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
+                send a message back telling the caller to handle it.
+                We could just delete the cache directory here, but since it could be anything, we're considering
+                that a potentially unsafe action.
+                */
+                return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
+            }
+        }
+
+        try
+        {
+            foreach (var (source, dest) in readmes)
+            {
+                File.Copy(source, dest, overwrite: true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log("Exception copying files to cache during scan", ex);
+            try
+            {
+                DeleteDirectory(cachePath);
+            }
+            catch (Exception ex2)
+            {
+                Log("Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
+            }
+        }
+
+        return CopyReadmesToCacheResult.Success;
+    }
+
+    #endregion
+
     #region Fail return functions
 
     private static ScannedFMDataAndError UnsupportedTDM(
-        string archivePath,
+        string fmDirName,
         Fen7z.Result? fen7zResult,
         Exception? ex,
         string errorInfo,
@@ -2272,7 +2764,7 @@ public sealed class Scanner : IDisposable
         {
             ScannedFMData = new ScannedFMData
             {
-                ArchiveName = Path.GetFileName(archivePath),
+                ArchiveName = fmDirName,
                 Game = Game.Unsupported,
                 MissionCount = 0,
             },
@@ -2334,707 +2826,19 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    private CopyReadmesToCacheResult CopyReadmesToCacheDir(
-        FMToScan fm,
-        ListFast<SevenZipArchiveEntry> sevenZipEntries,
-        SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries)
+    // @BLOCKS: Could we merge the solid-extract loop into here, and just extract in between the main loop and
+    //  the missflag read?
+    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
     {
-        string cachePath = fm.CachePath;
+        t3MisCount = 0;
 
-        Directory.CreateDirectory(cachePath);
-
-        var readmes = new List<(string Source, string Dest)>();
-
-        foreach (string f in Directory.GetFiles(_fmWorkingPath, "*", SearchOption.TopDirectoryOnly))
-        {
-            if (f.IsValidReadme())
-            {
-                readmes.Add((f, Path.Combine(cachePath, Path.GetFileName(f))));
-            }
-        }
-
-        for (int i = 0; i < 2; i++)
-        {
-            string readmeDir = i == 0 ? FMDirs.T3FMExtras1S : FMDirs.T3FMExtras2S;
-            string readmePathFull = Path.Combine(_fmWorkingPath, readmeDir);
-
-            if (Directory.Exists(readmePathFull))
-            {
-                string cachePathReadmeDir = Path.Combine(cachePath, readmeDir);
-
-                Directory.CreateDirectory(cachePathReadmeDir);
-
-                foreach (string f in Directory.GetFiles(readmePathFull, "*", SearchOption.TopDirectoryOnly))
-                {
-                    if (f.IsValidReadme())
-                    {
-                        readmes.Add((f, Path.Combine(cachePathReadmeDir, Path.GetFileName(f))));
-                    }
-                }
-            }
-        }
-
-        if (readmes.Count > 0)
-        {
-            bool anyHtmlReadmes = false;
-
-            string[] readmeFileNames = new string[readmes.Count];
-            for (int i = 0; i < readmes.Count; i++)
-            {
-                string readme = readmes[i].Source;
-                readmeFileNames[i] = readme;
-                if (readme.ExtIsHtml())
-                {
-                    anyHtmlReadmes = true;
-                }
-            }
-
-            if (anyHtmlReadmes)
-            {
-                List<string> archiveFileNames;
-                if (_fmFormat == FMFormat.SevenZip)
-                {
-                    archiveFileNames = new List<string>(sevenZipEntries.Count);
-                    for (int i = 0; i < sevenZipEntries.Count; i++)
-                    {
-                        archiveFileNames.Add(Path.GetFileName(sevenZipEntries[i].FileName));
-                    }
-                }
-                else
-                {
-                    archiveFileNames = new List<string>(rarEntries.Count);
-                    for (int i = 0; i < rarEntries.Count; i++)
-                    {
-                        archiveFileNames.Add(Path.GetFileName(rarEntries[i].Key));
-                    }
-                }
-
-                if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
-                {
-                    /*
-                    We don't want to handle HTML ref extracts here - it would complicate the code too much. So just
-                    send a message back telling the caller to handle it.
-                    We could just delete the cache directory here, but since it could be anything, we're considering
-                    that a potentially unsafe action.
-                    */
-                    return CopyReadmesToCacheResult.NeedsHtmlRefExtract;
-                }
-            }
-
-            try
-            {
-                foreach (var (source, dest) in readmes)
-                {
-                    File.Copy(source, dest, overwrite: true);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log("Exception copying files to cache during scan", ex);
-                try
-                {
-                    DeleteDirectory(cachePath);
-                }
-                catch (Exception ex2)
-                {
-                    Log("Exception deleting cache path '" + cachePath + "' as part of exception handling for cache copy failure", ex2);
-                }
-            }
-        }
-
-        return CopyReadmesToCacheResult.Success;
-    }
-
-    #region Dates
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ParsedDateTime
-    {
-        private readonly bool _isAmbiguous;
-        internal readonly DateTime? Date;
-
-        [MemberNotNullWhen(true, nameof(Date))]
-        internal bool IsAmbiguous => Date != null && _isAmbiguous;
-
-        internal ParsedDateTime(DateTime? date, bool isAmbiguous)
-        {
-            _isAmbiguous = isAmbiguous;
-            Date = date;
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct MisFileDateTime
-    {
-        private readonly bool _succeeded;
-        internal readonly DateTime? Date;
-
-        [MemberNotNullWhen(true, nameof(Date))]
-        internal bool Succeeded => Date != null && _succeeded;
-
-        internal MisFileDateTime(bool succeeded, DateTime? date)
-        {
-            _succeeded = succeeded;
-            Date = date;
-        }
-    }
-
-    private DateTime? GetReleaseDate()
-    {
-        MisFileDateTime misFileDateTime = new(false, null);
-
-        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
-
-        if (parsedDateTime.IsAmbiguous)
-        {
-            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
-
-            for (int i = 0; i < _readmeFiles.Count; i++)
-            {
-                ReadmeInternal readme = _readmeFiles[i];
-                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
-
-                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-
-            misFileDateTime = GetMisFileDate(this, _usedMisFiles);
-            if (misFileDateTime.Succeeded)
-            {
-                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
-
-                if (misFileLastModifiedDate.Year > 1998)
-                {
-                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
-                    if (finalDate != null) return finalDate;
-                }
-            }
-        }
-
-        if (parsedDateTime.Date != null) return parsedDateTime.Date;
-
-        for (int i = 0; i < _readmeFiles.Count; i++)
-        {
-            ReadmeInternal readme = _readmeFiles[i];
-            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
-            {
-                return readme.LastModifiedDate;
-            }
-        }
-
-        return misFileDateTime.Succeeded
-            ? misFileDateTime.Date.Value
-            : GetMisFileDate(this, _usedMisFiles).Date;
-
-        ParsedDateTime GetReadmeParsedDateTime()
-        {
-            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
-
-            // Search for updated dates FIRST, because they'll be the correct ones!
-            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_LatestUpdateDateDetect);
-            DateTime? dt = null;
-            bool dtIsAmbiguous = false;
-            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
-
-            if (ds.IsEmpty() || dt == null)
-            {
-                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_ReleaseDateDetect);
-            }
-
-            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
-
-            if (topDT != null && dt != null)
-            {
-                // TODO: We don't check the ambiguous date against the file(s) in this case
-                // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
-                // like we needed to.
-                if (!topDtIsAmbiguous && dtIsAmbiguous)
-                {
-                    return new ParsedDateTime(topDT, false);
-                }
-                else if (!dtIsAmbiguous && topDtIsAmbiguous)
-                {
-                    return new ParsedDateTime(dt, false);
-                }
-                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
-                {
-                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
-                }
-                else
-                {
-                    return new ParsedDateTime(dt, dtIsAmbiguous);
-                }
-            }
-            else if (topDT != null)
-            {
-                return new ParsedDateTime(topDT, topDtIsAmbiguous);
-            }
-            else if (dt != null)
-            {
-                return new ParsedDateTime(dt, dtIsAmbiguous);
-            }
-
-            return new ParsedDateTime(null, false);
-        }
-
-        static MisFileDateTime GetMisFileDate(Scanner scanner, ListFast<NameAndIndex> usedMisFiles)
-        {
-            if (usedMisFiles.Count > 0)
-            {
-                DateTime misFileDate;
-                if (scanner._fmFormat == FMFormat.Zip)
-                {
-                    misFileDate = new DateTimeOffset(ZipHelpers.ZipTimeToDateTime(
-                        scanner._archive.Entries[usedMisFiles[0].Index].LastWriteTime)).DateTime;
-                }
-                else if (scanner._fmFormat == FMFormat.SevenZip ||
-                         scanner._fmFormat == FMFormat.RarSolid ||
-                         scanner._fmDirFileInfos.Count > 0)
-                {
-                    misFileDate = new DateTimeOffset(scanner._fmDirFileInfos[usedMisFiles[0].Index].LastWriteTime).DateTime;
-                }
-                else
-                {
-                    var fi = new FileInfo(Path.Combine(scanner._fmWorkingPath, usedMisFiles[0].Name));
-                    misFileDate = new DateTimeOffset(fi.LastWriteTime).DateTime;
-                }
-
-                return misFileDate.Year > 1998
-                    ? new MisFileDateTime(true, misFileDate)
-                    : new MisFileDateTime(false, null);
-            }
-
-            return new MisFileDateTime(false, null);
-        }
-
-        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
-        {
-            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
-            {
-                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
-                    fileLastModifiedDate.Day == readmeParsedDate.Day)
-                {
-                    return readmeParsedDate;
-                }
-                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
-                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
-                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
-                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
-                {
-                    return new DateTime(
-                        year: readmeParsedDate.Year,
-                        month: readmeParsedDate.Day,
-                        day: readmeParsedDate.Month,
-                        hour: readmeParsedDate.Hour,
-                        minute: readmeParsedDate.Minute,
-                        second: readmeParsedDate.Second,
-                        millisecond: readmeParsedDate.Millisecond,
-                        kind: readmeParsedDate.Kind
-                    );
-                }
-            }
-
-            return null;
-        }
-    }
-
-    private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
-    {
-        // Always false for now, because we only return dates that have month names in them currently
-        // (was I concerned about number-only dates having not enough context to be sure they're dates?)
-        isAmbiguous = false;
-
-        if (_readmeFiles.Count == 0) return null;
-
-        foreach (ReadmeInternal r in _readmeFiles)
-        {
-            if (!r.Scan) continue;
-
-            int topLineCount = 0;
-            for (int i = 0; i < r.Lines.Count; i++)
-            {
-                string lineT = r.Lines[i].Trim();
-
-                if (lineT.IsWhiteSpace()) continue;
-
-                if (LineContainsMonthName(lineT, _ctx.MonthNames))
-                {
-                    if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
-                    {
-                        return result;
-                    }
-                }
-
-                topLineCount++;
-                if (topLineCount == _maxTopLines) break;
-            }
-        }
-
-        return null;
-
-        static bool LineContainsMonthName(string line, string[] monthNames)
-        {
-            foreach (string item in monthNames)
-            {
-                if (line.ContainsI(item))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    private readonly struct StringToDateResult
-    {
-        internal readonly bool FunctionResult;
-        internal readonly DateTime? DateTime;
-        internal readonly bool IsAmbiguous;
-
-        public StringToDateResult(bool functionResult, DateTime? dateTime, bool isAmbiguous)
-        {
-            FunctionResult = functionResult;
-            DateTime = dateTime;
-            IsAmbiguous = isAmbiguous;
-        }
-    }
-
-    private readonly Dictionary<string, StringToDateResult> _stringToDateResultCache = new(0);
-
-    private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
-    {
-        string originalDateString = dateString;
-
-        // Believe it or not, there are quite a few instances of the exact same line across different FMs.
-        // Anything we can do to avoid all the heavy work in this function is worth doing.
-        if (_stringToDateResultCache.TryGetValue(originalDateString, out StringToDateResult stringToDateResult))
-        {
-            dateTime = stringToDateResult.DateTime;
-            isAmbiguous = stringToDateResult.IsAmbiguous;
-            return stringToDateResult.FunctionResult;
-        }
-
-        // There are two valid "word-only" dates: "Christmas Y2K" and "Halloween Y2K".
-        // But we just barely get away with still having this number check work on account of the "2" in "Y2K".
-        if (dateString.AsSpan().IndexOfAny("0123456789".AsSpan()) == -1)
-        {
-            isAmbiguous = false;
-            dateTime = null;
-            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
-        }
-
-        // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
-        // to guessing about day/month order.
-        if (EuropeanDateRegex().Match(dateString).Success)
-        {
-            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex().Replace(dateString, ".").Trim('.');
-            if (DateTime.TryParseExact(
-                    dateStringTemp,
-                    _ctx.DateFormatsEuropean,
-                    DateTimeFormatInfo.InvariantInfo,
-                    DateTimeStyles.None,
-                    out DateTime eurDateResult))
-            {
-                dateTime = eurDateResult;
-                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
-                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-            }
-        }
-
-        dateString = DateSeparatorsRegex().Replace(dateString, " ");
-        dateString = DateOfSeparatorRegex().Replace(dateString, " ");
-        dateString = OneOrMoreWhiteSpaceCharsRegex().Replace(dateString, " ");
-
-        dateString = FebrRegex().Replace(dateString, "Feb ");
-        dateString = SeptRegex().Replace(dateString, "Sep ");
-        dateString = OktRegex().Replace(dateString, "Oct ");
-
-        dateString = HalloweenRegex().Replace(dateString, "Oct 31");
-        dateString = ChristmasRegex().Replace(dateString, "Dec 25");
-
-        // Cute...
-        dateString = Y2KRegex().Replace(dateString, "2000");
-
-        dateString = JanuaryVariationsRegex().Replace(dateString, "Jan");
-        dateString = FebruaryVariationsRegex().Replace(dateString, "Feb");
-        dateString = MarchVariationsRegex().Replace(dateString, "Mar");
-        dateString = AprilVariationsRegex().Replace(dateString, "Apr");
-        dateString = MayVariationsRegex().Replace(dateString, "May");
-        dateString = JuneVariationsRegex().Replace(dateString, "Jun");
-        dateString = JulyVariationsRegex().Replace(dateString, "Jul");
-        dateString = AugustVariationsRegex().Replace(dateString, "Aug");
-        dateString = SeptemberVariationsRegex().Replace(dateString, "Sep");
-        dateString = OctoberVariationsRegex().Replace(dateString, "Oct");
-        dateString = NovemberVariationsRegex().Replace(dateString, "Nov");
-        dateString = DecemberVariationsRegex().Replace(dateString, "Dec");
-
-        dateString = dateString.Trim('.');
-        dateString = dateString.Trim(_ctx.CA_Parens);
-        dateString = dateString.Trim();
-
-        // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
-        Match match = DaySuffixesRegex().Match(dateString);
-        if (match.Success)
-        {
-            Group suffix = match.Groups["Suffix"];
-            dateString = string.Concat(dateString.AsSpan(0, suffix.Index),
-                dateString.AsSpan(suffix.Index + suffix.Length));
-        }
-
-        // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
-        // want to fail, and not assume the current year.
-        bool success = false;
-        bool canBeAmbiguous = false;
-        DateTime? result = null!;
-        foreach (var item in _ctx.DateFormats)
-        {
-            success = DateTime.TryParseExact(
-                dateString,
-                item.Format,
-                DateTimeFormatInfo.InvariantInfo,
-                DateTimeStyles.None,
-                out DateTime result_);
-            if (success)
-            {
-                canBeAmbiguous = item.CanBeAmbiguous;
-                result = result_;
-                break;
-            }
-        }
-
-        if (!success)
-        {
-            isAmbiguous = false;
-            dateTime = null;
-            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
-        }
-
-        if (!checkForAmbiguity || !canBeAmbiguous)
-        {
-            isAmbiguous = false;
-            dateTime = result;
-            return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-        }
-
-        isAmbiguous = true;
-        foreach (char c in dateString)
-        {
-            if (char.IsAsciiLetter(c))
-            {
-                isAmbiguous = false;
-                break;
-            }
-        }
-
-        if (isAmbiguous)
-        {
-            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
-            {
-                isAmbiguous = false;
-                dateTime = resultNotNull;
-                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-            }
-
-            bool unambiguousYearFound = false;
-            bool unambiguousDayFound = false;
-
-            // We need there to be exactly 3 date numbers to match previous behavior.
-            // We don't actually have any instances of counts other than 3, and it may be impossible due to prior
-            // checks, but let's just make sure for now...
-            int dateNumsCount = 0;
-            foreach (ReadOnlySpan<char> numStr in ReadOnlySpanExtensions.SplitAny(dateString, _ctx.CA_DateSeparators,
-                         StringSplitOptions.RemoveEmptyEntries))
-            {
-                if (dateNumsCount > 3)
-                {
-                    unambiguousYearFound = false;
-                    unambiguousDayFound = false;
-                    break;
-                }
-
-                dateNumsCount++;
-
-                if (int.TryParse(numStr, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int numInt))
-                {
-                    switch (numInt)
-                    {
-                        case 0 or (> 31 and <= 9999):
-                            unambiguousYearFound = true;
-                            break;
-                        case > 12 and <= 31:
-                            unambiguousDayFound = true;
-                            break;
-                    }
-                }
-            }
-
-            if (dateNumsCount == 3 && unambiguousYearFound && unambiguousDayFound)
-            {
-                isAmbiguous = false;
-            }
-        }
-
-        dateTime = result;
-        return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
-
-        static bool DoReturn(
-            Dictionary<string, StringToDateResult> cache,
-            string originalDateString,
-            bool returnValue,
-            DateTime? dateTime,
-            bool isAmbiguous)
-        {
-            cache[originalDateString] = new StringToDateResult(returnValue, dateTime, isAmbiguous);
-            return returnValue;
-        }
-    }
-
-    #endregion
-
-    #region Set tags
-
-    private void SetLangTags(ScannedFMData fmData, Language langs, bool englishIsUncertain)
-    {
-        if (langs == Language.Default) return;
-
-        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
-        for (int i = 0; i < SupportedLanguageCount; i++)
-        {
-            LanguageIndex languageIndex = (LanguageIndex)i;
-
-            if (!langs.HasFlagFast(LanguageIndexToLanguage(languageIndex)))
-            {
-                continue;
-            }
-
-            string lang = SupportedLanguages[i];
-
-            Debug.Assert(lang == lang.ToLowerInvariant(),
-                "lang != lang.ToLowerInvariant() - lang is not lowercase");
-
-            if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
-
-            if (fmData.TagsString.Contains(lang, Ordinal))
-            {
-                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + _ctx.LanguagesC[i]);
-            }
-
-            // PERF: 5ms over the whole 1098 set, whatever
-            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
-            if (match.Success) continue;
-
-            if (fmData.TagsString != "") fmData.TagsString += ", ";
-            fmData.TagsString += "language:" + _ctx.LanguagesC[i];
-        }
-    }
-
-    private static void AddCampaignTag(ScannedFMData fmData) => SetMiscTag(fmData, "campaign");
-
-    private static void SetMiscTag(ScannedFMData fmData, string tag)
-    {
-        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
-
-        List<string> list = fmData.TagsString.Split(CA_CommaSemicolon, StringSplitOptions.None).ToList();
-        bool tagFound = false;
-        for (int i = 0; i < list.Count; i++)
-        {
-            list[i] = list[i].Trim();
-            if (list[i].IsEmpty())
-            {
-                list.RemoveAt(i);
-                i--;
-            }
-            else if (list[i].EqualsI(tag))
-            {
-                if (tagFound)
-                {
-                    list.RemoveAt(i);
-                    i--;
-                }
-                else
-                {
-                    list[i] = tag;
-                    tagFound = true;
-                }
-            }
-        }
-        if (tagFound) return;
-
-        list.Add(tag);
-
-        string tagsString = "";
-        for (int i = 0; i < list.Count; i++)
-        {
-            if (i > 0) tagsString += ", ";
-            tagsString += list[i];
-        }
-        fmData.TagsString = tagsString;
-    }
-
-    #endregion
-
-    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd)
-    {
         #region Add BaseDirFiles
 
         bool t3Found = false;
 
-        static bool MapFileExists(string path)
-        {
-            int lsi;
-            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
-                   path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
-                   (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
-                   (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
-                   (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
-                   (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
-                   (path[lsi + 5] == '0') &&
-                   path.LastIndexOf('.') > lsi;
-        }
-
-        static bool AutomapFileExists(string path)
-        {
-            int len = path.Length;
-            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
-                   // We don't need to check the length because we only need length == 6 but by virtue of
-                   // starting with "intrface/", our length is guaranteed to be at least 9
-                   (path[len - 6] == 'r' || path[len - 6] == 'R') &&
-                   (path[len - 5] == 'a' || path[len - 5] == 'A') &&
-                   path[len - 4] == '.' &&
-                   (path[len - 3] == 'b' || path[len - 3] == 'B') &&
-                   (path[len - 2] == 'i' || path[len - 2] == 'I') &&
-                   (path[len - 1] == 'n' || path[len - 1] == 'N');
-        }
-
-        static bool FileExtensionFound(string fn, string[] extensions)
-        {
-            foreach (string extension in extensions)
-            {
-                if (fn.EndsWithI(extension))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        static bool BaseDirScriptFileExtensions(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
-        {
-            for (int i = 0; i < baseDirFiles.Count; i++)
-            {
-                if (scriptFileExtensions.ContainsI(Path.GetExtension(baseDirFiles[i].Name)))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
+            // @BLOCKS: Manual type switch
             int filesCount = _fmFormat switch
             {
                 FMFormat.Zip => _archive.Entries.Count,
@@ -3047,13 +2851,12 @@ public sealed class Scanner : IDisposable
                 bool? pathIsCutscenes = null;
                 bool? pathIsSnd2 = null;
 
-                string fn = _fmFormat switch
-                {
-                    FMFormat.Zip => _archive.Entries[i].FullName,
-                    FMFormat.SevenZip or FMFormat.RarSolid => _fmDirFileInfos[i].FullName,
-                    FMFormat.Rar => _rarArchive.Entries[i].Key,
-                    _ => _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length),
-                };
+                // @BLOCKS: Manual type switch
+                string fn =
+                    _fmFormat == FMFormat.Zip ? _archive.Entries[i].FullName :
+                    _fmFormat.IsSolidArchive() ? _fmDirFileInfos[i].FullName :
+                    _fmFormat == FMFormat.Rar ? _rarArchive.Entries[i].Key :
+                    _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
                 if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3DetectS) &&
                     fn.Rel_CountDirSeps(FMDirs.T3DetectS.Length) == 0)
@@ -3354,7 +3157,7 @@ public sealed class Scanner : IDisposable
                             FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Mesh), _ctx.SA_AllBinFiles);
 
                         fmd.HasCustomScripts =
-                            BaseDirScriptFileExtensions(_baseDirFiles, _ctx.ScriptFileExtensions) ||
+                            BaseDirScriptFileExtensionFound(_baseDirFiles, _ctx.ScriptFileExtensions) ||
                             (baseDirFolders.ContainsI(FMDirs.Scripts) &&
                              FastIO.FilesExistSearchAll(Path.Combine(_fmWorkingPath, FMDirs.Scripts), _ctx.SA_AllFiles));
 
@@ -3386,7 +3189,7 @@ public sealed class Scanner : IDisposable
                 switch (T3GmpFiles.Count)
                 {
                     case 1:
-                        _usedMisFiles.Add(T3GmpFiles[0]);
+                        t3MisCount++;
                         break;
                     case > 1:
                         for (int i = 0; i < T3GmpFiles.Count; i++)
@@ -3394,7 +3197,7 @@ public sealed class Scanner : IDisposable
                             NameAndIndex item = T3GmpFiles[i];
                             if (!item.Name.EqualsI(FMFiles.EntryGmp))
                             {
-                                _usedMisFiles.Add(item);
+                                t3MisCount++;
                             }
                         }
                         break;
@@ -3428,53 +3231,131 @@ public sealed class Scanner : IDisposable
 
         #region Cache list of used .mis files
 
-        int missFlagIndex = -1;
-        if (_stringsDirFiles.Count > 0)
+        if (_missFlagAlreadyHandled) return true;
+
+        NameAndIndex? missFlagFile = null;
+        if (_solidMissFlagFileToUse is { } solidMissFlagFileToUse)
         {
-            // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
-            for (int i = 0; i < _stringsDirFiles.Count; i++)
+            missFlagFile = solidMissFlagFileToUse;
+        }
+        else
+        {
+            if (_misFiles.Count > 1 && _stringsDirFiles.Count > 0)
             {
-                NameAndIndex item = _stringsDirFiles[i];
-                if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
-                {
-                    missFlagIndex = i;
-                    break;
-                }
-            }
-            if (missFlagIndex == -1)
-            {
+                // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
                 for (int i = 0; i < _stringsDirFiles.Count; i++)
                 {
                     NameAndIndex item = _stringsDirFiles[i];
-                    if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                    if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
                     {
-                        missFlagIndex = i;
+                        missFlagFile = _stringsDirFiles[i];
                         break;
                     }
                 }
-            }
-            if (missFlagIndex == -1)
-            {
-                for (int i = 0; i < _stringsDirFiles.Count; i++)
+                if (missFlagFile == null)
                 {
-                    NameAndIndex item = _stringsDirFiles[i];
-                    if (item.Name.PathEndsWithI(FMFiles.SMissFlag))
+                    for (int i = 0; i < _stringsDirFiles.Count; i++)
                     {
-                        missFlagIndex = i;
-                        break;
+                        NameAndIndex item = _stringsDirFiles[i];
+                        if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
+                        {
+                            missFlagFile = _stringsDirFiles[i];
+                            break;
+                        }
+                    }
+                }
+                if (missFlagFile == null)
+                {
+                    for (int i = 0; i < _stringsDirFiles.Count; i++)
+                    {
+                        NameAndIndex item = _stringsDirFiles[i];
+                        if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                        {
+                            missFlagFile = _stringsDirFiles[i];
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        if (missFlagIndex > -1)
+        if (missFlagFile is { } missFlagFileNonNull)
         {
-            // missflag.str files are always ASCII / UTF8, so we can avoid an expensive encoding detect here
-            ReadAllLinesUTF8(_stringsDirFiles[missFlagIndex], _tempLines);
+            ReadAllLinesUTF8(missFlagFileNonNull, _tempLines);
+        }
+        CacheUsedMisFiles(missFlagFile, _misFiles, _usedMisFiles, _tempLines);
 
-            for (int mfI = 0; mfI < _misFiles.Count; mfI++)
+        #endregion
+
+        return true;
+
+        #region Local functions
+
+        static bool MapFileExists(string path)
+        {
+            int lsi;
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
+                   path.Length > (lsi = path.Rel_LastIndexOfDirSep()) + 5 &&
+                   (path[lsi + 1] == 'p' || path[lsi + 1] == 'P') &&
+                   (path[lsi + 2] == 'a' || path[lsi + 2] == 'A') &&
+                   (path[lsi + 3] == 'g' || path[lsi + 3] == 'G') &&
+                   (path[lsi + 4] == 'e' || path[lsi + 4] == 'E') &&
+                   (path[lsi + 5] == '0') &&
+                   path.LastIndexOf('.') > lsi;
+        }
+
+        static bool AutomapFileExists(string path)
+        {
+            int len = path.Length;
+            return path.Rel_DirSepCountIsAtLeast(1, FMDirs.IntrfaceS.Length) &&
+                   // We don't need to check the length because we only need length == 6 but by virtue of
+                   // starting with "intrface/", our length is guaranteed to be at least 9
+                   (path[len - 6] == 'r' || path[len - 6] == 'R') &&
+                   (path[len - 5] == 'a' || path[len - 5] == 'A') &&
+                   path[len - 4] == '.' &&
+                   (path[len - 3] == 'b' || path[len - 3] == 'B') &&
+                   (path[len - 2] == 'i' || path[len - 2] == 'I') &&
+                   (path[len - 1] == 'n' || path[len - 1] == 'N');
+        }
+
+        static bool FileExtensionFound(string fn, string[] extensions)
+        {
+            foreach (string extension in extensions)
             {
-                NameAndIndex mf = _misFiles[mfI];
+                if (fn.EndsWithI(extension))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool BaseDirScriptFileExtensionFound(ListFast<NameAndIndex> baseDirFiles, string[] scriptFileExtensions)
+        {
+            for (int i = 0; i < baseDirFiles.Count; i++)
+            {
+                if (scriptFileExtensions.ContainsI(Path.GetExtension(baseDirFiles[i].Name)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        #endregion
+    }
+
+    private static void CacheUsedMisFiles(
+        NameAndIndex? missFlagFile,
+        ListFast<NameAndIndex> misFiles,
+        ListFast<NameAndIndex> usedMisFiles,
+        ListFast<string> missFlagLines)
+    {
+        if (missFlagFile != null && misFiles.Count > 1)
+        {
+            for (int mfI = 0; mfI < misFiles.Count; mfI++)
+            {
+                NameAndIndex mf = misFiles[mfI];
 
                 // Obtuse nonsense to avoid string allocations (perf)
                 if (mf.Name.StartsWithI("miss") && mf.Name[4] != '.')
@@ -3483,9 +3364,9 @@ public sealed class Scanner : IDisposable
                     // character and not get a -1 index. And since we know our file starts with "miss", the
                     // -4 is guaranteed not to take us negative either.
                     int count = mf.Name.IndexOf('.') - 4;
-                    for (int mflI = 0; mflI < _tempLines.Count; mflI++)
+                    for (int mflI = 0; mflI < missFlagLines.Count; mflI++)
                     {
-                        string line = _tempLines[mflI];
+                        string line = missFlagLines[mflI];
                         if (line.StartsWithI("miss_") && line.Length > 5 + count && line[5 + count] == ':')
                         {
                             bool numsMatch = true;
@@ -3509,7 +3390,7 @@ public sealed class Scanner : IDisposable
                                       (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
                                       line[qIndex + 5] == '\"'))
                                 {
-                                    _usedMisFiles.Add(mf);
+                                    usedMisFiles.Add(mf);
                                 }
                             }
                         }
@@ -3518,49 +3399,24 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(_misFiles, _misFiles.Count);
-
-        #endregion
-
-        return true;
+        if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles, misFiles.Count);
     }
 
     #region Read FM info files
 
-    private (string Title, string Author
-#if FMScanner_FullCode
-        , string Version
-#endif
-        , DateTime? ReleaseDate)
+    private (string Title, string Author, DateTime? ReleaseDate)
     ReadFMInfoXml(NameAndIndex file)
     {
         string title = "";
         string author = "";
-#if FMScanner_FullCode
-        string version = "";
-#endif
         DateTime? releaseDate = null;
 
-        var fmInfoXml = new XmlDocument();
+        XmlDocument fmInfoXml = new();
 
-        #region Load XML
-
-        if (_fmFormat == FMFormat.Zip)
+        using (Stream es = GetEntry(file).Open())
         {
-            using var es = _archive.OpenEntry(_archive.Entries[file.Index]);
             fmInfoXml.Load(es);
         }
-        else if (_fmFormat == FMFormat.Rar)
-        {
-            using var es = _rarArchive.Entries[file.Index].OpenEntryStream();
-            fmInfoXml.Load(es);
-        }
-        else
-        {
-            fmInfoXml.Load(Path.Combine(_fmWorkingPath, file.Name));
-        }
-
-        #endregion
 
         if (_scanOptions.ScanTitle)
         {
@@ -3574,14 +3430,6 @@ public sealed class Scanner : IDisposable
             if (xAuthor.Count > 0) author = xAuthor[0].GetPlainInnerText();
         }
 
-#if FMScanner_FullCode
-        if (_scanOptions.ScanVersion)
-        {
-            using XmlNodeList xVersion = fmInfoXml.GetElementsByTagName("version");
-            if (xVersion.Count > 0) version = xVersion[0].GetPlainInnerText();
-        }
-#endif
-
         using XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
         if (xReleaseDate.Count > 0)
         {
@@ -3592,27 +3440,16 @@ public sealed class Scanner : IDisposable
         // These files also specify languages and whether the mission has custom stuff, but we're not going
         // to trust what we're told - we're going to detect that stuff by looking at what's actually there.
 
-        return (title, author
-#if FMScanner_FullCode
-            , version
-#endif
-            , releaseDate);
+        return (title, author, releaseDate);
     }
 
-    private (string Title, string Author
-#if FMScanner_FullCode
-        , string Description
-#endif
-        , DateTime? LastUpdateDate, string Tags)
+    private (string Title, string Author, DateTime? LastUpdateDate, string Tags)
     ReadFMIni(NameAndIndex file)
     {
         var ret = (
             Title: "",
-            Author: ""
-#if FMScanner_FullCode
-            , Description: ""
-#endif
-            , LastUpdateDate: (DateTime?)null,
+            Author: "",
+            LastUpdateDate: (DateTime?)null,
             Tags: ""
         );
 
@@ -3622,98 +3459,32 @@ public sealed class Scanner : IDisposable
 
         if (_tempLines.Count == 0)
         {
-            return ("", ""
-#if FMScanner_FullCode
-                , ""
-#endif
-                , null, "");
+            return ("", "", null, "");
         }
 
         (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = ("", "", "", "");
 
         #region Deserialize ini
 
-        bool inDescr = false;
-
         foreach (string line in _tempLines)
         {
             if (line.StartsWithI("NiceName="))
             {
-                inDescr = false;
                 fmIni.NiceName = line.Substring(9).Trim();
             }
             else if (line.StartsWithI("ReleaseDate="))
             {
-                inDescr = false;
                 fmIni.ReleaseDate = line.Substring(12).Trim();
             }
             else if (line.StartsWithI("Tags="))
             {
-                inDescr = false;
                 fmIni.Tags = line.Substring(5).Trim();
             }
-            // Sometimes Descr values are literally multi-line. DON'T. DO. THAT. Use \n.
-            // But I have to deal with it anyway.
-            else if (line.StartsWithI("Descr="))
-            {
-                inDescr = true;
-#if FMScanner_FullCode
-                if (_scanOptions.ScanDescription) fmIni.Descr = line.Substring(6).Trim();
-#endif
-            }
-            else if (inDescr)
-            {
-#if FMScanner_FullCode
-                if (_scanOptions.ScanDescription) fmIni.Descr += "\r\n" + line;
-#endif
-            }
-        }
-
-#if FMScanner_FullCode
-        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty()) fmIni.Descr = fmIni.Descr.Trim();
-#endif
-
-        #endregion
-
-        #endregion
-
-#if FMScanner_FullCode
-        #region Fixup description
-
-        // Descr can be multiline, and you're supposed to use \n for linebreaks, but sometimes this value
-        // is multiple actual lines. Despite this being a horrific violation of the .ini format, we still
-        // have to handle it.
-
-        if (_scanOptions.ScanDescription && !fmIni.Descr.IsEmpty())
-        {
-            fmIni.Descr = fmIni.Descr
-                .Replace(@"\t", "\t")
-                .Replace(@"\r\n", "\r\n")
-                .Replace(@"\r", "\r\n")
-                .Replace(@"\n", "\r\n")
-                .Replace(@"\""", "\"");
-
-            if (fmIni.Descr[0] == '\"' && fmIni.Descr[^1] == '\"' &&
-                CountChars(fmIni.Descr, '\"') == 2)
-            {
-                fmIni.Descr = fmIni.Descr.Trim('\"');
-            }
-            if (fmIni.Descr[0] == LeftDoubleQuote && fmIni.Descr[^1] == RightDoubleQuote &&
-                CountChars(fmIni.Descr, LeftDoubleQuote) + CountChars(fmIni.Descr, RightDoubleQuote) == 2)
-            {
-                fmIni.Descr = fmIni.Descr.Trim(_ctx.CA_UnicodeQuotes);
-            }
-
-            fmIni.Descr = fmIni.Descr.RemoveUnpairedLeadingOrTrailingQuotes();
-
-            // Normalize to just LF for now. Otherwise it just doesn't work right for reasons confusing and
-            // senseless. It can easily be converted later.
-            fmIni.Descr = fmIni.Descr.Replace("\r\n", "\n");
-            if (fmIni.Descr.IsWhiteSpace()) fmIni.Descr = "";
         }
 
         #endregion
-#endif
+
+        #endregion
 
         #region Get author from tags
 
@@ -3765,17 +3536,10 @@ public sealed class Scanner : IDisposable
             }
         }
 
-#if FMScanner_FullCode
-        if (_scanOptions.ScanDescription) ret.Description = fmIni.Descr;
-#endif
-
         /*
-           Notes:
-            - fm.ini can specify a readme file, but it may not be the one we're looking for, as far as
-              detecting values goes. Reading all .txt and .rtf files is slightly slower but more accurate.
-
-            - Although fm.ini wasn't used before NewDark, its presence doesn't necessarily mean the mission
-              is NewDark-only. Sturmdrang Peak has it but doesn't require NewDark, for instance.
+        Notes:
+        -fm.ini can specify a readme file, but it may not be the one we're looking for, as far as
+         detecting values goes. Reading all .txt and .rtf files is slightly slower but more accurate.
         */
 
         return ret;
@@ -3787,8 +3551,6 @@ public sealed class Scanner : IDisposable
         var ret = (Title: "", Author: "");
 
         ReadAllLinesDetectEncoding(file, _tempLines);
-
-        if (_tempLines.Count == 0) return ret;
 
         for (int i = 0; i < _tempLines.Count; i++)
         {
@@ -3847,69 +3609,9 @@ public sealed class Scanner : IDisposable
         {
             if (!readmeFile.Name.IsValidReadme()) continue;
 
-            ZipArchiveFastEntry? zipReadmeEntry = null;
-            RarArchiveEntry? rarReadmeEntry = null;
-
-            int readmeFileLen;
-            string readmeFileOnDisk = "";
-            bool isGlml;
-            DateTime? lastModifiedDate = null;
-
-            if (_fmFormat == FMFormat.Zip)
-            {
-                zipReadmeEntry = _archive.Entries[readmeFile.Index];
-                readmeFileLen = (int)zipReadmeEntry.Length;
-                if (readmeFileLen == 0) continue;
-
-                isGlml = zipReadmeEntry.FullName.ExtIsGlml();
-            }
-            else if (_fmFormat == FMFormat.Rar)
-            {
-                rarReadmeEntry = _rarArchive.Entries[readmeFile.Index];
-                readmeFileLen = (int)rarReadmeEntry.Size;
-                if (readmeFileLen == 0) continue;
-
-                isGlml = rarReadmeEntry.Key.ExtIsGlml();
-            }
-            else
-            {
-                FileInfoCustom readmeFI;
-
-                if (_fmDirFileInfos.Count > 0)
-                {
-                    readmeFI = _fmDirFileInfos[readmeFile.Index];
-                    if (readmeFI.Length == 0) continue;
-
-                    readmeFileOnDisk = Path.Combine(_fmWorkingPath, readmeFile.Name);
-                }
-                else
-                {
-                    /*
-                    If the readme was 0 length, it won't have been extracted, so in that case just skip this
-                    one and move on.
-                    */
-                    try
-                    {
-                        string fullReadmeFileName = Path.Combine(_fmWorkingPath, readmeFile.Name);
-
-                        FileInfo fi = new(fullReadmeFileName);
-                        if (fi.Length == 0) continue;
-
-                        readmeFI = new FileInfoCustom(fi);
-
-                        readmeFileOnDisk = fullReadmeFileName;
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-
-                readmeFileLen = (int)readmeFI.Length;
-
-                isGlml = readmeFI.FullName.ExtIsGlml();
-                lastModifiedDate = new DateTimeOffset(readmeFI.LastWriteTime).DateTime;
-            }
+            Entry readmeEntry = GetEntry(readmeFile);
+            int readmeFileLen = (int)readmeEntry.UncompressedSize;
+            if (readmeFileLen == 0) continue;
 
             // Files containing these phrases are almost certain to be script info files, whose dates will be the
             // release date of their respective script package, and so should be ignored when detecting the FM's
@@ -3929,22 +3631,12 @@ public sealed class Scanner : IDisposable
 
             // We still add the readme even if we're not going to store nor scan its contents, because we still
             // may need to look at its last modified date.
+            // @BLOCKS: Explicit archive type switch here, due to difficulty with date raw/not-raw optimization
             if (_fmFormat == FMFormat.Zip)
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
-                    isGlml: isGlml,
-                    lastModifiedDateRaw: zipReadmeEntry!.LastWriteTime,
-                    scan: scanThisReadme,
-                    useForDateDetect: useThisReadmeForDateDetect
-                );
-            }
-            else if (_fmFormat == FMFormat.Rar)
-            {
-                last = ReadmeInternal.AddReadme(
-                    _readmeFiles,
-                    isGlml: isGlml,
-                    lastModifiedDate: rarReadmeEntry!.LastModifiedTime ?? DateTime.MinValue,
+                    lastModifiedDateRaw: readmeEntry.LastModifiedDateRaw,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -3953,8 +3645,7 @@ public sealed class Scanner : IDisposable
             {
                 last = ReadmeInternal.AddReadme(
                     _readmeFiles,
-                    isGlml: isGlml,
-                    lastModifiedDate: (DateTime)lastModifiedDate!,
+                    lastModifiedDate: readmeEntry.LastModifiedDate,
                     scan: scanThisReadme,
                     useForDateDetect: useThisReadmeForDateDetect
                 );
@@ -3965,14 +3656,7 @@ public sealed class Scanner : IDisposable
             Stream? readmeStream = null;
             try
             {
-                // Saw one ".rtf" that was actually a plaintext file, and one vice versa. So detect by header
-                // alone.
-                readmeStream = _fmFormat switch
-                {
-                    FMFormat.Zip => _archive.OpenEntry(zipReadmeEntry!),
-                    FMFormat.Rar => rarReadmeEntry!.OpenEntryStream(),
-                    _ => GetReadModeFileStreamWithCachedBuffer(readmeFileOnDisk, DiskFileStreamBuffer),
-                };
+                readmeStream = readmeEntry.Open();
 
                 int rtfBytesRead = 0;
                 if (readmeFileLen >= rtfHeaderBytesLength)
@@ -3980,38 +3664,38 @@ public sealed class Scanner : IDisposable
                     rtfBytesRead = readmeStream.ReadAll(rtfHeader);
                 }
 
-                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+                if (_fmFormat.IsStreamableArchive())
                 {
                     readmeStream.Dispose();
                 }
                 else
                 {
+                    /*
+                    @PERF_TODO: For seekable streams, we keep the stream open and just seek to the beginning.
+                     This is a performance optimization, but it also creates a mess, as we now can't cleanly have
+                     a using. How much performance this actually gains us is questionable; it'll be some, but I
+                     doubt it's deal-breaking (but need to measure).
+                    */
                     readmeStream.Seek(0, SeekOrigin.Begin);
                 }
 
                 bool readmeIsRtf = rtfBytesRead >= rtfHeaderBytesLength && rtfHeader.SequenceEqual(RTFHeaderBytes);
                 if (readmeIsRtf)
                 {
-                    if (_fmFormat == FMFormat.Zip)
-                    {
-                        readmeStream = _archive.OpenEntry(zipReadmeEntry!);
-                    }
-                    else if (_fmFormat == FMFormat.Rar)
-                    {
-                        readmeStream = rarReadmeEntry!.OpenEntryStream();
-                    }
+                    using Stream stream = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.Open()
+                        : readmeStream;
 
                     // @MEM(RTF pooled byte arrays): This pool barely helps us
                     // Most of the arrays are used only once, a handful are used twice.
                     byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
                     try
                     {
-                        int bytesRead = readmeStream.ReadAll(rtfBytes, 0, readmeFileLen);
+                        int bytesRead = stream.ReadAll(rtfBytes, 0, readmeFileLen);
                         (bool success, string text) = RtfConverter.Convert(new ArrayWithLength<byte>(rtfBytes, bytesRead));
                         if (success)
                         {
                             last.Text = text;
-                            last.Lines.AddRange_Large(text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                         }
                     }
                     finally
@@ -4019,20 +3703,22 @@ public sealed class Scanner : IDisposable
                         _sevenZipContext.ByteArrayPool.Return(rtfBytes);
                     }
                 }
+                else if (readmeFile.Name.ExtIsGlml())
+                {
+                    using Stream stream = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.Open()
+                        : readmeStream;
+                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
+                }
                 else
                 {
-                    Stream stream = _fmFormat switch
-                    {
-                        FMFormat.Zip => CreateSeekableStreamFromZipEntry(zipReadmeEntry!, readmeFileLen),
-                        FMFormat.Rar => CreateSeekableStreamFromRarEntry(rarReadmeEntry!, readmeFileLen),
-                        _ => readmeStream,
-                    };
-
-                    last.Text = last.IsGlml
-                        ? Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer)
-                        : ReadAllTextDetectEncoding(stream);
-                    last.Lines.AddRange_Large(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    using StreamScope streamScope = _fmFormat.IsStreamableArchive()
+                        ? readmeEntry.OpenSeekable()
+                        : new StreamScope(this, readmeStream);
+                    last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                 }
+
+                last.Lines.AddRange_Large(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
             }
             finally
             {
@@ -4041,25 +3727,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private MemoryStream CreateSeekableStreamFromZipEntry(ZipArchiveFastEntry readmeEntry, int readmeFileLen)
-    {
-        _generalMemoryStream.SetLength(readmeFileLen);
-        _generalMemoryStream.Position = 0;
-        using var es = _archive.OpenEntry(readmeEntry);
-        es.CopyTo(_generalMemoryStream);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
-    }
-
-    private MemoryStream CreateSeekableStreamFromRarEntry(RarArchiveEntry readmeEntry, int readmeFileLen)
-    {
-        _generalMemoryStream.SetLength(readmeFileLen);
-        _generalMemoryStream.Position = 0;
-        using var es = readmeEntry.OpenEntryStream();
-        es.CopyTo(_generalMemoryStream);
-        _generalMemoryStream.Position = 0;
-        return _generalMemoryStream;
-    }
+    #region Get value from readme
 
     private string GetValueFromReadme(SpecialLogic specialLogic, string[] keys, ListFast<string>? titles = null, ReadmeInternal? singleReadme = null)
     {
@@ -4188,11 +3856,7 @@ public sealed class Scanner : IDisposable
         return ret;
     }
 
-    private
-#if !FMScanner_FullCode
-    static
-#endif
-    string GetValueFromLines(SpecialLogic specialLogic, string[] keys, ListFast<string> lines)
+    private static string GetValueFromLines(SpecialLogic specialLogic, string[] keys, ListFast<string> lines)
     {
         for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
         {
@@ -4218,13 +3882,6 @@ public sealed class Scanner : IDisposable
                     lineStartTrimmed.StartsWithI("Release version") ||
                     lineStartTrimmed.StartsWithI("Release: version") ||
                     lineStartTrimmed.StartsWithI("Released for"):
-#if FMScanner_FullCode
-                case SpecialLogic.Version when
-                    lineStartTrimmed.StartsWithI("Version History") ||
-                    lineStartTrimmed.ContainsI("NewDark") ||
-                    lineStartTrimmed.ContainsI("64 Cubed") ||
-                    VersionExclude1Regex().Match(lineStartTrimmed).Success:
-#endif
                 case SpecialLogic.Author when
                     lineStartTrimmed.StartsWithI("Authors note"):
                     continue;
@@ -4271,9 +3928,6 @@ public sealed class Scanner : IDisposable
             {
                 if (specialLogic == SpecialLogic.ReleaseDate)
                 {
-                    // @NET5: These are fine because they only run on detected release date lines.
-                    // Turns out we can't actually remove them anyway, they need to be deduplicated for the
-                    // string to date converter, it looks like. Probably. Anyway whatever, it's fine.
                     lineStartTrimmed = MultipleColonsRegex().Replace(lineStartTrimmed, ":");
                     lineStartTrimmed = MultipleDashesRegex().Replace(lineStartTrimmed, "-");
                     lineStartTrimmed = MultipleUnicodeDashesRegex().Replace(lineStartTrimmed, "\u2013");
@@ -4302,12 +3956,6 @@ public sealed class Scanner : IDisposable
             }
             else
             {
-#if FMScanner_FullCode
-                // Don't detect "Version "; too many false positives
-                // TODO: Can probably remove this check and then just sort out any false positives in GetVersion()
-                if (specialLogic == SpecialLogic.Version) continue;
-#endif
-
                 foreach (string key in keys)
                 {
                     if (!lineStartTrimmed.StartsWithI(key)) continue;
@@ -4380,7 +4028,76 @@ public sealed class Scanner : IDisposable
         return value;
     }
 
+    #endregion
+
     #region Title(s) and mission names
+
+    private void SetOrAddTitle(ListFast<string> titles, string value)
+    {
+        value = CleanupTitle(value).Trim();
+
+        if (value.IsEmpty()) return;
+
+        if (!titles.ContainsI(value))
+        {
+            titles.Add(value);
+        }
+    }
+
+    private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
+    {
+        OrderTitlesOptimally(titles, serverTitle);
+        if (titles.Count > 0)
+        {
+            fmData.Title = titles[0];
+            if (titles.Count > 1)
+            {
+                fmData.AlternateTitles = new string[titles.Count - 1];
+                for (int i = 1; i < titles.Count; i++)
+                {
+                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
+                }
+            }
+        }
+    }
+
+    private bool SetupAuthorRequiredTitleScan()
+    {
+        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
+        // titles in that case, but we shouldn't actually set the title in the return object because the
+        // caller didn't request it.
+        bool scanTitleForAuthorPurposesOnly = false;
+        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
+        {
+            _scanOptions.ScanTitle = true;
+            scanTitleForAuthorPurposesOnly = true;
+        }
+
+        return scanTitleForAuthorPurposesOnly;
+    }
+
+    private void EndTitleScan(
+        bool scanTitleForAuthorPurposesOnly,
+        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
+    {
+        ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
+        if (topOfReadmeTitles?.Count > 0)
+        {
+            for (int i = 0; i < topOfReadmeTitles.Count; i++)
+            {
+                SetOrAddTitle(titles, topOfReadmeTitles[i]);
+            }
+        }
+
+        if (!scanTitleForAuthorPurposesOnly)
+        {
+            SetFMTitles(fmData, titles, serverTitle);
+        }
+        else
+        {
+            _scanOptions.ScanTitle = false;
+        }
+    }
 
     // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
     // Perception 2. :P
@@ -4388,8 +4105,6 @@ public sealed class Scanner : IDisposable
     // end up as alternate titles, I can afford that.
     private ListFast<string>? GetTitlesFromTopOfReadmes()
     {
-        if (_readmeFiles.Count == 0) return null;
-
         ListFast<string>? ret = null;
 
         foreach (ReadmeInternal r in _readmeFiles)
@@ -4479,7 +4194,7 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < _intrfaceDirFiles.Count; i++)
             {
                 NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathEndsWithI(FMFiles.SNewGameStr))
+                if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
                 {
                     newGameStrFileIndex = i;
                     break;
@@ -4501,10 +4216,7 @@ public sealed class Scanner : IDisposable
 
                 // Do our best to ignore things that aren't titles
                 if (// first chars
-                    title[0] != '{' && title[0] != '}' && title[0] != '-' && title[0] != '_' &&
-                    title[0] != ':' && title[0] != ';' && title[0] != '!' && title[0] != '@' &&
-                    title[0] != '#' && title[0] != '$' && title[0] != '%' && title[0] != '^' &&
-                    title[0] != '&' && title[0] != '*' && title[0] != '(' && title[0] != ')' &&
+                    !CharIsDisallowed(title[0], _ctx) &&
                     // entire titles
                     !title.EqualsI("Play") && !title.EqualsI("Start") &&
                     !title.EqualsI("Begin") && !title.EqualsI("Begin...") &&
@@ -4520,48 +4232,27 @@ public sealed class Scanner : IDisposable
         }
 
         return "";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool CharIsDisallowed(char ch, ReadOnlyDataContext ctx)
+        {
+            return ch < 256 && ctx.NewGameStrDisallowedTitleFirstChars[ch];
+        }
     }
 
-    private (string TitleFrom0, string TitleFromN
-#if FMScanner_FullCode
-        , List<string>? CampaignMissionNames
-#endif
-        )
-    GetMissionNames()
+    private (string TitleFrom0, string TitleFromN)
+    GetTitleFromMissionNames()
     {
         ListFast<string>? titlesStrLines = GetTitlesStrLines();
         if (titlesStrLines == null || titlesStrLines.Count == 0)
         {
-            return ("", ""
-#if FMScanner_FullCode
-                    , null
-#endif
-                );
+            return ("", "");
         }
 
-        var ret =
-            (TitleFrom0: "",
-                TitleFromN: ""
-#if FMScanner_FullCode
-                , CampaignMissionNames: (List<string>?)null
-#endif
-            );
+        var ret = (TitleFrom0: "", TitleFromN: "");
 
-        static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
-        {
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i].Name.ContainsI(value)) return true;
-            }
-            return false;
-        }
-
-#if FMScanner_FullCode
-        var titles = new List<string>(titlesStrLines.Count);
-#else
         int titleFromTitlesFoundCount = 0;
         string firstTitleFromTitles = "";
-#endif
         for (int lineIndex = 0; lineIndex < titlesStrLines.Count; lineIndex++)
         {
             string titleNum = "";
@@ -4582,15 +4273,11 @@ public sealed class Scanner : IDisposable
 
                 if (umfDotIndex > 4 && umf.StartsWithI("miss") && titleNum == umf.Substring(4, umfDotIndex - 4))
                 {
-#if FMScanner_FullCode
-                    titles.Add(title);
-#else
                     if (titleFromTitlesFoundCount == 0)
                     {
                         firstTitleFromTitles = title;
                     }
                     titleFromTitlesFoundCount++;
-#endif
                 }
             }
 
@@ -4605,35 +4292,25 @@ public sealed class Scanner : IDisposable
                 NameExistsInList(_misFiles, missNumMis))
             {
                 ret.TitleFromN = title;
-#if FMScanner_FullCode
-                if (!_scanOptions.ScanCampaignMissionNames)
-#endif
-                {
-                    break;
-                }
+                break;
             }
         }
 
-#if FMScanner_FullCode
-        if (titles.Count > 0)
-        {
-            if (_scanOptions.ScanTitle && titles.Count == 1)
-            {
-                ret.TitleFromN = titles[0];
-            }
-            else if (_scanOptions.ScanCampaignMissionNames)
-            {
-                ret.CampaignMissionNames = titles;
-            }
-        }
-#else
         if (_scanOptions.ScanTitle && titleFromTitlesFoundCount == 1)
         {
             ret.TitleFromN = firstTitleFromTitles;
         }
-#endif
 
         return ret;
+
+        static bool NameExistsInList(ListFast<NameAndIndex> list, string value)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Name.ContainsI(value)) return true;
+            }
+            return false;
+        }
     }
 
     private ListFast<string>? GetTitlesStrLines()
@@ -4670,7 +4347,7 @@ public sealed class Scanner : IDisposable
         #region Filter titlesStrLines
 
         // There's a way to do this with an IEqualityComparer, but no, for reasons
-        titlesStrLines_Distinct.ClearFastAndEnsureCapacity(titlesStrLines.Count);
+        _titlesStrLines_Distinct.ClearFastAndEnsureCapacity(titlesStrLines.Count);
 
         static bool TitlesStrLinesContainsI(string line, int indexOfColon, ListFast<string> titlesStrLinesDistinct)
         {
@@ -4705,17 +4382,17 @@ public sealed class Scanner : IDisposable
                 line.StartsWithI("title_") &&
                 (indexOfColon = line.IndexOf(':')) > -1 &&
                 line.CharCountIsAtLeast('\"', 2) &&
-                !TitlesStrLinesContainsI(line, indexOfColon, titlesStrLines_Distinct))
+                !TitlesStrLinesContainsI(line, indexOfColon, _titlesStrLines_Distinct))
             {
-                titlesStrLines_Distinct.Add(line);
+                _titlesStrLines_Distinct.Add(line);
             }
         }
 
-        titlesStrLines_Distinct.Sort(_ctx.TitlesStrNaturalNumericSort);
+        _titlesStrLines_Distinct.Sort(_ctx.TitlesStrNaturalNumericSort);
 
         #endregion
 
-        return titlesStrLines_Distinct;
+        return _titlesStrLines_Distinct;
     }
 
     private string CleanupTitle(string value)
@@ -4781,7 +4458,6 @@ public sealed class Scanner : IDisposable
                 AddDetectedTitle(titles, readme.Lines[0], temporary: true);
             }
         }
-
         if (titles.Count < 2) return;
 
         DetectedTitle mainTitle = titles[0];
@@ -4910,6 +4586,30 @@ public sealed class Scanner : IDisposable
     #endregion
 
     #region Author
+
+    private void GetAuthor(ScannedFMData fmData, ListFast<string> titles)
+    {
+        if (fmData.Author.IsEmpty())
+        {
+            ListFast<string>? passTitles = titles.Count > 0 ? titles : null;
+            string author = GetValueFromReadme(SpecialLogic.Author, _ctx.SA_AuthorDetect, passTitles);
+            fmData.Author = CleanupValue(author).Trim();
+        }
+
+        if (!fmData.Author.IsEmpty())
+        {
+            Match match = AuthorEmailRegex().Match(fmData.Author);
+            if (match.Success)
+            {
+                fmData.Author = fmData.Author.Remove(match.Index, match.Length).Trim();
+            }
+
+            if (fmData.Author.StartsWithI("By "))
+            {
+                fmData.Author = fmData.Author.Substring(2).Trim();
+            }
+        }
+    }
 
     private string GetAuthorFromTopOfReadme(ListFast<string> lines, ListFast<string>? titles)
     {
@@ -5123,59 +4823,7 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-#if FMScanner_FullCode
-    private string GetVersion()
-    {
-        string version = GetValueFromReadme(SpecialLogic.Version, _ctx.SA_VersionDetect);
-
-        if (version.IsEmpty()) return "";
-
-        Debug.WriteLine(@"GetVersion() top:");
-        Debug.WriteLine(version);
-
-        const string numbers = "0123456789.";
-        if (numbers.Any(x => version[0] == x))
-        {
-            int indexSpace = version.IndexOf(' ');
-            int indexTab = version.IndexOf('\t');
-
-            int index = indexSpace > -1 && indexTab > -1
-                ? Math.Min(indexSpace, indexTab)
-                : Math.Max(indexSpace, indexTab);
-
-            if (index > -1)
-            {
-                version = version.Substring(0, index);
-            }
-        }
-        else // Starts with non-numbers
-        {
-            // Find index of the first numeric character
-            Match match = VersionFirstNumberRegex().Match(version);
-            if (match.Success)
-            {
-                version = version.Substring(match.Index);
-
-                int indexSpace = version.IndexOf(' ');
-                int indexTab = version.IndexOf('\t');
-
-                int index = indexSpace > -1 && indexTab > -1
-                    ? Math.Min(indexSpace, indexTab)
-                    : Math.Max(indexSpace, indexTab);
-
-                if (index > -1)
-                {
-                    version = version.Substring(0, index);
-                }
-            }
-        }
-
-        Debug.WriteLine(@"GetVersion() bottom:");
-        Debug.WriteLine(version);
-
-        return version;
-    }
-#endif
+    #region Languages
 
     private (Language Langs, bool EnglishIsUncertain)
     GetLanguages()
@@ -5273,127 +4921,35 @@ public sealed class Scanner : IDisposable
             : (Langs: Language.English, EnglishIsUncertain: true);
     }
 
-#if FMScanner_FullCode
-    private (bool? NewDarkRequired, Game Game)
-#else
-    private Game
-#endif
-    GetGameTypeAndEngine()
+    #endregion
+
+    #region Game type
+
+    private Game GetGameType()
     {
-#if FMScanner_FullCode
-        var ret = (NewDarkRequired: (bool?)null, Game: Game.Null);
-#else
-        Game game = Game.Null;
-#endif
+        Game game;
+        Entry misFileEntry = default;
 
-        #region Choose smallest .gam file
-
-        static ZipArchiveFastEntry? GetSmallestGamEntry_Zip(ZipArchiveFast _archive, ListFast<NameAndIndex> _baseDirFiles)
+        if (_solidGamFileToUse == null)
         {
-            int smallestSizeIndex = -1;
-            long smallestSize = long.MaxValue;
-            for (int i = 0; i < _baseDirFiles.Count; i++)
-            {
-                NameAndIndex item = _baseDirFiles[i];
-                if (item.Name.ExtIsGam())
-                {
-                    ZipArchiveFastEntry gamFile = _archive.Entries[item.Index];
-                    if (gamFile.Length <= smallestSize)
-                    {
-                        smallestSize = gamFile.Length;
-                        smallestSizeIndex = item.Index;
-                    }
-                }
-            }
+            NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
+            misFileEntry = GetEntry(smallestUsedMisFile);
 
-            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
+            game = GameType_DoQuickCheck(misFileEntry);
+            if (game != Game.Null) return game;
         }
 
-        static RarArchiveEntry? GetSmallestGamEntry_Rar(RarArchive _archive, ListFast<NameAndIndex> _baseDirFiles)
-        {
-            int smallestSizeIndex = -1;
-            long smallestSize = long.MaxValue;
-            for (int i = 0; i < _baseDirFiles.Count; i++)
-            {
-                NameAndIndex item = _baseDirFiles[i];
-                if (item.Name.ExtIsGam())
-                {
-                    RarArchiveEntry gamFile = _archive.Entries[item.Index];
-                    if (gamFile.Size <= smallestSize)
-                    {
-                        smallestSize = gamFile.Size;
-                        smallestSizeIndex = item.Index;
-                    }
-                }
-            }
+        game = GameType_DoMainCheck(misFileEntry);
+        if (game != Game.Null) return game;
 
-            return smallestSizeIndex == -1 ? null : _archive.Entries[smallestSizeIndex];
-        }
+        game = GameType_DoSS2FallbackCheck(misFileEntry);
+        if (game != Game.Null) return game;
 
-        #endregion
+        return Game.Thief1;
+    }
 
-        #region Choose smallest .mis file
-
-        NameAndIndex smallestUsedMisFile;
-        {
-            if (_usedMisFiles.Count == 1)
-            {
-                smallestUsedMisFile = _usedMisFiles[0];
-            }
-            // We know we have at least 1 used mis file at this point because we early-return way before this if
-            // we don't
-            else
-            {
-                int smallestSizeIndex = -1;
-                long smallestSize = long.MaxValue;
-                for (int i = 0; i < _usedMisFiles.Count; i++)
-                {
-                    NameAndIndex mis = _usedMisFiles[i];
-                    long length = _fmFormat == FMFormat.Zip
-                        ? _archive.Entries[mis.Index].Length
-                        : _fmFormat == FMFormat.Rar
-                            ? _rarArchive.Entries[mis.Index].Size
-                            : _fmFormat == FMFormat.SevenZip || _fmDirFileInfos.Count > 0
-                                ? _fmDirFileInfos[mis.Index].Length
-                                : new FileInfo(Path.Combine(_fmWorkingPath, mis.Name)).Length;
-
-                    if (length <= smallestSize)
-                    {
-                        smallestSize = length;
-                        smallestSizeIndex = i;
-                    }
-                }
-
-                smallestUsedMisFile = _usedMisFiles[smallestSizeIndex];
-            }
-        }
-
-        #endregion
-
-        #region Setup
-
-        ZipArchiveFastEntry misFileZipEntry = null!;
-        RarArchiveEntry misFileRarEntry = null!;
-
-        string misFileOnDisk = "";
-
-        if (_fmFormat == FMFormat.Zip)
-        {
-            misFileZipEntry = _archive.Entries[smallestUsedMisFile.Index];
-        }
-        else if (_fmFormat == FMFormat.Rar)
-        {
-            misFileRarEntry = _rarArchive.Entries[smallestUsedMisFile.Index];
-        }
-        else
-        {
-            misFileOnDisk = Path.Combine(_fmWorkingPath, smallestUsedMisFile.Name);
-        }
-
-        #endregion
-
-        #region Check for SKYOBJVAR in .mis (determines OldDark/NewDark; determines game type for OldDark)
-
+    private Game GameType_DoQuickCheck(Entry misFileEntry)
+    {
         /*
         SKYOBJVAR location key (byte position in file):
             No SKYOBJVAR           - OldDark Thief 1/G
@@ -5406,7 +4962,6 @@ public sealed class Scanner : IDisposable
         or 7292.
         System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
         696 = NewDark, 916 = OldDark.
-        (but we don't detect OldDark/NewDark for SS2 yet, see below)
 
         * We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky
           location, and it's faster and more reliable to simply carry on with the secondary check than to
@@ -5416,55 +4971,16 @@ public sealed class Scanner : IDisposable
         through the stream sequentially until we hit each one.
         */
 
-#if FMScanner_FullCode
-        bool foundAtNewDarkLocation = false;
-#endif
-        bool foundAtOldDarkThief2Location = false;
-
-        // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
-        // string size
-        static bool EndsWithSKYOBJVAR(byte[] buffer)
-        {
-            const ulong SKYOBJVA_ULong = 4708032109121981267;
-
-            int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == SKYOBJVA_ULong &&
-                   buffer[len - 1] == 'R';
-        }
-
-        static bool EndsWithMAPPARAM(byte[] buffer)
-        {
-            const ulong MAPPARAM_ULong = 5566821054880432461;
-
-            int len = buffer.Length;
-            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - 9]) == MAPPARAM_ULong;
-        }
-
         Stream? misStream = null;
         try
         {
-            misStream = _fmFormat switch
-            {
-                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
-                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
-            };
+            misStream = misFileEntry.Open();
 
             for (int i = 0; i < _ctx.GameDetect_KeyPhraseLocations.Length; i++)
             {
-                if (
-#if FMScanner_FullCode
-                    !_scanOptions.ScanNewDarkRequired &&
-#endif
-                    (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                     _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2))
-                {
-                    break;
-                }
-
                 byte[] buffer;
 
-                if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+                if (_fmFormat.IsStreamableArchive())
                 {
                     buffer = _zipOffsetBuffers[i];
                     int length = _ctx.GameDetect_KeyPhraseZipOffsets[i];
@@ -5483,212 +4999,186 @@ public sealed class Scanner : IDisposable
                      _ctx.GameDetect_KeyPhraseLocations[i] == SS2_OldDark_MAPPARAM_Location) &&
                     EndsWithMAPPARAM(buffer))
                 {
-                    /*
-                    TODO: @SS2: AngelLoader doesn't need to know if NewDark is required, but put that in eventually
-                    How to detect NewDark/OldDark for SS2:
-                    If MAPPARAM is at either OldDark location or NewDark location, then loop through all
-                    .mis files and check for MAPPARAM at NewDark location in each. If any found at NewDark
-                    location, we're NewDark. Unfortunately we have to do that because SS2 missions sometimes
-                    combine OldDark and NewDark .mis files.
-                    So we're leaving this disabled for now because adding a .mis read loop in here would be
-                    a pain, but there's how we would add it.
-                    Also, we can detect NewDark for T1/T2 by checking for DARKMISS at byte 612 if we wanted
-                    (DARKMISS at byte 612 = NewDark) although our SKYOBJVAR position checking method works
-                    fine currently.
-                    SS2 .mis files don't have DARKMISS in them at all.
-                    */
-#if FMScanner_FullCode
-                    return (null, Game.SS2);
-#else
                     return Game.SS2;
-#endif
                 }
-                else if ((_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location ||
-                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                          _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2) &&
+                else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location &&
                          EndsWithSKYOBJVAR(buffer))
                 {
-                    // Zip reading is going to check the NewDark locations the other way round, but fortunately
-                    // they're interchangeable in meaning so we don't have to do anything
-                    if (_ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location1 ||
-                     _ctx.GameDetect_KeyPhraseLocations[i] == NewDark_SKYOBJVAR_Location2)
-                    {
-#if FMScanner_FullCode
-                        ret.NewDarkRequired = true;
-                        foundAtNewDarkLocation = true;
-#endif
-                        break;
-                    }
-                    else if (_ctx.GameDetect_KeyPhraseLocations[i] == T2_OldDark_SKYOBJVAR_Location)
-                    {
-                        foundAtOldDarkThief2Location = true;
-                        break;
-                    }
+                    return Game.Thief2;
                 }
             }
 
-#if FMScanner_FullCode
-            if (!foundAtNewDarkLocation) ret.NewDarkRequired = false;
-#endif
+            return Game.Null;
         }
         finally
         {
             misStream?.Dispose();
         }
 
-        #endregion
-
-        if (foundAtOldDarkThief2Location)
+        // We need to say "length - x" because for zips, the buffer will be full offset size rather than detection
+        // string size
+        static bool EndsWithSKYOBJVAR(byte[] buffer)
         {
-#if FMScanner_FullCode
-            return (
-                _scanOptions.ScanNewDarkRequired ? false : null,
-                _scanOptions.ScanGameType ? Game.Thief2 : Game.Null);
-#else
-            return _scanOptions.ScanGameType ? Game.Thief2 : Game.Null;
-#endif
+            const ulong SKYOBJVA_ULong = 0x41564A424F594B53;
+
+            int len = buffer.Length;
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == SKYOBJVA_ULong &&
+                   buffer[len - 1] == (byte)'R';
         }
 
-#if FMScanner_FullCode
-        if (!_scanOptions.ScanGameType)
+        static bool EndsWithMAPPARAM(byte[] buffer)
         {
-            return (ret.NewDarkRequired, Game.Null);
+            const ulong MAPPARAM_ULong = 0x4D4152415050414D;
+
+            int len = buffer.Length;
+            return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
-#endif
+    }
 
-        #region Check for T2-unique value in .gam or .mis (determines game type for both OldDark and NewDark)
-
-        static bool StreamContainsIdentString(
-            Stream stream,
-            byte[] identString,
-            byte[] chunk,
-            int bufferSize)
+    private Game GameType_DoMainCheck(Entry misFileEntry)
+    {
+        if (_fmFormat.IsStreamableArchive())
         {
-            // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
-            // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
-            // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
-            int boundaryLen = identString.Length;
+            // For zips, since we can't seek within the stream, the fastest way to find our string is just to
+            // brute-force straight through.
+            Entry entry = GameType_TryGetSmallestGamFileEntry(out Entry gamFileEntry)
+                ? gamFileEntry
+                : misFileEntry;
+            using Stream stream = entry.Open();
 
-            chunk.Clear();
+            return GameType_StreamContainsIdentString(
+                stream,
+                _ctx.RopeyArrow,
+                GameTypeBuffer_ChunkPlusRopeyArrow,
+                _gameTypeBufferSize)
+                ? Game.Thief2
+                : Game.Null;
+        }
+        else if (_solidGamFileToUse != null)
+        {
+            string gamFileOnDisk = Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name);
+            using FileStream fs = GetReadModeFileStreamWithCachedBuffer(gamFileOnDisk, DiskFileStreamBuffer);
 
-            int bytesRead;
-            while ((bytesRead = stream.ReadAll(chunk, boundaryLen, bufferSize)) != 0)
+            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
+                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
             {
-                // Zero out all bytes after the end of the read data if there are any, in the ludicrously
-                // unlikely case that the end of this read data combines with the data that was already in
-                // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
-                if (bytesRead < bufferSize)
-                {
-                    Array.Clear(chunk, boundaryLen + bytesRead, bufferSize - (boundaryLen + bytesRead));
-                }
+                return Game.SS2;
+            }
 
-                if (chunk.Contains(identString)) return true;
+            fs.Position = 0;
 
-                // Copy the last boundaryLen bytes from chunk and put them at the beginning
-                for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++)
+            return ChunkContainsPhrase(fs, SymName_First, SymName_Second, _ctx.RopeyArrow) ? Game.Thief2 : Game.Null;
+        }
+        else
+        {
+            // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
+            // OBJ_MAP chunk and search it for the string. Phew.
+            using Stream fs = misFileEntry.Open();
+            return ChunkContainsPhrase(fs, OBJ_MAP_First, OBJ_MAP_Second, _ctx.RopeyArrow) ? Game.Thief2 : Game.Null;
+        }
+
+        static bool GAMEPARAM_At_Location(Stream stream, byte[] buffer, int location)
+        {
+            if (stream.Length > location + _gameDetectStringBufferLength)
+            {
+                stream.Position = location;
+                int bytesRead = stream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
+                if (bytesRead == _gameDetectStringBufferLength)
                 {
-                    chunk[si] = chunk[ei];
+                    const ulong GAMEPARA_Ulong = 0x41524150454D4147;
+
+                    return Unsafe.ReadUnaligned<ulong>(ref buffer[0]) == GAMEPARA_Ulong &&
+                           buffer[^1] == (byte)'M';
                 }
             }
 
             return false;
         }
 
-        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
+        bool ChunkContainsPhrase(Stream stream, ulong chunkNameFirst, uint chunkNameSecond, byte[] searchPhrase)
         {
-            // For zips, since we can't seek within the stream, the fastest way to find our string is just to
-            // brute-force straight through.
-            // We only need the .gam file for non-solid FMs, so we can save extracting it otherwise.
-            Stream? stream = null;
-            try
-            {
-                if (_fmFormat == FMFormat.Zip)
-                {
-                    stream = _archive.OpenEntry(GetSmallestGamEntry_Zip(_archive, _baseDirFiles) ?? misFileZipEntry);
-                }
-                else
-                {
-                    RarArchiveEntry? entry = GetSmallestGamEntry_Rar(_rarArchive, _baseDirFiles);
-                    stream = entry != null ? entry.OpenEntryStream() : misFileRarEntry.OpenEntryStream();
-                }
+            uint tocOffset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
-#if FMScanner_FullCode
-                ret.Game
-#else
-                game
-#endif
-                    = StreamContainsIdentString(
-                        stream,
-                        _ctx.RopeyArrow,
-                        GameTypeBuffer_ChunkPlusRopeyArrow,
-                        _gameTypeBufferSize)
-                        ? Game.Thief2
-                        : Game.Thief1;
-            }
-            finally
-            {
-                stream?.Dispose();
-            }
-        }
-        else
-        {
-            // For uncompressed files on disk, we mercifully can just look at the TOC and then seek to the
-            // OBJ_MAP chunk and search it for the string. Phew.
-            using FileStream fs = GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer);
+            stream.Position = tocOffset;
 
-            uint tocOffset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-
-            fs.Position = tocOffset;
-
-            uint invCount = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+            uint invCount = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
             for (int i = 0; i < invCount; i++)
             {
-                int bytesRead = fs.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
-                uint offset = BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
-                int length = (int)BinaryRead.ReadUInt32(fs, _binaryReadBuffer);
+                int bytesRead = stream.ReadAll(_misChunkHeaderBuffer, 0, _misChunkHeaderBuffer.Length);
+                uint offset = BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
+                int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
-                if (bytesRead < 12 || !_misChunkHeaderBuffer.Contains(_ctx.OBJ_MAP)) continue;
+                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
+                {
+                    continue;
+                }
 
                 // Put us past the name (12), version high (4), version low (4), and the zero (4).
                 // Length starts AFTER this 24-byte header! (thanks JayRude)
-                fs.Position = offset + 24;
+                stream.Position = offset + 24;
 
                 byte[] content = _sevenZipContext.ByteArrayPool.Rent(length);
                 try
                 {
-                    int objMapBytesRead = fs.ReadAll(content, 0, length);
-#if FMScanner_FullCode
-                    ret.Game
-#else
-                    game
-#endif
-                        = content.Contains(_ctx.RopeyArrow, objMapBytesRead)
-                            ? Game.Thief2
-                            : Game.Thief1;
+                    int chunkBytesRead = stream.ReadAll(content, 0, length);
+                    return content.Contains(searchPhrase, chunkBytesRead);
                 }
                 finally
                 {
                     _sevenZipContext.ByteArrayPool.Return(content);
                 }
-                break;
+            }
+
+            return false;
+
+            static bool HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond)
+            {
+                ulong first = Unsafe.ReadUnaligned<ulong>(ref header[0]);
+                if (first != chunkNameFirst) return false;
+                uint second = Unsafe.ReadUnaligned<uint>(ref header[8]);
+                return second == chunkNameSecond;
+            }
+        }
+    }
+
+    private Game GameType_DoSS2FallbackCheck(Entry misFileEntry)
+    {
+        /*
+        Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
+        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted it
+        earlier during the FM data caching and again here). For T2, we have a fallback scan if we don't find
+        SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's really
+        slow, but better slow than incorrect. This way, if a new SS2 FM is released and has the ident string
+        in a different place, at least we're like 98% certain to still detect it correctly here. Then people
+        can still at least have an accurate detection while I work on a new version that takes the new ident
+        string location into account.
+        */
+
+        // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
+        if ((_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+        {
+            using Stream stream =
+                _solidGamFileToUse != null
+                    ? GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name), DiskFileStreamBuffer)
+                    : misFileEntry.Open();
+
+            (byte[] identifier, byte[] buffer) =
+                _solidGamFileToUse != null
+                    ? (_ctx.GAMEPARAM, GameTypeBuffer_ChunkPlusGAMEPARAM)
+                    : (MAPPARAM, GameTypeBuffer_ChunkPlusMAPPARAM);
+
+            if (GameType_StreamContainsIdentString(
+                    stream,
+                    identifier,
+                    buffer,
+                    _gameTypeBufferSize))
+            {
+                return Game.SS2;
             }
         }
 
-        #endregion
-
-        #region SS2 slow-detect fallback
-
-        /*
-        Paranoid fallback. In case MAPPARAM ends up at a different byte location in a future version of
-        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
-        it earlier during ReadAndCacheFMData() and again here). For T2, we have a fallback scan if we don't
-        find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
-        really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has MAPPARAM
-        in a different place, at least we're like 98% certain to still detect it correctly here. Then people
-        can still at least have an accurate detection while I work on a new version that takes the new
-        MAPPARAM location into account.
-        */
+        return Game.Null;
 
         static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)
         {
@@ -5702,97 +5192,638 @@ public sealed class Scanner : IDisposable
 
             return false;
         }
+    }
 
-        // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if (
-#if FMScanner_FullCode
-            ret.Game
-#else
-            game
-#endif
-            == Game.Thief1 && (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+    private NameAndIndex GameType_GetSmallestMisFile()
+    {
+        if (_solidMisFileToUse is { } solidMisFileToUse)
         {
-            using Stream stream = _fmFormat switch
+            return solidMisFileToUse;
+        }
+        else if (_usedMisFiles.Count == 1)
+        {
+            return _usedMisFiles[0];
+        }
+        // We know we have at least 1 used mis file at this point because we early-return way before this if
+        // we don't
+        else
+        {
+            int smallestSizeIndex = -1;
+            long smallestSize = long.MaxValue;
+            for (int i = 0; i < _usedMisFiles.Count; i++)
             {
-                FMFormat.Zip => _archive.OpenEntry(misFileZipEntry),
-                FMFormat.Rar => misFileRarEntry.OpenEntryStream(),
-                _ => GetReadModeFileStreamWithCachedBuffer(misFileOnDisk, DiskFileStreamBuffer),
-            };
-            if (StreamContainsIdentString(
-                    stream,
-                    MAPPARAM,
-                    GameTypeBuffer_ChunkPlusMAPPARAM,
-                    _gameTypeBufferSize))
-            {
-#if FMScanner_FullCode
-                ret.Game
-#else
-                game
-#endif
-                    = Game.SS2;
+                Entry misFile = GetEntry(_usedMisFiles[i]);
+                long length = misFile.UncompressedSize;
+                if (length <= smallestSize)
+                {
+                    smallestSize = length;
+                    smallestSizeIndex = i;
+                }
             }
+
+            return _usedMisFiles[smallestSizeIndex];
+        }
+    }
+
+    private bool GameType_TryGetSmallestGamFileEntry(out Entry result)
+    {
+        bool found = false;
+        long smallestSize = long.MaxValue;
+        Entry smallest = default;
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            NameAndIndex item = _baseDirFiles[i];
+            if (item.Name.ExtIsGam())
+            {
+                Entry gamFile = GetEntry(item);
+                long gamSize = gamFile.UncompressedSize;
+                if (gamSize <= smallestSize)
+                {
+                    found = true;
+                    smallestSize = gamSize;
+                    smallest = gamFile;
+                }
+            }
+        }
+
+        if (found)
+        {
+            result = smallest;
+            return true;
+        }
+        else
+        {
+            result = default;
+            return false;
+        }
+    }
+
+    private static bool GameType_StreamContainsIdentString(
+        Stream stream,
+        byte[] identString,
+        byte[] chunk,
+        int bufferSize)
+    {
+        // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
+        // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
+        // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+        int boundaryLen = identString.Length;
+
+        chunk.Clear();
+
+        int bytesRead;
+        while ((bytesRead = stream.ReadAll(chunk, boundaryLen, bufferSize)) != 0)
+        {
+            // Zero out all bytes after the end of the read data if there are any, in the ludicrously
+            // unlikely case that the end of this read data combines with the data that was already in
+            // there and gives a false match. Literally not gonna happen but like yeah I noticed so yeah.
+            if (bytesRead < bufferSize)
+            {
+                Array.Clear(chunk, boundaryLen + bytesRead, bufferSize - (boundaryLen + bytesRead));
+            }
+
+            if (chunk.Contains(identString)) return true;
+
+            // Copy the last boundaryLen bytes from chunk and put them at the beginning
+            for (int si = 0, ei = bufferSize; si < boundaryLen; si++, ei++)
+            {
+                chunk[si] = chunk[ei];
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Dates
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ParsedDateTime
+    {
+        private readonly bool _isAmbiguous;
+        internal readonly DateTime? Date;
+
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal bool IsAmbiguous => Date != null && _isAmbiguous;
+
+        internal ParsedDateTime(DateTime? date, bool isAmbiguous)
+        {
+            _isAmbiguous = isAmbiguous;
+            Date = date;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct MisFileDateTime
+    {
+        private readonly bool _succeeded;
+        internal readonly DateTime? Date;
+
+        [MemberNotNullWhen(true, nameof(Date))]
+        internal bool Succeeded => Date != null && _succeeded;
+
+        internal MisFileDateTime(bool succeeded, DateTime? date)
+        {
+            _succeeded = succeeded;
+            Date = date;
+        }
+    }
+
+    private DateTime? GetReleaseDate()
+    {
+        MisFileDateTime misFileDateTime = new(false, null);
+
+        ParsedDateTime parsedDateTime = GetReadmeParsedDateTime();
+
+        if (parsedDateTime.IsAmbiguous)
+        {
+            DateTime readmeParsedDate = (DateTime)parsedDateTime.Date;
+
+            for (int i = 0; i < _readmeFiles.Count; i++)
+            {
+                ReadmeInternal readme = _readmeFiles[i];
+                DateTime readmeLastModifiedDate = readme.LastModifiedDate;
+
+                if (readme.UseForDateDetect && readmeLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(readmeLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+
+            misFileDateTime = GetMisFileDate(_usedMisFiles);
+            if (misFileDateTime.Succeeded)
+            {
+                DateTime misFileLastModifiedDate = (DateTime)misFileDateTime.Date;
+
+                if (misFileLastModifiedDate.Year > 1998)
+                {
+                    DateTime? finalDate = GetFileDateTime(misFileLastModifiedDate, readmeParsedDate);
+                    if (finalDate != null) return finalDate;
+                }
+            }
+        }
+
+        if (parsedDateTime.Date != null) return parsedDateTime.Date;
+
+        for (int i = 0; i < _readmeFiles.Count; i++)
+        {
+            ReadmeInternal readme = _readmeFiles[i];
+            if (readme.LastModifiedDate.Year > 1998 && readme.UseForDateDetect)
+            {
+                return readme.LastModifiedDate;
+            }
+        }
+
+        return misFileDateTime.Succeeded
+            ? misFileDateTime.Date.Value
+            : GetMisFileDate(_usedMisFiles).Date;
+
+        ParsedDateTime GetReadmeParsedDateTime()
+        {
+            DateTime? topDT = GetReleaseDateFromTopOfReadmes(out bool topDtIsAmbiguous);
+
+            // Search for updated dates FIRST, because they'll be the correct ones!
+            string ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_LatestUpdateDateDetect);
+            DateTime? dt = null;
+            bool dtIsAmbiguous = false;
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (ds.IsEmpty() || dt == null)
+            {
+                ds = GetValueFromReadme(SpecialLogic.ReleaseDate, _ctx.SA_ReleaseDateDetect);
+            }
+
+            if (!ds.IsEmpty()) StringToDate(ds, checkForAmbiguity: true, out dt, out dtIsAmbiguous);
+
+            if (topDT != null && dt != null)
+            {
+                // TODO: We don't check the ambiguous date against the file(s) in this case
+                // So we just take the non-ambiguous one even if it may be older. We could fix that if we felt
+                // like we needed to.
+                if (!topDtIsAmbiguous && dtIsAmbiguous)
+                {
+                    return new ParsedDateTime(topDT, false);
+                }
+                else if (!dtIsAmbiguous && topDtIsAmbiguous)
+                {
+                    return new ParsedDateTime(dt, false);
+                }
+                else if (DateTime.Compare((DateTime)topDT, (DateTime)dt) > 0)
+                {
+                    return new ParsedDateTime(topDT, topDtIsAmbiguous);
+                }
+                else
+                {
+                    return new ParsedDateTime(dt, dtIsAmbiguous);
+                }
+            }
+            else if (topDT != null)
+            {
+                return new ParsedDateTime(topDT, topDtIsAmbiguous);
+            }
+            else if (dt != null)
+            {
+                return new ParsedDateTime(dt, dtIsAmbiguous);
+            }
+
+            return new ParsedDateTime(null, false);
+        }
+
+        MisFileDateTime GetMisFileDate(ListFast<NameAndIndex> usedMisFiles)
+        {
+            if (usedMisFiles.Count > 0)
+            {
+                DateTime misFileDate = GetEntry(usedMisFiles[0]).LastModifiedDate_UtcProcessed;
+
+                return misFileDate.Year > 1998
+                    ? new MisFileDateTime(true, misFileDate)
+                    : new MisFileDateTime(false, null);
+            }
+
+            return new MisFileDateTime(false, null);
+        }
+
+        static DateTime? GetFileDateTime(DateTime fileLastModifiedDate, DateTime readmeParsedDate)
+        {
+            if (fileLastModifiedDate.Year == readmeParsedDate.Year)
+            {
+                if (fileLastModifiedDate.Month == readmeParsedDate.Month &&
+                    fileLastModifiedDate.Day == readmeParsedDate.Day)
+                {
+                    return readmeParsedDate;
+                }
+                else if ((fileLastModifiedDate.Day == readmeParsedDate.Month &&
+                          Math.Abs(fileLastModifiedDate.Month - readmeParsedDate.Day) <= 3) ||
+                         (fileLastModifiedDate.Month == readmeParsedDate.Day &&
+                          Math.Abs(fileLastModifiedDate.Day - readmeParsedDate.Month) <= 3))
+                {
+                    return new DateTime(
+                        year: readmeParsedDate.Year,
+                        month: readmeParsedDate.Day,
+                        day: readmeParsedDate.Month,
+                        hour: readmeParsedDate.Hour,
+                        minute: readmeParsedDate.Minute,
+                        second: readmeParsedDate.Second,
+                        millisecond: readmeParsedDate.Millisecond,
+                        kind: readmeParsedDate.Kind
+                    );
+                }
+            }
+
+            return null;
+        }
+    }
+
+    private DateTime? GetReleaseDateFromTopOfReadmes(out bool isAmbiguous)
+    {
+        // Always false for now, because we only return dates that have month names in them currently
+        // (was I concerned about number-only dates having not enough context to be sure they're dates?)
+        isAmbiguous = false;
+
+        foreach (ReadmeInternal r in _readmeFiles)
+        {
+            if (!r.Scan) continue;
+
+            int topLineCount = 0;
+            for (int i = 0; i < r.Lines.Count; i++)
+            {
+                string lineT = r.Lines[i].Trim();
+
+                if (lineT.IsWhiteSpace()) continue;
+
+                if (LineContainsMonthName(lineT, _ctx.MonthNames))
+                {
+                    if (StringToDate(lineT, checkForAmbiguity: false, out DateTime? result, out _))
+                    {
+                        return result;
+                    }
+                }
+
+                topLineCount++;
+                if (topLineCount == _maxTopLines) break;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool LineContainsMonthName(string line, string[] monthNames)
+    {
+        foreach (string item in monthNames)
+        {
+            if (line.ContainsI(item))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private readonly struct StringToDateResult
+    {
+        internal readonly bool FunctionResult;
+        internal readonly DateTime? DateTime;
+        internal readonly bool IsAmbiguous;
+
+        public StringToDateResult(bool functionResult, DateTime? dateTime, bool isAmbiguous)
+        {
+            FunctionResult = functionResult;
+            DateTime = dateTime;
+            IsAmbiguous = isAmbiguous;
+        }
+    }
+
+    private readonly Dictionary<string, StringToDateResult> _stringToDateResultCache = new(0);
+
+    private bool StringToDate(string dateString, bool checkForAmbiguity, [NotNullWhen(true)] out DateTime? dateTime, out bool isAmbiguous)
+    {
+        string originalDateString = dateString;
+
+        #region Early return
+
+        // Believe it or not, there are quite a few instances of the exact same line across different FMs.
+        // Anything we can do to avoid all the heavy work in this function is worth doing.
+        if (_stringToDateResultCache.TryGetValue(originalDateString, out StringToDateResult stringToDateResult))
+        {
+            dateTime = stringToDateResult.DateTime;
+            isAmbiguous = stringToDateResult.IsAmbiguous;
+            return stringToDateResult.FunctionResult;
+        }
+
+        // There are two valid "word-only" dates: "Christmas Y2K" and "Halloween Y2K".
+        // But we just barely get away with still having this number check work on account of the "2" in "Y2K".
+        if (dateString.AsSpan().IndexOfAny("0123456789".AsSpan()) == -1)
+        {
+            isAmbiguous = false;
+            dateTime = null;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
         }
 
         #endregion
 
-#if FMScanner_FullCode
-        return ret;
-#else
-        return game;
-#endif
-    }
-
-#if FMScanner_FullCode
-
-    private string GetNewDarkVersion()
-    {
-        foreach (ReadmeInternal readme in _readmeFiles)
+        // If a date has dot separators, it's probably European format, so we can up our accuracy with regard
+        // to guessing about day/month order.
+        if (EuropeanDateRegex().Match(dateString).Success)
         {
-            if (!readme.Scan) continue;
-
-            string ndv = GetNewDarkVersionFromText(readme.Text);
-            if (!ndv.IsEmpty()) return ndv;
+            string dateStringTemp = PeriodWithOptionalSurroundingSpacesRegex().Replace(dateString, ".").Trim('.');
+            if (DateTime.TryParseExact(
+                    dateStringTemp,
+                    _ctx.DateFormatsEuropean,
+                    DateTimeFormatInfo.InvariantInfo,
+                    DateTimeStyles.None,
+                    out DateTime eurDateResult))
+            {
+                dateTime = eurDateResult;
+                isAmbiguous = eurDateResult.Month != eurDateResult.Day;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+            }
         }
 
-        return "";
-    }
+        dateString = DateSeparatorsRegex().Replace(dateString, " ");
+        dateString = DateOfSeparatorRegex().Replace(dateString, " ");
+        dateString = OneOrMoreWhiteSpaceCharsRegex().Replace(dateString, " ");
 
-    private string GetNewDarkVersionFromText(string text)
-    {
-        string version = "";
+        dateString = FebrRegex().Replace(dateString, "Feb ");
+        dateString = SeptRegex().Replace(dateString, "Sep ");
+        dateString = OktRegex().Replace(dateString, "Oct ");
 
-        for (int i = 0; i < _ctx.NewDarkVersionRegexes.Length; i++)
+        dateString = HalloweenRegex().Replace(dateString, "Oct 31");
+        dateString = ChristmasRegex().Replace(dateString, "Dec 25");
+
+        // Cute...
+        dateString = Y2KRegex().Replace(dateString, "2000");
+
+        dateString = JanuaryVariationsRegex().Replace(dateString, "Jan");
+        dateString = FebruaryVariationsRegex().Replace(dateString, "Feb");
+        dateString = MarchVariationsRegex().Replace(dateString, "Mar");
+        dateString = AprilVariationsRegex().Replace(dateString, "Apr");
+        dateString = MayVariationsRegex().Replace(dateString, "May");
+        dateString = JuneVariationsRegex().Replace(dateString, "Jun");
+        dateString = JulyVariationsRegex().Replace(dateString, "Jul");
+        dateString = AugustVariationsRegex().Replace(dateString, "Aug");
+        dateString = SeptemberVariationsRegex().Replace(dateString, "Sep");
+        dateString = OctoberVariationsRegex().Replace(dateString, "Oct");
+        dateString = NovemberVariationsRegex().Replace(dateString, "Nov");
+        dateString = DecemberVariationsRegex().Replace(dateString, "Dec");
+
+        dateString = dateString.Trim('.');
+        dateString = dateString.Trim(_ctx.CA_Parens);
+        dateString = dateString.Trim();
+
+        // Remove "st", "nd", "rd, "th" if present, as DateTime.TryParse() will choke on them
+        Match match = DaySuffixesRegex().Match(dateString);
+        if (match.Success)
         {
-            Match match = _ctx.NewDarkVersionRegexes[i].Match(text);
-            if (match.Success)
+            Group suffix = match.Groups["Suffix"];
+            dateString = string.Concat(
+                dateString.AsSpan(0, suffix.Index),
+                dateString.AsSpan(suffix.Index + suffix.Length));
+        }
+
+        // We pass specific date formats to ensure that no field will be inferred: if there's no year, we
+        // want to fail, and not assume the current year.
+        bool success = false;
+        bool canBeAmbiguous = false;
+        DateTime? result = null!;
+        foreach (var item in _ctx.DateFormats)
+        {
+            success = DateTime.TryParseExact(
+                dateString,
+                item.Format,
+                DateTimeFormatInfo.InvariantInfo,
+                DateTimeStyles.None,
+                out DateTime result_);
+            if (success)
             {
-                version = match.Groups["Version"].Value;
+                canBeAmbiguous = item.CanBeAmbiguous;
+                result = result_;
                 break;
             }
         }
 
-        if (version.IsEmpty()) return "";
-
-        string ndv = version.Trim('.');
-        int index = ndv.IndexOf('.');
-        if (index > -1 && ndv.Substring(index + 1).Length < 2)
+        if (!success)
         {
-            ndv += "0";
+            isAmbiguous = false;
+            dateTime = null;
+            return DoReturn(_stringToDateResultCache, originalDateString, false, dateTime, isAmbiguous);
         }
 
-        // Anything lower than 1.19 is OldDark; and cut it off at 2.0 to prevent that durn old time-travelling
-        // Zealot's Hollow from claiming it was made with "NewDark Version 2.1"
-        return Float_TryParseInv(ndv, out float ndvF) && ndvF >= 1.19 && ndvF < 2.0 ? ndv : "";
-    }
-#endif
+        if (!checkForAmbiguity || !canBeAmbiguous)
+        {
+            isAmbiguous = false;
+            dateTime = result;
+            return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+        }
 
-    private void DeleteFMWorkingPath()
+        isAmbiguous = true;
+        foreach (char c in dateString)
+        {
+            if (char.IsAsciiLetter(c))
+            {
+                isAmbiguous = false;
+                break;
+            }
+        }
+
+        if (isAmbiguous)
+        {
+            if (result is { } resultNotNull && resultNotNull.Month == resultNotNull.Day)
+            {
+                isAmbiguous = false;
+                dateTime = resultNotNull;
+                return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+            }
+
+            bool unambiguousYearFound = false;
+            bool unambiguousDayFound = false;
+
+            // We need there to be exactly 3 date numbers to match previous behavior.
+            // We don't actually have any instances of counts other than 3, and it may be impossible due to prior
+            // checks, but let's just make sure for now...
+            int dateNumsCount = 0;
+            foreach (ReadOnlySpan<char> numStr in ReadOnlySpanExtensions.SplitAny(dateString, _ctx.CA_DateSeparators,
+                         StringSplitOptions.RemoveEmptyEntries))
+            {
+                if (dateNumsCount > 3)
+                {
+                    unambiguousYearFound = false;
+                    unambiguousDayFound = false;
+                    break;
+                }
+
+                dateNumsCount++;
+
+                if (int.TryParse(numStr, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int numInt))
+                {
+                    switch (numInt)
+                    {
+                        case 0 or (> 31 and <= 9999):
+                            unambiguousYearFound = true;
+                            break;
+                        case > 12 and <= 31:
+                            unambiguousDayFound = true;
+                            break;
+                    }
+                }
+            }
+
+            if (dateNumsCount == 3 && unambiguousYearFound && unambiguousDayFound)
+            {
+                isAmbiguous = false;
+            }
+        }
+
+        dateTime = result;
+        return DoReturn(_stringToDateResultCache, originalDateString, true, dateTime, isAmbiguous);
+
+        static bool DoReturn(
+            Dictionary<string, StringToDateResult> cache,
+            string originalDateString,
+            bool returnValue,
+            DateTime? dateTime,
+            bool isAmbiguous)
+        {
+            cache[originalDateString] = new StringToDateResult(returnValue, dateTime, isAmbiguous);
+            return returnValue;
+        }
+    }
+
+    #endregion
+
+    #region Set tags
+
+    private void SetLangTags(ScannedFMData fmData, Language langs, bool englishIsUncertain)
+    {
+        if (langs == Language.Default) return;
+
+        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
+        for (int i = 0; i < SupportedLanguageCount; i++)
+        {
+            LanguageIndex languageIndex = (LanguageIndex)i;
+
+            if (!langs.HasFlagFast(LanguageIndexToLanguage(languageIndex)))
+            {
+                continue;
+            }
+
+            string lang = SupportedLanguages[i];
+
+            Debug.Assert(lang == lang.ToLowerInvariant(),
+                "lang != lang.ToLowerInvariant() - lang is not lowercase");
+
+            if (englishIsUncertain && languageIndex == LanguageIndex.English) continue;
+
+            if (fmData.TagsString.Contains(lang, Ordinal))
+            {
+                fmData.TagsString = Regex.Replace(fmData.TagsString, @":\s*" + lang, ":" + _ctx.LanguagesC[i]);
+            }
+
+            // PERF: 5ms over the whole 1098 set, whatever
+            Match match = Regex.Match(fmData.TagsString, @"language:\s*" + lang, Regex_IgnoreCaseInvariant);
+            if (match.Success) continue;
+
+            if (fmData.TagsString != "") fmData.TagsString += ", ";
+            fmData.TagsString += "language:" + _ctx.LanguagesC[i];
+        }
+    }
+
+    private static void AddCampaignTag(ScannedFMData fmData) => SetMiscTag(fmData, "campaign");
+
+    private static void SetMiscTag(ScannedFMData fmData, string tag)
+    {
+        if (fmData.TagsString.IsWhiteSpace()) fmData.TagsString = "";
+
+        List<string> list = fmData.TagsString.Split(CA_CommaSemicolon, StringSplitOptions.None).ToList();
+        bool tagFound = false;
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i] = list[i].Trim();
+            if (list[i].IsEmpty())
+            {
+                list.RemoveAt(i);
+                i--;
+            }
+            else if (list[i].EqualsI(tag))
+            {
+                if (tagFound)
+                {
+                    list.RemoveAt(i);
+                    i--;
+                }
+                else
+                {
+                    list[i] = tag;
+                    tagFound = true;
+                }
+            }
+        }
+        if (tagFound) return;
+
+        list.Add(tag);
+
+        string tagsString = "";
+        for (int i = 0; i < list.Count; i++)
+        {
+            if (i > 0) tagsString += ", ";
+            tagsString += list[i];
+        }
+        fmData.TagsString = tagsString;
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private void DeleteFMWorkingPathIfRequired()
     {
         try
         {
             // IMPORTANT: _DO NOT_ delete the working path if we're a folder FM to start with!
             // That means our working path is NOT temporary!!!
-            if ((_fmFormat is FMFormat.SevenZip or FMFormat.RarSolid) &&
+            if (_fmFormat.IsSolidArchive() &&
                 !_fmWorkingPath.IsEmpty() &&
                 Directory.Exists(_fmWorkingPath))
             {
@@ -5804,32 +5835,6 @@ public sealed class Scanner : IDisposable
             // Don't care
         }
     }
-
-    #region Helpers
-
-#if FMScanner_FullCode
-
-    // So we don't bloat up AL_Common with this when we don't use it there
-
-    /// <summary>
-    /// Returns the number of times a character appears in a string.
-    /// Avoids whatever silly overhead junk Count(predicate) is doing.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="character"></param>
-    /// <returns></returns>
-    private static int CountChars(string value, char character)
-    {
-        int count = 0;
-        for (int i = 0; i < value.Length; i++)
-        {
-            if (value[i] == character) count++;
-        }
-
-        return count;
-    }
-
-#endif
 
     /// <summary>
     /// Deletes a directory after first setting everything in it, and itself, to non-read-only.
@@ -5850,8 +5855,6 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    #region Generic dir/file functions
-
     private string[] EnumFiles(string path, SearchOption searchOption)
     {
         try
@@ -5866,8 +5869,6 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    #endregion
-
     #region Read plaintext
 
     #region Read all text
@@ -5877,13 +5878,13 @@ public sealed class Scanner : IDisposable
         Encoding encoding = _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
         stream.Position = 0;
 
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(stream, encoding, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
     private string ReadAllTextUTF8(Stream stream)
     {
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(stream, Encoding.UTF8, _streamReaderCustom);
         return sr.Reader.ReadToEnd();
     }
 
@@ -6052,86 +6053,147 @@ public sealed class Scanner : IDisposable
     {
         lines.ClearFast();
 
-        if (_fmFormat is FMFormat.Zip or FMFormat.Rar)
-        {
-            Stream? entryStream = null;
-            try
-            {
-                long entryLength;
-                if (_fmFormat == FMFormat.Zip)
-                {
-                    ZipArchiveFastEntry entry = _archive.Entries[item.Index];
-                    entryStream = _archive.OpenEntry(entry);
-                    entryLength = entry.Length;
-                }
-                else
-                {
-                    RarArchiveEntry entry = _rarArchive.Entries[item.Index];
-                    entryStream = entry.OpenEntryStream();
-                    entryLength = entry.Size;
-                }
+        Entry entry = GetEntry(item);
+        using StreamScope streamScope = entry.OpenSeekable();
 
-                // Detecting the encoding of a stream reads it forward some amount, and I can't seek backwards in
-                // an archive stream, so I have to copy it to a seekable MemoryStream. Blah.
-                _generalMemoryStream.SetLength(entryLength);
-                _generalMemoryStream.Position = 0;
-
-                entryStream.CopyTo(_generalMemoryStream);
-                _generalMemoryStream.Position = 0;
-
-                Encoding encoding = DetectEncoding(_generalMemoryStream);
-                _generalMemoryStream.Position = 0;
-
-                using var sr = new StreamReaderCustom.SRC_Wrapper(_generalMemoryStream, encoding, false,
-                    _streamReaderCustom, disposeStream: false);
-                while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-            }
-            finally
-            {
-                entryStream?.Dispose();
-            }
-        }
-        else
-        {
-            using FileStream stream = GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer);
-            Encoding encoding = DetectEncoding(stream);
-            stream.Seek(0, SeekOrigin.Begin);
-
-            using var sr = new StreamReaderCustom.SRC_Wrapper(stream, encoding, false, _streamReaderCustom);
-            while (sr.Reader.ReadLine() is { } line) lines.Add(line);
-        }
-
-        return;
-
-        Encoding DetectEncoding(Stream stream) =>
+        Encoding encoding =
             type == DetectEncodingType.NewGameStr &&
-            TryDetectNewGameStrEncoding(stream, out Encoding? newGameStrEncoding)
+            TryDetectNewGameStrEncoding(streamScope.Stream, out Encoding? newGameStrEncoding)
                 ? newGameStrEncoding
                 : type == DetectEncodingType.TitlesStr &&
-                  TryDetectTitlesStrEncoding(stream, out Encoding? titlesStrEncoding)
+                  TryDetectTitlesStrEncoding(streamScope.Stream, out Encoding? titlesStrEncoding)
                     ? titlesStrEncoding
-                    : _fileEncoding.DetectFileEncoding(stream) ?? Encoding.GetEncoding(1252);
+                    : _fileEncoding.DetectFileEncoding(streamScope.Stream) ?? Encoding.GetEncoding(1252);
+
+        streamScope.Stream.Seek(0, SeekOrigin.Begin);
+
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, encoding, _streamReaderCustom);
+        while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
     private void ReadAllLinesUTF8(NameAndIndex item, ListFast<string> lines)
     {
         lines.ClearFast();
 
-        using Stream stream = _fmFormat switch
-        {
-            FMFormat.Zip => _archive.OpenEntry(_archive.Entries[item.Index]),
-            FMFormat.Rar => _rarArchive.Entries[item.Index].OpenEntryStream(),
-            _ => GetReadModeFileStreamWithCachedBuffer(Path.Combine(_fmWorkingPath, item.Name), DiskFileStreamBuffer),
-        };
+        Entry entry = GetEntry(item);
+        using StreamScope streamScope = new(this, entry.Open());
 
-        // Stupid micro-optimization: Don't call Dispose() method on stream twice
-        using var sr = new StreamReaderCustom.SRC_Wrapper(stream, Encoding.UTF8, false, _streamReaderCustom, disposeStream: false);
+        using StreamReaderCustom.SRC_Wrapper sr = new(streamScope.Stream, Encoding.UTF8, _streamReaderCustom);
         while (sr.Reader.ReadLine() is { } line) lines.Add(line);
     }
 
     #endregion
 
     #endregion
+
+    private Entry GetEntry(NameAndIndex item) => _fmFormat switch
+    {
+        FMFormat.Zip => new Entry(this, _archive.Entries[item.Index]),
+        FMFormat.Rar => new Entry(this, _rarArchive.Entries[item.Index]),
+        _ => _fmDirFileInfos.Count > 0
+            ? new Entry(this, _fmDirFileInfos[item.Index])
+            : new Entry(this, item.Name),
+    };
+
+    private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
+    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
+    {
+        ZipArchiveFast? ret;
+
+        try
+        {
+            ret = ZipArchiveFast.Create_Scan(
+                stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
+                context: zipContext,
+                darkMod: darkModMode);
+
+            // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
+            // thrown while loading them. If this passes, we're definitely good.
+            int entriesCount = ret.Entries.Count;
+            if (checkForZeroEntries && entriesCount == 0)
+            {
+                Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
+                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
+            }
+        }
+        catch (Exception ex)
+        {
+            #region Notes about semi-broken zips
+            /*
+            Semi-broken but still workable zip files throw on open (FMSel can work with them, but we can't)
+
+            Known semi-broken files:
+            Uguest.zip (https://archive.org/download/ThiefMissions/) (Part 3.zip)
+            1999-08-11_UninvitedGuests.zip (https://mega.nz/folder/QfZG0AZA#cGHPc2Fu708Uuo4itvMARQ)
+
+            Both files are byte-identical but just with different names.
+
+            Note that my version of the second file (same name) is not broken, I got it from
+            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
+            scanner with.
+
+            These files throw with "The archive entry was compressed using an unsupported compression method."
+            They throw on both ZipArchiveFast() and regular built-in ZipArchive().
+
+            The compression method for each file in the archive is:
+
+            MISS15.MIS:                6
+            UGUEST.TXT:                6
+            INTRFACE/NEWGAME.STR:      1
+            INTRFACE/UGUEST/GOALS.STR: 1
+            STRINGS/MISSFLAG.STR:      1
+            STRINGS/TITLES.STR:        6
+
+            1 = Shrink
+            6 = Implode
+
+            (according to https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT)
+
+           .NET zip (all versions AFAIK) only supports Deflate.
+
+            There also seem to be other errors, involving "headers" and "data past the end of archive".
+            I don't really know enough about the zip format to understand these that much.
+
+            7z.exe can handle these files, so we could use that as a fallback, but:
+
+            7z.exe reports:
+
+            ERRORS:
+            Headers Error
+
+            WARNINGS:
+            There are data after the end of archive
+
+            And it considers the error to be "fatal" even though it succeeds in this case (the
+            extracted dir diffs identical with the extracted dir of the working one).
+            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
+            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
+            not result in intact files on disk) error. If we just match by "Headers error" and/or
+            "data past end" who knows if sometimes those might actually result in bad output and not
+            others. I don't know. So we're going to continue to fail in this case, but at least tell
+            the user what's wrong and give them an actionable suggestion.
+            */
+            #endregion
+            if (ex is ZipCompressionMethodException zipEx)
+            {
+                Log(fm.Path + $": fm is zip.{NL}" +
+                    $"UNSUPPORTED COMPRESSION METHOD{NL}" +
+                    "Zip contains one or more files compressed with an unsupported method. " +
+                    $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
+                    "Returning 'Unknown' game type.", zipEx);
+                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
+            }
+            else
+            {
+                Log(fm.Path + ": fm is zip, exception in " +
+                    nameof(ZipArchiveFast) +
+                    " construction or entries getting. Returning 'Unsupported' game type.", ex);
+                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
+            }
+        }
+
+        return (true, null, ret);
+    }
 
     #endregion
 

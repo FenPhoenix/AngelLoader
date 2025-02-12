@@ -55,10 +55,10 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
                 continue;
             }
 
-            var checkBox = new DarkCheckBox();
-            var textBox = new DarkTextBox();
-            var button = new StandardButton();
-            var groupBox = new DarkGroupBox();
+            DarkCheckBox checkBox = new();
+            DarkTextBox textBox = new();
+            StandardButton button = new();
+            DarkGroupBox groupBox = new();
 
             groupBox.SuspendLayout();
 
@@ -153,7 +153,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControl
     {
         var gameIniItem = GameIniItems.First(x => x.BrowseButton == sender);
 
-        using var d = new OpenFileDialog();
+        using OpenFileDialog d = new();
         d.Title =
             _importType == ImportType.FMSel
                 ? GetLocalizedSelectFMSelIniDialogTitle(gameIniItem.GameIndex)

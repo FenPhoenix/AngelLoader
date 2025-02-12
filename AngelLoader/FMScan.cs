@@ -1,9 +1,13 @@
 ﻿//#define TIMING_TEST
+//#define INDIVIDUAL_FM_TIMING
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+#if INDIVIDUAL_FM_TIMING
+using System.Linq;
+#endif
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,6 +39,7 @@ internal static class FMScan
         _timingTestStopWatch.Stop();
         // ReSharper disable RedundantNameQualifier
         Trace.WriteLine("Scan: " + _timingTestStopWatch.Elapsed);
+        Core.Dialogs.ShowAlert("Scan: " + _timingTestStopWatch.Elapsed, "", MBoxIcon.None);
     }
 #endif
 
@@ -93,7 +98,7 @@ internal static class FMScan
         // The progress object MUST be constructed here on the UI thread! This is what allows it to report smoothly
         // and without the endless and unsolvable issues we get when we merely invoke to the UI thread from the
         // report function.
-        var progress = new Progress<ProgressReport>(ReportProgress);
+        Progress<ProgressReport> progress = new(ReportProgress);
 
         // Show on UI thread to prevent a small gap between when the thread starts (freeing the UI thread) and
         // when we show the progress box (blocking refreshes). Theoretically a refresh could sneak in through
@@ -148,7 +153,7 @@ internal static class FMScan
 
                     _scanCts = _scanCts.Recreate();
 
-                    var fms = new List<FMToScan>(fmsToScan.Count);
+                    List<FMToScan> fms = new(fmsToScan.Count);
 
                     // Get archive paths list only once and cache it - in case of "include subfolders" being true,
                     // cause then it will hit the actual disk rather than just going through a list of paths in
@@ -162,7 +167,7 @@ internal static class FMScan
                     #region Filter out invalid FMs from scan list
 
                     // Safety net to guarantee that the in and out lists will have the same count and order
-                    var fmsToScanFiltered = new List<FanMission>(fmsToScan.Count);
+                    List<FanMission> fmsToScanFiltered = new(fmsToScan.Count);
 
                     bool tdmDataRequired = false;
 
@@ -276,7 +281,7 @@ internal static class FMScan
                                 tdmContext: tdmContext);
 
                             fmDataList = await scanner.ScanAsync(
-                                missions: fms,
+                                fms: fms,
                                 tempPath: Paths.FMScannerTemp,
                                 scanOptions: scanOptions,
                                 progress: progress,
@@ -289,8 +294,8 @@ internal static class FMScan
                             );
 
                             fmDataList = Scanner.ScanThreaded(
-                                Paths.SevenZipPath,
-                                Paths.SevenZipExe,
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
                                 fullScanOptions: GetDefaultScanOptions(),
                                 tdmContext: tdmContext,
                                 threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData.Threads),
@@ -301,10 +306,22 @@ internal static class FMScan
                                 cancellationToken: _scanCts.Token);
                         }
 
-                        Core.View.SetProgressPercent(100);
-#if TIMING_TEST
-                        StopTimingAndPrintResult();
+#if INDIVIDUAL_FM_TIMING
+                        List<Scanner.TimingData> timingDataList = new();
+                        timingDataList.AddRange(Scanner.TimingDataList);
+
+                        timingDataList = timingDataList.OrderBy(static x => Path.GetFileName(x.Path)).ToList();
+
+                        using (StreamWriter sw = new(@"C:\al_7z_scan_timings.txt"))
+                        {
+                            foreach (Scanner.TimingData item in timingDataList)
+                            {
+                                sw.WriteLine(item.Time + "=" + Path.GetFileName(item.Path));
+                            }
+                        }
 #endif
+
+                        Core.View.SetProgressPercent(100);
                     }
                     catch (OperationCanceledException)
                     {
@@ -546,6 +563,9 @@ internal static class FMScan
             _scanCts.Dispose();
             Core.View.Block(false);
             Core.View.HideProgressBox();
+#if TIMING_TEST
+            StopTimingAndPrintResult();
+#endif
         }
 
         #region Local functions

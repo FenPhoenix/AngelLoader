@@ -182,7 +182,7 @@ internal static class Import
                 {
                     if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsToScan, out var fmsToScanNonEmpty))
                     {
-                        var scanOptions = importType == ImportType.FMSel
+                        ScanOptions scanOptions = importType == ImportType.FMSel
                             ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
                             // NewDarkLoader and DarkLoader both take this one
                             : ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true);
@@ -281,13 +281,13 @@ internal static class Import
         //    darkGameSS2 = 4
         //}
 
-        Regex darkLoaderFMRegex = new(@"\.[0-9]+]$", RegexOptions.Compiled);
+        Regex darkLoaderFMRegex = new(@"\.[0-9]+]$");
 
         const string missionDirsHeader = "[mission directories]";
 
         #endregion
 
-        var fms = new List<FanMission>();
+        List<FanMission> fms = new();
 
         ImportError error = DoImport();
 
@@ -308,7 +308,7 @@ internal static class Import
 
                 if (importFMData)
                 {
-                    var archives = new DictionaryI<string>();
+                    DictionaryI<string> archives = new();
                     HashSetI fmArchivesHash = new();
 
                     #region Read archive directories
@@ -397,7 +397,7 @@ internal static class Import
                             realArchive += ".zip";
 
                             ulong.TryParse(size, out ulong sizeBytes);
-                            var fm = new FanMission
+                            FanMission fm = new()
                             {
                                 Archive = realArchive,
                                 InstalledDir = realArchive.ToInstDirNameFMSel(instDirNameContext, true),
@@ -437,7 +437,7 @@ internal static class Import
                                     ulong.TryParse(value, out ulong result);
                                     try
                                     {
-                                        var date = new DateTime(1899, 12, 30).AddDays(result);
+                                        DateTime date = new DateTime(1899, 12, 30).AddDays(result);
                                         fm.ReleaseDate.DateTime = date.Year > 1998 ? date : null;
                                     }
                                     catch (ArgumentOutOfRangeException)
@@ -450,7 +450,7 @@ internal static class Import
                                     ulong.TryParse(value, out ulong result);
                                     try
                                     {
-                                        var date = new DateTime(1899, 12, 30).AddDays(result);
+                                        DateTime date = new DateTime(1899, 12, 30).AddDays(result);
                                         fm.LastPlayed.DateTime = date.Year > 1998 ? date : null;
                                     }
                                     catch (ArgumentOutOfRangeException)
@@ -593,7 +593,7 @@ internal static class Import
     {
         // As far as can be ascertained through manual testing, FMSel seems to read/write its ini file in UTF8.
         List<string> lines = File_ReadAllLines_List(iniFile);
-        var fms = new List<FanMission>();
+        List<FanMission> fms = new();
 
         DoImport(lines, fms);
 
@@ -617,7 +617,7 @@ internal static class Import
                     // FMSel has number-append name collision handling, but if we have installed dirs and no
                     // archives then we should still have picked the correct name up from searching the actual
                     // installed dir ourselves, so FMSel's installed names should match ours even in this case.
-                    var fm = new FanMission { InstalledDir = instName };
+                    FanMission fm = new() { InstalledDir = instName };
 
                     while (i < lines.Count - 1)
                     {
@@ -726,7 +726,7 @@ internal static class Import
     {
         // NewDarkLoader uses Encoding.Default for NewDarkLoader.ini, confirmed from source and testing 1.7.0
         List<string> lines = File_ReadAllLines_List(iniFile, GetLegacyDefaultEncoding(), true);
-        var fms = new List<FanMission>();
+        List<FanMission> fms = new();
 
         ImportError error = DoImport(lines, fms, instDirNameContext);
 
@@ -826,7 +826,7 @@ internal static class Import
                     // Rare I guess, so just ignore?
                     string instName = line.Substring(4, line.Length - 5);
 
-                    var fm = new FanMission { InstalledDir = instName };
+                    FanMission fm = new() { InstalledDir = instName };
                     fmsInstalledDirDict[instName] = fm;
 
                     while (i < lines.Count - 1)
@@ -956,7 +956,7 @@ internal static class Import
 
     private static List<FanMission> MergeImportedFMData_DL(List<FanMission> importedFMs, FieldsToImport fields)
     {
-        var importedFMsInMainList = new List<FanMission>();
+        List<FanMission> importedFMsInMainList = new();
 
         DictionaryI<FanMission> archivesDict = new();
         foreach (FanMission fm in FMDataIniList)
@@ -1003,7 +1003,7 @@ internal static class Import
             }
             else
             {
-                var newFM = new FanMission
+                FanMission newFM = new()
                 {
                     Archive = importedFM.Archive,
                     InstalledDir = importedFM.InstalledDir,
@@ -1048,7 +1048,7 @@ internal static class Import
 
     private static List<FanMission> MergeImportedFMData_NDL(List<FanMission> importedFMs, FieldsToImport fields)
     {
-        var importedFMsInMainList = new List<FanMission>();
+        List<FanMission> importedFMsInMainList = new();
 
         DictionaryI<FanMission> archivesDict = new();
         DictionaryI<FanMission> instDirsDict = new();
@@ -1115,7 +1115,7 @@ internal static class Import
             }
             else
             {
-                var newFM = new FanMission
+                FanMission newFM = new()
                 {
                     Archive = importedFM.Archive,
                     InstalledDir = importedFM.InstalledDir,
@@ -1177,7 +1177,7 @@ internal static class Import
 
     private static List<FanMission> MergeImportedFMData_FMSel(List<FanMission> importedFMs, FieldsToImport fields)
     {
-        var importedFMsInMainList = new List<FanMission>();
+        List<FanMission> importedFMsInMainList = new();
 
         DictionaryI<FanMission> archivesDict = new();
         DictionaryI<FanMission> instDirsDict = new();
@@ -1246,7 +1246,7 @@ internal static class Import
             }
             else
             {
-                var newFM = new FanMission
+                FanMission newFM = new()
                 {
                     Archive = importedFM.Archive,
                     InstalledDir = importedFM.InstalledDir,

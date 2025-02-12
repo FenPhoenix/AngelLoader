@@ -26,7 +26,7 @@ internal static class FMLanguages
 
     private static List<string> SortLangsToSpec(HashSetI langsHash)
     {
-        var ret = new List<string>(SupportedLanguageCount);
+        List<string> ret = new(SupportedLanguageCount);
 
         // Return a list of all found languages, sorted in the same order as FMSupportedLanguages
         // (matching FMSel behavior)
@@ -212,7 +212,7 @@ internal static class FMLanguages
 
         #endregion
 
-        var langsFoundList = new HashSetI(SupportedLanguageCount);
+        HashSetI langsFoundList = new(SupportedLanguageCount);
 
         while (searchList.Count > 0)
         {
@@ -236,7 +236,7 @@ internal static class FMLanguages
         string archivePath = FMArchives.FindFirstMatch(archiveName, FMArchives.GetFMArchivePaths());
         if (archivePath.IsEmpty()) return failed;
 
-        var ret = new List<string>(SupportedLanguageCount);
+        List<string> ret = new(SupportedLanguageCount);
 
         bool[] foundLangInArchive = new bool[SupportedLanguageCount];
 
@@ -269,7 +269,8 @@ internal static class FMLanguages
 
             if (archivePath.ExtIsZip())
             {
-                using ZipArchiveFast zipArchive = ZipArchiveFast.Create_LanguageSearch(File.OpenRead(archivePath));
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
+                using ZipArchiveFast zipArchive = ZipArchiveFast.Create_LanguageSearch(fs.FileStream);
                 ListFast<ZipArchiveFastEntry> entries = zipArchive.Entries;
                 int filesCount = entries.Count;
                 for (int i = 0; i < filesCount; i++)
@@ -282,10 +283,10 @@ internal static class FMLanguages
             }
             else if (archivePath.ExtIsRar())
             {
-                using var fs = File.OpenRead(archivePath);
-                using var rarArchive = RarArchive.Open(fs);
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
+                using RarArchive rarArchive = RarArchive.Open(fs.FileStream);
                 var entries = rarArchive.Entries;
-                foreach (var entry in entries)
+                foreach (RarArchiveEntry entry in entries)
                 {
                     string fn = entry.Key.ToForwardSlashes();
                     var result = Search(fn, earlyOutOnEnglish, foundLangInArchive, ret);
@@ -294,8 +295,8 @@ internal static class FMLanguages
             }
             else
             {
-                using var fs = File.OpenRead(archivePath);
-                var sevenZipArchive = new SevenZipArchive(fs);
+                using FileStream_Read_WithRentedBuffer fs = new(archivePath);
+                SevenZipArchive sevenZipArchive = new(fs.FileStream);
                 ListFast<SevenZipArchiveEntry> entries = sevenZipArchive.Entries;
                 for (int i = 0; i < entries.Count; i++)
                 {

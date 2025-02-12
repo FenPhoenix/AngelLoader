@@ -246,7 +246,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
         // we just draw it full-width ourselves and handle the click interaction later (see WndProc).
         Rectangle selRect = e.Bounds with { Width = ClientRectangle.Width - e.Bounds.X };
 
-        using (var bcBrush = new SolidBrush(BackColor))
+        using (SolidBrush bcBrush = new(BackColor))
         {
             Brush bgBrush =
                 itemSelected
@@ -313,7 +313,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
     {
         if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
 
-        using var gc = new Native.GraphicsContext(hWnd);
+        using Native.GraphicsContext gc = new(hWnd);
         gc.G.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, new Rectangle(1, 1, Width - 3, Height - 3));
         gc.G.DrawRectangle(DarkColors.LightBorderPen, new Rectangle(0, 0, Width - 1, Height - 1));
     }
@@ -324,7 +324,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
     {
         m.LParam = Native.MAKELPARAM(2, Native.SignedHIWORD(m.LParam));
 
-        var modCursorPos = new Point(2, this.ClientCursorPos().Y);
+        Point modCursorPos = new(2, this.ClientCursorPos().Y);
 
         ListViewHitTestInfo hitTest = HitTest(modCursorPos);
 

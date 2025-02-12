@@ -5,6 +5,20 @@ namespace SharpCompress.Archives.SevenZip;
 
 public sealed class SevenZipArchiveEntry
 {
+    public int Block;
+    public int IndexInBlock;
+    /*
+    For solid archives, compressed size can't be known or stored for individual files; only an entire block can
+    have a total compressed size. So use a file's uncompressed size as a proxy.
+    */
+    public long DistanceFromBlockStart_Uncompressed;
+
+    public long TotalExtractionCost
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => DistanceFromBlockStart_Uncompressed + UncompressedSize;
+    }
+
     internal bool HasStream = true;
     internal ulong MTime;
 
@@ -50,5 +64,8 @@ public sealed class SevenZipArchiveEntry
         _lastModifiedTimeSet = false;
         _lastModifiedTime = null;
         IsDirectory = false;
+        Block = 0;
+        IndexInBlock = 0;
+        DistanceFromBlockStart_Uncompressed = 0;
     }
 }

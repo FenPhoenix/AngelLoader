@@ -918,6 +918,11 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_ShowPresetTags_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.ShowPresetTags = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     [StructLayout(LayoutKind.Auto)]
@@ -1121,9 +1126,12 @@ internal static partial class Ini
         { "EnableFuzzySearch".AsMemory(), new Config_DelegatePointerWrapper(&Config_EnableFuzzySearch_Set) },
         { "CheckForUpdates".AsMemory(), new Config_DelegatePointerWrapper(&Config_CheckForUpdates_Set) },
         { "ScreenshotGammaPercent".AsMemory(), new Config_DelegatePointerWrapper(&Config_ScreenshotGammaPercent_Set) },
+
         { "IOThreadsMode".AsMemory(), new Config_DelegatePointerWrapper(&Config_IOThreadsMode_Set) },
         { "CustomIOThreadCount".AsMemory(), new Config_DelegatePointerWrapper(&Config_CustomIOThreadCount_Set) },
         { "DriveMultithreadingLevel".AsMemory(), new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
+
+        { "ShowPresetTags".AsMemory(), new Config_DelegatePointerWrapper(&Config_ShowPresetTags_Set) },
 
         #region Backward compatibility
 
@@ -1154,7 +1162,7 @@ internal static partial class Ini
     {
         try
         {
-            using var sr = new StreamReader(path);
+            using StreamReader sr = new(path);
             while (sr.ReadLine() is { } line)
             {
                 string lineT = line.Trim();
@@ -1193,7 +1201,7 @@ internal static partial class Ini
         for (int li = 0; li < iniLines.Count; li++)
         {
             ReadOnlyMemory<char> lineTS = iniLines[li].AsMemory().TrimStart();
-            var lineTSInitialSpan = lineTS.Span;
+            ReadOnlySpan<char> lineTSInitialSpan = lineTS.Span;
 
             if (lineTSInitialSpan.Length == 0 || lineTSInitialSpan[0] == ';') continue;
 
@@ -1550,5 +1558,7 @@ internal static partial class Ini
             sw.Append(item.Key).Append(':').Append(item.Value);
         }
         sw.AppendLine();
+
+        sw.Append("ShowPresetTags=").AppendLine(config.ShowPresetTags);
     }
 }

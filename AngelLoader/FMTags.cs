@@ -98,7 +98,7 @@ internal static class FMTags
         }
 
         // Shut up, it works
-        var list = new List<string>();
+        List<string> list = new();
         foreach (CatAndTagsList gCat in GlobalTags)
         {
             if (gCat.Category.ContainsI(text.First))

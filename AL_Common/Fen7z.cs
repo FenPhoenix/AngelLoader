@@ -91,7 +91,7 @@ public static class Fen7z
     }
 
     /// <summary>
-    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility
     /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
     /// Hooray!
     /// </summary>
@@ -111,7 +111,7 @@ public static class Fen7z
         string outputPath,
         int entriesCount = 0,
         string listFile = "",
-        List<string>? fileNamesList = null,
+        ListFast<string>? fileNamesList = null,
         IProgress<ProgressReport>? progress = null)
     {
         return Extract(
@@ -127,7 +127,7 @@ public static class Fen7z
     }
 
     /// <summary>
-    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility, version 19.00
+    /// Extract a .7z file wholly or partially, using the official 7z.exe command-line utility
     /// for speed, but without the out-of-memory exceptions you get with SevenZipSharp when using that version.
     /// Hooray!
     /// </summary>
@@ -149,7 +149,7 @@ public static class Fen7z
         CancellationToken cancellationToken,
         int entriesCount = 0,
         string listFile = "",
-        List<string>? fileNamesList = null,
+        ListFast<string>? fileNamesList = null,
         IProgress<ProgressReport>? progress = null)
     {
         bool selectiveFiles = !listFile.IsWhiteSpace() && fileNamesList?.Count > 0;
@@ -177,9 +177,9 @@ public static class Fen7z
 
         string errorText = "";
 
-        var report = new ProgressReport();
+        ProgressReport report = new();
 
-        var p = new Process { EnableRaisingEvents = true };
+        Process p = new() { EnableRaisingEvents = true };
         try
         {
             p.StartInfo.FileName = sevenZipPathAndExe;
@@ -200,7 +200,7 @@ public static class Fen7z
 
             p.OutputDataReceived += (sender, e) =>
             {
-                var proc = (Process)sender;
+                Process proc = (Process)sender;
                 if (!canceled && cancellationToken.IsCancellationRequested)
                 {
                     canceled = true;

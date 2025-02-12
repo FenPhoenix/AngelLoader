@@ -111,7 +111,7 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         // side if you don't do this.
         // Take margin into account to allow drawing past the left side of the first item or the right of the
         // last
-        var rectLeft = new Rectangle(0, 0, firstItemX - firstItemMarginLeft, Height);
+        Rectangle rectLeft = new(0, 0, firstItemX - firstItemMarginLeft, Height);
 
         int lastItemIndex = -1;
         for (int i = 0; i < Items.Count; i++)
@@ -132,8 +132,8 @@ internal sealed class ToolStripCustom : ToolStrip, IDarkable
         }
 
         int rect2Start = lastItemX + lastItemWidth + lastItemMarginRight;
-        var rectRight = new Rectangle(rect2Start, 0, Width - rect2Start, Height);
-        var rectBottom = new Rectangle(0, Height - 1, Width, 1);
+        Rectangle rectRight = new(rect2Start, 0, Width - rect2Start, Height);
+        Rectangle rectBottom = new(0, Height - 1, Width, 1);
 
         Brush brush = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundBrush : SystemBrushes.Control;
         Pen pen = _darkModeEnabled ? DarkColors.Fen_ControlBackgroundPen : SystemPens.Control;

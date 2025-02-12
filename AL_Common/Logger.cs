@@ -41,7 +41,7 @@ public static partial class Logger
     // this claws back some startup time.
     private static string GetDateTimeStringFast()
     {
-        var dt = new SYSTEMTIME();
+        SYSTEMTIME dt = new();
         GetLocalTime(ref dt);
         return dt.wYear + "/" + dt.wMonth + "/" + dt.wDay + " " +
                dt.wHour + ":" + dt.wMinute + ":" + dt.wSecond;
@@ -77,7 +77,7 @@ public static partial class Logger
 
         try
         {
-            using var sw = new StreamWriter(_logFile);
+            using StreamWriter sw = new(_logFile);
             sw.WriteLine(GetDateTimeStringFast() + " " + message + $"{NL}");
         }
         catch (Exception ex)
@@ -99,9 +99,16 @@ public static partial class Logger
 
             try
             {
-                if (new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
+                try
+                {
+                    if (new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
+                }
+                catch
+                {
+                    // file doesn't exist - ignore
+                }
 
-                using var sw = new StreamWriter(_logFile, append: true);
+                using StreamWriter sw = new(_logFile, append: true);
 
                 sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + $"{NL}" + message);
                 if (ex != null) sw.WriteLine($"EXCEPTION:{NL}" + ex);

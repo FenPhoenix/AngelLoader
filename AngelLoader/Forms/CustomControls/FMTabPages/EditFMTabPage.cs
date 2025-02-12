@@ -274,10 +274,10 @@ public sealed class EditFMTabPage : Lazy_TabsBase
         AltTitlesList fmAltTitles = _owner.FMsDGV.GetMainSelectedFM().AltTitles;
         if (fmAltTitles.Count == 0) return;
 
-        var altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
+        ToolStripItem[] altTitlesMenuItems = new ToolStripItem[fmAltTitles.Count];
         for (int i = 0; i < fmAltTitles.Count; i++)
         {
-            var item = new ToolStripMenuItemWithBackingText(fmAltTitles[i]);
+            ToolStripMenuItemWithBackingText item = new(fmAltTitles[i]);
             item.Click += EditFMAltTitlesMenuItems_Click;
             altTitlesMenuItems[i] = item;
         }

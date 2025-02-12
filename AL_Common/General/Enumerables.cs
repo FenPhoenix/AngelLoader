@@ -109,6 +109,19 @@ public static partial class Common
             _itemsArrayLength = capacity;
         }
 
+        public void RemoveAt(int index)
+        {
+            if ((uint)index >= (uint)Count)
+            {
+                ThrowHelper.ArgumentOutOfRange(nameof(index), "Out of range");
+            }
+            Count--;
+            if (index < Count)
+            {
+                Array.Copy(ItemsArray, index + 1, ItemsArray, index, Count - index);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Sort(IComparer<T> comparer) => Array.Sort(ItemsArray, 0, Count, comparer);
 
@@ -117,6 +130,18 @@ public static partial class Common
         {
             if (Count == _itemsArrayLength) EnsureCapacity(Count + 1);
             ItemsArray[Count++] = item;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange(ListFast<T> items)
+        {
+            EnsureCapacity(Count + items.Count);
+            // We usually add small enough arrays that a loop is faster
+            for (int i = 0; i < items.Count; i++)
+            {
+                ItemsArray[Count + i] = items[i];
+            }
+            Count += items.Count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -383,13 +383,12 @@ public sealed class ConfigData
 
     #endregion
 
-    private static string[] InitWebSearchUrls()
+    internal readonly string[] WebSearchUrls = RunFunc(static () =>
     {
         string[] ret = new string[SupportedGameCount];
         Defaults.WebSearchUrls.CopyTo(ret, 0);
         return ret;
-    }
-    internal readonly string[] WebSearchUrls = InitWebSearchUrls();
+    });
     internal string GetWebSearchUrl(GameIndex index) => WebSearchUrls[(int)index];
     internal void SetWebSearchUrl(GameIndex index, string value) => WebSearchUrls[(int)index] = value;
 
@@ -477,6 +476,8 @@ public sealed class ConfigData
             return DriveMultithreadingLevel.Auto;
         }
     }
+
+    internal bool ShowPresetTags = true;
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

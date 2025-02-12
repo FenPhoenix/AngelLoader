@@ -404,6 +404,7 @@
             this.ScanDescriptionCheckBox.AutoSize = true;
             this.ScanDescriptionCheckBox.Checked = true;
             this.ScanDescriptionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanDescriptionCheckBox.Enabled = false;
             this.ScanDescriptionCheckBox.Location = new System.Drawing.Point(224, 72);
             this.ScanDescriptionCheckBox.Name = "ScanDescriptionCheckBox";
             this.ScanDescriptionCheckBox.Size = new System.Drawing.Size(54, 17);
@@ -440,6 +441,7 @@
             this.ScanNewDarkRequiredCheckBox.AutoSize = true;
             this.ScanNewDarkRequiredCheckBox.Checked = true;
             this.ScanNewDarkRequiredCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanNewDarkRequiredCheckBox.Enabled = false;
             this.ScanNewDarkRequiredCheckBox.Location = new System.Drawing.Point(96, 48);
             this.ScanNewDarkRequiredCheckBox.Name = "ScanNewDarkRequiredCheckBox";
             this.ScanNewDarkRequiredCheckBox.Size = new System.Drawing.Size(112, 17);
@@ -488,6 +490,7 @@
             this.ScanNDMinVerCheckBox.AutoSize = true;
             this.ScanNDMinVerCheckBox.Checked = true;
             this.ScanNDMinVerCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanNDMinVerCheckBox.Enabled = false;
             this.ScanNDMinVerCheckBox.Location = new System.Drawing.Point(224, 48);
             this.ScanNDMinVerCheckBox.Name = "ScanNDMinVerCheckBox";
             this.ScanNDMinVerCheckBox.Size = new System.Drawing.Size(73, 17);
@@ -500,6 +503,7 @@
             this.ScanIncludedMissionsCheckBox.AutoSize = true;
             this.ScanIncludedMissionsCheckBox.Checked = true;
             this.ScanIncludedMissionsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanIncludedMissionsCheckBox.Enabled = false;
             this.ScanIncludedMissionsCheckBox.Location = new System.Drawing.Point(96, 24);
             this.ScanIncludedMissionsCheckBox.Name = "ScanIncludedMissionsCheckBox";
             this.ScanIncludedMissionsCheckBox.Size = new System.Drawing.Size(125, 17);
@@ -524,6 +528,7 @@
             this.ScanVersionCheckBox.AutoSize = true;
             this.ScanVersionCheckBox.Checked = true;
             this.ScanVersionCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanVersionCheckBox.Enabled = false;
             this.ScanVersionCheckBox.Location = new System.Drawing.Point(304, 24);
             this.ScanVersionCheckBox.Name = "ScanVersionCheckBox";
             this.ScanVersionCheckBox.Size = new System.Drawing.Size(61, 17);
@@ -536,6 +541,7 @@
             this.ScanLanguagesCheckBox.AutoSize = true;
             this.ScanLanguagesCheckBox.Checked = true;
             this.ScanLanguagesCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ScanLanguagesCheckBox.Enabled = false;
             this.ScanLanguagesCheckBox.Location = new System.Drawing.Point(416, 24);
             this.ScanLanguagesCheckBox.Name = "ScanLanguagesCheckBox";
             this.ScanLanguagesCheckBox.Size = new System.Drawing.Size(79, 17);

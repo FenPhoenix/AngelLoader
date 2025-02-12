@@ -31,7 +31,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
     protected override void OnRenderImageMargin(ToolStripRenderEventArgs e)
     {
-        var rect = new Rectangle(0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
+        Rectangle rect = new(0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
         e.Graphics.DrawRectangle(DarkColors.LightBorderPen, rect);
     }
 
@@ -39,7 +39,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
     {
         Graphics g = e.Graphics;
 
-        var rect = new Rectangle(
+        Rectangle rect = new(
             e.ImageRectangle.Left - 2,
             e.ImageRectangle.Top - 2,
             e.ImageRectangle.Width + 4,
@@ -48,7 +48,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
         g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, rect);
 
-        var modRect = new Rectangle(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
+        Rectangle modRect = new(rect.Left, rect.Top, rect.Width - 1, rect.Height - 1);
         g.DrawRectangle(DarkColors.BlueHighlightPen, modRect);
 
         if (e.Item.ImageIndex == -1 && e.Item.ImageKey.IsEmpty() && e.Item.Image == null)
@@ -70,7 +70,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
     protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
     {
-        var rect = new Rectangle(1, 3, e.Item.Width, 1);
+        Rectangle rect = new(1, 3, e.Item.Width, 1);
         e.Graphics.FillRectangle(DarkColors.LightBorderBrush, rect);
     }
 
@@ -97,11 +97,11 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
         if (e.Item.Enabled)
         {
             // Normal item
-            var rect = new Rectangle(2, 0, e.Item.Width - 3, e.Item.Height);
+            Rectangle rect = new(2, 0, e.Item.Width - 3, e.Item.Height);
 
             if (!e.Item.Selected)
             {
-                using var b = new SolidBrush(e.Item.BackColor);
+                using SolidBrush b = new(e.Item.BackColor);
                 g.FillRectangle(b, rect);
             }
             else

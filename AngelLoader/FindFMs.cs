@@ -214,7 +214,7 @@ internal static class FindFMs
         // tasks or anything here... just return an exception and handle it on the main thread...
         try
         {
-            using var dsw = new DisableScreenshotWatchers();
+            using DisableScreenshotWatchers dsw = new();
 
             List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
             splashScreen.SetCheckAtStoredMessageWidth();
@@ -234,7 +234,7 @@ internal static class FindFMs
     {
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
-        using var dsw = new DisableScreenshotWatchers();
+        using DisableScreenshotWatchers dsw = new();
 
         List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
         Core.View!.SetAvailableAndFinishedFMCount();
@@ -257,7 +257,7 @@ internal static class FindFMs
         {
             // Make sure we don't lose anything when we re-find!
             // NOTE: This also writes out TagsStrings and then reads them back in and syncs them with Tags.
-            // Critical that that gets done.
+            //  Critical that that gets done.
             Ini.WriteFullFMDataIni();
 
             // Do this every time we modify FMsViewList in realtime, to prevent FMsDGV from redrawing from
@@ -316,8 +316,8 @@ internal static class FindFMs
 
         // PERF: We can't know how many files we're going to find, so make the initial list capacity large
         // enough that we're unlikely to have it bump its size up repeatedly. Shaves some time off.
-        var files = new List<string>(2000);
-        var dateTimes = new List<ExpandableDate_FromTicks>(2000);
+        List<string> files = new(2000);
+        List<ExpandableDate_FromTicks> dateTimes = new(2000);
 
         #region Get installed dirs from disk
 
@@ -343,7 +343,7 @@ internal static class FindFMs
                         string d = files[di];
                         if (!d.EqualsI(Paths.FMSelCache))
                         {
-                            var fm = new FanMission
+                            FanMission fm = new()
                             {
                                 InstalledDir = d,
                                 Game = GameIndexToGame(gameIndex),
@@ -364,7 +364,7 @@ internal static class FindFMs
 
         #region Get archives from disk
 
-        var fmArchivesAndDatesDict = new DictionaryI<ExpandableDate_FromTicks>();
+        DictionaryI<ExpandableDate_FromTicks> fmArchivesAndDatesDict = new();
 
         List<string> archivePaths = FMArchives.GetFMArchivePaths();
         bool onlyOnePath = archivePaths.Count == 1;
@@ -403,10 +403,12 @@ internal static class FindFMs
 
         #endregion
 
+        // @ARCHIVE_MERGE: Here's where archives get merged into the list, and separate extensions added as
+        //  separate items.
         MergeNewArchiveFMs(fmArchivesAndDatesDict, instDirNameContext);
 
         int fmDataIniListCount = FMDataIniList.Count;
-        var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
+        DictionaryI<FanMission> fmDataIniInstDirDict = new(fmDataIniListCount);
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
@@ -421,7 +423,7 @@ internal static class FindFMs
             GameIndex gameIndex = (GameIndex)i;
             if (gameIndex == GameIndex.TDM) continue;
 
-            var curGameInstFMsList = perGameInstFMDirsItems[i];
+            DictionaryI<InstDirValueData> curGameInstFMsList = perGameInstFMDirsItems[i];
             if (curGameInstFMsList.Count > 0)
             {
                 MergeNewInstalledFMs(
@@ -430,12 +432,22 @@ internal static class FindFMs
             }
         }
 
-        SetArchiveNames(fmArchivesAndDatesDict, instDirNameContext);
+        /*
+        @ARCHIVE_MERGE: Here we set archive names for new installed FMs, which sounds kind of not related, but
+         we can end up searching for archives (any extension). Also, installed FMs normally have the fmsel.inf
+         file which lists an archive with an explicit extension (.zip for example). So if we wanted to switch an
+         entry from .zip to .7z, we would also have to change that file. And that would mess up FMSel of course...
+
+        @ARCHIVE_MERGE(Backup/restore): Zips and 7zs may well have different timestamps for their entries (zips
+         having 2 second granularity). Switching an FM from zip to 7z might therefore screw up a differential
+         backup.
+        */
+        SetArchiveNamesForNewlyFoundInstalledFMs(fmArchivesAndDatesDict, instDirNameContext);
 
         EnsureUniqueInstalledNames();
 
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
-        var fmsViewListUnscanned = new List<FanMission>(FMDataIniList.Count);
+        List<FanMission> fmsViewListUnscanned = new(FMDataIniList.Count);
 
         AddTdmFMs(files, dateTimes);
 
@@ -472,7 +484,7 @@ internal static class FindFMs
         to add it. But then our FMs list is not portable between Linux and Windows - if you took it back and forth,
         it would change/get screwed up.
         */
-        var fmDataIniListTDM_Dict = new DictionaryI<FanMission>(FMDataIniListTDM.Count);
+        DictionaryI<FanMission> fmDataIniListTDM_Dict = new(FMDataIniListTDM.Count);
         foreach (FanMission fm in FMDataIniListTDM)
         {
             fmDataIniListTDM_Dict[fm.TDMInstalledDir] = fm;
@@ -484,10 +496,10 @@ internal static class FindFMs
             {
                 List<string> dirs = files;
 
-                var filesPK4 = new List<string>();
-                var filesZip = new List<string>();
-                var dateTimesPK4 = new List<ExpandableDate_FromTicks>();
-                var dateTimesZip = new List<ExpandableDate_FromTicks>();
+                List<string> filesPK4 = new();
+                List<string> filesZip = new();
+                List<ExpandableDate_FromTicks> dateTimesPK4 = new();
+                List<ExpandableDate_FromTicks> dateTimesZip = new();
 
                 FastIO.GetDirsTopOnly_FMs(fmsPath, "*", dirs, dateTimes);
                 FastIO.GetFilesTopOnly_FMs(fmsPath, "*.pk4", filesPK4, dateTimesPK4);
@@ -495,8 +507,8 @@ internal static class FindFMs
 
                 HashSetI dirsHash = dirs.ToHashSetI();
 
-                var finalFilesList = new List<string>(dirs.Count + filesPK4.Count + filesZip.Count);
-                var finalDateTimesList = new List<ExpandableDate_FromTicks>(dateTimes.Count + dateTimesPK4.Count + dateTimesZip.Count);
+                List<string> finalFilesList = new(dirs.Count + filesPK4.Count + filesZip.Count);
+                List<ExpandableDate_FromTicks> finalDateTimesList = new(dateTimes.Count + dateTimesPK4.Count + dateTimesZip.Count);
 
                 finalFilesList.AddRange(dirs);
                 finalDateTimesList.AddRange(dateTimes);
@@ -558,7 +570,7 @@ internal static class FindFMs
         // If I'd have known I'd do TDM, I'd have planned for it better...
         // This is really, really janky and easy to make a mistake with the wrong installed dir version, meh.
 
-        var fmDataIniList_Hash = new HashSetI(FMDataIniList.Count);
+        HashSetI fmDataIniList_Hash = new(FMDataIniList.Count);
         foreach (FanMission fm in FMDataIniList)
         {
             fmDataIniList_Hash.Add(fm.InstalledDir);
@@ -612,7 +624,9 @@ internal static class FindFMs
 
     #region Set names
 
-    private static void SetArchiveNames(DictionaryI<ExpandableDate_FromTicks> fmArchives, InstDirNameContext instDirNameContext)
+    private static void SetArchiveNamesForNewlyFoundInstalledFMs(
+        DictionaryI<ExpandableDate_FromTicks> fmArchives,
+        InstDirNameContext instDirNameContext)
     {
         DictionaryI<FanMission>? archivesDict = null;
         DictionaryI<FanMission> GetArchivesDict()
@@ -639,45 +653,44 @@ internal static class FindFMs
         {
             FanMission fm = FMDataIniList[i];
 
-            if (fm.Archive.IsEmpty())
+            if (!fm.Archive.IsEmpty()) continue;
+
+            if (fm.InstalledDir.IsEmpty())
             {
-                if (fm.InstalledDir.IsEmpty())
-                {
-                    FMDataIniList.RemoveAt(i);
-                    i--;
-                    continue;
-                }
+                FMDataIniList.RemoveAt(i);
+                i--;
+                continue;
+            }
 
-                // @PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
-                string? archiveName = null;
-                // Skip the expensive archive name search if we're marked as having no archive
-                if (!fm.NoArchive)
-                {
-                    lastResortLinkupContext ??= new LastResortLinkupContext(instDirNameContext);
-                    archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupContext);
-                }
-                if (archiveName.IsEmpty()) continue;
+            // @PERF_TODO: Should we keep null here because it's faster? Is it faster? (tight loop)
+            string? archiveName = null;
+            // Skip the expensive archive name search if we're marked as having no archive
+            if (!fm.NoArchive)
+            {
+                lastResortLinkupContext ??= new LastResortLinkupContext(instDirNameContext);
+                archiveName = GetArchiveNameFromInstalledDir(fm, fmArchives, lastResortLinkupContext);
+            }
+            if (archiveName.IsEmpty()) continue;
 
-                // NOTE: I guess this removes duplicates, which is why it has to do the search?
-                if (GetArchivesDict().TryGetValue(archiveName, out FanMission? existingFM))
+            // NOTE: I guess this removes duplicates, which is why it has to do the search?
+            if (GetArchivesDict().TryGetValue(archiveName, out FanMission? existingFM))
+            {
+                existingFM.InstalledDir = fm.InstalledDir;
+                existingFM.Installed = true;
+                existingFM.Game = fm.Game;
+                existingFM.DateAdded ??= fm.DateAdded;
+                FMDataIniList.RemoveAt(i);
+                i--;
+            }
+            else
+            {
+                fm.Archive = archiveName;
+                if (fm.NoArchive)
                 {
-                    existingFM.InstalledDir = fm.InstalledDir;
-                    existingFM.Installed = true;
-                    existingFM.Game = fm.Game;
-                    existingFM.DateAdded ??= fm.DateAdded;
-                    FMDataIniList.RemoveAt(i);
-                    i--;
+                    string? fmselInf = GetFMSelInfPath(fm);
+                    if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
                 }
-                else
-                {
-                    fm.Archive = archiveName;
-                    if (fm.NoArchive)
-                    {
-                        string? fmselInf = GetFMSelInfPath(fm);
-                        if (!fmselInf.IsEmpty()) WriteFMSelInf(fm, fmselInf, archiveName);
-                    }
-                    fm.NoArchive = false;
-                }
+                fm.NoArchive = false;
             }
         }
     }
@@ -685,7 +698,7 @@ internal static class FindFMs
     private static void EnsureUniqueInstalledNames()
     {
         // Check for and handle truncated name collisions
-        var hash = new HashSetI(FMDataIniList.Count);
+        HashSetI hash = new(FMDataIniList.Count);
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];
@@ -722,8 +735,8 @@ internal static class FindFMs
     private static void MergeNewArchiveFMs(DictionaryI<ExpandableDate_FromTicks> fmArchives, InstDirNameContext instDirNameContext)
     {
         int fmDataIniListCount = FMDataIniList.Count;
-        var fmDataIniInstDirDict = new DictionaryI<FanMission>(fmDataIniListCount);
-        var fmDataIniArchiveDict = new DictionaryI<FanMission>(fmDataIniListCount);
+        DictionaryI<FanMission> fmDataIniInstDirDict = new(fmDataIniListCount);
+        DictionaryI<FanMission> fmDataIniArchiveDict = new(fmDataIniListCount);
         for (int i = 0; i < fmDataIniListCount; i++)
         {
             FanMission fm = FMDataIniList[i];
@@ -787,10 +800,10 @@ internal static class FindFMs
     }
 
     private static void MergeNewInstalledFMs(
-        DictionaryI<InstDirValueData> installedList,
+        DictionaryI<InstDirValueData> installedDict,
         DictionaryI<FanMission> fmDataIniInstDirDict)
     {
-        foreach (var item in installedList)
+        foreach (var item in installedDict)
         {
             FanMission gFM = item.Value.FM;
 
@@ -909,7 +922,7 @@ internal static class FindFMs
     {
         try
         {
-            using var sw = new StreamWriter(path);
+            using StreamWriter sw = new(path);
             sw.WriteLine("Name=" + fm.InstalledDir);
             sw.WriteLine("Archive=" + archiveName);
         }
@@ -943,7 +956,7 @@ internal static class FindFMs
             }
         }
 
-        var viewListHash = new HashSetI(FMDataIniList.Count);
+        HashSetI viewListHash = new(FMDataIniList.Count);
         for (int i = 0; i < FMDataIniList.Count; i++)
         {
             FanMission fm = FMDataIniList[i];

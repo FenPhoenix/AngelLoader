@@ -79,7 +79,7 @@ internal sealed class Lazy_PlayOriginalControls : IDarkable
 
         for (int i = 0, tabIndex = 1; i < SupportedGameCount; i++)
         {
-            var gameButton = new DarkButton
+            DarkButton gameButton = new()
             {
                 Tag = LoadType.Lazy,
                 GameIndex = (GameIndex)i,

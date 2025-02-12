@@ -40,7 +40,7 @@ public static class Logger
     // this claws back some startup time.
     private static string GetDateTimeStringFast()
     {
-        var dt = new SYSTEMTIME();
+        SYSTEMTIME dt = new();
         GetLocalTime(ref dt);
         return dt.wYear + "/" + dt.wMonth + "/" + dt.wDay + " " +
                dt.wHour + ":" + dt.wMinute + ":" + dt.wSecond;
@@ -60,7 +60,7 @@ public static class Logger
 
             try
             {
-                using var sw = new StreamWriter(_logFile, append: true);
+                using StreamWriter sw = new(_logFile, append: true);
 
                 sw.WriteLine(GetDateTimeStringFast() + " " + callerMemberName + $"{NL}" + message);
                 if (ex != null) sw.WriteLine($"EXCEPTION:{NL}" + ex);

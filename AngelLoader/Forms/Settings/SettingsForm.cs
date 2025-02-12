@@ -660,6 +660,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
 
+            OtherPage.AlwaysShowPresetTagsCheckBox.Checked = config.ShowPresetTags;
+
             #endregion
 
             #region Thief Buddy page
@@ -1148,6 +1150,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
                 OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
 
+                OtherPage.TagsGroupBox.Text = LText.SettingsWindow.Other_Tags;
+                OtherPage.AlwaysShowPresetTagsCheckBox.Text = LText.SettingsWindow.Other_AlwaysShowPresetTags;
+                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox,LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
+
                 #endregion
 
                 #region Thief Buddy page
@@ -1537,6 +1543,8 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             OutConfig.EnableFuzzySearch = OtherPage.EnableFuzzySearchCheckBox.Checked;
 
+            OutConfig.ShowPresetTags = OtherPage.AlwaysShowPresetTagsCheckBox.Checked;
+
             #endregion
 
             #region Thief Buddy page
@@ -1595,7 +1603,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         if (EventsDisabled > 0) return;
 
-        var s = (DarkRadioButtonCustom)sender;
+        DarkRadioButtonCustom s = (DarkRadioButtonCustom)sender;
         if (!s.Checked) return;
 
         using (new DisableEvents(this))
@@ -1746,7 +1754,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     {
         DarkTextBox tb = PathsPage.BackupPathTextBox;
 
-        using (var d = new FolderBrowserDialog())
+        using (FolderBrowserDialog d = new())
         {
             d.Description = LText.SettingsWindow.Paths_ChooseBackupPath_DialogTitle;
             d.UseDescriptionForTitle = true;
@@ -1761,7 +1769,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private (DialogResult Result, string FileName)
     BrowseForExeFile(string initialPath, string title)
     {
-        using var dialog = new OpenFileDialog();
+        using OpenFileDialog dialog = new();
         dialog.Title = title;
         dialog.InitialDirectory = initialPath;
         dialog.Filter = LText.BrowseDialogs.ExeFiles + "|*.exe";
@@ -1790,7 +1798,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void AddFMArchivePathButton_Click(object? sender, EventArgs e)
     {
-        using var d = new FolderBrowserDialog();
+        using FolderBrowserDialog d = new();
 
         d.Description = LText.SettingsWindow.Paths_AddFMArchivePath_DialogTitle;
         d.UseDescriptionForTitle = true;

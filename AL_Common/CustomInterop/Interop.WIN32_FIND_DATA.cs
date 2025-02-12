@@ -20,7 +20,7 @@ internal static partial class Interop
             internal uint nFileSizeLow;
             internal uint dwReserved0;
             internal uint dwReserved1;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = Common.MAX_PATH)]
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAX_PATH)]
             public string cFileName;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 14)]
             public string cAlternateFileName;

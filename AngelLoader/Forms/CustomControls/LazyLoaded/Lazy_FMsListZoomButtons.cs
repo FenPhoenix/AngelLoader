@@ -51,7 +51,7 @@ internal sealed class Lazy_FMsListZoomButtons : IDarkable
         // Insert them in reverse order so we always insert at 0
         for (int i = 2; i >= 0; i--)
         {
-            var button = new ToolStripButtonCustom
+            ToolStripButtonCustom button = new()
             {
                 AutoSize = false,
                 DisplayStyle = ToolStripItemDisplayStyle.Image,

@@ -35,7 +35,7 @@ internal static partial class Ini
     // file is re-generated. I could make it so it doesn't get removed, but meh.
     internal static void AddLanguageFromFile(string file, string key, DictionaryI<string> langDict)
     {
-        using var sr = new StreamReader(file, Encoding.UTF8);
+        using StreamReader sr = new(file, Encoding.UTF8);
 
         bool inMeta = false;
         while (sr.ReadLine() is { } line)
@@ -67,7 +67,7 @@ internal static partial class Ini
 
         try
         {
-            var fileInfos = new DirectoryInfo(Paths.Data)
+            List<FileInfo> fileInfos = new DirectoryInfo(Paths.Data)
                 .GetFiles(Paths.FMDataBakBase + "*", SearchOption.TopDirectoryOnly)
                 .ToList();
 
@@ -110,14 +110,14 @@ internal static partial class Ini
     {
         if (!File.Exists(_dateAccuracyFile)) return;
 
-        var dict = new DictionaryI<FanMission>(FMDataIniList.Count);
+        DictionaryI<FanMission> dict = new(FMDataIniList.Count);
         foreach (FanMission fm in FMDataIniList)
         {
             dict[fm.InstalledDir] = fm;
         }
 
-        var lines = File_ReadAllLines_List(_dateAccuracyFile);
-        foreach (var line in lines)
+        List<string> lines = File_ReadAllLines_List(_dateAccuracyFile);
+        foreach (string line in lines)
         {
             string lineT = line.Trim();
             if (lineT.IsEmpty()) continue;
@@ -137,7 +137,7 @@ internal static partial class Ini
 
     private static void WriteDateAccuracyFile()
     {
-        using var sw = new StreamWriter(_dateAccuracyFile);
+        using StreamWriter sw = new(_dateAccuracyFile);
         foreach (FanMission fm in FMDataIniList)
         {
             sw.WriteLine(fm.InstalledDir + "=" + Utils.DateAccuracy_Serialize(fm.DateAccuracy));
@@ -203,7 +203,7 @@ internal static partial class Ini
             _ => ByteSize.MB * 1,
         };
 
-        using var sr = File_OpenTextFast(fileName, bufferSize);
+        using StreamReaderCustom.SRC_Wrapper sr = File_OpenTextFast(fileName, bufferSize);
 
         FanMission? fm = null;
         while (sr.Reader.ReadLine() is { } line)
@@ -456,7 +456,7 @@ internal static partial class Ini
             }
             else
             {
-                var newTagsList = new FMTagsCollection();
+                FMTagsCollection newTagsList = new();
                 if (!tag.IsEmpty()) newTagsList.Add(tag);
                 existingTags.Add(cat, newTagsList);
             }

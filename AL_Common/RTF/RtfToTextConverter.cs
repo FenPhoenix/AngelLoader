@@ -1549,7 +1549,7 @@ public sealed partial class RtfToTextConverter
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
     };
 
-    private static bool[] InitIsNonPlainTextBytes()
+    private readonly bool[] IsNonPlainText = RunFunc(static () =>
     {
         bool[] ret = new bool[256];
         ret['\\'] = true;
@@ -1559,9 +1559,7 @@ public sealed partial class RtfToTextConverter
         ret['\n'] = true;
         ret['\0'] = true;
         return ret;
-    }
-
-    private readonly bool[] IsNonPlainText = InitIsNonPlainTextBytes();
+    });
 
     #endregion
 
@@ -1802,7 +1800,7 @@ public sealed partial class RtfToTextConverter
                         ? HandleSkippableHexData(param)
                         : ChangeDestination((DestinationType)symbol.Index);
                 case KeywordType.Special:
-                    var specialType = (SpecialType)symbol.Index;
+                    SpecialType specialType = (SpecialType)symbol.Index;
                     return DispatchSpecialKeyword(specialType, symbol, param);
                 default:
                     return RtfError.OK;
@@ -1817,7 +1815,7 @@ public sealed partial class RtfToTextConverter
                         ? HandleSkippableHexData(param)
                         : RtfError.OK;
                 case KeywordType.Special:
-                    var specialType = (SpecialType)symbol.Index;
+                    SpecialType specialType = (SpecialType)symbol.Index;
                     return specialType == SpecialType.SkipNumberOfBytes
                         ? DispatchSpecialKeyword(specialType, symbol, param)
                         : RtfError.OK;
