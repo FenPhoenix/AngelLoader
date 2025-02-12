@@ -3194,7 +3194,7 @@ public sealed class Scanner : IDisposable
                 switch (T3GmpFiles.Count)
                 {
                     case 1:
-                        t3MisCount++;
+                        t3MisCount = 1;
                         break;
                     case > 1:
                         for (int i = 0; i < T3GmpFiles.Count; i++)
