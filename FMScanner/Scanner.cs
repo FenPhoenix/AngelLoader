@@ -10,19 +10,17 @@ We could just get the full text and then allocate an array of int pairs for star
 then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
 be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
 
-@RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
-
 @BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
 
 @BLOCKS_NOTE: Could SharpCompress (full) allow us to stream 7z entries to memory?
- Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out ahead.
- We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
- UPDATE 2025-01-01: Tested this, and surprisingly we gain very little to nothing. SharpCompress is much slower
- at decompressing than native 7z.exe, enough so that it erases most of our time gained. It's probably for the
- best, as it made the code even more horrendously complicated than it already is.
+ Even though it's slower than native 7z.exe, if we have to extract a lot less, then maybe we'd still come out
+ ahead. We could scan .mis and .gam files in the usual way, decompressing in chunks etc.
+ UPDATE 2025-01-01: Tested this, and surprisingly we gain very little to nothing. SharpCompress is much slower at
+ decompressing than native 7z.exe, enough so that it erases most of our time gained. It's probably for the best,
+ as it made the code even more horrendously complicated than it already is.
 
-@BLOCKS_NOTE: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in that
- case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
+@BLOCKS_NOTE: Non-solid 7z FMs work fine, but our solid-aware paths might be doing more work than necessary in
+ that case. TBP non-solid scans very slightly slower than loader-friendly solid (like ~220ms vs ~190ms warm).
  This is not really urgent because it's unlikely anyone will make non-solid 7z FMs, but if we felt like looking
  into non-solid optimizations at some point we could.
 */
@@ -2831,8 +2829,6 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    // @BLOCKS: Could we merge the solid-extract loop into here, and just extract in between the main loop and
-    //  the missflag read?
     private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
     {
         t3MisCount = 0;
@@ -3234,9 +3230,9 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Cache list of used .mis files
-
         if (_missFlagAlreadyHandled) return true;
+
+        #region Cache list of used .mis files
 
         NameAndIndex? missFlagFile = null;
         if (_solidMissFlagFileToUse is { } solidMissFlagFileToUse)
