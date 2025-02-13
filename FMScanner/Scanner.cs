@@ -4051,7 +4051,7 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    #region Title(s) and mission names
+    #region Title
 
     private void SetOrAddTitle(ListFast<string> titles, string value)
     {
