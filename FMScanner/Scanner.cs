@@ -1842,21 +1842,29 @@ public sealed class Scanner : IDisposable
 
             #region Check info files
 
-            if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor ||
-                _scanOptions.ScanReleaseDate || _scanOptions.ScanTags)
+            if (_scanOptions.ScanTitle ||
+                _scanOptions.ScanAuthor ||
+                _scanOptions.ScanReleaseDate ||
+                _scanOptions.ScanTags)
             {
                 for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
                     {
-                        var (title, author, releaseDate) = ReadFMInfoXml(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
+                        (string title, string author, DateTime? releaseDate) = ReadFMInfoXml(f);
+                        if (_scanOptions.ScanTitle)
+                        {
+                            SetOrAddTitle(titles, title);
+                        }
                         if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
                         {
                             fmData.Author = author;
                         }
-                        if (_scanOptions.ScanReleaseDate && releaseDate != null) fmData.LastUpdateDate = releaseDate;
+                        if (_scanOptions.ScanReleaseDate && releaseDate != null)
+                        {
+                            fmData.LastUpdateDate = releaseDate;
+                        }
                         break;
                     }
                 }
@@ -1869,14 +1877,23 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.FMIni))
                     {
-                        var (title, author, lastUpdateDate, tags) = ReadFMIni(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
+                        (string title, string author, DateTime? lastUpdateDate, string tags) = ReadFMIni(f);
+                        if (_scanOptions.ScanTitle)
+                        {
+                            SetOrAddTitle(titles, title);
+                        }
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
                         }
-                        if (_scanOptions.ScanReleaseDate && lastUpdateDate != null) fmData.LastUpdateDate = lastUpdateDate;
-                        if (_scanOptions.ScanTags) fmData.TagsString = tags;
+                        if (_scanOptions.ScanReleaseDate && lastUpdateDate != null)
+                        {
+                            fmData.LastUpdateDate = lastUpdateDate;
+                        }
+                        if (_scanOptions.ScanTags)
+                        {
+                            fmData.TagsString = tags;
+                        }
                         break;
                     }
                 }
@@ -1890,8 +1907,11 @@ public sealed class Scanner : IDisposable
                     NameAndIndex f = _baseDirFiles[i];
                     if (f.Name.EqualsI_Local(FMFiles.ModIni))
                     {
-                        var (title, author) = ReadModIni(f);
-                        if (_scanOptions.ScanTitle) SetOrAddTitle(titles, title);
+                        (string title, string author) = ReadModIni(f);
+                        if (_scanOptions.ScanTitle)
+                        {
+                            SetOrAddTitle(titles, title);
+                        }
                         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
                         {
                             fmData.Author = author;
