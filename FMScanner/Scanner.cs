@@ -5211,9 +5211,9 @@ public sealed class Scanner : IDisposable
 
         static bool SS2MisFilesPresent(ListFast<NameAndIndex> misFiles, HashSetI ss2MisFiles)
         {
-            for (int mfI = 0; mfI < misFiles.Count; mfI++)
+            for (int i = 0; i < misFiles.Count; i++)
             {
-                if (ss2MisFiles.Contains(misFiles[mfI].Name))
+                if (ss2MisFiles.Contains(misFiles[i].Name))
                 {
                     return true;
                 }
