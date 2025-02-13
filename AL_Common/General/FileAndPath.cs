@@ -75,7 +75,7 @@ public static partial class Common
         public FileStream_Read_WithRentedBuffer(string path, int bufferSize = FileStreamBufferSize)
         {
             Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-            FileStream = GetReadModeFileStreamWithCachedBuffer(path, Buffer);
+            FileStream = GetReadModeFileStreamWithCachedBuffer(path, Buffer, bufferSize);
         }
 
         public void Dispose()
@@ -94,7 +94,7 @@ public static partial class Common
         public FileStream_Write_WithRentedBuffer(string path, bool overwrite = true, int bufferSize = FileStreamBufferSize)
         {
             Buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-            FileStream = GetWriteModeFileStreamWithCachedBuffer(path, overwrite, Buffer);
+            FileStream = GetWriteModeFileStreamWithCachedBuffer(path, overwrite, Buffer, bufferSize);
         }
 
         public void Dispose()

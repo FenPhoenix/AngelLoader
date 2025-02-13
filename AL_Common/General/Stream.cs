@@ -25,20 +25,20 @@ public static partial class Common
      and redirect to the member FileStream. Maybe this would prevent the JIT from devirtualizing. Would it matter?
     -We could use a wrapper struct and make the callsites messier.
     */
-    public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer)
+    public static FileStream GetReadModeFileStreamWithCachedBuffer(string path, byte[] buffer, int bufferSize = FileStreamBufferSize)
     {
-        FileStream fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096);
+        FileStream fs = new(path, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize);
 
         SetBuffer(fs, buffer);
 
         return fs;
     }
 
-    public static FileStream GetWriteModeFileStreamWithCachedBuffer(string path, bool overwrite, byte[] buffer)
+    public static FileStream GetWriteModeFileStreamWithCachedBuffer(string path, bool overwrite, byte[] buffer, int bufferSize = FileStreamBufferSize)
     {
         FileMode mode = overwrite ? FileMode.Create : FileMode.CreateNew;
 
-        FileStream fs = new(path, mode, FileAccess.Write, FileShare.Read, 4096);
+        FileStream fs = new(path, mode, FileAccess.Write, FileShare.Read, bufferSize);
 
         SetBuffer(fs, buffer);
 
