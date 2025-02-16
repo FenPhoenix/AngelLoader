@@ -70,6 +70,15 @@ file static class FMFormatExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsSolidArchive(this FMFormat fmFormat) => fmFormat is FMFormat.SevenZip or FMFormat.RarSolid;
+
+    internal static string Name(this FMFormat fmFormat) => fmFormat switch
+    {
+        FMFormat.Zip => "zip",
+        FMFormat.SevenZip => "7z",
+        FMFormat.Rar => "rar",
+        FMFormat.RarSolid => "rar (solid)",
+        _ => "dir",
+    };
 }
 
 public sealed class Scanner : IDisposable
@@ -1334,7 +1343,6 @@ public sealed class Scanner : IDisposable
                     Log("Found a TDM FM directory with no pk4 in it. Invalid FM or empty FM directory. Returning 'Unsupported'.");
                     return UnsupportedTDM(
                         fmDirName: FMWorkingPathDirName,
-                        fen7zResult: null,
                         ex: null,
                         errorInfo: "FM directory: " + fm.Path,
                         originalIndex: fm.OriginalIndex
@@ -1754,42 +1762,19 @@ public sealed class Scanner : IDisposable
         bool success = ReadAndCacheFMData(fm.Path, fmData, out int t3MisCount);
         if (!success)
         {
-            string ext = _fmFormat switch
-            {
-                FMFormat.Zip => "zip",
-                FMFormat.SevenZip => "7z",
-                FMFormat.Rar => "rar",
-                FMFormat.RarSolid => "rar (solid)",
-                _ => "dir",
-            };
-            Log(fm.Path + ": fm is " + ext + ", " +
+            string fmType = _fmFormat.Name();
+
+            Log(fm.Path + ": fm is " + fmType + ", " +
                 nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
 
             return _fmFormat > FMFormat.NotInArchive
-                ? UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex)
+                ? UnsupportedArchive(fm.Path, null, null, "", fm.OriginalIndex)
                 : UnsupportedDir(null, null, "", fm.OriginalIndex);
         }
 
         #endregion
 
         bool fmIsT3 = fmData.Game == Game.Thief3;
-
-        // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
-        // theoretically possible to end up with some of these set. There's no way around it, so just unset
-        // them all here for consistency.
-        if (fmIsT3)
-        {
-            fmData.HasMap = null;
-            fmData.HasAutomap = null;
-            fmData.HasCustomCreatures = null;
-            fmData.HasCustomScripts = null;
-            fmData.HasCustomTextures = null;
-            fmData.HasCustomSounds = null;
-            fmData.HasCustomObjects = null;
-            fmData.HasCustomMotions = null;
-            fmData.HasCustomSubtitles = null;
-            fmData.HasMovies = null;
-        }
 
         bool singleMission =
             fmIsT3
@@ -2349,7 +2334,7 @@ public sealed class Scanner : IDisposable
                         "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                         result);
 
-                    return (UnsupportedZip(
+                    return (UnsupportedArchive(
                         archivePath: fm.Path,
                         fen7zResult: result,
                         ex: null,
@@ -2379,25 +2364,15 @@ public sealed class Scanner : IDisposable
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            string fmType = _fmFormat switch
-            {
-                FMFormat.SevenZip => "7z",
-                FMFormat.RarSolid => "rar (solid)",
-                _ => "rar",
-            };
-            string exType = _fmFormat switch
-            {
-                FMFormat.SevenZip => "7z.exe",
-                FMFormat.RarSolid => "rar (solid)",
-                _ => "rar",
-            };
-            Log(fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction", ex);
-            return (UnsupportedZip(
+            string fmType = _fmFormat.Name();
+
+            Log(fm.Path + ": exception in " + fmType + " extraction", ex);
+            return (UnsupportedArchive(
                     archivePath: fm.Path,
                     fen7zResult: null,
                     ex: ex,
                     errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + ": fm is " + fmType + ", exception in " + exType + " extraction",
+                               fm.Path + ": fm is " + fmType + ", exception in " + fmType + " extraction",
                     originalIndex: fm.OriginalIndex),
                 entriesList);
         }
@@ -2478,7 +2453,7 @@ public sealed class Scanner : IDisposable
 
         if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
         {
-            error = UnsupportedZip(
+            error = UnsupportedArchive(
                 archivePath: fm.Path,
                 fen7zResult: result.SevenZipResult,
                 ex: null,
@@ -2767,7 +2742,6 @@ public sealed class Scanner : IDisposable
 
     private static ScannedFMDataAndError UnsupportedTDM(
         string fmDirName,
-        Fen7z.Result? fen7zResult,
         Exception? ex,
         string errorInfo,
         int originalIndex) =>
@@ -2779,12 +2753,12 @@ public sealed class Scanner : IDisposable
                 Game = Game.Unsupported,
                 MissionCount = 0,
             },
-            Fen7zResult = fen7zResult,
+            Fen7zResult = null,
             Exception = ex,
             ErrorInfo = errorInfo,
         };
 
-    private static ScannedFMDataAndError UnsupportedZip(
+    private static ScannedFMDataAndError UnsupportedArchive(
         string archivePath,
         Fen7z.Result? fen7zResult,
         Exception? ex,
@@ -2803,7 +2777,7 @@ public sealed class Scanner : IDisposable
             ErrorInfo = errorInfo,
         };
 
-    private static ScannedFMDataAndError UnknownZip(
+    private static ScannedFMDataAndError UnknownArchive(
         string archivePath,
         Fen7z.Result? fen7zResult,
         Exception? ex,
@@ -3193,6 +3167,23 @@ public sealed class Scanner : IDisposable
 
         if (t3Found)
         {
+            if (_scanOptions.ScanCustomResources)
+            {
+                // Due to the Thief 3 detection being done in the same place as the custom resources check, it's
+                // theoretically possible to end up with some of these set. There's no way around it, so just
+                // unset them all here for consistency.
+                fmd.HasMap = null;
+                fmd.HasAutomap = null;
+                fmd.HasCustomCreatures = null;
+                fmd.HasCustomScripts = null;
+                fmd.HasCustomTextures = null;
+                fmd.HasCustomSounds = null;
+                fmd.HasCustomObjects = null;
+                fmd.HasCustomMotions = null;
+                fmd.HasCustomSubtitles = null;
+                fmd.HasMovies = null;
+            }
+
             if (_scanOptions.ScanMissionCount)
             {
                 switch (T3GmpFiles.Count)
@@ -6185,7 +6176,7 @@ public sealed class Scanner : IDisposable
             if (checkForZeroEntries && entriesCount == 0)
             {
                 Log(fm.Path + ": fm is zip, no files in archive. Returning 'Unsupported' game type.", stackTrace: false);
-                return (false, UnsupportedZip(fm.Path, null, null, "", fm.OriginalIndex), null);
+                return (false, UnsupportedArchive(fm.Path, null, null, "", fm.OriginalIndex), null);
             }
         }
         catch (Exception ex)
@@ -6253,14 +6244,14 @@ public sealed class Scanner : IDisposable
                     "Zip contains one or more files compressed with an unsupported method. " +
                     $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip file.{NL}" +
                     "Returning 'Unknown' game type.", zipEx);
-                return (false, UnknownZip(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
+                return (false, UnknownArchive(fm.Path, null, zipEx, "", fm.OriginalIndex), null);
             }
             else
             {
                 Log(fm.Path + ": fm is zip, exception in " +
                     nameof(ZipArchiveFast) +
                     " construction or entries getting. Returning 'Unsupported' game type.", ex);
-                return (false, UnsupportedZip(fm.Path, null, ex, "", fm.OriginalIndex), null);
+                return (false, UnsupportedArchive(fm.Path, null, ex, "", fm.OriginalIndex), null);
             }
         }
 
