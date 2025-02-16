@@ -1,6 +1,4 @@
-﻿//#define ENABLE_UNUSED
-
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 namespace AL_Common;
@@ -9,7 +7,6 @@ internal static partial class Interop
 {
     internal static partial class Kernel32
     {
-#if ENABLE_UNUSED
         internal struct WIN32_FILE_ATTRIBUTE_DATA
         {
             internal int dwFileAttributes;
@@ -29,6 +26,5 @@ internal static partial class Interop
                 nFileSizeLow = findData.nFileSizeLow;
             }
         }
-#endif
     }
 }

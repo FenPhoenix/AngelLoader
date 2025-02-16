@@ -46,8 +46,8 @@ internal static partial class Interop
         internal const int ERROR_INVALID_PARAMETER = 0x57;
         internal const int ERROR_BROKEN_PIPE = 0x6D;
         internal const int ERROR_DISK_FULL = 0x70;
-#if ENABLE_UNUSED
         internal const int ERROR_SEM_TIMEOUT = 0x79;
+#if ENABLE_UNUSED
         internal const int ERROR_CALL_NOT_IMPLEMENTED = 0x78;
         internal const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
 #endif

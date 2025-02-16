@@ -82,6 +82,7 @@ public static class SR
     public static readonly string NotSupported_UnwritableStream = "Stream does not support writing.";
     public static readonly string InvalidOperation_NullArray = "The underlying array is null.";
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
+    public static readonly string IO_FileNotFound_FileName = "Could not find file '{0}'.";
 #if ENABLE_UNUSED
     public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
@@ -90,5 +91,6 @@ public static class SR
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
 #endif
 
+    internal static string Format(string resourceFormat, object? p1) => string.Format(resourceFormat, p1);
     internal static string Format(string resourceFormat, object? p1, object? p2) => string.Format(resourceFormat, p1, p2);
 }

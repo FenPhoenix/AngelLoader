@@ -736,4 +736,42 @@ public static partial class Common
             __Error.WinIOError(Marshal.GetLastWin32Error(), path);
         }
     }
+
+    #region From modern .NET
+
+    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
+
+    // Direct functions so we don't have to allocate a FileInfo object for no good reason
+
+    public static long GetFileLength(string path)
+    {
+        Interop.Kernel32.WIN32_FILE_ATTRIBUTE_DATA data = InitializeData(path);
+
+        FileAttributes attributes = (FileAttributes)data.dwFileAttributes;
+        if ((attributes & FileAttributes.Directory) == FileAttributes.Directory)
+        {
+            throw new FileNotFoundException(SR.Format(SR.IO_FileNotFound_FileName, path), path);
+        }
+
+        return ((long)data.nFileSizeHigh) << 32 | data.nFileSizeLow & 0xFFFFFFFFL;
+    }
+
+    private static Interop.Kernel32.WIN32_FILE_ATTRIBUTE_DATA InitializeData(string path)
+    {
+        Interop.Kernel32.WIN32_FILE_ATTRIBUTE_DATA data = new();
+
+        // This should not throw, instead we store the result so that we can throw it
+        // when someone actually accesses a property
+        int dataInitialized = FileSystem.FillAttributeInfo(path, ref data, returnErrorOnNotFound: false);
+
+        if (dataInitialized != 0) // Refresh was unable to initialize the data
+        {
+            throw Win32Marshal.GetExceptionForWin32Error(dataInitialized, path);
+        }
+
+        return data;
+    }
+
+    #endregion
 }

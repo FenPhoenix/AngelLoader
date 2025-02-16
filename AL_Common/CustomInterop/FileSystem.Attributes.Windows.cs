@@ -3,6 +3,9 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+
 namespace AL_Common;
 
 internal static class FileSystem
@@ -34,6 +37,7 @@ internal static class FileSystem
             (data.dwFileAttributes != -1) &&
             ((data.dwFileAttributes & Interop.Kernel32.FileAttributes.FILE_ATTRIBUTE_DIRECTORY) == 0);
     }
+#endif
 
     /// <summary>
     /// Returns 0 on success, otherwise a Win32 error code.  Note that
@@ -53,12 +57,12 @@ internal static class FileSystem
         {
             if (!Interop.Kernel32.GetFileAttributesEx(path, Interop.Kernel32.GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, ref data))
             {
-                errorCode = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                errorCode = Marshal.GetLastWin32Error();
 
                 if (!IsPathUnreachableError(errorCode))
                 {
                     // Assert so we can track down other cases (if any) to add to our test suite
-                    System.Diagnostics.Debug.Assert(errorCode == Interop.Errors.ERROR_ACCESS_DENIED || errorCode == Interop.Errors.ERROR_SHARING_VIOLATION || errorCode == Interop.Errors.ERROR_SEM_TIMEOUT,
+                    Debug.Assert(errorCode == Interop.Errors.ERROR_ACCESS_DENIED || errorCode == Interop.Errors.ERROR_SHARING_VIOLATION || errorCode == Interop.Errors.ERROR_SEM_TIMEOUT,
                         $"Unexpected error code getting attributes {errorCode} from path {path}");
 
                     // Files that are marked for deletion will not let you GetFileAttributes,
@@ -79,7 +83,7 @@ internal static class FileSystem
                     {
                         if (handle.IsInvalid)
                         {
-                            errorCode = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                            errorCode = Marshal.GetLastWin32Error();
                         }
                         else
                         {
@@ -106,7 +110,6 @@ internal static class FileSystem
 
         return errorCode;
     }
-#endif
 
     internal static bool IsPathUnreachableError(int errorCode) =>
         errorCode is

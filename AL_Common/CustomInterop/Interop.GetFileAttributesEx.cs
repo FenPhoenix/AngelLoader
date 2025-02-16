@@ -1,7 +1,7 @@
-﻿//#define ENABLE_UNUSED
-
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
+using System.Runtime.InteropServices;
 
 namespace AL_Common;
 
@@ -9,17 +9,16 @@ internal static partial class Interop
 {
     internal static partial class Kernel32
     {
-#if ENABLE_UNUSED
         /// <summary>
         /// WARNING: This method does not implicitly handle long paths. Use GetFileAttributesEx.
         /// </summary>
-        [System.Runtime.InteropServices.DllImport(
+        [DllImport(
             "kernel32.dll",
             EntryPoint = "GetFileAttributesExW",
             ExactSpelling = true,
             SetLastError = true,
-            CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
-        [return: System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.Bool)]
+            CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetFileAttributesExPrivate(
             string? name,
             GET_FILEEX_INFO_LEVELS fileInfoLevel,
@@ -30,6 +29,5 @@ internal static partial class Interop
             name = PathInternal.EnsureExtendedPrefixIfNeeded(name);
             return GetFileAttributesExPrivate(name, fileInfoLevel, ref lpFileInformation);
         }
-#endif
     }
 }
