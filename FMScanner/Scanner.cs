@@ -1897,24 +1897,7 @@ public sealed class Scanner : IDisposable
             #endregion
         }
 
-        #region Read, cache, and set readme files
-
-        foreach (NameAndIndex f in _baseDirFiles)
-        {
-            _readmeDirFiles.Add(f);
-        }
-
-        if (fmIsT3)
-        {
-            foreach (NameAndIndex f in T3FMExtrasDirFiles)
-            {
-                _readmeDirFiles.Add(f);
-            }
-        }
-
         ReadAndCacheReadmeFiles();
-
-        #endregion
 
         #region Set release date
 
@@ -2734,7 +2717,7 @@ public sealed class Scanner : IDisposable
     {
         t3MisCount = 0;
 
-        #region Add BaseDirFiles
+        #region Populate file lists
 
         bool t3Found = false;
 
@@ -3083,6 +3066,23 @@ public sealed class Scanner : IDisposable
                 }
             }
         }
+
+        #region Populate readme dir files
+
+        for (int i = 0; i < _baseDirFiles.Count; i++)
+        {
+            _readmeDirFiles.Add(_baseDirFiles[i]);
+        }
+
+        if (t3Found)
+        {
+            for (int i = 0; i < T3FMExtrasDirFiles.Count; i++)
+            {
+                _readmeDirFiles.Add(T3FMExtrasDirFiles[i]);
+            }
+        }
+
+        #endregion
 
         if (t3Found)
         {
