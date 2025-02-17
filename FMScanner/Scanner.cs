@@ -3251,7 +3251,7 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles, misFiles.Count);
+        if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles);
     }
 
     #region Read FM info files
