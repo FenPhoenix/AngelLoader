@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace AL_Common;
 
 public static partial class Common
 {
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ParallelForData<T>
     {
         public readonly ConcurrentQueue<T> CQ;

@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using AL_Common.FastZipReader.Deflate64Managed;
 using JetBrains.Annotations;
 
@@ -129,6 +130,7 @@ public sealed class ZipContext_Pool
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipContextRentScope
 {
     private readonly ZipContext_Pool _pool;
@@ -205,6 +207,7 @@ public sealed class ZipContext_Threaded_Pool
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipContextThreadedRentScope
 {
     private readonly ZipContext_Threaded_Pool _pool;

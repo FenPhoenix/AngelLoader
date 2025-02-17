@@ -23,6 +23,7 @@ public static class FastIO_Native
 
     #region Classes / structs / enums
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly ref struct FileFinder
     {
         private const int FindExInfoBasic = 1;
