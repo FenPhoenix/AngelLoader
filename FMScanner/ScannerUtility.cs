@@ -254,7 +254,7 @@ internal static class Utility
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool StartsWithGU(this string str, string value)
+    internal static bool StartsWith_GivenOrUpper(this string str, string value)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -290,7 +290,7 @@ internal static class Utility
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool StartsWithGL(this string str, string value)
+    internal static bool StartsWith_GivenOrLower(this string str, string value)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 

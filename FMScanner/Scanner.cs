@@ -998,8 +998,8 @@ public sealed class Scanner : IDisposable
         }
 
         // Deep-copy the scan options object because we might have to change its values in some cases, but we
-        // don't want to modify the original because the caller will still have a reference to it and may
-        // depend on it not changing.
+        // don't want to modify the original because the caller will still have a reference to it and may depend
+        // on it not changing.
         _scanOptions = scanOptions?.DeepCopy() ?? throw new ArgumentNullException(nameof(scanOptions));
 
         List<ScannedFMDataAndError> scannedFMDataList = new(listCapacity);
@@ -1087,8 +1087,8 @@ public sealed class Scanner : IDisposable
 
         ResetCachedFields();
 
-        // Random name for solid archive temp extract operations, to prevent possible file/folder name
-        // clashes in parallelized scenario.
+        // Random name for solid archive temp extract operations, to prevent possible file/folder name clashes
+        // in parallelized scenario.
         string tempRandomName = Path_GetRandomFileName().Trim();
 
         bool nullAlreadyAdded = false;
@@ -1398,10 +1398,9 @@ public sealed class Scanner : IDisposable
 
                         --- snip ---
 
-                        The way it's phrased makes it sound like multiple "maps" should still be considered
-                        part of the same "mission" if they're used like this. So we're going to consider one
-                        "Mission" line to be one mission, and if it has multiple maps then it's one mission
-                        with loading zones.
+                        The way it's phrased makes it sound like multiple "maps" should still be considered part
+                        of the same "mission" if they're used like this. So we're going to consider one "Mission"
+                        line to be one mission, and if it has multiple maps then it's one mission with loading zones.
                         */
                         else if (_ctx.DarkMod_TDM_MapSequence_MissionLine_Regex.Match(lineT).Success)
                         {
@@ -1438,9 +1437,8 @@ public sealed class Scanner : IDisposable
         if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
             // @TDM_NOTE(readme text & dates):
-            // For best perf, I guess we would get dates from the pk4 but text from disk.
-            // Still, these files are generally extremely small, and TDM scans are lightning-fast anyway, so
-            // let's just leave it.
+            // For best perf, I guess we would get dates from the pk4 but text from disk. Still, these files are
+            // generally extremely small, and TDM scans are lightning-fast anyway, so let's just leave it.
 
             // Sometimes the extracted readmes have different dates than the ones in the pk4.
             // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
@@ -1709,8 +1707,8 @@ public sealed class Scanner : IDisposable
             }
             else
             {
-                // Getting the size is horrendously expensive for folders, but if we're doing it then we can
-                // save some time later by using the file info list as a cache.
+                // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
+                // some time later by using the file info list as a cache.
                 FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
 
                 ulong size = 0;
@@ -1821,8 +1819,8 @@ public sealed class Scanner : IDisposable
                     }
                 }
             }
-            // I think we need to always scan fm.ini even if we're not returning any of its fields, because
-            // of tags, I think for some reason we're needing to read tags always?
+            // I think we need to always scan fm.ini even if we're not returning any of its fields, because of
+            // tags, I think for some reason we're needing to read tags always?
             {
                 for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
@@ -1852,7 +1850,6 @@ public sealed class Scanner : IDisposable
             }
             if (_scanOptions.ScanTitle || _scanOptions.ScanTags || _scanOptions.ScanAuthor)
             {
-                // SS2 file
                 // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
                 for (int i = 0; i < _baseDirFiles.Count; i++)
                 {
@@ -1981,8 +1978,8 @@ public sealed class Scanner : IDisposable
         acceptable, then we fall back to the older method of extracting everything we might possibly need.
 
         IMPORTANT(Scanner partial solid archive extract):
-        The logic for deciding which files to extract (taking files and then de-duping the list) needs
-        to match the logic for using them. If we change the usage logic, we need to change this too!
+        The logic for deciding which files to extract (taking files and then de-duping the list) needs to match
+        the logic for using them. If we change the usage logic, we need to change this too!
         */
 
         // Stupid micro-optimization:
@@ -2044,9 +2041,9 @@ public sealed class Scanner : IDisposable
                         fn = rarEntry.Key;
                         uncompressedSize = rarEntry.Size;
                         /*
-                        @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have
-                         cost functionality for solid rar yet (and probably won't want to go into the guts of
-                         the rar code to add it either).
+                        @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have cost
+                         functionality for solid rar yet (and probably won't want to go into the guts of the rar
+                         code to add it either).
                         */
                         solidEntry = new NameAndIndex(rarEntry.Key, i, 0);
                     }
@@ -2065,8 +2062,8 @@ public sealed class Scanner : IDisposable
                     }
                     else if (fn.IsBaseDirMisOrGamFile())
                     {
-                        // We always need to know about mis files to get the used ones for the titles.str
-                        // scan, but we won't extract them if we don't actually need to scan them.
+                        // We always need to know about mis files to get the used ones for the titles.str scan,
+                        // but we won't extract them if we don't actually need to scan them.
                         if (fn.ExtIsMis())
                         {
                             _solid_MisFiles.Add(solidEntry);
@@ -2133,9 +2130,9 @@ public sealed class Scanner : IDisposable
 
             #region De-duplicate list
 
-            // Some files could have multiple copies in different folders, but we only want to extract
-            // the one we're going to use. We separate out this more complex and self-dependent logic
-            // here. Doing this nonsense is still faster than extracting to disk.
+            // Some files could have multiple copies in different folders, but we only want to extract the one
+            // we're going to use. We separate out this more complex and self-dependent logic here. Doing this
+            // nonsense is still faster than extracting to disk.
 
             static void PopulateTempList(
                 ListFast<NameAndIndex> fileNamesList,
@@ -2279,9 +2276,9 @@ public sealed class Scanner : IDisposable
 
         /*
         @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are
-        in that block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
-        we would have to ignore any files in its block that are 0 length. We don't need to do this currently,
-        but just a note for the future.
+         in that block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
+         we would have to ignore any files in its block that are 0 length. We don't need to do this currently,
+         but just a note for the future.
         */
 
         // @BLOCKS: Implement solid RAR support later
@@ -3596,10 +3593,10 @@ public sealed class Scanner : IDisposable
             if (specialLogic == SpecialLogic.Author)
             {
                 /*
-                    Check this first so as to avoid:
+                Check this first so as to avoid:
 
-                    Briefing Movie
-                    Created by Yandros using VideoPad by NCH Software
+                Briefing Movie
+                Created by Yandros using VideoPad by NCH Software
                 */
                 ret = GetAuthorFromTopOfReadme(file.Lines, titles);
                 if (!ret.IsEmpty()) return ret;
@@ -3611,9 +3608,9 @@ public sealed class Scanner : IDisposable
                 if (specialLogic == SpecialLogic.Author)
                 {
                     // @PERF_TODO: We can move things around for perf here.
-                    // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
-                    // a little bit faster on average. But that causes a handful of differences in the
-                    // output. Not enough to matter really, but meh...
+                    // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be a little
+                    // bit faster on average. But that causes a handful of differences in the output. Not enough
+                    // to matter really, but meh...
                     ret = GetAuthorFromText(file.Text);
                     if (!ret.IsEmpty()) return ret;
                 }
@@ -3643,9 +3640,9 @@ public sealed class Scanner : IDisposable
         // statistically unlikely to find anything
         if (specialLogic == SpecialLogic.Author && ret.IsEmpty())
         {
-            // We do this separately for performance and clarity; it's an uncommon case involving regex
-            // searching and we don't want to run it unless we have to. Also, it's specific enough that we
-            // don't really want to shoehorn it into the standard line search.
+            // We do this separately for performance and clarity; it's an uncommon case involving regex searching
+            // and we don't want to run it unless we have to. Also, it's specific enough that we don't really want
+            // to shoehorn it into the standard line search.
             ret = GetAuthorFromCopyrightMessage();
 
             if (!ret.IsEmpty()) return ret;
@@ -3696,11 +3693,10 @@ public sealed class Scanner : IDisposable
 
             /*
             @PERF_TODO(Scanner/GetValueFromReadme/GetAuthorFromTitleByAuthorLine() call section):
-            This is last because it used to have a dynamic and constantly re-instantiated regex in it. I
-            don't even know why I thought I needed that but it turns out I could just make it static like
-            the rest, so I did. Re-evaluate this and maybe put it higher?
-            Anything that can go before the full-text search probably should, because that's clearly the
-            slowest by far.
+            This is last because it used to have a dynamic and constantly re-instantiated regex in it. I don't
+            even know why I thought I needed that but it turns out I could just make it static like the rest, so
+            I did. Re-evaluate this and maybe put it higher? Anything that can go before the full-text search
+            probably should, because that's clearly the slowest by far.
             */
             ret = GetAuthorFromTitleByAuthorLine(titles);
         }
@@ -3722,7 +3718,7 @@ public sealed class Scanner : IDisposable
                 // I can't believe fallthrough is actually useful (for visual purposes only, but still!)
                 case SpecialLogic.Title when
                     lineStartTrimmed.StartsWithI_Local("Title & Description") ||
-                    lineStartTrimmed.StartsWithGL("Title screen"):
+                    lineStartTrimmed.StartsWith_GivenOrLower("Title screen"):
 #if false
                     // @Scanner: Enable these once we have more robust readme language logic
                     // Ugh
@@ -3748,7 +3744,7 @@ public sealed class Scanner : IDisposable
             {
                 // Either in given case or in all caps, but not in lowercase, because that's given me at least
                 // one false positive
-                if (lineStartTrimmed.StartsWithGU(key))
+                if (lineStartTrimmed.StartsWith_GivenOrUpper(key))
                 {
                     lineStartsWithKey = true;
 
@@ -3899,25 +3895,23 @@ public sealed class Scanner : IDisposable
     private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
     {
         OrderTitlesOptimally(titles, serverTitle);
-        if (titles.Count > 0)
+        if (titles.Count == 0) return;
+
+        fmData.Title = titles[0];
+        if (titles.Count == 1) return;
+
+        fmData.AlternateTitles = new string[titles.Count - 1];
+        for (int i = 1; i < titles.Count; i++)
         {
-            fmData.Title = titles[0];
-            if (titles.Count > 1)
-            {
-                fmData.AlternateTitles = new string[titles.Count - 1];
-                for (int i = 1; i < titles.Count; i++)
-                {
-                    fmData.AlternateTitles[i - 1] = titles[i].Trim();
-                }
-            }
+            fmData.AlternateTitles[i - 1] = titles[i].Trim();
         }
     }
 
     private bool SetupAuthorRequiredTitleScan()
     {
-        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan
-        // titles in that case, but we shouldn't actually set the title in the return object because the
-        // caller didn't request it.
+        // There's one author scan that depends on the title ("[title] by [author]"), so we need to scan titles
+        // in that case, but we shouldn't actually set the title in the return object because the caller didn't
+        // request it.
         bool scanTitleForAuthorPurposesOnly = false;
         if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !_scanOptions.ScanTitle)
         {
@@ -3930,7 +3924,9 @@ public sealed class Scanner : IDisposable
 
     private void EndTitleScan(
         bool scanTitleForAuthorPurposesOnly,
-        ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
+        ScannedFMData fmData,
+        ListFast<string> titles,
+        string? serverTitle = null)
     {
         ListFast<string>? topOfReadmeTitles = GetTitlesFromTopOfReadmes();
         if (topOfReadmeTitles?.Count > 0)
@@ -3951,10 +3947,6 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    // This is kind of just an excuse to say that my scanner can catch the full proper title of Deceptive
-    // Perception 2. :P
-    // This is likely to be a bit loose with its accuracy, but since values caught here are almost certain to
-    // end up as alternate titles, I can afford that.
     private ListFast<string>? GetTitlesFromTopOfReadmes()
     {
         ListFast<string>? ret = null;
@@ -5364,6 +5356,7 @@ public sealed class Scanner : IDisposable
         return false;
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct StringToDateResult
     {
         internal readonly bool FunctionResult;
@@ -5992,9 +5985,8 @@ public sealed class Scanner : IDisposable
 
             Both files are byte-identical but just with different names.
 
-            Note that my version of the second file (same name) is not broken, I got it from
-            http://ladyjo1.free.fr/ back in like 2018 or whenever I got that big pack to test the
-            scanner with.
+            Note that my version of the second file (same name) is not broken, I got it from http://ladyjo1.free.fr/
+            back in like 2018 or whenever I got that big pack to test the scanner with.
 
             These files throw with "The archive entry was compressed using an unsupported compression method."
             They throw on both ZipArchiveFast() and regular built-in ZipArchive().
@@ -6028,14 +6020,13 @@ public sealed class Scanner : IDisposable
             WARNINGS:
             There are data after the end of archive
 
-            And it considers the error to be "fatal" even though it succeeds in this case (the
-            extracted dir diffs identical with the extracted dir of the working one).
-            But if we're going to attempt to sometimes allow fatal errors to count as "success", I
-            dunno how we would tell the difference between that and an ACTUAL fatal (ie. extract did
-            not result in intact files on disk) error. If we just match by "Headers error" and/or
-            "data past end" who knows if sometimes those might actually result in bad output and not
-            others. I don't know. So we're going to continue to fail in this case, but at least tell
-            the user what's wrong and give them an actionable suggestion.
+            And it considers the error to be "fatal" even though it succeeds in this case (the extracted dir diffs
+            identical with the extracted dir of the working one). But if we're going to attempt to sometimes allow
+            fatal errors to count as "success", I dunno how we would tell the difference between that and an ACTUAL
+            fatal error (ie. extract did not result in intact files on disk). If we just match by "Headers error"
+            and/or "data past end" who knows if sometimes those might actually result in bad output and not others.
+            I don't know. So we're going to continue to fail in this case, but at least tell the user what's wrong
+            and give them an actionable suggestion.
             */
             #endregion
             if (ex is ZipCompressionMethodException zipEx)
