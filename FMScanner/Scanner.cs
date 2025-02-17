@@ -225,6 +225,10 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<NameAndIndex> _solid_MisFileItems = new(20);
     private readonly ListFast<string> _missFlagExtractList = new(1);
 
+    private NameAndIndex? _solidMissFlagFileToUse;
+    private NameAndIndex? _solidMisFileToUse;
+    private NameAndIndex? _solidGamFileToUse;
+
     #endregion
 
     private readonly ListFast<string> _tempLines = new(0);
@@ -261,10 +265,6 @@ public sealed class Scanner : IDisposable
     private readonly ScannerTDMContext _tdmContext;
 
     private bool _missFlagAlreadyHandled;
-
-    private NameAndIndex? _solidMissFlagFileToUse;
-    private NameAndIndex? _solidMisFileToUse;
-    private NameAndIndex? _solidGamFileToUse;
 
     #endregion
 
