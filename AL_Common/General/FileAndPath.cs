@@ -317,6 +317,30 @@ public static partial class Common
     }
 
     /// <summary>
+    /// Path equality check ignoring case and directory separator differences. Only use if <paramref name="second"/> is ASCII.
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public static bool PathEqualsI_AsciiSecond(this string first, string second)
+    {
+        if (first == second) return true;
+
+        int firstLen = first.Length;
+        if (firstLen != second.Length) return false;
+
+        for (int i = 0; i < firstLen; i++)
+        {
+            char fc = first[i];
+            char sc = second[i];
+
+            if (!AsciiPathCharsConsideredEqual_Win(fc, sc)) return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Path starts-with check ignoring case and directory separator differences.
     /// </summary>
     /// <param name="first"></param>

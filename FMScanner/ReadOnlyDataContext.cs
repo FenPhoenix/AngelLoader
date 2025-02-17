@@ -1092,10 +1092,10 @@ public sealed class ReadOnlyDataContext
     #region Missflag.str predicates
 
     private static bool MissFlagPredicate1(string value) =>
-        value.PathEqualsI(FMFiles.StringsMissFlag);
+        value.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag);
 
     private static bool MissFlagPredicate2(string value) =>
-        value.PathEqualsI(FMFiles.StringsEnglishMissFlag);
+        value.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag);
 
     private static bool MissFlagPredicate3(string value) =>
         value.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag);
@@ -1112,10 +1112,10 @@ public sealed class ReadOnlyDataContext
     #region Newgame.str predicates
 
     private static bool NewGameStrPredicate1(string value) =>
-        value.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr);
+        value.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr);
 
     private static bool NewGameStrPredicate2(string value) =>
-        value.PathEqualsI(FMFiles.IntrfaceNewGameStr);
+        value.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr);
 
     private static bool NewGameStrPredicate3(string value) =>
         value.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr);
@@ -1133,7 +1133,7 @@ public sealed class ReadOnlyDataContext
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool TitlesFilePredicate(string value, string location) =>
-        value.PathEqualsI(location);
+        value.PathEqualsI_AsciiSecond(location);
 
     #endregion
 
