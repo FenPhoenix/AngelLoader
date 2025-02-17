@@ -1627,6 +1627,8 @@ public sealed class Scanner : IDisposable
 
         bool needsHtmlRefExtract = false;
 
+        ulong sevenZipSize = 0;
+
         if (_fmFormat.IsSolidArchive())
         {
             (ScannedFMDataAndError? partialExtractError, ListFast<NameAndIndex> entries) =
@@ -1636,7 +1638,8 @@ public sealed class Scanner : IDisposable
                     fm,
                     sevenZipEntries,
                     rarEntries,
-                    cancellationToken);
+                    cancellationToken,
+                    out sevenZipSize);
 
             if (partialExtractError != null)
             {
@@ -1701,34 +1704,44 @@ public sealed class Scanner : IDisposable
 
         if (_scanOptions.ScanSize)
         {
-            if (_fmFormat > FMFormat.NotInArchive)
+            switch (_fmFormat)
             {
-                fmData.Size = (ulong)GetFileLength(fm.Path);
-            }
-            else
-            {
-                // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
-                // some time later by using the file info list as a cache.
-                FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
-
-                ulong size = 0;
-                _fmDirFileInfos.SetRecycleState(fileInfos.Length);
-                for (int i = 0; i < fileInfos.Length; i++)
+                case FMFormat.Zip:
+                    fmData.Size = (ulong)_archive.ArchiveStreamLength;
+                    break;
+                case FMFormat.Rar:
+                case FMFormat.RarSolid:
+                    fmData.Size = (ulong)_rarStream.Length;
+                    break;
+                case FMFormat.SevenZip:
+                    fmData.Size = sevenZipSize;
+                    break;
+                default:
                 {
-                    FileInfo fileInfo = fileInfos[i];
-                    FileInfoCustom? fileInfoCustom = _fmDirFileInfos[i];
-                    if (fileInfoCustom != null!)
+                    // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
+                    // some time later by using the file info list as a cache.
+                    FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
+
+                    ulong size = 0;
+                    _fmDirFileInfos.SetRecycleState(fileInfos.Length);
+                    for (int i = 0; i < fileInfos.Length; i++)
                     {
-                        fileInfoCustom.Set(fileInfo);
+                        FileInfo fileInfo = fileInfos[i];
+                        FileInfoCustom? fileInfoCustom = _fmDirFileInfos[i];
+                        if (fileInfoCustom != null!)
+                        {
+                            fileInfoCustom.Set(fileInfo);
+                        }
+                        else
+                        {
+                            fileInfoCustom = new FileInfoCustom(fileInfo);
+                            _fmDirFileInfos[i] = fileInfoCustom;
+                        }
+                        size += (ulong)fileInfo.Length;
                     }
-                    else
-                    {
-                        fileInfoCustom = new FileInfoCustom(fileInfo);
-                        _fmDirFileInfos[i] = fileInfoCustom;
-                    }
-                    size += (ulong)fileInfo.Length;
+                    fmData.Size = size;
+                    break;
                 }
-                fmData.Size = size;
             }
         }
 
@@ -1971,8 +1984,11 @@ public sealed class Scanner : IDisposable
         FMToScan fm,
         ListFast<SevenZipArchiveEntry> sevenZipEntries,
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        out ulong sevenZipSize)
     {
+        sevenZipSize = 0;
+
         /*
         We try to extract the absolute minimum, but if we can't determine for sure if our extraction cost is
         acceptable, then we fall back to the older method of extracting everything we might possibly need.
@@ -2001,6 +2017,7 @@ public sealed class Scanner : IDisposable
             */
             using (FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
             {
+                sevenZipSize = (ulong)fs.Length;
                 int entriesCount;
                 cancellationToken.ThrowIfCancellationRequested();
 
