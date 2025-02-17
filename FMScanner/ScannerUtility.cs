@@ -465,8 +465,8 @@ internal static class Utility
 
         return;
 
-        // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
-        // being interpreted as a Roman numeral
+        // Nothing past 'X' because no mission number is going to be that high and we don't want something like
+        // "MIX" being interpreted as a Roman numeral
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
 
@@ -594,7 +594,7 @@ internal static class Utility
     #endregion
 
     // @RAR: Duplicate because we don't want to put it in Common cause then it has to reference SharpCompress
-    // And then we couldn't have SharpCompress reference Common. Meh.
+    //  and then we couldn't have SharpCompress reference Common. Meh.
     internal static void ExtractToFile_Fast(
         this RarReader reader,
         string fileName,

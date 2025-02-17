@@ -1718,8 +1718,8 @@ public sealed class Scanner : IDisposable
                     break;
                 default:
                 {
-                    // Getting the size is horrendously expensive for folders, but if we're doing it then we can save
-                    // some time later by using the file info list as a cache.
+                    // Getting the size is horrendously expensive for folders, but if we're doing it then we can
+                    // save some time later by using the file info list as a cache.
                     FileInfo[] fileInfos = FMWorkingPathDirInfo.GetFiles("*", SearchOption.AllDirectories);
 
                     ulong size = 0;
