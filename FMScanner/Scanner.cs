@@ -81,6 +81,23 @@ file static class FMFormatExtensions
     };
 }
 
+internal readonly struct SolidEntry
+{
+    internal readonly string FullName;
+    internal readonly int Index;
+    internal readonly long TotalExtractionCost;
+
+    public SolidEntry(string fullName, int index, long totalExtractionCost)
+    {
+        FullName = fullName;
+        Index = index;
+        TotalExtractionCost = totalExtractionCost;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
+}
+
 public sealed class Scanner : IDisposable
 {
     // Only safe to enable during single-threaded scans, otherwise all threads will hammer on this!
@@ -303,23 +320,6 @@ public sealed class Scanner : IDisposable
     #endregion
 
     #region Private classes
-
-    private readonly struct SolidEntry
-    {
-        internal readonly string FullName;
-        internal readonly int Index;
-        internal readonly long TotalExtractionCost;
-
-        public SolidEntry(string fullName, int index, long totalExtractionCost)
-        {
-            FullName = fullName;
-            Index = index;
-            TotalExtractionCost = totalExtractionCost;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
-    }
 
     /// <summary>
     /// Abstracts over disposable streams vs. the reusable cached MemoryStream. The passed stream won't be disposed
@@ -2126,7 +2126,8 @@ public sealed class Scanner : IDisposable
                     {
                         _solid_MissFlagFiles.Add(solidEntry);
                     }
-                    else if (fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
+                    else if (fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
+                             fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
                     {
                         entriesList.Add(solidEntry);
                     }
@@ -2197,106 +2198,24 @@ public sealed class Scanner : IDisposable
 
             if (!_missFlagAlreadyHandled)
             {
-                // TODO: We might be able to put these into a method that takes a predicate so they're not duplicated
-                SolidEntry? missFlagToUse = null;
-                if (_solid_MisFiles.Count > 1)
+                if (TryGetMissFlag(tempList, out SolidEntry missFlagToUse))
                 {
-                    foreach (SolidEntry item in tempList)
-                    {
-                        if (item.FullName.PathEqualsI(FMFiles.StringsMissFlag))
-                        {
-                            missFlagToUse = item;
-                            break;
-                        }
-                    }
-                    if (missFlagToUse == null)
-                    {
-                        foreach (SolidEntry item in tempList)
-                        {
-                            if (item.FullName.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                            {
-                                missFlagToUse = item;
-                                break;
-                            }
-                        }
-                    }
-                    if (missFlagToUse == null)
-                    {
-                        foreach (SolidEntry item in tempList)
-                        {
-                            if (item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
-                            {
-                                missFlagToUse = item;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (missFlagToUse is { } missFlagToUseNonNull)
-                {
-                    entriesList.Add(missFlagToUseNonNull);
+                    entriesList.Add(missFlagToUse);
                 }
             }
 
             PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
 
-            SolidEntry? newGameStrToUse = null;
-            foreach (SolidEntry item in tempList)
+            if (TryGetNewGameStr(tempList, out SolidEntry newGameStrToUse))
             {
-                if (item.FullName.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-                {
-                    newGameStrToUse = item;
-                    break;
-                }
-            }
-            if (newGameStrToUse == null)
-            {
-                foreach (SolidEntry item in tempList)
-                {
-                    if (item.FullName.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                    {
-                        newGameStrToUse = item;
-                        break;
-                    }
-                }
-            }
-            if (newGameStrToUse == null)
-            {
-                foreach (SolidEntry item in tempList)
-                {
-                    if (item.FullName.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                        item.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
-                    {
-                        newGameStrToUse = item;
-                        break;
-                    }
-                }
-            }
-
-            if (newGameStrToUse is { } newGameStrToUseNonNull)
-            {
-                entriesList.Add(newGameStrToUseNonNull);
+                entriesList.Add(newGameStrToUse);
             }
 
             PopulateTempList(entriesList, tempList, EndsWithTitleFile);
 
-            foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
+            if (TryGetTitlesFile(tempList, _ctx.FMFiles_TitlesStrLocations, out SolidEntry titlesFileToUse))
             {
-                SolidEntry? titlesFileToUse = null;
-                foreach (SolidEntry item in tempList)
-                {
-                    if (item.FullName.PathEqualsI(titlesFileLocation))
-                    {
-                        titlesFileToUse = item;
-                        break;
-                    }
-                }
-                if (titlesFileToUse is { } titlesFileToUseNonNull)
-                {
-                    entriesList.Add(titlesFileToUseNonNull);
-                    break;
-                }
+                entriesList.Add(titlesFileToUse);
             }
 
             #endregion
@@ -3238,45 +3157,11 @@ public sealed class Scanner : IDisposable
         {
             missFlagFile = solidMissFlagFileToUse;
         }
-        else
+        else if (_misFiles.Count > 1 &&
+                 _stringsDirFiles.Count > 0 &&
+                 TryGetMissFlag(_stringsDirFiles, out NameAndIndex result))
         {
-            if (_misFiles.Count > 1 && _stringsDirFiles.Count > 0)
-            {
-                // I don't remember if I need to search in this exact order, so uh... not rockin' the boat.
-                for (int i = 0; i < _stringsDirFiles.Count; i++)
-                {
-                    NameAndIndex item = _stringsDirFiles[i];
-                    if (item.Name.PathEqualsI(FMFiles.StringsMissFlag))
-                    {
-                        missFlagFile = _stringsDirFiles[i];
-                        break;
-                    }
-                }
-                if (missFlagFile == null)
-                {
-                    for (int i = 0; i < _stringsDirFiles.Count; i++)
-                    {
-                        NameAndIndex item = _stringsDirFiles[i];
-                        if (item.Name.PathEqualsI(FMFiles.StringsEnglishMissFlag))
-                        {
-                            missFlagFile = _stringsDirFiles[i];
-                            break;
-                        }
-                    }
-                }
-                if (missFlagFile == null)
-                {
-                    for (int i = 0; i < _stringsDirFiles.Count; i++)
-                    {
-                        NameAndIndex item = _stringsDirFiles[i];
-                        if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
-                        {
-                            missFlagFile = _stringsDirFiles[i];
-                            break;
-                        }
-                    }
-                }
-            }
+            missFlagFile = result;
         }
 
         if (missFlagFile is { } missFlagFileNonNull)
@@ -4167,44 +4052,12 @@ public sealed class Scanner : IDisposable
     {
         if (_intrfaceDirFiles.Count == 0) return "";
 
-        int newGameStrFileIndex = -1;
-        for (int i = 0; i < _intrfaceDirFiles.Count; i++)
+        if (!TryGetNewGameStr(_intrfaceDirFiles, out NameAndIndex newGameStrFile))
         {
-            NameAndIndex item = _intrfaceDirFiles[i];
-            if (item.Name.PathEqualsI(FMFiles.IntrfaceEnglishNewGameStr))
-            {
-                newGameStrFileIndex = i;
-                break;
-            }
-        }
-        if (newGameStrFileIndex == -1)
-        {
-            for (int i = 0; i < _intrfaceDirFiles.Count; i++)
-            {
-                NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathEqualsI(FMFiles.IntrfaceNewGameStr))
-                {
-                    newGameStrFileIndex = i;
-                    break;
-                }
-            }
-        }
-        if (newGameStrFileIndex == -1)
-        {
-            for (int i = 0; i < _intrfaceDirFiles.Count; i++)
-            {
-                NameAndIndex item = _intrfaceDirFiles[i];
-                if (item.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
-                {
-                    newGameStrFileIndex = i;
-                    break;
-                }
-            }
+            return "";
         }
 
-        if (newGameStrFileIndex == -1) return "";
-
-        ReadAllLinesDetectEncoding(_intrfaceDirFiles[newGameStrFileIndex], _tempLines, type: DetectEncodingType.NewGameStr);
+        ReadAllLinesDetectEncoding(newGameStrFile, _tempLines, type: DetectEncodingType.NewGameStr);
 
         for (int i = 0; i < _tempLines.Count; i++)
         {
@@ -4315,34 +4168,15 @@ public sealed class Scanner : IDisposable
 
     private ListFast<string>? GetTitlesStrLines()
     {
-        ListFast<string>? titlesStrLines = null;
-
-        #region Read title(s).str file
-
-        foreach (string titlesFileLocation in _ctx.FMFiles_TitlesStrLocations)
+        if (!TryGetTitlesFile(_stringsDirFiles, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFile))
         {
-            int titlesFileIndex = -1;
-            for (int i = 0; i < _stringsDirFiles.Count; i++)
-            {
-                NameAndIndex item = _stringsDirFiles[i];
-                if (item.Name.PathEqualsI(titlesFileLocation))
-                {
-                    titlesFileIndex = i;
-                    break;
-                }
-            }
-
-            if (titlesFileIndex == -1) continue;
-
-            ReadAllLinesDetectEncoding(_stringsDirFiles[titlesFileIndex], _tempLines, type: DetectEncodingType.TitlesStr);
-            titlesStrLines = _tempLines;
-
-            break;
+            return null;
         }
 
-        #endregion
+        ReadAllLinesDetectEncoding(titlesFile, _tempLines, type: DetectEncodingType.TitlesStr);
+        ListFast<string> titlesStrLines = _tempLines;
 
-        if (titlesStrLines == null || titlesStrLines.Count == 0) return null;
+        if (titlesStrLines.Count == 0) return null;
 
         #region Filter titlesStrLines
 
@@ -6257,6 +6091,130 @@ public sealed class Scanner : IDisposable
 
         return (true, null, ret);
     }
+
+    #endregion
+
+    #region Get item by filename
+
+    #region Missflag.str functions
+
+    private bool TryGetMissFlag(ListFast<SolidEntry> list, out SolidEntry result)
+    {
+        result = default;
+        return list.Count != 0 && TryGetItemFromPredicate_SolidEntry(list, _ctx._missFlagPredicates, out result);
+    }
+
+    private bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count != 0 && TryGetItemFromPredicate_NameAndIndex(list, _ctx._missFlagPredicates, out result);
+    }
+
+    #endregion
+
+    #region Newgame.str functions
+
+    private bool TryGetNewGameStr(ListFast<SolidEntry> list, out SolidEntry result)
+    {
+        result = default;
+        return list.Count != 0 && TryGetItemFromPredicate_SolidEntry(list, _ctx._newGameStrPredicates, out result);
+    }
+
+    private bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count != 0 && TryGetItemFromPredicate_NameAndIndex(list, _ctx._newGameStrPredicates, out result);
+    }
+
+    #endregion
+
+    #region Titles file functions
+
+    private static bool TryGetTitlesFile(ListFast<SolidEntry> list, string[] locations, out SolidEntry result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (string location in locations)
+        {
+            if (TryGetItem(list, x => TitlesFilePredicate(x.FullName, location), out result))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (string location in locations)
+        {
+            if (TryGetItem(list, x => TitlesFilePredicate(x.Name, location), out result))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #endregion
+
+    #region Predicate getter functions
+
+    private static bool TryGetItemFromPredicate_SolidEntry(ListFast<SolidEntry> list, Func<string, bool>[] predicates, out SolidEntry result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (Func<string, bool> predicate in predicates)
+        {
+            if (TryGetItem(list, x => predicate.Invoke(x.FullName), out result))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryGetItemFromPredicate_NameAndIndex(ListFast<NameAndIndex> list, Func<string, bool>[] predicates, out NameAndIndex result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (Func<string, bool> predicate in predicates)
+        {
+            if (TryGetItem(list, x => predicate.Invoke(x.Name), out result))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryGetItem<T>(ListFast<T> list, Predicate<T> predicate, out T result)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            T item = list[i];
+            if (predicate(item))
+            {
+                result = item;
+                return true;
+            }
+        }
+
+        result = default!;
+        return false;
+    }
+
+    #endregion
 
     #endregion
 
