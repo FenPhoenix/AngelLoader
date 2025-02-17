@@ -81,23 +81,6 @@ file static class FMFormatExtensions
     };
 }
 
-internal readonly struct SolidEntry
-{
-    internal readonly string FullName;
-    internal readonly int Index;
-    internal readonly long TotalExtractionCost;
-
-    public SolidEntry(string fullName, int index, long totalExtractionCost)
-    {
-        FullName = fullName;
-        Index = index;
-        TotalExtractionCost = totalExtractionCost;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal NameAndIndex ToNameAndIndex() => new(FullName, Index);
-}
-
 public sealed class Scanner : IDisposable
 {
     // Only safe to enable during single-threaded scans, otherwise all threads will hammer on this!
@@ -225,23 +208,21 @@ public sealed class Scanner : IDisposable
     #region Solid entry lists
 
     // 50 entries is more than we're ever likely to need in these lists, but still small enough not to be wasteful.
-    private ListFast<SolidEntry>? _solidExtractedEntriesList;
-    private ListFast<SolidEntry> SolidExtractedEntriesList => _solidExtractedEntriesList ??= new ListFast<SolidEntry>(50);
+    private ListFast<NameAndIndex>? _solidExtractedEntriesList;
+    private ListFast<NameAndIndex> SolidExtractedEntriesList => _solidExtractedEntriesList ??= new ListFast<NameAndIndex>(50);
 
-    private ListFast<SolidEntry>? _solidExtractedEntriesTempList;
-    private ListFast<SolidEntry> SolidZipExtractedEntriesTempList => _solidExtractedEntriesTempList ??= new ListFast<SolidEntry>(50);
+    private ListFast<NameAndIndex>? _solidExtractedEntriesTempList;
+    private ListFast<NameAndIndex> SolidZipExtractedEntriesTempList => _solidExtractedEntriesTempList ??= new ListFast<NameAndIndex>(50);
 
     private ListFast<string>? _solidExtractedFilesList;
     private ListFast<string> SolidExtractedFilesList => _solidExtractedFilesList ??= new ListFast<string>(50);
 
     // @BLOCKS: Lazy-load these?
-    private readonly ListFast<SolidEntry> _solid_MisFiles = new(20);
-    private readonly ListFast<SolidEntry> _solid_GamFiles = new(10);
-    private readonly ListFast<SolidEntry> _solid_MissFlagFiles = new(3);
-    private readonly ListFast<SolidEntry> _solid_MisAndGamFiles = new(21);
+    private readonly ListFast<NameAndIndex> _solid_MisFiles = new(20);
+    private readonly ListFast<NameAndIndex> _solid_GamFiles = new(10);
+    private readonly ListFast<NameAndIndex> _solid_MissFlagFiles = new(3);
+    private readonly ListFast<NameAndIndex> _solid_MisAndGamFiles = new(21);
     private readonly ListFast<NameAndIndex> _solid_MisFileItems = new(20);
-    private readonly ListFast<NameAndIndex> _solid_UsedMisFileItems = new(20);
-    private readonly ListFast<SolidEntry> _solid_FinalUsedMisFilesList = new(20);
     private readonly ListFast<string> _missFlagExtractList = new(1);
 
     #endregion
@@ -1002,8 +983,6 @@ public sealed class Scanner : IDisposable
         _solid_MissFlagFiles.ClearFast();
         _solid_MisAndGamFiles.ClearFast();
         _solid_MisFileItems.ClearFast();
-        _solid_UsedMisFileItems.ClearFast();
-        _solid_FinalUsedMisFilesList.ClearFast();
         _missFlagExtractList.ClearFast();
     }
 
@@ -1652,7 +1631,7 @@ public sealed class Scanner : IDisposable
 
         if (_fmFormat.IsSolidArchive())
         {
-            (ScannedFMDataAndError? partialExtractError, ListFast<SolidEntry> entries) =
+            (ScannedFMDataAndError? partialExtractError, ListFast<NameAndIndex> entries) =
                 DoPartialSolidExtract(
                     tempPath,
                     tempRandomName,
@@ -1988,7 +1967,7 @@ public sealed class Scanner : IDisposable
 
     #region Solid archive partial extract
 
-    private (ScannedFMDataAndError? Error, ListFast<SolidEntry> Entries)
+    private (ScannedFMDataAndError? Error, ListFast<NameAndIndex> Entries)
     DoPartialSolidExtract(
         string tempPath,
         string tempRandomName,
@@ -2008,8 +1987,8 @@ public sealed class Scanner : IDisposable
 
         // Stupid micro-optimization:
         // Init them both just once, avoiding repeated null checks on the properties
-        ListFast<SolidEntry> entriesList = SolidExtractedEntriesList;
-        ListFast<SolidEntry> tempList = SolidZipExtractedEntriesTempList;
+        ListFast<NameAndIndex> entriesList = SolidExtractedEntriesList;
+        ListFast<NameAndIndex> tempList = SolidZipExtractedEntriesTempList;
 
         try
         {
@@ -2047,7 +2026,7 @@ public sealed class Scanner : IDisposable
 
                     SevenZipArchiveEntry sevenZipEntry = null!;
                     RarArchiveEntry rarEntry = null!;
-                    SolidEntry solidEntry;
+                    NameAndIndex solidEntry;
                     string fn;
                     long uncompressedSize;
                     // @BLOCKS: Manual type switch
@@ -2057,7 +2036,7 @@ public sealed class Scanner : IDisposable
                         if (sevenZipEntry.IsAnti) continue;
                         fn = sevenZipEntry.FileName;
                         uncompressedSize = sevenZipEntry.UncompressedSize;
-                        solidEntry = new SolidEntry(fn, i, sevenZipEntry.TotalExtractionCost);
+                        solidEntry = new NameAndIndex(fn, i, sevenZipEntry.TotalExtractionCost);
                     }
                     else
                     {
@@ -2069,7 +2048,7 @@ public sealed class Scanner : IDisposable
                          cost functionality for solid rar yet (and probably won't want to go into the guts of
                          the rar code to add it either).
                         */
-                        solidEntry = new SolidEntry(rarEntry.Key, i, 0);
+                        solidEntry = new NameAndIndex(rarEntry.Key, i, 0);
                     }
 
                     int dirSeps;
@@ -2159,15 +2138,15 @@ public sealed class Scanner : IDisposable
             // here. Doing this nonsense is still faster than extracting to disk.
 
             static void PopulateTempList(
-                ListFast<SolidEntry> fileNamesList,
-                ListFast<SolidEntry> tempList,
-                Func<SolidEntry, bool> predicate)
+                ListFast<NameAndIndex> fileNamesList,
+                ListFast<NameAndIndex> tempList,
+                Func<NameAndIndex, bool> predicate)
             {
                 tempList.ClearFast();
 
                 for (int i = 0; i < fileNamesList.Count; i++)
                 {
-                    SolidEntry fileName = fileNamesList[i];
+                    NameAndIndex fileName = fileNamesList[i];
                     if (predicate(fileName))
                     {
                         tempList.Add(fileName);
@@ -2177,26 +2156,26 @@ public sealed class Scanner : IDisposable
                 }
             }
 
-            PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag));
+            PopulateTempList(entriesList, tempList, static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag));
 
             if (!_missFlagAlreadyHandled)
             {
-                if (TryGetMissFlag(tempList, out SolidEntry missFlagToUse))
+                if (TryGetMissFlag(tempList, out NameAndIndex missFlagToUse))
                 {
                     entriesList.Add(missFlagToUse);
                 }
             }
 
-            PopulateTempList(entriesList, tempList, static x => x.FullName.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
+            PopulateTempList(entriesList, tempList, static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
 
-            if (TryGetNewGameStr(tempList, out SolidEntry newGameStrToUse))
+            if (TryGetNewGameStr(tempList, out NameAndIndex newGameStrToUse))
             {
                 entriesList.Add(newGameStrToUse);
             }
 
             PopulateTempList(entriesList, tempList, EndsWithTitleFile);
 
-            if (TryGetTitlesFile(tempList, _ctx.FMFiles_TitlesStrLocations, out SolidEntry titlesFileToUse))
+            if (TryGetTitlesFile(tempList, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFileToUse))
             {
                 entriesList.Add(titlesFileToUse);
             }
@@ -2205,14 +2184,14 @@ public sealed class Scanner : IDisposable
 
             ListFast<string> fileNamesList = SolidExtractedFilesList;
 
-            foreach (SolidEntry item in entriesList)
+            foreach (NameAndIndex item in entriesList)
             {
                 if (!_scanOptions.ScanGameType &&
-                    item.FullName.IsBaseDirMisOrGamFile())
+                    item.Name.IsBaseDirMisOrGamFile())
                 {
                     continue;
                 }
-                fileNamesList.Add(item.FullName);
+                fileNamesList.Add(item.Name);
             }
 
             if (_fmFormat == FMFormat.SevenZip)
@@ -2281,15 +2260,15 @@ public sealed class Scanner : IDisposable
 
         return (null, entriesList);
 
-        static bool EndsWithTitleFile(SolidEntry fileName)
+        static bool EndsWithTitleFile(NameAndIndex fileName)
         {
-            return fileName.FullName.PathEndsWithI_AsciiSecond("/titles.str") ||
-                   fileName.FullName.PathEndsWithI_AsciiSecond("/title.str");
+            return fileName.Name.PathEndsWithI_AsciiSecond("/titles.str") ||
+                   fileName.Name.PathEndsWithI_AsciiSecond("/title.str");
         }
     }
 
     private bool TryAddLowestCostSolidFiles(
-        ListFast<SolidEntry> entriesList,
+        ListFast<NameAndIndex> entriesList,
         string tempPath,
         string tempRandomName,
         FMToScan fm,
@@ -2311,7 +2290,7 @@ public sealed class Scanner : IDisposable
             return FillOutNormalList();
         }
 
-        SolidEntry? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
+        NameAndIndex? lowestCostGamFile = GetLowestExtractCostEntry(_solid_GamFiles);
 
         #region Fast gam file size check
 
@@ -2323,10 +2302,10 @@ public sealed class Scanner : IDisposable
         */
         if (lowestCostGamFile != null)
         {
-            _solid_MisAndGamFiles.AddRange(_solid_MisFiles, _solid_MisFiles.Count);
+            _solid_MisAndGamFiles.AddRange(_solid_MisFiles);
             _solid_MisAndGamFiles.Add(lowestCostGamFile.Value);
 
-            SolidEntry? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
+            NameAndIndex? lowestCostMisOrGamFile = GetLowestExtractCostEntry(_solid_MisAndGamFiles);
             if (lowestCostMisOrGamFile != null &&
                 lowestCostMisOrGamFile.Value.Index == lowestCostGamFile.Value.Index)
             {
@@ -2340,7 +2319,7 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        SolidEntry? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
+        NameAndIndex? lowestCostMissFlagFile = GetLowestExtractCostEntry(_solid_MissFlagFiles);
 
         var result =
             GetLowestCostUsedMisFile(
@@ -2351,7 +2330,7 @@ public sealed class Scanner : IDisposable
                 fm,
                 cancellationToken);
 
-        SolidEntry? lowestCostUsedMisFile = null;
+        NameAndIndex? lowestCostUsedMisFile = null;
 
         if (result.Result == GetLowestCostMisFileError.SevenZipExtractError)
         {
@@ -2402,11 +2381,11 @@ public sealed class Scanner : IDisposable
 
         return true;
 
-        NameAndIndex CreateAndAdd(SolidEntry? entry)
+        NameAndIndex CreateAndAdd(NameAndIndex? entry)
         {
-            SolidEntry value = entry!.Value;
+            NameAndIndex value = entry!.Value;
             entriesList.Add(value);
-            return value.ToNameAndIndex();
+            return value;
         }
 
         bool FillOutNormalList()
@@ -2427,13 +2406,13 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private static SolidEntry? GetLowestExtractCostEntry(ListFast<SolidEntry> list)
+    private static NameAndIndex? GetLowestExtractCostEntry(ListFast<NameAndIndex> list)
     {
         int lowestCostIndex = -1;
         long lowestCost = long.MaxValue;
         for (int i = 0; i < list.Count; i++)
         {
-            SolidEntry item = list[i];
+            NameAndIndex item = list[i];
             if (item.TotalExtractionCost <= lowestCost)
             {
                 lowestCost = item.TotalExtractionCost;
@@ -2444,10 +2423,10 @@ public sealed class Scanner : IDisposable
         return lowestCostIndex == -1 ? null : list[lowestCostIndex];
     }
 
-    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, SolidEntry MisFile)
+    private (GetLowestCostMisFileError Result, Fen7z.Result? SevenZipResult, NameAndIndex MisFile)
     GetLowestCostUsedMisFile(
-        SolidEntry? lowestCostMissFlagFile,
-        ListFast<SolidEntry> misFiles,
+        NameAndIndex? lowestCostMissFlagFile,
+        ListFast<NameAndIndex> misFiles,
         string tempPath,
         string tempRandomName,
         FMToScan fm,
@@ -2455,8 +2434,8 @@ public sealed class Scanner : IDisposable
     {
         if (misFiles.Count == 1)
         {
-            SolidEntry item = misFiles[0];
-            _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
+            NameAndIndex item = misFiles[0];
+            _usedMisFiles.Add(item);
             return (GetLowestCostMisFileError.Success, null, item);
         }
 
@@ -2474,7 +2453,7 @@ public sealed class Scanner : IDisposable
 
             string listFile = Path.Combine(tempPath, tempRandomName + ".7zl");
 
-            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.FullName);
+            _missFlagExtractList.Add(lowestCostMissFlagFileNonNull.Name);
 
             Fen7z.Result result = Fen7z.Extract(
                 sevenZipWorkingPath: _sevenZipWorkingPath,
@@ -2498,13 +2477,13 @@ public sealed class Scanner : IDisposable
 
             for (int i = 0; i < misFiles.Count; i++)
             {
-                SolidEntry item = misFiles[i];
-                _solid_MisFileItems.Add(item.ToNameAndIndex());
+                NameAndIndex item = misFiles[i];
+                _solid_MisFileItems.Add(item);
             }
 
-            NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull.ToNameAndIndex();
+            NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull;
             ReadAllLinesUTF8(missFlagFile, _tempLines);
-            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _solid_UsedMisFileItems, _tempLines);
+            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _usedMisFiles, _tempLines);
 
             _solidMissFlagFileToUse = missFlagFile;
         }
@@ -2512,27 +2491,14 @@ public sealed class Scanner : IDisposable
         {
             for (int i = 0; i < misFiles.Count; i++)
             {
-                SolidEntry item = misFiles[i];
-                _solid_UsedMisFileItems.Add(item.ToNameAndIndex());
+                NameAndIndex item = misFiles[i];
+                _usedMisFiles.Add(item);
             }
         }
 
         _missFlagAlreadyHandled = true;
 
-        _usedMisFiles.ClearFast();
-        foreach (NameAndIndex usedMisFile in _solid_UsedMisFileItems)
-        {
-            foreach (SolidEntry entry in misFiles)
-            {
-                if (entry.FullName == usedMisFile.Name)
-                {
-                    _solid_FinalUsedMisFilesList.Add(entry);
-                }
-            }
-            _usedMisFiles.Add(usedMisFile);
-        }
-
-        SolidEntry? lowestCostUsedMisFile = GetLowestExtractCostEntry(_solid_FinalUsedMisFilesList);
+        NameAndIndex? lowestCostUsedMisFile = GetLowestExtractCostEntry(_usedMisFiles);
         if (lowestCostUsedMisFile is { } lowestCostUsedMisFileNonNull)
         {
             return (GetLowestCostMisFileError.Success, null, lowestCostUsedMisFileNonNull);
@@ -2543,7 +2509,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<SolidEntry> entries)
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<NameAndIndex> entries)
     {
         string cachePath = fm.CachePath;
 
@@ -2600,7 +2566,7 @@ public sealed class Scanner : IDisposable
             List<string> archiveFileNames = new List<string>(entries.Count);
             for (int i = 0; i < entries.Count; i++)
             {
-                archiveFileNames.Add(Path.GetFileName(entries[i].FullName));
+                archiveFileNames.Add(Path.GetFileName(entries[i].Name));
             }
 
             if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
@@ -3149,6 +3115,7 @@ public sealed class Scanner : IDisposable
         #endregion
 
         if (_missFlagAlreadyHandled) return true;
+        if (_usedMisFiles.Count > 0) return true;
 
         #region Cache list of used .mis files
 
@@ -6096,54 +6063,16 @@ public sealed class Scanner : IDisposable
 
     #region Get item by filename
 
-    #region Missflag.str functions
-
-    private bool TryGetMissFlag(ListFast<SolidEntry> list, out SolidEntry result)
-    {
-        result = default;
-        return list.Count != 0 && TryGetItemFromPredicate_SolidEntry(list, _ctx._missFlagPredicates, out result);
-    }
-
     private bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
-        return list.Count != 0 && TryGetItemFromPredicate_NameAndIndex(list, _ctx._missFlagPredicates, out result);
-    }
-
-    #endregion
-
-    #region Newgame.str functions
-
-    private bool TryGetNewGameStr(ListFast<SolidEntry> list, out SolidEntry result)
-    {
-        result = default;
-        return list.Count != 0 && TryGetItemFromPredicate_SolidEntry(list, _ctx._newGameStrPredicates, out result);
+        return list.Count != 0 && TryGetItemFromPredicate(list, _ctx._missFlagPredicates, out result);
     }
 
     private bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
-        return list.Count != 0 && TryGetItemFromPredicate_NameAndIndex(list, _ctx._newGameStrPredicates, out result);
-    }
-
-    #endregion
-
-    #region Titles file functions
-
-    private static bool TryGetTitlesFile(ListFast<SolidEntry> list, string[] locations, out SolidEntry result)
-    {
-        result = default;
-        if (list.Count == 0) return false;
-
-        foreach (string location in locations)
-        {
-            if (TryGetItem(list, x => TitlesFilePredicate(x.FullName, location), out result))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return list.Count != 0 && TryGetItemFromPredicate(list, _ctx._newGameStrPredicates, out result);
     }
 
     private static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
@@ -6162,27 +6091,7 @@ public sealed class Scanner : IDisposable
         return false;
     }
 
-    #endregion
-
-    #region Predicate getter functions
-
-    private static bool TryGetItemFromPredicate_SolidEntry(ListFast<SolidEntry> list, Func<string, bool>[] predicates, out SolidEntry result)
-    {
-        result = default;
-        if (list.Count == 0) return false;
-
-        foreach (Func<string, bool> predicate in predicates)
-        {
-            if (TryGetItem(list, x => predicate.Invoke(x.FullName), out result))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryGetItemFromPredicate_NameAndIndex(ListFast<NameAndIndex> list, Func<string, bool>[] predicates, out NameAndIndex result)
+    private static bool TryGetItemFromPredicate(ListFast<NameAndIndex> list, Func<string, bool>[] predicates, out NameAndIndex result)
     {
         result = default;
         if (list.Count == 0) return false;
@@ -6213,8 +6122,6 @@ public sealed class Scanner : IDisposable
         result = default!;
         return false;
     }
-
-    #endregion
 
     #endregion
 

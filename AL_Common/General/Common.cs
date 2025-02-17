@@ -55,17 +55,27 @@ public static partial class Common
     {
         public readonly string Name;
         public readonly int Index;
+        public readonly long TotalExtractionCost;
+
+        public NameAndIndex(string name, int index, long totalExtractionCost)
+        {
+            Name = name;
+            Index = index;
+            TotalExtractionCost = totalExtractionCost;
+        }
 
         public NameAndIndex(string name, int index)
         {
             Name = name;
             Index = index;
+            TotalExtractionCost = 0;
         }
 
         public NameAndIndex(string name)
         {
             Name = name;
             Index = -1;
+            TotalExtractionCost = 0;
         }
     }
 

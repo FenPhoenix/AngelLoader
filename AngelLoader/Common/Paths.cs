@@ -1,4 +1,4 @@
-﻿//#define ALWAYS_USE_APP_STARTUP_PATH
+﻿#define ALWAYS_USE_APP_STARTUP_PATH
 
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,8 @@ internal static class Paths
             if my personal environment var is set. Obviously don't add this var yourself.
             */
 #if ALWAYS_USE_APP_STARTUP_PATH
-            return GetStartupPath();
+            //return GetStartupPath();
+            return @"C:\Users\Brian\Desktop\AL_7zips_Perf_Demo";
 #endif
 
             string? val = Environment.GetEnvironmentVariable("AL_FEN_PERSONAL_DEV_3053BA21", EnvironmentVariableTarget.Machine);
