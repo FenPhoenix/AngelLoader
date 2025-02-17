@@ -55,6 +55,9 @@ public static partial class Common
     {
         public readonly string Name;
         public readonly int Index;
+        /// <summary>
+        /// Used for solid archives only.
+        /// </summary>
         public readonly long TotalExtractionCost;
 
         public NameAndIndex(string name, int index, long totalExtractionCost)
