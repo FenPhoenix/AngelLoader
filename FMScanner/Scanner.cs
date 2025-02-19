@@ -1749,15 +1749,15 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Cache FM data
+        #region Populate FM data
 
-        bool success = ReadAndCacheFMData(fm.Path, fmData, out int t3MisCount);
+        bool success = ReadAndPopulateFMData(fm.Path, fmData, out int t3MisCount);
         if (!success)
         {
             string fmType = _fmFormat.Name();
 
             Log(fm.Path + ": fm is " + fmType + ", " +
-                nameof(ReadAndCacheFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
+                nameof(ReadAndPopulateFMData) + " returned false. Returning 'Unsupported' game type.", stackTrace: false);
 
             return _fmFormat > FMFormat.NotInArchive
                 ? UnsupportedArchive(fm.Path, null, null, "", fm.OriginalIndex)
@@ -2498,7 +2498,7 @@ public sealed class Scanner : IDisposable
             }
 
             _solidMissFlagFileToUse = lowestCostMissFlagFileNonNull;
-            CacheUsedMisFiles(_solidMissFlagFileToUse, _solid_MisFileItems);
+            PopulateUsedMisFiles(_solidMissFlagFileToUse, _solid_MisFileItems);
         }
         else
         {
@@ -2692,13 +2692,13 @@ public sealed class Scanner : IDisposable
 
     #endregion
 
-    private bool ReadAndCacheFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
+    private bool ReadAndPopulateFMData(string fmPath, ScannedFMData fmd, out int t3MisCount)
     {
         t3MisCount = 0;
 
-        #region Populate file lists
-
         bool t3Found = false;
+
+        #region Populate file lists
 
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
@@ -3043,6 +3043,8 @@ public sealed class Scanner : IDisposable
             }
         }
 
+        #endregion
+
         #region Populate readme dir files
 
         for (int i = 0; i < _baseDirFiles.Count; i++)
@@ -3059,6 +3061,8 @@ public sealed class Scanner : IDisposable
         }
 
         #endregion
+
+        #region Thief 3 finalize and return
 
         if (t3Found)
         {
@@ -3105,7 +3109,7 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        #region Add MisFiles and check for none
+        #region Populate .mis files and check for none
 
         for (int i = 0; i < _baseDirFiles.Count; i++)
         {
@@ -3127,7 +3131,7 @@ public sealed class Scanner : IDisposable
         if (_missFlagAlreadyHandled) return true;
         if (_usedMisFiles.Count > 0) return true;
 
-        #region Cache list of used .mis files
+        #region Populate used .mis files
 
         NameAndIndex? missFlagFile;
         if (_solidMissFlagFileToUse is { } solidMissFlagFileToUse)
@@ -3143,7 +3147,7 @@ public sealed class Scanner : IDisposable
             missFlagFile = null;
         }
 
-        CacheUsedMisFiles(missFlagFile, _misFiles);
+        PopulateUsedMisFiles(missFlagFile, _misFiles);
 
         #endregion
 
@@ -3205,7 +3209,7 @@ public sealed class Scanner : IDisposable
         #endregion
     }
 
-    private void CacheUsedMisFiles(NameAndIndex? missFlagFile, ListFast<NameAndIndex> misFiles)
+    private void PopulateUsedMisFiles(NameAndIndex? missFlagFile, ListFast<NameAndIndex> misFiles)
     {
         if (missFlagFile is { } missFlagFileNonNull && misFiles.Count > 1)
         {
