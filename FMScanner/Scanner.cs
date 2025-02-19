@@ -1607,6 +1607,8 @@ public sealed class Scanner : IDisposable
 
         #region Setup
 
+        ulong sevenZipSize = 0;
+
         ListFast<SevenZipArchiveEntry> sevenZipEntries = null!;
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
 
@@ -1629,10 +1631,17 @@ public sealed class Scanner : IDisposable
 
         bool needsHtmlRefExtract = false;
 
-        ulong sevenZipSize = 0;
-
         if (_fmFormat.IsSolidArchive())
         {
+            if (_fmFormat == FMFormat.SevenZip)
+            {
+                using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer);
+                SevenZipArchive sevenZipArchive = new(fs, _sevenZipContext);
+                sevenZipEntries = sevenZipArchive.Entries;
+
+                sevenZipSize = (ulong)fs.Length;
+            }
+
             (ScannedFMDataAndError? partialExtractError, ListFast<NameAndIndex> entries) =
                 DoPartialSolidExtract(
                     tempPath,
@@ -1640,8 +1649,7 @@ public sealed class Scanner : IDisposable
                     fm,
                     sevenZipEntries,
                     rarEntries,
-                    cancellationToken,
-                    out sevenZipSize);
+                    cancellationToken);
 
             if (partialExtractError != null)
             {
@@ -1701,6 +1709,7 @@ public sealed class Scanner : IDisposable
 
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
+        // This must come before the FM data caching, because it creates the cached file info list (for dir FMs).
         // This must come before the FM data caching, because it creates the cached file info list (for on-disk FMs).
         #region Size
 
@@ -1986,11 +1995,8 @@ public sealed class Scanner : IDisposable
         FMToScan fm,
         ListFast<SevenZipArchiveEntry> sevenZipEntries,
         SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries,
-        CancellationToken cancellationToken,
-        out ulong sevenZipSize)
+        CancellationToken cancellationToken)
     {
-        sevenZipSize = 0;
-
         /*
         We try to extract the absolute minimum, but if we can't determine for sure if our extraction cost is
         acceptable, then we fall back to the older method of extracting everything we might possibly need.
@@ -2017,122 +2023,114 @@ public sealed class Scanner : IDisposable
             times in DateTime format and not have to parse possible localized text dates out of the output
             stream.
             */
-            using (FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(fm.Path, DiskFileStreamBuffer))
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            int entriesCount = _fmFormat == FMFormat.SevenZip
+                ? sevenZipEntries.Count
+                : rarEntries.Count;
+
+            _fmDirFileInfos.SetRecycleState(entriesCount);
+
+            for (int i = 0; i < entriesCount; i++)
             {
-                sevenZipSize = (ulong)fs.Length;
-                int entriesCount;
                 cancellationToken.ThrowIfCancellationRequested();
 
+                SevenZipArchiveEntry sevenZipEntry = null!;
+                RarArchiveEntry rarEntry = null!;
+                NameAndIndex solidEntry;
+                string fn;
+                long uncompressedSize;
+
+                // @BLOCKS: Manual type switch
                 if (_fmFormat == FMFormat.SevenZip)
                 {
-                    SevenZipArchive sevenZipArchive = new(fs, _sevenZipContext);
-                    sevenZipEntries = sevenZipArchive.Entries;
-                    entriesCount = sevenZipEntries.Count;
+                    sevenZipEntry = sevenZipEntries[i];
+                    if (sevenZipEntry.IsAnti) continue;
+
+                    fn = sevenZipEntry.FileName;
+                    uncompressedSize = sevenZipEntry.UncompressedSize;
+                    solidEntry = new NameAndIndex(fn, i, sevenZipEntry.TotalExtractionCost);
                 }
                 else
                 {
-                    entriesCount = rarEntries.Count;
+                    rarEntry = rarEntries[i];
+
+                    fn = rarEntry.Key;
+                    uncompressedSize = rarEntry.Size;
+                    /*
+                    @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have cost
+                     functionality for solid rar yet (and probably won't want to go into the guts of the rar
+                     code to add it either).
+                    */
+                    solidEntry = new NameAndIndex(rarEntry.Key, i, 0);
                 }
 
-                _fmDirFileInfos.SetRecycleState(entriesCount);
+                int dirSeps;
 
-                for (int i = 0; i < entriesCount; i++)
+                // Always extract readmes no matter what, so our cache copying is always correct.
+                // Also maybe we would need to always extract them regardless for other reasons, but yeah.
+                if (fn.IsValidReadme() && uncompressedSize > 0 &&
+                    (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
+                      (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
+                       fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
+                     dirSeps == 0))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    entriesList.Add(solidEntry);
+                }
+                else if (fn.IsBaseDirMisOrGamFile())
+                {
+                    // We always need to know about mis files to get the used ones for the titles.str scan,
+                    // but we won't extract them if we don't actually need to scan them.
+                    if (fn.ExtIsMis())
+                    {
+                        _solid_MisFiles.Add(solidEntry);
+                    }
+                    else if (_scanOptions.ScanGameType)
+                    {
+                        _solid_GamFiles.Add(solidEntry);
+                    }
+                }
+                else if (!fn.Rel_ContainsDirSep() &&
+                         (fn.EqualsI_Local(FMFiles.FMInfoXml) ||
+                          fn.EqualsI_Local(FMFiles.FMIni) ||
+                          fn.EqualsI_Local(FMFiles.ModIni)))
+                {
+                    entriesList.Add(solidEntry);
+                }
+                else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
+                         fn.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
+                {
+                    _solid_MissFlagFiles.Add(solidEntry);
+                }
+                else if (fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
+                         fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
+                {
+                    entriesList.Add(solidEntry);
+                }
+                else if (EndsWithTitleFile(solidEntry))
+                {
+                    entriesList.Add(solidEntry);
+                }
 
-                    SevenZipArchiveEntry sevenZipEntry = null!;
-                    RarArchiveEntry rarEntry = null!;
-                    NameAndIndex solidEntry;
-                    string fn;
-                    long uncompressedSize;
-                    // @BLOCKS: Manual type switch
+                FileInfoCustom fileInfoCustom = _fmDirFileInfos[i];
+                if (fileInfoCustom != null!)
+                {
                     if (_fmFormat == FMFormat.SevenZip)
                     {
-                        sevenZipEntry = sevenZipEntries[i];
-                        if (sevenZipEntry.IsAnti) continue;
-                        fn = sevenZipEntry.FileName;
-                        uncompressedSize = sevenZipEntry.UncompressedSize;
-                        solidEntry = new NameAndIndex(fn, i, sevenZipEntry.TotalExtractionCost);
+                        fileInfoCustom.Set(sevenZipEntry);
                     }
                     else
                     {
-                        rarEntry = rarEntries[i];
-                        fn = rarEntry.Key;
-                        uncompressedSize = rarEntry.Size;
-                        /*
-                        @BLOCKS_NOTE: For solid rar just say cost is always 0 for now, because we don't have cost
-                         functionality for solid rar yet (and probably won't want to go into the guts of the rar
-                         code to add it either).
-                        */
-                        solidEntry = new NameAndIndex(rarEntry.Key, i, 0);
+                        fileInfoCustom.Set(rarEntry);
                     }
-
-                    int dirSeps;
-
-                    // Always extract readmes no matter what, so our cache copying is always correct.
-                    // Also maybe we would need to always extract them regardless for other reasons, but yeah.
-                    if (fn.IsValidReadme() && uncompressedSize > 0 &&
-                        (((dirSeps = fn.Rel_CountDirSepsUpToAmount(2)) == 1 &&
-                          (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
-                           fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))) ||
-                         dirSeps == 0))
-                    {
-                        entriesList.Add(solidEntry);
-                    }
-                    else if (fn.IsBaseDirMisOrGamFile())
-                    {
-                        // We always need to know about mis files to get the used ones for the titles.str scan,
-                        // but we won't extract them if we don't actually need to scan them.
-                        if (fn.ExtIsMis())
-                        {
-                            _solid_MisFiles.Add(solidEntry);
-                        }
-                        else if (_scanOptions.ScanGameType)
-                        {
-                            _solid_GamFiles.Add(solidEntry);
-                        }
-                    }
-                    else if (!fn.Rel_ContainsDirSep() &&
-                             (fn.EqualsI_Local(FMFiles.FMInfoXml) ||
-                              fn.EqualsI_Local(FMFiles.FMIni) ||
-                              fn.EqualsI_Local(FMFiles.ModIni)))
-                    {
-                        entriesList.Add(solidEntry);
-                    }
-                    else if (fn.PathStartsWithI_AsciiSecond(FMDirs.StringsS) &&
-                             fn.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag))
-                    {
-                        _solid_MissFlagFiles.Add(solidEntry);
-                    }
-                    else if (fn.PathStartsWithI_AsciiSecond(FMDirs.IntrfaceS) &&
-                             fn.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr))
-                    {
-                        entriesList.Add(solidEntry);
-                    }
-                    else if (EndsWithTitleFile(solidEntry))
-                    {
-                        entriesList.Add(solidEntry);
-                    }
-
-                    FileInfoCustom fileInfoCustom = _fmDirFileInfos[i];
-                    if (fileInfoCustom != null!)
-                    {
-                        if (_fmFormat == FMFormat.SevenZip)
-                        {
-                            fileInfoCustom.Set(sevenZipEntry);
-                        }
-                        else
-                        {
-                            fileInfoCustom.Set(rarEntry);
-                        }
-                    }
-                    else
-                    {
-                        fileInfoCustom = _fmFormat == FMFormat.SevenZip
-                            ? new FileInfoCustom(sevenZipEntry)
-                            : new FileInfoCustom(rarEntry);
-                        _fmDirFileInfos[i] = fileInfoCustom;
-                    }
+                }
+                else
+                {
+                    fileInfoCustom = _fmFormat == FMFormat.SevenZip
+                        ? new FileInfoCustom(sevenZipEntry)
+                        : new FileInfoCustom(rarEntry);
+                    _fmDirFileInfos[i] = fileInfoCustom;
                 }
             }
 
