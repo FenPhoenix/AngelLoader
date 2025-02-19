@@ -2496,8 +2496,7 @@ public sealed class Scanner : IDisposable
             }
 
             NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull;
-            ReadAllLinesUTF8(missFlagFile, _tempLines);
-            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems, _usedMisFiles, _tempLines);
+            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems);
 
             _solidMissFlagFileToUse = missFlagFile;
         }
@@ -3145,11 +3144,7 @@ public sealed class Scanner : IDisposable
             missFlagFile = result;
         }
 
-        if (missFlagFile is { } missFlagFileNonNull)
-        {
-            ReadAllLinesUTF8(missFlagFileNonNull, _tempLines);
-        }
-        CacheUsedMisFiles(missFlagFile, _misFiles, _usedMisFiles, _tempLines);
+        CacheUsedMisFiles(missFlagFile, _misFiles);
 
         #endregion
 
@@ -3211,14 +3206,13 @@ public sealed class Scanner : IDisposable
         #endregion
     }
 
-    private static void CacheUsedMisFiles(
-        NameAndIndex? missFlagFile,
-        ListFast<NameAndIndex> misFiles,
-        ListFast<NameAndIndex> usedMisFiles,
-        ListFast<string> missFlagLines)
+    private void CacheUsedMisFiles(NameAndIndex? missFlagFile, ListFast<NameAndIndex> misFiles)
     {
-        if (missFlagFile != null && misFiles.Count > 1)
+        ListFast<string> missFlagLines = _tempLines;
+        if (missFlagFile is { } missFlagFileNonNull && misFiles.Count > 1)
         {
+            ReadAllLinesUTF8(missFlagFileNonNull, missFlagLines);
+
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
             {
                 NameAndIndex mf = misFiles[mfI];
@@ -3256,7 +3250,7 @@ public sealed class Scanner : IDisposable
                                       (line[qIndex + 4] == 'p' || line[qIndex + 4] == 'P') &&
                                       line[qIndex + 5] == '\"'))
                                 {
-                                    usedMisFiles.Add(mf);
+                                    _usedMisFiles.Add(mf);
                                 }
                             }
                         }
@@ -3265,7 +3259,7 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        if (usedMisFiles.Count == 0) usedMisFiles.AddRange(misFiles);
+        if (_usedMisFiles.Count == 0) _usedMisFiles.AddRange(misFiles);
     }
 
     #region Read FM info files
