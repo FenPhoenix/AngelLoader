@@ -251,6 +251,9 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<NameAndIndex> _stringsDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _intrfaceDirFiles = new(0);
     private readonly ListFast<NameAndIndex> _booksDirFiles = new(0);
+    private NameAndIndex? _fmInfoXml;
+    private NameAndIndex? _fmIni;
+    private NameAndIndex? _modIni;
 
     private readonly ListFast<NameAndIndex> _readmeDirFiles = new(10);
 
@@ -967,6 +970,9 @@ public sealed class Scanner : IDisposable
         _stringsDirFiles.ClearFast();
         _intrfaceDirFiles.ClearFast();
         _booksDirFiles.ClearFast();
+        _fmInfoXml = null;
+        _fmIni = null;
+        _modIni = null;
 
         _readmeDirFiles.ClearFast();
 
@@ -1821,75 +1827,60 @@ public sealed class Scanner : IDisposable
                 _scanOptions.ScanReleaseDate ||
                 _scanOptions.ScanTags)
             {
-                for (int i = 0; i < _baseDirFiles.Count; i++)
+                if (_fmInfoXml is { } fmInfoXml)
                 {
-                    NameAndIndex f = _baseDirFiles[i];
-                    if (f.Name.EqualsI_Local(FMFiles.FMInfoXml))
+                    (string title, string author, DateTime? releaseDate) = ReadFMInfoXml(fmInfoXml);
+                    if (_scanOptions.ScanTitle)
                     {
-                        (string title, string author, DateTime? releaseDate) = ReadFMInfoXml(f);
-                        if (_scanOptions.ScanTitle)
-                        {
-                            SetOrAddTitle(titles, title);
-                        }
-                        if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
-                        {
-                            fmData.Author = author;
-                        }
-                        if (_scanOptions.ScanReleaseDate && releaseDate != null)
-                        {
-                            fmData.LastUpdateDate = releaseDate;
-                        }
-                        break;
+                        SetOrAddTitle(titles, title);
+                    }
+                    if (_scanOptions.ScanTags || _scanOptions.ScanAuthor)
+                    {
+                        fmData.Author = author;
+                    }
+                    if (_scanOptions.ScanReleaseDate && releaseDate != null)
+                    {
+                        fmData.LastUpdateDate = releaseDate;
                     }
                 }
             }
             // I think we need to always scan fm.ini even if we're not returning any of its fields, because of
             // tags, I think for some reason we're needing to read tags always?
             {
-                for (int i = 0; i < _baseDirFiles.Count; i++)
+                if (_fmIni is { } fmIni)
                 {
-                    NameAndIndex f = _baseDirFiles[i];
-                    if (f.Name.EqualsI_Local(FMFiles.FMIni))
+                    (string title, string author, DateTime? lastUpdateDate, string tags) = ReadFMIni(fmIni);
+                    if (_scanOptions.ScanTitle)
                     {
-                        (string title, string author, DateTime? lastUpdateDate, string tags) = ReadFMIni(f);
-                        if (_scanOptions.ScanTitle)
-                        {
-                            SetOrAddTitle(titles, title);
-                        }
-                        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
-                        {
-                            fmData.Author = author;
-                        }
-                        if (_scanOptions.ScanReleaseDate && lastUpdateDate != null)
-                        {
-                            fmData.LastUpdateDate = lastUpdateDate;
-                        }
-                        if (_scanOptions.ScanTags)
-                        {
-                            fmData.TagsString = tags;
-                        }
-                        break;
+                        SetOrAddTitle(titles, title);
+                    }
+                    if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
+                    {
+                        fmData.Author = author;
+                    }
+                    if (_scanOptions.ScanReleaseDate && lastUpdateDate != null)
+                    {
+                        fmData.LastUpdateDate = lastUpdateDate;
+                    }
+                    if (_scanOptions.ScanTags)
+                    {
+                        fmData.TagsString = tags;
                     }
                 }
             }
             if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanTags)
             {
                 // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
-                for (int i = 0; i < _baseDirFiles.Count; i++)
+                if (_modIni is { } modIni)
                 {
-                    NameAndIndex f = _baseDirFiles[i];
-                    if (f.Name.EqualsI_Local(FMFiles.ModIni))
+                    (string title, string author) = ReadModIni(modIni);
+                    if (_scanOptions.ScanTitle)
                     {
-                        (string title, string author) = ReadModIni(f);
-                        if (_scanOptions.ScanTitle)
-                        {
-                            SetOrAddTitle(titles, title);
-                        }
-                        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
-                        {
-                            fmData.Author = author;
-                        }
-                        break;
+                        SetOrAddTitle(titles, title);
+                    }
+                    if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !author.IsEmpty())
+                    {
+                        fmData.Author = author;
                     }
                 }
             }
@@ -2091,10 +2082,7 @@ public sealed class Scanner : IDisposable
                         _solid_GamFiles.Add(solidEntry);
                     }
                 }
-                else if (!fn.Rel_ContainsDirSep() &&
-                         (fn.EqualsI_Local(FMFiles.FMInfoXml) ||
-                          fn.EqualsI_Local(FMFiles.FMIni) ||
-                          fn.EqualsI_Local(FMFiles.ModIni)))
+                else if (!fn.Rel_ContainsDirSep() && IsFMInfoFile(fn))
                 {
                     entriesList.Add(solidEntry);
                 }
@@ -2767,6 +2755,19 @@ public sealed class Scanner : IDisposable
                 }
                 else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
                 {
+                    if (fn.EqualsI_Local(FMFiles.FMInfoXml))
+                    {
+                        _fmInfoXml = new NameAndIndex(fn, i);
+                    }
+                    else if (fn.EqualsI_Local(FMFiles.FMIni))
+                    {
+                        _fmIni = new NameAndIndex(fn, i);
+                    }
+                    else if (fn.EqualsI_Local(FMFiles.ModIni))
+                    {
+                        _modIni = new NameAndIndex(fn, i);
+                    }
+
                     _baseDirFiles.Add(new NameAndIndex(fn, i));
                     // Fallthrough so ScanCustomResources can use it
                 }
@@ -6056,6 +6057,11 @@ public sealed class Scanner : IDisposable
     }
 
     #endregion
+
+    private static bool IsFMInfoFile(string fn) =>
+        fn.EqualsI_Local(FMFiles.FMInfoXml) ||
+        fn.EqualsI_Local(FMFiles.FMIni) ||
+        fn.EqualsI_Local(FMFiles.ModIni);
 
     [PublicAPI]
     public void Dispose()
