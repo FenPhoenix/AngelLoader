@@ -2176,7 +2176,7 @@ public sealed class Scanner : IDisposable
 
             if (!_missFlagAlreadyHandled)
             {
-                if (TryGetMissFlag(tempList, out NameAndIndex missFlagToUse))
+                if (Utility.TryGetMissFlag(tempList, out NameAndIndex missFlagToUse))
                 {
                     entriesList.Add(missFlagToUse);
                 }
@@ -2184,14 +2184,14 @@ public sealed class Scanner : IDisposable
 
             PopulateTempList(entriesList, tempList, static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr));
 
-            if (TryGetNewGameStr(tempList, out NameAndIndex newGameStrToUse))
+            if (Utility.TryGetNewGameStr(tempList, out NameAndIndex newGameStrToUse))
             {
                 entriesList.Add(newGameStrToUse);
             }
 
             PopulateTempList(entriesList, tempList, EndsWithTitleFile);
 
-            if (TryGetTitlesFile(tempList, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFileToUse))
+            if (Utility.TryGetTitlesFile(tempList, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFileToUse))
             {
                 entriesList.Add(titlesFileToUse);
             }
@@ -3134,7 +3134,7 @@ public sealed class Scanner : IDisposable
         {
             missFlagFile = solidMissFlagFileToUse;
         }
-        else if (_misFiles.Count > 1 && TryGetMissFlag(_stringsDirFiles, out NameAndIndex result))
+        else if (_misFiles.Count > 1 && Utility.TryGetMissFlag(_stringsDirFiles, out NameAndIndex result))
         {
             missFlagFile = result;
         }
@@ -4014,7 +4014,7 @@ public sealed class Scanner : IDisposable
     {
         if (_intrfaceDirFiles.Count == 0) return "";
 
-        if (!TryGetNewGameStr(_intrfaceDirFiles, out NameAndIndex newGameStrFile))
+        if (!Utility.TryGetNewGameStr(_intrfaceDirFiles, out NameAndIndex newGameStrFile))
         {
             return "";
         }
@@ -4130,7 +4130,7 @@ public sealed class Scanner : IDisposable
 
     private ListFast<string>? GetTitlesStrLines()
     {
-        if (!TryGetTitlesFile(_stringsDirFiles, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFile))
+        if (!Utility.TryGetTitlesFile(_stringsDirFiles, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFile))
         {
             return null;
         }
@@ -6051,70 +6051,6 @@ public sealed class Scanner : IDisposable
         }
 
         return (true, null, ret);
-    }
-
-    #endregion
-
-    #region Get item by filename
-
-    private bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
-    {
-        result = default;
-        return list.Count > 0 && TryGetItemFromPredicate(list, _ctx._missFlagPredicates, out result);
-    }
-
-    private bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
-    {
-        result = default;
-        return list.Count > 0 && TryGetItemFromPredicate(list, _ctx._newGameStrPredicates, out result);
-    }
-
-    private static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
-    {
-        result = default;
-        if (list.Count == 0) return false;
-
-        foreach (string location in locations)
-        {
-            if (TryGetItem(list, x => TitlesFilePredicate(x.Name, location), out result))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryGetItemFromPredicate(ListFast<NameAndIndex> list, Func<string, bool>[] predicates, out NameAndIndex result)
-    {
-        result = default;
-        if (list.Count == 0) return false;
-
-        foreach (Func<string, bool> predicate in predicates)
-        {
-            if (TryGetItem(list, x => predicate.Invoke(x.Name), out result))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static bool TryGetItem<T>(ListFast<T> list, Predicate<T> predicate, out T result)
-    {
-        for (int i = 0; i < list.Count; i++)
-        {
-            T item = list[i];
-            if (predicate(item))
-            {
-                result = item;
-                return true;
-            }
-        }
-
-        result = default!;
-        return false;
     }
 
     #endregion

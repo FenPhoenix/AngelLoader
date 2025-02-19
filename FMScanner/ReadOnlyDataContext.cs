@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using static AL_Common.LanguageSupport;
@@ -1086,58 +1085,6 @@ public sealed class ReadOnlyDataContext
 
         return ret;
     });
-
-    #region Filename match predicates
-
-    #region Missflag.str predicates
-
-    private static bool MissFlagPredicate1(string value) =>
-        value.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag);
-
-    private static bool MissFlagPredicate2(string value) =>
-        value.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag);
-
-    private static bool MissFlagPredicate3(string value) =>
-        value.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag);
-
-    internal readonly Func<string, bool>[] _missFlagPredicates =
-    {
-        MissFlagPredicate1,
-        MissFlagPredicate2,
-        MissFlagPredicate3,
-    };
-
-    #endregion
-
-    #region Newgame.str predicates
-
-    private static bool NewGameStrPredicate1(string value) =>
-        value.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr);
-
-    private static bool NewGameStrPredicate2(string value) =>
-        value.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr);
-
-    private static bool NewGameStrPredicate3(string value) =>
-        value.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr);
-
-    internal readonly Func<string, bool>[] _newGameStrPredicates =
-    {
-        NewGameStrPredicate1,
-        NewGameStrPredicate2,
-        NewGameStrPredicate3,
-    };
-
-    #endregion
-
-    #region Titles.str predicates
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool TitlesFilePredicate(string value, string location) =>
-        value.PathEqualsI_AsciiSecond(location);
-
-    #endregion
-
-    #endregion
 
     #region Comparer classes
 

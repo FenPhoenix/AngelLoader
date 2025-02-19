@@ -8,6 +8,7 @@ using System.Text;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Readers.Rar;
 using static System.StringComparison;
+using static FMScanner.ReadOnlyDataContext;
 
 namespace FMScanner;
 
@@ -628,6 +629,78 @@ internal static class Utility
 
         return value;
     }
+
+    #region Get item by filename
+
+    internal static bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count > 0 &&
+               (TryGetItem(
+                    list,
+                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag),
+                    out result) ||
+                TryGetItem(
+                    list,
+                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag),
+                    out result) ||
+                TryGetItem(
+                    list,
+                    static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag),
+                    out result));
+    }
+
+    internal static bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count > 0 &&
+               (TryGetItem(
+                    list,
+                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr),
+                    out result) ||
+                TryGetItem(
+                    list,
+                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr),
+                    out result) ||
+                TryGetItem(
+                    list,
+                    static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr),
+                    out result));
+    }
+
+    internal static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (string location in locations)
+        {
+            if (TryGetItem(list, x => x.Name.PathEqualsI_AsciiSecond(location), out result))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryGetItem(ListFast<NameAndIndex> list, Predicate<NameAndIndex> predicate, out NameAndIndex result)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            NameAndIndex item = list[i];
+            if (predicate(item))
+            {
+                result = item;
+                return true;
+            }
+        }
+
+        result = default!;
+        return false;
+    }
+
+    #endregion
 
     #region GLML
 
