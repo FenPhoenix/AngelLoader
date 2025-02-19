@@ -1056,7 +1056,7 @@ public sealed class ReadOnlyDataContext
         internal const string ModIni = "mod.ini";
 
         // For Thief 3 missions, all of them have this file, and then any other .gmp files are the actual missions
-        internal const string EntryGmp = "Entry.gmp";
+        internal const string SEntryGmp = "/Entry.gmp";
 
         internal const string TDM_DarkModTxt = "darkmod.txt";
         internal const string TDM_ReadmeTxt = "readme.txt";

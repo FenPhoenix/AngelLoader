@@ -424,6 +424,9 @@ public sealed class Scanner : IDisposable
             _fileName = fileName;
         }
 
+        /// <summary>
+        /// Opens the entry without guaranteeing whether the stream will be seekable.
+        /// </summary>
         internal Stream Open() => _entryType switch
         {
             EntryType.Zip => _scanner._archive.OpenEntry(_zipEntry),
@@ -431,6 +434,10 @@ public sealed class Scanner : IDisposable
             _ => GetReadModeFileStreamWithCachedBuffer(FullName, _scanner.DiskFileStreamBuffer),
         };
 
+        /// <summary>
+        /// Opens the entry and guarantees the stream will be seekable. A copy to the cached memory stream will
+        /// occur if required, so only use this if you explicitly need a seekable stream.
+        /// </summary>
         internal StreamScope OpenSeekable()
         {
             Stream entryStream = Open();
@@ -657,11 +664,6 @@ public sealed class Scanner : IDisposable
             ReadmeInternal readme = new(lastModifiedDate, scan, useForDateDetect);
             readmes.Add(readme);
             return readme;
-        }
-
-        internal static ReadmeInternal GetReadme(ListFast<ReadmeInternal> readmes, uint lastModifiedDateRaw, bool scan, bool useForDateDetect)
-        {
-            return AddReadme(readmes, lastModifiedDateRaw, scan, useForDateDetect);
         }
     }
 
@@ -1573,7 +1575,7 @@ public sealed class Scanner : IDisposable
                 try
                 {
                     Entry entry = new(this, zipEntry);
-                    readme = ReadmeInternal.GetReadme(
+                    readme = ReadmeInternal.AddReadme(
                         _readmeFiles,
                         lastModifiedDateRaw: entry.LastModifiedDateRaw,
                         scan: true,
@@ -1861,7 +1863,7 @@ public sealed class Scanner : IDisposable
                     }
                 }
             }
-            if (_scanOptions.ScanTitle || _scanOptions.ScanTags || _scanOptions.ScanAuthor)
+            if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanTags)
             {
                 // TODO: If we wanted to be sticklers, we could skip this for non-SS2 FMs
                 for (int i = 0; i < _baseDirFiles.Count; i++)
@@ -2292,10 +2294,10 @@ public sealed class Scanner : IDisposable
         error = null;
 
         /*
-        @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are
-         in that block. So if we want to check if a file is in a block by itself (for extraction cost purposes),
-         we would have to ignore any files in its block that are 0 length. We don't need to do this currently,
-         but just a note for the future.
+        @BLOCKS_NOTE: If a file is 0 length, it will go into block 0, even if other >0 length files are in that
+         block. So if we want to check if a file is in a block by itself (for extraction cost purposes), we would
+         have to ignore any files in its block that are 0 length. We don't need to do this currently, but just a
+         note for the future.
         */
 
         // @BLOCKS: Implement solid RAR support later
@@ -2456,9 +2458,9 @@ public sealed class Scanner : IDisposable
         if (lowestCostMissFlagFile is { } lowestCostMissFlagFileNonNull)
         {
             /*
-            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the
-            record). 64KB is small enough that extraction time will be negligible, but large enough to
-            cover any missflag.str file that's likely to ever exist.
+            The largest known missflag.str file is 4040 bytes (due to a ton of custom comments, for the record).
+            64KB is small enough that extraction time will be negligible, but large enough to cover any missflag.str
+            file that's likely to ever exist.
             */
             if (lowestCostMissFlagFileNonNull.TotalExtractionCost > ByteSize.KB * 64)
             {
@@ -2495,10 +2497,8 @@ public sealed class Scanner : IDisposable
                 _solid_MisFileItems.Add(item);
             }
 
-            NameAndIndex missFlagFile = lowestCostMissFlagFileNonNull;
-            CacheUsedMisFiles(missFlagFile, _solid_MisFileItems);
-
-            _solidMissFlagFileToUse = missFlagFile;
+            _solidMissFlagFileToUse = lowestCostMissFlagFileNonNull;
+            CacheUsedMisFiles(_solidMissFlagFileToUse, _solid_MisFileItems);
         }
         else
         {
@@ -2731,8 +2731,7 @@ public sealed class Scanner : IDisposable
                         {
                             if (_scanOptions.ScanMissionCount)
                             {
-                                // We only want the filename; we already know it's in the right folder
-                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), i));
+                                T3GmpFiles.Add(new NameAndIndex(fn, i));
                             }
                             continue;
                         }
@@ -2754,15 +2753,14 @@ public sealed class Scanner : IDisposable
                             t3Found = true;
                             if (_scanOptions.ScanMissionCount)
                             {
-                                // We only want the filename; we already know it's in the right folder
-                                T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(fn), i));
+                                T3GmpFiles.Add(new NameAndIndex(fn, i));
                             }
                             continue;
                         }
                     }
                 }
-                // We can't early-out if !t3Found here because if we find it after this point, we'll be
-                // missing however many of these we skipped before we detected Thief 3
+                // We can't early-out if !t3Found here because if we find it after this point, we'll be missing
+                // however many of these we skipped before we detected Thief 3
                 else if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras1S) ||
                          fn.PathStartsWithI_AsciiSecond(FMDirs.T3FMExtras2S))
                 {
@@ -2899,7 +2897,7 @@ public sealed class Scanner : IDisposable
                 }
             }
         }
-        else // Dir only; solid is now handled up there as well
+        else // Directory FM when we don't have the file info cache
         {
             string t3DetectPath = Path.Combine(_fmWorkingPath, FMDirs.T3DetectS);
             if (Directory.Exists(t3DetectPath) &&
@@ -2912,8 +2910,7 @@ public sealed class Scanner : IDisposable
                     {
                         if (f.ExtIsGmp())
                         {
-                            // We only want the filename; we already know it's in the right folder
-                            T3GmpFiles.Add(new NameAndIndex(Path.GetFileName(f)));
+                            T3GmpFiles.Add(new NameAndIndex(f));
                         }
                     }
                 }
@@ -2976,8 +2973,8 @@ public sealed class Scanner : IDisposable
                     for (int i = 0; i < baseDirFolders.Length; i++)
                     {
                         // @DIRSEP: Even for UNC paths, FM working path has to be at least like \\netPC\some_directory
-                        // and we're getting dirs inside that, so it'll be at least \\netPC\some_directory\other
-                        // so we'll always end up with "other" (for example). So we're safe here.
+                        //  and we're getting dirs inside that, so it'll be at least \\netPC\some_directory\other
+                        //  so we'll always end up with "other" (for example). So we're safe here.
                         string folder = baseDirFolders[i];
                         baseDirFolders[i] = folder.Substring(folder.Rel_LastIndexOfDirSep() + 1);
                     }
@@ -3093,7 +3090,7 @@ public sealed class Scanner : IDisposable
                         for (int i = 0; i < T3GmpFiles.Count; i++)
                         {
                             NameAndIndex item = T3GmpFiles[i];
-                            if (!item.Name.EqualsI_Local(FMFiles.EntryGmp))
+                            if (!item.Name.PathEndsWithI_AsciiSecond(FMFiles.SEntryGmp))
                             {
                                 t3MisCount++;
                             }
@@ -3132,16 +3129,18 @@ public sealed class Scanner : IDisposable
 
         #region Cache list of used .mis files
 
-        NameAndIndex? missFlagFile = null;
+        NameAndIndex? missFlagFile;
         if (_solidMissFlagFileToUse is { } solidMissFlagFileToUse)
         {
             missFlagFile = solidMissFlagFileToUse;
         }
-        else if (_misFiles.Count > 1 &&
-                 _stringsDirFiles.Count > 0 &&
-                 TryGetMissFlag(_stringsDirFiles, out NameAndIndex result))
+        else if (_misFiles.Count > 1 && TryGetMissFlag(_stringsDirFiles, out NameAndIndex result))
         {
             missFlagFile = result;
+        }
+        else
+        {
+            missFlagFile = null;
         }
 
         CacheUsedMisFiles(missFlagFile, _misFiles);
@@ -3208,9 +3207,10 @@ public sealed class Scanner : IDisposable
 
     private void CacheUsedMisFiles(NameAndIndex? missFlagFile, ListFast<NameAndIndex> misFiles)
     {
-        ListFast<string> missFlagLines = _tempLines;
         if (missFlagFile is { } missFlagFileNonNull && misFiles.Count > 1)
         {
+            ListFast<string> missFlagLines = _tempLines;
+
             ReadAllLinesUTF8(missFlagFileNonNull, missFlagLines);
 
             for (int mfI = 0; mfI < misFiles.Count; mfI++)
@@ -3294,11 +3294,16 @@ public sealed class Scanner : IDisposable
         if (xReleaseDate.Count > 0)
         {
             string rdString = xReleaseDate[0].GetPlainInnerText();
-            if (!rdString.IsEmpty()) releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
+            if (!rdString.IsEmpty())
+            {
+                releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _)
+                    ? dt
+                    : null;
+            }
         }
 
-        // These files also specify languages and whether the mission has custom stuff, but we're not going
-        // to trust what we're told - we're going to detect that stuff by looking at what's actually there.
+        // These files also specify languages and whether the mission has custom stuff, but we're not going to
+        // trust what we're told - we're going to detect that stuff by looking at what's actually there.
 
         return (title, author, releaseDate);
     }
@@ -3306,14 +3311,7 @@ public sealed class Scanner : IDisposable
     private (string Title, string Author, DateTime? LastUpdateDate, string Tags)
     ReadFMIni(NameAndIndex file)
     {
-        var ret = (
-            Title: "",
-            Author: "",
-            LastUpdateDate: (DateTime?)null,
-            Tags: ""
-        );
-
-        #region Load INI
+        var ret = (Title: "", Author: "", LastUpdateDate: (DateTime?)null, Tags: "");
 
         ReadAllLinesDetectEncoding(file, _tempLines);
 
@@ -3322,35 +3320,31 @@ public sealed class Scanner : IDisposable
             return ("", "", null, "");
         }
 
-        (string NiceName, string ReleaseDate, string Tags, string Descr) fmIni = ("", "", "", "");
-
-        #region Deserialize ini
+        string niceName = "";
+        string releaseDate = "";
+        string tags = "";
 
         foreach (string line in _tempLines)
         {
             if (line.StartsWithI_Local("NiceName="))
             {
-                fmIni.NiceName = line.Substring(9).Trim();
+                niceName = line.Substring(9).Trim();
             }
             else if (line.StartsWithI_Local("ReleaseDate="))
             {
-                fmIni.ReleaseDate = line.Substring(12).Trim();
+                releaseDate = line.Substring(12).Trim();
             }
             else if (line.StartsWithI_Local("Tags="))
             {
-                fmIni.Tags = line.Substring(5).Trim();
+                tags = line.Substring(5).Trim();
             }
         }
 
-        #endregion
-
-        #endregion
-
         #region Get author from tags
 
-        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !fmIni.Tags.IsEmpty())
+        if ((_scanOptions.ScanTags || _scanOptions.ScanAuthor) && !tags.IsEmpty())
         {
-            string[] tagsArray = fmIni.Tags.Split_Char(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
+            string[] tagsArray = tags.Split_Char(CA_CommaSemicolon, StringSplitOptions.RemoveEmptyEntries, _sevenZipContext.IntArrayPool);
 
             string authorString = "";
             for (int i = 0, authorsFound = 0; i < tagsArray.Length; i++)
@@ -3370,18 +3364,16 @@ public sealed class Scanner : IDisposable
         #endregion
 
         // Return the raw string and let the caller decide what to do with it
-        if (_scanOptions.ScanTags) ret.Tags = fmIni.Tags;
+        if (_scanOptions.ScanTags) ret.Tags = tags;
 
-        if (_scanOptions.ScanTitle) ret.Title = fmIni.NiceName;
+        if (_scanOptions.ScanTitle) ret.Title = niceName;
 
         if (_scanOptions.ScanReleaseDate)
         {
-            string rd = fmIni.ReleaseDate;
-
             // The fm.ini Unix timestamp looks 32-bit, but FMSel's source code pegs it as int64. It must just
             // be writing only as many digits as it needs. That's good, because 32-bit will run out in 2038.
             // Anyway, we should parse it as long.
-            if (long.TryParse(rd, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out long seconds))
+            if (long.TryParse(releaseDate, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out long seconds))
             {
                 try
                 {
@@ -3392,16 +3384,16 @@ public sealed class Scanner : IDisposable
                     // Invalid date, leave blank
                 }
             }
-            else if (!fmIni.ReleaseDate.IsEmpty())
+            else if (!releaseDate.IsEmpty())
             {
-                ret.LastUpdateDate = StringToDate(fmIni.ReleaseDate, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
+                ret.LastUpdateDate = StringToDate(releaseDate, checkForAmbiguity: false, out DateTime? dt, out _) ? dt : null;
             }
         }
 
         /*
         Notes:
-        -fm.ini can specify a readme file, but it may not be the one we're looking for, as far as
-         detecting values goes. Reading all .txt and .rtf files is slightly slower but more accurate.
+        fm.ini can specify a readme file, but it may not be the one we're looking for, as far as detecting values
+        goes. Reading all .txt and .rtf files is slightly slower but more accurate.
         */
 
         return ret;
@@ -3677,12 +3669,12 @@ public sealed class Scanner : IDisposable
                     if (i < lines.Count - 2)
                     {
                         string lineAfterNext = lines[i + 2].Trim();
-                        int lanLen = lineAfterNext.Length;
-                        if ((lanLen > 0 &&
+                        int lineAfterNextLength = lineAfterNext.Length;
+                        if ((lineAfterNextLength > 0 &&
                              (lineAfterNext.Contains(':') ||
                               // Overly-specific hack for the Dark Mod training mission
                               lineAfterNext == ".") &&
-                             lanLen <= 50) ||
+                             lineAfterNextLength <= 50) ||
                             lineAfterNext.IsWhiteSpace())
                         {
                             return lines[i + 1].Trim();
@@ -4442,8 +4434,8 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout
-        // the whole text is asking for a cavalcade of false positives, hence why we only look near the top.
+        // Look for a "by [author]" in the first few lines. Looking for a line starting with "by" throughout the
+        // whole text is asking for a cavalcade of false positives, hence why we only look near the top.
         _topLines.ClearFast();
 
         for (int i = 0; i < lines.Count; i++)
@@ -4515,8 +4507,8 @@ public sealed class Scanner : IDisposable
 
         if (titles.Count == 0) return "";
 
-        // We DON'T just check the first five lines, because there might be another language section first
-        // and this kind of author string might well be buried down in the file.
+        // We DON'T just check the first five lines, because there might be another language section first and
+        // this kind of author string might well be buried down in the file.
         foreach (ReadmeInternal rf in _readmeFiles)
         {
             if (!rf.Scan) continue;
@@ -4790,17 +4782,17 @@ public sealed class Scanner : IDisposable
             3093                   - NewDark, could be either T1/G or T2    Commonness: ~4%
             Any other location*    - OldDark Thief2
 
-        System Shock 2 .mis files can (but may not) have the SKYOBJVAR string. If they do, it'll be at 3168
-        or 7292.
+        System Shock 2 .mis files can (but may not) have the SKYOBJVAR string. If they do, it'll be at 3168 or
+        7292.
         System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
         696 = NewDark, 916 = OldDark.
 
-        * We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky
-          location, and it's faster and more reliable to simply carry on with the secondary check than to
-          try to guess where SKYOBJVAR is in this case.
+        *We skip this check because only a handful of OldDark Thief 2 missions have SKYOBJVAR in a wacky location,
+         and it's faster and more reliable to simply carry on with the secondary check than to try to guess where
+         SKYOBJVAR is in this case.
 
-        For folder scans, we can seek to these positions directly, but for zip scans, we have to read
-        through the stream sequentially until we hit each one.
+        For folder scans, we can seek to these positions directly, but for zip scans, we have to read through the
+        stream sequentially until we hit each one.
         */
 
         Stream? misStream = null;
@@ -4977,14 +4969,14 @@ public sealed class Scanner : IDisposable
     private Game GameType_DoSS2FallbackCheck(Entry misFileEntry)
     {
         /*
-        Paranoid fallback. In case the ident string ends up at a different byte location in a future version of
-        NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted it
-        earlier during the FM data caching and again here). For T2, we have a fallback scan if we don't find
-        SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's really
-        slow, but better slow than incorrect. This way, if a new SS2 FM is released and has the ident string
-        in a different place, at least we're like 98% certain to still detect it correctly here. Then people
-        can still at least have an accurate detection while I work on a new version that takes the new ident
-        string location into account.
+        Paranoid fallback. In case the ident string ends up at a different byte location in a future version
+        of NewDark, we run this check if we suspect we're dealing with an SS2 FM (we will have fingerprinted
+        it earlier during the FM data caching and again here). For T2, we have a fallback scan if we don't
+        find SKYOBJVAR at byte 772, so we're safe. But SS2 we should have a fallback in place as well. It's
+        really slow, but better slow than incorrect. This way, if a new SS2 FM is released and has the ident
+        string in a different place, at least we're like 98% certain to still detect it correctly here. Then
+        people can still at least have an accurate detection while I work on a new version that takes the new
+        ident string location into account.
         */
 
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
@@ -5036,8 +5028,8 @@ public sealed class Scanner : IDisposable
         {
             return _usedMisFiles[0];
         }
-        // We know we have at least 1 used mis file at this point because we early-return way before this if
-        // we don't
+        // We know we have at least 1 used mis file at this point because we early-return way before this if we
+        // don't
         else
         {
             int smallestSizeIndex = -1;
@@ -5096,9 +5088,9 @@ public sealed class Scanner : IDisposable
         byte[] chunk,
         int bufferSize)
     {
-        // To catch matches on a boundary between chunks, leave extra space at the start of each chunk
-        // for the last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of
-        // quick-n-dirty "step back and re-read" type thing. Dunno man, it works.
+        // To catch matches on a boundary between chunks, leave extra space at the start of each chunk for the
+        // last boundaryLen bytes of the previous chunk to go into, thus achieving a kind of quick-n-dirty "step
+        // back and re-read" type thing. Dunno man, it works.
         int boundaryLen = identString.Length;
 
         chunk.Clear();
@@ -6068,13 +6060,13 @@ public sealed class Scanner : IDisposable
     private bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
-        return list.Count != 0 && TryGetItemFromPredicate(list, _ctx._missFlagPredicates, out result);
+        return list.Count > 0 && TryGetItemFromPredicate(list, _ctx._missFlagPredicates, out result);
     }
 
     private bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
-        return list.Count != 0 && TryGetItemFromPredicate(list, _ctx._newGameStrPredicates, out result);
+        return list.Count > 0 && TryGetItemFromPredicate(list, _ctx._newGameStrPredicates, out result);
     }
 
     private static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
