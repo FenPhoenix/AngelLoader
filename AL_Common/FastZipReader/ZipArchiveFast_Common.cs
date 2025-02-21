@@ -409,7 +409,7 @@ internal static class ZipArchiveFast_Common
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
-                uncompressedStream = new Deflate64ManagedStream(compressedStreamToRead);
+                uncompressedStream = new Deflate64ManagedStream(compressedStreamToRead, leaveOpen: true);
                 break;
             case CompressionMethodValues.Stored:
             default:

@@ -24,7 +24,7 @@ public sealed class Deflate64ManagedStream : Stream
     private byte[] _buffer;
 
     // A specific constructor to allow decompression of Deflate64
-    public Deflate64ManagedStream(Stream stream)
+    public Deflate64ManagedStream(Stream stream, bool leaveOpen)
     {
         if (stream == null)
         {
@@ -35,13 +35,13 @@ public sealed class Deflate64ManagedStream : Stream
             ThrowHelper.ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
         }
 
-        InitializeInflater(stream);
+        InitializeInflater(stream, leaveOpen);
     }
 
     /// <summary>
     /// Sets up this DeflateManagedStream to be used for Inflation/Decompression
     /// </summary>
-    private void InitializeInflater(Stream stream)
+    private void InitializeInflater(Stream stream, bool leaveOpen)
     {
         Debug.Assert(stream != null);
         if (!stream.CanRead)
@@ -52,7 +52,7 @@ public sealed class Deflate64ManagedStream : Stream
         _inflater64 = new Inflater64Managed(reader: null);
 
         _stream = stream;
-        _leaveOpen = false;
+        _leaveOpen = leaveOpen;
         _buffer = new byte[DefaultBufferSize];
     }
 
