@@ -74,7 +74,7 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
     private readonly MainForm _owner;
 
-    private ProgressSizeMode _sizeModeMode = _defaultSizeMode;
+    private ProgressSizeMode _sizeMode = _defaultSizeMode;
 
     private Action _cancelAction = NullAction;
 
@@ -156,7 +156,7 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
     private void SetSizeMode(ProgressSizeMode sizeMode, bool forceChange = false)
     {
-        if (!forceChange && sizeMode == _sizeModeMode) return;
+        if (!forceChange && sizeMode == _sizeMode) return;
 
         bool doubleSize = sizeMode == ProgressSizeMode.Double;
 
@@ -167,7 +167,7 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 
         this.CenterHV(_owner, clientSize: true);
 
-        _sizeModeMode = sizeMode;
+        _sizeMode = sizeMode;
 
         // Necessary otherwise our drawn border doesn't update its size
         Invalidate();
