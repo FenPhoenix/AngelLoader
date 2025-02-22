@@ -632,40 +632,31 @@ internal static class Utility
 
     #region Get item by filename
 
+    // Cached predicates for allocation avoidance
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate1 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag);
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate2 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag);
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate3 = static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag);
+
     internal static bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
         return list.Count > 0 &&
-               (TryGetItem(
-                    list,
-                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag),
-                    out result) ||
-                TryGetItem(
-                    list,
-                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag),
-                    out result) ||
-                TryGetItem(
-                    list,
-                    static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag),
-                    out result));
+               (TryGetItem(list, MissFlagPredicate1, out result) ||
+                TryGetItem(list, MissFlagPredicate2, out result) ||
+                TryGetItem(list, MissFlagPredicate3, out result));
     }
+
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate1 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr);
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate2 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr);
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate3 = static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr);
 
     internal static bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
     {
         result = default;
         return list.Count > 0 &&
-               (TryGetItem(
-                    list,
-                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr),
-                    out result) ||
-                TryGetItem(
-                    list,
-                    static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr),
-                    out result) ||
-                TryGetItem(
-                    list,
-                    static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr),
-                    out result));
+               (TryGetItem(list, NewGameStrPredicate1, out result) ||
+                TryGetItem(list, NewGameStrPredicate2, out result) ||
+                TryGetItem(list, NewGameStrPredicate3, out result));
     }
 
     internal static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
@@ -675,9 +666,14 @@ internal static class Utility
 
         foreach (string location in locations)
         {
-            if (TryGetItem(list, x => x.Name.PathEqualsI_AsciiSecond(location), out result))
+            for (int i = 0; i < list.Count; i++)
             {
-                return true;
+                NameAndIndex item = list[i];
+                if (item.Name.PathEqualsI_AsciiSecond(location))
+                {
+                    result = item;
+                    return true;
+                }
             }
         }
 
