@@ -8,7 +8,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class FilterControlsLLMenu : IDarkable
+internal sealed class Lazy_FilterControlsMenu : IDarkable
 {
     private bool _constructed;
     private readonly bool[] _filterCheckedStates = InitializedArray(HideableFilterControlsCount, true);
@@ -50,7 +50,7 @@ internal sealed class FilterControlsLLMenu : IDarkable
         }
     }
 
-    internal FilterControlsLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_FilterControlsMenu(MainForm owner) => _owner = owner;
 
     private void Construct()
     {

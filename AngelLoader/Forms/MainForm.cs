@@ -164,22 +164,22 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly IDarkable[] _lazyLoadedControls;
 
-    private readonly ChooseReadmeLLPanel ChooseReadmeLLPanel;
+    private readonly Lazy_ChooseReadmePanel ChooseReadmeLLPanel;
     private readonly Lazy_ReadmeEncodingsMenu Lazy_ReadmeEncodingsMenu;
-    private readonly ExitLLButton ExitLLButton;
-    private readonly FilterControlsLLMenu FilterControlsLLMenu;
-    private readonly FMsDGV_ColumnHeaderLLMenu FMsDGV_ColumnHeaderLLMenu;
-    internal readonly FMsDGV_FM_LLMenu FMsDGV_FM_LLMenu;
-    private readonly GameFilterControlsLLMenu GameFilterControlsLLMenu;
-    private readonly InstallUninstallFMLLButton InstallUninstallFMLLButton;
+    private readonly Lazy_ExitButton ExitLLButton;
+    private readonly Lazy_FilterControlsMenu FilterControlsLLMenu;
+    private readonly Lazy_FMsDGV_ColumnHeaderMenu FMsDGV_ColumnHeaderLLMenu;
+    internal readonly Lazy_FMsDGV_FM_Menu FMsDGV_FM_LLMenu;
+    private readonly Lazy_GameFilterControlsMenu GameFilterControlsLLMenu;
+    private readonly Lazy_InstallUninstallFMButton InstallUninstallFMLLButton;
     private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
     private readonly Lazy_PlayOriginalControls Lazy_PlayOriginalControls;
     private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
-    private readonly MainLLMenu MainLLMenu;
-    private readonly PlayOriginalGameLLMenu PlayOriginalGameLLMenu;
-    private readonly PlayOriginalT2InMultiplayerLLMenu PlayOriginalT2InMultiplayerLLMenu;
+    private readonly Lazy_MainMenu MainLLMenu;
+    private readonly Lazy_PlayOriginalGameMenu PlayOriginalGameLLMenu;
+    private readonly Lazy_PlayOriginalT2InMultiplayerMenu PlayOriginalT2InMultiplayerLLMenu;
     private readonly Lazy_FMTabsMenu Lazy_FMTabsMenu;
-    private readonly ViewHTMLReadmeLLButton ViewHTMLReadmeLLButton;
+    private readonly Lazy_ViewHTMLReadmeButton ViewHTMLReadmeLLButton;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_FMTabsBlocker Lazy_TopFMTabsBlocker;
     private readonly Lazy_FMTabsBlocker Lazy_BottomFMTabsBlocker;
@@ -565,22 +565,22 @@ public sealed partial class MainForm : DarkFormBase,
 
         _lazyLoadedControls = new IDarkable[]
         {
-            ChooseReadmeLLPanel = new ChooseReadmeLLPanel(this),
+            ChooseReadmeLLPanel = new Lazy_ChooseReadmePanel(this),
             Lazy_ReadmeEncodingsMenu = new Lazy_ReadmeEncodingsMenu(this),
-            ExitLLButton = new ExitLLButton(this),
-            FilterControlsLLMenu = new FilterControlsLLMenu(this),
-            FMsDGV_ColumnHeaderLLMenu = new FMsDGV_ColumnHeaderLLMenu(this),
-            FMsDGV_FM_LLMenu = new FMsDGV_FM_LLMenu(this),
-            GameFilterControlsLLMenu = new GameFilterControlsLLMenu(this),
-            InstallUninstallFMLLButton = new InstallUninstallFMLLButton(this),
+            ExitLLButton = new Lazy_ExitButton(this),
+            FilterControlsLLMenu = new Lazy_FilterControlsMenu(this),
+            FMsDGV_ColumnHeaderLLMenu = new Lazy_FMsDGV_ColumnHeaderMenu(this),
+            FMsDGV_FM_LLMenu = new Lazy_FMsDGV_FM_Menu(this),
+            GameFilterControlsLLMenu = new Lazy_GameFilterControlsMenu(this),
+            InstallUninstallFMLLButton = new Lazy_InstallUninstallFMButton(this),
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this),
             Lazy_PlayOriginalControls = new Lazy_PlayOriginalControls(this),
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this),
-            MainLLMenu = new MainLLMenu(this),
-            PlayOriginalGameLLMenu = new PlayOriginalGameLLMenu(this),
-            PlayOriginalT2InMultiplayerLLMenu = new PlayOriginalT2InMultiplayerLLMenu(this),
+            MainLLMenu = new Lazy_MainMenu(this),
+            PlayOriginalGameLLMenu = new Lazy_PlayOriginalGameMenu(this),
+            PlayOriginalT2InMultiplayerLLMenu = new Lazy_PlayOriginalT2InMultiplayerMenu(this),
             Lazy_FMTabsMenu = new Lazy_FMTabsMenu(this),
-            ViewHTMLReadmeLLButton = new ViewHTMLReadmeLLButton(this),
+            ViewHTMLReadmeLLButton = new Lazy_ViewHTMLReadmeButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_BottomFMTabsBlocker = new Lazy_FMTabsBlocker(this),

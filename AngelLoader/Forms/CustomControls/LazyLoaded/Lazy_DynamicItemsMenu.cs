@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class DynamicItemsLLMenu : IDarkable
+internal sealed class Lazy_DynamicItemsMenu : IDarkable
 {
     private bool _constructed;
 
@@ -19,7 +19,7 @@ internal sealed class DynamicItemsLLMenu : IDarkable
         }
     }
 
-    internal DynamicItemsLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_DynamicItemsMenu(MainForm owner) => _owner = owner;
 
     private bool _darkModeEnabled;
     [PublicAPI]

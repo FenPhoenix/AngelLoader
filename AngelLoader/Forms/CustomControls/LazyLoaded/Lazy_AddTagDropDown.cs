@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class AddTagLLDropDown : IDarkable
+internal sealed class Lazy_AddTagDropDown : IDarkable
 {
     private bool _constructed;
 
@@ -39,7 +39,7 @@ internal sealed class AddTagLLDropDown : IDarkable
         }
     }
 
-    internal AddTagLLDropDown(MainForm form, TagsTabPage page, Lazy_TagsPage realPage)
+    internal Lazy_AddTagDropDown(MainForm form, TagsTabPage page, Lazy_TagsPage realPage)
     {
         _form = form;
         _page = page;

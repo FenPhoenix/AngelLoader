@@ -7,7 +7,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
+internal sealed class Lazy_FMsDGV_ColumnHeaderMenu : IDarkable
 {
     #region Control backing fields
 
@@ -40,7 +40,7 @@ internal sealed class FMsDGV_ColumnHeaderLLMenu : IDarkable
 
     #endregion
 
-    internal FMsDGV_ColumnHeaderLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_FMsDGV_ColumnHeaderMenu(MainForm owner) => _owner = owner;
 
     #region Private methods
 

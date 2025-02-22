@@ -17,7 +17,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Lazy-loaded subcontrols
 
-    private DynamicItemsLLMenu AltTitlesLLMenu = null!;
+    private Lazy_DynamicItemsMenu AltTitlesLLMenu = null!;
     private Lazy_LangDetectError Lazy_LangDetectError = null!;
 
     #endregion
@@ -78,7 +78,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
         _page = ConstructPage<Lazy_EditFMPage>();
 
-        AltTitlesLLMenu = new DynamicItemsLLMenu(_owner);
+        AltTitlesLLMenu = new Lazy_DynamicItemsMenu(_owner);
         Lazy_LangDetectError = new Lazy_LangDetectError(_owner, _page);
 
         using (new DisableEvents(_owner))

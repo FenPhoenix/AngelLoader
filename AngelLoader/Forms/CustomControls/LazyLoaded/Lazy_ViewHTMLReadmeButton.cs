@@ -5,7 +5,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class ViewHTMLReadmeLLButton : IDarkable
+internal sealed class Lazy_ViewHTMLReadmeButton : IDarkable
 {
     private bool _constructed;
     private DarkButton Button = null!;
@@ -26,7 +26,7 @@ internal sealed class ViewHTMLReadmeLLButton : IDarkable
         }
     }
 
-    internal ViewHTMLReadmeLLButton(MainForm owner) => _owner = owner;
+    internal Lazy_ViewHTMLReadmeButton(MainForm owner) => _owner = owner;
 
     internal void Localize()
     {

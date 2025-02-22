@@ -5,7 +5,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class ExitLLButton : IDarkable
+internal sealed class Lazy_ExitButton : IDarkable
 {
     private readonly MainForm _owner;
 
@@ -27,7 +27,7 @@ internal sealed class ExitLLButton : IDarkable
         }
     }
 
-    internal ExitLLButton(MainForm owner) => _owner = owner;
+    internal Lazy_ExitButton(MainForm owner) => _owner = owner;
 
     internal void Localize()
     {

@@ -15,8 +15,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
     #region Lazy-loaded subcontrols
 
-    private AddTagLLDropDown AddTagLLDropDown = null!;
-    private DynamicItemsLLMenu AddTagLLMenu = null!;
+    private Lazy_AddTagDropDown AddTagLLDropDown = null!;
+    private Lazy_DynamicItemsMenu AddTagLLMenu = null!;
 
     #endregion
 
@@ -52,8 +52,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
         _page = ConstructPage<Lazy_TagsPage>();
 
-        AddTagLLDropDown = new AddTagLLDropDown(_owner, this, _page);
-        AddTagLLMenu = new DynamicItemsLLMenu(_owner);
+        AddTagLLDropDown = new Lazy_AddTagDropDown(_owner, this, _page);
+        AddTagLLMenu = new Lazy_DynamicItemsMenu(_owner);
 
         using (new DisableEvents(_owner))
         {

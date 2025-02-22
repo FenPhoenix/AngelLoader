@@ -4,7 +4,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class PlayOriginalT2InMultiplayerLLMenu : IDarkable
+internal sealed class Lazy_PlayOriginalT2InMultiplayerMenu : IDarkable
 {
     private bool _constructed;
 
@@ -25,7 +25,7 @@ internal sealed class PlayOriginalT2InMultiplayerLLMenu : IDarkable
         }
     }
 
-    internal PlayOriginalT2InMultiplayerLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_PlayOriginalT2InMultiplayerMenu(MainForm owner) => _owner = owner;
 
     private ToolStripMenuItemCustom MenuItem = null!;
 

@@ -6,7 +6,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class ChooseReadmeLLPanel : IDarkable
+internal sealed class Lazy_ChooseReadmePanel : IDarkable
 {
     private bool _constructed;
 
@@ -45,7 +45,7 @@ internal sealed class ChooseReadmeLLPanel : IDarkable
         }
     }
 
-    internal ChooseReadmeLLPanel(MainForm owner) => _owner = owner;
+    internal Lazy_ChooseReadmePanel(MainForm owner) => _owner = owner;
 
     private void Construct()
     {
