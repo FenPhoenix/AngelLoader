@@ -287,15 +287,69 @@ public static partial class Common
             ClearFast();
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                yield return ItemsArray[i];
-            }
-        }
+        private Enumerator? _enumerator;
+
+        public IEnumerator<T> GetEnumerator() => _enumerator ??= new Enumerator(this);
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public struct Enumerator : IEnumerator<T>
+        {
+            private readonly ListFast<T> _list;
+            private int _index;
+            private T _current;
+
+            internal Enumerator(ListFast<T> list)
+            {
+                _list = list;
+                _index = 0;
+                _current = default!;
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                ListFast<T> localList = _list;
+
+                if (((uint)_index < (uint)localList.Count))
+                {
+                    _current = localList.ItemsArray[_index];
+                    _index++;
+                    return true;
+                }
+                return MoveNextRare();
+            }
+
+            private bool MoveNextRare()
+            {
+                _index = _list.Count + 1;
+                _current = default!;
+                return false;
+            }
+
+            public readonly T Current => _current;
+
+            readonly object IEnumerator.Current
+            {
+                get
+                {
+                    if (_index == 0 || _index == _list.Count + 1)
+                    {
+                        ThrowHelper.ThrowInvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
+                    }
+                    return _current!;
+                }
+            }
+
+            void IEnumerator.Reset()
+            {
+                _index = 0;
+                _current = default!;
+            }
+        }
     }
 
     #endregion

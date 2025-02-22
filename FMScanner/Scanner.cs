@@ -2186,8 +2186,10 @@ public sealed class Scanner : IDisposable
 
             ListFast<string> fileNamesList = SolidExtractedFilesList;
 
-            foreach (NameAndIndex item in entriesList)
+            for (int i = 0; i < entriesList.Count; i++)
             {
+                NameAndIndex item = entriesList[i];
+
                 if (!_scanOptions.ScanGameType &&
                     item.Name.IsBaseDirMisOrGamFile())
                 {
@@ -2980,8 +2982,10 @@ public sealed class Scanner : IDisposable
 
                     if (_scanOptions.ScanCustomResources)
                     {
-                        foreach (NameAndIndex f in _intrfaceDirFiles)
+                        for (int i = 0; i < _intrfaceDirFiles.Count; i++)
                         {
+                            NameAndIndex f = _intrfaceDirFiles[i];
+
                             if (fmd.HasAutomap == null && AutomapFileExists(f.Name))
                             {
                                 fmd.HasAutomap = true;
@@ -3327,8 +3331,10 @@ public sealed class Scanner : IDisposable
         string releaseDate = "";
         string tags = "";
 
-        foreach (string line in _tempLines)
+        for (int i = 0; i < _tempLines.Count; i++)
         {
+            string line = _tempLines[i];
+
             if (line.StartsWithI_Local("NiceName="))
             {
                 niceName = line.Substring(9).Trim();
@@ -3458,8 +3464,10 @@ public sealed class Scanner : IDisposable
         // Note: .wri files look like they may be just plain text with garbage at the top. Shrug.
         // Treat 'em like plaintext and see how it goes.
 
-        foreach (NameAndIndex readmeFile in _readmeDirFiles)
+        for (int i = 0; i < _readmeDirFiles.Count; i++)
         {
+            NameAndIndex readmeFile = _readmeDirFiles[i];
+
             if (!readmeFile.Name.IsValidReadme()) continue;
 
             Entry readmeEntry = GetEntry(readmeFile);
@@ -3688,11 +3696,13 @@ public sealed class Scanner : IDisposable
                 return "";
             }
 
-            foreach (ReadmeInternal file in _readmeFiles)
+            for (int i = 0; i < _readmeFiles.Count; i++)
             {
-                if (!file.Scan) continue;
+                ReadmeInternal readme = _readmeFiles[i];
 
-                ret = GetAuthorNextLine(file.Lines);
+                if (!readme.Scan) continue;
+
+                ret = GetAuthorNextLine(readme.Lines);
 
                 if (!ret.IsEmpty()) return ret;
             }
@@ -3957,15 +3967,17 @@ public sealed class Scanner : IDisposable
     {
         ListFast<string>? ret = null;
 
-        foreach (ReadmeInternal r in _readmeFiles)
+        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
-            if (!r.Scan) continue;
+            ReadmeInternal readme = _readmeFiles[readmeIndex];
+
+            if (!readme.Scan) continue;
 
             _topLines.ClearFast();
 
-            for (int i = 0; i < r.Lines.Count; i++)
+            for (int i = 0; i < readme.Lines.Count; i++)
             {
-                string line = r.Lines[i];
+                string line = readme.Lines[i];
                 if (!line.IsWhiteSpace()) _topLines.Add(line);
                 if (_topLines.Count == _maxTopLines) break;
             }
@@ -4257,13 +4269,17 @@ public sealed class Scanner : IDisposable
         if (originalTitles.Count == 0) return;
 
         ListFast<DetectedTitle> titles = _detectedTitles;
-        foreach (string title in originalTitles)
+        for (int i = 0; i < originalTitles.Count; i++)
         {
+            string title = originalTitles[i];
+
             AddDetectedTitle(titles, title, temporary: false);
         }
         // Ultimate final attack against stubborn titles that just won't be caught
-        foreach (ReadmeInternal readme in _readmeFiles)
+        for (int i = 0; i < _readmeFiles.Count; i++)
         {
+            ReadmeInternal readme = _readmeFiles[i];
+
             if (readme.Lines.Count >= 2 && readme.Lines[1].IsWhiteSpace())
             {
                 AddDetectedTitle(titles, readme.Lines[0], temporary: true);
@@ -4430,8 +4446,10 @@ public sealed class Scanner : IDisposable
         bool titleContainsBy = false;
         if (titles != null)
         {
-            foreach (string title in titles)
+            for (int i = 0; i < titles.Count; i++)
             {
+                string title = titles[i];
+
                 if (title.StartsWithI_Local("by ")) titleStartsWithBy = true;
                 if (title.ContainsI(" by ")) titleContainsBy = true;
             }
@@ -4512,21 +4530,25 @@ public sealed class Scanner : IDisposable
 
         // We DON'T just check the first five lines, because there might be another language section first and
         // this kind of author string might well be buried down in the file.
-        foreach (ReadmeInternal rf in _readmeFiles)
+        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
-            if (!rf.Scan) continue;
+            ReadmeInternal readme = _readmeFiles[readmeIndex];
 
-            for (int i = 0; i < rf.Lines.Count; i++)
+            if (!readme.Scan) continue;
+
+            for (int lineIndex = 0; lineIndex < readme.Lines.Count; lineIndex++)
             {
-                string lineT = rf.Lines[i].Trim();
+                string lineT = readme.Lines[lineIndex].Trim();
 
                 if (!lineT.ContainsI(" by ")) continue;
 
                 string titleCandidate = lineT.Substring(0, lineT.IndexOf(" by", OrdinalIgnoreCase)).Trim();
 
                 bool fuzzyMatched = false;
-                foreach (string title in titles)
+                for (int titleIndex = 0; titleIndex < titles.Count; titleIndex++)
                 {
+                    string title = titles[titleIndex];
+
                     if (titleCandidate.SimilarityTo(title, _sevenZipContext) > 0.75)
                     {
                         fuzzyMatched = true;
@@ -4551,16 +4573,18 @@ public sealed class Scanner : IDisposable
 
         bool foundAuthor = false;
 
-        foreach (ReadmeInternal rf in _readmeFiles)
+        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
-            if (!rf.Scan) continue;
+            ReadmeInternal readme = _readmeFiles[readmeIndex];
+
+            if (!readme.Scan) continue;
 
             bool inCopyrightSection = false;
             bool pastFirstLineOfCopyrightSection = false;
 
-            for (int i = 0; i < rf.Lines.Count; i++)
+            for (int lineIndex = 0; lineIndex < readme.Lines.Count; lineIndex++)
             {
-                string line = rf.Lines[i];
+                string line = readme.Lines[lineIndex];
 
                 if (line.IsWhiteSpace()) continue;
 
@@ -5309,14 +5333,16 @@ public sealed class Scanner : IDisposable
         // (was I concerned about number-only dates having not enough context to be sure they're dates?)
         isAmbiguous = false;
 
-        foreach (ReadmeInternal r in _readmeFiles)
+        for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
-            if (!r.Scan) continue;
+            ReadmeInternal readme = _readmeFiles[readmeIndex];
+
+            if (!readme.Scan) continue;
 
             int topLineCount = 0;
-            for (int i = 0; i < r.Lines.Count; i++)
+            for (int lineIndex = 0; lineIndex < readme.Lines.Count; lineIndex++)
             {
-                string lineT = r.Lines[i].Trim();
+                string lineT = readme.Lines[lineIndex].Trim();
 
                 if (lineT.IsWhiteSpace()) continue;
 

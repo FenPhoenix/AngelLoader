@@ -2534,8 +2534,10 @@ internal static partial class FMInstallAndPlay
 
         HashSetPathI extractedNamesHash = new(entries.Count);
 
-        foreach (ZipArchiveFastEntry entry in entries)
+        for (int i = 0; i < entries.Count; i++)
         {
+            ZipArchiveFastEntry entry = entries[i];
+
             string fileName = entry.FullName;
 
             if (fileName.IsEmpty()) continue;
