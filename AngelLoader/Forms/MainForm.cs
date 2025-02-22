@@ -164,22 +164,22 @@ public sealed partial class MainForm : DarkFormBase,
 
     private readonly IDarkable[] _lazyLoadedControls;
 
-    private readonly Lazy_ChooseReadmePanel ChooseReadmeLLPanel;
+    private readonly Lazy_ChooseReadmePanel Lazy_ChooseReadmePanel;
     private readonly Lazy_ReadmeEncodingsMenu Lazy_ReadmeEncodingsMenu;
-    private readonly Lazy_ExitButton ExitLLButton;
-    private readonly Lazy_FilterControlsMenu FilterControlsLLMenu;
-    private readonly Lazy_FMsDGV_ColumnHeaderMenu FMsDGV_ColumnHeaderLLMenu;
-    internal readonly Lazy_FMsDGV_FM_Menu FMsDGV_FM_LLMenu;
-    private readonly Lazy_GameFilterControlsMenu GameFilterControlsLLMenu;
-    private readonly Lazy_InstallUninstallFMButton InstallUninstallFMLLButton;
+    private readonly Lazy_ExitButton Lazy_ExitButton;
+    private readonly Lazy_FilterControlsMenu Lazy_FilterControlsMenu;
+    private readonly Lazy_FMsDGV_ColumnHeaderMenu Lazy_FMsDGV_ColumnHeaderMenu;
+    internal readonly Lazy_FMsDGV_FM_Menu Lazy_FMsDGV_FM_Menu;
+    private readonly Lazy_GameFilterControlsMenu Lazy_GameFilterControlsMenu;
+    private readonly Lazy_InstallUninstallFMButton Lazy_InstallUninstallFMButton;
     private readonly Lazy_FMsListZoomButtons Lazy_FMsListZoomButtons;
     private readonly Lazy_PlayOriginalControls Lazy_PlayOriginalControls;
     private readonly Lazy_ToolStripLabels Lazy_ToolStripLabels;
-    private readonly Lazy_MainMenu MainLLMenu;
-    private readonly Lazy_PlayOriginalGameMenu PlayOriginalGameLLMenu;
-    private readonly Lazy_PlayOriginalT2InMultiplayerMenu PlayOriginalT2InMultiplayerLLMenu;
+    private readonly Lazy_MainMenu Lazy_MainMenu;
+    private readonly Lazy_PlayOriginalGameMenu Lazy_PlayOriginalGameMenu;
+    private readonly Lazy_PlayOriginalT2InMultiplayerMenu Lazy_PlayOriginalT2InMultiplayerMenu;
     private readonly Lazy_FMTabsMenu Lazy_FMTabsMenu;
-    private readonly Lazy_ViewHTMLReadmeButton ViewHTMLReadmeLLButton;
+    private readonly Lazy_ViewHTMLReadmeButton Lazy_ViewHTMLReadmeButton;
     private readonly Lazy_WebSearchButton Lazy_WebSearchButton;
     private readonly Lazy_FMTabsBlocker Lazy_TopFMTabsBlocker;
     private readonly Lazy_FMTabsBlocker Lazy_BottomFMTabsBlocker;
@@ -369,7 +369,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // Stupid hack to fix "send mousewheel to underlying control and block further messages"
                 // functionality still not being fully reliable. We need to focus the parent control sometimes
                 // inexplicably. Sure. Whole point is to avoid having to do that, but sure.
-                if (!(TagsTabPage.AddTagLLDropDownVisible() && TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true)))
+                if (!(TagsTabPage.AddTagDropDownVisible() && TagsTabPage.CursorOverAddTagDropDown(fullArea: true)))
                 {
                     if (controlOver is DarkTextBox { Multiline: true })
                     {
@@ -458,7 +458,7 @@ public sealed partial class MainForm : DarkFormBase,
             }
             else if (CursorOutsideAddTagsDropDownArea())
             {
-                TagsTabPage.HideAndClearAddTagLLDropDown();
+                TagsTabPage.HideAndClearAddTagDropDown();
                 if (m.Msg != Native.WM_LBUTTONUP &&
                     m.Msg != Native.WM_MBUTTONUP &&
                     m.Msg != Native.WM_RBUTTONUP &&
@@ -510,19 +510,19 @@ public sealed partial class MainForm : DarkFormBase,
             int wParam = (int)m.WParam;
             if (wParam == (int)Keys.F1 && !ModalDialogUp())
             {
-                bool mainMenuWasOpen = MainLLMenu.Visible;
+                bool mainMenuWasOpen = Lazy_MainMenu.Visible;
 
                 string section =
                     !EverythingPanel.Enabled ? HelpSections.MainWindow :
                     mainMenuWasOpen ? HelpSections.MainMenu :
-                    FMsDGV_FM_LLMenu.Visible ? HelpSections.FMContextMenu :
-                    FMsDGV_ColumnHeaderLLMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
+                    Lazy_FMsDGV_FM_Menu.Visible ? HelpSections.FMContextMenu :
+                    Lazy_FMsDGV_ColumnHeaderMenu.Visible ? HelpSections.ColumnHeaderContextMenu :
                     AnyControlFocusedIn(TopSplitContainer.Panel1) ? HelpSections.MissionList :
                     TopFMTabsMenuButton.Focused ||
                     BottomFMTabsMenuButton.Focused ||
                     Lazy_FMTabsMenu.Focused ? HelpSections.GetFMTab(default) :
                     // Add tag dropdown is in EverythingPanel, not tags tab page
-                    TagsTabPage.AddTagLLDropDownFocused() ? HelpSections.GetFMTab(FMTab.Tags) :
+                    TagsTabPage.AddTagDropDownFocused() ? HelpSections.GetFMTab(FMTab.Tags) :
                     TryAnyFMTabFocused(out string? fmTabSection) ? fmTabSection :
                     AnyControlFocusedIn(ReadmeContainer) ? HelpSections.ReadmeArea :
                     HelpSections.MainWindow;
@@ -565,22 +565,22 @@ public sealed partial class MainForm : DarkFormBase,
 
         _lazyLoadedControls = new IDarkable[]
         {
-            ChooseReadmeLLPanel = new Lazy_ChooseReadmePanel(this),
+            Lazy_ChooseReadmePanel = new Lazy_ChooseReadmePanel(this),
             Lazy_ReadmeEncodingsMenu = new Lazy_ReadmeEncodingsMenu(this),
-            ExitLLButton = new Lazy_ExitButton(this),
-            FilterControlsLLMenu = new Lazy_FilterControlsMenu(this),
-            FMsDGV_ColumnHeaderLLMenu = new Lazy_FMsDGV_ColumnHeaderMenu(this),
-            FMsDGV_FM_LLMenu = new Lazy_FMsDGV_FM_Menu(this),
-            GameFilterControlsLLMenu = new Lazy_GameFilterControlsMenu(this),
-            InstallUninstallFMLLButton = new Lazy_InstallUninstallFMButton(this),
+            Lazy_ExitButton = new Lazy_ExitButton(this),
+            Lazy_FilterControlsMenu = new Lazy_FilterControlsMenu(this),
+            Lazy_FMsDGV_ColumnHeaderMenu = new Lazy_FMsDGV_ColumnHeaderMenu(this),
+            Lazy_FMsDGV_FM_Menu = new Lazy_FMsDGV_FM_Menu(this),
+            Lazy_GameFilterControlsMenu = new Lazy_GameFilterControlsMenu(this),
+            Lazy_InstallUninstallFMButton = new Lazy_InstallUninstallFMButton(this),
             Lazy_FMsListZoomButtons = new Lazy_FMsListZoomButtons(this),
             Lazy_PlayOriginalControls = new Lazy_PlayOriginalControls(this),
             Lazy_ToolStripLabels = new Lazy_ToolStripLabels(this),
-            MainLLMenu = new Lazy_MainMenu(this),
-            PlayOriginalGameLLMenu = new Lazy_PlayOriginalGameMenu(this),
-            PlayOriginalT2InMultiplayerLLMenu = new Lazy_PlayOriginalT2InMultiplayerMenu(this),
+            Lazy_MainMenu = new Lazy_MainMenu(this),
+            Lazy_PlayOriginalGameMenu = new Lazy_PlayOriginalGameMenu(this),
+            Lazy_PlayOriginalT2InMultiplayerMenu = new Lazy_PlayOriginalT2InMultiplayerMenu(this),
             Lazy_FMTabsMenu = new Lazy_FMTabsMenu(this),
-            ViewHTMLReadmeLLButton = new Lazy_ViewHTMLReadmeButton(this),
+            Lazy_ViewHTMLReadmeButton = new Lazy_ViewHTMLReadmeButton(this),
             Lazy_WebSearchButton = new Lazy_WebSearchButton(this),
             Lazy_TopFMTabsBlocker = new Lazy_FMTabsBlocker(this),
             Lazy_BottomFMTabsBlocker = new Lazy_FMTabsBlocker(this),
@@ -985,7 +985,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         UpdateRatingListsAndColumn(Config.RatingDisplayStyle, startup: true);
 
-        FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, Config.Columns);
+        FMsDGV.SetColumnData(Lazy_FMsDGV_ColumnHeaderMenu, Config.Columns);
 
         #endregion
 
@@ -1005,11 +1005,11 @@ public sealed partial class MainForm : DarkFormBase,
 
         #region Filters
 
-        GameFilterControlsLLMenu.SetCheckedStates(Config.GameFilterControlVisibilities);
+        Lazy_GameFilterControlsMenu.SetCheckedStates(Config.GameFilterControlVisibilities);
 
         #region Set filter control visibilities
 
-        FilterControlsLLMenu.SetCheckedStates(Config.FilterControlVisibilities);
+        Lazy_FilterControlsMenu.SetCheckedStates(Config.FilterControlVisibilities);
 
         for (int fiI = 0; fiI < HideableFilterControlsCount; fiI++)
         {
@@ -1364,9 +1364,9 @@ public sealed partial class MainForm : DarkFormBase,
             }
         }
 
-        if (TagsTabPage.AddTagLLDropDownVisible())
+        if (TagsTabPage.AddTagDropDownVisible())
         {
-            TagsTabPage.HideAndClearAddTagLLDropDown();
+            TagsTabPage.HideAndClearAddTagDropDown();
         }
 
         base.OnSizeChanged(e);
@@ -1432,7 +1432,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             CancelResizables();
 
-            TagsTabPage.HideAndClearAddTagLLDropDown();
+            TagsTabPage.HideAndClearAddTagDropDown();
 
             // Easy way to "get out" of the filter if you want to use Home and End again
             if (FilterTitleTextBox.Focused || FilterAuthorTextBox.Focused)
@@ -1442,7 +1442,7 @@ public sealed partial class MainForm : DarkFormBase,
         }
 
         // Fixes tags dropdown remaining open when new FM selected with arrow keys when mouse is over FMs list
-        if (ViewBlocked || TagsTabPage.AddTagLLDropDownVisible()) return;
+        if (ViewBlocked || TagsTabPage.AddTagDropDownVisible()) return;
 
         if (e.KeyCode == Keys.Escape)
         {
@@ -1812,7 +1812,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!startup) EverythingPanel.SuspendDrawing();
 
             MainToolTip.SetToolTip(MainMenuButton, LText.MainMenu.MainMenuToolTip);
-            MainLLMenu.Localize();
+            Lazy_MainMenu.Localize();
 
             #region Game tabs
 
@@ -1834,7 +1834,7 @@ public sealed partial class MainForm : DarkFormBase,
             }
 
             SetGameFilterShowHideMenuText();
-            GameFilterControlsLLMenu.Localize();
+            Lazy_GameFilterControlsMenu.Localize();
 
             FilterTitleLabel.Text = LText.FilterBar.Title;
             FilterAuthorLabel.Text = LText.FilterBar.Author;
@@ -1859,7 +1859,7 @@ public sealed partial class MainForm : DarkFormBase,
             FilterShowRecentAtTopButton.ToolTipText = LText.FilterBar.ShowRecentAtTop;
 
             FilterControlsShowHideButton.ToolTipText = LText.FilterBar.ShowHideMenuToolTip;
-            FilterControlsLLMenu.Localize();
+            Lazy_FilterControlsMenu.Localize();
 
             #endregion
 
@@ -1874,8 +1874,8 @@ public sealed partial class MainForm : DarkFormBase,
 
             #region FMs list
 
-            FMsDGV_ColumnHeaderLLMenu.Localize();
-            FMsDGV_FM_LLMenu.Localize();
+            Lazy_FMsDGV_ColumnHeaderMenu.Localize();
+            Lazy_FMsDGV_FM_Menu.Localize();
 
             Lazy_FMsListZoomButtons.Localize();
 
@@ -1925,9 +1925,9 @@ public sealed partial class MainForm : DarkFormBase,
 
             Lazy_ReadmeEncodingsMenu.Localize();
 
-            ViewHTMLReadmeLLButton.Localize();
+            Lazy_ViewHTMLReadmeButton.Localize();
 
-            ChooseReadmeLLPanel.Localize();
+            Lazy_ChooseReadmePanel.Localize();
 
             if (ReadmeRichTextBox.LocalizableMessageType != ReadmeLocalizableMessage.None)
             {
@@ -1944,10 +1944,10 @@ public sealed partial class MainForm : DarkFormBase,
 
             Lazy_PlayOriginalControls.LocalizeSingle();
             Lazy_PlayOriginalControls.LocalizeMulti();
-            PlayOriginalGameLLMenu.Localize();
-            PlayOriginalT2InMultiplayerLLMenu.Localize();
+            Lazy_PlayOriginalGameMenu.Localize();
+            Lazy_PlayOriginalT2InMultiplayerMenu.Localize();
 
-            InstallUninstallFMLLButton.Localize();
+            Lazy_InstallUninstallFMButton.Localize();
 
             Lazy_WebSearchButton.Localize();
 
@@ -1957,7 +1957,7 @@ public sealed partial class MainForm : DarkFormBase,
             if (!startup) SetAvailableAndFinishedFMCount(forceRefresh: true);
 
             SettingsButton.Text = LText.MainButtons.Settings;
-            ExitLLButton.Localize();
+            Lazy_ExitButton.Localize();
 
             #endregion
         }
@@ -2144,7 +2144,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void MainMenuButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(MainLLMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
+        ControlUtils.ShowMenu(Lazy_MainMenu.Menu, MainMenuButton, MenuPos.BottomRight, xOffset: 0, yOffset: 2);
     }
 
     private void MainMenuButton_Enter(object sender, EventArgs e) => MainMenuButton.HideFocusRectangle();
@@ -2225,7 +2225,7 @@ public sealed partial class MainForm : DarkFormBase,
     private void GameFilterControlsShowHideButton_Click(object sender, EventArgs e)
     {
         ControlUtils.ShowMenu(
-            GameFilterControlsLLMenu.Menu,
+            Lazy_GameFilterControlsMenu.Menu,
             GameFilterControlsShowHideButtonToolStrip,
             MenuPos.RightDown,
             -GameFilterControlsShowHideButton.Width,
@@ -2236,7 +2236,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         var s = (ToolStripMenuItemCustom)sender;
 
-        if (!s.Checked && GameFilterControlsLLMenu.GetCheckedStates().All(static x => !x))
+        if (!s.Checked && Lazy_GameFilterControlsMenu.GetCheckedStates().All(static x => !x))
         {
             s.Checked = true;
             return;
@@ -2245,7 +2245,7 @@ public sealed partial class MainForm : DarkFormBase,
         if (Config.GameOrganization == GameOrganization.OneList)
         {
             ToolStripButtonCustom button = GetObjectFromMenuItem(
-                GameFilterControlsLLMenu.Menu,
+                Lazy_GameFilterControlsMenu.Menu,
                 s,
                 _filterByGameButtons,
                 SupportedGameCount);
@@ -2259,7 +2259,7 @@ public sealed partial class MainForm : DarkFormBase,
         else // ByTab
         {
             TabPage tab = GetObjectFromMenuItem(
-                GameFilterControlsLLMenu.Menu,
+                Lazy_GameFilterControlsMenu.Menu,
                 s,
                 _gameTabs,
                 SupportedGameCount);
@@ -2272,7 +2272,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (programmatic)
         {
-            bool[] states = GameFilterControlsLLMenu.GetCheckedStates();
+            bool[] states = Lazy_GameFilterControlsMenu.GetCheckedStates();
             int tabIndex = Array.IndexOf(_gameTabs, tab);
             if (states[tabIndex] == show)
             {
@@ -2283,7 +2283,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 return;
             }
-            GameFilterControlsLLMenu.SetCheckedStates(states);
+            Lazy_GameFilterControlsMenu.SetCheckedStates(states);
         }
 
         // We don't need to do a manual refresh here because ShowTab will end up resulting in one
@@ -2444,7 +2444,7 @@ public sealed partial class MainForm : DarkFormBase,
     // controls properly) but keep the rest of the work before load
     private void ChangeFilterControlsForGameType()
     {
-        bool[] checkedStates = GameFilterControlsLLMenu.GetCheckedStates();
+        bool[] checkedStates = Lazy_GameFilterControlsMenu.GetCheckedStates();
 
         if (Config.GameOrganization == GameOrganization.ByTab)
         {
@@ -2734,7 +2734,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             await Core.RefreshFMsListFromDisk();
         }
-        else if (sender == SettingsButton || sender.EqualsIfNotNull(MainLLMenu.SettingsMenuItem))
+        else if (sender == SettingsButton || sender.EqualsIfNotNull(Lazy_MainMenu.SettingsMenuItem))
         {
             try
             {
@@ -2746,11 +2746,11 @@ public sealed partial class MainForm : DarkFormBase,
                 Cursor = Cursors.Default;
             }
         }
-        else if (sender.EqualsIfNotNull(MainLLMenu.CheckForUpdatesMenuItem))
+        else if (sender.EqualsIfNotNull(Lazy_MainMenu.CheckForUpdatesMenuItem))
         {
             await AppUpdate.DoManualCheck();
         }
-        else if (sender.EqualsIfNotNull(InstallUninstallFMLLButton.Button))
+        else if (sender.EqualsIfNotNull(Lazy_InstallUninstallFMButton.Button))
         {
             await FMInstallAndPlay.InstallOrUninstall(FMsDGV.GetSelectedFMs_InOrder());
         }
@@ -2758,17 +2758,17 @@ public sealed partial class MainForm : DarkFormBase,
         {
             await FMInstallAndPlay.InstallIfNeededAndPlay(FMsDGV.GetMainSelectedFM());
         }
-        else if (sender.EqualsIfNotNull(MainLLMenu.ScanAllFMsMenuItem))
+        else if (sender.EqualsIfNotNull(Lazy_MainMenu.ScanAllFMsMenuItem))
         {
             await FMScan.ScanAllFMs();
         }
-        else if (sender.EqualsIfNotNull(MainLLMenu.ImportFromDarkLoaderMenuItem) ||
-                 sender.EqualsIfNotNull(MainLLMenu.ImportFromFMSelMenuItem) ||
-                 sender.EqualsIfNotNull(MainLLMenu.ImportFromNewDarkLoaderMenuItem))
+        else if (sender.EqualsIfNotNull(Lazy_MainMenu.ImportFromDarkLoaderMenuItem) ||
+                 sender.EqualsIfNotNull(Lazy_MainMenu.ImportFromFMSelMenuItem) ||
+                 sender.EqualsIfNotNull(Lazy_MainMenu.ImportFromNewDarkLoaderMenuItem))
         {
             ImportType importType =
-                sender.EqualsIfNotNull(MainLLMenu.ImportFromDarkLoaderMenuItem) ? ImportType.DarkLoader :
-                sender.EqualsIfNotNull(MainLLMenu.ImportFromFMSelMenuItem) ? ImportType.FMSel :
+                sender.EqualsIfNotNull(Lazy_MainMenu.ImportFromDarkLoaderMenuItem) ? ImportType.DarkLoader :
+                sender.EqualsIfNotNull(Lazy_MainMenu.ImportFromFMSelMenuItem) ? ImportType.FMSel :
                 ImportType.NewDarkLoader;
 
             await Import.ImportFrom(importType);
@@ -3006,7 +3006,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void FilterControlsShowHideButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(FilterControlsLLMenu.Menu,
+        ControlUtils.ShowMenu(Lazy_FilterControlsMenu.Menu,
             FilterIconButtonsToolStrip,
             MenuPos.RightDown,
             -FilterControlsShowHideButton.Width,
@@ -4296,11 +4296,11 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (ht.Type is DataGridViewHitTestType.ColumnHeader or DataGridViewHitTestType.None)
         {
-            FMsDGV.ContextMenuStrip = FMsDGV_ColumnHeaderLLMenu.Menu;
+            FMsDGV.ContextMenuStrip = Lazy_FMsDGV_ColumnHeaderMenu.Menu;
         }
         else if (ht.Type == DataGridViewHitTestType.Cell && (ht.ColumnIndex | ht.RowIndex) > -1)
         {
-            FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
+            FMsDGV.ContextMenuStrip = Lazy_FMsDGV_FM_Menu.Menu;
             if (!FMsDGV.Rows[ht.RowIndex].Selected)
             {
                 FMsDGV.SelectSingle(ht.RowIndex);
@@ -4364,7 +4364,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (ControlUtils.IsMenuKey(e))
         {
-            FMsDGV.ContextMenuStrip = FMsDGV_FM_LLMenu.Menu;
+            FMsDGV.ContextMenuStrip = Lazy_FMsDGV_FM_Menu.Menu;
         }
     }
 
@@ -4390,7 +4390,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void UpdateRatingListsAndColumn(RatingDisplayStyle style, bool startup)
     {
-        FMsDGV_FM_LLMenu.UpdateRatingList(style);
+        Lazy_FMsDGV_FM_Menu.UpdateRatingList(style);
 
         #region Update rating column
 
@@ -4438,7 +4438,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (!startup)
         {
-            FMsDGV.SetColumnData(FMsDGV_ColumnHeaderLLMenu, FMsDGV.GetColumnData());
+            FMsDGV.SetColumnData(Lazy_FMsDGV_ColumnHeaderMenu, FMsDGV.GetColumnData());
             RefreshFMsListRowsOnlyKeepSelection();
         }
 
@@ -4479,24 +4479,24 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void ChooseReadmeButton_Click(object sender, EventArgs e)
     {
-        int itemCount = ChooseReadmeLLPanel.ListBox.Items.Count;
-        if (itemCount == 0 || ChooseReadmeLLPanel.ListBox.SelectedIndex == -1)
+        int itemCount = Lazy_ChooseReadmePanel.ListBox.Items.Count;
+        if (itemCount == 0 || Lazy_ChooseReadmePanel.ListBox.SelectedIndex == -1)
         {
             return;
         }
 
         FanMission fm = FMsDGV.GetMainSelectedFM();
-        fm.SelectedReadme = ChooseReadmeLLPanel.ListBox.SelectedBackingItem();
-        ChooseReadmeLLPanel.ShowPanel(false);
+        fm.SelectedReadme = Lazy_ChooseReadmePanel.ListBox.SelectedBackingItem();
+        Lazy_ChooseReadmePanel.ShowPanel(false);
 
         List<string> list = itemCount > 1
-            ? ChooseReadmeLLPanel.ListBox.BackingItems
+            ? Lazy_ChooseReadmePanel.ListBox.BackingItems
             : new List<string>();
 
         ReadmeListFillAndSelect(list, fm.SelectedReadme);
         ShowReadmeControls(CursorOverReadmeArea());
 
-        ChooseReadmeLLPanel.ListBox.ClearFullItems();
+        Lazy_ChooseReadmePanel.ListBox.ClearFullItems();
 
         Core.LoadReadme(fm);
     }
@@ -4600,7 +4600,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Install/Play buttons
 
-    public void ShowInstallUninstallButton(bool enabled) => InstallUninstallFMLLButton.SetVisible(enabled);
+    public void ShowInstallUninstallButton(bool enabled) => Lazy_InstallUninstallFMButton.SetVisible(enabled);
 
     #region Play without FM
 
@@ -4675,29 +4675,29 @@ public sealed partial class MainForm : DarkFormBase,
     // Just gonna have to leave this part as-is.
     internal void PlayOriginalGameButton_Click(object sender, EventArgs e)
     {
-        PlayOriginalGameLLMenu.Construct();
+        Lazy_PlayOriginalGameMenu.Construct();
 
         for (int i = 0, modI = 0; i < SupportedGameCount; i++)
         {
             GameIndex gameIndex = (GameIndex)i;
             bool gameSpecified = !Config.GetGameExe(gameIndex).IsEmpty();
-            PlayOriginalGameLLMenu.GameMenuItems[i].Enabled = gameSpecified;
+            Lazy_PlayOriginalGameMenu.GameMenuItems[i].Enabled = gameSpecified;
             if (GameIsDark(gameIndex))
             {
-                PlayOriginalGameLLMenu.ModsSubMenu.DropDownItems[modI].Enabled = gameSpecified;
+                Lazy_PlayOriginalGameMenu.ModsSubMenu.DropDownItems[modI].Enabled = gameSpecified;
                 modI++;
             }
         }
-        PlayOriginalGameLLMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
+        Lazy_PlayOriginalGameMenu.Thief2MPMenuItem.Visible = Config.T2MPDetected;
 
-        ControlUtils.ShowMenu(PlayOriginalGameLLMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
+        ControlUtils.ShowMenu(Lazy_PlayOriginalGameMenu.Menu, Lazy_PlayOriginalControls.ButtonSingle, MenuPos.TopRight);
     }
 
     internal void PlayOriginalGameMenuItems_Click(object sender, EventArgs e)
     {
         GameIndex gameIndex = ((ToolStripMenuItemCustom)sender).GameIndex;
 
-        bool playMP = sender == PlayOriginalGameLLMenu.Thief2MPMenuItem;
+        bool playMP = sender == Lazy_PlayOriginalGameMenu.Thief2MPMenuItem;
 
         FMInstallAndPlay.PlayOriginalGame(gameIndex, playMP);
     }
@@ -4727,7 +4727,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     internal void PlayOriginalT2MPButton_Click(object sender, EventArgs e)
     {
-        ControlUtils.ShowMenu(PlayOriginalT2InMultiplayerLLMenu.Menu,
+        ControlUtils.ShowMenu(Lazy_PlayOriginalT2InMultiplayerMenu.Menu,
             Lazy_PlayOriginalControls.T2MPMenuButton, MenuPos.TopRight);
     }
 
@@ -4757,7 +4757,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Right side
 
-    public void ShowExitButton(bool enabled) => ExitLLButton.SetVisible(enabled);
+    public void ShowExitButton(bool enabled) => Lazy_ExitButton.SetVisible(enabled);
 
     #endregion
 
@@ -4774,14 +4774,14 @@ public sealed partial class MainForm : DarkFormBase,
 
         #region Menus
 
-        MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
+        Lazy_MainMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
         #endregion
 
         #region Bottom bar
 
-        InstallUninstallFMLLButton.SetSayInstall(true);
-        InstallUninstallFMLLButton.SetEnabled(false);
+        Lazy_InstallUninstallFMButton.SetSayInstall(true);
+        Lazy_InstallUninstallFMButton.SetEnabled(false);
 
         PlayFMButton.Enabled = false;
 
@@ -4796,8 +4796,8 @@ public sealed partial class MainForm : DarkFormBase,
         SetReadmeVisible(false);
         ReadmeRichTextBox.SetText("");
 
-        ChooseReadmeLLPanel.ShowPanel(false);
-        ViewHTMLReadmeLLButton.Hide();
+        Lazy_ChooseReadmePanel.ShowPanel(false);
+        Lazy_ViewHTMLReadmeButton.Hide();
 
         #endregion
 
@@ -4960,50 +4960,50 @@ public sealed partial class MainForm : DarkFormBase,
 
         #endregion
 
-        FMsDGV_FM_LLMenu.SetPlayFMMenuItemEnabled(playShouldBeEnabled);
+        Lazy_FMsDGV_FM_Menu.SetPlayFMMenuItemEnabled(playShouldBeEnabled);
         PlayFMButton.Enabled = playShouldBeEnabled;
 
-        FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
-        FMsDGV_FM_LLMenu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
+        Lazy_FMsDGV_FM_Menu.SetPlayFMInMPMenuItemVisible(!multiSelected && fm.Game == Game.Thief2 && Config.T2MPDetected);
+        Lazy_FMsDGV_FM_Menu.SetPlayFMInMPMenuItemEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemVisible(installShouldBeVisible);
-        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
-        InstallUninstallFMLLButton.SetEnabled(installShouldBeEnabled);
+        Lazy_FMsDGV_FM_Menu.SetInstallUninstallMenuItemVisible(installShouldBeVisible);
+        Lazy_FMsDGV_FM_Menu.SetInstallUninstallMenuItemEnabled(installShouldBeEnabled);
+        Lazy_InstallUninstallFMButton.SetEnabled(installShouldBeEnabled);
 
-        FMsDGV_FM_LLMenu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected, fm.Game);
-        InstallUninstallFMLLButton.SetSayInstall(!fm.Installed);
+        Lazy_FMsDGV_FM_Menu.SetInstallUninstallMenuItemText(!fm.Installed, multiSelected, fm.Game);
+        Lazy_InstallUninstallFMButton.SetSayInstall(!fm.Installed);
 
-        FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!fm.Pinned);
-        FMsDGV_FM_LLMenu.SetPinItemsMode(multiplePinnedStates);
+        Lazy_FMsDGV_FM_Menu.SetPinOrUnpinMenuItemState(!fm.Pinned);
+        Lazy_FMsDGV_FM_Menu.SetPinItemsMode(multiplePinnedStates);
 
-        FMsDGV_FM_LLMenu.SetDeleteFMMenuItemEnabled(
+        Lazy_FMsDGV_FM_Menu.SetDeleteFMMenuItemEnabled(
             (multiSelected && !noneAreAvailable) || allAreAvailable
         );
-        FMsDGV_FM_LLMenu.SetDeleteFMMenuItemVisible(!noneAreAvailable && !anyAreTDM);
-        FMsDGV_FM_LLMenu.SetDeleteFMMenuItemText(multiSelected);
+        Lazy_FMsDGV_FM_Menu.SetDeleteFMMenuItemVisible(!noneAreAvailable && !anyAreTDM);
+        Lazy_FMsDGV_FM_Menu.SetDeleteFMMenuItemText(multiSelected);
 
-        FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemVisible(noneAreAvailable);
-        FMsDGV_FM_LLMenu.SetDeleteFromDBMenuItemText(multiSelected);
+        Lazy_FMsDGV_FM_Menu.SetDeleteFromDBMenuItemVisible(noneAreAvailable);
+        Lazy_FMsDGV_FM_Menu.SetDeleteFromDBMenuItemText(multiSelected);
 
-        FMsDGV_FM_LLMenu.SetOpenInDromEdMenuItemText(fm);
-        FMsDGV_FM_LLMenu.SetOpenInDromEdVisible(!multiSelected &&
+        Lazy_FMsDGV_FM_Menu.SetOpenInDromEdMenuItemText(fm);
+        Lazy_FMsDGV_FM_Menu.SetOpenInDromEdVisible(!multiSelected &&
                                                 fm.Game.ConvertsToDark(out GameIndex gameIndex)
                                                 && Config.GetGameEditorDetected(gameIndex));
-        FMsDGV_FM_LLMenu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
+        Lazy_FMsDGV_FM_Menu.SetOpenInDromedEnabled(!multiSelected && !fm.MarkedUnavailable);
 
-        FMsDGV_FM_LLMenu.SetOpenFMFolderVisible(!multiSelected && (fm.Game == Game.TDM || fm.Installed));
+        Lazy_FMsDGV_FM_Menu.SetOpenFMFolderVisible(!multiSelected && (fm.Game == Game.TDM || fm.Installed));
 
-        FMsDGV_FM_LLMenu.SetScanFMMenuItemEnabled(!noneAreAvailable);
-        FMsDGV_FM_LLMenu.SetScanFMText(multiSelected);
+        Lazy_FMsDGV_FM_Menu.SetScanFMMenuItemEnabled(!noneAreAvailable);
+        Lazy_FMsDGV_FM_Menu.SetScanFMText(multiSelected);
 
-        FMsDGV_FM_LLMenu.SetConvertAudioRCSubMenuEnabled(
+        Lazy_FMsDGV_FM_Menu.SetConvertAudioRCSubMenuEnabled(
             !noneAreAvailable && !noneAreInstalled && !noneAreDark
         );
 
-        FMsDGV_FM_LLMenu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
+        Lazy_FMsDGV_FM_Menu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
         bool webSearchShouldBeEnabled = !multiSelected && GameIsKnownAndSupported(fm.Game);
-        FMsDGV_FM_LLMenu.SetWebSearchEnabled(webSearchShouldBeEnabled);
+        Lazy_FMsDGV_FM_Menu.SetWebSearchEnabled(webSearchShouldBeEnabled);
         Lazy_WebSearchButton.SetEnabled(webSearchShouldBeEnabled);
     }
 
@@ -5027,11 +5027,11 @@ public sealed partial class MainForm : DarkFormBase,
         UpdateUIControlsForMultiSelectState(fm);
 
         // We should never get here when the view list count is 0, but hey
-        MainLLMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
+        Lazy_MainMenu.SetScanAllFMsMenuItemEnabled(FMsViewList.Count > 0);
 
-        FMsDGV_FM_LLMenu.SetRatingMenuItemChecked(fm.Rating);
+        Lazy_FMsDGV_FM_Menu.SetRatingMenuItemChecked(fm.Rating);
 
-        FMsDGV_FM_LLMenu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
+        Lazy_FMsDGV_FM_Menu.SetFinishedOnMenuItemsChecked((Difficulty)fm.FinishedOn, fm.FinishedOnUnknown);
 
         UpdateFMTabs();
     }
@@ -5066,9 +5066,9 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void SetReadmeToErrorState(ReadmeLocalizableMessage messageType)
     {
-        ChooseReadmeLLPanel.ShowPanel(false);
+        Lazy_ChooseReadmePanel.ShowPanel(false);
         ChooseReadmeComboBox.Hide();
-        ViewHTMLReadmeLLButton.Hide();
+        Lazy_ViewHTMLReadmeButton.Hide();
         SetReadmeVisible(true);
         ReadmeEncodingButton.Enabled = false;
 
@@ -5078,10 +5078,10 @@ public sealed partial class MainForm : DarkFormBase,
     public void SetReadmeToInitialChooserState(List<string> readmeFiles)
     {
         SetReadmeVisible(false);
-        ViewHTMLReadmeLLButton.Hide();
-        FillReadmeListControl(ChooseReadmeLLPanel.ListBox, readmeFiles);
+        Lazy_ViewHTMLReadmeButton.Hide();
+        FillReadmeListControl(Lazy_ChooseReadmePanel.ListBox, readmeFiles);
         ShowReadmeControls(false);
-        ChooseReadmeLLPanel.ShowPanel(true);
+        Lazy_ChooseReadmePanel.ShowPanel(true);
     }
 
     private static void FillReadmeListControl(IListControlWithBackingItems readmeListControl, List<string> readmes)
@@ -5101,13 +5101,13 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowReadmeChooser(bool visible) => ChooseReadmeComboBox.Visible = visible;
 
-    public void ShowInitialReadmeChooser(bool visible) => ChooseReadmeLLPanel.ShowPanel(visible);
+    public void ShowInitialReadmeChooser(bool visible) => Lazy_ChooseReadmePanel.ShowPanel(visible);
 
     public Encoding? LoadReadmeContent(string path, ReadmeType fileType, Encoding? encoding)
     {
         if (fileType == ReadmeType.HTML)
         {
-            ViewHTMLReadmeLLButton.Show();
+            Lazy_ViewHTMLReadmeButton.Show();
             SetReadmeVisible(false);
             ReadmeEncodingButton.Enabled = false;
             // In case the cursor is over the scroll bar area
@@ -5117,7 +5117,7 @@ public sealed partial class MainForm : DarkFormBase,
         else
         {
             SetReadmeVisible(true);
-            ViewHTMLReadmeLLButton.Hide();
+            Lazy_ViewHTMLReadmeButton.Hide();
             ReadmeEncodingButton.Enabled = fileType == ReadmeType.PlainText;
             return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
         }
@@ -5437,8 +5437,8 @@ public sealed partial class MainForm : DarkFormBase,
             FMsDGV.CurrentSortDirection,
             FMsDGV.DefaultCellStyle.Font.SizeInPoints,
             FMsDGV.Filter,
-            GameFilterControlsLLMenu.GetCheckedStates(),
-            FilterControlsLLMenu.GetCheckedStates(),
+            Lazy_GameFilterControlsMenu.GetCheckedStates(),
+            Lazy_FilterControlsMenu.GetCheckedStates(),
             selectedFM,
             FMsDGV.GameTabsState,
             gameTab,
@@ -5455,16 +5455,16 @@ public sealed partial class MainForm : DarkFormBase,
     private bool CursorOverReadmeArea()
     {
         return ReadmeRichTextBox.Visible ? CursorOverControl(ReadmeRichTextBox) :
-            ViewHTMLReadmeLLButton.Visible && CursorOverControl(ReadmeContainer);
+            Lazy_ViewHTMLReadmeButton.Visible && CursorOverControl(ReadmeContainer);
     }
 
     // Standard Windows drop-down behavior: nothing else responds until the drop-down closes
     private bool CursorOutsideAddTagsDropDownArea()
     {
         // Check Visible first, otherwise we might be passing a null ref!
-        return TagsTabPage.AddTagLLDropDownVisible() &&
+        return TagsTabPage.AddTagDropDownVisible() &&
                // Check Size instead of ClientSize in order to support clicking the scroll bar
-               !TagsTabPage.CursorOverAddTagLLDropDown(fullArea: true) &&
+               !TagsTabPage.CursorOverAddTagDropDown(fullArea: true) &&
                !TagsTabPage.CursorOverAddTagTextBox() &&
                !TagsTabPage.CursorOverAddTagButton();
     }
@@ -5734,7 +5734,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void RefreshMods() => ModsTabPage.UpdatePage();
 
-    public void SetPinnedMenuState(bool pinned) => FMsDGV_FM_LLMenu.SetPinOrUnpinMenuItemState(!pinned);
+    public void SetPinnedMenuState(bool pinned) => Lazy_FMsDGV_FM_Menu.SetPinOrUnpinMenuItemState(!pinned);
 
     #region FMsDGV scroll position save/restore
 
