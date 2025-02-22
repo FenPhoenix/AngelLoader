@@ -289,11 +289,23 @@ public static partial class Common
 
         private Enumerator? _enumerator;
 
-        public IEnumerator<T> GetEnumerator() => _enumerator ??= new Enumerator(this);
+        public IEnumerator<T> GetEnumerator()
+        {
+            if (_enumerator == null)
+            {
+                _enumerator = new Enumerator(this);
+            }
+            else
+            {
+                _enumerator.Reset();
+            }
+
+            return _enumerator;
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public struct Enumerator : IEnumerator<T>
+        public class Enumerator : IEnumerator<T>
         {
             private readonly ListFast<T> _list;
             private int _index;
@@ -330,9 +342,9 @@ public static partial class Common
                 return false;
             }
 
-            public readonly T Current => _current;
+            public T Current => _current;
 
-            readonly object IEnumerator.Current
+            object IEnumerator.Current
             {
                 get
                 {
@@ -344,7 +356,7 @@ public static partial class Common
                 }
             }
 
-            void IEnumerator.Reset()
+            public void Reset()
             {
                 _index = 0;
                 _current = default!;
