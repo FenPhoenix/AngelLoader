@@ -2264,28 +2264,12 @@ public sealed partial class MainForm : DarkFormBase,
                 _gameTabs,
                 SupportedGameCount);
 
-            ShowGameTab(tab, s.Checked, programmatic: false);
+            ShowGameTab(tab, s.Checked);
         }
     }
 
-    private void ShowGameTab(TabPage tab, bool show, bool programmatic)
+    private void ShowGameTab(TabPage tab, bool show)
     {
-        if (programmatic)
-        {
-            bool[] states = Lazy_GameFilterControlsMenu.GetCheckedStates();
-            int tabIndex = Array.IndexOf(_gameTabs, tab);
-            if (states[tabIndex] == show)
-            {
-                return;
-            }
-            states[tabIndex] = show;
-            if (states.All(static x => !x))
-            {
-                return;
-            }
-            Lazy_GameFilterControlsMenu.SetCheckedStates(states);
-        }
-
         // We don't need to do a manual refresh here because ShowTab will end up resulting in one
         GamesTabControl.ShowTab(tab, show);
         AutosizeGameTabsWidth();
