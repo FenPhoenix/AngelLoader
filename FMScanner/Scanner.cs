@@ -1648,7 +1648,7 @@ public sealed class Scanner : IDisposable
                 sevenZipSize = (ulong)fs.Length;
             }
 
-            (ScannedFMDataAndError? partialExtractError, ListFast<NameAndIndex> entries) =
+            ScannedFMDataAndError? partialExtractError =
                 DoPartialSolidExtract(
                     tempPath,
                     tempRandomName,
@@ -1666,7 +1666,7 @@ public sealed class Scanner : IDisposable
             {
                 try
                 {
-                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, entries);
+                    CopyReadmesToCacheResult result = CopyReadmesToCacheDir(fm, _fmDirFileInfos);
                     if (result == CopyReadmesToCacheResult.NeedsHtmlRefExtract)
                     {
                         needsHtmlRefExtract = true;
@@ -1979,8 +1979,7 @@ public sealed class Scanner : IDisposable
 
     #region Solid archive partial extract
 
-    private (ScannedFMDataAndError? Error, ListFast<NameAndIndex> Entries)
-    DoPartialSolidExtract(
+    private ScannedFMDataAndError? DoPartialSolidExtract(
         string tempPath,
         string tempRandomName,
         FMToScan fm,
@@ -2130,7 +2129,7 @@ public sealed class Scanner : IDisposable
                     cancellationToken,
                     out ScannedFMDataAndError? solidCostError))
             {
-                return (solidCostError, entriesList);
+                return solidCostError;
             }
 
             #region De-duplicate list
@@ -2219,13 +2218,13 @@ public sealed class Scanner : IDisposable
                         "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                         result);
 
-                    return (UnsupportedArchive(
+                    return UnsupportedArchive(
                         archivePath: fm.Path,
                         fen7zResult: result,
                         ex: null,
                         errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
                                    fm.Path + $": fm is 7z{NL}",
-                        originalIndex: fm.OriginalIndex), entriesList);
+                        originalIndex: fm.OriginalIndex);
                 }
             }
             else
@@ -2252,17 +2251,16 @@ public sealed class Scanner : IDisposable
             string fmType = _fmFormat.Name();
 
             Log(fm.Path + ": exception in " + fmType + " extraction", ex);
-            return (UnsupportedArchive(
-                    archivePath: fm.Path,
-                    fen7zResult: null,
-                    ex: ex,
-                    errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
-                               fm.Path + ": fm is " + fmType + ", exception in " + fmType + " extraction",
-                    originalIndex: fm.OriginalIndex),
-                entriesList);
+            return UnsupportedArchive(
+                archivePath: fm.Path,
+                fen7zResult: null,
+                ex: ex,
+                errorInfo: "7z.exe path: " + _sevenZipExePath + $"{NL}" +
+                           fm.Path + ": fm is " + fmType + ", exception in " + fmType + " extraction",
+                originalIndex: fm.OriginalIndex);
         }
 
-        return (null, entriesList);
+        return null;
 
         static bool EndsWithTitleFile(NameAndIndex fileName)
         {
@@ -2510,7 +2508,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<NameAndIndex> entries)
+    private CopyReadmesToCacheResult CopyReadmesToCacheDir(FMToScan fm, ListFast<FileInfoCustom> fileInfos)
     {
         string cachePath = fm.CachePath;
 
@@ -2564,10 +2562,10 @@ public sealed class Scanner : IDisposable
 
         if (anyHtmlReadmes)
         {
-            List<string> archiveFileNames = new List<string>(entries.Count);
-            for (int i = 0; i < entries.Count; i++)
+            List<string> archiveFileNames = new List<string>(fileInfos.Count);
+            for (int i = 0; i < fileInfos.Count; i++)
             {
-                archiveFileNames.Add(Path.GetFileName(entries[i].Name));
+                archiveFileNames.Add(Path.GetFileName(fileInfos[i].FullName));
             }
 
             if (HtmlNeedsReferenceExtract(readmeFileNames, archiveFileNames))
