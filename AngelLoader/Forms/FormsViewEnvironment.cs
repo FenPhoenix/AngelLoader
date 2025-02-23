@@ -94,6 +94,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
         FanMission? fm = fmsViewList.Find(x => x.InstalledDir.EqualsI(selFM.InstalledName));
         if (fm == null) return;
+        if (fm.ForceReadmeReCache) return;
         if (fmsViewListUnscanned.Contains(fm)) return;
         if (fm.SelectedReadme.IsWhiteSpace()) return;
 
