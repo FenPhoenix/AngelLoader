@@ -2755,15 +2755,15 @@ public sealed class Scanner : IDisposable
                 }
                 else if (!fn.Rel_ContainsDirSep() && fn.Contains('.'))
                 {
-                    if (fn.EqualsI_Local(FMFiles.FMInfoXml))
+                    if (_fmInfoXml == null && fn.EqualsI_Local(FMFiles.FMInfoXml))
                     {
                         _fmInfoXml = new NameAndIndex(fn, i);
                     }
-                    else if (fn.EqualsI_Local(FMFiles.FMIni))
+                    else if (_fmIni == null && fn.EqualsI_Local(FMFiles.FMIni))
                     {
                         _fmIni = new NameAndIndex(fn, i);
                     }
-                    else if (fn.EqualsI_Local(FMFiles.ModIni))
+                    else if (_modIni == null && fn.EqualsI_Local(FMFiles.ModIni))
                     {
                         _modIni = new NameAndIndex(fn, i);
                     }
