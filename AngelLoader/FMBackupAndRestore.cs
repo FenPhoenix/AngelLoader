@@ -29,7 +29,7 @@ Because we're trimming from the start of a relative path, so we won't trim any "
 
 NOTE(Backup/restore): Note about empty directories
 It seems we already explicitly ignore empty directory entries in the get diff function, which means empty dirs
-are neve backed up - nor deleted empty dirs marked as deleted - in any case. So, we could just leave this alone
+are never backed up - nor deleted empty dirs marked as deleted - in any case. So, we could just leave this alone
 and we'd have the same behavior as before. To be completely correct, we should count empty dirs in the diff, but
 then any FM that contained empty dirs and was installed with a previous AL version would get those dirs marked as
 deleted in its backup, and then they'd always end up deleted on subsequent installs. To prevent this, we should
