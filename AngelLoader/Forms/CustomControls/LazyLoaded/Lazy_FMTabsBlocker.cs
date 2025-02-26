@@ -98,9 +98,9 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
                 Construct();
                 Panel.Show();
             }
-            else
+            else if (_constructed)
             {
-                if (_constructed) Panel.Hide();
+                Panel.Hide();
             }
         }
     }

@@ -28,6 +28,36 @@ internal sealed class Lazy_ViewHTMLReadmeButton : IDarkable
 
     internal Lazy_ViewHTMLReadmeButton(MainForm owner) => _owner = owner;
 
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        Button = new DarkButton
+        {
+            Tag = LoadType.Lazy,
+
+            Anchor = AnchorStyles.None,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            // Button gets centered on localize so no location is specified here
+            Padding = new Padding(6, 0, 6, 0),
+            MinimumSize = new Size(0, 23),
+            TabIndex = 49,
+            Visible = false,
+
+            DarkModeEnabled = _darkModeEnabled,
+        };
+
+        Control container = _owner.ReadmeContainer;
+        container.Controls.Add(Button);
+        Button.Click += _owner.ViewHTMLReadmeButton_Click;
+        Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
+
+        _constructed = true;
+
+        Localize();
+    }
+
     internal void Localize()
     {
         if (!_constructed) return;
@@ -38,41 +68,15 @@ internal sealed class Lazy_ViewHTMLReadmeButton : IDarkable
 
     internal bool Visible => _constructed && Button.Visible;
 
-    internal void Hide()
-    {
-        if (_constructed) Button.Hide();
-    }
-
     internal void Show()
     {
-        if (!_constructed)
-        {
-            Button = new DarkButton
-            {
-                Tag = LoadType.Lazy,
-
-                Anchor = AnchorStyles.None,
-                AutoSize = true,
-                AutoSizeMode = AutoSizeMode.GrowAndShrink,
-                // Button gets centered on localize so no location is specified here
-                Padding = new Padding(6, 0, 6, 0),
-                MinimumSize = new Size(0, 23),
-                TabIndex = 49,
-                Visible = false,
-
-                DarkModeEnabled = _darkModeEnabled,
-            };
-
-            Control container = _owner.ReadmeContainer;
-            container.Controls.Add(Button);
-            Button.Click += _owner.ViewHTMLReadmeButton_Click;
-            Button.MouseLeave += _owner.ReadmeArea_MouseLeave;
-
-            _constructed = true;
-
-            Localize();
-        }
-
+        Construct();
         Button.Show();
+    }
+
+    internal void Hide()
+    {
+        if (!_constructed) return;
+        Button.Hide();
     }
 }
