@@ -326,7 +326,7 @@ public static partial class Common
             {
                 ListFast<T> localList = _list;
 
-                if (((uint)_index < (uint)localList.Count))
+                if ((uint)_index < (uint)localList.Count)
                 {
                     _current = localList.ItemsArray[_index];
                     _index++;

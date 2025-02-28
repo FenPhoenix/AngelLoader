@@ -79,17 +79,15 @@ internal static class FileSystem
                     // cases that we know we don't want to retry on.
 
                     Interop.Kernel32.WIN32_FIND_DATA findData = default;
-                    using (SafeFindHandle handle = Interop.Kernel32.FindFirstFile(path!, ref findData))
+                    using SafeFindHandle handle = Interop.Kernel32.FindFirstFile(path!, ref findData);
+                    if (handle.IsInvalid)
                     {
-                        if (handle.IsInvalid)
-                        {
-                            errorCode = Marshal.GetLastWin32Error();
-                        }
-                        else
-                        {
-                            errorCode = Interop.Errors.ERROR_SUCCESS;
-                            data.PopulateFrom(ref findData);
-                        }
+                        errorCode = Marshal.GetLastWin32Error();
+                    }
+                    else
+                    {
+                        errorCode = Interop.Errors.ERROR_SUCCESS;
+                        data.PopulateFrom(ref findData);
                     }
                 }
             }
