@@ -540,7 +540,7 @@ internal static class Core
         bool useFixedFontChanged =
             !startup && Config.ReadmeUseFixedWidthFont != outConfig.ReadmeUseFixedWidthFont;
 
-        bool playWithFMButtonStyleChanged =
+        bool playWithoutFMButtonStyleChanged =
             !startup && Config.PlayOriginalSeparateButtons != outConfig.PlayOriginalSeparateButtons;
 
         bool fuzzySearchChanged =
@@ -763,7 +763,7 @@ internal static class Core
         bool keepSel = false;
         bool sortAndSetFilter = false;
 
-        if (playWithFMButtonStyleChanged)
+        if (playWithoutFMButtonStyleChanged)
         {
             SetPlayWithoutFMControlsState_Once();
         }
