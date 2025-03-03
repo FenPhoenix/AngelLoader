@@ -13,6 +13,8 @@ public static partial class Common
 {
     #region Fields / classes
 
+    public const int MaxArrayLength = 2146435071;
+
     public const int MAX_PATH = 260;
 
     public const RegexOptions Regex_IgnoreCaseInvariant = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;

@@ -67,7 +67,7 @@ public static partial class Common
         using AL_SafeFileHandle sfh = AL_SafeFileHandle.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read, options);
 
         long fileLength = 0;
-        if (sfh.CanSeek && (fileLength = sfh.GetFileLength()) > 2146435071)
+        if (sfh.CanSeek && (fileLength = sfh.GetFileLength()) > MaxArrayLength)
         {
             throw new IOException(SR.IO_FileTooLong2GB);
         }
@@ -108,9 +108,9 @@ public static partial class Common
                 if (bytesRead == buffer.Length)
                 {
                     uint newLength = (uint)buffer.Length * 2;
-                    if (newLength > 2146435071)
+                    if (newLength > MaxArrayLength)
                     {
-                        newLength = (uint)Math.Max(2146435071, buffer.Length + 1);
+                        newLength = (uint)Math.Max(MaxArrayLength, buffer.Length + 1);
                     }
 
                     byte[] tmp = ArrayPool<byte>.Shared.Rent((int)newLength);

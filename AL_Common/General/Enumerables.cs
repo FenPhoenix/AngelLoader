@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using JetBrains.Annotations;
@@ -269,7 +270,7 @@ public static partial class Common
         {
             if (_itemsArrayLength >= min) return;
             int newCapacity = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
-            if ((uint)newCapacity > 2146435071U) newCapacity = 2146435071;
+            if ((uint)newCapacity > MaxArrayLength) newCapacity = MaxArrayLength;
             if (newCapacity < min) newCapacity = min;
             Capacity = newCapacity;
         }
@@ -361,6 +362,152 @@ public static partial class Common
                 _index = 0;
                 _current = default!;
             }
+        }
+    }
+
+    // Licensed to the .NET Foundation under one or more agreements.
+    // The .NET Foundation licenses this file to you under the MIT license.
+
+    public class StackFast<T>
+    {
+        private T[] _array;
+        public int Count;
+
+        private const int DefaultCapacity = 4;
+
+        public StackFast(int capacity) => _array = new T[capacity];
+
+        /// <summary>
+        /// Gets the total numbers of elements the internal data structure can hold without resizing.
+        /// </summary>
+        public int Capacity => _array.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ClearFast() => Count = 0;
+
+        public T Peek()
+        {
+            int size = Count - 1;
+            T[] array = _array;
+
+            if ((uint)size >= (uint)array.Length)
+            {
+                ThrowForEmptyStack();
+            }
+
+            return array[size];
+        }
+
+        public bool TryPeek([MaybeNullWhen(false)] out T result)
+        {
+            int size = Count - 1;
+            T[] array = _array;
+
+            if ((uint)size >= (uint)array.Length)
+            {
+                result = default!;
+                return false;
+            }
+            result = array[size];
+            return true;
+        }
+
+        public T Pop()
+        {
+            int size = Count - 1;
+            T[] array = _array;
+
+            // if (_size == 0) is equivalent to if (size == -1), and this case
+            // is covered with (uint)size, thus allowing bounds check elimination
+            // https://github.com/dotnet/coreclr/pull/9773
+            if ((uint)size >= (uint)array.Length)
+            {
+                ThrowForEmptyStack();
+            }
+
+            Count = size;
+            T item = array[size];
+
+            return item;
+        }
+
+        public bool TryPop([MaybeNullWhen(false)] out T result)
+        {
+            int size = Count - 1;
+            T[] array = _array;
+
+            if ((uint)size >= (uint)array.Length)
+            {
+                result = default!;
+                return false;
+            }
+
+            Count = size;
+            result = array[size];
+
+            return true;
+        }
+
+        public void Push(T item)
+        {
+            int size = Count;
+            T[] array = _array;
+
+            if ((uint)size < (uint)array.Length)
+            {
+                array[size] = item;
+                Count = size + 1;
+            }
+            else
+            {
+                PushWithResize(item);
+            }
+        }
+
+        // Non-inline from Stack.Push to improve its code quality as uncommon path
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void PushWithResize(T item)
+        {
+            Grow(Count + 1);
+            _array[Count] = item;
+            Count++;
+        }
+
+        /// <summary>
+        /// Ensures that the capacity of this Stack is at least the specified <paramref name="capacity"/>.
+        /// If the current capacity of the Stack is less than specified <paramref name="capacity"/>,
+        /// the capacity is increased by continuously twice current capacity until it is at least the specified <paramref name="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">The minimum capacity to ensure.</param>
+        /// <returns>The new capacity of this stack.</returns>
+        public int EnsureCapacity(int capacity)
+        {
+            if (_array.Length < capacity)
+            {
+                Grow(capacity);
+            }
+
+            return _array.Length;
+        }
+
+        private void Grow(int capacity)
+        {
+            int newCapacity = _array.Length == 0 ? DefaultCapacity : 2 * _array.Length;
+
+            // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
+            // Note that this check works even when _items.Length overflowed thanks to the (uint) cast.
+            if ((uint)newCapacity > MaxArrayLength) newCapacity = MaxArrayLength;
+
+            // If computed capacity is still less than specified, set to the original argument.
+            // Capacities exceeding Array.MaxLength will be surfaced as OutOfMemoryException by Array.Resize.
+            if (newCapacity < capacity) newCapacity = capacity;
+
+            Array.Resize(ref _array, newCapacity);
+        }
+
+        private static void ThrowForEmptyStack()
+        {
+            throw new InvalidOperationException(SR.InvalidOperation_EmptyStack);
         }
     }
 

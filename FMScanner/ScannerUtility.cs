@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -330,25 +329,27 @@ internal static class Utility
     /// non-surrounding parentheses intact.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="stack"></param>
     /// <returns></returns>
-    internal static string RemoveSurroundingParentheses(this string value)
+    internal static string RemoveSurroundingParentheses(this string value, StackFast<int> stack)
     {
         if (value.IsEmpty() || value[0] != '(' || value[^1] != ')') return value;
+
+        ReadOnlySpan<char> valueSpan = value.AsSpan();
 
         bool surroundedByParens = false;
         do
         {
-            Stack<int> stack = new();
-            for (int i = 0; i < value.Length; i++)
+            for (int i = 0; i < valueSpan.Length; i++)
             {
-                switch (value[i])
+                switch (valueSpan[i])
                 {
                     case '(':
                         stack.Push(i);
                         surroundedByParens = false;
                         break;
                     case ')':
-                        int index = stack.Count > 0 ? stack.Pop() : -1;
+                        int index = stack.TryPop(out int result) ? result : -1;
                         surroundedByParens = index == 0;
                         break;
                     default:
@@ -357,10 +358,10 @@ internal static class Utility
                 }
             }
 
-            if (surroundedByParens) value = value.Substring(1, value.Length - 2);
+            if (surroundedByParens) valueSpan = valueSpan.Slice(1, value.Length - 2);
         } while (surroundedByParens);
 
-        return value;
+        return value.Length == valueSpan.Length ? value : valueSpan.ToString();
     }
 
     // Doesn't handle unicode left and right double quotes, but meh...

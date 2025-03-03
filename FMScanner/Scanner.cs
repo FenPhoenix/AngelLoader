@@ -269,6 +269,8 @@ public sealed class Scanner : IDisposable
 
     private bool _missFlagAlreadyHandled;
 
+    private readonly StackFast<int> _parenthesesRemovalStack = new(0);
+
     #endregion
 
     #region Enums
@@ -992,6 +994,8 @@ public sealed class Scanner : IDisposable
         _solid_MisAndGamFiles.ClearFast();
         _solid_MisFileItems.ClearFast();
         _missFlagExtractList.ClearFast();
+
+        _parenthesesRemovalStack.ClearFast();
     }
 
     #region Pre-scan
@@ -3864,7 +3868,7 @@ public sealed class Scanner : IDisposable
 
         #region Parentheses
 
-        value = value.RemoveSurroundingParentheses();
+        value = value.RemoveSurroundingParentheses(_parenthesesRemovalStack);
 
         bool containsOpenParen = value.Contains('(');
         bool containsCloseParen = value.Contains(')');
@@ -4635,7 +4639,7 @@ public sealed class Scanner : IDisposable
 
     private string CleanupCopyrightAuthor(string author)
     {
-        author = author.Trim().RemoveSurroundingParentheses();
+        author = author.Trim().RemoveSurroundingParentheses(_parenthesesRemovalStack);
 
         int index = author.IndexOf(',');
         if (index > -1) author = author.Substring(0, index);

@@ -84,6 +84,7 @@ public static class SR
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
     public static readonly string IO_FileNotFound_FileName = "Could not find file '{0}'.";
     public static readonly string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
+    public static readonly string InvalidOperation_EmptyStack = "Stack empty.";
 #if ENABLE_UNUSED
     public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
