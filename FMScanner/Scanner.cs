@@ -1720,7 +1720,6 @@ public sealed class Scanner : IDisposable
         bool scanTitleForAuthorPurposesOnly = SetupAuthorRequiredTitleScan();
 
         // This must come before the FM data caching, because it creates the cached file info list (for dir FMs).
-        // This must come before the FM data caching, because it creates the cached file info list (for on-disk FMs).
         #region Size
 
         if (_scanOptions.ScanSize)
