@@ -147,7 +147,7 @@ public sealed class FMToScan
     public readonly string Path;
     public readonly bool ForceFullScan;
     /// <summary>
-    /// Optional cache path to place extracted readme files for .7z archives, for performance.
+    /// Optional cache path to place extracted readme files for solid archives, for performance.
     /// Ignored for all other FM package types.
     /// </summary>
     public readonly string CachePath;
