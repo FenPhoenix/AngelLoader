@@ -270,8 +270,27 @@ internal static class FMScan
                             fms.Count.ToStrCur() +
                             LText.ProgressBox.ReportScanningLast;
 
-                        // Don't take the substantial parallel loop overhead if it's just one FMs
-                        if (fms.Count == 1)
+                        int threadCount;
+                        if (fms.Count > 1 && (threadCount = GetThreadCount(
+                                usedArchivePaths,
+                                fmInstalledDirsRequired,
+                                atLeastOneSolidArchiveInSet,
+                                fms)) > 1)
+                        {
+                            fmDataList = Scanner.ScanThreaded(
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
+                                fullScanOptions: GetDefaultScanOptions(),
+                                tdmContext: tdmContext,
+                                threadCount: threadCount,
+                                fms: fms,
+                                tempPath: Paths.FMScannerTemp,
+                                scanOptions: scanOptions,
+                                progress: progress,
+                                cancellationToken: _scanCts.Token);
+                        }
+                        // Don't take the substantial parallel loop overhead if we don't need to
+                        else
                         {
                             using Scanner scanner = new(
                                 sevenZipWorkingPath: Paths.SevenZipPath,
@@ -281,24 +300,6 @@ internal static class FMScan
                                 tdmContext: tdmContext);
 
                             fmDataList = await scanner.ScanAsync(
-                                fms: fms,
-                                tempPath: Paths.FMScannerTemp,
-                                scanOptions: scanOptions,
-                                progress: progress,
-                                cancellationToken: _scanCts.Token);
-                        }
-                        else
-                        {
-                            ThreadingData threadingData = GetLowestCommonThreadingData(
-                                GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
-                            );
-
-                            fmDataList = Scanner.ScanThreaded(
-                                sevenZipWorkingPath: Paths.SevenZipPath,
-                                sevenZipExePath: Paths.SevenZipExe,
-                                fullScanOptions: GetDefaultScanOptions(),
-                                tdmContext: tdmContext,
-                                threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData.Threads),
                                 fms: fms,
                                 tempPath: Paths.FMScannerTemp,
                                 scanOptions: scanOptions,
@@ -579,6 +580,19 @@ internal static class FMScan
             scanReleaseDate: true,
             scanTags: true,
             scanMissionCount: true);
+
+        static int GetThreadCount(
+            HashSetI usedArchivePaths,
+            bool[] fmInstalledDirsRequired,
+            bool atLeastOneSolidArchiveInSet,
+            List<FMToScan> fms)
+        {
+            ThreadingData threadingData = GetLowestCommonThreadingData(
+                GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
+            );
+
+            return GetThreadCountForParallelOperation(fms.Count, threadingData.Threads);
+        }
 
         void ReportProgress(ProgressReport pr)
         {
