@@ -56,7 +56,7 @@ public sealed class DrawnPanel : Panel, IDarkable
 
     protected override void OnPaint(PaintEventArgs e)
     {
-        using SolidBrush brush = new(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
+        SolidBrush brush = DarkColors.GetCachedSolidBrush(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
         e.Graphics.FillRectangle(brush, ClientRectangle);
     }
 }

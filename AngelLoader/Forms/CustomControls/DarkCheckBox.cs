@@ -350,10 +350,10 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
         Color? parentBackColor = Parent?.BackColor;
         if (parentBackColor != null)
         {
-            using SolidBrush b =
+            SolidBrush b =
                 usingLightMode
-                    ? new SolidBrush((Color)parentBackColor)
-                    : new SolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
+                    ? DarkColors.GetCachedSolidBrush((Color)parentBackColor)
+                    : DarkColors.GetCachedSolidBrush(DarkModeBackColor ?? (Color)parentBackColor);
             g.FillRectangle(b, rect);
         }
         else
@@ -373,7 +373,7 @@ public sealed class DarkCheckBox : CheckBox, IDarkable
                 usingLightMode
                     ? SystemColors.Window
                     : DarkColors.Fen_DarkBackground;
-            using Pen checkMarkPen = new(penColor, 1.6f);
+            Pen checkMarkPen = DarkColors.GetCached16WidthPen(penColor);
             ControlUtils.DrawCheckMark(g, checkMarkPen, outlineBoxRect);
         }
         else if (CheckState == CheckState.Indeterminate)

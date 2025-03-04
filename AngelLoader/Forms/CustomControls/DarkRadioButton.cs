@@ -292,7 +292,7 @@ public sealed class DarkRadioButton : RadioButton, IDarkable
         Color? parentBackColor = Parent?.BackColor;
         if (parentBackColor != null)
         {
-            using SolidBrush b = new((Color)parentBackColor);
+            SolidBrush b = DarkColors.GetCachedSolidBrush((Color)parentBackColor);
             g.FillRectangle(b, ClientRectangle);
         }
 

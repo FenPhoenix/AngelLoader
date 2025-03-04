@@ -3528,7 +3528,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 _inTabDragArea = true;
                 using Native.GraphicsContext gc = new(destGroup.Splitter.Handle);
-                using SolidBrush b = new(GetOverlayColor());
+                SolidBrush b = DarkColors.GetCachedSolidBrush(GetOverlayColor());
                 int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
                 gc.G.FillRectangle(
                     b,
@@ -3545,7 +3545,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 _inTabDragArea = true;
                 using Native.GraphicsContext gc = new(destGroup.Splitter.Panel2.Handle);
-                using SolidBrush b = new(GetOverlayColor());
+                SolidBrush b = DarkColors.GetCachedSolidBrush(GetOverlayColor());
                 gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
             }
         }

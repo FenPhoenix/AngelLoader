@@ -209,7 +209,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
             if (Parent != null)
             {
                 // Fill background behind the control (shows up behind tabs)
-                using SolidBrush b = new(Parent.BackColor);
+                SolidBrush b = DarkColors.GetCachedSolidBrush(Parent.BackColor);
                 g.FillRectangle(b, ClientRectangle);
             }
 

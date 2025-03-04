@@ -246,27 +246,24 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
         // we just draw it full-width ourselves and handle the click interaction later (see WndProc).
         Rectangle selRect = e.Bounds with { Width = ClientRectangle.Width - e.Bounds.X };
 
-        using (SolidBrush bcBrush = new(BackColor))
-        {
-            Brush bgBrush =
-                itemSelected
-                    ? _darkModeEnabled
-                        ? !Enabled
-                            ? bcBrush
-                            : DarkColors.BlueSelectionBrush
-                        : !Enabled
-                            ? SystemBrushes.ControlLight
-                            : SystemBrushes.Highlight
-                    : _darkModeEnabled
-                        ? !Enabled
-                            ? DarkColors.Fen_ControlBackgroundBrush
-                            : bcBrush
-                        : !Enabled
-                            ? SystemBrushes.Control
-                            : bcBrush;
+        Brush bgBrush =
+            itemSelected
+                ? _darkModeEnabled
+                    ? !Enabled
+                        ? DarkColors.GetCachedSolidBrush(BackColor)
+                        : DarkColors.BlueSelectionBrush
+                    : !Enabled
+                        ? SystemBrushes.ControlLight
+                        : SystemBrushes.Highlight
+                : _darkModeEnabled
+                    ? !Enabled
+                        ? DarkColors.Fen_ControlBackgroundBrush
+                        : DarkColors.GetCachedSolidBrush(BackColor)
+                    : !Enabled
+                        ? SystemBrushes.Control
+                        : DarkColors.GetCachedSolidBrush(BackColor);
 
-            e.Graphics.FillRectangle(bgBrush, selRect);
-        }
+        e.Graphics.FillRectangle(bgBrush, selRect);
 
         Color textColor =
             _darkModeEnabled

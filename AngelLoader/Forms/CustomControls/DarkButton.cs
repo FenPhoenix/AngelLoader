@@ -391,7 +391,7 @@ public class DarkButton : Button, IDarkable
 
         if (fillColor != null)
         {
-            using SolidBrush b = new((Color)fillColor);
+            SolidBrush b = DarkColors.GetCachedSolidBrush((Color)fillColor);
             g.FillRectangle(b, rect);
         }
         else
@@ -481,7 +481,7 @@ public class DarkButton : Button, IDarkable
 
             if (parent != null)
             {
-                using Pen pen = new(parent.BackColor);
+                Pen pen = DarkColors.GetCachedDefaultWidthPen(parent.BackColor);
                 Rectangle bgRect = new(0, 0, ClientSize.Width - 1, ClientSize.Height - 1);
                 g.DrawRectangle(pen, bgRect);
             }
