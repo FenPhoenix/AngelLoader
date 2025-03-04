@@ -270,8 +270,27 @@ internal static class FMScan
                             fms.Count.ToStrCur() +
                             LText.ProgressBox.ReportScanningLast;
 
-                        // Don't take the substantial parallel loop overhead if it's just one FMs
-                        if (fms.Count == 1)
+                        int threadCount;
+                        if (fms.Count > 1 && (threadCount = GetThreadCount(
+                                usedArchivePaths,
+                                fmInstalledDirsRequired,
+                                atLeastOneSolidArchiveInSet,
+                                fms)) > 1)
+                        {
+                            fmDataList = Scanner.ScanThreaded(
+                                sevenZipWorkingPath: Paths.SevenZipPath,
+                                sevenZipExePath: Paths.SevenZipExe,
+                                fullScanOptions: GetDefaultScanOptions(),
+                                tdmContext: tdmContext,
+                                threadCount: threadCount,
+                                fms: fms,
+                                tempPath: Paths.FMScannerTemp,
+                                scanOptions: scanOptions,
+                                progress: progress,
+                                cancellationToken: _scanCts.Token);
+                        }
+                        // Don't take the substantial parallel loop overhead if we don't need to
+                        else
                         {
                             using Scanner scanner = new(
                                 sevenZipWorkingPath: Paths.SevenZipPath,
@@ -281,24 +300,6 @@ internal static class FMScan
                                 tdmContext: tdmContext);
 
                             fmDataList = await scanner.ScanAsync(
-                                fms: fms,
-                                tempPath: Paths.FMScannerTemp,
-                                scanOptions: scanOptions,
-                                progress: progress,
-                                cancellationToken: _scanCts.Token);
-                        }
-                        else
-                        {
-                            ThreadingData threadingData = GetLowestCommonThreadingData(
-                                GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
-                            );
-
-                            fmDataList = Scanner.ScanThreaded(
-                                sevenZipWorkingPath: Paths.SevenZipPath,
-                                sevenZipExePath: Paths.SevenZipExe,
-                                fullScanOptions: GetDefaultScanOptions(),
-                                tdmContext: tdmContext,
-                                threadCount: GetThreadCountForParallelOperation(fms.Count, threadingData.Threads),
                                 fms: fms,
                                 tempPath: Paths.FMScannerTemp,
                                 scanOptions: scanOptions,
@@ -362,19 +363,20 @@ internal static class FMScan
                         {
                             // @BetterErrors(FMScan): We should maybe have an option to cancel the scan.
                             // So that we don't set the data on the FMs if it's going to be corrupt or wrong.
+                            string msg;
                             if (unsupportedCompressionErrors.Count > 0)
                             {
                                 if (unsupportedCompressionErrors.Count == 1)
                                 {
-                                    Core.Dialogs.ShowError(
-                                        "The zip archive '"
-                                        + unsupportedCompressionErrors[0].FM.Path +
+                                    msg =
+                                        "The zip archive '" +
+                                        unsupportedCompressionErrors[0].FM.Path +
                                         "' contains one or more files compressed with an unsupported compression method. " +
-                                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archive.");
+                                        "Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archive.";
                                 }
                                 else
                                 {
-                                    string msg =
+                                    msg =
                                         "One or more zip archives contain files compressed with unsupported compression methods. " +
                                         $"Only the DEFLATE method is supported. Try manually extracting and re-creating the zip archives.{NL}{NL}" +
                                         $"The following zip archives produced this error:{NL}{NL}";
@@ -388,20 +390,19 @@ internal static class FMScan
                                     {
                                         msg += "[See the log for the rest]";
                                     }
+                                }
 
-                                    if (otherErrors)
-                                    {
-                                        msg += $"{NL}{NL}In addition, one or more other errors occurred. See the log for details.";
-                                    }
-
-                                    Core.Dialogs.ShowError(msg);
+                                if (otherErrors)
+                                {
+                                    msg += $"{NL}{NL}In addition, one or more other errors occurred. See the log for details.";
                                 }
                             }
                             else
                             {
-                                Core.Dialogs.ShowError(
-                                    "One or more errors occurred while scanning. See the log for details.");
+                                msg = "One or more errors occurred while scanning. See the log for details.";
                             }
+
+                            Core.Dialogs.ShowError(msg);
                         }
                     }
 
@@ -579,6 +580,19 @@ internal static class FMScan
             scanReleaseDate: true,
             scanTags: true,
             scanMissionCount: true);
+
+        static int GetThreadCount(
+            HashSetI usedArchivePaths,
+            bool[] fmInstalledDirsRequired,
+            bool atLeastOneSolidArchiveInSet,
+            List<FMToScan> fms)
+        {
+            ThreadingData threadingData = GetLowestCommonThreadingData(
+                GetScanRelevantPaths(usedArchivePaths, fmInstalledDirsRequired, atLeastOneSolidArchiveInSet)
+            );
+
+            return GetThreadCountForParallelOperation(fms.Count, threadingData.Threads);
+        }
 
         void ReportProgress(ProgressReport pr)
         {

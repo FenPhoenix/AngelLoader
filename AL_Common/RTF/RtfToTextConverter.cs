@@ -1718,7 +1718,7 @@ public sealed partial class RtfToTextConverter
                             if (symbolFont > SymbolFont.Unset)
                             {
                                 GetCharFromConversionList_Byte((byte)ch, _symbolFontTables[(int)symbolFont], out ListFast<char> result);
-                                _plainText.AddRange(result, result.Count);
+                                _plainText.AddRange(result);
                             }
                             else
                             {
@@ -1752,7 +1752,7 @@ public sealed partial class RtfToTextConverter
                 if (!IsNonPlainText[ch])
                 {
                     GetCharFromConversionList_Byte((byte)ch, table, out ListFast<char> result);
-                    _plainText.AddRange(result, result.Count);
+                    _plainText.AddRange(result);
                 }
                 else
                 {
@@ -2034,7 +2034,7 @@ public sealed partial class RtfToTextConverter
                 uint[] fontTable = _symbolFontTables[(int)symbolFont];
                 if (GetCharFromConversionList_UInt(ch, fontTable, out ListFast<char> result))
                 {
-                    _plainText.AddRange(result, result.Count);
+                    _plainText.AddRange(result);
                 }
             }
             else

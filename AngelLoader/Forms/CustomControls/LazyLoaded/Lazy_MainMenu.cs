@@ -5,7 +5,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class MainLLMenu : IDarkable
+internal sealed class Lazy_MainMenu : IDarkable
 {
     #region Backing fields
 
@@ -16,7 +16,7 @@ internal sealed class MainLLMenu : IDarkable
 
     private readonly MainForm _owner;
 
-    internal MainLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_MainMenu(MainForm owner) => _owner = owner;
 
     #region Menu items
 

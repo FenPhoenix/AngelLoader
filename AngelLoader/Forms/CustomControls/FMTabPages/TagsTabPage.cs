@@ -15,8 +15,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
     #region Lazy-loaded subcontrols
 
-    private AddTagLLDropDown AddTagLLDropDown = null!;
-    private DynamicItemsLLMenu AddTagLLMenu = null!;
+    private Lazy_AddTagDropDown Lazy_AddTagDropDown = null!;
+    private Lazy_DynamicItemsMenu Lazy_AddTagMenu = null!;
 
     #endregion
 
@@ -33,8 +33,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
             // These need to be up here or they don't theme right
             if (_constructed)
             {
-                AddTagLLDropDown.DarkModeEnabled = DarkModeEnabled;
-                AddTagLLMenu.DarkModeEnabled = DarkModeEnabled;
+                Lazy_AddTagDropDown.DarkModeEnabled = DarkModeEnabled;
+                Lazy_AddTagMenu.DarkModeEnabled = DarkModeEnabled;
             }
 
             if (DarkModeEnabled == value) return;
@@ -52,8 +52,8 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
         _page = ConstructPage<Lazy_TagsPage>();
 
-        AddTagLLDropDown = new AddTagLLDropDown(_owner, this, _page);
-        AddTagLLMenu = new DynamicItemsLLMenu(_owner);
+        Lazy_AddTagDropDown = new Lazy_AddTagDropDown(_owner, this, _page);
+        Lazy_AddTagMenu = new Lazy_DynamicItemsMenu(_owner);
 
         using (new DisableEvents(_owner))
         {
@@ -118,31 +118,31 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
     // null! checks - industrial strength protection against stupid event handler firing in the component init method...
     // (But now that we've reorganized to be lazy-loaded, it might well not matter. Still, does no harm.)
-    internal bool AddTagLLDropDownVisible()
+    internal bool AddTagDropDownVisible()
     {
-        return _constructed && AddTagLLDropDown != null! && AddTagLLDropDown.Visible;
+        return _constructed && Lazy_AddTagDropDown != null! && Lazy_AddTagDropDown.Visible;
     }
 
     internal bool TagsTreeFocused => _constructed && _page.TagsTreeView.Focused;
 
     internal void HandleTagDelete() => RemoveTagOperation();
 
-    internal void HideAndClearAddTagLLDropDown()
+    internal void HideAndClearAddTagDropDown()
     {
-        if (_constructed && AddTagLLDropDown != null!)
+        if (_constructed && Lazy_AddTagDropDown != null!)
         {
-            AddTagLLDropDown.HideAndClear();
+            Lazy_AddTagDropDown.HideAndClear();
         }
     }
 
-    internal bool AddTagLLDropDownFocused()
+    internal bool AddTagDropDownFocused()
     {
-        return _constructed && AddTagLLDropDown.Focused;
+        return _constructed && Lazy_AddTagDropDown.Focused;
     }
 
-    internal bool CursorOverAddTagLLDropDown(bool fullArea = false)
+    internal bool CursorOverAddTagDropDown(bool fullArea = false)
     {
-        return _constructed && _owner.CursorOverControl(AddTagLLDropDown.ListBox, fullArea);
+        return _constructed && _owner.CursorOverControl(Lazy_AddTagDropDown.ListBox, fullArea);
     }
 
     internal bool CursorOverAddTagTextBox(bool fullArea = false)
@@ -158,11 +158,11 @@ public sealed class TagsTabPage : Lazy_TabsBase
     // Robustness for if the user presses tab to get away, rather than clicking
     internal void AddTagTextBoxOrListBox_Leave(object? sender, EventArgs e)
     {
-        if ((sender == _page.AddTagTextBox && !AddTagLLDropDown.Focused) ||
-            (AddTagLLDropDown.Visible &&
-             sender == AddTagLLDropDown.ListBox && !_page.AddTagTextBox.Focused))
+        if ((sender == _page.AddTagTextBox && !Lazy_AddTagDropDown.Focused) ||
+            (Lazy_AddTagDropDown.Visible &&
+             sender == Lazy_AddTagDropDown.ListBox && !_page.AddTagTextBox.Focused))
         {
-            AddTagLLDropDown.HideAndClear();
+            Lazy_AddTagDropDown.HideAndClear();
         }
     }
 
@@ -173,17 +173,17 @@ public sealed class TagsTabPage : Lazy_TabsBase
         List<string> list = FMTags.GetMatchingTagsList(_page.AddTagTextBox.Text);
         if (list.Count == 0)
         {
-            AddTagLLDropDown.HideAndClear();
+            Lazy_AddTagDropDown.HideAndClear();
         }
         else
         {
-            AddTagLLDropDown.SetItemsAndShow(list);
+            Lazy_AddTagDropDown.SetItemsAndShow(list);
         }
     }
 
     internal void AddTagTextBoxOrListBox_KeyDown(object? sender, KeyEventArgs e)
     {
-        DarkListBox box = AddTagLLDropDown.ListBox;
+        DarkListBox box = Lazy_AddTagDropDown.ListBox;
 
         switch (e.KeyCode)
         {
@@ -218,11 +218,11 @@ public sealed class TagsTabPage : Lazy_TabsBase
 
     internal void AddTagListBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
-        if (AddTagLLDropDown.ListBox.SelectedIndex == -1) return;
+        if (Lazy_AddTagDropDown.ListBox.SelectedIndex == -1) return;
 
         using (new DisableEvents(_owner))
         {
-            _page.AddTagTextBox.Text = AddTagLLDropDown.ListBox.SelectedItem;
+            _page.AddTagTextBox.Text = Lazy_AddTagDropDown.ListBox.SelectedItem;
         }
 
         if (_page.AddTagTextBox.Text.Length > 0)
@@ -250,16 +250,16 @@ public sealed class TagsTabPage : Lazy_TabsBase
     {
         if (e.Button != MouseButtons.Left) return;
 
-        if (AddTagLLDropDown.ListBox.SelectedIndex > -1)
+        if (Lazy_AddTagDropDown.ListBox.SelectedIndex > -1)
         {
-            AddTagOperation(_owner.FMsDGV.GetMainSelectedFM(), AddTagLLDropDown.ListBox.SelectedItem);
+            AddTagOperation(_owner.FMsDGV.GetMainSelectedFM(), Lazy_AddTagDropDown.ListBox.SelectedItem);
         }
     }
 
     private void ClearTagsSearchBox()
     {
         _page.AddTagTextBox.Clear();
-        AddTagLLDropDown.HideAndClear();
+        Lazy_AddTagDropDown.HideAndClear();
     }
 
     private void AddTagButton_Click(object? sender, EventArgs e)
@@ -309,9 +309,9 @@ public sealed class TagsTabPage : Lazy_TabsBase
             }
         }
 
-        AddTagLLMenu.ClearAndFillMenu(addTagMenuItems);
+        Lazy_AddTagMenu.ClearAndFillMenu(addTagMenuItems);
 
-        ControlUtils.ShowMenu(AddTagLLMenu.Menu, _page.AddTagFromListButton, MenuPos.LeftDown);
+        ControlUtils.ShowMenu(Lazy_AddTagMenu.Menu, _page.AddTagFromListButton, MenuPos.LeftDown);
     }
 
     private void AddTagMenuItem_Click(object? sender, EventArgs e)

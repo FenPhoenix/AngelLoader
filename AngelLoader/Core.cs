@@ -44,7 +44,6 @@ using System.Threading.Tasks;
 using AngelLoader.DataClasses;
 using JetBrains.Annotations;
 using Microsoft.Win32;
-using static AL_Common.Common;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -562,7 +561,7 @@ internal static class Core
         bool useFixedFontChanged =
             !startup && Config.ReadmeUseFixedWidthFont != outConfig.ReadmeUseFixedWidthFont;
 
-        bool playWithFMButtonStyleChanged =
+        bool playWithoutFMButtonStyleChanged =
             !startup && Config.PlayOriginalSeparateButtons != outConfig.PlayOriginalSeparateButtons;
 
         bool fuzzySearchChanged =
@@ -785,7 +784,7 @@ internal static class Core
         bool keepSel = false;
         bool sortAndSetFilter = false;
 
-        if (playWithFMButtonStyleChanged)
+        if (playWithoutFMButtonStyleChanged)
         {
             SetPlayWithoutFMControlsState_Once();
         }

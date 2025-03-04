@@ -6,7 +6,7 @@ using static AngelLoader.Global;
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
 // @GENGAMES(T2MP) (Play original game menu): Begin
-internal sealed class PlayOriginalGameLLMenu : IDarkable
+internal sealed class Lazy_PlayOriginalGameMenu : IDarkable
 {
     private bool _constructed;
 
@@ -22,7 +22,7 @@ internal sealed class PlayOriginalGameLLMenu : IDarkable
         }
     }
 
-    internal PlayOriginalGameLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_PlayOriginalGameMenu(MainForm owner) => _owner = owner;
 
     internal ToolStripMenuItemCustom Thief2MPMenuItem = null!;
 

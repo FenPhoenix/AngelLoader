@@ -139,6 +139,12 @@ internal static partial class Ini
         fm.ForceReadmeReCache = val.EqualsTrue();
     }
 
+    private static void FMData_ForceReadmeReCacheAlways_Set(FanMission fm, ReadOnlySpan<char> val)
+    {
+        val = val.Trim();
+        fm.ForceReadmeReCacheAlways = val.EqualsTrue();
+    }
+
     private static void FMData_SelectedReadme_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
@@ -371,6 +377,7 @@ internal static partial class Ini
         { "Installed".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_Installed_Set) },
         { "NoReadmes".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_NoReadmes_Set) },
         { "ForceReadmeReCache".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ForceReadmeReCache_Set) },
+        { "ForceReadmeReCacheAlways".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ForceReadmeReCacheAlways_Set) },
         { "SelectedReadme".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_SelectedReadme_Set) },
         { "ReadmeEncoding".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_ReadmeEncoding_Set) },
         { "SizeBytes".AsMemory(), new FMData_DelegatePointerWrapper(&FMData_SizeBytes_Set) },
@@ -510,6 +517,10 @@ internal static partial class Ini
             if (fm.ForceReadmeReCache)
             {
                 sw.WriteLine("ForceReadmeReCache=True");
+            }
+            if (fm.ForceReadmeReCacheAlways)
+            {
+                sw.WriteLine("ForceReadmeReCacheAlways=True");
             }
             if (!string.IsNullOrEmpty(fm.SelectedReadme))
             {

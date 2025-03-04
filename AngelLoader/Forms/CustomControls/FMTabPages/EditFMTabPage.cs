@@ -17,7 +17,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
     #region Lazy-loaded subcontrols
 
-    private DynamicItemsLLMenu AltTitlesLLMenu = null!;
+    private Lazy_DynamicItemsMenu Lazy_AltTitlesMenu = null!;
     private Lazy_LangDetectError Lazy_LangDetectError = null!;
 
     #endregion
@@ -60,7 +60,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             if (_constructed)
             {
                 Lazy_LangDetectError.DarkModeEnabled = DarkModeEnabled;
-                AltTitlesLLMenu.DarkModeEnabled = DarkModeEnabled;
+                Lazy_AltTitlesMenu.DarkModeEnabled = DarkModeEnabled;
             }
 
             if (DarkModeEnabled == value) return;
@@ -78,7 +78,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
 
         _page = ConstructPage<Lazy_EditFMPage>();
 
-        AltTitlesLLMenu = new DynamicItemsLLMenu(_owner);
+        Lazy_AltTitlesMenu = new Lazy_DynamicItemsMenu(_owner);
         Lazy_LangDetectError = new Lazy_LangDetectError(_owner, _page);
 
         using (new DisableEvents(_owner))
@@ -251,7 +251,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
                 c.Enabled = false;
             }
 
-            _owner.FMsDGV_FM_LLMenu.ClearFinishedOnMenuItemChecks();
+            _owner.Lazy_FMsDGV_FM_Menu.ClearFinishedOnMenuItemChecks();
         }
     }
 
@@ -282,10 +282,10 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             altTitlesMenuItems[i] = item;
         }
 
-        AltTitlesLLMenu.ClearAndFillMenu(altTitlesMenuItems);
+        Lazy_AltTitlesMenu.ClearAndFillMenu(altTitlesMenuItems);
 
         ControlUtils.ShowMenu(
-            AltTitlesLLMenu.Menu,
+            Lazy_AltTitlesMenu.Menu,
             _page.EditFMAltTitlesArrowButton,
             MenuPos.BottomLeft);
     }
@@ -370,7 +370,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
     private void EditFMRatingButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(
-            _owner.FMsDGV_FM_LLMenu.GetRatingMenu(),
+            _owner.Lazy_FMsDGV_FM_Menu.GetRatingMenu(),
             _page.EditFMRatingButton,
             MenuPos.BottomRight,
             unstickMenu: true);
@@ -383,7 +383,7 @@ public sealed class EditFMTabPage : Lazy_TabsBase
     private void EditFMFinishedOnButton_Click(object? sender, EventArgs e)
     {
         ControlUtils.ShowMenu(
-            _owner.FMsDGV_FM_LLMenu.GetFinishedOnMenu(),
+            _owner.Lazy_FMsDGV_FM_Menu.GetFinishedOnMenu(),
             _page.EditFMFinishedOnButton,
             MenuPos.BottomRight,
             unstickMenu: true);

@@ -60,6 +60,8 @@ public static class SR
     public static readonly string ArgumentOutOfRange_IndexMustBeLess = "Index was out of range. Must be non-negative and less than the size of the collection.";
     public static readonly string EntryNameEncodingNotSupported = "Entry name encoding not supported.";
     public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
+    public static readonly string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
+    public static readonly string InvalidOperation_EmptyStack = "Stack empty.";
 #if ENABLE_UNUSED
     public static readonly string InvalidArgumentOffsetCount = "Offset plus count is larger than the length of target array.";
     public static readonly string ObjectDisposed_StreamClosed = "Cannot access a closed stream.";
@@ -72,5 +74,9 @@ public static class SR
     public static readonly string ObjectDisposed_FileClosed = "Cannot access a closed file.";
     public static readonly string ArgumentNull_Buffer = "Buffer cannot be null.";
     public static readonly string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
+    public static readonly string IO_FileNotFound_FileName = "Could not find file '{0}'.";
+
+    internal static string Format(string resourceFormat, object? p1) => string.Format(resourceFormat, p1);
+    internal static string Format(string resourceFormat, object? p1, object? p2) => string.Format(resourceFormat, p1, p2);
 #endif
 }

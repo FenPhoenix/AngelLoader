@@ -298,7 +298,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         return columns.OrderById();
     }
 
-    internal void SetColumnData(FMsDGV_ColumnHeaderLLMenu menu, ColumnDataArray columnData)
+    internal void SetColumnData(Lazy_FMsDGV_ColumnHeaderMenu menu, ColumnDataArray columnData)
     {
         retry:
         #region Important

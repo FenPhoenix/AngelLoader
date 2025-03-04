@@ -7,7 +7,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class InstallUninstallFMLLButton : IDarkable
+internal sealed class Lazy_InstallUninstallFMButton : IDarkable
 {
     private readonly MainForm _owner;
 
@@ -33,7 +33,7 @@ internal sealed class InstallUninstallFMLLButton : IDarkable
         }
     }
 
-    internal InstallUninstallFMLLButton(MainForm owner) => _owner = owner;
+    internal Lazy_InstallUninstallFMButton(MainForm owner) => _owner = owner;
 
     internal void Localize()
     {

@@ -2475,6 +2475,7 @@ internal static partial class FMInstallAndPlay
         return new FMInstallResult(fmData, InstallResultType.InstallSucceeded);
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct ExtractableEntry
     {
         internal readonly ZipArchiveFastEntry Entry;
@@ -2487,6 +2488,7 @@ internal static partial class FMInstallAndPlay
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct ExtractableEntries
     {
         internal readonly List<ExtractableEntry> NonDuplicateEntries;
@@ -2528,8 +2530,10 @@ internal static partial class FMInstallAndPlay
 
         HashSetPathI extractedNamesHash = new(entries.Count);
 
-        foreach (ZipArchiveFastEntry entry in entries)
+        for (int i = 0; i < entries.Count; i++)
         {
+            ZipArchiveFastEntry entry = entries[i];
+
             string fileName = entry.FullName;
 
             if (fileName.IsEmpty()) continue;

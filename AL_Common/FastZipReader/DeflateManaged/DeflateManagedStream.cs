@@ -15,18 +15,21 @@ namespace AL_Common.FastZipReader.DeflateManaged
         internal const int DefaultBufferSize = 8192;
 
         private Stream? _stream;
+        private readonly bool _leaveOpen;
         private InflaterManaged _inflater;
         private readonly byte[] _buffer;
 
         private int _asyncOperations;
 
         // A specific constructor to allow decompression of Deflate64
-        internal DeflateManagedStream(Stream stream, long uncompressedSize = -1)
+        internal DeflateManagedStream(Stream stream, bool leaveOpen, long uncompressedSize = -1)
         {
             ArgumentNullException.ThrowIfNull(stream);
 
             if (!stream.CanRead)
                 throw new ArgumentException(SR.NotSupported_UnreadableStream, nameof(stream));
+
+            _leaveOpen = leaveOpen;
 
             _inflater = new InflaterManaged(true, uncompressedSize);
 
@@ -297,7 +300,7 @@ namespace AL_Common.FastZipReader.DeflateManaged
                 // In this case, we still need to clean up internal resources, hence the inner finally blocks.
                 try
                 {
-                    if (disposing && _stream != null)
+                    if (disposing && !_leaveOpen && _stream != null)
                         _stream.Dispose();
                 }
                 finally

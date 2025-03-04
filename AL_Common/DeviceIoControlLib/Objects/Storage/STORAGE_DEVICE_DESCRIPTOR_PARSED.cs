@@ -35,22 +35,22 @@ public struct STORAGE_DEVICE_DESCRIPTOR_PARSED
         uint length = RawPropertiesLength.Clamp(0u, 0x16u);
         for (int i = 0; i < length; i++)
         {
-            rawDeviceProperties += RawDeviceProperties[i].ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + ",";
+            rawDeviceProperties += RawDeviceProperties[i].ToStrInv() + ",";
         }
 
         return "----------------" + $"{NL}" +
-               nameof(Version) + ": " + Version.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(Size) + ": " + Size.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(DeviceType) + ": " + DeviceType.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(DeviceTypeModifier) + ": " + DeviceTypeModifier.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(RemovableMedia) + ": " + RemovableMedia.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(CommandQueueing) + ": " + CommandQueueing.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(VendorIdOffset) + ": " + VendorIdOffset.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(ProductIdOffset) + ": " + ProductIdOffset.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(ProductRevisionOffset) + ": " + ProductRevisionOffset.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
-               nameof(SerialNumberOffset) + ": " + SerialNumberOffset.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
+               nameof(Version) + ": " + Version.ToStrInv() + $"{NL}" +
+               nameof(Size) + ": " + Size.ToStrInv() + $"{NL}" +
+               nameof(DeviceType) + ": " + DeviceType.ToStrInv() + $"{NL}" +
+               nameof(DeviceTypeModifier) + ": " + DeviceTypeModifier.ToStrInv() + $"{NL}" +
+               nameof(RemovableMedia) + ": " + RemovableMedia + $"{NL}" +
+               nameof(CommandQueueing) + ": " + CommandQueueing + $"{NL}" +
+               nameof(VendorIdOffset) + ": " + VendorIdOffset.ToStrInv() + $"{NL}" +
+               nameof(ProductIdOffset) + ": " + ProductIdOffset.ToStrInv() + $"{NL}" +
+               nameof(ProductRevisionOffset) + ": " + ProductRevisionOffset.ToStrInv() + $"{NL}" +
+               nameof(SerialNumberOffset) + ": " + SerialNumberOffset.ToStrInv() + $"{NL}" +
                nameof(BusType) + ": " + BusType + $"{NL}" +
-               nameof(RawPropertiesLength) + ": " + RawPropertiesLength.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) + $"{NL}" +
+               nameof(RawPropertiesLength) + ": " + RawPropertiesLength.ToStrInv() + $"{NL}" +
                nameof(RawDeviceProperties) + ": " + rawDeviceProperties + $"{NL}" +
                nameof(SerialNumber) + ": " + SerialNumber + $"{NL}" +
                nameof(VendorId) + ": " + VendorId + $"{NL}" +

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace AL_Common;
 
@@ -15,6 +16,7 @@ namespace AL_Common;
 /// prompt won't happen. You have to have had media in at least once to get
 /// the file system to load and then have removed it.
 /// </remarks>
+[StructLayout(LayoutKind.Auto)]
 public struct DisableMediaInsertionPrompt : IDisposable
 {
     private bool _disableSuccess;

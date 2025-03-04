@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace AL_Common;
@@ -11,15 +12,10 @@ public static partial class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrInv(this int value) => value.ToString(NumberFormatInfo.InvariantInfo);
-
-    /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.InvariantInfo"/>)
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrInv(this byte value) => value.ToString(NumberFormatInfo.InvariantInfo);
+    public static string ToStrInv<T>(this T value) where T : IFormattable
+    {
+        return value.ToString(null, NumberFormatInfo.InvariantInfo);
+    }
 
     /// <summary>
     /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
@@ -27,13 +23,8 @@ public static partial class Common
     /// <param name="value"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this int value) => value.ToString(NumberFormatInfo.CurrentInfo);
-
-    /// <summary>
-    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string ToStrCur(this double value) => value.ToString(NumberFormatInfo.CurrentInfo);
+    public static string ToStrCur<T>(this T value) where T : IFormattable
+    {
+        return value.ToString(null, NumberFormatInfo.CurrentInfo);
+    }
 }

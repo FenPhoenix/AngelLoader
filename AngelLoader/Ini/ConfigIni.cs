@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -1480,7 +1479,7 @@ internal static partial class Ini
         sw.Append("ShowRecentAtTop=").AppendLine(config.ShowRecentAtTop);
         sw.Append("ShowUnsupported=").AppendLine(config.ShowUnsupported);
         sw.Append("ShowUnavailableFMs=").AppendLine(config.ShowUnavailableFMs);
-        sw.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("FMsListFontSizeInPoints=").AppendLine(config.FMsListFontSizeInPoints.ToStrInv());
 
         foreach (ColumnData col in config.Columns)
         {
@@ -1509,9 +1508,9 @@ internal static partial class Ini
         sw.Append("MainWindowSize=").Append(config.MainWindowSize.Width).Append(',').AppendLine(config.MainWindowSize.Height);
         sw.Append("MainWindowLocation=").Append(config.MainWindowLocation.X).Append(',').AppendLine(config.MainWindowLocation.Y);
 
-        sw.Append("MainSplitterPercent=").AppendLine(config.MainSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("TopSplitterPercent=").AppendLine(config.TopSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
-        sw.Append("BottomSplitterPercent=").AppendLine(config.BottomSplitterPercent.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("MainSplitterPercent=").AppendLine(config.MainSplitterPercent.ToStrInv());
+        sw.Append("TopSplitterPercent=").AppendLine(config.TopSplitterPercent.ToStrInv());
+        sw.Append("BottomSplitterPercent=").AppendLine(config.BottomSplitterPercent.ToStrInv());
         sw.Append("TopRightPanelCollapsed=").AppendLine(config.TopFMTabsPanelCollapsed);
         sw.Append("BottomRightPanelCollapsed=").AppendLine(config.BottomFMTabsPanelCollapsed);
 
@@ -1535,7 +1534,7 @@ internal static partial class Ini
         sw.Append("ModsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Mods).Visible);
         sw.Append("ScreenshotsTabVisible=").AppendLine(config.FMTabsData.GetTab(FMTab.Screenshots).Visible);
 
-        sw.Append("ReadmeZoomFactor=").AppendLine(config.ReadmeZoomFactor.ToString(NumberFormatInfo.InvariantInfo));
+        sw.Append("ReadmeZoomFactor=").AppendLine(config.ReadmeZoomFactor.ToStrInv());
         sw.Append("ReadmeUseFixedWidthFont=").AppendLine(config.ReadmeUseFixedWidthFont);
 
         #endregion

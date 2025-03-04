@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -7,6 +6,7 @@ using System.Text;
 using SharpCompress.Archives.SevenZip;
 using SharpCompress.Readers.Rar;
 using static System.StringComparison;
+using static FMScanner.ReadOnlyDataContext;
 
 namespace FMScanner;
 
@@ -137,7 +137,7 @@ internal static class Utility
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool StartsWithGU(this string str, string value)
+    internal static bool StartsWith_GivenOrUpper(this string str, string value)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -173,7 +173,7 @@ internal static class Utility
     /// <param name="str"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    internal static bool StartsWithGL(this string str, string value)
+    internal static bool StartsWith_GivenOrLower(this string str, string value)
     {
         if (str.IsEmpty() || str.Length < value.Length) return false;
 
@@ -212,25 +212,27 @@ internal static class Utility
     /// non-surrounding parentheses intact.
     /// </summary>
     /// <param name="value"></param>
+    /// <param name="stack"></param>
     /// <returns></returns>
-    internal static string RemoveSurroundingParentheses(this string value)
+    internal static string RemoveSurroundingParentheses(this string value, StackFast<int> stack)
     {
         if (value.IsEmpty() || value[0] != '(' || value[^1] != ')') return value;
+
+        ReadOnlySpan<char> valueSpan = value.AsSpan();
 
         bool surroundedByParens = false;
         do
         {
-            Stack<int> stack = new();
-            for (int i = 0; i < value.Length; i++)
+            for (int i = 0; i < valueSpan.Length; i++)
             {
-                switch (value[i])
+                switch (valueSpan[i])
                 {
                     case '(':
                         stack.Push(i);
                         surroundedByParens = false;
                         break;
                     case ')':
-                        int index = stack.Count > 0 ? stack.Pop() : -1;
+                        int index = stack.TryPop(out int result) ? result : -1;
                         surroundedByParens = index == 0;
                         break;
                     default:
@@ -239,10 +241,10 @@ internal static class Utility
                 }
             }
 
-            if (surroundedByParens) value = value.Substring(1, value.Length - 2);
+            if (surroundedByParens) valueSpan = valueSpan.Slice(1, value.Length - 2);
         } while (surroundedByParens);
 
-        return value;
+        return value.Length == valueSpan.Length ? value : valueSpan.ToString();
     }
 
     // Doesn't handle unicode left and right double quotes, but meh...
@@ -348,8 +350,8 @@ internal static class Utility
 
         return;
 
-        // Nothing past 'X' because no mission number is going to be that high and we don't want something like "MIX"
-        // being interpreted as a Roman numeral
+        // Nothing past 'X' because no mission number is going to be that high and we don't want something like
+        // "MIX" being interpreted as a Roman numeral
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool CharacterIsSupportedRomanNumeral(char c) => c is 'I' or 'V' or 'X';
 
@@ -477,7 +479,7 @@ internal static class Utility
     #endregion
 
     // @RAR: Duplicate because we don't want to put it in Common cause then it has to reference SharpCompress
-    // And then we couldn't have SharpCompress reference Common. Meh.
+    //  and then we couldn't have SharpCompress reference Common. Meh.
     internal static void ExtractToFile_Fast(
         this RarReader reader,
         string fileName,
@@ -511,6 +513,74 @@ internal static class Utility
 
         return value;
     }
+
+    #region Get item by filename
+
+    // Cached predicates for allocation avoidance
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate1 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsMissFlag);
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate2 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.StringsEnglishMissFlag);
+    private static readonly Predicate<NameAndIndex> MissFlagPredicate3 = static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SMissFlag);
+
+    internal static bool TryGetMissFlag(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count > 0 &&
+               (TryGetItem(list, MissFlagPredicate1, out result) ||
+                TryGetItem(list, MissFlagPredicate2, out result) ||
+                TryGetItem(list, MissFlagPredicate3, out result));
+    }
+
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate1 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceEnglishNewGameStr);
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate2 = static x => x.Name.PathEqualsI_AsciiSecond(FMFiles.IntrfaceNewGameStr);
+    private static readonly Predicate<NameAndIndex> NewGameStrPredicate3 = static x => x.Name.PathEndsWithI_AsciiSecond(FMFiles.SNewGameStr);
+
+    internal static bool TryGetNewGameStr(ListFast<NameAndIndex> list, out NameAndIndex result)
+    {
+        result = default;
+        return list.Count > 0 &&
+               (TryGetItem(list, NewGameStrPredicate1, out result) ||
+                TryGetItem(list, NewGameStrPredicate2, out result) ||
+                TryGetItem(list, NewGameStrPredicate3, out result));
+    }
+
+    internal static bool TryGetTitlesFile(ListFast<NameAndIndex> list, string[] locations, out NameAndIndex result)
+    {
+        result = default;
+        if (list.Count == 0) return false;
+
+        foreach (string location in locations)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                NameAndIndex item = list[i];
+                if (item.Name.PathEqualsI_AsciiSecond(location))
+                {
+                    result = item;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static bool TryGetItem(ListFast<NameAndIndex> list, Predicate<NameAndIndex> predicate, out NameAndIndex result)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            NameAndIndex item = list[i];
+            if (predicate(item))
+            {
+                result = item;
+                return true;
+            }
+        }
+
+        result = default!;
+        return false;
+    }
+
+    #endregion
 
     #region GLML
 

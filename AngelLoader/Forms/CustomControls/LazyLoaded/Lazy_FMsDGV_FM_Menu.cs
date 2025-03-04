@@ -10,7 +10,7 @@ using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class FMsDGV_FM_LLMenu : IDarkable
+internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
 {
     #region Backing fields
 
@@ -110,7 +110,7 @@ internal sealed class FMsDGV_FM_LLMenu : IDarkable
         OpenFMFolderMenuItem.Image = Images.Folder;
     }
 
-    internal FMsDGV_FM_LLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_FMsDGV_FM_Menu(MainForm owner) => _owner = owner;
 
     #region Private methods
 

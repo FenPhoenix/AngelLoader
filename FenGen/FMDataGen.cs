@@ -207,11 +207,6 @@ internal static class FMData
 
     private static void WriteReadSection(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
     {
-        static string GetTryParseArgsRead(string fieldType) =>
-            IsDecimal(fieldType)
-                ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
-                : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
-
         const string val = "val";
 
         w.WL("#region Generated code for reader");
@@ -476,6 +471,13 @@ internal static class FMData
         w.WL("};");
         w.WL();
         w.WL("#endregion");
+
+        return;
+
+        static string GetTryParseArgsRead(string fieldType) =>
+            IsDecimal(fieldType)
+                ? "NumberStyles.Float, NumberFormatInfo.InvariantInfo, "
+                : "NumberStyles.Integer, NumberFormatInfo.InvariantInfo, ";
     }
 
     private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, List<Field> fields)

@@ -191,10 +191,16 @@ public sealed class FanMission
         set => SetFMFlag(FMFlag.ForceReadmeReCache, value);
     }
 
-    // Used when an FMs was supposed to have its readmes cached during the scan, but couldn't because it had at
-    // least one HTML readme with dependent files. This will force the FM to have its cache refreshed on next
-    // select even in this case (ForceReadmeReCache will not work in this case).
-    [FenGenIgnore]
+    /*
+    Used when an FMs was supposed to have its readmes cached during the scan, but couldn't because it had at
+    least one HTML readme with dependent files. This will force the FM to have its cache refreshed on next
+    select even in this case (ForceReadmeReCache will not work in this case).
+
+    NOTE: For max ini size efficiency we could make this supersede the non-always version, so they don't both get
+     written out. However, this flag being set will be very rare - only for 7z FMs with HTML ref files, and there
+     are only _two_ FMs with HTML ref files that I know of, and one of them is a false positive in the algo. So
+     let's just avoid the complication and leave it as is.
+    */
     internal bool ForceReadmeReCacheAlways
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

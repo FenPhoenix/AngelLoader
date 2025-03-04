@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using AL_Common.FastZipReader.DeflateManaged;
 using JetBrains.Annotations;
 
@@ -131,6 +132,7 @@ public sealed class ZipContext_Pool
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipContextRentScope
 {
     private readonly ZipContext_Pool _pool;
@@ -205,6 +207,7 @@ public sealed class ZipContext_Threaded_Pool
     }
 }
 
+[StructLayout(LayoutKind.Auto)]
 public readonly ref struct ZipContextThreadedRentScope
 {
     private readonly ZipContext_Threaded_Pool _pool;
@@ -406,7 +409,7 @@ internal static class ZipArchiveFast_Common
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
-                uncompressedStream = new DeflateManagedStream(compressedStreamToRead, entry.Length);
+                uncompressedStream = new DeflateManagedStream(compressedStreamToRead, leaveOpen: true, entry.Length);
                 break;
             case CompressionMethodValues.Stored:
             default:

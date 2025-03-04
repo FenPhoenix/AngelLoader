@@ -238,9 +238,25 @@ internal static partial class Misc
 
     #endregion
 
-    internal static string ToStrInv(this int value) => value.ToString(CultureInfo.InvariantCulture);
+    /// <summary>
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.InvariantInfo"/>)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToStrInv<T>(this T value) where T : IFormattable
+    {
+        return value.ToString(null, NumberFormatInfo.InvariantInfo);
+    }
 
-    internal static string ToStrInv(this long value) => value.ToString(CultureInfo.InvariantCulture);
-
-    internal static string ToStrInv(this bool value) => value.ToString(CultureInfo.InvariantCulture);
+    /// <summary>
+    /// Shorthand for <paramref name="value"/>.ToString(<see cref="NumberFormatInfo.CurrentInfo"/>)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToStrCur<T>(this T value) where T : IFormattable
+    {
+        return value.ToString(null, NumberFormatInfo.CurrentInfo);
+    }
 }

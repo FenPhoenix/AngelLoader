@@ -51,8 +51,8 @@ internal static class RtfProcessing
 
     #endregion
 
-    // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't
-    // want to make a new one every time.
+    // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
+    // to make a new one every time.
     private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
     private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
 
@@ -94,32 +94,8 @@ internal static class RtfProcessing
 
     private static ListFast<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
     {
-        #region Local functions
-
-        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match
-        // our new background color to keep author intent (avoiding spoilers etc.)
-        static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
-
-        static ListFast<byte> ByteToASCIICharBytes(byte number)
-        {
-            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
-            // a new byte array EVERY time through here (which is a lot)
-            _colorNumberBytes.ClearFast();
-
-            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
-
-            for (int i = 0; i < digits; i++)
-            {
-                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
-                number /= 10;
-            }
-
-            return _colorNumberBytes;
-        }
-
-        #endregion
-
-        const int maxColorEntryStringLength = 25; // "\red255\green255\blue255;" = 25 chars
+        // "\red255\green255\blue255;" = 25 chars
+        const int maxColorEntryStringLength = 25;
 
         // Size us large enough that we don't reallocate
         ListFast<byte> colorEntriesBytesList = new(
@@ -180,56 +156,37 @@ internal static class RtfProcessing
         colorEntriesBytesList.Add((byte)'}');
 
         return colorEntriesBytesList;
+
+        #region Local functions
+
+        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
+        // new background color to keep author intent (avoiding spoilers etc.)
+        static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
+
+        static ListFast<byte> ByteToASCIICharBytes(byte number)
+        {
+            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
+            // a new byte array EVERY time through here (which is a lot)
+            _colorNumberBytes.ClearFast();
+
+            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
+
+            for (int i = 0; i < digits; i++)
+            {
+                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
+                number /= 10;
+            }
+
+            return _colorNumberBytes;
+        }
+
+        #endregion
     }
 
     internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
     {
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
-
-        #region Local functions
-
-        static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
-        {
-            byte firstByte = _lang[0];
-            int index = Array.IndexOf(input, firstByte, start);
-
-            while (index > -1)
-            {
-                for (int i = 0; i < _lang.Length; i++)
-                {
-                    if (index + i >= input.Length) return (-1, -1);
-                    if (_lang[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
-                        break;
-                    }
-
-                    if (i == _lang.Length - 1)
-                    {
-                        int firstDigitIndex = index + i + 1;
-
-                        int numIndex = firstDigitIndex;
-                        while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
-                        {
-                            numIndex++;
-                        }
-                        if (numIndex > firstDigitIndex)
-                        {
-                            return (index, numIndex);
-                        }
-                        else
-                        {
-                            index = numIndex;
-                        }
-                    }
-                }
-            }
-
-            return (-1, -1);
-        }
-
-        #endregion
 
 #if PROCESS_README_TIME_TEST
         TimeSpan totalTime = TimeSpan.Zero;
@@ -437,7 +394,8 @@ internal static class RtfProcessing
             // Do this BEFORE putting the dark background control word in, or else it will be overwritten too!
             ReplaceByteSequence(retBytes, _background, _backgroundBlanked);
 
-            // Insert our dark background definition at the end, so we override any other backgrounds that may be set.
+            // Insert our dark background definition at the end, so we override any other backgrounds that may be
+            // set.
             ReadOnlySpan<byte> backgroundSpan = RTF_DarkBackgroundBytes.AsSpan();
             backgroundSpan.CopyTo(retBytesSpan[lastIndexDest..]);
 
@@ -498,6 +456,50 @@ internal static class RtfProcessing
 
             return currentReadmeBytes;
         }
+
+        #region Local functions
+
+        static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
+        {
+            byte firstByte = _lang[0];
+            int index = Array.IndexOf(input, firstByte, start);
+
+            while (index > -1)
+            {
+                for (int i = 0; i < _lang.Length; i++)
+                {
+                    if (index + i >= input.Length) return (-1, -1);
+                    if (_lang[i] != input[index + i])
+                    {
+                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
+                        break;
+                    }
+
+                    if (i == _lang.Length - 1)
+                    {
+                        int firstDigitIndex = index + i + 1;
+
+                        int numIndex = firstDigitIndex;
+                        while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
+                        {
+                            numIndex++;
+                        }
+                        if (numIndex > firstDigitIndex)
+                        {
+                            return (index, numIndex);
+                        }
+                        else
+                        {
+                            index = numIndex;
+                        }
+                    }
+                }
+            }
+
+            return (-1, -1);
+        }
+
+        #endregion
     }
 
     private static void CopyInserts(

@@ -5,7 +5,7 @@ using static AngelLoader.GameSupport;
 
 namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
-internal sealed class GameFilterControlsLLMenu : IDarkable
+internal sealed class Lazy_GameFilterControlsMenu : IDarkable
 {
     private bool _constructed;
     private readonly bool[] _checkedStates = InitializedArray(SupportedGameCount, true);
@@ -36,7 +36,7 @@ internal sealed class GameFilterControlsLLMenu : IDarkable
         }
     }
 
-    internal GameFilterControlsLLMenu(MainForm owner) => _owner = owner;
+    internal Lazy_GameFilterControlsMenu(MainForm owner) => _owner = owner;
 
     private void Construct()
     {

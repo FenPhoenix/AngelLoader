@@ -35,4 +35,6 @@ public static class ThrowHelper
     public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
     [DoesNotReturn]
     public static void EncryptionNotSupported() => throw new NotSupportedException("Encrypted archives are not supported.");
+    [DoesNotReturn]
+    internal static void ThrowInvalidOperationException(string message) => throw new InvalidOperationException(message);
 }
