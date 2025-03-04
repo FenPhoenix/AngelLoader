@@ -319,7 +319,7 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                 inPreloadedState = RTFPreprocessing.InPreloadedState(path, _darkModeEnabled);
                 if (!inPreloadedState)
                 {
-                    long size = new FileInfo(path).Length;
+                    long size = GetFileLength(path);
                     if (size > ByteSize.KB * 300)
                     {
                         _owner.SetWaitCursor(true);

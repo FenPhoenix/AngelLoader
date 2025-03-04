@@ -247,7 +247,7 @@ internal static partial class Ini
         fmsList.Clear();
         fmsListTDM.Clear();
 
-        long fileLength = new FileInfo(fileName).Length;
+        long fileLength = GetFileLength(fileName);
 
         int bufferSize = fileLength switch
         {

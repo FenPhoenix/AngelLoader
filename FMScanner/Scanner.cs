@@ -386,7 +386,7 @@ public sealed class Scanner : IDisposable
             EntryType.Zip => _zipEntry.Length,
             EntryType.Rar => _rarEntry.Size,
             EntryType.FileInfoCached => _fileInfo.Length,
-            _ => new FileInfo(GetFullFileName(_fileName)).Length,
+            _ => GetFileLength(GetFullFileName(_fileName)),
         };
 
         public Entry(Scanner scanner, ZipArchiveFastEntry entry)

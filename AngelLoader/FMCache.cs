@@ -240,7 +240,7 @@ internal static class FMCache
                 {
                     foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
                     {
-                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
+                        if (fn.IsValidReadme() && GetFileLength(fn) > 0)
                         {
                             readmes.Add(fn.Substring(basePath.Length + 1));
                         }
