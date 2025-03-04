@@ -245,6 +245,9 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<char> _altTitleAcronymChars = new(10);
     private readonly ListFast<char> _altTitleRomanToDecimalAcronymChars = new(10);
 
+    private ListFast<char>? _romanNumeralRun;
+    private ListFast<char> RomanNumeralRun => _romanNumeralRun ??= new ListFast<char>(10);
+
     private readonly ListFast<NameAndIndex> _baseDirFiles = new(20);
     private readonly ListFast<NameAndIndex> _misFiles = new(20);
     private readonly ListFast<NameAndIndex> _usedMisFiles = new(20);
@@ -4296,7 +4299,7 @@ public sealed class Scanner : IDisposable
 
         byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
 
-        bool titleContainsAcronym = _ctx.AcronymRegex.Match(mainTitle.Value).Success;
+        bool mainTitleContainsAcronym = _ctx.AcronymRegex.Match(mainTitle.Value).Success;
         Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
 
         bool swapDone = false;
@@ -4304,8 +4307,10 @@ public sealed class Scanner : IDisposable
         ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
         ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
 
-        if (titleContainsAcronym)
+        if (mainTitleContainsAcronym)
         {
+            ListFast<char> romanNumeralRun = RomanNumeralRun;
+
             for (int i = 1; i < titles.Count; i++)
             {
                 DetectedTitle altTitle = titles[i];
@@ -4313,7 +4318,11 @@ public sealed class Scanner : IDisposable
                 _altTitleRomanToDecimalAcronymChars.ClearFast();
 
                 Utility.GetAcronym(altTitle.Value, _altTitleAcronymChars);
-                Utility.GetAcronym_SupportRomanNumerals(altTitle.Value, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable);
+                Utility.GetAcronym_SupportRomanNumerals(
+                    altTitle.Value,
+                    _altTitleRomanToDecimalAcronymChars,
+                    romanNumeralRun,
+                    romanNumeralToDecimalTable);
 
                 if (!mainTitle.Value.EqualsIgnoreCaseAndWhiteSpace(altTitle.Value, tempChars1, tempChars2) &&
                     (Utility.SequenceEqual(_titleAcronymChars, _altTitleAcronymChars) ||
@@ -4345,14 +4354,14 @@ public sealed class Scanner : IDisposable
         if (!swapDone &&
             !serverTitle.IsEmpty() &&
             !_ctx.AcronymRegex.Match(serverTitle).Success &&
-            (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
+            (mainTitleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
             swapDone = true;
         }
 
         if (!swapDone &&
-            titleContainsAcronym &&
+            mainTitleContainsAcronym &&
             titles.Count == 2 &&
             titles[1].Value.Length > titles[0].Value.Length &&
             !titles[1].Temporary &&

@@ -431,16 +431,19 @@ internal static class Utility
         }
     }
 
-    internal static void GetAcronym_SupportRomanNumerals(string title, ListFast<char> acronymChars, byte[] romanNumeralToDecimalTable)
+    internal static void GetAcronym_SupportRomanNumerals(
+        string title,
+        ListFast<char> acronymChars,
+        ListFast<char> romanNumeralRun,
+        byte[] romanNumeralToDecimalTable)
     {
-        ListFast<char>? romanNumeralRun = null;
+        romanNumeralRun.ClearFast();
 
         for (int titleIndex = 0; titleIndex < title.Length; titleIndex++)
         {
             char c = title[titleIndex];
             if (CharacterIsSupportedRomanNumeral(c))
             {
-                romanNumeralRun ??= new ListFast<char>(10);
                 romanNumeralRun.Add(c);
 
                 int romanNumeralIndex;
