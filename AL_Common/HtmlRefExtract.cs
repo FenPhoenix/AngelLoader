@@ -13,9 +13,9 @@ public static partial class Common
         ".flv", ".log", ".str", ".nut", ".db", ".obj",
     };
 
-    private static bool IsExcludedFileType(string name)
+    public static bool IsExcludedFileType(string[] excludes, string name)
     {
-        foreach (string item in HtmlRefExcludes)
+        foreach (string item in excludes)
         {
             if (name.EndsWithI(item)) return true;
         }
@@ -37,7 +37,7 @@ public static partial class Common
                 if (!name.IsEmpty() &&
                     !name.EndsWithDirSep() &&
                     name.Contains('.') &&
-                    !IsExcludedFileType(name) &&
+                    !IsExcludedFileType(HtmlRefExcludes, name) &&
                     content.ContainsI(name))
                 {
                     return true;
