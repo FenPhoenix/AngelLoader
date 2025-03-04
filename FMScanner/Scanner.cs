@@ -2695,12 +2695,25 @@ public sealed class Scanner : IDisposable
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
             // @BLOCKS: Manual type switch
-            int filesCount = _fmFormat switch
+            ListFast<ZipArchiveFastEntry> zipEntries = null!;
+            SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
+
+            int filesCount;
+            switch (_fmFormat)
             {
-                FMFormat.Zip => _archive.Entries.Count,
-                FMFormat.Rar => _rarArchive.Entries.Count,
-                _ => _fmDirFileInfos.Count,
-            };
+                case FMFormat.Zip:
+                    zipEntries = _archive.Entries;
+                    filesCount = zipEntries.Count;
+                    break;
+                case FMFormat.Rar:
+                    rarEntries = _rarArchive.Entries;
+                    filesCount = rarEntries.Count;
+                    break;
+                default:
+                    filesCount = _fmDirFileInfos.Count;
+                    break;
+            }
+
             for (int i = 0; i < filesCount; i++)
             {
                 bool? pathIsIntrfaceDir = null;
@@ -2709,9 +2722,9 @@ public sealed class Scanner : IDisposable
 
                 // @BLOCKS: Manual type switch
                 string fn =
-                    _fmFormat == FMFormat.Zip ? _archive.Entries[i].FullName :
+                    _fmFormat == FMFormat.Zip ? zipEntries[i].FullName :
                     _fmFormat.IsSolidArchive() ? _fmDirFileInfos[i].FullName :
-                    _fmFormat == FMFormat.Rar ? _rarArchive.Entries[i].Key :
+                    _fmFormat == FMFormat.Rar ? rarEntries[i].Key :
                     _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
                 if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3DetectS) &&
