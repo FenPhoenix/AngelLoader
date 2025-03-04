@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AL_Common.FastZipReader.Deflate64Managed;
@@ -405,7 +406,7 @@ internal static class ZipArchiveFast_Common
         switch (entry.CompressionMethod)
         {
             case CompressionMethodValues.Deflate:
-                uncompressedStream = new System.IO.Compression.DeflateStream(compressedStreamToRead, System.IO.Compression.CompressionMode.Decompress, leaveOpen: true);
+                uncompressedStream = new DeflateStream(compressedStreamToRead, CompressionMode.Decompress, leaveOpen: true);
                 break;
             case CompressionMethodValues.Deflate64:
                 // This is always in decompress-only mode
