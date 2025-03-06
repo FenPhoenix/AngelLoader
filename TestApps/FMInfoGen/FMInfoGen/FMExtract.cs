@@ -6,13 +6,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using AngelLoader;
 using static FMInfoGen.Misc;
 
 namespace FMInfoGen;
 
 internal static class FMExtract
 {
-    private static CancellationTokenSource? _extractCTS;
+    private static CancellationTokenSource _extractCTS = new();
 
     #region Extract FM archives
 
@@ -22,7 +23,10 @@ internal static class FMExtract
         string archive = Path.Combine(Config.FMsPath, selectedFM);
         string extractDir = Path.Combine(Config.TempPath, selectedFM.FN_NoExt().Trim());
 
-        if (Directory.Exists(extractDir)) Directory.Delete(extractDir, recursive: true);
+        if (Directory.Exists(extractDir))
+        {
+            Directory.Delete(extractDir, recursive: true);
+        }
 
         Directory.CreateDirectory(extractDir);
 
@@ -49,11 +53,11 @@ internal static class FMExtract
 
         try
         {
-            _extractCTS = new CancellationTokenSource();
+            _extractCTS = _extractCTS.Recreate();
 
             Core.View.BeginExtractArchiveMode();
 
-            var fmArchives = Core.View.GetFMArchives().ToArray();
+            string[] fmArchives = Core.View.GetFMArchives().ToArray();
 
             for (int i = 0; i < fmArchives.Length; i++)
             {
@@ -81,7 +85,10 @@ internal static class FMExtract
                 {
                     // CreateDirectory already skips dirs if they exist, but not sure if it still walks down
                     // the tree and creates subdirectories if they don't exist? Gonna be explicit here.
-                    if (!Directory.Exists(extractDir)) Directory.CreateDirectory(extractDir);
+                    if (!Directory.Exists(extractDir))
+                    {
+                        Directory.CreateDirectory(extractDir);
+                    }
 
                     bool success = await Task.Run(() =>
                     {
@@ -108,7 +115,7 @@ internal static class FMExtract
                     break;
                 }
 
-                Core.View.SetExtractProgressBarValue((100 * i) / fmArchives.Length);
+                Core.View.SetExtractProgressBarValue(GetPercentFromValue_Int(i, fmArchives.Length));
 
                 await Task.Delay(1);
             }
@@ -120,7 +127,7 @@ internal static class FMExtract
         }
         finally
         {
-            _extractCTS?.Dispose();
+            _extractCTS.Dispose();
 
             Core.View.EndExtractArchiveMode();
 
@@ -132,7 +139,7 @@ internal static class FMExtract
         }
     }
 
-    internal static void Cancel() => _extractCTS?.CancelIfNotDisposed();
+    internal static void Cancel() => _extractCTS.CancelIfNotDisposed();
 
     #endregion
 }
