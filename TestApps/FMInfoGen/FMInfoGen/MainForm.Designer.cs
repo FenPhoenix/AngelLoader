@@ -142,7 +142,7 @@
             // 
             // ExtractProgressBar
             // 
-            this.ExtractProgressBar.Location = new System.Drawing.Point(8, 584);
+            this.ExtractProgressBar.Location = new System.Drawing.Point(8, 544);
             this.ExtractProgressBar.Name = "ExtractProgressBar";
             this.ExtractProgressBar.Size = new System.Drawing.Size(744, 23);
             this.ExtractProgressBar.TabIndex = 7;
@@ -150,7 +150,7 @@
             // 
             // CancelExtractAllButton
             // 
-            this.CancelExtractAllButton.Location = new System.Drawing.Point(633, 608);
+            this.CancelExtractAllButton.Location = new System.Drawing.Point(633, 568);
             this.CancelExtractAllButton.Name = "CancelExtractAllButton";
             this.CancelExtractAllButton.Size = new System.Drawing.Size(120, 23);
             this.CancelExtractAllButton.TabIndex = 8;
@@ -255,7 +255,7 @@
             this.MainTabControl.Location = new System.Drawing.Point(0, 0);
             this.MainTabControl.Name = "MainTabControl";
             this.MainTabControl.SelectedIndex = 0;
-            this.MainTabControl.Size = new System.Drawing.Size(1245, 670);
+            this.MainTabControl.Size = new System.Drawing.Size(1245, 627);
             this.MainTabControl.TabIndex = 10;
             // 
             // MainTabPage
@@ -274,20 +274,20 @@
             this.MainTabPage.Location = new System.Drawing.Point(4, 22);
             this.MainTabPage.Name = "MainTabPage";
             this.MainTabPage.Padding = new System.Windows.Forms.Padding(3);
-            this.MainTabPage.Size = new System.Drawing.Size(1237, 644);
+            this.MainTabPage.Size = new System.Drawing.Size(1237, 601);
             this.MainTabPage.TabIndex = 0;
             this.MainTabPage.Text = "Main";
             // 
             // FMScanProgressBar
             // 
-            this.FMScanProgressBar.Location = new System.Drawing.Point(8, 528);
+            this.FMScanProgressBar.Location = new System.Drawing.Point(8, 488);
             this.FMScanProgressBar.Name = "FMScanProgressBar";
             this.FMScanProgressBar.Size = new System.Drawing.Size(744, 23);
             this.FMScanProgressBar.TabIndex = 18;
             // 
             // CancelFMScanButton
             // 
-            this.CancelFMScanButton.Location = new System.Drawing.Point(658, 552);
+            this.CancelFMScanButton.Location = new System.Drawing.Point(658, 512);
             this.CancelFMScanButton.Name = "CancelFMScanButton";
             this.CancelFMScanButton.Size = new System.Drawing.Size(96, 23);
             this.CancelFMScanButton.TabIndex = 17;
@@ -307,7 +307,7 @@
             this.ScanOptionsGroupBox.Controls.Add(this.ScanGameTypeCheckBox);
             this.ScanOptionsGroupBox.Location = new System.Drawing.Point(248, 344);
             this.ScanOptionsGroupBox.Name = "ScanOptionsGroupBox";
-            this.ScanOptionsGroupBox.Size = new System.Drawing.Size(504, 168);
+            this.ScanOptionsGroupBox.Size = new System.Drawing.Size(504, 128);
             this.ScanOptionsGroupBox.TabIndex = 16;
             this.ScanOptionsGroupBox.TabStop = false;
             this.ScanOptionsGroupBox.Text = "Scan options";
@@ -319,9 +319,9 @@
             this.ScanReleaseDateCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ScanReleaseDateCheckBox.Location = new System.Drawing.Point(136, 48);
             this.ScanReleaseDateCheckBox.Name = "ScanReleaseDateCheckBox";
-            this.ScanReleaseDateCheckBox.Size = new System.Drawing.Size(69, 17);
+            this.ScanReleaseDateCheckBox.Size = new System.Drawing.Size(89, 17);
             this.ScanReleaseDateCheckBox.TabIndex = 18;
-            this.ScanReleaseDateCheckBox.Text = "Rel. date";
+            this.ScanReleaseDateCheckBox.Text = "Release date";
             this.ScanReleaseDateCheckBox.UseVisualStyleBackColor = true;
             // 
             // ScanMissionCountCheckBox
@@ -474,7 +474,7 @@
             // DebugLabel
             // 
             this.DebugLabel.AutoSize = true;
-            this.DebugLabel.Location = new System.Drawing.Point(9, 560);
+            this.DebugLabel.Location = new System.Drawing.Point(9, 520);
             this.DebugLabel.Name = "DebugLabel";
             this.DebugLabel.Size = new System.Drawing.Size(71, 13);
             this.DebugLabel.TabIndex = 10;
@@ -484,7 +484,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1245, 670);
+            this.ClientSize = new System.Drawing.Size(1245, 627);
             this.Controls.Add(this.MainTabControl);
             this.Name = "MainForm";
             this.Text = "FMInfoGen";
