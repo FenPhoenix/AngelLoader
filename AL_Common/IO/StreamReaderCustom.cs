@@ -146,15 +146,9 @@ public sealed class StreamReaderCustom
         if (encodingCruftEnabled)
         {
             _decoders ??= new Dictionary<Encoding, Decoder>(_knownEncodingCount);
-            if (_decoders.TryGetValue(encoding, out Decoder decoder))
-            {
-                _decoder = decoder;
-            }
-            else
-            {
-                _decoder = encoding.GetDecoder();
-                _decoders[encoding] = _decoder;
-            }
+            _decoder = _decoders.TryGetValue(encoding, out Decoder decoder)
+                ? decoder
+                : _decoders.AddAndReturn(encoding, encoding.GetDecoder());
 
             _charBuffers ??= new Dictionary<int, char[]>(10)
             {
@@ -164,26 +158,14 @@ public sealed class StreamReaderCustom
                 { 514, new char[514] },
                 { 1027, new char[1027] },
             };
-            if (_charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer))
-            {
-                _charBuffer = maxCharsBuffer;
-            }
-            else
-            {
-                _charBuffer = new char[_maxCharsPerBuffer];
-                _charBuffers[_maxCharsPerBuffer] = _charBuffer;
-            }
+            _charBuffer = _charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer)
+                ? maxCharsBuffer
+                : _charBuffers.AddAndReturn(_maxCharsPerBuffer, new char[_maxCharsPerBuffer]);
 
             _perEncodingPreambles ??= new Dictionary<Encoding, byte[]>(_knownEncodingCount);
-            if (_perEncodingPreambles.TryGetValue(encoding, out byte[] preamble))
-            {
-                _preamble = preamble;
-            }
-            else
-            {
-                _preamble = encoding.GetPreamble();
-                _perEncodingPreambles[encoding] = _preamble;
-            }
+            _preamble = _perEncodingPreambles.TryGetValue(encoding, out byte[] preamble)
+                ? preamble
+                : _perEncodingPreambles.AddAndReturn(encoding, encoding.GetPreamble());
         }
         else
         {

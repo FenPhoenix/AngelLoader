@@ -11,48 +11,27 @@ public static class DarkColors
 
     public static SolidBrush GetCachedSolidBrush(Color color)
     {
-        if (_solidBrushCache.TryGetValue(color, out SolidBrush result))
-        {
-            return result;
-        }
-        else
-        {
-            SolidBrush brush = new(color);
-            _solidBrushCache[color] = brush;
-            return brush;
-        }
+        return _solidBrushCache.TryGetValue(color, out SolidBrush result)
+            ? result
+            : _solidBrushCache.AddAndReturn(color, new SolidBrush(color));
     }
 
     private static readonly Dictionary<Color, Pen> _defaultWidthPenCache = new(10);
 
     public static Pen GetCachedDefaultWidthPen(Color color)
     {
-        if (_defaultWidthPenCache.TryGetValue(color, out Pen result))
-        {
-            return result;
-        }
-        else
-        {
-            Pen pen = new(color);
-            _defaultWidthPenCache[color] = pen;
-            return pen;
-        }
+        return _defaultWidthPenCache.TryGetValue(color, out Pen result)
+            ? result
+            : _defaultWidthPenCache.AddAndReturn(color, new Pen(color));
     }
 
     private static readonly Dictionary<Color, Pen> _16WidthPenCache = new(10);
 
     public static Pen GetCached16WidthPen(Color color)
     {
-        if (_16WidthPenCache.TryGetValue(color, out Pen result))
-        {
-            return result;
-        }
-        else
-        {
-            Pen pen = new(color, 1.6f);
-            _16WidthPenCache[color] = pen;
-            return pen;
-        }
+        return _16WidthPenCache.TryGetValue(color, out Pen result)
+            ? result
+            : _16WidthPenCache.AddAndReturn(color, new Pen(color, 1.6f));
     }
 
     #region Fen
