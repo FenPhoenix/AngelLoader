@@ -52,6 +52,22 @@ public interface IViewEnvironment
 
 public interface IDialogs
 {
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
+    /// <param name="yes"></param>
+    /// <param name="no"></param>
+    /// <param name="cancel"></param>
+    /// <param name="yesIsDangerous"></param>
+    /// <param name="noIsDangerous"></param>
+    /// <param name="cancelIsDangerous"></param>
+    /// <param name="checkBoxText"></param>
+    /// <param name="defaultButton"></param>
+    /// <param name="viewLogButtonVisible"></param>
+    /// <returns></returns>
     (MBoxButton ButtonPressed, bool CheckBoxChecked)
     ShowMultiChoiceDialog(
         string message,
@@ -66,10 +82,46 @@ public interface IDialogs
         string? checkBoxText = null,
         MBoxButton defaultButton = MBoxButton.Yes,
         bool viewLogButtonVisible = false);
+
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
     void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error);
+
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
     void ShowAlert(string message, string title, MBoxIcon icon = MBoxIcon.Warning);
+
+    /// <summary>
+    /// This method is NOT auto-invoked, because it's meant to be used when <see cref="Core.View"/> is known to
+    /// not be initialized yet.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="title"></param>
+    /// <param name="buttons"></param>
+    /// <param name="icon"></param>
     void ShowAlert_Stock(string message, string title, MBoxButtons buttons, MBoxIcon icon);
 
+    /// <summary>
+    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
+    /// </summary>
+    /// <param name="messageTop"></param>
+    /// <param name="messageBottom"></param>
+    /// <param name="title"></param>
+    /// <param name="icon"></param>
+    /// <param name="okText"></param>
+    /// <param name="cancelText"></param>
+    /// <param name="okIsDangerous"></param>
+    /// <param name="choiceStrings"></param>
+    /// <param name="multiSelectionAllowed"></param>
+    /// <returns></returns>
     (bool Accepted, List<string> SelectedItems)
     ShowListDialog(
         string messageTop,
@@ -227,6 +279,16 @@ public interface IView : ISettingsChangeableView
 
     #region Filter
 
+    /// <summary>
+    /// Pass selectedFM only if you need to store it BEFORE this method runs, like for RefreshFromDisk()
+    /// </summary>
+    /// <param name="selectedFM"></param>
+    /// <param name="forceDisplayFM"></param>
+    /// <param name="keepSelection"></param>
+    /// <param name="gameTabSwitch"></param>
+    /// <param name="landImmediate"></param>
+    /// <param name="keepMultiSelection"></param>
+    /// <returns></returns>
     Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
         bool keepSelection = false, bool gameTabSwitch = false,
         bool landImmediate = false, bool keepMultiSelection = false);
@@ -311,6 +373,11 @@ public interface IView : ISettingsChangeableView
 
     #region Get FM info
 
+    /// <summary>
+    /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder_List"/>
+    /// if you need them in visual order.
+    /// </summary>
+    /// <returns></returns>
     FanMission[] GetSelectedFMs();
 
     List<FanMission> GetSelectedFMs_InOrder_List();

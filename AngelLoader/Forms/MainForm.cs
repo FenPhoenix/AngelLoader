@@ -3653,11 +3653,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
-    /// <summary>
-    /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder_List"/>
-    /// if you need them in visual order.
-    /// </summary>
-    /// <returns></returns>
     public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
 
     public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
@@ -3884,16 +3879,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    /// <summary>
-    /// Pass selectedFM only if you need to store it BEFORE this method runs, like for RefreshFromDisk()
-    /// </summary>
-    /// <param name="selectedFM"></param>
-    /// <param name="forceDisplayFM"></param>
-    /// <param name="keepSelection"></param>
-    /// <param name="gameTabSwitch"></param>
-    /// <param name="landImmediate"></param>
-    /// <param name="keepMultiSelection"></param>
-    /// <returns></returns>
     public async Task SortAndSetFilter(
         SelectedFM? selectedFM = null,
         bool forceDisplayFM = false,
