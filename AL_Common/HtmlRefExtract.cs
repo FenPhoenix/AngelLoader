@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace AL_Common;
 
@@ -13,6 +12,15 @@ public static partial class Common
         ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
         ".flv", ".log", ".str", ".nut", ".db", ".obj",
     };
+
+    public static bool IsExcludedFileType(string[] excludes, string name)
+    {
+        foreach (string item in excludes)
+        {
+            if (name.EndsWithI(item)) return true;
+        }
+        return false;
+    }
 
     public static bool HtmlNeedsReferenceExtract(string[] cacheFiles, List<string> archiveFileNamesNameOnly)
     {
@@ -28,7 +36,7 @@ public static partial class Common
                 if (!name.IsEmpty() &&
                     !name.EndsWithDirSep() &&
                     name.Contains('.') &&
-                    !HtmlRefExcludes.Any(name.EndsWithI) &&
+                    !IsExcludedFileType(HtmlRefExcludes, name) &&
                     content.ContainsI(name))
                 {
                     return true;

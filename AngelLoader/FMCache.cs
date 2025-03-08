@@ -240,7 +240,7 @@ internal static class FMCache
                 {
                     foreach (string fn in FastIO.GetFilesTopOnly(readmePath, "*"))
                     {
-                        if (fn.IsValidReadme() && new FileInfo(fn).Length > 0)
+                        if (fn.IsValidReadme() && GetFileLength(fn) > 0)
                         {
                             readmes.Add(fn.Substring(basePath.Length + 1));
                         }
@@ -715,7 +715,7 @@ internal static class FMCache
                         SevenZipArchiveEntry entry = entries[i];
                         if (!entry.IsDirectory &&
                             !entry.FileName.EndsWithDirSep() &&
-                            !HtmlRefExcludes.Any(entry.FileName.EndsWithI))
+                            !IsExcludedFileType(HtmlRefExcludes, entry.FileName))
                         {
                             archiveFileNamesNameOnly.Add(entry.FileName.GetFileNameFast());
                             archiveNonExcludedFullFileNames.Add(entry.FileName);
@@ -915,7 +915,7 @@ internal static class FMCache
                             if (!entry.IsDirectory &&
                                 !fullName.IsEmpty() &&
                                 !fullName[^1].IsDirSep() &&
-                                !HtmlRefExcludes.Any(name.EndsWithI))
+                                !IsExcludedFileType(HtmlRefExcludes, name))
                             {
                                 string extractedName;
                                 try
@@ -1031,8 +1031,8 @@ internal static class FMCache
     }
 
     private static bool RefFileExcluded(string name, long size) =>
-        HtmlRefExcludes.Any(name.EndsWithI) ||
-        _imageFileExtensions.Any(name.EndsWithI) ||
+        IsExcludedFileType(HtmlRefExcludes, name) ||
+        IsExcludedFileType(_imageFileExtensions, name) ||
         // 128k is generous. Any text or markup sort of file should be WELL under that.
         size > ByteSize.KB * 128;
 
@@ -1048,7 +1048,7 @@ internal static class FMCache
         if (!name.IsEmpty() &&
             !name.EndsWithDirSep() &&
             name.Contains('.') &&
-            !HtmlRefExcludes.Any(name.EndsWithI) &&
+            !IsExcludedFileType(HtmlRefExcludes, name) &&
             content.ContainsI(name) &&
             htmlRefFiles.TrueForAll(x => x.Index != i))
         {

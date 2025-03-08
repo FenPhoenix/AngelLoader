@@ -44,25 +44,3 @@ internal sealed class ConfigData
     internal string TempPath { get; set; } = "";
     internal string FMsPath { get; set; } = "";
 }
-
-internal sealed class AccuracyData
-{
-    public bool? Title { get; set; }
-    public bool? Author { get; set; }
-    public bool? Version { get; set; }
-    public bool? Languages { get; set; }
-    public bool? Game { get; set; }
-    public bool? NewDarkRequired { get; set; }
-    public bool? NewDarkMinRequiredVersion { get; set; }
-    public bool? Type { get; set; }
-    public bool? HasCustomScripts { get; set; }
-    public bool? HasCustomTextures { get; set; }
-    public bool? HasCustomSounds { get; set; }
-    public bool? HasCustomObjects { get; set; }
-    public bool? HasCustomCreatures { get; set; }
-    public bool? HasCustomMotions { get; set; }
-    public bool? HasAutomap { get; set; }
-    public bool? HasMap { get; set; }
-    public bool? HasMovies { get; set; }
-    public bool? HasCustomSubtitles { get; set; }
-}

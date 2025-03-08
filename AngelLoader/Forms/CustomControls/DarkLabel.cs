@@ -59,7 +59,7 @@ public sealed class DarkLabel : Label, IDarkable
         }
         else
         {
-            using SolidBrush bgBrush = new((Color)DarkModeBackColor);
+            SolidBrush bgBrush = DarkColors.GetCachedSolidBrush((Color)DarkModeBackColor);
             e.Graphics.FillRectangle(bgBrush, ClientRectangle);
             TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, color, (Color)DarkModeBackColor, textFormatFlags);
         }

@@ -19,24 +19,23 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-	  <OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\Debug\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTesting|x64'">
-	  <DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
-	  <OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE;Debug</DefineConstants>
+		<OutputPath>bin\Debug\</OutputPath>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-	  <Optimize>true</Optimize>
-	  <DefineConstants>TRACE;Release</DefineConstants>
-	  <OutputPath>bin\Release\</OutputPath>
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE;Release</DefineConstants>
+		<OutputPath>bin\Release\</OutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
-		<PackageReference Include="SharpClipboard" Version="3.5.2" />
 		<PackageReference Include="WindowsAPICodePack-Core" Version="1.1.2" />
 		<PackageReference Include="WindowsAPICodePack-Shell" Version="1.1.1" />
 		<PackageReference Include="YamlDotNet" Version="8.1.2" />

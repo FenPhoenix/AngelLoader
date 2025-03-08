@@ -2,11 +2,11 @@
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace AngelLoader;
+namespace AL_Common;
 
-public static partial class Utils
+public static partial class Common
 {
-    internal static void CancelIfNotDisposed(this CancellationTokenSource value)
+    public static void CancelIfNotDisposed(this CancellationTokenSource value)
     {
         try { value.Cancel(); } catch (ObjectDisposedException) { }
     }
@@ -17,7 +17,7 @@ public static partial class Utils
     /// <param name="cts"></param>
     /// <returns></returns>
     [MustUseReturnValue]
-    internal static CancellationTokenSource Recreate(this CancellationTokenSource cts)
+    public static CancellationTokenSource Recreate(this CancellationTokenSource cts)
     {
         cts.Dispose();
         return new CancellationTokenSource();

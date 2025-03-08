@@ -2,5 +2,5 @@
 
 internal static class Misc
 {
-    internal static ConfigData Config { get; } = new ConfigData();
+    internal static ConfigData Config { get; } = new();
 }

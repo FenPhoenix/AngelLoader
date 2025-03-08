@@ -101,7 +101,7 @@ public sealed class DarkMenuRenderer : ToolStripRenderer
 
             if (!e.Item.Selected)
             {
-                using SolidBrush b = new(e.Item.BackColor);
+                SolidBrush b = DarkColors.GetCachedSolidBrush(e.Item.BackColor);
                 g.FillRectangle(b, rect);
             }
             else

@@ -1110,9 +1110,8 @@ public sealed partial class MainForm : DarkFormBase,
         // Set this explicitly AFTER the FMs list is populated
         SetAvailableAndFinishedFMCount();
 
-        // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
-        // Find() to have been run first.
-        // Also, do this first sort so that the list is as sorted as possible before we show.
+        // Sort the list here because ctor is run in parallel to FindFMs.Find() but sorting needs Find() to have
+        // been run first. Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
         if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
@@ -3534,7 +3533,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 _inTabDragArea = true;
                 using Native.GraphicsContext gc = new(destGroup.Splitter.Handle);
-                using SolidBrush b = new(GetOverlayColor());
+                SolidBrush b = DarkColors.GetCachedSolidBrush(GetOverlayColor());
                 int splitterDistance = destGroup.Splitter.SplitterDistanceLogical;
                 gc.G.FillRectangle(
                     b,
@@ -3551,7 +3550,7 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 _inTabDragArea = true;
                 using Native.GraphicsContext gc = new(destGroup.Splitter.Panel2.Handle);
-                using SolidBrush b = new(GetOverlayColor());
+                SolidBrush b = DarkColors.GetCachedSolidBrush(GetOverlayColor());
                 gc.G.FillRectangle(b, destGroup.Splitter.Panel2.ClientRectangle with { X = 0, Y = 0 });
             }
         }
@@ -3660,11 +3659,6 @@ public sealed partial class MainForm : DarkFormBase,
 
     public FanMission? GetMainSelectedFMOrNull() => FMsDGV.RowSelected() ? FMsDGV.GetMainSelectedFM() : null;
 
-    /// <summary>
-    /// Order is not guaranteed. Seems to be in reverse order currently but who knows. Use <see cref="GetSelectedFMs_InOrder_List"/>
-    /// if you need them in visual order.
-    /// </summary>
-    /// <returns></returns>
     public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
 
     public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
@@ -3891,16 +3885,6 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    /// <summary>
-    /// Pass selectedFM only if you need to store it BEFORE this method runs, like for RefreshFromDisk()
-    /// </summary>
-    /// <param name="selectedFM"></param>
-    /// <param name="forceDisplayFM"></param>
-    /// <param name="keepSelection"></param>
-    /// <param name="gameTabSwitch"></param>
-    /// <param name="landImmediate"></param>
-    /// <param name="keepMultiSelection"></param>
-    /// <returns></returns>
     public async Task SortAndSetFilter(
         SelectedFM? selectedFM = null,
         bool forceDisplayFM = false,

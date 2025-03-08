@@ -261,6 +261,9 @@ public sealed class Scanner : IDisposable
     private readonly ListFast<char> _altTitleAcronymChars = new(10);
     private readonly ListFast<char> _altTitleRomanToDecimalAcronymChars = new(10);
 
+    private ListFast<char>? _romanNumeralRun;
+    private ListFast<char> RomanNumeralRun => _romanNumeralRun ??= new ListFast<char>(10);
+
     private readonly ListFast<NameAndIndex> _baseDirFiles = new(20);
     private readonly ListFast<NameAndIndex> _misFiles = new(20);
     private readonly ListFast<NameAndIndex> _usedMisFiles = new(20);
@@ -402,7 +405,7 @@ public sealed class Scanner : IDisposable
             EntryType.Zip => _zipEntry.Length,
             EntryType.Rar => _rarEntry.Size,
             EntryType.FileInfoCached => _fileInfo.Length,
-            _ => new FileInfo(GetFullFileName(_fileName)).Length,
+            _ => GetFileLength(GetFullFileName(_fileName)),
         };
 
         public Entry(Scanner scanner, ZipArchiveFastEntry entry)
@@ -2689,12 +2692,25 @@ public sealed class Scanner : IDisposable
         if (_fmFormat > FMFormat.NotInArchive || _fmDirFileInfos.Count > 0)
         {
             // @BLOCKS: Manual type switch
-            int filesCount = _fmFormat switch
+            ListFast<ZipArchiveFastEntry> zipEntries = null!;
+            SharpCompress.LazyReadOnlyCollection<RarArchiveEntry> rarEntries = null!;
+
+            int filesCount;
+            switch (_fmFormat)
             {
-                FMFormat.Zip => _archive.Entries.Count,
-                FMFormat.Rar => _rarArchive.Entries.Count,
-                _ => _fmDirFileInfos.Count,
-            };
+                case FMFormat.Zip:
+                    zipEntries = _archive.Entries;
+                    filesCount = zipEntries.Count;
+                    break;
+                case FMFormat.Rar:
+                    rarEntries = _rarArchive.Entries;
+                    filesCount = rarEntries.Count;
+                    break;
+                default:
+                    filesCount = _fmDirFileInfos.Count;
+                    break;
+            }
+
             for (int i = 0; i < filesCount; i++)
             {
                 bool? pathIsIntrfaceDir = null;
@@ -2703,9 +2719,9 @@ public sealed class Scanner : IDisposable
 
                 // @BLOCKS: Manual type switch
                 string fn =
-                    _fmFormat == FMFormat.Zip ? _archive.Entries[i].FullName :
+                    _fmFormat == FMFormat.Zip ? zipEntries[i].FullName :
                     _fmFormat.IsSolidArchive() ? _fmDirFileInfos[i].FullName :
-                    _fmFormat == FMFormat.Rar ? _rarArchive.Entries[i].Key :
+                    _fmFormat == FMFormat.Rar ? rarEntries[i].Key :
                     _fmDirFileInfos[i].FullName.Substring(_fmWorkingPath.Length);
 
                 if (fn.PathStartsWithI_AsciiSecond(FMDirs.T3DetectS) &&
@@ -4283,7 +4299,7 @@ public sealed class Scanner : IDisposable
 
         byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
 
-        bool titleContainsAcronym = AcronymRegex().Match(mainTitle.Value).Success;
+        bool mainTitleContainsAcronym = AcronymRegex().Match(mainTitle.Value).Success;
         Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
 
         bool swapDone = false;
@@ -4291,8 +4307,10 @@ public sealed class Scanner : IDisposable
         ListFast<char> tempChars1 = Title1_TempNonWhitespaceChars;
         ListFast<char> tempChars2 = Title2_TempNonWhitespaceChars;
 
-        if (titleContainsAcronym)
+        if (mainTitleContainsAcronym)
         {
+            ListFast<char> romanNumeralRun = RomanNumeralRun;
+
             for (int i = 1; i < titles.Count; i++)
             {
                 DetectedTitle altTitle = titles[i];
@@ -4300,7 +4318,11 @@ public sealed class Scanner : IDisposable
                 _altTitleRomanToDecimalAcronymChars.ClearFast();
 
                 Utility.GetAcronym(altTitle.Value, _altTitleAcronymChars);
-                Utility.GetAcronym_SupportRomanNumerals(altTitle.Value, _altTitleRomanToDecimalAcronymChars, romanNumeralToDecimalTable);
+                Utility.GetAcronym_SupportRomanNumerals(
+                    altTitle.Value,
+                    _altTitleRomanToDecimalAcronymChars,
+                    romanNumeralRun,
+                    romanNumeralToDecimalTable);
 
                 if (!mainTitle.Value.EqualsIgnoreCaseAndWhiteSpace(altTitle.Value, tempChars1, tempChars2) &&
                     (Utility.SequenceEqual(_titleAcronymChars, _altTitleAcronymChars) ||
@@ -4332,14 +4354,14 @@ public sealed class Scanner : IDisposable
         if (!swapDone &&
             !serverTitle.IsEmpty() &&
             !AcronymRegex().Match(serverTitle).Success &&
-            (titleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
+            (mainTitleContainsAcronym || serverTitle.Length > titles[0].Value.Length))
         {
             DoServerTitleSwap(titles, serverTitle);
             swapDone = true;
         }
 
         if (!swapDone &&
-            titleContainsAcronym &&
+            mainTitleContainsAcronym &&
             titles.Count == 2 &&
             titles[1].Value.Length > titles[0].Value.Length &&
             !titles[1].Temporary &&

@@ -53,11 +53,11 @@ public static partial class Utils
         }
 
         ThreadingData threadingData;
-        if (paths.Any(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.Single))
+        if (AnyAreSingle(paths))
         {
             threadingData = new ThreadingData(threadCount ?? 1, IOThreadingLevel.Read);
         }
-        else if (paths.All(static x => x.DriveMultithreadingLevel == DriveMultithreadingLevel.ReadWrite))
+        else if (AllAreReadWrite(paths))
         {
             threadingData = new ThreadingData(threadCount ?? CoreCount, IOThreadingLevel.ReadWrite);
         }
@@ -73,6 +73,30 @@ public static partial class Utils
 #endif
 
         return threadingData;
+
+        static bool AnyAreSingle(List<ThreadablePath> paths)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                if (paths[i].DriveMultithreadingLevel == DriveMultithreadingLevel.Single)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static bool AllAreReadWrite(List<ThreadablePath> paths)
+        {
+            for (int i = 0; i < paths.Count; i++)
+            {
+                if (paths[i].DriveMultithreadingLevel != DriveMultithreadingLevel.ReadWrite)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
     #region Task-relevant paths

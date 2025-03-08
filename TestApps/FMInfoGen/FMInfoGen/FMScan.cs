@@ -14,7 +14,7 @@ namespace FMInfoGen;
 
 internal static class FMScan
 {
-    private static CancellationTokenSource? _scannerCTS;
+    private static CancellationTokenSource _scannerCTS = new();
 
     #region Private methods
 
@@ -51,7 +51,7 @@ internal static class FMScan
 
     private static void WriteYaml(bool zips, string path, List<ScannedFMDataAndError> scannedFMs, bool deleteSingle = false)
     {
-        foreach (var fmData in scannedFMs)
+        foreach (ScannedFMDataAndError fmData in scannedFMs)
         {
             if (fmData.ScannedFMData == null) continue;
 
@@ -60,8 +60,8 @@ internal static class FMScan
                 .DisableAliases()
                 .WithNamingConvention(new LowerCaseNamingConvention());
 
-            var serializer = builder.Build();
-            var yaml = serializer.Serialize(fmData.ScannedFMData);
+            ISerializer serializer = builder.Build();
+            string yaml = serializer.Serialize(fmData.ScannedFMData);
 
             string yamlFile = Path.Combine(path,
                 (zips
@@ -71,7 +71,7 @@ internal static class FMScan
 
             if (deleteSingle) File.Delete(yamlFile);
 
-            using var sw = new StreamWriter(yamlFile, append: false);
+            using StreamWriter sw = new(yamlFile, append: false);
             sw.Write(yaml);
         }
     }
@@ -112,35 +112,35 @@ internal static class FMScan
     // Have to ifdef this whole method because the scanner's multi-FM synchronous Scan() is also ifdeffed on
     // DEBUG
 #if DEBUG || ScanSynchronous
-        private static void ScanAllFMs_Sync_Internal(bool zips)
+    private static void ScanAllFMs_Sync_Internal(bool zips)
+    {
+        (string yamlPath, List<FMToScan> fms, ScanOptions scanOptions) = GetScanData(zips);
+
+        List<ScannedFMDataAndError> scannedFMs;
+
+        Stopwatch t = new();
+        t.Start();
+
+        using (Scanner scanner = new(Paths.SevenZipExe))
         {
-            (string yamlPath, List<FMToScan> fms, ScanOptions scanOptions) = GetScanData(zips);
-
-            List<ScannedFMDataAndError> scannedFMs;
-
-            var t = new Stopwatch();
-            t.Start();
-
-            using (var scanner = new Scanner(Paths.SevenZipExe))
-            {
-                scannedFMs = scanner.Scan(
-                    fms,
-                    @"J:\FM packs\FM pack\All\ExtractTemp",
-                    scanOptions,
-                    null!,
-                    CancellationToken.None);
-            }
-
-            Debug.WriteLine("Scan took: " + t.Elapsed);
-            Core.View.SetDebugLabelText("Scan took: " + t.Elapsed);
-
-            t.Stop();
-
-            // Clear it again after scanning all FMs just in case. Don't include this in the time measurement.
-            ClearTempDir();
-
-            WriteYaml(zips, yamlPath, scannedFMs);
+            scannedFMs = scanner.Scan(
+                fms,
+                @"J:\FM packs\FM pack\All\ExtractTemp",
+                scanOptions,
+                null!,
+                CancellationToken.None);
         }
+
+        Debug.WriteLine("Scan took: " + t.Elapsed);
+        Core.View.SetDebugLabelText("Scan took: " + t.Elapsed);
+
+        t.Stop();
+
+        // Clear it again after scanning all FMs just in case. Don't include this in the time measurement.
+        ClearTempDir();
+
+        WriteYaml(zips, yamlPath, scannedFMs);
+    }
 #endif
 
     private static async Task ScanAllFMs_Async_Internal(bool zips)
@@ -149,17 +149,17 @@ internal static class FMScan
 
         List<ScannedFMDataAndError> scannedFMs;
 
-        var t = new Stopwatch();
+        Stopwatch t = new();
 
         try
         {
-            _scannerCTS = new CancellationTokenSource();
+            _scannerCTS = _scannerCTS.Recreate();
 
-            var progress = new Progress<ProgressReport>(ReportProgress);
+            Progress<ProgressReport> progress = new(ReportProgress);
 
             t.Start();
 
-            using (var scanner = new Scanner(Paths.SevenZipExe))
+            using (Scanner scanner = new(Paths.SevenZipExe))
             {
                 scannedFMs = await scanner.ScanAsync(
                     fms,
@@ -173,9 +173,7 @@ internal static class FMScan
 
             MessageBox.Show("Finished scan!");
 
-            await Task.Delay(500);
             Debug.WriteLine("Scan took: " + t.Elapsed);
-            Core.View.SetDebugLabelText("Scan took: " + t.Elapsed);
         }
         catch (OperationCanceledException)
         {
@@ -186,19 +184,31 @@ internal static class FMScan
         finally
         {
             t.Stop();
-            _scannerCTS?.Dispose();
+            _scannerCTS.Dispose();
         }
 
-        // Clear it again after scanning all FMs just in case. Don't include this in the time measurement.
-        ClearTempDir();
+        try
+        {
+            await Task.Run(() =>
+            {
+                Core.View.SetDebugLabelText("Finishing and writing to disk...");
 
-        WriteYaml(zips, yamlPath, scannedFMs);
+                // Clear it again after scanning all FMs just in case. Don't include this in the time measurement.
+                ClearTempDir();
+                WriteYaml(zips, yamlPath, scannedFMs);
+            });
+        }
+        finally
+        {
+            Core.View.SetDebugLabelText("Scan took: " + t.Elapsed);
+            Core.View.SetFMScanProgressBarValue(0);
+        }
 
         return;
 
         static void ReportProgress(ProgressReport pr)
         {
-            int percent = Common.GetPercentFromValue_Int(pr.FMNumber - 1, pr.FMsCount);
+            int percent = GetPercentFromValue_Int(pr.FMNumber, pr.FMsCount);
 
             Core.View.SetDebugLabelText(
                 "Scanned " + pr.FMNumber + "/" + pr.FMsCount + ", " +
@@ -218,10 +228,10 @@ internal static class FMScan
 
         Directory.CreateDirectory(yamlPath);
 
-        var scanOptions = Core.View.GetSelectedScanOptions();
+        ScanOptions scanOptions = Core.View.GetSelectedScanOptions();
 
         ScannedFMDataAndError fmData;
-        using (var scanner = new Scanner(Paths.SevenZipExe))
+        using (Scanner scanner = new(Paths.SevenZipExe))
         {
             string fmPath = zip
                 ? Path.Combine(Config.FMsPath, item)
@@ -241,9 +251,9 @@ internal static class FMScan
         {
             Core.View.BeginScanMode();
 #if DEBUG || ScanSynchronous
-                {
-                    ScanAllFMs_Sync_Internal(zips);
-                }
+            {
+                ScanAllFMs_Sync_Internal(zips);
+            }
 #else
             {
                 await ScanAllFMs_Async_Internal(zips);
@@ -257,7 +267,7 @@ internal static class FMScan
     }
 #pragma warning restore 1998
 
-    internal static void CancelScan() => _scannerCTS?.CancelIfNotDisposed();
+    internal static void CancelScan() => _scannerCTS.CancelIfNotDisposed();
 
     #endregion
 }

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 namespace AngelLoader.DataClasses;
@@ -6,6 +7,54 @@ namespace AngelLoader.DataClasses;
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public static class DarkColors
 {
+    private static readonly Dictionary<Color, SolidBrush> _solidBrushCache = new(10);
+
+    public static SolidBrush GetCachedSolidBrush(Color color)
+    {
+        if (_solidBrushCache.TryGetValue(color, out SolidBrush? result))
+        {
+            return result;
+        }
+        else
+        {
+            SolidBrush brush = new(color);
+            _solidBrushCache[color] = brush;
+            return brush;
+        }
+    }
+
+    private static readonly Dictionary<Color, Pen> _defaultWidthPenCache = new(10);
+
+    public static Pen GetCachedDefaultWidthPen(Color color)
+    {
+        if (_defaultWidthPenCache.TryGetValue(color, out Pen? result))
+        {
+            return result;
+        }
+        else
+        {
+            Pen pen = new(color);
+            _defaultWidthPenCache[color] = pen;
+            return pen;
+        }
+    }
+
+    private static readonly Dictionary<Color, Pen> _16WidthPenCache = new(10);
+
+    public static Pen GetCached16WidthPen(Color color)
+    {
+        if (_16WidthPenCache.TryGetValue(color, out Pen? result))
+        {
+            return result;
+        }
+        else
+        {
+            Pen pen = new(color, 1.6f);
+            _16WidthPenCache[color] = pen;
+            return pen;
+        }
+    }
+
     #region Fen
 
     // Scroll arrows:

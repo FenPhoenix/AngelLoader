@@ -23,16 +23,16 @@ internal static partial class Interop
         internal const int ERROR_FILENAME_EXCED_RANGE = 0xCE;
         internal const int ERROR_MORE_DATA = 0xEA;
         internal const int ERROR_OPERATION_ABORTED = 0x3E3;
-#if ENABLE_UNUSED
-        internal const int ERROR_INVALID_HANDLE = 0x6;
+        internal const int ERROR_SEM_TIMEOUT = 0x79;
         internal const int ERROR_NOT_READY = 0x15;
+        internal const int ERROR_INVALID_HANDLE = 0x6;
         internal const int ERROR_BAD_NETPATH = 0x35;
         internal const int ERROR_NETWORK_ACCESS_DENIED = 0x41;
         internal const int ERROR_BAD_NET_NAME = 0x43;
-        internal const int ERROR_SEM_TIMEOUT = 0x79;
         internal const int ERROR_INVALID_NAME = 0x7B;
         internal const int ERROR_BAD_PATHNAME = 0xA1;
         internal const int ERROR_NETWORK_UNREACHABLE = 0x4CF;
+#if ENABLE_UNUSED
         internal const int ERROR_INVALID_FUNCTION = 0x1;
         internal const int ERROR_NOT_ENOUGH_MEMORY = 0x8;
         internal const int ERROR_INVALID_ACCESS = 0xC;

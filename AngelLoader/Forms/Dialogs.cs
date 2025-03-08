@@ -41,22 +41,6 @@ internal sealed class Dialogs : IDialogs
 
     #endregion
 
-    /// <summary>
-    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="title"></param>
-    /// <param name="icon"></param>
-    /// <param name="yes"></param>
-    /// <param name="no"></param>
-    /// <param name="cancel"></param>
-    /// <param name="yesIsDangerous"></param>
-    /// <param name="noIsDangerous"></param>
-    /// <param name="cancelIsDangerous"></param>
-    /// <param name="checkBoxText"></param>
-    /// <param name="defaultButton"></param>
-    /// <param name="viewLogButtonVisible"></param>
-    /// <returns></returns>
     public (MBoxButton ButtonPressed, bool CheckBoxChecked)
     ShowMultiChoiceDialog(string message,
         string title,
@@ -134,22 +118,16 @@ internal sealed class Dialogs : IDialogs
             return (result == DialogResult.OK, d.SelectedItems);
         });
 
-    /// <summary>
-    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="title"></param>
-    /// <param name="icon"></param>
-    public void ShowError(string message, string? title = null, MBoxIcon icon = MBoxIcon.Error)
+    public void ShowError(
+        string message,
+        string? title = null,
+        MBoxIcon icon = MBoxIcon.Error) => InvokeIfViewExists(() =>
     {
-        InvokeIfViewExists(() =>
-        {
-            IWin32Window? view = FormsViewEnvironment.ViewCreated && !FormsViewEnvironment.ViewInternal.Disposing
-                ? FormsViewEnvironment.ViewInternal
-                : null;
-            ShowError_Internal(message, view, title, icon);
-        });
-    }
+        IWin32Window? view = FormsViewEnvironment.ViewCreated && !FormsViewEnvironment.ViewInternal.Disposing
+            ? FormsViewEnvironment.ViewInternal
+            : null;
+        ShowError_Internal(message, view, title, icon);
+    });
 
     // Private method, not invoked because all calls are
     private static void ShowError_Internal(string message, IWin32Window? owner, string? title, MBoxIcon icon)
@@ -165,12 +143,6 @@ internal sealed class Dialogs : IDialogs
         }
     }
 
-    /// <summary>
-    /// This method is auto-invoked if <see cref="Core.View"/> is able to be invoked to.
-    /// </summary>
-    /// <param name="message"></param>
-    /// <param name="title"></param>
-    /// <param name="icon"></param>
     public void ShowAlert(
         string message,
         string title,
