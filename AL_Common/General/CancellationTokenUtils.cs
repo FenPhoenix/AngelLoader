@@ -2,9 +2,9 @@
 using System.Threading;
 using JetBrains.Annotations;
 
-namespace AngelLoader;
+namespace AL_Common;
 
-public static partial class Utils
+public static partial class Common
 {
     public static void CancelIfNotDisposed(this CancellationTokenSource value)
     {
