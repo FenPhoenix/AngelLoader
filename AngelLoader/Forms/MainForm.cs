@@ -1105,9 +1105,8 @@ public sealed partial class MainForm : DarkFormBase,
         // Set this explicitly AFTER the FMs list is populated
         SetAvailableAndFinishedFMCount();
 
-        // Sort the list here because InitThreadable() is run in parallel to FindFMs.Find() but sorting needs
-        // Find() to have been run first.
-        // Also, do this first sort so that the list is as sorted as possible before we show.
+        // Sort the list here because ctor is run in parallel to FindFMs.Find() but sorting needs Find() to have
+        // been run first. Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
         if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))

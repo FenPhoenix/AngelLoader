@@ -241,7 +241,7 @@ internal static class FindFMs
         return fmsViewListUnscanned;
     }
 
-    // @THREADING: On startup only, this is run in parallel with MainForm.ctor and .InitThreadable()
+    // @THREADING: On startup only, this is run in parallel with view ctor
     // So don't touch anything the other touches: anything affecting the view.
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static List<FanMission> FindInternal(bool startup)
@@ -268,7 +268,7 @@ internal static class FindFMs
         }
 
         // Init or reinit - must be deep-copied or changes propagate back because reference types
-        // @THREADING: This is thread-safe, the view ctor and InitThreadable() doesn't touch it.
+        // @THREADING: This is thread-safe, the view ctor doesn't touch it.
         PresetTags.DeepCopyTo(GlobalTags);
 
         #region Back up lists and read FM data file
