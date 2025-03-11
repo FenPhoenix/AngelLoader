@@ -1669,7 +1669,7 @@ public sealed class Scanner : IDisposable
                 return partialExtractError;
             }
 
-            if (!fm.CachePath.IsEmpty() && _fmFormat.IsSolidArchive())
+            if (!fm.CachePath.IsEmpty())
             {
                 try
                 {
