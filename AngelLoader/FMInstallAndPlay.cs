@@ -2776,13 +2776,6 @@ internal static partial class FMInstallAndPlay
 
     #region Uninstall
 
-    /*
-    If the user clicks "Stop", we may be in the middle of several delete operations and they're all going to
-    finish before the operation stops. Whereas if we're single-threaded, we'll stop immediately after the current
-    FM. This delayed-cancel behavior is fine for cancel-semantics (revertible) operations, but stop-semantics
-    (non-revertible) operations don't play as well with it. This is also a convenient excuse to sidestep the
-    entire set of difficulties we were having with multithreading this thing. Shame to lose performance, but eh...
-    */
     internal static async Task<(bool Success, bool AtLeastOneFMMarkedUnavailable)>
     Uninstall(FanMission[] fms, bool doEndTasks = true)
     {
@@ -3098,6 +3091,15 @@ internal static partial class FMInstallAndPlay
         }
     }
 
+    /*
+    Thread per-FM-dir, not per-set, because:
+    If we're threading per-set and the user clicks "Stop", we may be in the middle of several delete operations
+    and they're all going to finish before the operation stops. Whereas if we're single-threaded, we'll stop
+    immediately after the current FM. This delayed-cancel behavior is fine for cancel-semantics (revertible)
+    operations, but stop-semantics (non-revertible) operations don't play as well with it. This is also a
+    convenient excuse to sidestep the entire set of difficulties we were having with multithreading this thing.
+    Shame to lose performance, but eh...
+    */
     private static FMUninstallResult DeleteFMInstalledDirectory(string path, FMData fmData)
     {
         if (!Directory.Exists(path))
