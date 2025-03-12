@@ -209,7 +209,7 @@ internal static class RtfProcessing
             preCheckForColorTableTimer.Start();
 #endif
 
-            colorTableWorkRequired = FindIndexOfByteSequence(currentReadmeBytes, _colortbl) > -1;
+            colorTableWorkRequired = currentReadmeBytes.Contains(_colortbl);
 
 #if PROCESS_README_TIME_TEST
             preCheckForColorTableTimer.Stop();
