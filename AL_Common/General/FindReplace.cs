@@ -6,25 +6,9 @@ public static partial class Common
 {
     public static int FindIndexOfByteSequence(byte[] input, byte[] pattern, int start = 0)
     {
-        byte firstByte = pattern[0];
-        int index = Array.IndexOf(input, firstByte, start);
-
-        while (index > -1)
-        {
-            for (int i = 0; i < pattern.Length; i++)
-            {
-                if (index + i >= input.Length) return -1;
-                if (pattern[i] != input[index + i])
-                {
-                    if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return -1;
-                    break;
-                }
-
-                if (i == pattern.Length - 1) return index;
-            }
-        }
-
-        return -1;
+        int index = input.AsSpan(start).IndexOf(pattern);
+        if (index > -1) index += start;
+        return index;
     }
 
     public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
