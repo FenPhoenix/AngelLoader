@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using AngelLoader.DataClasses;
@@ -488,38 +489,59 @@ public static partial class Misc
     }
 
     [PublicAPI]
-    public sealed class DriveLetterDictionary : Dictionary<char, DriveMultithreadingLevel>
+    public sealed class DriveLetterDictionary
     {
-        public DriveLetterDictionary() { }
+        private Dictionary<char, DriveMultithreadingLevel> _dict;
 
-        public DriveLetterDictionary(int capacity) : base(capacity) { }
+        public DriveLetterDictionary() => _dict = new Dictionary<char, DriveMultithreadingLevel>();
 
-        public new DriveMultithreadingLevel this[char key]
+        public DriveLetterDictionary(int capacity) => _dict = new Dictionary<char, DriveMultithreadingLevel>(capacity);
+
+        public int Count => _dict.Count;
+
+        public DriveMultithreadingLevel this[char key]
         {
-            get => base[key.ToAsciiUpper()];
+            get => _dict[key.ToAsciiUpper()];
             set
             {
                 if (char.IsAsciiLetter(key))
                 {
-                    base[key.ToAsciiUpper()] = value;
+                    _dict[key.ToAsciiUpper()] = value;
                 }
             }
         }
 
-        public new void Add(char key, DriveMultithreadingLevel value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DriveMultithreadingLevel AddAndReturn(char key, DriveMultithreadingLevel value)
+        {
+            return _dict.AddAndReturn(key.ToAsciiUpper(), value);
+        }
+
+        public void Add(char key, DriveMultithreadingLevel value)
         {
             if (char.IsAsciiLetter(key))
             {
-                base.Add(key.ToAsciiUpper(), value);
+                _dict.Add(key.ToAsciiUpper(), value);
             }
         }
 
-        public new bool ContainsKey(char key) => base.ContainsKey(key.ToAsciiUpper());
+        public bool ContainsKey(char key) => _dict.ContainsKey(key.ToAsciiUpper());
 
-        public new bool Remove(char key) => base.Remove(key.ToAsciiUpper());
+        public bool Remove(char key) => _dict.Remove(key.ToAsciiUpper());
 
-        public new bool TryGetValue(char key, out DriveMultithreadingLevel value) => base.TryGetValue(key.ToAsciiUpper(), out value);
+        public bool TryGetValue(char key, out DriveMultithreadingLevel value) => _dict.TryGetValue(key.ToAsciiUpper(), out value);
 
-        public new bool TryAdd(char key, DriveMultithreadingLevel value) => base.TryAdd(key.ToAsciiUpper(), value);
+        public void CopyTo_NoClearDest(DriveLetterDictionary dest)
+        {
+            foreach (var item in _dict)
+            {
+                dest[item.Key.ToAsciiUpper()] = item.Value;
+            }
+        }
+
+        public KeyValuePair<char, DriveMultithreadingLevel>[] ToArray_SortedByKey()
+        {
+            return _dict.OrderBy(static x => x.Key).ToArray();
+        }
     }
 }

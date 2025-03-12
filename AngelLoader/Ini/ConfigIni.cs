@@ -1549,7 +1549,7 @@ internal static partial class Ini
         sw.Append("IOThreadsMode=").AppendLine(config.IOThreadsMode);
         sw.Append("CustomIOThreadCount=").AppendLine(config.CustomIOThreadCount);
         sw.Append("DriveMultithreadingLevel=");
-        var driveLettersAndTypes = config.DriveLettersAndTypes.OrderBy(static x => x.Key).ToArray();
+        var driveLettersAndTypes = config.DriveLettersAndTypes.ToArray_SortedByKey();
         for (int i = 0; i < driveLettersAndTypes.Length; i++)
         {
             var item = driveLettersAndTypes[i];

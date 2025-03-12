@@ -670,5 +670,21 @@ public static partial class Common
 
     public static HashSetPathI ToHashSetPathI(this IEnumerable<string> source) => new(source);
 
+    /*
+    We'd like to be able to say "GetAndAddIfNeeded(key, valueToAdd)", but then we'd have to pass an instantiated
+    value with every call, defeating the purpose of a dictionary-as-cache. So the best we can do is to use this
+    pattern:
+
+    var value = dict.TryGetValue(key, out var result)
+        ? result
+        : dict.AddAndReturn(key, the_default_value);
+    */
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static TValue AddAndReturn<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) where TKey : notnull
+    {
+        dict[key] = value;
+        return value;
+    }
+
     #endregion
 }

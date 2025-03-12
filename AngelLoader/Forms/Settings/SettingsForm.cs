@@ -694,10 +694,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             #region I/O Threading page
 
             DriveLetterDictionary driveLettersAndTypes = new();
-            foreach (var item in config.DriveLettersAndTypes)
-            {
-                driveLettersAndTypes[item.Key] = item.Value;
-            }
+            config.DriveLettersAndTypes.CopyTo_NoClearDest(driveLettersAndTypes);
 
             switch (config.IOThreadsMode)
             {
@@ -1152,7 +1149,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 OtherPage.TagsGroupBox.Text = LText.SettingsWindow.Other_Tags;
                 OtherPage.AlwaysShowPresetTagsCheckBox.Text = LText.SettingsWindow.Other_AlwaysShowPresetTags;
-                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox,LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
+                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox, LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
 
                 #endregion
 
@@ -2344,16 +2341,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private T GetDummy<T>() where T : IDisposable, new()
     {
-        if (_dummyDisposables.TryGetValue(typeof(T), out IDisposable? item))
-        {
-            return (T)item;
-        }
-        else
-        {
-            T newItem = new();
-            _dummyDisposables[typeof(T)] = newItem;
-            return newItem;
-        }
+        return (T)(_dummyDisposables.TryGetValue(typeof(T), out IDisposable? item)
+            ? item
+            : _dummyDisposables.AddAndReturn(typeof(T), new T()));
     }
 
     /// <summary>

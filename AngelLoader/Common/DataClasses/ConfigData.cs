@@ -466,15 +466,10 @@ public sealed class ConfigData
         }
 
         char letterChar = letter[0];
-        if (dict.TryGetValue(letterChar, out DriveMultithreadingLevel result))
-        {
-            return result;
-        }
-        else
-        {
-            dict[letterChar] = DriveMultithreadingLevel.Auto;
-            return DriveMultithreadingLevel.Auto;
-        }
+
+        return dict.TryGetValue(letterChar, out DriveMultithreadingLevel result)
+            ? result
+            : dict.AddAndReturn(letterChar, DriveMultithreadingLevel.Auto);
     }
 
     internal bool ShowPresetTags = true;
