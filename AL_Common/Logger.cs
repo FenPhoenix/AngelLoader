@@ -101,7 +101,7 @@ public static partial class Logger
             {
                 try
                 {
-                    if (new FileInfo(_logFile).Length > ByteSize.MB * 50) ClearLogFile();
+                    if (GetFileLength(_logFile) > ByteSize.MB * 50) ClearLogFile();
                 }
                 catch
                 {
