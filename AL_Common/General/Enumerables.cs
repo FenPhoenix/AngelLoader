@@ -730,7 +730,7 @@ public static partial class Common
         : dict.AddAndReturn(key, the_default_value);
     */
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static TValue AddAndReturn<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value)
+    public static TValue AddAndReturn<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) where TKey : notnull
     {
         dict[key] = value;
         return value;
