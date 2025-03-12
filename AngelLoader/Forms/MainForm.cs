@@ -4222,7 +4222,7 @@ public sealed partial class MainForm : DarkFormBase,
                 TimeSpan playTime = fm.PlayTime;
                 string sep = CultureInfo.CurrentCulture.DateTimeFormat.TimeSeparator;
                 e.Value = ((int)Math.Floor(playTime.TotalHours)).ToStrInv() + sep +
-                          playTime.ToString(@"mm\" + sep + "ss", DateTimeFormatInfo.CurrentInfo);
+                          playTime.ToString("mm" + sep.EscapeAllChars() + "ss", DateTimeFormatInfo.CurrentInfo);
                 break;
             }
 
