@@ -3694,19 +3694,49 @@ public sealed class Scanner : IDisposable
                         continue;
                     }
 
-                    if (i < lines.Count - 2)
+                    if (i >= lines.Count - 2) continue;
+
+                    /*
+                    Allow multiple-line author strings when joined by commas, for example the training mission
+                    from TDM 2.13:
+
+                    Authors:
+                    The Dark Mod Team, Bikerdude, Flanders, Dragofer, Daft Mugi, SneaksieDave, HappyCheeze, Fidcal, Komag,
+                    Grayman, & Amadeus
+                    */
+                    int firstAuthorLineI = i + 1;
+                    int lastAuthorLineI = firstAuthorLineI;
+                    for (; lastAuthorLineI < lines.Count; lastAuthorLineI++)
                     {
-                        string lineAfterNext = lines[i + 2].Trim();
-                        int lineAfterNextLength = lineAfterNext.Length;
-                        if ((lineAfterNextLength > 0 &&
-                             (lineAfterNext.Contains(':') ||
-                              // Overly-specific hack for the Dark Mod training mission
-                              lineAfterNext == ".") &&
-                             lineAfterNextLength <= 50) ||
-                            lineAfterNext.IsWhiteSpace())
+                        string authorLine = lines[lastAuthorLineI].Trim();
+                        if (authorLine.Length > 1 && !authorLine.Contains(':') && authorLine.EndsWith(",", Ordinal))
                         {
-                            return lines[i + 1].Trim();
+                            continue;
                         }
+
+                        break;
+                    }
+
+                    if (lastAuthorLineI + 1 > lines.Count - 1) continue;
+
+                    string lineAfterNext = lines[lastAuthorLineI + 1].Trim();
+                    int lineAfterNextLength = lineAfterNext.Length;
+                    if ((lineAfterNextLength > 0 &&
+                         (lineAfterNext.Contains(':') ||
+                          // Overly-specific hack for the Dark Mod training mission (<= 2.12)
+                          lineAfterNext == ".") &&
+                         lineAfterNextLength <= 50) ||
+                        lineAfterNext.IsWhiteSpace())
+                    {
+                        string finalAuthor = "";
+                        for (int finalI = firstAuthorLineI; finalI < lastAuthorLineI + 1; finalI++)
+                        {
+                            string authorLine = lines[finalI].Trim().TrimEnd(CA_Comma);
+                            if (!finalAuthor.IsEmpty()) finalAuthor += ", ";
+                            finalAuthor += authorLine;
+                        }
+
+                        return finalAuthor;
                     }
                 }
 
