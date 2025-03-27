@@ -90,34 +90,31 @@ internal static class TDM_Downloader
 
             foreach (XmlNode mn in missionNodes)
             {
-                if (mn.Name == "mission")
+                if (mn.Name == "mission" && mn.Attributes != null)
                 {
                     TDM_ServerFMData serverFMData = new();
-                    if (mn.Attributes != null)
+                    foreach (XmlAttribute attr in mn.Attributes)
                     {
-                        foreach (XmlAttribute attr in mn.Attributes)
+                        switch (attr.Name)
                         {
-                            switch (attr.Name)
-                            {
-                                case "title":
-                                    serverFMData.Title = attr.Value;
-                                    break;
-                                case "releaseDate":
-                                    serverFMData.ReleaseDate = attr.Value;
-                                    break;
-                                case "version":
-                                    serverFMData.Version = attr.Value;
-                                    break;
-                                case "internalName":
-                                    serverFMData.InternalName = attr.Value;
-                                    break;
-                                case "author":
-                                    serverFMData.Author = attr.Value;
-                                    break;
-                            }
+                            case "title":
+                                serverFMData.Title = attr.Value;
+                                break;
+                            case "releaseDate":
+                                serverFMData.ReleaseDate = attr.Value;
+                                break;
+                            case "version":
+                                serverFMData.Version = attr.Value;
+                                break;
+                            case "internalName":
+                                serverFMData.InternalName = attr.Value;
+                                break;
+                            case "author":
+                                serverFMData.Author = attr.Value;
+                                break;
                         }
-                        fmsList.Add(serverFMData);
                     }
+                    fmsList.Add(serverFMData);
                 }
             }
 
