@@ -3314,15 +3314,18 @@ public sealed class Scanner : IDisposable
             if (xAuthor.Count > 0) author = xAuthor[0].GetPlainInnerText();
         }
 
-        using XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
-        if (xReleaseDate.Count > 0)
+        if (_scanOptions.ScanReleaseDate)
         {
-            string rdString = xReleaseDate[0].GetPlainInnerText();
-            if (!rdString.IsEmpty())
+            using XmlNodeList xReleaseDate = fmInfoXml.GetElementsByTagName("releasedate");
+            if (xReleaseDate.Count > 0)
             {
-                releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _)
-                    ? dt
-                    : null;
+                string rdString = xReleaseDate[0].GetPlainInnerText();
+                if (!rdString.IsEmpty())
+                {
+                    releaseDate = StringToDate(rdString, checkForAmbiguity: false, out DateTime? dt, out _)
+                        ? dt
+                        : null;
+                }
             }
         }
 
