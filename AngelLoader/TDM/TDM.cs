@@ -289,8 +289,7 @@ internal static class TDM
             foreach (FanMission fm in FMDataIniListTDM)
             {
                 // @TDM_CASE(Case-sensitivity/UpdateTDMInstalledFMStatus): Case-sensitive compare
-                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our
-                // list.
+                // Case-sensitive compare of the dir name from currentfm.txt and the dir name from our list.
                 fm.Installed = fmName != null && !fm.MarkedUnavailable && fm.TDMInstalledDir == fmName;
             }
         }
