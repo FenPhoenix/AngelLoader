@@ -3666,13 +3666,8 @@ public sealed class Scanner : IDisposable
             }
         }
 
-        // Do the less common cases separately so as not to slow down the main ones with checks that are
-        // statistically unlikely to find anything
         if (specialLogic == SpecialLogic.Author && ret.IsEmpty())
         {
-            // We do this separately for performance and clarity; it's an uncommon case involving regex searching
-            // and we don't want to run it unless we have to. Also, it's specific enough that we don't really want
-            // to shoehorn it into the standard line search.
             ret = GetAuthorFromCopyrightMessage();
 
             if (!ret.IsEmpty()) return ret;
