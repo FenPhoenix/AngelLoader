@@ -122,11 +122,11 @@ public static partial class Common
 public sealed class TDM_ServerFMData
 {
     // string
-    public string Title = "";
+    public readonly string Title;
 
     // DateTime
     // This is always in the format yyyy-mm-dd
-    public string ReleaseDate = "";
+    private readonly string _releaseDate;
 
     private DateTime? _releaseDateDT;
     public DateTime? ReleaseDateDT
@@ -135,7 +135,7 @@ public sealed class TDM_ServerFMData
         {
             if (_releaseDateDT == null)
             {
-                if (TryParseTDMDate(ReleaseDate, out DateTime result))
+                if (TryParseTDMDate(_releaseDate, out DateTime result))
                 {
                     _releaseDateDT = result;
                 }
@@ -145,34 +145,53 @@ public sealed class TDM_ServerFMData
     }
 
     // probably int
-    public string Version = "";
+    public readonly string Version;
 
     // string
-    private string _internalName = "";
-    public string InternalName
+    public readonly string InternalName;
+
+    // string
+    public readonly string Author;
+
+    public TDM_ServerFMData(
+        string title,
+        string releaseDate,
+        string version,
+        string internalName,
+        string author)
     {
-        get => _internalName;
-        set => _internalName = value.ConvertToValidTDMInternalName(".pk4");
+        Title = title;
+        _releaseDate = releaseDate;
+        Version = version;
+        InternalName = internalName.ConvertToValidTDMInternalName(".pk4");
+        Author = author;
     }
-
-    // string
-    public string Author = "";
 }
 
 public sealed class TDM_LocalFMData
 {
     public readonly string InternalName;
+    public readonly string DownloadedVersion;
+    public readonly string LastPlayDate;
+    public readonly bool MissionCompletedOnNormal;
+    public readonly bool MissionCompletedOnHard;
+    public readonly bool MissionCompletedOnExpert;
 
-    public TDM_LocalFMData(string internalName)
+    public TDM_LocalFMData(
+        string internalName,
+        string downloadedVersion,
+        string lastPlayDate,
+        bool missionCompletedOnNormal,
+        bool missionCompletedOnHard,
+        bool missionCompletedOnExpert)
     {
         InternalName = internalName;
+        DownloadedVersion = downloadedVersion;
+        LastPlayDate = lastPlayDate;
+        MissionCompletedOnNormal = missionCompletedOnNormal;
+        MissionCompletedOnHard = missionCompletedOnHard;
+        MissionCompletedOnExpert = missionCompletedOnExpert;
     }
-
-    public string DownloadedVersion = "";
-    public string LastPlayDate = "";
-    public bool MissionCompletedOnNormal;
-    public bool MissionCompletedOnHard;
-    public bool MissionCompletedOnExpert;
 }
 
 // @TDM_CASE: Case-sensitive dictionaries

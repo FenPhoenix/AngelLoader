@@ -98,31 +98,34 @@ internal static class TDM
 
                 SkipToEntryData(lines, ref i);
 
-                TDM_LocalFMData localFMData = new(fmName);
-
+                string downloadedVersion = "";
+                string lastPlayDate = "";
+                bool missionCompletedOnNormal = false;
+                bool missionCompletedOnHard = false;
+                bool missionCompletedOnExpert = false;
                 while (i < lines.Count - 1)
                 {
                     string entryLineT = lines[i + 1].Trim();
                     if (entryLineT.StartsWithO(downloaded_version))
                     {
-                        localFMData.DownloadedVersion = GetValueForKey(entryLineT, downloaded_version);
+                        downloadedVersion = GetValueForKey(entryLineT, downloaded_version);
                     }
                     else if (entryLineT.StartsWithO(last_play_date))
                     {
-                        localFMData.LastPlayDate = GetValueForKey(entryLineT, last_play_date);
+                        lastPlayDate = GetValueForKey(entryLineT, last_play_date);
                     }
 
                     else if (entryLineT.StartsWithO(mission_completed_0))
                     {
-                        localFMData.MissionCompletedOnNormal = GetValueForKey(entryLineT, mission_completed_0) == "1";
+                        missionCompletedOnNormal = GetValueForKey(entryLineT, mission_completed_0) == "1";
                     }
                     else if (entryLineT.StartsWithO(mission_completed_1))
                     {
-                        localFMData.MissionCompletedOnHard = GetValueForKey(entryLineT, mission_completed_1) == "1";
+                        missionCompletedOnHard = GetValueForKey(entryLineT, mission_completed_1) == "1";
                     }
                     else if (entryLineT.StartsWithO(mission_completed_2))
                     {
-                        localFMData.MissionCompletedOnExpert = GetValueForKey(entryLineT, mission_completed_2) == "1";
+                        missionCompletedOnExpert = GetValueForKey(entryLineT, mission_completed_2) == "1";
                     }
 
                     else if (entryLineT == "}")
@@ -132,7 +135,13 @@ internal static class TDM
                     i++;
                 }
 
-                ret.Add(localFMData);
+                ret.Add(new TDM_LocalFMData(
+                    fmName,
+                    downloadedVersion,
+                    lastPlayDate,
+                    missionCompletedOnNormal,
+                    missionCompletedOnHard,
+                    missionCompletedOnExpert));
             }
 
             return ret;

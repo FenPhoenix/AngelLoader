@@ -92,29 +92,33 @@ internal static class TDM_Downloader
             {
                 if (mn.Name == "mission" && mn.Attributes != null)
                 {
-                    TDM_ServerFMData serverFMData = new();
+                    string title = "";
+                    string releaseDate = "";
+                    string version = "";
+                    string internalName = "";
+                    string author = "";
                     foreach (XmlAttribute attr in mn.Attributes)
                     {
                         switch (attr.Name)
                         {
                             case "title":
-                                serverFMData.Title = attr.Value;
+                                title = attr.Value;
                                 break;
                             case "releaseDate":
-                                serverFMData.ReleaseDate = attr.Value;
+                                releaseDate = attr.Value;
                                 break;
                             case "version":
-                                serverFMData.Version = attr.Value;
+                                version = attr.Value;
                                 break;
                             case "internalName":
-                                serverFMData.InternalName = attr.Value;
+                                internalName = attr.Value;
                                 break;
                             case "author":
-                                serverFMData.Author = attr.Value;
+                                author = attr.Value;
                                 break;
                         }
                     }
-                    fmsList.Add(serverFMData);
+                    fmsList.Add(new TDM_ServerFMData(title, releaseDate, version, internalName, author));
                 }
             }
 
