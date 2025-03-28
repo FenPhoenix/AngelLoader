@@ -693,7 +693,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region I/O Threading page
 
-            DriveLetterDictionary driveLettersAndTypes = new();
+            DriveLetterDictionary driveLettersAndTypes = new(config.DriveLettersAndTypes.Count);
             config.DriveLettersAndTypes.CopyTo_NoClearDest(driveLettersAndTypes);
 
             switch (config.IOThreadsMode)
