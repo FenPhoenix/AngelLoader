@@ -3708,7 +3708,7 @@ public sealed class Scanner : IDisposable
                     for (; lastAuthorLineI < lines.Count; lastAuthorLineI++)
                     {
                         string authorLine = lines[lastAuthorLineI].Trim();
-                        if (authorLine.Length > 1 && !authorLine.Contains(':') && authorLine.EndsWith(",", Ordinal))
+                        if (authorLine.Length > 1 && !authorLine.Contains(':') && authorLine[^1] == ',')
                         {
                             continue;
                         }
