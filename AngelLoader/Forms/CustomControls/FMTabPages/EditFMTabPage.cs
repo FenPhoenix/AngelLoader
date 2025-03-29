@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
@@ -442,23 +441,16 @@ public sealed class EditFMTabPage : Lazy_TabsBase
             {
                 Lazy_LangDetectError.SetVisible(!fm.LangsScanned);
 
-                var langPairs = new List<(string InternalName, string TranslatedName)>(SupportedLanguageCount);
-
-                for (int i = 0; i < SupportedLanguageCount; i++)
-                {
-                    LanguageIndex languageIndex = (LanguageIndex)i;
-                    Language language = LanguageIndexToLanguage(languageIndex);
-                    if (fm.Langs.HasFlagFast(language))
-                    {
-                        langPairs.Add((GetLanguageString(languageIndex), GetTranslatedLanguageName(languageIndex)));
-                    }
-                }
-
                 using (new UpdateRegion(_page.EditFMLanguageComboBox))
                 {
-                    foreach (var (internalName, translatedName) in langPairs)
+                    for (int i = 0; i < SupportedLanguageCount; i++)
                     {
-                        _page.EditFMLanguageComboBox.AddFullItem(internalName, translatedName);
+                        LanguageIndex languageIndex = (LanguageIndex)i;
+                        Language language = LanguageIndexToLanguage(languageIndex);
+                        if (fm.Langs.HasFlagFast(language))
+                        {
+                            _page.EditFMLanguageComboBox.AddFullItem(GetLanguageString(languageIndex), GetTranslatedLanguageName(languageIndex));
+                        }
                     }
                 }
 
