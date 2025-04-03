@@ -3618,11 +3618,11 @@ public sealed class Scanner : IDisposable
 
         for (int ri = 0; ri < _readmeFiles.Count; ri++)
         {
-            ReadmeInternal file = _readmeFiles[ri];
-            // @TDM_NOTE: Janky, but it works and a null check isn't going to be our bottleneck here, so whatever
-            if (singleReadme != null && singleReadme != file) continue;
+            ReadmeInternal readme = _readmeFiles[ri];
+            if (!readme.Scan) continue;
 
-            if (!file.Scan) continue;
+            // @TDM_NOTE: Janky, but it works and a null check isn't going to be our bottleneck here, so whatever
+            if (singleReadme != null && singleReadme != readme) continue;
 
             if (specialLogic == SpecialLogic.Author)
             {
@@ -3632,11 +3632,11 @@ public sealed class Scanner : IDisposable
                 Briefing Movie
                 Created by Yandros using VideoPad by NCH Software
                 */
-                ret = GetAuthorFromTopOfReadme(file.Lines, titles);
+                ret = GetAuthorFromTopOfReadme(readme.Lines, titles);
                 if (!ret.IsEmpty()) return ret;
             }
 
-            ret = GetValueFromLines(specialLogic, keys, file.Lines);
+            ret = GetValueFromLines(specialLogic, keys, readme.Lines);
             if (ret.IsEmpty())
             {
                 if (specialLogic == SpecialLogic.Author)
@@ -3645,7 +3645,7 @@ public sealed class Scanner : IDisposable
                     // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be a little
                     // bit faster on average. But that causes a handful of differences in the output. Not enough
                     // to matter really, but meh...
-                    ret = GetAuthorFromText(file.Text);
+                    ret = GetAuthorFromText(readme.Text);
                     if (!ret.IsEmpty()) return ret;
                 }
             }
@@ -3744,7 +3744,6 @@ public sealed class Scanner : IDisposable
             for (int i = 0; i < _readmeFiles.Count; i++)
             {
                 ReadmeInternal readme = _readmeFiles[i];
-
                 if (!readme.Scan) continue;
 
                 ret = GetAuthorNextLine(readme.Lines);
@@ -4015,7 +4014,6 @@ public sealed class Scanner : IDisposable
         for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
-
             if (!readme.Scan) continue;
 
             _topLines.ClearFast();
@@ -4324,6 +4322,7 @@ public sealed class Scanner : IDisposable
         for (int i = 0; i < _readmeFiles.Count; i++)
         {
             ReadmeInternal readme = _readmeFiles[i];
+            if (!readme.Scan) continue;
 
             if (readme.Lines.Count >= 2 && readme.Lines[1].IsWhiteSpace())
             {
@@ -4584,7 +4583,6 @@ public sealed class Scanner : IDisposable
         for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
-
             if (!readme.Scan) continue;
 
             for (int lineIndex = 0; lineIndex < readme.Lines.Count; lineIndex++)
@@ -4627,7 +4625,6 @@ public sealed class Scanner : IDisposable
         for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
-
             if (!readme.Scan) continue;
 
             bool inCopyrightSection = false;
@@ -5387,7 +5384,6 @@ public sealed class Scanner : IDisposable
         for (int readmeIndex = 0; readmeIndex < _readmeFiles.Count; readmeIndex++)
         {
             ReadmeInternal readme = _readmeFiles[readmeIndex];
-
             if (!readme.Scan) continue;
 
             int topLineCount = 0;
