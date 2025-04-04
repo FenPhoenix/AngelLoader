@@ -17,6 +17,8 @@ internal enum Lazy_FilterLabel
 
 internal sealed class Lazy_ToolStripLabels : IDarkable
 {
+    private const int FilterLabelCount = 3;
+
     private readonly MainForm _owner;
 
     private bool _darkModeEnabled;
@@ -43,10 +45,10 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
 
     private Color LabelForeColor => _darkModeEnabled ? DarkColors.LightText : Color.Maroon;
 
-    private readonly bool[] _constructed = new bool[3];
+    private readonly bool[] _constructed = new bool[FilterLabelCount];
 
     // Inits to null, don't worry
-    private readonly ToolStripLabel[] _labels = new ToolStripLabel[3];
+    private readonly ToolStripLabel[] _labels = new ToolStripLabel[FilterLabelCount];
 
     internal void Show(Lazy_FilterLabel label, string text)
     {
@@ -92,20 +94,20 @@ internal sealed class Lazy_ToolStripLabels : IDarkable
     {
         int li = (int)label;
 
-        if (_constructed[li])
+        if (!_constructed[li]) return;
+
+        _labels[li].ToolTipText = label switch
         {
-            _labels[li].ToolTipText = label switch
-            {
-                Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
-                Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
-                Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip,
-            };
-        }
+            Lazy_FilterLabel.ReleaseDate => LText.FilterBar.ReleaseDateToolTip,
+            Lazy_FilterLabel.LastPlayed => LText.FilterBar.LastPlayedToolTip,
+            Lazy_FilterLabel.Rating => LText.FilterBar.RatingToolTip,
+        };
     }
 
     internal void Hide(Lazy_FilterLabel label)
     {
         int li = (int)label;
-        if (_constructed[li]) _labels[li].Visible = false;
+        if (!_constructed[li]) return;
+        _labels[li].Visible = false;
     }
 }

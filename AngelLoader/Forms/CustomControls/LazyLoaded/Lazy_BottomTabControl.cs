@@ -90,9 +90,8 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
             Construct();
             _tabControl.ShowTab(tabPage, true);
         }
-        else
+        else if (Constructed)
         {
-            if (!Constructed) return;
             _tabControl.ShowTab(tabPage, false);
         }
     }
@@ -153,9 +152,9 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
                 Construct();
                 _tabControl.Show();
             }
-            else
+            else if (Constructed)
             {
-                if (Constructed) _tabControl.Hide();
+                _tabControl.Hide();
             }
         }
     }

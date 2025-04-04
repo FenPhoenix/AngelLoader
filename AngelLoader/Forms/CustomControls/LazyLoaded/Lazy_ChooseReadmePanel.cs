@@ -112,7 +112,8 @@ internal sealed class Lazy_ChooseReadmePanel : IDarkable
 
     internal void Localize()
     {
-        if (_constructed) OKButton.Text = LText.Global.OK;
+        if (!_constructed) return;
+        OKButton.Text = LText.Global.OK;
     }
 
     internal void ShowPanel(bool value)

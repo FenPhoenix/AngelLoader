@@ -107,11 +107,13 @@ internal sealed class Lazy_FMTabsBlocker : IDarkable
 
     internal void SuspendDrawing()
     {
-        if (_constructed) Panel.SuspendDrawing();
+        if (!_constructed) return;
+        Panel.SuspendDrawing();
     }
 
     internal void ResumeDrawing()
     {
-        if (_constructed) Panel.ResumeDrawing();
+        if (!_constructed) return;
+        Panel.ResumeDrawing();
     }
 }

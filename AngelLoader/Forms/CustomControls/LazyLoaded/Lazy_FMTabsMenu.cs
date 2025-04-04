@@ -13,45 +13,48 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
 
     private readonly MainForm _owner;
 
+    private void Construct()
+    {
+        if (_constructed) return;
+
+        #region Instantiation and hookup events
+
+        _menu = new DarkContextMenu(_owner);
+
+        ToolStripItem[] menuItems = new ToolStripItem[FMTabCount];
+        for (int i = 0; i < menuItems.Length; i++)
+        {
+            ToolStripMenuItemCustom item = new()
+            {
+                CheckOnClick = true,
+                Checked = _checkedStates[i],
+            };
+            item.Click += _owner.FMTabsMenu_MenuItems_Click;
+            menuItems[i] = item;
+        }
+
+        _menu.Items.AddRange(menuItems);
+
+        #endregion
+
+        _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
+
+        _menu.DarkModeEnabled = _darkModeEnabled;
+
+        _menu.Opening += _owner.FMTabsMenu_Opening;
+        _menu.Closed += MenuClosed;
+
+        _constructed = true;
+
+        Localize();
+    }
+
     private DarkContextMenu _menu = null!;
     internal DarkContextMenu Menu
     {
         get
         {
-            if (!_constructed)
-            {
-                #region Instantiation and hookup events
-
-                _menu = new DarkContextMenu(_owner);
-
-                ToolStripItem[] menuItems = new ToolStripItem[FMTabCount];
-                for (int i = 0; i < menuItems.Length; i++)
-                {
-                    ToolStripMenuItemCustom item = new()
-                    {
-                        CheckOnClick = true,
-                        Checked = _checkedStates[i],
-                    };
-                    item.Click += _owner.FMTabsMenu_MenuItems_Click;
-                    menuItems[i] = item;
-                }
-
-                _menu.Items.AddRange(menuItems);
-
-                #endregion
-
-                _menu.SetPreventCloseOnClickItems(_menu.Items.Cast<ToolStripMenuItemCustom>().ToArray());
-
-                _menu.DarkModeEnabled = _darkModeEnabled;
-
-                _menu.Opening += _owner.FMTabsMenu_Opening;
-                _menu.Closed += MenuClosed;
-
-                _constructed = true;
-
-                Localize();
-            }
-
+            Construct();
             return _menu;
         }
     }
