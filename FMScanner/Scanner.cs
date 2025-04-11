@@ -673,6 +673,20 @@ public sealed class Scanner : IDisposable
             readmes.Add(readme);
             return readme;
         }
+
+        internal void SetLines(string[] lines)
+        {
+            Lines.ClearFast();
+            Lines.AddRange_Large(lines);
+            /*
+            Quick-n-dirty way to support multi-line authors (or any other line-after-next checks) without having
+            to explicitly account for if the block is at the end of the file (no more lines after it).
+            */
+            if (Lines.Count > 0 && !Lines[Lines.Count - 1].IsWhiteSpace())
+            {
+                Lines.Add("");
+            }
+        }
     }
 
     #endregion
@@ -1484,7 +1498,7 @@ public sealed class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    darkModTxtReadme.SetLines(darkModTxtReadme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
             }
 
@@ -1595,7 +1609,7 @@ public sealed class Scanner : IDisposable
                         useForDateDetect: true);
                     using StreamScope streamScope = entry.OpenSeekable();
                     readme.Text = ReadAllTextDetectEncoding(streamScope.Stream);
-                    readme.Lines.AddRange_Large(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                    readme.SetLines(readme.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
                 }
                 catch
                 {
@@ -3601,7 +3615,7 @@ public sealed class Scanner : IDisposable
                     last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                 }
 
-                last.Lines.AddRange_Large(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
+                last.SetLines(last.Text.Split_String(_ctx.SA_Linebreaks, StringSplitOptions.None, _sevenZipContext.IntArrayPool));
             }
             finally
             {
