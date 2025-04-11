@@ -668,6 +668,20 @@ public sealed class Scanner : IDisposable
             readmes.Add(readme);
             return readme;
         }
+
+        internal void SetLines(string[] lines)
+        {
+            Lines.ClearFast();
+            Lines.AddRange_Large(lines);
+            /*
+            Quick-n-dirty way to support multi-line authors (or any other line-after-next checks) without having
+            to explicitly account for if the block is at the end of the file (no more lines after it).
+            */
+            if (Lines.Count > 0 && !Lines[Lines.Count - 1].IsWhiteSpace())
+            {
+                Lines.Add("");
+            }
+        }
     }
 
     #endregion
@@ -1481,7 +1495,7 @@ public sealed class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.Lines.ClearFullAndAdd(darkModTxtReadme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    darkModTxtReadme.SetLines(darkModTxtReadme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                 }
             }
 
@@ -1592,7 +1606,7 @@ public sealed class Scanner : IDisposable
                         useForDateDetect: true);
                     using StreamScope streamScope = entry.OpenSeekable();
                     readme.Text = ReadAllTextDetectEncoding(streamScope.Stream);
-                    readme.Lines.AddRange_Large(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    readme.SetLines(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
                 }
                 catch
                 {
@@ -3600,7 +3614,7 @@ public sealed class Scanner : IDisposable
                     last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
                 }
 
-                last.Lines.AddRange_Large(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                last.SetLines(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
             }
             finally
             {
