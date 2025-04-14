@@ -27,15 +27,15 @@ internal static class TaskBarProgress
 
     private static readonly bool _taskbarSupported = WinVersion.Is7OrAbove;
 
-    internal static void SetState(IntPtr windowHandle, TaskbarStates taskbarState)
+    internal static void SetState(nint windowHandle, TaskbarStates taskbarState)
     {
-        if (!_taskbarSupported || windowHandle == IntPtr.Zero) return;
+        if (!_taskbarSupported || windowHandle == 0) return;
         _instance.SetProgressState(windowHandle, taskbarState);
     }
 
-    internal static void SetValue(IntPtr windowHandle, int progressValue, int progressMax)
+    internal static void SetValue(nint windowHandle, int progressValue, int progressMax)
     {
-        if (!_taskbarSupported || windowHandle == IntPtr.Zero) return;
+        if (!_taskbarSupported || windowHandle == 0) return;
         _instance.SetProgressValue(windowHandle, (ulong)progressValue, (ulong)progressMax);
     }
 }

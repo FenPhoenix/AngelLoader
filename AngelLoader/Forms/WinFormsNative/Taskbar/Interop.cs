@@ -12,21 +12,21 @@ internal interface ITaskbarList3
     [PreserveSig]
     void HrInit();
     [PreserveSig]
-    void AddTab(IntPtr hwnd);
+    void AddTab(nint hwnd);
     [PreserveSig]
-    void DeleteTab(IntPtr hwnd);
+    void DeleteTab(nint hwnd);
     [PreserveSig]
-    void ActivateTab(IntPtr hwnd);
+    void ActivateTab(nint hwnd);
     [PreserveSig]
-    void SetActiveAlt(IntPtr hwnd);
+    void SetActiveAlt(nint hwnd);
 
     // ITaskbarList2
     [PreserveSig]
-    void MarkFullscreenWindow(IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
+    void MarkFullscreenWindow(nint hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen);
 
     // ITaskbarList3
     [PreserveSig]
-    void SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
+    void SetProgressValue(nint hwnd, ulong ullCompleted, ulong ullTotal);
     [PreserveSig]
-    void SetProgressState(IntPtr hwnd, TaskbarStates state);
+    void SetProgressState(nint hwnd, TaskbarStates state);
 }

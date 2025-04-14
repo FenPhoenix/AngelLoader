@@ -143,7 +143,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
         if (_broadcastEnabled)
         {
-            Native.PostMessageW((IntPtr)HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+            Native.PostMessageW(HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, AppNum(), RTFFileComboBox.SelectedIndex);
         }
     }
 
@@ -180,7 +180,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         if (_broadcastEnabled)
         {
             Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
-            Native.PostMessageW((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+            Native.PostMessageW(HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, AppNum(), si.nPos);
         }
     }
 

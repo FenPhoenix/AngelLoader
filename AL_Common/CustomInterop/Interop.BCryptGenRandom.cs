@@ -13,6 +13,6 @@ internal static partial class Interop
         internal const int BCRYPT_USE_SYSTEM_PREFERRED_RNG = 0x00000002;
 
         [DllImport("BCrypt.dll")]
-        internal static extern unsafe NTSTATUS BCryptGenRandom(IntPtr hAlgorithm, byte* pbBuffer, int cbBuffer, int dwFlags);
+        internal static extern unsafe NTSTATUS BCryptGenRandom(nint hAlgorithm, byte* pbBuffer, int cbBuffer, int dwFlags);
     }
 }

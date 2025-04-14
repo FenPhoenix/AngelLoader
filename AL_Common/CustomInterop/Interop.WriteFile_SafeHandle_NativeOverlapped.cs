@@ -24,7 +24,7 @@ internal static partial class Interop
             SafeHandle handle,
             byte* bytes,
             int numBytesToWrite,
-            IntPtr numBytesWritten_mustBeZero,
+            nint numBytesWritten_mustBeZero,
             NativeOverlapped* lpOverlapped);
 #endif
 

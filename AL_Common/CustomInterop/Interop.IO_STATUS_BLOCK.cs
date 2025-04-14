@@ -22,7 +22,7 @@ internal static partial class Interop
             /// <summary>
             /// Request dependent value.
             /// </summary>
-            public IntPtr Information;
+            public nint Information;
 
             // This isn't an actual Windows type, it is a union within IO_STATUS_BLOCK. We *have* to separate it out as
             // the size of IntPtr varies by architecture and we can't specify the size at compile time to offset the
@@ -41,7 +41,7 @@ internal static partial class Interop
                 /// Reserved for internal use.
                 /// </summary>
                 [FieldOffset(0)]
-                public IntPtr Pointer;
+                public nint Pointer;
             }
         }
     }

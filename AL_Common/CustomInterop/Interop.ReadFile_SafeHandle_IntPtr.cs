@@ -16,7 +16,7 @@ internal static partial class Interop
             byte* bytes,
             int numBytesToRead,
             out int numBytesRead,
-            System.IntPtr mustBeZero);
+            nint mustBeZero);
 #endif
     }
 }

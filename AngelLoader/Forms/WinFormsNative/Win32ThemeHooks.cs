@@ -53,7 +53,7 @@ internal static class Win32ThemeHooks
     private static GetSysColorBrushDelegate? GetSysColorBrush_Original;
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
-    private delegate IntPtr GetSysColorBrushDelegate(int nIndex);
+    private delegate nint GetSysColorBrushDelegate(int nIndex);
 
 #endif
 
@@ -67,8 +67,8 @@ internal static class Win32ThemeHooks
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
     private delegate int DrawThemeBackgroundDelegate(
-        IntPtr hTheme,
-        IntPtr hdc,
+        nint hTheme,
+        nint hdc,
         int partId,
         int stateId,
         ref Native.RECT pRect,
@@ -84,7 +84,7 @@ internal static class Win32ThemeHooks
 
     [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
     private delegate int GetThemeColorDelegate(
-        IntPtr hTheme,
+        nint hTheme,
         int iPartId,
         int iStateId,
         int iPropId,
@@ -157,7 +157,7 @@ internal static class Win32ThemeHooks
 
         try
         {
-            IntPtr address = LocalHook.GetProcAddress(dll, method);
+            nint address = LocalHook.GetProcAddress(dll, method);
             originalMethod = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
             hook = LocalHook.Create(address, hookDelegate, null);
             hook.ThreadACL.SetInclusiveACL(new[] { 0 });
@@ -176,8 +176,8 @@ internal static class Win32ThemeHooks
     #region Hooked method overrides
 
     private static int DrawThemeBackground_Hooked(
-        IntPtr hTheme,
-        IntPtr hdc,
+        nint hTheme,
+        nint hdc,
         int iPartId,
         int iStateId,
         ref Native.RECT pRect,
@@ -216,7 +216,7 @@ internal static class Win32ThemeHooks
     }
 
     private static int GetThemeColor_Hooked(
-        IntPtr hTheme,
+        nint hTheme,
         int iPartId,
         int iStateId,
         int iPropId,
@@ -285,7 +285,7 @@ internal static class Win32ThemeHooks
 
 #if !X64
 
-    private static IntPtr GetSysColorBrush_Hooked(int nIndex)
+    private static nint GetSysColorBrush_Hooked(int nIndex)
     {
         return !_disableHookedTheming && Global.Config.DarkMode
             ? SysColorOverride switch
@@ -360,8 +360,8 @@ internal static class Win32ThemeHooks
                 // Do this AFTER re-enabling hooked theming, otherwise it doesn't take and we end up with
                 // dark-on-dark tooltips
                 ControlUtils.RecreateAllToolTipHandles();
-                List<IntPtr> handles = Native.GetProcessWindowHandles();
-                foreach (IntPtr handle in handles)
+                List<nint> handles = Native.GetProcessWindowHandles();
+                foreach (nint handle in handles)
                 {
                     Control? control = Control.FromHandle(handle);
                     if (control is Form form) form.Refresh();
@@ -381,15 +381,15 @@ internal static class Win32ThemeHooks
 
 #if !X64
 
-    private static readonly IntPtr SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
-    private static readonly IntPtr SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
-    private static readonly IntPtr SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
-    private static readonly IntPtr SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
-    private static readonly IntPtr SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
-    private static readonly IntPtr SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
-    private static readonly IntPtr SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
-    private static readonly IntPtr SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
-    private static readonly IntPtr SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+    private static readonly nint SysColorBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+    private static readonly nint SysColorBrush_LightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightText));
+    private static readonly nint SysColorBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
+    private static readonly nint SysColorBrush_Fen_HighlightText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_HighlightText));
+    private static readonly nint SysColorBrush_Fen_ControlBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_ControlBackground));
+    private static readonly nint SysColorBrush_DisabledText = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DisabledText));
+    private static readonly nint SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
+    private static readonly nint SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
+    private static readonly nint SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
 
 #endif
 
@@ -433,7 +433,7 @@ internal static class Win32ThemeHooks
         Trackbar,
     }
 
-    private static readonly IntPtr[] _hThemes = new IntPtr[_renderedControlCount];
+    private static readonly nint[] _hThemes = new nint[_renderedControlCount];
 
     private static readonly string[] _clSids =
     {
@@ -495,7 +495,7 @@ internal static class Win32ThemeHooks
     private static readonly PointF[] _trackBarThumbBottomPoints = new PointF[4];
 
     private static bool TrackBar_TryDrawThemeBackground(
-        IntPtr hdc,
+        nint hdc,
         int iPartId,
         int iStateId,
         ref Native.RECT pRect)
@@ -552,7 +552,7 @@ internal static class Win32ThemeHooks
     private static bool TabScrollButtonsEnabled() => Global.Config.DarkMode;
 
     private static bool TabScrollButtons_TryDrawThemeBackground(
-        IntPtr hdc,
+        nint hdc,
         int iPartId,
         int iStateId,
         ref Native.RECT pRect)
@@ -611,7 +611,7 @@ internal static class Win32ThemeHooks
     private static bool ScrollBarEnabled() => Global.Config.DarkMode || (WinVersion.Is11OrAbove && !Native.HighContrastEnabled());
 
     private static bool ScrollBar_TryDrawThemeBackground(
-        IntPtr hdc,
+        nint hdc,
         int iPartId,
         int iStateId,
         ref Native.RECT pRect)
@@ -863,7 +863,7 @@ internal static class Win32ThemeHooks
     private static bool ToolTipEnabled() => Global.Config.DarkMode && ControlUtils.ToolTipsReflectable;
 
     private static bool ToolTip_TryDrawThemeBackground(
-        IntPtr hdc,
+        nint hdc,
         int iPartId,
         ref Native.RECT pRect)
     {
@@ -909,7 +909,7 @@ internal static class Win32ThemeHooks
     #region TreeView
 
     private static bool TreeView_TryDrawThemeBackground(
-        IntPtr hdc,
+        nint hdc,
         int iPartId,
         int iStateId,
         ref Native.RECT pRect)

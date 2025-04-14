@@ -28,7 +28,7 @@ internal sealed partial class RichTextBoxCustom
     {
         if (_fullDetectUrlsSet) return;
 
-        Native.SendMessageW(Handle, Native.EM_AUTOURLDETECT, (IntPtr)(Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR), IntPtr.Zero);
+        Native.SendMessageW(Handle, Native.EM_AUTOURLDETECT, Native.AURL_ENABLEURL | Native.AURL_ENABLEEMAILADDR, 0);
         _fullDetectUrlsSet = true;
     }
 
@@ -132,11 +132,11 @@ internal sealed partial class RichTextBoxCustom
 
     private static bool VerticalScrollBarVisible(Control ctl)
     {
-        uint style = Native.GetWindowLongPtr(ctl.Handle, -16).ToUInt32();
+        nuint style = Native.GetWindowLongPtr(ctl.Handle, -16);
         return (style & Native.WS_VSCROLL) != 0;
     }
 
-    private static void BetterScroll(IntPtr handle, int pixels)
+    private static void BetterScroll(nint handle, int pixels)
     {
         if (pixels == 0) return;
 
@@ -186,7 +186,7 @@ internal sealed partial class RichTextBoxCustom
     {
         if (VerticalScrollBarVisible(this))
         {
-            m.Result = (IntPtr)1;
+            m.Result = (nint)1;
             EnterReaderMode();
         }
     }
@@ -204,7 +204,7 @@ internal sealed partial class RichTextBoxCustom
         // replace it with the global one, or scroll will break.
         Rectangle scrollBounds = new(_cursorScrollBounds.Left, _cursorScrollBounds.Top, _cursorScrollBounds.Right, _cursorScrollBounds.Bottom);
 
-        IntPtr rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
+        nint rectPtr = Marshal.AllocHGlobal(Marshal.SizeOf(scrollBounds));
 
         try
         {
@@ -215,7 +215,7 @@ internal sealed partial class RichTextBoxCustom
                 hwnd = Handle,
                 fFlags = Native.ReaderModeFlags.VerticalOnly,
                 prc = rectPtr,
-                lParam = IntPtr.Zero,
+                lParam = 0,
                 fFlags2 = TranslateDispatchCallback,
                 pfnScroll = ReaderScrollCallback,
             };
@@ -321,7 +321,7 @@ internal sealed partial class RichTextBoxCustom
         if (LinkCursor)
         {
             Native.SetCursor(new HandleRef(Cursors.Hand, Cursors.Hand.Handle));
-            m.Result = (IntPtr)1;
+            m.Result = (nint)1;
         }
         // If the cursor isn't supposed to be Hand, then leave it be. Prevents cursor fighting where
         // it wants to set right-arrow-pointer but is then told to set IBeam etc.
@@ -335,14 +335,14 @@ internal sealed partial class RichTextBoxCustom
         {
             es.nmhdr = new Native.NMHDR();
             es.charrange = new Native.CHARRANGE();
-            es.nmhdr.hwndFrom = Marshal.ReadIntPtr((IntPtr)es64p);
-            es.nmhdr.idFrom = Marshal.ReadIntPtr((IntPtr)(es64p + 8));
-            es.nmhdr.code = Marshal.ReadInt32((IntPtr)(es64p + 16));
-            es.msg = Marshal.ReadInt32((IntPtr)(es64p + 24));
-            es.wParam = Marshal.ReadIntPtr((IntPtr)(es64p + 28));
-            es.lParam = Marshal.ReadIntPtr((IntPtr)(es64p + 36));
-            es.charrange.cpMin = Marshal.ReadInt32((IntPtr)(es64p + 44));
-            es.charrange.cpMax = Marshal.ReadInt32((IntPtr)(es64p + 48));
+            es.nmhdr.hwndFrom = Marshal.ReadIntPtr((nint)es64p);
+            es.nmhdr.idFrom = Marshal.ReadIntPtr((nint)(es64p + 8));
+            es.nmhdr.code = Marshal.ReadInt32((nint)(es64p + 16));
+            es.msg = Marshal.ReadInt32((nint)(es64p + 24));
+            es.wParam = Marshal.ReadIntPtr((nint)(es64p + 28));
+            es.lParam = Marshal.ReadIntPtr((nint)(es64p + 36));
+            es.charrange.cpMin = Marshal.ReadInt32((nint)(es64p + 44));
+            es.charrange.cpMax = Marshal.ReadInt32((nint)(es64p + 48));
         }
         return es;
     }
@@ -374,7 +374,7 @@ internal sealed partial class RichTextBoxCustom
         {
             case Native.WM_SETCURSOR:
                 LinkCursor = true;
-                m.Result = (IntPtr)1;
+                m.Result = (nint)1;
                 return;
             case Native.WM_LBUTTONDOWN:
                 // Run base link-mousedown handler (eventually) - otherwise we'd have to re-implement

@@ -5,14 +5,14 @@ namespace AL_Common.DeviceIoControlLib.Utilities;
 
 public sealed class UnmanagedMemory : IDisposable
 {
-    public IntPtr Handle { get; }
+    public nint Handle { get; }
 
     public UnmanagedMemory(int size)
     {
         Handle = Marshal.AllocHGlobal(size);
     }
 
-    public static implicit operator IntPtr(UnmanagedMemory mem)
+    public static implicit operator nint(UnmanagedMemory mem)
     {
         return mem.Handle;
     }

@@ -57,7 +57,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
     #region Protected methods
 
-    protected override bool RunDialog(IntPtr hwndOwner)
+    protected override bool RunDialog(nint hwndOwner)
     {
         NativeFolderBrowserDialog? dialog = null;
         try
@@ -136,7 +136,7 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
 
             HResult result = NativeMethods.SHCreateItemFromParsingName(
                 InitialDirectory,
-                IntPtr.Zero,
+                0,
                 ref guid,
                 out object item);
 
@@ -160,9 +160,9 @@ public sealed class VistaFolderBrowserDialog : CommonDialog
         {
             resultsArray.GetItemAt(i, out IShellItem result);
 
-            HResult hr = result.GetDisplayName(NativeMethods.SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out IntPtr ppszName);
+            HResult hr = result.GetDisplayName(NativeMethods.SIGDN.SIGDN_DESKTOPABSOLUTEPARSING, out nint ppszName);
 
-            if (hr == HResult.Ok && ppszName != IntPtr.Zero)
+            if (hr == HResult.Ok && ppszName != 0)
             {
                 DirectoryNames.Add(Marshal.PtrToStringAuto(ppszName));
             }

@@ -76,12 +76,12 @@ internal static class NativeCommon
     {
         try
         {
-            IntPtr pidl = ILCreateFromPathW(filePath);
-            if (pidl == IntPtr.Zero) return false;
+            nint pidl = ILCreateFromPathW(filePath);
+            if (pidl == 0) return false;
 
             try
             {
-                int result = SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                int result = SHOpenFolderAndSelectItems(pidl, 0, 0, 0);
                 return result == 0;
             }
             catch
@@ -100,13 +100,13 @@ internal static class NativeCommon
     }
 
     [DllImport("shell32.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    private static extern IntPtr ILCreateFromPathW(string pszPath);
+    private static extern nint ILCreateFromPathW(string pszPath);
 
     [DllImport("shell32.dll", ExactSpelling = true)]
-    private static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
+    private static extern int SHOpenFolderAndSelectItems(nint pidlFolder, int cild, nint apidl, int dwFlags);
 
     [DllImport("shell32.dll", ExactSpelling = true)]
-    private static extern void ILFree(IntPtr pidl);
+    private static extern void ILFree(nint pidl);
 
     #endregion
 }

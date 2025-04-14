@@ -20,23 +20,23 @@ internal static partial class Interop
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         private static extern unsafe int FormatMessageW(
             int dwFlags,
-            IntPtr lpSource,
+            nint lpSource,
             uint dwMessageId,
             int dwLanguageId,
             void* lpBuffer,
             int nSize,
-            IntPtr arguments);
+            nint arguments);
 
         /// <summary>
         ///     Returns a string message for the specified Win32 error code.
         /// </summary>
         internal static string GetMessage(int errorCode) =>
-            GetMessage(errorCode, IntPtr.Zero);
+            GetMessage(errorCode, 0);
 
-        internal static unsafe string GetMessage(int errorCode, IntPtr moduleHandle)
+        internal static unsafe string GetMessage(int errorCode, nint moduleHandle)
         {
             int flags = FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY;
-            if (moduleHandle != IntPtr.Zero)
+            if (moduleHandle != 0)
             {
                 flags |= FORMAT_MESSAGE_FROM_HMODULE;
             }
@@ -45,7 +45,7 @@ internal static partial class Interop
             Span<char> stackBuffer = stackalloc char[256]; // arbitrary stack limit
             fixed (char* bufferPtr = stackBuffer)
             {
-                int length = FormatMessageW(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr, stackBuffer.Length, IntPtr.Zero);
+                int length = FormatMessageW(flags, moduleHandle, unchecked((uint)errorCode), 0, bufferPtr, stackBuffer.Length, 0);
                 if (length > 0)
                 {
                     return GetAndTrimString(stackBuffer[..length]);
@@ -57,10 +57,10 @@ internal static partial class Interop
             // a buffer, have the method allocate one, which we then need to free.
             if (Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER)
             {
-                IntPtr nativeMsgPtr = default;
+                nint nativeMsgPtr = default;
                 try
                 {
-                    int length = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle, unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, IntPtr.Zero);
+                    int length = FormatMessageW(flags | FORMAT_MESSAGE_ALLOCATE_BUFFER, moduleHandle, unchecked((uint)errorCode), 0, &nativeMsgPtr, 0, 0);
                     if (length > 0)
                     {
                         return GetAndTrimString(new ReadOnlySpan<char>((char*)nativeMsgPtr, length));

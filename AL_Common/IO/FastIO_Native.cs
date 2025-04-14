@@ -29,9 +29,9 @@ public static class FastIO_Native
         private const int FindExInfoBasic = 1;
         private const int FindExSearchNameMatch = 0;
 
-        private readonly IntPtr _handle;
+        private readonly nint _handle;
 
-        private FileFinder(IntPtr handle) => _handle = handle;
+        private FileFinder(nint handle) => _handle = handle;
 
         public static FileFinder Create(string fileName, int additionalFlags, out WIN32_FIND_DATAW findData)
         {
@@ -40,32 +40,32 @@ public static class FastIO_Native
                 FindExInfoBasic,
                 out findData,
                 FindExSearchNameMatch,
-                IntPtr.Zero,
+                0,
                 additionalFlags));
         }
 
         public bool TryFindNextFile(out WIN32_FIND_DATAW findData) => FindNextFileW(_handle, out findData);
 
-        public bool IsInvalid => _handle == IntPtr.Zero || _handle == new IntPtr(-1);
+        public bool IsInvalid => _handle == 0 || _handle == -1;
 
         public void Dispose() => FindClose(_handle);
 
         #region P/Invoke
 
         [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern IntPtr FindFirstFileExW(
+        private static extern nint FindFirstFileExW(
             string lpFileName,
             int fInfoLevelId,
             out WIN32_FIND_DATAW lpFindFileData,
             int fSearchOp,
-            IntPtr lpSearchFilter,
+            nint lpSearchFilter,
             int dwAdditionalFlags);
 
         [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
-        private static extern bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
+        private static extern bool FindNextFileW(nint hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
-        private static extern bool FindClose(IntPtr hFindFile);
+        private static extern bool FindClose(nint hFindFile);
 
         #endregion
     }

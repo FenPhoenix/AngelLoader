@@ -17,12 +17,12 @@ public static class DeviceIoControlHelper
     private static extern unsafe bool DeviceIoControl(
         SafeFileHandle hDevice,
         IOControlCode dwIoControlCode,
-        [In] IntPtr lpInBuffer,
+        [In] nint lpInBuffer,
         uint nInBufferSize,
         [Out] void* lpOutBuffer,
         uint nOutBufferSize,
         out uint lpBytesReturned,
-        [In] IntPtr lpOverlapped
+        [In] nint lpOverlapped
     );
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class DeviceIoControlHelper
 
         do
         {
-            IntPtr inputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(input));
+            nint inputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(input));
             try
             {
                 Marshal.StructureToPtr(input, inputPtr, true);
@@ -59,7 +59,7 @@ public static class DeviceIoControlHelper
                         lpOutBuffer: outputPtr,
                         nOutBufferSize: outputLength,
                         lpBytesReturned: out uint returnedBytes,
-                        lpOverlapped: IntPtr.Zero);
+                        lpOverlapped: 0);
 
                     if (!success)
                     {

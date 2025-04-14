@@ -155,12 +155,12 @@ internal static class __Error
     [DllImport("kernel32.dll", ExactSpelling = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
     private static extern int FormatMessage(
         int dwFlags,
-        IntPtr lpSource,
+        nint lpSource,
         int dwMessageId,
         int dwLanguageId,
         StringBuilder lpBuffer,
         int nSize,
-        IntPtr va_list_arguments);
+        nint va_list_arguments);
 
     // Gets an error message for a Win32 error code.
     private static string GetMessage(int errorCode)
@@ -169,7 +169,7 @@ internal static class __Error
         int result = FormatMessage(
             FORMAT_MESSAGE_IGNORE_INSERTS |
             FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ARGUMENT_ARRAY,
-            IntPtr.Zero, errorCode, 0, sb, sb.Capacity, IntPtr.Zero);
+            0, errorCode, 0, sb, sb.Capacity, 0);
         if (result != 0)
         {
             // result is the # of characters copied to the StringBuilder on NT,

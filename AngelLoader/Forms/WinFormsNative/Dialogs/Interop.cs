@@ -215,7 +215,7 @@ internal static class NativeMethods
     }
 
     [DllImport("shell32.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
+    internal static extern HResult SHCreateItemFromParsingName([MarshalAs(UnmanagedType.LPWStr)] string pszPath, nint pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppv);
 }
 
 #region Interfaces
@@ -231,7 +231,7 @@ internal interface IFileDialog
 {
     [PreserveSig]
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    int Show([In] IntPtr parent);
+    int Show([In] nint parent);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void SetFileTypes([In] uint cFileTypes, [In, MarshalAs(UnmanagedType.LPArray)] NativeMethods.COMDLG_FILTERSPEC[] rgFilterSpec);
@@ -300,7 +300,7 @@ internal interface IFileDialog
     void ClearClientData();
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
+    void SetFilter([MarshalAs(UnmanagedType.Interface)] nint pFilter);
 }
 #endif
 
@@ -314,7 +314,7 @@ internal interface IFileOpenDialog //: IFileDialog // IFileDialog is commented-o
 {
     [PreserveSig]
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    HResult Show([In] IntPtr parent);
+    HResult Show([In] nint parent);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void SetFileTypes([In] uint cFileTypes, [In] ref NativeMethods.COMDLG_FILTERSPEC rgFilterSpec);
@@ -383,7 +383,7 @@ internal interface IFileOpenDialog //: IFileDialog // IFileDialog is commented-o
     void ClearClientData();
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetFilter([MarshalAs(UnmanagedType.Interface)] IntPtr pFilter);
+    void SetFilter([MarshalAs(UnmanagedType.Interface)] nint pFilter);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetResults([MarshalAs(UnmanagedType.Interface)] out IShellItemArray ppenum);
@@ -428,14 +428,14 @@ internal interface IFileDialogEvents
 internal interface IShellItem
 {
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void BindToHandler([In, MarshalAs(UnmanagedType.Interface)] IntPtr pbc, [In] ref Guid bhid, [In] ref Guid riid, out IntPtr ppv);
+    void BindToHandler([In, MarshalAs(UnmanagedType.Interface)] nint pbc, [In] ref Guid bhid, [In] ref Guid riid, out nint ppv);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetParent([MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
     [PreserveSig]
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    HResult GetDisplayName([In] NativeMethods.SIGDN sigdnName, out IntPtr ppszName);
+    HResult GetDisplayName([In] NativeMethods.SIGDN sigdnName, out nint ppszName);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetAttributes([In] uint sfgaoMask, out uint psfgaoAttribs);
@@ -448,13 +448,13 @@ internal interface IShellItem
 internal interface IShellItemArray
 {
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void BindToHandler([In, MarshalAs(UnmanagedType.Interface)] IntPtr pbc, [In] ref Guid rbhid, [In] ref Guid riid, out IntPtr ppvOut);
+    void BindToHandler([In, MarshalAs(UnmanagedType.Interface)] nint pbc, [In] ref Guid rbhid, [In] ref Guid riid, out nint ppvOut);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetPropertyStore([In] int Flags, [In] ref Guid riid, out IntPtr ppv);
+    void GetPropertyStore([In] int Flags, [In] ref Guid riid, out nint ppv);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetPropertyDescriptionList([In] ref NativeMethods.PROPERTYKEY keyType, [In] ref Guid riid, out IntPtr ppv);
+    void GetPropertyDescriptionList([In] ref NativeMethods.PROPERTYKEY keyType, [In] ref Guid riid, out nint ppv);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetAttributes([In] uint dwAttribFlags, [In] uint sfgaoMask, out uint psfgaoAttribs);
@@ -466,7 +466,7 @@ internal interface IShellItemArray
     void GetItemAt([In] uint dwIndex, [MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi);
 
     [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumItems([MarshalAs(UnmanagedType.Interface)] out IntPtr ppenumShellItems);
+    void EnumItems([MarshalAs(UnmanagedType.Interface)] out nint ppenumShellItems);
 }
 
 #endregion

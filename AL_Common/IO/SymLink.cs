@@ -80,7 +80,7 @@ public static partial class Common
                 lpSecurityAttributes: null,
                 FileMode.Open,
                 dwFlagsAndAttributes: flags,
-                hTemplateFile: IntPtr.Zero);
+                hTemplateFile: 0);
 
             return handle;
         }
@@ -96,7 +96,7 @@ public static partial class Common
             Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
             FileMode dwCreationDisposition,
             int dwFlagsAndAttributes,
-            IntPtr hTemplateFile);
+            nint hTemplateFile);
 
         private static unsafe SafeFileHandle CreateFile(
             string lpFileName,
@@ -105,7 +105,7 @@ public static partial class Common
             Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
             FileMode dwCreationDisposition,
             int dwFlagsAndAttributes,
-            IntPtr hTemplateFile)
+            nint hTemplateFile)
         {
             lpFileName = PathInternal.EnsureExtendedPrefixIfNeeded(lpFileName);
             return CreateFilePrivate(
@@ -254,7 +254,7 @@ public static partial class Common
                         lpOutBuffer: pBuffer,
                         nOutBufferSize: Interop.Kernel32.MAXIMUM_REPARSE_DATA_BUFFER_SIZE,
                         out _,
-                        IntPtr.Zero);
+                        0);
                 }
 
                 if (!success)

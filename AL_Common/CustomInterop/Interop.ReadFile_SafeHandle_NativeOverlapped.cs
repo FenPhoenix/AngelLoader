@@ -18,7 +18,7 @@ internal static partial class Interop
             SafeHandle handle,
             byte* bytes,
             int numBytesToRead,
-            System.IntPtr numBytesRead_mustBeZero,
+            nint numBytesRead_mustBeZero,
             NativeOverlapped* overlapped);
 #endif
 

@@ -8,5 +8,5 @@ public struct STORAGE_PROPERTY_QUERY
 {
     public STORAGE_PROPERTY_ID PropertyId;
     public STORAGE_QUERY_TYPE QueryType;
-    public IntPtr AdditionalParameters;
+    public nint AdditionalParameters;
 }

@@ -12,6 +12,6 @@ internal static partial class Interop
     {
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool FindClose(IntPtr hFindFile);
+        internal static extern bool FindClose(nint hFindFile);
     }
 }

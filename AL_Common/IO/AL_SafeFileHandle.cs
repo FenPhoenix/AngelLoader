@@ -86,7 +86,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
     /// </summary>
     /// <param name="preexistingHandle">Handle to wrap</param>
     /// <param name="ownsHandle">Whether to control the handle lifetime</param>
-    public AL_SafeFileHandle(IntPtr preexistingHandle, bool ownsHandle) : base(ownsHandle)
+    public AL_SafeFileHandle(nint preexistingHandle, bool ownsHandle) : base(ownsHandle)
     {
         SetHandle(preexistingHandle);
     }
@@ -197,7 +197,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         flagsAndAttributes |= Interop.Kernel32.SecurityOptions.SECURITY_SQOS_PRESENT |
                               Interop.Kernel32.SecurityOptions.SECURITY_ANONYMOUS;
 
-        AL_SafeFileHandle fileHandle = CreateFile(fullPath, fAccess, share, &secAttrs, mode, flagsAndAttributes, IntPtr.Zero);
+        AL_SafeFileHandle fileHandle = CreateFile(fullPath, fAccess, share, &secAttrs, mode, flagsAndAttributes, 0);
         if (fileHandle.IsInvalid)
         {
             // Return a meaningful exception with the full path.
@@ -247,7 +247,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
 
     [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool CloseHandle(IntPtr handle);
+    private static extern bool CloseHandle(nint handle);
 
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     private static class FileTypes
@@ -269,7 +269,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
         FileMode dwCreationDisposition,
         int dwFlagsAndAttributes,
-        IntPtr hTemplateFile);
+        nint hTemplateFile);
 
     private static unsafe AL_SafeFileHandle CreateFile(
         string lpFileName,
@@ -278,7 +278,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         Interop.Kernel32.SECURITY_ATTRIBUTES* lpSecurityAttributes,
         FileMode dwCreationDisposition,
         int dwFlagsAndAttributes,
-        IntPtr hTemplateFile)
+        nint hTemplateFile)
     {
         lpFileName = PathInternal.EnsureExtendedPrefixIfNeeded(lpFileName);
         return CreateFilePrivate(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
@@ -329,7 +329,7 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
                 lpOutBuffer: &storageReadCapacity,
                 nOutBufferSize: (uint)sizeof(Interop.Kernel32.STORAGE_READ_CAPACITY),
                 out uint bytesReturned,
-                IntPtr.Zero);
+                0);
 
             if (!success)
             {

@@ -121,7 +121,7 @@ internal sealed class DarkTreeView : TreeView, IDarkable, IUpdateRegion
     #endregion
 
 #if DRAW_BORDER
-    private void DrawBorder(IntPtr hWnd)
+    private void DrawBorder(nint hWnd)
     {
         // This draws a buggy extra border an item-height high at the bottom if we collapse an item.
         // Everything seems to look fine without this, so disabling for now.

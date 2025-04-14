@@ -115,16 +115,16 @@ internal static class Native
     #region SendMessageW/PostMessageW
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static extern nint PostMessageW(nint hWnd, int Msg, nint wParam, nint lParam);
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static extern nint SendMessageW(nint hWnd, int Msg, nint wParam, nint lParam);
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern int SendMessageW(IntPtr hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, IntPtr lParam);
+    internal static extern int SendMessageW(nint hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, nint lParam);
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern void SendMessageW(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+    internal static extern void SendMessageW(nint hWnd, int wMsg, nint wParam, ref DATETIMEPICKERINFO lParam);
 
     #endregion
 
@@ -161,7 +161,7 @@ internal static class Native
     internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
-        internal IntPtr hIcon;
+        internal nint hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
         internal fixed char szPath[MAX_PATH];
@@ -172,14 +172,14 @@ internal static class Native
 
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool DestroyIcon(IntPtr hIcon);
+    internal static extern bool DestroyIcon(nint hIcon);
 
     #endregion
 
     #region RichTextBox
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr SetCursor(HandleRef hCursor);
+    internal static extern nint SetCursor(HandleRef hCursor);
 
     #region Reader mode
 
@@ -206,10 +206,10 @@ internal static class Native
     [StructLayout(LayoutKind.Sequential)]
     public struct MSG
     {
-        public IntPtr HWnd;
+        public nint HWnd;
         public uint Msg;
-        public IntPtr WParam;
-        public IntPtr LParam;
+        public nint WParam;
+        public nint LParam;
         public uint time;
         public Point pt;
     }
@@ -218,12 +218,12 @@ internal static class Native
     internal struct READERMODEINFO
     {
         internal int cbSize;
-        internal IntPtr hwnd;
+        internal nint hwnd;
         internal ReaderModeFlags fFlags;
-        internal IntPtr prc;
+        internal nint prc;
         internal ReaderScrollCallbackDelegate pfnScroll;
         internal TranslateDispatchCallbackDelegate fFlags2;
-        internal IntPtr lParam;
+        internal nint lParam;
     }
 
     [DllImport("comctl32.dll", EntryPoint = "#383", ExactSpelling = true, SetLastError = true)]
@@ -239,8 +239,8 @@ internal static class Native
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     internal struct NMHDR
     {
-        internal IntPtr hwndFrom;
-        internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
+        internal nint hwndFrom;
+        internal nint idFrom; //This is declared as UINT_PTR in winuser.h
         internal int code;
     }
 
@@ -251,8 +251,8 @@ internal static class Native
     {
         internal NMHDR nmhdr;
         internal int msg = 0;
-        internal IntPtr wParam = IntPtr.Zero;
-        internal IntPtr lParam = IntPtr.Zero;
+        internal nint wParam = 0;
+        internal nint lParam = 0;
         internal CHARRANGE? charrange = null;
     }
 
@@ -291,19 +291,19 @@ internal static class Native
     #region Device context
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    private static extern IntPtr GetWindowDC(IntPtr hWnd);
+    private static extern nint GetWindowDC(nint hWnd);
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    private static extern bool ReleaseDC(nint hWnd, nint hDC);
 
     public sealed class GraphicsContext_Ref : IDisposable
     {
-        private readonly IntPtr _hWnd;
-        private readonly IntPtr _dc;
+        private readonly nint _hWnd;
+        private readonly nint _dc;
         public readonly Graphics G;
 
-        public GraphicsContext_Ref(IntPtr hWnd)
+        public GraphicsContext_Ref(nint hWnd)
         {
             _hWnd = hWnd;
             _dc = GetWindowDC(_hWnd);
@@ -320,11 +320,11 @@ internal static class Native
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
-        private readonly IntPtr _hWnd;
-        private readonly IntPtr _dc;
+        private readonly nint _hWnd;
+        private readonly nint _dc;
         public readonly Graphics G;
 
-        public GraphicsContext(IntPtr hWnd)
+        public GraphicsContext(nint hWnd)
         {
             _hWnd = hWnd;
             _dc = GetWindowDC(_hWnd);
@@ -344,9 +344,9 @@ internal static class Native
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+    internal static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-    internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+    internal static nuint GetWindowLongPtr(nint hWnd, int nIndex)
     {
 #if X64
         return GetWindowLongPtr64(hWnd, nIndex);
@@ -357,14 +357,14 @@ internal static class Native
 
 #if X64
     [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW", ExactSpelling = true)]
-    private static extern UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+    private static extern nuint GetWindowLongPtr64(nint hWnd, int nIndex);
 #else
     [DllImport("user32.dll", EntryPoint = "GetWindowLongW", ExactSpelling = true)]
-    private static extern UIntPtr GetWindowLong32(IntPtr hWnd, int nIndex);
+    private static extern nuint GetWindowLong32(nint hWnd, int nIndex);
 #endif
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr WindowFromPoint(Point pt);
+    internal static extern nint WindowFromPoint(Point pt);
 
     #endregion
 
@@ -374,16 +374,16 @@ internal static class Native
 
     // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
-    internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)((high << 16) | (low & 0xffff));
-#if false
+    internal static nint MAKELPARAM(int low, int high) => (nint)((high << 16) | (low & 0xffff));
+
     internal static int MAKELONG(int low, int high) => (high << 16) | (low & 0xffff);
     internal static int HIWORD(int n) => (n >> 16) & 0xffff;
-    internal static int HIWORD(IntPtr n) => HIWORD(unchecked((int)(long)n));
-#endif
+    internal static int HIWORD(nint n) => HIWORD(unchecked((int)(long)n));
+
     internal static int LOWORD(int n) => n & 0xffff;
-    internal static int LOWORD(IntPtr n) => LOWORD(unchecked((int)(long)n));
-    internal static int SignedHIWORD(IntPtr n) => SignedHIWORD(unchecked((int)(long)n));
-    internal static int SignedLOWORD(IntPtr n) => SignedLOWORD(unchecked((int)(long)n));
+    internal static int LOWORD(nint n) => LOWORD(unchecked((int)(long)n));
+    internal static int SignedHIWORD(nint n) => SignedHIWORD(unchecked((int)(long)n));
+    internal static int SignedLOWORD(nint n) => SignedLOWORD(unchecked((int)(long)n));
     internal static int SignedHIWORD(int n) => (int)(short)((n >> 16) & 0xffff);
     internal static int SignedLOWORD(int n) => (int)(short)(n & 0xFFFF);
 #pragma warning restore IDE0004
@@ -547,13 +547,13 @@ internal static class Native
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+    internal static extern bool GetScrollInfo(nint hwnd, int fnBar, ref SCROLLINFO lpsi);
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern int SetScrollInfo(IntPtr hwnd, int fnBar, [In] ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
+    internal static extern int SetScrollInfo(nint hwnd, int fnBar, [In] ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
 
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
-    internal static extern int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+    internal static extern int GetScrollBarInfo(nint hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
     #endregion
 
@@ -659,9 +659,9 @@ internal static class Native
         internal int stateCheck;
         internal RECT rcButton;
         internal int stateButton;
-        internal IntPtr hwndEdit;
-        internal IntPtr hwndUD;
-        internal IntPtr hwndDropDown;
+        internal nint hwndEdit;
+        internal nint hwndUD;
+        internal nint hwndDropDown;
     }
 
     #endregion
@@ -754,13 +754,13 @@ internal static class Native
     #endregion
 
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+    internal static extern int SetWindowTheme(nint hWnd, string appname, string idlist);
 
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    internal static extern IntPtr OpenThemeData(IntPtr hWnd, string classList);
+    internal static extern nint OpenThemeData(nint hWnd, string classList);
 
     [DllImport("uxtheme.dll", ExactSpelling = true)]
-    public static extern int CloseThemeData(IntPtr hTheme);
+    public static extern int CloseThemeData(nint hTheme);
 
     [DllImport("uxtheme.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -768,7 +768,7 @@ internal static class Native
 
 #if !X64
     [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
-    internal static extern IntPtr CreateSolidBrush(int crColor);
+    internal static extern nint CreateSolidBrush(int crColor);
 #endif
 
     // Ridiculous Windows using a different value on different versions...
@@ -776,26 +776,26 @@ internal static class Native
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
     [DllImport("dwmapi.dll", ExactSpelling = true)]
-    internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
+    internal static extern int DwmSetWindowAttribute(nint hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
 
     #region Enumerate window handles
 
-    private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+    private delegate bool EnumThreadDelegate(nint hWnd, nint lParam);
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, IntPtr lParam);
+    private static extern bool EnumThreadWindows(int dwThreadId, EnumThreadDelegate lpfn, nint lParam);
 
-    internal static List<IntPtr> GetProcessWindowHandles()
+    internal static List<nint> GetProcessWindowHandles()
     {
-        List<IntPtr> handles = new();
+        List<nint> handles = new();
 
         using Process currentProcess = Process.GetCurrentProcess();
         foreach (ProcessThread thread in currentProcess.Threads)
         {
-            EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, IntPtr.Zero);
+            EnumThreadWindows(thread.Id, (hWnd, _) => { handles.Add(hWnd); return true; }, 0);
         }
 
         return handles;
@@ -861,7 +861,7 @@ internal static class Native
 
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+    private static extern bool GetWindowPlacement(nint hWnd, ref WINDOWPLACEMENT lpwndpl);
 
     internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
     {
@@ -1008,20 +1008,20 @@ internal static class Native
         public bool fIcon;
         public int xHotspot;
         public int yHotspot;
-        public IntPtr hbmMask;
-        public IntPtr hbmColor;
+        public nint hbmMask;
+        public nint hbmColor;
     }
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
+    internal static extern nint CreateIconIndirect(ref ICONINFO icon);
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
+    internal static extern bool GetIconInfo(nint hIcon, ref ICONINFO pIconInfo);
 
     [DllImport("gdi32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool DeleteObject(IntPtr handle);
+    internal static extern bool DeleteObject(nint handle);
 
     #endregion
 

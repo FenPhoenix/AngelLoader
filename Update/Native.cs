@@ -28,7 +28,7 @@ internal static class Native
     #region SendMessageW/PostMessageW
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static extern nint SendMessageW(nint hWnd, int Msg, nint wParam, nint lParam);
 
     #endregion
 
@@ -53,7 +53,7 @@ internal static class Native
     internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
-        internal IntPtr hIcon;
+        internal nint hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
         internal fixed char szPath[MAX_PATH];
@@ -64,7 +64,7 @@ internal static class Native
 
     [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool DestroyIcon(IntPtr hIcon);
+    internal static extern bool DestroyIcon(nint hIcon);
 
     #endregion
 
@@ -73,20 +73,20 @@ internal static class Native
     #region Device context
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    private static extern IntPtr GetWindowDC(IntPtr hWnd);
+    private static extern nint GetWindowDC(nint hWnd);
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    private static extern bool ReleaseDC(nint hWnd, nint hDC);
 
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
-        private readonly IntPtr _hWnd;
-        private readonly IntPtr _dc;
+        private readonly nint _hWnd;
+        private readonly nint _dc;
         public readonly Graphics G;
 
-        public GraphicsContext(IntPtr hWnd)
+        public GraphicsContext(nint hWnd)
         {
             _hWnd = hWnd;
             _dc = GetWindowDC(_hWnd);
@@ -105,14 +105,14 @@ internal static class Native
     #region Theming
 
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
-    internal static extern int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+    internal static extern int SetWindowTheme(nint hWnd, string appname, string idlist);
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
     [DllImport("dwmapi.dll", ExactSpelling = true)]
-    internal static extern int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
+    internal static extern int DwmSetWindowAttribute(nint hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
 }
