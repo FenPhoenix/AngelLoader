@@ -136,7 +136,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
     private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText, null);
+        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToStringOrEmpty(), ReadmeType.RichText, null);
 
         string notesFile = GetCurrentNotesFile();
         NotesTextBox.Text = File.Exists(notesFile) ? File.ReadAllText(notesFile) : "";
@@ -186,7 +186,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
     private string GetCurrentNotesFile() =>
         Path.Combine(SaveBaseDir, RTFFileComboBox
-            .SelectedItem.ToString()
+            .SelectedItem.ToStringOrEmpty()
             .Substring(FMsCacheDir.Length + 1)
             .ToForwardSlashes()
             .Replace("/", "___") + ".txt");
