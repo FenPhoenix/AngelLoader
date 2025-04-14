@@ -76,16 +76,16 @@ internal static partial class Native
     #region SendMessageW/PostMessageW
 
     [LibraryImport("user32.dll")]
-    internal static partial IntPtr PostMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static partial nint PostMessageW(nint hWnd, int Msg, nint wParam, nint lParam);
 
     [LibraryImport("user32.dll")]
-    internal static partial IntPtr SendMessageW(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+    internal static partial nint SendMessageW(nint hWnd, int Msg, nint wParam, nint lParam);
 
     [LibraryImport("user32.dll")]
-    internal static partial int SendMessageW(IntPtr hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, IntPtr lParam);
+    internal static partial int SendMessageW(nint hWnd, int wMsg, [MarshalAs(UnmanagedType.Bool)] bool wParam, nint lParam);
 
     [LibraryImport("user32.dll")]
-    internal static partial void SendMessageW(IntPtr hWnd, int wMsg, IntPtr wParam, ref DATETIMEPICKERINFO lParam);
+    internal static partial void SendMessageW(nint hWnd, int wMsg, nint wParam, ref DATETIMEPICKERINFO lParam);
 
     #endregion
 
@@ -122,7 +122,7 @@ internal static partial class Native
     internal unsafe struct SHSTOCKICONINFO
     {
         internal uint cbSize;
-        internal IntPtr hIcon;
+        internal nint hIcon;
         internal int iSysIconIndex;
         internal int iIcon;
         internal fixed char szPath[MAX_PATH];
@@ -133,7 +133,7 @@ internal static partial class Native
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool DestroyIcon(IntPtr hIcon);
+    internal static partial bool DestroyIcon(nint hIcon);
 
     #endregion
 
@@ -164,10 +164,10 @@ internal static partial class Native
     [StructLayout(LayoutKind.Sequential)]
     public struct MSG
     {
-        public IntPtr HWnd;
+        public nint HWnd;
         public uint Msg;
-        public IntPtr WParam;
-        public IntPtr LParam;
+        public nint WParam;
+        public nint LParam;
         public uint time;
         public Point pt;
     }
@@ -176,12 +176,12 @@ internal static partial class Native
     internal struct READERMODEINFO
     {
         internal int cbSize;
-        internal IntPtr hwnd;
+        internal nint hwnd;
         internal ReaderModeFlags fFlags;
-        internal IntPtr prc;
-        internal IntPtr pfnScroll;
-        internal IntPtr fFlags2;
-        internal IntPtr lParam;
+        internal nint prc;
+        internal nint pfnScroll;
+        internal nint fFlags2;
+        internal nint lParam;
     }
 
     [LibraryImport("comctl32.dll", EntryPoint = "#383", SetLastError = true)]
@@ -197,8 +197,8 @@ internal static partial class Native
     [UsedImplicitly(ImplicitUseTargetFlags.WithMembers)]
     internal struct NMHDR
     {
-        internal IntPtr hwndFrom;
-        internal IntPtr idFrom; //This is declared as UINT_PTR in winuser.h
+        internal nint hwndFrom;
+        internal nint idFrom; //This is declared as UINT_PTR in winuser.h
         internal int code;
     }
 
@@ -209,8 +209,8 @@ internal static partial class Native
     {
         internal NMHDR nmhdr;
         internal int msg = 0;
-        internal IntPtr wParam = IntPtr.Zero;
-        internal IntPtr lParam = IntPtr.Zero;
+        internal nint wParam = 0;
+        internal nint lParam = 0;
         internal CHARRANGE? charrange = null;
     }
 
@@ -247,19 +247,19 @@ internal static partial class Native
     #region Device context
 
     [LibraryImport("user32.dll")]
-    private static partial IntPtr GetWindowDC(IntPtr hWnd);
+    private static partial nint GetWindowDC(nint hWnd);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool ReleaseDC(IntPtr hWnd, IntPtr hDC);
+    private static partial bool ReleaseDC(nint hWnd, nint hDC);
 
     public sealed class GraphicsContext_Ref : IDisposable
     {
-        private readonly IntPtr _hWnd;
-        private readonly IntPtr _dc;
+        private readonly nint _hWnd;
+        private readonly nint _dc;
         public readonly Graphics G;
 
-        public GraphicsContext_Ref(IntPtr hWnd)
+        public GraphicsContext_Ref(nint hWnd)
         {
             _hWnd = hWnd;
             _dc = GetWindowDC(_hWnd);
@@ -276,11 +276,11 @@ internal static partial class Native
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct GraphicsContext
     {
-        private readonly IntPtr _hWnd;
-        private readonly IntPtr _dc;
+        private readonly nint _hWnd;
+        private readonly nint _dc;
         public readonly Graphics G;
 
-        public GraphicsContext(IntPtr hWnd)
+        public GraphicsContext(nint hWnd)
         {
             _hWnd = hWnd;
             _dc = GetWindowDC(_hWnd);
@@ -300,20 +300,20 @@ internal static partial class Native
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+    internal static partial bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-    internal static UIntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex)
+    internal static nuint GetWindowLongPtr(nint hWnd, int nIndex)
     {
         return GetWindowLongPtr64(hWnd, nIndex);
     }
 
     [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
-    private static partial UIntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+    private static partial nuint GetWindowLongPtr64(nint hWnd, int nIndex);
 
     [LibraryImport("user32.dll", EntryPoint = "WindowFromPoint")]
-    private static partial IntPtr WindowFromPoint_Native(POINT pt);
+    private static partial nint WindowFromPoint_Native(POINT pt);
 
-    internal static IntPtr WindowFromPoint(Point pt) => WindowFromPoint_Native(new POINT(pt.X, pt.Y));
+    internal static nint WindowFromPoint(Point pt) => WindowFromPoint_Native(new POINT(pt.X, pt.Y));
 
     #endregion
 
@@ -323,16 +323,14 @@ internal static partial class Native
 
     // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
-    internal static IntPtr MAKELPARAM(int low, int high) => (IntPtr)((high << 16) | (low & 0xffff));
-#if false
+    internal static nint MAKELPARAM(int low, int high) => (nint)((high << 16) | (low & 0xffff));
     internal static int MAKELONG(int low, int high) => (high << 16) | (low & 0xffff);
     internal static int HIWORD(int n) => (n >> 16) & 0xffff;
-    internal static int HIWORD(IntPtr n) => HIWORD(unchecked((int)(long)n));
-#endif
+    internal static int HIWORD(nint n) => HIWORD(unchecked((int)(long)n));
     internal static int LOWORD(int n) => n & 0xffff;
-    internal static int LOWORD(IntPtr n) => LOWORD(unchecked((int)(long)n));
-    internal static int SignedHIWORD(IntPtr n) => SignedHIWORD(unchecked((int)(long)n));
-    internal static int SignedLOWORD(IntPtr n) => SignedLOWORD(unchecked((int)(long)n));
+    internal static int LOWORD(nint n) => LOWORD(unchecked((int)(long)n));
+    internal static int SignedHIWORD(nint n) => SignedHIWORD(unchecked((int)(long)n));
+    internal static int SignedLOWORD(nint n) => SignedLOWORD(unchecked((int)(long)n));
     internal static int SignedHIWORD(int n) => (int)(short)((n >> 16) & 0xffff);
     internal static int SignedLOWORD(int n) => (int)(short)(n & 0xFFFF);
 #pragma warning restore IDE0004
@@ -496,13 +494,13 @@ internal static partial class Native
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
+    internal static partial bool GetScrollInfo(nint hwnd, int fnBar, ref SCROLLINFO lpsi);
 
     [LibraryImport("user32.dll")]
-    internal static partial int SetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
+    internal static partial int SetScrollInfo(nint hwnd, int fnBar, ref SCROLLINFO lpsi, [MarshalAs(UnmanagedType.Bool)] bool fRedraw);
 
     [LibraryImport("user32.dll", EntryPoint = "GetScrollBarInfo", SetLastError = true)]
-    internal static partial int GetScrollBarInfo(IntPtr hWnd, uint idObject, ref SCROLLBARINFO psbi);
+    internal static partial int GetScrollBarInfo(nint hWnd, uint idObject, ref SCROLLBARINFO psbi);
 
     #endregion
 
@@ -608,9 +606,9 @@ internal static partial class Native
         internal int stateCheck;
         internal RECT rcButton;
         internal int stateButton;
-        internal IntPtr hwndEdit;
-        internal IntPtr hwndUD;
-        internal IntPtr hwndDropDown;
+        internal nint hwndEdit;
+        internal nint hwndUD;
+        internal nint hwndDropDown;
     }
 
     #endregion
@@ -703,52 +701,52 @@ internal static partial class Native
     #endregion
 
     [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
-    internal static partial int SetWindowTheme(IntPtr hWnd, string appname, string idlist);
+    internal static partial int SetWindowTheme(nint hWnd, string appname, string idlist);
 
     [LibraryImport("uxtheme.dll", StringMarshalling = StringMarshalling.Utf16)]
-    internal static partial IntPtr OpenThemeData(IntPtr hWnd, string classList);
+    internal static partial nint OpenThemeData(nint hWnd, string classList);
 
     [LibraryImport("uxtheme.dll")]
-    public static partial int CloseThemeData(IntPtr hTheme);
+    public static partial int CloseThemeData(nint hTheme);
 
     [LibraryImport("uxtheme.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool IsThemeActive();
 
     [LibraryImport("gdi32.dll", SetLastError = true)]
-    internal static partial IntPtr CreateSolidBrush(int crColor);
+    internal static partial nint CreateSolidBrush(int crColor);
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
     [LibraryImport("dwmapi.dll")]
-    internal static partial int DwmSetWindowAttribute(IntPtr hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
+    internal static partial int DwmSetWindowAttribute(nint hwnd, int dwAttribute, ref int pvAttribute, int cbAttribute);
 
     #endregion
 
     #region Enumerate window handles
 
-    private delegate bool EnumThreadDelegate(IntPtr hWnd, IntPtr lParam);
+    private delegate bool EnumThreadDelegate(nint hWnd, nint lParam);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool EnumThreadWindows(int dwThreadId, IntPtr lpfn, IntPtr lParam);
+    private static partial bool EnumThreadWindows(int dwThreadId, nint lpfn, nint lParam);
 
-    internal static List<IntPtr> GetProcessWindowHandles()
+    internal static List<nint> GetProcessWindowHandles()
     {
-        List<IntPtr> handles = new();
+        List<nint> handles = new();
 
         using Process currentProcess = Process.GetCurrentProcess();
-        IntPtr callback = Marshal.GetFunctionPointerForDelegate<EnumThreadDelegate>(Callback);
+        nint callback = Marshal.GetFunctionPointerForDelegate<EnumThreadDelegate>(Callback);
         foreach (ProcessThread thread in currentProcess.Threads)
         {
-            EnumThreadWindows(thread.Id, callback, IntPtr.Zero);
+            EnumThreadWindows(thread.Id, callback, 0);
         }
 
         return handles;
 
-        bool Callback(IntPtr hWnd, IntPtr _)
+        bool Callback(nint hWnd, nint _)
         {
             handles.Add(hWnd);
             return true;
@@ -815,7 +813,7 @@ internal static partial class Native
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetWindowPlacement(IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl);
+    private static partial bool GetWindowPlacement(nint hWnd, ref WINDOWPLACEMENT lpwndpl);
 
     internal static bool TryGetRealWindowBounds(Form form, out Rectangle rect)
     {
@@ -962,20 +960,20 @@ internal static partial class Native
         public bool fIcon;
         public int xHotspot;
         public int yHotspot;
-        public IntPtr hbmMask;
-        public IntPtr hbmColor;
+        public nint hbmMask;
+        public nint hbmColor;
     }
 
     [DllImport("user32.dll", ExactSpelling = true)]
-    internal static extern IntPtr CreateIconIndirect(ref ICONINFO icon);
+    internal static extern nint CreateIconIndirect(ref ICONINFO icon);
 
     [DllImport("user32.dll", ExactSpelling = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static extern bool GetIconInfo(IntPtr hIcon, ref ICONINFO pIconInfo);
+    internal static extern bool GetIconInfo(nint hIcon, ref ICONINFO pIconInfo);
 
     [LibraryImport("gdi32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool DeleteObject(IntPtr handle);
+    internal static partial bool DeleteObject(nint handle);
 
     #endregion
 

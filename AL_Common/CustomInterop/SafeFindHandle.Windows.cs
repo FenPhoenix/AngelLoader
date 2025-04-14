@@ -10,9 +10,9 @@ namespace AL_Common;
 [UsedImplicitly]
 internal sealed class SafeFindHandle : SafeHandle
 {
-    public SafeFindHandle() : base(IntPtr.Zero, true) { }
+    public SafeFindHandle() : base(0, true) { }
 
     protected override bool ReleaseHandle() => Interop.Kernel32.FindClose(handle);
 
-    public override bool IsInvalid => handle == IntPtr.Zero || handle == new IntPtr(-1);
+    public override bool IsInvalid => handle == 0 || handle == -1;
 }

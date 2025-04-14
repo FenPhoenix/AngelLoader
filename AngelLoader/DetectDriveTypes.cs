@@ -118,10 +118,10 @@ internal static partial class DetectDriveData
         string lpFileName,
         FileAccess dwDesiredAccess,
         FileShare dwShareMode,
-        IntPtr lpSecurityAttributes,
+        nint lpSecurityAttributes,
         FileMode dwCreationDisposition,
         FileAttributes dwFlagsAndAttributes,
-        IntPtr hTemplateFile);
+        nint hTemplateFile);
 
     private static (string Root, bool IsLink)
     GetRoot(string path, IOPathType ioPathType)
@@ -184,10 +184,10 @@ internal static partial class DetectDriveData
                         */
                         dwDesiredAccess: 0,
                         dwShareMode: FileShare.ReadWrite,
-                        lpSecurityAttributes: IntPtr.Zero,
+                        lpSecurityAttributes: 0,
                         dwCreationDisposition: FileMode.Open,
                         dwFlagsAndAttributes: FileAttributes.Normal,
-                        hTemplateFile: IntPtr.Zero);
+                        hTemplateFile: 0);
                 }
 
                 StorageDeviceWrapper device = new(safeHandle);

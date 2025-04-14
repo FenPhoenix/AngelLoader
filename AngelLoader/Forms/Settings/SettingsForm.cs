@@ -146,7 +146,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 Config.VisualTheme = newTheme;
                 SetTheme(Config.VisualTheme, Config.FollowSystemTheme, startup: false);
-                m.Result = IntPtr.Zero;
+                m.Result = 0;
             }
         }
         base.WndProc(ref m);

@@ -32,18 +32,18 @@ public static partial class FastIO_Native
         private const int FindExInfoBasic = 1;
         private const int FindExSearchNameMatch = 0;
 
-        private readonly IntPtr _handle;
+        private readonly nint _handle;
 
-        private FileFinder(IntPtr handle) => _handle = handle;
+        private FileFinder(nint handle) => _handle = handle;
 
         public static FileFinder Create(string fileName, int additionalFlags, out FindData findData)
         {
-            IntPtr handle = FindFirstFileExW(
+            nint handle = FindFirstFileExW(
                 fileName,
                 FindExInfoBasic,
                 out WIN32_FIND_DATAW findDataInternal,
                 FindExSearchNameMatch,
-                IntPtr.Zero,
+                0,
                 additionalFlags);
 
             findData = new FindData(findDataInternal);
@@ -57,7 +57,7 @@ public static partial class FastIO_Native
             return success;
         }
 
-        public bool IsInvalid => _handle == IntPtr.Zero || _handle == new IntPtr(-1);
+        public bool IsInvalid => _handle == 0 || _handle == -1;
 
         public void Dispose() => FindClose(_handle);
     }
@@ -65,21 +65,21 @@ public static partial class FastIO_Native
     #region P/Invoke
 
     [LibraryImport("kernel32.dll", SetLastError = true, StringMarshalling = StringMarshalling.Utf16)]
-    private static partial IntPtr FindFirstFileExW(
+    private static partial nint FindFirstFileExW(
         string lpFileName,
         int fInfoLevelId,
         out WIN32_FIND_DATAW lpFindFileData,
         int fSearchOp,
-        IntPtr lpSearchFilter,
+        nint lpSearchFilter,
         int dwAdditionalFlags);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool FindNextFileW(IntPtr hFindFile, out WIN32_FIND_DATAW lpFindFileData);
+    private static partial bool FindNextFileW(nint hFindFile, out WIN32_FIND_DATAW lpFindFileData);
 
     [LibraryImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool FindClose(IntPtr hFindFile);
+    private static partial bool FindClose(nint hFindFile);
 
     #endregion
 

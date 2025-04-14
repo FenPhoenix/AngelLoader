@@ -28,13 +28,13 @@ internal static class ControlUtils
     internal static void SuspendDrawing(this Control control)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
-        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, false, IntPtr.Zero);
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, false, 0);
     }
 
     internal static void ResumeDrawing(this Control control, bool invalidateInsteadOfRefresh = false)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
-        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, 0);
         if (invalidateInsteadOfRefresh)
         {
             control.Invalidate();
@@ -51,7 +51,7 @@ internal static class ControlUtils
         bool invalidateInsteadOfRefresh = false)
     {
         if (!control.IsHandleCreated || !control.Visible) return;
-        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, IntPtr.Zero);
+        Native.SendMessageW(control.Handle, Native.WM_SETREDRAW, true, 0);
 
         /*
         Focus after the enable-redraw message but before the refresh.
@@ -151,8 +151,8 @@ internal static class ControlUtils
     internal static void HideFocusRectangle(this Control control) => Native.SendMessageW(
         control.Handle,
         Native.WM_CHANGEUISTATE,
-        new IntPtr(Native.SetControlFocusToHidden),
-        IntPtr.Zero);
+        Native.SetControlFocusToHidden,
+        0);
 
     #region Text alignment flags
 
@@ -188,7 +188,7 @@ internal static class ControlUtils
 
     #region Scrolling
 
-    internal static Native.SCROLLINFO GetCurrentScrollInfo(IntPtr handle, int direction)
+    internal static Native.SCROLLINFO GetCurrentScrollInfo(nint handle, int direction)
     {
         Native.SCROLLINFO si = new();
         si.cbSize = (uint)Marshal.SizeOf(si);
@@ -197,16 +197,15 @@ internal static class ControlUtils
         return si;
     }
 
-    internal static void RepositionScroll(IntPtr handle, Native.SCROLLINFO si, int direction)
+    internal static void RepositionScroll(nint handle, Native.SCROLLINFO si, int direction)
     {
         Native.SetScrollInfo(handle, direction, ref si, true);
 
         // Send a WM_*SCROLL scroll message using SB_THUMBTRACK as wParam
         // SB_THUMBTRACK: low-order word of wParam, si.nPos high-order word of wParam
-        IntPtr ptrWParam = new(Native.SB_THUMBTRACK + (0x10000 * si.nPos));
-
-        IntPtr wp = (long)ptrWParam >= 0 ? ptrWParam : (IntPtr)Native.SB_THUMBTRACK;
-        Native.SendMessageW(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, IntPtr.Zero);
+        nint ptrWParam = Native.MAKELPARAM((int)Native.SB_THUMBTRACK, si.nPos);
+        nint wp = ptrWParam >= 0 ? ptrWParam : (nint)Native.SB_THUMBTRACK;
+        Native.SendMessageW(handle, direction == Native.SB_VERT ? Native.WM_VSCROLL : Native.WM_HSCROLL, wp, 0);
     }
 
     #endregion
@@ -262,7 +261,7 @@ internal static class ControlUtils
             sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
 
             int result = Native.SHGetStockIconInfo(sysIcon, Native.SHGSI_ICON, ref sii);
-            Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
+            Marshal.ThrowExceptionForHR(result, -1);
 
             pictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
         }
@@ -521,8 +520,8 @@ internal static class ControlUtils
 
         try
         {
-            List<IntPtr> handles = Native.GetProcessWindowHandles();
-            foreach (IntPtr handle in handles)
+            List<nint> handles = Native.GetProcessWindowHandles();
+            foreach (nint handle in handles)
             {
                 NativeWindow? nw = NativeWindow.FromHandle(handle);
                 if (nw == null || nw.GetType() != _toolTipNativeWindowClass) continue;
@@ -967,13 +966,13 @@ internal static class ControlUtils
         cursor = null;
 
         Native.ICONINFO iconInfo = new();
-        IntPtr iconHandle = IntPtr.Zero;
-        IntPtr cursorPtr = IntPtr.Zero;
+        nint iconHandle = 0;
+        nint cursorPtr = 0;
         try
         {
             iconHandle = bitmap.GetHicon();
 
-            if (!Native.GetIconInfo(iconHandle, ref iconInfo) || iconHandle == IntPtr.Zero)
+            if (!Native.GetIconInfo(iconHandle, ref iconInfo) || iconHandle == 0)
             {
                 return false;
             }
@@ -985,7 +984,7 @@ internal static class ControlUtils
             iconInfo.fIcon = false;
 
             cursorPtr = Native.CreateIconIndirect(ref iconInfo);
-            if (cursorPtr == IntPtr.Zero)
+            if (cursorPtr == 0)
             {
                 Native.DeleteObject(cursorPtr);
                 return false;

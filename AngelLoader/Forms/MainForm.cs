@@ -307,10 +307,10 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 Config.VisualTheme = newTheme;
                 SetTheme(Config.VisualTheme);
-                m.Result = IntPtr.Zero;
+                m.Result = 0;
 
-                List<IntPtr> handles = Native.GetProcessWindowHandles();
-                foreach (IntPtr handle in handles)
+                List<nint> handles = Native.GetProcessWindowHandles();
+                foreach (nint handle in handles)
                 {
                     Control? control = Control.FromHandle(handle);
                     if (control is DarkFormBase form) form.RespondToSystemThemeChange();
@@ -325,7 +325,7 @@ public sealed partial class MainForm : DarkFormBase,
         const bool BlockMessage = true;
         const bool PassMessageOn = false;
 
-        static bool TryGetHWndFromMousePos(Message msg, out IntPtr result, [NotNullWhen(true)] out Control? control)
+        static bool TryGetHWndFromMousePos(Message msg, out nint result, [NotNullWhen(true)] out Control? control)
         {
             Point pos = new(Native.SignedLOWORD(msg.LParam), Native.SignedHIWORD(msg.LParam));
             result = Native.WindowFromPoint(pos);
@@ -344,7 +344,7 @@ public sealed partial class MainForm : DarkFormBase,
             // Do this check inside each if block rather than above, because the message may not
             // be a mousemove message, and in that case we'd be trying to get a window point from a random
             // value, and that causes the min,max,close button flickering.
-            if (!TryGetHWndFromMousePos(m, out IntPtr hWnd, out Control? controlOver)) return PassMessageOn;
+            if (!TryGetHWndFromMousePos(m, out nint hWnd, out Control? controlOver)) return PassMessageOn;
 
             if (ViewBlocked || CursorOutsideAddTagsDropDownArea()) return BlockMessage;
 
@@ -360,7 +360,7 @@ public sealed partial class MainForm : DarkFormBase,
 
                     FilterBarFLP.HorizontalScroll.SmallChange = 45;
 
-                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, 0);
 
                     FilterBarFLP.HorizontalScroll.SmallChange = origSmallChange;
                 }
@@ -2868,7 +2868,7 @@ public sealed partial class MainForm : DarkFormBase,
     {
         if (_repeatButtonRunning) return;
         int direction = sender == FilterBarScrollLeftButton ? Native.SB_LINELEFT : Native.SB_LINERIGHT;
-        Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero);
+        Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, 0);
     }
 
     private void FilterBarScrollButtons_MouseDown(object? sender, MouseEventArgs e)
@@ -2885,7 +2885,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             while (_repeatButtonRunning)
             {
-                Invoke(new Action(() => Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, IntPtr.Zero)));
+                Invoke(new Action(() => Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, direction, 0)));
                 Thread.Sleep(150);
             }
         });
@@ -2945,7 +2945,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // WinForms? Argh!
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINELEFT, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINELEFT, 0);
                 }
             }
         }
@@ -2958,7 +2958,7 @@ public sealed partial class MainForm : DarkFormBase,
                 // Ditto the above
                 for (int i = 0; i < 8; i++)
                 {
-                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINERIGHT, IntPtr.Zero);
+                    Native.SendMessageW(FilterBarFLP.Handle, Native.WM_SCROLL, Native.SB_LINERIGHT, 0);
                 }
             }
         }
@@ -4503,7 +4503,7 @@ public sealed partial class MainForm : DarkFormBase,
     // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
     internal void ReadmeArea_MouseLeave(object? sender, EventArgs e)
     {
-        IntPtr hWnd = Native.WindowFromPoint(Cursor.Position);
+        nint hWnd = Native.WindowFromPoint(Cursor.Position);
         if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
     }
 

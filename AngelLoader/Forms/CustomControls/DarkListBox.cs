@@ -33,8 +33,8 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
             // Hack to fix the background color not changing with modes if we're disabled
             if (!Enabled)
             {
-                Native.PostMessageW(Handle, Native.WM_ENABLE, 1, IntPtr.Zero);
-                Native.PostMessageW(Handle, Native.WM_ENABLE, 0, IntPtr.Zero);
+                Native.PostMessageW(Handle, Native.WM_ENABLE, 1, 0);
+                Native.PostMessageW(Handle, Native.WM_ENABLE, 0, 0);
             }
         }
     }
@@ -306,7 +306,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
         TextRenderer.DrawText(e.Graphics, e.Item.Text, e.Item.Font, e.Bounds, textColor, textBackColor, textFormatFlags);
     }
 
-    private void DrawBorder(IntPtr hWnd)
+    private void DrawBorder(nint hWnd)
     {
         if (!_darkModeEnabled || BorderStyle == BorderStyle.None) return;
 
@@ -412,7 +412,7 @@ public class DarkListBox : ListView, IDarkable, IUpdateRegion
                 base.WndProc(ref m);
                 break;
             case Native.WM_ENABLE:
-                if (_darkModeEnabled && m.WParam == IntPtr.Zero)
+                if (_darkModeEnabled && m.WParam == 0)
                 {
                     using (new Win32ThemeHooks.OverrideSysColorScope(Win32ThemeHooks.Override.Full))
                     {

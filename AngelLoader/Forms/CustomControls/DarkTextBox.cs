@@ -153,8 +153,8 @@ public class DarkTextBox : TextBox, IDarkable
         if (!Enabled)
         {
             // Flip enabled off and on again to fix disabled text color
-            Native.SendMessageW(Handle, Native.WM_ENABLE, 1, IntPtr.Zero);
-            Native.SendMessageW(Handle, Native.WM_ENABLE, 0, IntPtr.Zero);
+            Native.SendMessageW(Handle, Native.WM_ENABLE, 1, 0);
+            Native.SendMessageW(Handle, Native.WM_ENABLE, 0, 0);
         }
     }
 

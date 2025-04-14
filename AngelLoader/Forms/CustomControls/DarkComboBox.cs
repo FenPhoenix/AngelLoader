@@ -403,14 +403,14 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
             bool alignRight = p.X + DropDownWidth > screenWidth;
 
             int x = alignRight ? p.X - (DropDownWidth - Math.Min(Width, screenWidth - p.X)) : p.X;
-            Native.SetWindowPos(m.LParam, IntPtr.Zero, x, p.Y, 0, 0, Native.SWP_NOSIZE);
+            Native.SetWindowPos(m.LParam, 0, x, p.Y, 0, 0, Native.SWP_NOSIZE);
         }
         // Needed to make the MouseLeave event fire when the mouse moves off the control directly onto another
         // window (other controls work like that automatically, ComboBox doesn't)
         else if (FireMouseLeaveOnLeaveWindow && m.Msg == Native.WM_MOUSELEAVE)
         {
             OnMouseLeave(EventArgs.Empty);
-            m.Result = (IntPtr)1;
+            m.Result = 1;
             // If we return here, the ComboBox remains highlighted even when the mouse leaves.
             // If we don't return here, the OnMouseLeave event gets fired twice. That's irritating, but in
             // this particular case it's fine, it just hides the readme controls twice. But remember in case
@@ -472,16 +472,16 @@ public partial class DarkComboBox : ComboBox, IDarkable, IUpdateRegion
         internal Native.RECT rcItem;
         internal Native.RECT rcButton;
         internal int stateButton;
-        internal IntPtr hwndCombo;
-        internal IntPtr hwndItem;
-        internal IntPtr hwndList;
+        internal nint hwndCombo;
+        internal nint hwndItem;
+        internal nint hwndList;
     }
 
     private static readonly int _comboboxInfoSize = Marshal.SizeOf<COMBOBOXINFO>();
 
     [LibraryImport("user32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static partial bool GetComboBoxInfo(IntPtr hwnd, ref COMBOBOXINFO cbInfo);
+    private static partial bool GetComboBoxInfo(nint hwnd, ref COMBOBOXINFO cbInfo);
 
     #endregion
 }

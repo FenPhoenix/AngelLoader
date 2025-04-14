@@ -75,12 +75,12 @@ internal static partial class NativeCommon
     {
         try
         {
-            IntPtr pidl = ILCreateFromPathW(filePath);
-            if (pidl == IntPtr.Zero) return false;
+            nint pidl = ILCreateFromPathW(filePath);
+            if (pidl == 0) return false;
 
             try
             {
-                int result = SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                int result = SHOpenFolderAndSelectItems(pidl, 0, 0, 0);
                 return result == 0;
             }
             catch
@@ -99,13 +99,13 @@ internal static partial class NativeCommon
     }
 
     [LibraryImport("shell32.dll", StringMarshalling = StringMarshalling.Utf16)]
-    private static partial IntPtr ILCreateFromPathW(string pszPath);
+    private static partial nint ILCreateFromPathW(string pszPath);
 
     [LibraryImport("shell32.dll")]
-    private static partial int SHOpenFolderAndSelectItems(IntPtr pidlFolder, int cild, IntPtr apidl, int dwFlags);
+    private static partial int SHOpenFolderAndSelectItems(nint pidlFolder, int cild, nint apidl, int dwFlags);
 
     [LibraryImport("shell32.dll")]
-    private static partial void ILFree(IntPtr pidl);
+    private static partial void ILFree(nint pidl);
 
     #endregion
 }

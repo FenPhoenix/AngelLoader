@@ -126,7 +126,7 @@ internal static class ControlUtils
             sii.cbSize = (uint)Marshal.SizeOf(typeof(Native.SHSTOCKICONINFO));
 
             int result = Native.SHGetStockIconInfo(sysIcon, Native.SHGSI_ICON, ref sii);
-            Marshal.ThrowExceptionForHR(result, new IntPtr(-1));
+            Marshal.ThrowExceptionForHR(result, -1);
 
             pictureBox.Image = Icon.FromHandle(sii.hIcon).ToBitmap();
         }

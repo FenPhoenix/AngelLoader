@@ -136,14 +136,14 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
     private void RTFFileComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToString(), ReadmeType.RichText, null);
+        RTFBox.LoadContent(RTFFileComboBox.SelectedItem.ToStringOrEmpty(), ReadmeType.RichText, null);
 
         string notesFile = GetCurrentNotesFile();
         NotesTextBox.Text = File.Exists(notesFile) ? File.ReadAllText(notesFile) : "";
 
         if (_broadcastEnabled)
         {
-            Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, (IntPtr)AppNum(), (IntPtr)RTFFileComboBox.SelectedIndex);
+            Native.PostMessageW(HWND_BROADCAST, WM_CHANGECOMBOBOXSELECTEDINDEX, AppNum(), RTFFileComboBox.SelectedIndex);
         }
     }
 
@@ -180,13 +180,13 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
         if (_broadcastEnabled)
         {
             var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
-            Native.PostMessage((IntPtr)HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, (IntPtr)AppNum(), (IntPtr)si.nPos);
+            Native.PostMessageW(HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, AppNum(), si.nPos);
         }
     }
 
     private string GetCurrentNotesFile() =>
         Path.Combine(SaveBaseDir, RTFFileComboBox
-            .SelectedItem.ToString()
+            .SelectedItem.ToStringOrEmpty()
             .Substring(FMsCacheDir.Length + 1)
             .ToForwardSlashes()
             .Replace("/", "___") + ".txt");
