@@ -3,7 +3,6 @@
 // As of 2023-12-08.
 // So we're leaving it with the old style because we get a warning if we make this [GeneratedComInterface].
 
-using System;
 using System.Runtime.InteropServices;
 
 namespace AngelLoader.Forms.WinFormsNative.Taskbar;
