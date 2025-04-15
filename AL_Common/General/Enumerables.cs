@@ -306,7 +306,7 @@ public static partial class Common
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public class Enumerator : IEnumerator<T>
+        public sealed class Enumerator : IEnumerator<T>
         {
             private readonly ListFast<T> _list;
             private int _index;
@@ -368,7 +368,7 @@ public static partial class Common
     // Licensed to the .NET Foundation under one or more agreements.
     // The .NET Foundation licenses this file to you under the MIT license.
 
-    public class StackFast<T>
+    public sealed class StackFast<T>
     {
         private T[] _array;
         public int Count;
