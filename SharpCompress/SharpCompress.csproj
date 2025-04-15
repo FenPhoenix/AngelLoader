@@ -15,6 +15,9 @@
 		<Platforms>AnyCPU;x64;x86</Platforms>
 	</PropertyGroup>
 	<ItemGroup>
+	  <PackageReference Include="System.Memory" Version="4.6.3" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
 	</ItemGroup>
 </Project>
