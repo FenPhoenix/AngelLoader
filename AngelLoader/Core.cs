@@ -1599,7 +1599,7 @@ internal static class Core
             {
                 try
                 {
-                    encoding = Encoding.GetEncoding(codePage);
+                    encoding = GetEncoding_Arbitrary(codePage);
                 }
                 catch
                 {
@@ -1653,7 +1653,7 @@ internal static class Core
             Encoding enc;
             try
             {
-                enc = Encoding.GetEncoding(codePage);
+                enc = GetEncoding_Arbitrary(codePage);
             }
             catch
             {

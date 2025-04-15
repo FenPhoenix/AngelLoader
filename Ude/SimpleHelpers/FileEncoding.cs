@@ -50,10 +50,6 @@ public sealed class FileEncoding
     private readonly byte[] _buffer = new byte[_bufferSize];
     private readonly UdeContext _udeContext;
 
-    private static readonly Encoding Windows1251Encoding = Encoding.GetEncoding(1251);
-    private static readonly Encoding Windows1252Encoding = Encoding.GetEncoding(1252);
-    private static readonly Encoding ShiftJISEncoding = Encoding.GetEncoding(932);
-
     public FileEncoding() => _udeContext = new UdeContext(4096);
 
     public FileEncoding(int contextSize) => _udeContext = new UdeContext(contextSize);
@@ -108,24 +104,7 @@ public sealed class FileEncoding
             }
 
             Charset charset = GetCurrentEncoding();
-            if (charset == Charset.Null)
-            {
-                return null;
-            }
-            else
-            {
-                // Quick path for the most common encodings to prevent a zillion 40-byte allocations
-                Encoding encoding = charset switch
-                {
-                    Charset.UTF8 => Encoding.UTF8,
-                    Charset.Windows1252 => Windows1252Encoding,
-                    Charset.Windows1251 => Windows1251Encoding,
-                    Charset.ShiftJIS => ShiftJISEncoding,
-                    _ => Encoding.GetEncoding(CharsetDetector.GetCharsetCodePage(charset)),
-                };
-
-                return encoding;
-            }
+            return charset == Charset.Null ? null : GetEncoding_Arbitrary(CharsetDetector.GetCharsetCodePage(charset));
         }
         catch
         {

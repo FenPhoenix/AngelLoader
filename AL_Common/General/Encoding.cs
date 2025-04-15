@@ -61,4 +61,34 @@ public static partial class Common
 
         return enc;
     }
+
+    /// <summary>
+    /// This is to work around a quirk when CodePagesEncodingProvider is registered.
+    /// If we call Encoding.GetEncoding() with a codepage corresponding to one of the encodings that .NET supports
+    /// by default, then CodePagesEncodingProvider will fail to find it in its own list, but in the process of
+    /// failing to find it, it will heap-allocate a 40-byte array. And since nothing will have been cached, it
+    /// will go through this fail-to-find process - and the 40-byte alloc - every single time it gets one of these
+    /// codepages. So call through this custom method to intercept such codepages and redirect them to the
+    /// built-in .NET static cached versions.
+    /// </summary>
+    /// <param name="codePage"></param>
+    /// <returns></returns>
+    public static Encoding GetEncoding_Arbitrary(int codePage)
+    {
+        return codePage switch
+        {
+            // Order of roughly expected commonness
+            65001 => Encoding.UTF8,
+            1200 => Encoding.Unicode,
+            20127 => Encoding.ASCII,
+            28591 => Encoding.Latin1,
+            1201 => Encoding.BigEndianUnicode,
+            12000 => Encoding.UTF32,
+            // This one, alone, is private. Sure why the hell not.
+            // Fortunately it's almost certainly never going to occur in practice in our use case, so meh.
+            //case 12001:
+            //    return Encoding.BigEndianUTF32;
+            _ => Encoding.GetEncoding(codePage),
+        };
+    }
 }
