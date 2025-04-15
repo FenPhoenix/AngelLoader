@@ -70,6 +70,9 @@ public static partial class Common
     /// will go through this fail-to-find process - and the 40-byte alloc - every single time it gets one of these
     /// codepages. So call through this custom method to intercept such codepages and redirect them to the
     /// built-in .NET static cached versions.
+    /// <para/>
+    /// This is not necessary on Framework, as there the codepages are all built-in so there isn't this layering
+    /// quirk.
     /// </summary>
     /// <param name="codePage"></param>
     /// <returns></returns>
