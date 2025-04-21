@@ -1040,8 +1040,19 @@ internal static class Core
             {
                 watcher.EnableWatching = false;
                 // @GENGAMES(Set game data from disk - screenshot watchers)
+                /*
+                @TDM: If "seta fs_savepath <path>" exists in DarkMod.cfg, TDM will use the path there as the
+                "base path", putting the screenshots and fms folders there, and a few other sundry files.
+                <path> can be absolute or relative (eg. "seta fs_savepath some_path" -> "c:\darkmod\some_path").
+                <path> can be surrounded by quotes or not; spaces in <path> work in both cases.
+                We could try to support this, but the game itself is iffy on its behavior with it enabled: it
+                doesn't show any fms in the missions list from the default base\fms folder, but if an FM is
+                selected, it will still be able to play it even if it's in base\fms. So the game code either has
+                some kind of fallback, or else its support for this option is incomplete. We're probably okay
+                just ignoring it.
+                */
                 watcher.Path = gameIndex == GameIndex.TDM
-                    ? Path.Combine(Config.GetGamePath(GameIndex.TDM), "screenshots")
+                    ? Config.GetGamePath(GameIndex.TDM)
                     : fmInstallPath;
                 watcher.EnableWatching = true;
             }
