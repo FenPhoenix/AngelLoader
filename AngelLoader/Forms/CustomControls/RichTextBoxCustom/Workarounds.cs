@@ -132,7 +132,7 @@ internal sealed partial class RichTextBoxCustom
 
     private static bool VerticalScrollBarVisible(Control ctl)
     {
-        uint style = Native.GetWindowLongPtr(ctl.Handle, -16).ToUInt32();
+        nuint style = Native.GetWindowLongPtr(ctl.Handle, -16);
         return (style & Native.WS_VSCROLL) != 0;
     }
 
