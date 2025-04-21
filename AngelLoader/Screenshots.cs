@@ -107,6 +107,10 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
         }
         catch
         {
+            if (_watcher != null!)
+            {
+                _watcher.Dispose();
+            }
             _constructed = false;
             return;
         }
