@@ -455,20 +455,26 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     private void SetMainSelectedRow()
     {
-        if (GetRowSelectedCount() == 0)
+        int selectedRowCount = GetRowSelectedCount();
+        if (selectedRowCount == 0)
         {
             MainSelectedRow = null;
         }
         else
         {
-            if (MainSelectedRow == null || GetRowSelectedCount() == 1)
+            if (MainSelectedRow == null || selectedRowCount == 1)
             {
                 // Need to make a SelectedRows call here, can't set CurrentRow for example because that ends
                 // up causing bad behavior when right-clicking to open the menu.
                 // In theory this should only ever be 1 long anyway.
                 MainSelectedRow = SelectedRows[0];
             }
-            _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+
+            // Efficiency: don't run UI updater multiple times in a row
+            if (_previousSelectedRowCount > 1 || selectedRowCount > 1)
+            {
+                _owner.UpdateUIControlsForMultiSelectState(GetMainSelectedFM());
+            }
         }
     }
 
@@ -485,6 +491,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         }
     }
 
+    private int _previousSelectedRowCount = -1;
+
     protected override void OnSelectionChanged(EventArgs e)
     {
         if (!_owner.AboutToClose)
@@ -493,6 +501,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             if (!SuppressSelectionEvent) SetMainSelectedRow();
         }
         base.OnSelectionChanged(e);
+
+        _previousSelectedRowCount = GetRowSelectedCount();
     }
 
     protected override void OnRowsAdded(DataGridViewRowsAddedEventArgs e)
