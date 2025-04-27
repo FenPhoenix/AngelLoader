@@ -144,7 +144,7 @@ internal static class FastIO
 
         if (fileFinder.IsInvalid)
         {
-            int err = Marshal.GetLastWin32Error();
+            int err = Marshal.GetLastPInvokeError();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return;
 
             // Since the framework isn't here to save us, we should blanket-catch and throw on every
@@ -200,7 +200,7 @@ internal static class FastIO
 
         if (fileFinder.IsInvalid)
         {
-            int err = Marshal.GetLastWin32Error();
+            int err = Marshal.GetLastPInvokeError();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
 
             // Since the framework isn't here to save us, we should blanket-catch and throw on every
@@ -260,7 +260,7 @@ internal static class FastIO
 
         if (fileFinder.IsInvalid)
         {
-            int err = Marshal.GetLastWin32Error();
+            int err = Marshal.GetLastPInvokeError();
             if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
             ThrowException("*", err, path);
         }

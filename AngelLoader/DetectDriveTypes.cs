@@ -343,7 +343,7 @@ internal static partial class DetectDriveData
         uint dataSize = QueryDosDeviceW(name, buffer, buffer.Capacity);
         while (dataSize <= 0)
         {
-            int lastError = Marshal.GetLastWin32Error();
+            int lastError = Marshal.GetLastPInvokeError();
             if (lastError == ERROR_INSUFFICIENT_BUFFER)
             {
                 buffer.EnsureCapacity(buffer.Capacity * 2);

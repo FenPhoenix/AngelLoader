@@ -63,7 +63,7 @@ public static partial class DeviceIoControlHelper
 
                     if (!success)
                     {
-                        int lastError = Marshal.GetLastWin32Error();
+                        int lastError = Marshal.GetLastPInvokeError();
 
                         if (lastError == Interop.Errors.ERROR_MORE_DATA)
                         {

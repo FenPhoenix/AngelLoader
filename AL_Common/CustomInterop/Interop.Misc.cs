@@ -13,7 +13,7 @@ internal static partial class Interop
         using SafeFindHandle handle = Kernel32.FindFirstFile(PathInternal.TrimEndingDirectorySeparator(fullPath), ref findData);
         if (handle.IsInvalid)
         {
-            int errorCode = Marshal.GetLastWin32Error();
+            int errorCode = Marshal.GetLastPInvokeError();
             // File not found doesn't make much sense coming from a directory.
             if (isDirectory && errorCode == Errors.ERROR_FILE_NOT_FOUND)
             {

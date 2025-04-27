@@ -18,7 +18,7 @@ internal static class Win32Marshal
     /// including the specified path in the error message.
     /// </summary>
     internal static Exception GetExceptionForLastWin32Error(string? path = "")
-        => GetExceptionForWin32Error(Marshal.GetLastWin32Error(), path);
+        => GetExceptionForWin32Error(Marshal.GetLastPInvokeError(), path);
 
     /// <summary>
     /// Converts the specified Win32 error into a corresponding <see cref="Exception"/> object, optionally
@@ -26,7 +26,7 @@ internal static class Win32Marshal
     /// </summary>
     internal static Exception GetExceptionForWin32Error(int errorCode, string? path = "", string? errorDetails = null)
     {
-        // ERROR_SUCCESS gets thrown when another unexpected interop call was made before checking GetLastWin32Error().
+        // ERROR_SUCCESS gets thrown when another unexpected interop call was made before checking GetLastPInvokeError().
         // Errors have to get retrieved as soon as possible after P/Invoking to avoid this.
         Debug.Assert(errorCode != Interop.Errors.ERROR_SUCCESS);
 
