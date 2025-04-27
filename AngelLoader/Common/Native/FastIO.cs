@@ -178,21 +178,62 @@ internal static class FastIO
                 dateTimes?.Add(new ExpandableDate_FromTicks(findData.ftCreationTime.ToTicks()));
             }
         } while (fileFinder.TryFindNextFile(out findData));
+    }
 
-        return;
+    public static bool OneOrMoreTdmPk4FMFilesExist(string path, bool pathIsKnownValid)
+    {
+        const string searchPattern = "*.pk4";
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static bool IsFile(WIN32_FIND_DATAW findData)
+        path = NormalizeAndCheckPath(path, pathIsKnownValid);
+
+        // Other relevant errors (though we don't use them specifically at the moment)
+        //const int ERROR_PATH_NOT_FOUND = 0x3;
+        //const int ERROR_REM_NOT_LIST = 0x33;
+        //const int ERROR_BAD_NETPATH = 0x35;
+
+        string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
+
+        using FileFinder fileFinder = FileFinder.Create(
+            searchPath,
+            FIND_FIRST_EX_LARGE_FETCH,
+            out WIN32_FIND_DATAW findData);
+
+        if (fileFinder.IsInvalid)
         {
-            return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
-        }
+            int err = Marshal.GetLastWin32Error();
+            if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static bool IsDirectory(WIN32_FIND_DATAW findData, bool ignoreReparsePoints)
-        {
-            return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
-                   (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
+            // Since the framework isn't here to save us, we should blanket-catch and throw on every
+            // possible error other than file-not-found (as that's an intended scenario, obviously).
+            // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+            ThrowException(searchPattern, err, path);
         }
+        do
+        {
+            if (IsFile(findData) &&
+                findData.cFileName != "." && findData.cFileName != ".." &&
+                !FileNameExtTooLong(findData.cFileName) &&
+                !findData.cFileName.EndsWithI("_l10n.pk4")
+               )
+            {
+                return true;
+            }
+        } while (fileFinder.TryFindNextFile(out findData));
+
+        return false;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsFile(WIN32_FIND_DATAW findData)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsDirectory(WIN32_FIND_DATAW findData, bool ignoreReparsePoints)
+    {
+        return (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY &&
+               (!ignoreReparsePoints || (findData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != FILE_ATTRIBUTE_REPARSE_POINT);
     }
 
     /// <summary>
