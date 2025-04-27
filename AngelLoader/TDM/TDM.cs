@@ -371,16 +371,16 @@ internal static class TDM
             List<string> fileTdmFMIds_Zips = FastIO.GetFilesTopOnly(fmsPath, "*.zip", returnFullPaths: false);
             HashSetI dirsHash = fileTdmFMIds_Dirs.ToHashSetI();
 
-            List<string> finalFilesList = new(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count + fileTdmFMIds_Zips.Count);
+            List<string> finalDirsList = new(fileTdmFMIds_Dirs.Count + fileTdmFMIds_PK4s.Count + fileTdmFMIds_Zips.Count);
 
-            finalFilesList.AddRange(fileTdmFMIds_Dirs);
+            finalDirsList.AddRange(fileTdmFMIds_Dirs);
 
             for (int i = 0; i < fileTdmFMIds_PK4s.Count; i++)
             {
                 string nameWithoutExt = fileTdmFMIds_PK4s[i].ConvertToValidTDMInternalName(".pk4");
                 if (dirsHash.Add(nameWithoutExt))
                 {
-                    finalFilesList.Add(nameWithoutExt);
+                    finalDirsList.Add(nameWithoutExt);
                 }
             }
 
@@ -389,24 +389,24 @@ internal static class TDM
                 string nameWithoutExt = fileTdmFMIds_Zips[i].ConvertToValidTDMInternalName(".zip");
                 if (dirsHash.Add(nameWithoutExt))
                 {
-                    finalFilesList.Add(nameWithoutExt);
+                    finalDirsList.Add(nameWithoutExt);
                 }
             }
 
-            for (int i = 0; i < finalFilesList.Count; i++)
+            for (int i = 0; i < finalDirsList.Count; i++)
             {
-                if (!IsValidTdmFM(fmsPath, finalFilesList[i]))
+                if (!IsValidTdmFM(fmsPath, finalDirsList[i]))
                 {
-                    finalFilesList.RemoveAt(i);
+                    finalDirsList.RemoveAt(i);
                     break;
                 }
             }
 
             internalTdmFMIds.Sort();
-            finalFilesList.Sort();
+            finalDirsList.Sort();
 
             // @TDM_CASE: Case-sensitive comparison
-            if (!internalTdmFMIds.SequenceEqual(finalFilesList, StringComparer.Ordinal))
+            if (!internalTdmFMIds.SequenceEqual(finalDirsList, StringComparer.Ordinal))
             {
                 return true;
             }
@@ -440,7 +440,7 @@ internal static class TDM
         }
     }
 
-    internal static bool IsValidTdmFM(string fmsPath, string fileOrDirName)
+    internal static bool IsValidTdmFM(string fmsPath, string dirName)
     {
         /*
         The Dark Mod Wiki also mentions _i18n.pk4 files, but the game (as of v2.11 anyway) doesn't seem to do
@@ -448,24 +448,19 @@ internal static class TDM
         be these are deprecated file names, but regardless, it looks like we can ignore them.
         */
         // @TDM_CASE
-        if (fileOrDirName.EqualsI(Paths.TDMMissionShots) ||
-            fileOrDirName.EndsWithI("_l10n") ||
-            fileOrDirName.EndsWithI("_l10n.pk4"))
+        if (dirName.EqualsI(Paths.TDMMissionShots) ||
+            dirName.EndsWithI("_l10n"))
         {
             return false;
         }
 
         try
         {
-            string fullDir = Path.Combine(fmsPath, fileOrDirName);
-            if (Directory.Exists(fullDir))
+            string fullDir = Path.Combine(fmsPath, dirName);
+            if (Directory.Exists(fullDir) &&
+                FastIO.OneOrMoreTdmPk4FMFilesExist(fullDir, pathIsKnownValid: true))
             {
-                // @MEM: This thing allocates some enumerator-related thing. What a pain...
-                string? first = Directory.EnumerateFiles(fullDir, "*.pk4", SearchOption.TopDirectoryOnly).FirstOrDefault();
-                if (first == null)
-                {
-                    return false;
-                }
+                return true;
             }
         }
         catch
@@ -473,7 +468,7 @@ internal static class TDM
             return false;
         }
 
-        return true;
+        return false;
     }
 
     /*
