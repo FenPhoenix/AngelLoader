@@ -1083,8 +1083,8 @@ internal static class GameConfigFiles
             {
                 string modFileNameOnly = modName.GetFileNameFast();
                 if (modFileNameOnly.IsEmpty()) return false;
-                List<string> modFiles = FastIO.GetFilesTopOnly(modContainingDir, modFileNameOnly + ".*");
-                return modFiles.Count > 0;
+                return !modFileNameOnly.IsEmpty() &&
+                       FastIO.OneOrMoreModsExist(modContainingDir, modFileNameOnly + ".*", pathIsKnownValid: false);
             }
             else
             {

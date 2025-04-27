@@ -223,6 +223,45 @@ internal static class FastIO
         return false;
     }
 
+    public static bool OneOrMoreModsExist(string path, string searchPattern, bool pathIsKnownValid)
+    {
+        path = NormalizeAndCheckPath(path, pathIsKnownValid);
+
+        // Other relevant errors (though we don't use them specifically at the moment)
+        //const int ERROR_PATH_NOT_FOUND = 0x3;
+        //const int ERROR_REM_NOT_LIST = 0x33;
+        //const int ERROR_BAD_NETPATH = 0x35;
+
+        string searchPath = MakeUNCPath(path) + "\\" + searchPattern;
+
+        using FileFinder fileFinder = FileFinder.Create(
+            searchPath,
+            FIND_FIRST_EX_LARGE_FETCH,
+            out FindData findData);
+
+        if (fileFinder.IsInvalid)
+        {
+            int err = Marshal.GetLastPInvokeError();
+            if (err is ERROR_FILE_NOT_FOUND or ERROR_NO_MORE_FILES) return false;
+
+            // Since the framework isn't here to save us, we should blanket-catch and throw on every
+            // possible error other than file-not-found (as that's an intended scenario, obviously).
+            // This isn't as nice as you'd get from a framework method call, but it gets the job done.
+            ThrowException(searchPattern, err, path);
+        }
+        do
+        {
+            if (IsFile(findData) &&
+                findData.cFileName != "." && findData.cFileName != ".."
+               )
+            {
+                return true;
+            }
+        } while (fileFinder.TryFindNextFile(out findData));
+
+        return false;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsFile(FindData findData)
     {
