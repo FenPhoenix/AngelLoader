@@ -179,6 +179,8 @@ internal static partial class Ini
         }
     }
 
+    private static readonly KeyComparer CachedKeyComparer = new();
+
     private sealed class KeyComparer : IEqualityComparer<string>
     {
         public bool Equals(string x, string y)

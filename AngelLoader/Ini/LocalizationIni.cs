@@ -18,7 +18,7 @@ internal static partial class Ini
         foreach (FieldInfo f in sectionFields)
         {
             FieldInfo[] fields = f.FieldType.GetFields(_bfLText);
-            var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, new KeyComparer());
+            var dict = new Dictionary<string, (FieldInfo, object)>(fields.Length, CachedKeyComparer);
             foreach (FieldInfo field in fields)
             {
                 dict[field.Name] = (field, f.GetValue(lText));

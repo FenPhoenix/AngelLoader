@@ -931,7 +931,7 @@ internal static partial class Ini
     }
 
     private static unsafe Dictionary<string, Config_DelegatePointerWrapper>
-    CreateConfigDictionary() => new(new KeyComparer())
+    CreateConfigDictionary() => new(CachedKeyComparer)
     {
         #region Settings window state
 
