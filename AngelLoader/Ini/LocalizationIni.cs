@@ -7,10 +7,8 @@ namespace AngelLoader;
 
 internal static partial class Ini
 {
-    internal static void ReadLocalizationIni(string file, LText_Class lText)
+    internal static Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>> GetLocalizationDictionary(LText_Class lText)
     {
-        #region Dictionary setup
-
         const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
         FieldInfo[] sectionFields = typeof(LText_Class).GetFields(_bfLText);
@@ -26,7 +24,12 @@ internal static partial class Ini
             sections["[" + f.Name + "]"] = dict;
         }
 
-        #endregion
+        return sections;
+    }
+
+    internal static void ReadLocalizationIni(string file, LText_Class lText, Dictionary<string, Dictionary<string, (FieldInfo FieldInfo, object Obj)>>? sections = null)
+    {
+        sections ??= GetLocalizationDictionary(lText);
 
         List<string> lines = File_ReadAllLines_List(file);
         int linesLength = lines.Count;

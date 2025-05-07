@@ -266,6 +266,8 @@ internal static class Core
 
             try
             {
+                var sections = Ini.GetLocalizationDictionary(LText);
+
                 for (int i = 0; i < langFiles.Count; i++)
                 {
                     string f = langFiles[i];
@@ -275,7 +277,7 @@ internal static class Core
 
                     if (!selFound && fn.EqualsI(Config.Language))
                     {
-                        Ini.ReadLocalizationIni(f, LText);
+                        Ini.ReadLocalizationIni(f, LText, sections);
                         selFound = true;
                     }
 
