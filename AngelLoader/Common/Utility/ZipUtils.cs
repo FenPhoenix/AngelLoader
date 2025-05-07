@@ -114,7 +114,7 @@ public static partial class Utils
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            File.SetLastWriteTime(fileName, entry.LastWriteTime.DateTime);
+            SetLastWriteTime_Fast(fileName, entry.LastWriteTime.DateTime);
 
             cancellationToken.ThrowIfCancellationRequested();
 
