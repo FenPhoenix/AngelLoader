@@ -1336,7 +1336,10 @@ public sealed class Scanner : IDisposable
                     foreach (string fileName in pk4FilesInFMFolder)
                     {
                         // @TDM_CASE(Scanner: pk4 within fm folder - _l10n check)
-                        if (!fileName.EndsWith("_l10n.pk4", OrdinalIgnoreCase))
+                        if (
+                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
+                            !FastIO_Native.FileNameExtTooLong(fileName) &&
+                            !fileName.EndsWith("_l10n.pk4", OrdinalIgnoreCase))
                         {
                             zipPath = fileName;
                             break;
