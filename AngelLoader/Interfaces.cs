@@ -46,6 +46,7 @@ public interface IViewEnvironment
     IView GetView();
     void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList);
     void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
+    void PreloadTheme(VisualTheme theme);
     (bool Accepted, ConfigData OutConfig, bool AskForImport)
     ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
 }

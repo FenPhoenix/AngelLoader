@@ -92,6 +92,11 @@ internal static class Core
         // Perf: The only thing the splash screen needs is the theme
         (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
 
+        using Task? darkModeHooksTask =
+            Config.DarkMode
+                ? Task.Run(static () => ViewEnv.PreloadTheme(Config.VisualTheme))
+                : null;
+
         SetGameDataError[] gameDataErrors = InitializedArray(SupportedGameCount, SetGameDataError.None);
         bool enableTDMWatchers = false;
         List<string>?[] perGameCamModIniLines = new List<string>?[SupportedGameCount];
@@ -326,7 +331,7 @@ internal static class Core
 
         startupWorkTask.Wait();
 
-        async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_)
+        async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_, Task? darkModeHooksTask_)
         {
             splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
                                     LText.SplashScreen.LoadingMainApp);
@@ -369,6 +374,8 @@ internal static class Core
                 }
             });
 
+            darkModeHooksTask_?.Wait();
+
             // Construct and init the view right here, because it's a heavy operation and we want it to run
             // in parallel with Find() to the greatest extent possible.
             View = ViewEnv.GetView();
@@ -400,16 +407,17 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad(askForImport: false, splashScreen);
+            await DoParallelLoad(askForImport: false, splashScreen, darkModeHooksTask);
         }
         else
         {
+            darkModeHooksTask?.Wait();
             splashScreen.Hide();
             (bool accepted, bool askForImport) = await OpenSettings(settingsWindowState);
             if (accepted)
             {
                 splashScreen.Show(Config.VisualTheme);
-                await DoParallelLoad(askForImport, splashScreen);
+                await DoParallelLoad(askForImport, splashScreen, darkModeHooksTask);
             }
             else
             {

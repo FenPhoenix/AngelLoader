@@ -31,6 +31,29 @@ internal static class Win32ThemeHooks
 {
     #region Hooks
 
+    private enum HookType
+    {
+        GetSysColor,
+#if !X64
+        GetSysColorBrush,
+#endif
+        DrawThemeBackground,
+        GetThemeColor,
+        Length,
+    }
+
+    private readonly struct HookData
+    {
+        internal readonly string Dll;
+        internal readonly string Method;
+
+        public HookData(string dll, string method)
+        {
+            Dll = dll;
+            Method = method;
+        }
+    }
+
     #region Hooks and delegates
 
     #region GetSysColor
@@ -94,21 +117,36 @@ internal static class Win32ThemeHooks
 
     #endregion
 
+    // ReSharper disable once RedundantExplicitArraySize
+    private static readonly HookData[] _hookData = new HookData[(int)HookType.Length]
+    {
+        new("user32.dll", "GetSysColor"),
+#if !X64
+        new("user32.dll", "GetSysColorBrush"),
+#endif
+        new("uxtheme.dll", "DrawThemeBackground"),
+        new("uxtheme.dll", "GetThemeColor"),
+    };
+
+    private static HookData GetHookData(HookType hookType) => _hookData[(int)hookType];
+
+    private static readonly nint[] _procAddresses = new nint[(int)HookType.Length];
+
     #region Hook installing
 
     private static bool _hooksInstalled;
+    private static bool _hooksPreloaded;
 
     internal static void InstallHooks()
     {
         if (_hooksInstalled) return;
 
-        ReloadHThemes();
+        PreloadHooks();
 
         try
         {
             (_getSysColorHook, GetSysColor_Original) = InstallHook<GetSysColorDelegate>(
-                "user32.dll",
-                "GetSysColor",
+                HookType.GetSysColor,
                 GetSysColor_Hooked);
 
             // @x64 (GetSysColorBrush hook):
@@ -118,19 +156,16 @@ internal static class Win32ThemeHooks
             // 2023-11-11: This seems to work with CoreHook.
 #if !X64
             (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
-                "user32.dll",
-                "GetSysColorBrush",
+                HookType.GetSysColorBrush,
                 GetSysColorBrush_Hooked);
 #endif
 
             (_drawThemeBackgroundHook, DrawThemeBackground_Original) = InstallHook<DrawThemeBackgroundDelegate>(
-                "uxtheme.dll",
-                "DrawThemeBackground",
+                HookType.DrawThemeBackground,
                 DrawThemeBackground_Hooked);
 
             (_getThemeColorHook, GetThemeColor_Original) = InstallHook<GetThemeColorDelegate>(
-                "uxtheme.dll",
-                "GetThemeColor",
+                HookType.GetThemeColor,
                 GetThemeColor_Hooked);
         }
         catch
@@ -149,17 +184,44 @@ internal static class Win32ThemeHooks
         }
     }
 
+    /*
+    @PERF_TODO(PreloadHooks): This overlap can sometimes just barely fit in the overlap window, when on a clean
+    install with no real data to load. We could overlap it with the main form component init and ctor, which is
+    currently not done because the InstallHooks() call is in DarkFormBase, and DarkFormBase's ctor runs before
+    its derived types (MainForm in this case). We put the call in there for convenience, so we don't really want
+    to remove it if we can help it. We could make some disgusting hack to make it not run if our type is MainForm
+    or something.
+    */
+    public static void PreloadHooks()
+    {
+        if (_hooksPreloaded) return;
+
+        ReloadHThemes();
+
+        _procAddresses[(int)HookType.GetSysColor] = GetProcAddressForHookData(GetHookData(HookType.GetSysColor));
+#if !X64
+        _procAddresses[(int)HookType.GetSysColorBrush] = GetProcAddressForHookData(GetHookData(HookType.GetSysColorBrush));
+#endif
+        _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
+        _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
+
+        _hooksPreloaded = true;
+
+        return;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static IntPtr GetProcAddressForHookData(HookData hookData) => LocalHook.GetProcAddress(hookData.Dll, hookData.Method);
+    }
+
     private static (LocalHook Hook, TDelegate OriginalMethod)
-    InstallHook<TDelegate>(string dll, string method, TDelegate hookDelegate) where TDelegate : Delegate
+    InstallHook<TDelegate>(HookType hookType, TDelegate hookDelegate) where TDelegate : Delegate
     {
         TDelegate originalMethod;
         LocalHook? hook = null;
 
         try
         {
-            // @PERF_TODO: 36ms out of 43ms for InstallHooks() is these GetProcAddress calls. See if we can overlap.
-            // Also, see if we can overlap ReloadHThemes() (2.1ms).
-            nint address = LocalHook.GetProcAddress(dll, method);
+            nint address = _procAddresses[(int)hookType];
             originalMethod = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
             hook = LocalHook.Create(address, hookDelegate, null);
             hook.ThreadACL.SetInclusiveACL(new[] { 0 });

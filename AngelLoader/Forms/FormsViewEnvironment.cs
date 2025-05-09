@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms;
 
@@ -124,5 +125,20 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         }
 
         RTFPreprocessing.PreloadRichFormat(readmeFile, bytes, config.DarkMode);
+    }
+
+    public void PreloadTheme(VisualTheme theme)
+    {
+        try
+        {
+            if (theme != VisualTheme.Classic)
+            {
+                Win32ThemeHooks.PreloadHooks();
+            }
+        }
+        catch
+        {
+            // ignore
+        }
     }
 }
