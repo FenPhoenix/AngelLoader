@@ -350,6 +350,8 @@ internal static class Paths
     private const string _sneakyOptionsIni = "SneakyOptions.ini";
     // First release version to support portable is 1.1.11, but there was a 1.1.10.519 beta that supported it too
     private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);
+    // Similar situation with this
+    private static readonly Version _sneakyUpgradeMinimumNewStylePortableVersion = new(1, 1, 11, 506);
 
     internal static (string SoIni, bool IsPortable, bool IsNewStylePortable)
     GetSneakyOptionsIni()
@@ -415,13 +417,18 @@ internal static class Paths
                         string lt = lines[i + 1].Trim();
                         if (lt.TryGetValueI("SaveGamePath=", out string saveGamePath))
                         {
-                            saveGamePath = RelativeToAbsolute(gamePath, saveGamePath);
-                            string si_SoIni = Path.Combine(saveGamePath, "Options", _sneakyOptionsIni);
-                            if (File.Exists(si_SoIni))
+                            if (version != null &&
+                                version >= _sneakyUpgradeMinimumNewStylePortableVersion &&
+                                !saveGamePath.IsWhiteSpace())
                             {
-                                soIni = si_SoIni;
-                                isNewStylePortable = true;
-                                return true;
+                                saveGamePath = RelativeToAbsolute(gamePath, saveGamePath);
+                                string si_SoIni = Path.Combine(saveGamePath, "Options", _sneakyOptionsIni);
+                                if (File.Exists(si_SoIni))
+                                {
+                                    soIni = si_SoIni;
+                                    isNewStylePortable = true;
+                                    return true;
+                                }
                             }
                         }
                         else if (lt.TryGetValueI("IgnoreSaveGamePath=", out string ignoreSaveGamePath))
