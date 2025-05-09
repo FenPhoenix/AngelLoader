@@ -157,6 +157,8 @@ internal static class Win32ThemeHooks
 
         try
         {
+            // @PERF_TODO: 36ms out of 43ms for InstallHooks() is these GetProcAddress calls. See if we can overlap.
+            // Also, see if we can overlap ReloadHThemes() (2.1ms).
             nint address = LocalHook.GetProcAddress(dll, method);
             originalMethod = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
             hook = LocalHook.Create(address, hookDelegate, null);
