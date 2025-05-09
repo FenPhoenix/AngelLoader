@@ -1330,8 +1330,8 @@ public sealed class Scanner : IDisposable
                 try
                 {
                     zipPath = "";
-                    // @Scanner/@PERF_TODO: Directory.GetFiles() is too heavy for what we're doing here, also
-                    //  it's top-only so bad on Framework
+                    // This is the slow built-in call, but it's on a fallback path that is not expected to be hit
+                    // (and isn't ever hit, as of 2025-05-08).
                     string[] pk4FilesInFMFolder = Directory.GetFiles(fm.Path, "*.pk4", SearchOption.TopDirectoryOnly);
                     foreach (string fileName in pk4FilesInFMFolder)
                     {
