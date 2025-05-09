@@ -188,29 +188,34 @@ internal static class Win32ThemeHooks
     @PERF_TODO(PreloadHooks): This overlap can sometimes just barely fit in the overlap window, when on a clean
     install with no real data to load. We could overlap it with the main form component init and ctor, which is
     currently not done because the InstallHooks() call is in DarkFormBase, and DarkFormBase's ctor runs before
-    its derived types (MainForm in this case). We put the call in there for convenience, so we don't really want
-    to remove it if we can help it. We could make some disgusting hack to make it not run if our type is MainForm
-    or something.
+    its derived types (MainForm in this case). We put the call in there for robustness (for example if a dialog
+    needs to come up before any other form is loaded, the dialog will trigger the hook install), so we don't
+    really want to remove it if we can help it. We could make some disgusting hack to make it not run if our type
+    is MainForm or something.
     */
+    private static readonly object _preloadHooksLock = new();
     public static void PreloadHooks()
     {
-        if (_hooksPreloaded) return;
+        lock (_preloadHooksLock)
+        {
+            if (_hooksPreloaded) return;
 
-        ReloadHThemes();
+            ReloadHThemes();
 
-        _procAddresses[(int)HookType.GetSysColor] = GetProcAddressForHookData(GetHookData(HookType.GetSysColor));
+            _procAddresses[(int)HookType.GetSysColor] = GetProcAddressForHookData(GetHookData(HookType.GetSysColor));
 #if !X64
         _procAddresses[(int)HookType.GetSysColorBrush] = GetProcAddressForHookData(GetHookData(HookType.GetSysColorBrush));
 #endif
-        _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
-        _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
+            _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
+            _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
 
-        _hooksPreloaded = true;
+            _hooksPreloaded = true;
 
-        return;
+            return;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static IntPtr GetProcAddressForHookData(HookData hookData) => LocalHook.GetProcAddress(hookData.Dll, hookData.Method);
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static IntPtr GetProcAddressForHookData(HookData hookData) => LocalHook.GetProcAddress(hookData.Dll, hookData.Method);
+        }
     }
 
     private static (LocalHook Hook, TDelegate OriginalMethod)
