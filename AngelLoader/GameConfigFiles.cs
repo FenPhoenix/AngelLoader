@@ -194,7 +194,7 @@ internal static class GameConfigFiles
                      string PrevFMSelectorValue, bool AlwaysShowLoader, bool GamePathNeedsWriteCheck)
     GetInfoFromSneakyOptionsIni()
     {
-        (string soIni, bool isPortable) = Paths.GetSneakyOptionsIni();
+        (string soIni, bool isPortable, bool isNewStylePortable) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return (Error.SneakyOptionsNotFound, false, "", "", false, isPortable);
@@ -285,7 +285,11 @@ internal static class GameConfigFiles
                 string? soIniDir = Path.GetDirectoryName(soIni);
                 if (soIniDir != null)
                 {
-                    fmInstPath = RelativeToAbsolute(soIniDir, fmInstPath);
+                    // Direct from snobel, new-style relative paths are relative to \System, which should always
+                    // be the same as our game directory.
+                    string finalBasePath = isNewStylePortable ? Config.GetGamePath(GameIndex.Thief3) : soIniDir;
+
+                    fmInstPath = RelativeToAbsolute(finalBasePath, fmInstPath);
                     Directory.CreateDirectory(fmInstPath);
                 }
             }
@@ -763,7 +767,7 @@ internal static class GameConfigFiles
         bool existingAlwaysShowKeyOverwritten = false;
         int insertLineIndex = -1;
 
-        (string soIni, suIsPortable) = Paths.GetSneakyOptionsIni();
+        (string soIni, suIsPortable, _) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return failNoEx;

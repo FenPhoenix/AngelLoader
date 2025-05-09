@@ -351,25 +351,27 @@ internal static class Paths
     // First release version to support portable is 1.1.11, but there was a 1.1.10.519 beta that supported it too
     private static readonly Version _sneakyUpgradeMinimumPortableVersion = new(1, 1, 10, 519);
 
-    internal static (string SoIni, bool IsPortable) GetSneakyOptionsIni()
+    internal static (string SoIni, bool IsPortable, bool IsNewStylePortable)
+    GetSneakyOptionsIni()
     {
-        if (TryGetSneakyOptionsIniFromGameDir(out string soIni))
+        if (TryGetSneakyOptionsIniFromGameDir(out string soIni, out bool isNewStylePortable))
         {
-            return (soIni, true);
+            return (soIni, true, isNewStylePortable);
         }
         else
         {
-            return (GetSneakyOptionsIniFromRegistry(), false);
+            return (GetSneakyOptionsIniFromRegistry(), false, false);
         }
     }
 
-    internal static bool SneakyUpgradeIsPortable() => TryGetSneakyOptionsIniFromGameDir(out _);
+    internal static bool SneakyUpgradeIsPortable() => TryGetSneakyOptionsIniFromGameDir(out _, out _);
 
-    private static bool TryGetSneakyOptionsIniFromGameDir(out string soIni)
+    private static bool TryGetSneakyOptionsIniFromGameDir(out string soIni, out bool isNewStylePortable)
     {
         try
         {
             soIni = "";
+            isNewStylePortable = false;
 
             (_, Version? version, _) = Core.GetGameVersion(GameIndex.Thief3);
             if (version != null && version < _sneakyUpgradeMinimumPortableVersion)
@@ -411,9 +413,20 @@ internal static class Paths
                     while (i < lines.Count - 1)
                     {
                         string lt = lines[i + 1].Trim();
-                        if (lt.TryGetValueI("IgnoreSaveGamePath=", out string value))
+                        if (lt.TryGetValueI("SaveGamePath=", out string saveGamePath))
                         {
-                            ignoreSaveGameKey = value.EqualsTrue();
+                            saveGamePath = RelativeToAbsolute(gamePath, saveGamePath);
+                            string si_SoIni = Path.Combine(saveGamePath, "Options", _sneakyOptionsIni);
+                            if (File.Exists(si_SoIni))
+                            {
+                                soIni = si_SoIni;
+                                isNewStylePortable = true;
+                                return true;
+                            }
+                        }
+                        else if (lt.TryGetValueI("IgnoreSaveGamePath=", out string ignoreSaveGamePath))
+                        {
+                            ignoreSaveGameKey = ignoreSaveGamePath.EqualsTrue();
                             break;
                         }
                         else if (lt.IsIniHeader())
@@ -435,12 +448,14 @@ internal static class Paths
             string finalSoIni = Path.Combine(gameRootPath, "Options", _sneakyOptionsIni);
             if (!File.Exists(finalSoIni)) return false;
 
+            isNewStylePortable = false;
             soIni = finalSoIni;
             return true;
         }
         catch
         {
             soIni = "";
+            isNewStylePortable = false;
             return false;
         }
     }
