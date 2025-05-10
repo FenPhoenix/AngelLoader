@@ -396,7 +396,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         const string engLang = "English";
 
-        var langsList = config.LanguageNames.OrderBy(static x => x.Key, StringComparer.Ordinal);
+        var langsList = ReadLanguages().OrderBy(static x => x.Key, StringComparer.Ordinal);
 
         using (new UpdateRegion(LangComboBox))
         {
@@ -896,6 +896,45 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
 
         #endregion
+    }
+
+    private static DictionaryI<string> ReadLanguages()
+    {
+        DictionaryI<string> ret = new();
+
+        List<string> langFiles;
+        try
+        {
+            langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+        }
+        catch (Exception ex)
+        {
+            ResetLanguages();
+            Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
+            return ret;
+        }
+
+        ret.Clear();
+
+        try
+        {
+            for (int i = 0; i < langFiles.Count; i++)
+            {
+                string fileName = langFiles[i];
+                string fileNameWithoutExtension = fileName.GetFileNameFast().RemoveExtension();
+
+                Ini.AddLanguageFromFile(fileName, fileNameWithoutExtension, ret);
+            }
+        }
+        catch (Exception ex)
+        {
+            ResetLanguages();
+            Log(ErrorText.Ex + "in language files read", ex);
+        }
+
+        return ret;
+
+        void ResetLanguages() => ret.Clear();
     }
 
     private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)

@@ -266,9 +266,6 @@ public sealed class ConfigData
 
     internal string Language = "English";
 
-    // Session-only; don't write out
-    internal readonly DictionaryI<string> LanguageNames = new();
-
     #endregion
 
     #region Date format

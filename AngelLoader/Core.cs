@@ -239,52 +239,20 @@ internal static class Core
 
         static void ReadLanguages(SplashScreen splashScreen)
         {
-            // We can't show a message until we've read the config file (to know which language to use) and
-            // the current language file (to get the translated message strings). So just show language dir/
-            // language file names, so it's as clear as possible what we're doing without actually having to
-            // display a translated string.
-            splashScreen.SetMessage(Paths.Languages);
-
-            // Have to read langs here because which language to use will be stored in the config file.
-            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
-            // name in its own language
-            List<string> langFiles;
+            string langIni = "";
             try
             {
-                langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
-            }
-            catch (Exception ex)
-            {
-                splashScreen.Hide();
-                ResetLanguages();
-                Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
-                Dialogs.ShowError(
-                    $"Couldn't get the language .ini files.{NL}{NL}" +
-                    ErrorText.LangDefault + $"{NL}{NL}" +
-                    "Path: " + Paths.Languages);
-                splashScreen.Show(Config.VisualTheme);
-                return;
-            }
-            bool selFound = false;
+                langIni = Path.Combine(Paths.Languages, Config.Language + ".ini");
 
-            Config.LanguageNames.Clear();
+                // We can't show a message until we've read the config file (to know which language to use) and
+                // the current language file (to get the translated message strings). So just show the lang ini
+                // file name, so it's as clear as possible what we're doing without actually having to display a
+                // translated string.
+                splashScreen.SetMessage(Paths.Languages);
 
-            try
-            {
-                for (int i = 0; i < langFiles.Count; i++)
+                if (File.Exists(langIni))
                 {
-                    string f = langFiles[i];
-                    string fn = f.GetFileNameFast().RemoveExtension();
-
-                    splashScreen.SetMessage(f);
-
-                    if (!selFound && fn.EqualsI(Config.Language))
-                    {
-                        Ini.ReadLocalizationIni(f, LText);
-                        selFound = true;
-                    }
-
-                    Ini.AddLanguageFromFile(f, fn, Config.LanguageNames);
+                    Ini.ReadLocalizationIni(langIni, LText);
                 }
             }
             catch (Exception ex)
@@ -292,7 +260,7 @@ internal static class Core
                 splashScreen.Hide();
                 ResetLanguages();
                 Log(ErrorText.Ex + "in language files read", ex);
-                Dialogs.ShowError("An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
+                Dialogs.ShowError("An error occurred while trying to read language file '" + langIni + "'. " + ErrorText.LangDefault);
                 splashScreen.Show(Config.VisualTheme);
             }
 
@@ -302,7 +270,6 @@ internal static class Core
             {
                 LText = new LText_Class();
                 Config.Language = "English";
-                Config.LanguageNames.Clear();
             }
         }
 
