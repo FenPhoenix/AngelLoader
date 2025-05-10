@@ -417,9 +417,7 @@ internal static class Paths
                         string lt = lines[i + 1].Trim();
                         if (lt.TryGetValueI("SaveGamePath=", out string saveGamePath))
                         {
-                            if (version != null &&
-                                version >= _sneakyUpgradeMinimumNewStylePortableVersion &&
-                                !saveGamePath.IsWhiteSpace())
+                            if (!saveGamePath.IsWhiteSpace())
                             {
                                 saveGamePath = RelativeToAbsolute(gamePath, saveGamePath);
                                 string si_SoIni = Path.Combine(saveGamePath, "Options", _sneakyOptionsIni);
