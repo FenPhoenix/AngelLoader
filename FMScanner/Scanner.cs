@@ -4850,8 +4850,8 @@ public sealed class Scanner : IDisposable
     SS2 (ShockEd) doesn't have the "Dark Mission Description" mission variable, and SS2 .mis files don't have the
     DARKMISS block, so it appears that SS2 doesn't write out any game descriptor value.
     DARKMISS should have another block after it and therefore another printable-ASCII block name, so if the game
-    descriptor byte is >0x3 then we can say it's a <=1.27 mission and we should fall back to the old detection
-    method.
+    descriptor byte is printable ASCII (>31) then we can safely say it's a <=1.27 mission and we should fall back
+    to the old detection method.
 
     *Block headers are 24 bytes (12 bytes name + 12 bytes cruft), so our byte is at header end + 14, or byte 13
      after header if counting from 0
