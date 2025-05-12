@@ -102,14 +102,16 @@ public sealed class Scanner : IDisposable
 
     private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 
-    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
-
     private ListFast<char>? _utf32CharBuffer;
     private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
 
     private readonly BinaryBuffer _binaryReadBuffer = new();
 
     #region Game detection
+
+    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
+
+    private readonly byte[] _darkmissChunkBuffer = new byte[38];
 
     private const int _gameTypeBufferSize = 81_920;
 
@@ -4934,6 +4936,25 @@ public sealed class Scanner : IDisposable
                 }
                 else
                 {
+                    if (i == 0)
+                    {
+                        // @ND128: Use handle and RandomAccess to make this more efficient
+                        misStream.Position = Thief_DARKMISS_Offset;
+                        int darkmissBytesRead = misStream.ReadAll(_darkmissChunkBuffer, 0, _darkmissChunkBuffer.Length);
+                        if (darkmissBytesRead == _darkmissChunkBuffer.Length)
+                        {
+                            if (GameType_HeaderEquals(_darkmissChunkBuffer, DARKMISS_First, DARKMISS_Second))
+                            {
+                                byte gameDescriptor = _darkmissChunkBuffer[Thief_128_GameDescriptorOffsetFromDARKMISS];
+                                Game gameFromDescriptor = GetGameFromDescriptorByte(gameDescriptor);
+                                if (gameFromDescriptor != Game.Null)
+                                {
+                                    return gameFromDescriptor;
+                                }
+                            }
+                        }
+                    }
+
                     buffer = _gameDetectStringBuffer;
                     misStream.Position = _ctx.GameDetect_KeyPhraseLocations[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
@@ -4981,31 +5002,23 @@ public sealed class Scanner : IDisposable
 
         static Game GetGameFromDARKMISS(byte[] buffer)
         {
-            if (buffer.Length <= Thief_128_GameDescriptorOffset)
-            {
-                return Game.Null;
-            }
-
-            ulong first = Unsafe.ReadUnaligned<ulong>(ref buffer[Thief_DARKMISS_Offset]);
-            if (first != DARKMISS_First)
-            {
-                return Game.Null;
-            }
-
-            uint second = Unsafe.ReadUnaligned<uint>(ref buffer[Thief_DARKMISS_Offset + 8]);
-            if (second != DARKMISS_Second)
+            if (buffer.Length <= Thief_128_GameDescriptorOffset ||
+                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second, Thief_DARKMISS_Offset))
             {
                 return Game.Null;
             }
 
             byte gameDescriptor = buffer[Thief_128_GameDescriptorOffset];
-            return gameDescriptor switch
-            {
-                0x2 => Game.Thief1,
-                0x3 => Game.Thief2,
-                _ => Game.Null,
-            };
+            return GetGameFromDescriptorByte(gameDescriptor);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static Game GetGameFromDescriptorByte(byte gameDescriptor) => gameDescriptor switch
+        {
+            0x2 => Game.Thief1,
+            0x3 => Game.Thief2,
+            _ => Game.Null,
+        };
     }
 
     // @ND128: Add on-disk game descriptor detection path
@@ -5083,7 +5096,7 @@ public sealed class Scanner : IDisposable
                 int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
-                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
+                if (bytesRead < 12 || !GameType_HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
                 {
                     continue;
                 }
@@ -5105,15 +5118,15 @@ public sealed class Scanner : IDisposable
             }
 
             return false;
-
-            static bool HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond)
-            {
-                ulong first = Unsafe.ReadUnaligned<ulong>(ref header[0]);
-                if (first != chunkNameFirst) return false;
-                uint second = Unsafe.ReadUnaligned<uint>(ref header[8]);
-                return second == chunkNameSecond;
-            }
         }
+    }
+
+    private static bool GameType_HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond, int offset = 0)
+    {
+        ulong first = Unsafe.ReadUnaligned<ulong>(ref header[offset]);
+        if (first != chunkNameFirst) return false;
+        uint second = Unsafe.ReadUnaligned<uint>(ref header[offset + 8]);
+        return second == chunkNameSecond;
     }
 
     private Game GameType_DoSS2FallbackCheck(Entry misFileEntry)

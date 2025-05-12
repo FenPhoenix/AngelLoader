@@ -461,6 +461,9 @@ public sealed class ReadOnlyDataContext
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
 
+    // Offset from the start of the DARKMISS chunk header - in other words, from the first byte of the word "DARKMISS"
+    internal const int Thief_128_GameDescriptorOffsetFromDARKMISS = 37;
+
     // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
     internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
     internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
