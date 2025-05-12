@@ -4846,22 +4846,13 @@ public sealed class Scanner : IDisposable
     #region Game type
 
     /*
-    @ND128(Game type detection):
     The new "Mission Game" parameter ("Dark Mission Description" in DromEd) is the 30th byte after DARKMISS*, and
     is a new byte that doesn't exist in <1.27. 0x1 = Any, 0x2 = Thief 1, 0x3 = Thief 2.
     SS2 (ShockEd) doesn't have the "Dark Mission Description" mission variable, and SS2 .mis files don't have the
     DARKMISS block, so it appears that SS2 doesn't write out any game descriptor value.
-    ---
-    For zip search:
-    DARKMISS should have another block after it and therefore another printable-ASCII block name, so if the game
-    descriptor byte is printable ASCII (>31) then we can safely say it's a <=1.27 mission and we should fall back
-    to the old detection method.
-    ---
-    For on-disk search:
-    We just check the length of the DARKMISS block. >=14 = >=1.28, otherwise <=1.27.
 
     *Block headers are 24 bytes (12 bytes name + 12 bytes cruft), so our byte is at header end + 14, or byte 13
-     after header if counting from 0
+     after header if counting from 0.
     */
     private Game GetGameType()
     {
@@ -5021,7 +5012,6 @@ public sealed class Scanner : IDisposable
         };
     }
 
-    // @ND128: Add on-disk game descriptor detection path
     private Game GameType_DoMainCheck(Entry misFileEntry)
     {
         if (_fmFormat.IsStreamableArchive())
