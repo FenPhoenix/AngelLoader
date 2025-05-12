@@ -455,6 +455,8 @@ public sealed class ReadOnlyDataContext
     internal const int T2_OldDark_SKYOBJVAR_Location = 772;
     internal const int SS2_OldDark_MAPPARAM_Location = 916;
 
+    internal const int Thief_DARKMISS_Offset = 612;
+    internal const int Thief_128_GameDescriptorOffset = 649;
     internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
@@ -468,6 +470,9 @@ public sealed class ReadOnlyDataContext
 
     internal const ulong SymName_First = 0x6D614E6D79532450;
     internal const uint SymName_Second = 0x00000065;
+
+    internal const ulong DARKMISS_First = 0x5353494D4B524144;
+    internal const uint DARKMISS_Second = 0x00000000;
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is

@@ -4922,6 +4922,15 @@ public sealed class Scanner : IDisposable
                     int length = _ctx.GameDetect_KeyPhraseZipOffsets[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
+
+                    if (i == 0)
+                    {
+                        Game gameFromDARKMISS = GetGameFromDARKMISS(buffer);
+                        if (gameFromDARKMISS != Game.Null)
+                        {
+                            return gameFromDARKMISS;
+                        }
+                    }
                 }
                 else
                 {
@@ -4969,8 +4978,37 @@ public sealed class Scanner : IDisposable
             int len = buffer.Length;
             return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
+
+        static Game GetGameFromDARKMISS(byte[] buffer)
+        {
+            if (buffer.Length <= Thief_128_GameDescriptorOffset)
+            {
+                return Game.Null;
+            }
+
+            ulong first = Unsafe.ReadUnaligned<ulong>(ref buffer[Thief_DARKMISS_Offset]);
+            if (first != DARKMISS_First)
+            {
+                return Game.Null;
+            }
+
+            uint second = Unsafe.ReadUnaligned<uint>(ref buffer[Thief_DARKMISS_Offset + 8]);
+            if (second != DARKMISS_Second)
+            {
+                return Game.Null;
+            }
+
+            byte gameDescriptor = buffer[Thief_128_GameDescriptorOffset];
+            return gameDescriptor switch
+            {
+                0x2 => Game.Thief1,
+                0x3 => Game.Thief2,
+                _ => Game.Null,
+            };
+        }
     }
 
+    // @ND128: Add on-disk game descriptor detection path
     private Game GameType_DoMainCheck(Entry misFileEntry)
     {
         if (_fmFormat.IsStreamableArchive())
