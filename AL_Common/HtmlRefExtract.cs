@@ -8,9 +8,53 @@ public static partial class Common
     // Try to reject formats that don't make sense. Exclude instead of include for future-proofing.
     public static readonly string[] HtmlRefExcludes =
     {
-        ".osm", ".exe", ".dll", ".ose", ".mis", ".gam", ".ibt", ".cbt", ".gmp", ".ned", ".unr", ".wav",
-        ".mp3", ".ogg", ".aiff", ".aif", ".flac", ".bin", ".dlx", ".mc", ".mi", ".avi", ".mp4", ".mkv",
-        ".flv", ".log", ".str", ".nut", ".db", ".obj",
+        // Mission files
+        ".cbt",
+        ".gam",
+        ".gmp",
+        ".ibt",
+        ".mis",
+        ".ned",
+        ".unr",
+
+        // Misc
+        ".bin",
+        ".db",
+        ".dll",
+        ".dlx",
+        ".exe",
+        ".ose",
+        ".osm",
+        ".mc",
+        ".mi",
+        ".log",
+        ".str",
+        ".nut",
+        ".obj",
+
+        // Audio
+        ".aif",
+        ".aiff",
+        ".flac",
+        ".mp1",
+        ".mp2",
+        ".mp3",
+        ".oga",
+        ".ogg",
+        ".opus",
+        ".pcm",
+        ".w64",
+        ".wav",
+
+        // Video
+        ".avi",
+        ".flv",
+        ".mkv",
+        ".mov",
+        ".mp4",
+        ".ogv",
+        ".webm",
+        ".wmf",
     };
 
     public static bool IsExcludedFileType(string[] excludes, string name)
