@@ -4975,30 +4975,30 @@ public sealed class Scanner : IDisposable
 
         static bool TryGetGameFromDARKMISS_StreamableArchive(byte[] buffer, out Game game)
         {
-            if (buffer.Length <= Thief_128_GameDescriptorOffset ||
-                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second, Thief_DARKMISS_Offset))
+            if (buffer.Length <= Thief_128_GameDescriptor_Location ||
+                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second, Thief_DARKMISS_Location))
             {
                 game = Game.Null;
                 return false;
             }
 
-            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptorOffset]);
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptor_Location]);
             return game != Game.Null;
         }
 
         static bool TryGetGameFromDARKMISS_OnDisk(Stream misStream, byte[] buffer, out Game game)
         {
             // @ND128: Use handle and RandomAccess to make this more efficient
-            misStream.Position = Thief_DARKMISS_Offset;
-            int darkmissBytesRead = misStream.ReadAll(buffer, 0, buffer.Length);
-            if (darkmissBytesRead != buffer.Length ||
+            misStream.Position = Thief_DARKMISS_Location;
+            int bytesRead = misStream.ReadAll(buffer, 0, buffer.Length);
+            if (bytesRead != buffer.Length ||
                 !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second))
             {
                 game = Game.Null;
                 return false;
             }
 
-            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptorOffsetFromDARKMISS]);
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptor_OffsetFromDARKMISS]);
             return game != Game.Null;
         }
 
@@ -5035,8 +5035,8 @@ public sealed class Scanner : IDisposable
             string gamFileOnDisk = Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name);
             using FileStream_NET fs = GetReadModeFileStreamWithCachedBuffer(gamFileOnDisk, DiskFileStreamBuffer);
 
-            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
-                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
+            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Location1) ||
+                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Location2))
             {
                 return Game.SS2;
             }
