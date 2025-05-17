@@ -4916,34 +4916,16 @@ public sealed class Scanner : IDisposable
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
 
-                    if (i == 0)
+                    if (i == 0 && TryGetGameFromDARKMISS_StreamableArchive(buffer, out Game gameFromDARKMISS))
                     {
-                        Game gameFromDARKMISS = GetGameFromDARKMISS(buffer);
-                        if (gameFromDARKMISS != Game.Null)
-                        {
-                            return gameFromDARKMISS;
-                        }
+                        return gameFromDARKMISS;
                     }
                 }
                 else
                 {
-                    if (i == 0)
+                    if (i == 0 && TryGetGameFromDARKMISS_OnDisk(misStream, _darkmissChunkBuffer, out Game gameFromDARKMISS))
                     {
-                        // @ND128: Use handle and RandomAccess to make this more efficient
-                        misStream.Position = Thief_DARKMISS_Offset;
-                        int darkmissBytesRead = misStream.ReadAll(_darkmissChunkBuffer, 0, _darkmissChunkBuffer.Length);
-                        if (darkmissBytesRead == _darkmissChunkBuffer.Length)
-                        {
-                            if (GameType_HeaderEquals(_darkmissChunkBuffer, DARKMISS_First, DARKMISS_Second))
-                            {
-                                byte gameDescriptor = _darkmissChunkBuffer[Thief_128_GameDescriptorOffsetFromDARKMISS];
-                                Game gameFromDescriptor = GetGameFromDescriptorByte(gameDescriptor);
-                                if (gameFromDescriptor != Game.Null)
-                                {
-                                    return gameFromDescriptor;
-                                }
-                            }
-                        }
+                        return gameFromDARKMISS;
                     }
 
                     buffer = _gameDetectStringBuffer;
@@ -4991,16 +4973,33 @@ public sealed class Scanner : IDisposable
             return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
 
-        static Game GetGameFromDARKMISS(byte[] buffer)
+        static bool TryGetGameFromDARKMISS_StreamableArchive(byte[] buffer, out Game game)
         {
             if (buffer.Length <= Thief_128_GameDescriptorOffset ||
                 !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second, Thief_DARKMISS_Offset))
             {
-                return Game.Null;
+                game = Game.Null;
+                return false;
             }
 
-            byte gameDescriptor = buffer[Thief_128_GameDescriptorOffset];
-            return GetGameFromDescriptorByte(gameDescriptor);
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptorOffset]);
+            return game != Game.Null;
+        }
+
+        static bool TryGetGameFromDARKMISS_OnDisk(Stream misStream, byte[] buffer, out Game game)
+        {
+            // @ND128: Use handle and RandomAccess to make this more efficient
+            misStream.Position = Thief_DARKMISS_Offset;
+            int darkmissBytesRead = misStream.ReadAll(buffer, 0, buffer.Length);
+            if (darkmissBytesRead != buffer.Length ||
+                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second))
+            {
+                game = Game.Null;
+                return false;
+            }
+
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptorOffsetFromDARKMISS]);
+            return game != Game.Null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
