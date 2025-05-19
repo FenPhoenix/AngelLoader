@@ -2098,10 +2098,34 @@ internal static partial class FMInstallAndPlay
                 Stopwatch audioConvertSW = Stopwatch.StartNew();
 #endif
 
-                // Dark engine games can't play MP3s, so they must be converted in all cases.
-                // This one won't be called anywhere except during install, because it always runs during
-                // install so there's no need to make it optional elsewhere. So we don't need to have a
-                // check bool or anything.
+                /*
+                Dark engine games can't play MP3s, so they must be converted in all cases.
+                This one won't be called anywhere except during install, because it always runs during install so
+                there's no need to make it optional elsewhere. So we don't need to have a check bool or anything.
+
+                @ND128(MP3 always convert on install):
+                1.28+ directly supports MP3s in-game now (the patents have expired since NewDark first released),
+                so it's no longer true that MP3s always need converting. We should have the option not to convert
+                for 1.28+.
+                
+                @ND128(Audio files, conversion, and backup restore):
+                If we allow MP3s to not be converted, then a backup restore will put the previously converted
+                .wav versions back into the folder, and will also auto-delete the mp3 versions (same with oggs if
+                they were converted). This is already sort of a problem and we've been avoiding it for a long time
+                now, although things end up working out mostly okay in practice. The reason we've been avoiding
+                the issue is that it's difficult to tell for sure if backed-up audio is just a converted version
+                of stock audio, or if some of it was manually user-modified. However, user modification is pretty
+                unlikely and should be a very rare case, so maybe we should just exclude everything in the sound
+                folders from backup and restore. That's kind of janky, but the other solution would be to temp-
+                convert all stock audio to the destination format (both of them - .wav AND .wav-16!) and then
+                diff every single one with the backup set to see if any have changed outside conversion. That's
+                insanely slow, so excluding audio from backup is probably the better option.
+
+                @ND128(Convert .wav to 16-bit):
+                1.28+ supports higher than 16bit bitrates in OpenAL, so we should disable the convert-to-16-bit
+                option for 1.28+. We should put some "not needed for 1.28+" message in the places where we disable
+                it, to let users know why it's disabled.
+                */
                 FMAudio.ConvertAsPartOfInstall(
                     validAudioConvertibleFM,
                     AudioConvert.MP3ToWAV,
