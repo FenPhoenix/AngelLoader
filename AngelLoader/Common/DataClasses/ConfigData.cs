@@ -14,6 +14,7 @@ public sealed class ConfigData
     {
         #region To be left at defaults
 
+        _darkGameVersions = new Version?[SupportedGameCount];
         _newMantling = new bool?[SupportedGameCount];
         _gameEditorDetected = new bool[SupportedGameCount];
         _startupAlwaysStartSelector = new bool[SupportedGameCount];
@@ -78,6 +79,18 @@ public sealed class ConfigData
     internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => _startupAlwaysStartSelector[(uint)index] = value;
 
     #endregion
+
+    #endregion
+
+    #region Dark game versions
+
+    // We only use these for NewDark version detection, so for performance don't get the version for other games
+
+    private readonly Version?[] _darkGameVersions;
+
+    internal Version? GetDarkGameVersion(GameIndex index) => GameIsDark(index) ? _darkGameVersions[(int)index] : null;
+
+    internal void SetDarkGameVersion(GameIndex index, Version? value) => _darkGameVersions[(int)index] = GameIsDark(index) ? value : null;
 
     #endregion
 

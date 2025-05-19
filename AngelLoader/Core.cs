@@ -159,7 +159,8 @@ internal static class Core
                         {
                             if (File.Exists(gameExe))
                             {
-                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) =
+                                    SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
                                 if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
                             }
                         }
@@ -918,6 +919,9 @@ internal static class Core
                     configMods.Add(tempList[i]);
                 }
             }
+
+            var gv = GetGameVersion(gameIndex);
+            Config.SetDarkGameVersion(gameIndex, gv.Error == Error.None ? gv.Version : null);
         }
         else if (gameIndex == GameIndex.TDM)
         {
