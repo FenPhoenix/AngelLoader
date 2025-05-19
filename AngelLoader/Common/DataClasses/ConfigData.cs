@@ -458,6 +458,9 @@ public sealed class ConfigData
 
     internal bool ShowPresetTags = true;
 
+    // @ND128: Make this a UI option
+    internal bool ExcludeSoundDirsFromBackupAndRestore = true;
+
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
     internal bool ForceWindowed;

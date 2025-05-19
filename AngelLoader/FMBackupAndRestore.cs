@@ -855,7 +855,13 @@ internal static partial class FMInstallAndPlay
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool IsIgnoredFile(string fn) => fn.EqualsI(Paths.FMSelInf) || fn.EqualsI(_startMisSav);
+    private static bool IsIgnoredFile(string fn) =>
+        fn.EqualsI(Paths.FMSelInf) ||
+        fn.EqualsI(_startMisSav) ||
+        (
+            Config.ExcludeSoundDirsFromBackupAndRestore &&
+            (fn.PathStartsWithI(@"snd\") || fn.PathStartsWithI(@"snd2\"))
+        );
 
     #endregion
 }
