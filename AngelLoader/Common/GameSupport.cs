@@ -172,5 +172,32 @@ public static partial class GameSupport
         GameIndex.SS2 => LText.FMsList.FMMenu_OpenInShockEd,
         _ => "",
     };
+
+    private static readonly Version _newDark128_Thief = new(1, 2, 8, 0);
+    private static readonly Version _newDark128_SS2 = new(2, 4, 9, 0);
+
+    /// <summary>
+    /// Gets the version from the config object, not from disk. Use when you need to avoid a disk-hit delay.
+    /// </summary>
+    /// <param name="gameIndex"></param>
+    /// <returns></returns>
+    internal static bool ConfigStoredGameIsNewDark128OrAbove(GameIndex gameIndex)
+    {
+        switch (gameIndex)
+        {
+            case GameIndex.Thief1 or GameIndex.Thief2:
+            {
+                Version? version = Config.GetDarkGameVersion(gameIndex);
+                return version != null && version >= _newDark128_Thief;
+            }
+            case GameIndex.SS2:
+            {
+                Version? version = Config.GetDarkGameVersion(gameIndex);
+                return version != null && version >= _newDark128_SS2;
+            }
+            default:
+                return false;
+        }
+    }
 }
 // @GENGAMES (GameSupport): End
