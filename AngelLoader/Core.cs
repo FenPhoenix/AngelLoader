@@ -1983,7 +1983,6 @@ internal static class Core
     {
         string gameExe = Config.GetGameExe(game);
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
-        if (!File.Exists(gameExe)) return (Error.GameExeNotFound, null, "");
 
         bool gameIsNormal = GameIsDark(game) || game == GameIndex.TDM;
         string exeToSearch;
@@ -1994,7 +1993,11 @@ internal static class Core
         else
         {
             // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
-            if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
+            try
+            {
+                exeToSearch = Path.Combine(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll);
+            }
+            catch
             {
                 return (Error.SneakyDllNotFound, null, "");
             }
@@ -2003,6 +2006,7 @@ internal static class Core
         FileVersionInfo vi;
         try
         {
+            // This thing does a File.Exists() check itself, so no need to do any duplicate ones beforehand
             vi = FileVersionInfo.GetVersionInfo(exeToSearch);
         }
         catch (FileNotFoundException)
