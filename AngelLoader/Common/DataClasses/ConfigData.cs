@@ -366,6 +366,10 @@ public sealed class ConfigData
 
     internal bool ConvertWAVsTo16BitOnInstall = true;
     internal bool ConvertOGGsToWAVsOnInstall;
+    // @ND128: Make this a UI option
+    internal bool ConvertMP3sToWavOnInstall;
+    // @ND128: If we want to allow conversion of other new supported formats, we'll need to build a version of
+    // ffmpeg with support for them.
 
     internal bool UseOldMantlingForOldDarkFMs;
 

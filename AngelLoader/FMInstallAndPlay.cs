@@ -2126,11 +2126,14 @@ internal static partial class FMInstallAndPlay
                 option for 1.28+. We should put some "not needed for 1.28+" message in the places where we disable
                 it, to let users know why it's disabled.
                 */
-                FMAudio.ConvertAsPartOfInstall(
-                    validAudioConvertibleFM,
-                    AudioConvert.MP3ToWAV,
-                    audioConversionThreadingData,
-                    cancellationToken);
+                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) || Config.ConvertMP3sToWavOnInstall)
+                {
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.MP3ToWAV,
+                        audioConversionThreadingData,
+                        cancellationToken);
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
