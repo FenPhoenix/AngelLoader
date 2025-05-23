@@ -28,6 +28,8 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
     private bool _openFMFolderMenuItemVisible;
     private bool _scanFMMenuItemEnabled;
     private bool _convertAudioSubMenuEnabled;
+    private bool _convertWAVsTo16BitMenuItemEnabled;
+    // @ND128: We may want a "convert mp3s" menu item for ND 1.28+
     private int _rating = -1;
     private Difficulty _finishedExplicitItemsChecked = Difficulty.None;
     private bool _finishedOnUnknownChecked;
@@ -273,6 +275,7 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
         ScanFMMenuItem.Enabled = _scanFMMenuItemEnabled;
 
         ConvertAudioMenuItem.Enabled = _convertAudioSubMenuEnabled;
+        ConvertWAVsTo16BitMenuItem.Enabled = _convertWAVsTo16BitMenuItemEnabled;
 
         WebSearchMenuItem.Enabled = _webSearchMenuItemEnabled;
 
@@ -619,7 +622,7 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
         }
     }
 
-    internal void SetConvertAudioRCSubMenuEnabled(bool value)
+    internal void SetConvertAudioSubMenuEnabled(bool value)
     {
         if (_constructed)
         {
@@ -628,6 +631,18 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
         else
         {
             _convertAudioSubMenuEnabled = value;
+        }
+    }
+
+    internal void SetConvertWAVsTo16BitMenuItemEnabled(bool value)
+    {
+        if (_constructed)
+        {
+            ConvertWAVsTo16BitMenuItem.Enabled = value;
+        }
+        else
+        {
+            _convertWAVsTo16BitMenuItemEnabled = value;
         }
     }
 

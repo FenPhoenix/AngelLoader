@@ -4805,6 +4805,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool anyAreTDM;
         bool installShouldBeVisible;
         bool allAreSupportedAndAvailable;
+        bool allAreND128;
 
         bool multiplePinnedStates = false;
         {
@@ -4816,6 +4817,8 @@ public sealed partial class MainForm : DarkFormBase,
 
             bool atLeastOnePinned = false;
             bool atLeastOneUnpinned = false;
+
+            int nd128Count = 0;
 
             /*
             We iterate the whole list looking for selected FMs, rather than get SelectedRows every time.
@@ -4863,9 +4866,19 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 if (selectedFM.Installed) installedCount++;
                 if (selectedFM.MarkedUnavailable) markedUnavailableCount++;
-                if (GameIsDark(selectedFM.Game)) gameIsDarkCount++;
                 if (selectedFM.Game == Game.TDM) gameIsTDMCount++;
-                if (GameIsKnownAndSupported(selectedFM.Game)) knownAndSupportedCount++;
+                if (selectedFM.Game.ConvertsToKnownAndSupported(out GameIndex gi))
+                {
+                    knownAndSupportedCount++;
+                    if (GameIsDark(gi))
+                    {
+                        gameIsDarkCount++;
+                        if (ConfigStoredGameIsNewDark128OrAbove(gi))
+                        {
+                            nd128Count++;
+                        }
+                    }
+                }
 
                 if (!multiplePinnedStates)
                 {
@@ -4893,6 +4906,7 @@ public sealed partial class MainForm : DarkFormBase,
             noneAreAvailable = markedUnavailableCount == selRowsCount;
             bool allSelectedAreSameInstalledState = allAreInstalled || noneAreInstalled;
             allAreSupportedAndAvailable = allAreKnownAndSupported && allAreAvailable;
+            allAreND128 = nd128Count == selRowsCount;
 
             multiSelected = selRowsCount > 1;
             playShouldBeEnabled = !multiSelected && allAreSupportedAndAvailable;
@@ -4964,9 +4978,11 @@ public sealed partial class MainForm : DarkFormBase,
         Lazy_FMsDGV_FM_Menu.SetScanFMMenuItemEnabled(!noneAreAvailable);
         Lazy_FMsDGV_FM_Menu.SetScanFMText(multiSelected);
 
-        Lazy_FMsDGV_FM_Menu.SetConvertAudioRCSubMenuEnabled(
+        Lazy_FMsDGV_FM_Menu.SetConvertAudioSubMenuEnabled(
             !noneAreAvailable && !noneAreInstalled && !noneAreDark
         );
+
+        Lazy_FMsDGV_FM_Menu.SetConvertWAVsTo16BitMenuItemEnabled(!allAreND128);
 
         Lazy_FMsDGV_FM_Menu.SetGameSpecificFinishedOnMenuItemsText(fm.Game);
 
