@@ -930,6 +930,11 @@ internal static partial class Ini
         config.ShowPresetTags = valTrimmed.EqualsTrue();
     }
 
+    private static void Config_ExcludeSoundDirsFromBackupAndRestore_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.ExcludeSoundDirsFromBackupAndRestore = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     [StructLayout(LayoutKind.Auto)]
@@ -1141,6 +1146,7 @@ internal static partial class Ini
         { "DriveMultithreadingLevel", new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
 
         { "ShowPresetTags", new Config_DelegatePointerWrapper(&Config_ShowPresetTags_Set) },
+        { "ExcludeSoundDirsFromBackupAndRestore", new Config_DelegatePointerWrapper(&Config_ExcludeSoundDirsFromBackupAndRestore_Set) },
 
         #region Backward compatibility
 
@@ -1560,5 +1566,6 @@ internal static partial class Ini
         sw.AppendLine();
 
         sw.Append("ShowPresetTags=").AppendLine(config.ShowPresetTags);
+        sw.Append("ExcludeSoundDirsFromBackupAndRestore=").AppendLine(config.ExcludeSoundDirsFromBackupAndRestore);
     }
 }
