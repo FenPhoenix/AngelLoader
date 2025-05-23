@@ -36,6 +36,10 @@ internal static class FMAudio
     // computers, performance heavy missions or with large OGG files. In such cases it might help to convert
     // them to WAV files during installation."
 
+    /*
+    @ND128(Audio conversion): We need to reject NewDark versions that aren't supposed to have the passed format
+    converted. We aren't doing that currently and so we may get audio converted for games we shouldn't.
+    */
     internal static async Task ConvertSelected(AudioConvert convertType)
     {
         using DisableScreenshotWatchers dsw = new();
