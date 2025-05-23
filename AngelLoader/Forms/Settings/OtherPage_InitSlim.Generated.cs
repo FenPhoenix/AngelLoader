@@ -8,6 +8,8 @@ sealed partial class OtherPage
     private void InitSlim()
     {
         this.PagePanel = new System.Windows.Forms.Panel();
+        this.TagsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
+        this.AlwaysShowPresetTagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.FilteringGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.EnableFuzzySearchCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.InstallingFMsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -43,18 +45,14 @@ sealed partial class OtherPage
         this.BackupSavesAndScreensOnlyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.FMSettingsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.OldMantleForOldDarkFMsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.ConvertWAVsTo16BitOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
-        this.TagsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.AlwaysShowPresetTagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.PagePanel.SuspendLayout();
+        this.TagsGroupBox.SuspendLayout();
         this.FilteringGroupBox.SuspendLayout();
         this.InstallingFMsGroupBox.SuspendLayout();
         this.PlayFMOnDCOrEnterGroupBox.SuspendLayout();
         this.WebSearchGroupBox.SuspendLayout();
         this.UninstallingFMsGroupBox.SuspendLayout();
         this.FMSettingsGroupBox.SuspendLayout();
-        this.TagsGroupBox.SuspendLayout();
         this.SuspendLayout();
         // 
         // PagePanel
@@ -72,12 +70,32 @@ sealed partial class OtherPage
         this.PagePanel.Size = new System.Drawing.Size(440, 985);
         this.PagePanel.TabIndex = 0;
         // 
+        // TagsGroupBox
+        // 
+        this.TagsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.TagsGroupBox.Controls.Add(this.AlwaysShowPresetTagsCheckBox);
+        this.TagsGroupBox.Location = new System.Drawing.Point(8, 812);
+        this.TagsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
+        this.TagsGroupBox.Size = new System.Drawing.Size(424, 56);
+        this.TagsGroupBox.TabIndex = 6;
+        this.TagsGroupBox.TabStop = false;
+        // 
+        // AlwaysShowPresetTagsCheckBox
+        // 
+        this.AlwaysShowPresetTagsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.AlwaysShowPresetTagsCheckBox.Checked = true;
+        this.AlwaysShowPresetTagsCheckBox.Location = new System.Drawing.Point(16, 16);
+        this.AlwaysShowPresetTagsCheckBox.Size = new System.Drawing.Size(400, 32);
+        this.AlwaysShowPresetTagsCheckBox.TabIndex = 0;
+        // 
         // FilteringGroupBox
         // 
         this.FilteringGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.FilteringGroupBox.Controls.Add(this.EnableFuzzySearchCheckBox);
-        this.FilteringGroupBox.Location = new System.Drawing.Point(8, 808);
+        this.FilteringGroupBox.Location = new System.Drawing.Point(8, 744);
         this.FilteringGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.FilteringGroupBox.Size = new System.Drawing.Size(424, 56);
         this.FilteringGroupBox.TabIndex = 5;
@@ -99,7 +117,7 @@ sealed partial class OtherPage
         this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmMultipleOnlyRadioButton);
         this.InstallingFMsGroupBox.Controls.Add(this.Install_ConfirmAlwaysRadioButton);
         this.InstallingFMsGroupBox.Controls.Add(this.ConfirmBeforeInstallLabel);
-        this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 140);
+        this.InstallingFMsGroupBox.Location = new System.Drawing.Point(8, 76);
         this.InstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.InstallingFMsGroupBox.Size = new System.Drawing.Size(424, 124);
         this.InstallingFMsGroupBox.TabIndex = 1;
@@ -135,7 +153,7 @@ sealed partial class OtherPage
         this.PlayFMOnDCOrEnterGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.PlayFMOnDCOrEnterGroupBox.Controls.Add(this.ConfirmPlayOnDCOrEnterCheckBox);
-        this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 740);
+        this.PlayFMOnDCOrEnterGroupBox.Location = new System.Drawing.Point(8, 676);
         this.PlayFMOnDCOrEnterGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.PlayFMOnDCOrEnterGroupBox.Size = new System.Drawing.Size(424, 56);
         this.PlayFMOnDCOrEnterGroupBox.TabIndex = 4;
@@ -169,7 +187,7 @@ sealed partial class OtherPage
         this.WebSearchGroupBox.Controls.Add(this.T2WebSearchUrlTextBox);
         this.WebSearchGroupBox.Controls.Add(this.T1WebSearchUrlTextBox);
         this.WebSearchGroupBox.Controls.Add(this.WebSearchUrlLabel);
-        this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 436);
+        this.WebSearchGroupBox.Location = new System.Drawing.Point(8, 372);
         this.WebSearchGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.WebSearchGroupBox.Size = new System.Drawing.Size(424, 292);
         this.WebSearchGroupBox.TabIndex = 3;
@@ -302,7 +320,7 @@ sealed partial class OtherPage
         this.UninstallingFMsGroupBox.Controls.Add(this.BackupAlwaysAskCheckBox);
         this.UninstallingFMsGroupBox.Controls.Add(this.BackupAllChangedDataRadioButton);
         this.UninstallingFMsGroupBox.Controls.Add(this.BackupSavesAndScreensOnlyRadioButton);
-        this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 276);
+        this.UninstallingFMsGroupBox.Location = new System.Drawing.Point(8, 212);
         this.UninstallingFMsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
         this.UninstallingFMsGroupBox.Size = new System.Drawing.Size(424, 148);
         this.UninstallingFMsGroupBox.TabIndex = 2;
@@ -346,11 +364,9 @@ sealed partial class OtherPage
         this.FMSettingsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
         this.FMSettingsGroupBox.Controls.Add(this.OldMantleForOldDarkFMsCheckBox);
-        this.FMSettingsGroupBox.Controls.Add(this.ConvertOGGsToWAVsOnInstallCheckBox);
-        this.FMSettingsGroupBox.Controls.Add(this.ConvertWAVsTo16BitOnInstallCheckBox);
         this.FMSettingsGroupBox.Location = new System.Drawing.Point(8, 8);
         this.FMSettingsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.FMSettingsGroupBox.Size = new System.Drawing.Size(424, 120);
+        this.FMSettingsGroupBox.Size = new System.Drawing.Size(424, 56);
         this.FMSettingsGroupBox.TabIndex = 0;
         this.FMSettingsGroupBox.TabStop = false;
         // 
@@ -358,46 +374,9 @@ sealed partial class OtherPage
         // 
         this.OldMantleForOldDarkFMsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 80);
+        this.OldMantleForOldDarkFMsCheckBox.Location = new System.Drawing.Point(16, 16);
         this.OldMantleForOldDarkFMsCheckBox.Size = new System.Drawing.Size(400, 32);
         this.OldMantleForOldDarkFMsCheckBox.TabIndex = 2;
-        // 
-        // ConvertOGGsToWAVsOnInstallCheckBox
-        // 
-        this.ConvertOGGsToWAVsOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.ConvertOGGsToWAVsOnInstallCheckBox.Location = new System.Drawing.Point(16, 44);
-        this.ConvertOGGsToWAVsOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
-        this.ConvertOGGsToWAVsOnInstallCheckBox.TabIndex = 1;
-        // 
-        // ConvertWAVsTo16BitOnInstallCheckBox
-        // 
-        this.ConvertWAVsTo16BitOnInstallCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.ConvertWAVsTo16BitOnInstallCheckBox.Checked = true;
-        this.ConvertWAVsTo16BitOnInstallCheckBox.Location = new System.Drawing.Point(16, 16);
-        this.ConvertWAVsTo16BitOnInstallCheckBox.Size = new System.Drawing.Size(400, 32);
-        this.ConvertWAVsTo16BitOnInstallCheckBox.TabIndex = 0;
-        // 
-        // TagsGroupBox
-        // 
-        this.TagsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.TagsGroupBox.Controls.Add(this.AlwaysShowPresetTagsCheckBox);
-        this.TagsGroupBox.Location = new System.Drawing.Point(8, 876);
-        this.TagsGroupBox.MinimumSize = new System.Drawing.Size(424, 0);
-        this.TagsGroupBox.Size = new System.Drawing.Size(424, 56);
-        this.TagsGroupBox.TabIndex = 6;
-        this.TagsGroupBox.TabStop = false;
-        // 
-        // AlwaysShowPresetTagsCheckBox
-        // 
-        this.AlwaysShowPresetTagsCheckBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-        | System.Windows.Forms.AnchorStyles.Right)));
-        this.AlwaysShowPresetTagsCheckBox.Checked = true;
-        this.AlwaysShowPresetTagsCheckBox.Location = new System.Drawing.Point(16, 16);
-        this.AlwaysShowPresetTagsCheckBox.Size = new System.Drawing.Size(400, 32);
-        this.AlwaysShowPresetTagsCheckBox.TabIndex = 0;
         // 
         // OtherPage
         // 
@@ -406,6 +385,7 @@ sealed partial class OtherPage
         this.Controls.Add(this.PagePanel);
         this.Size = new System.Drawing.Size(440, 985);
         this.PagePanel.ResumeLayout(false);
+        this.TagsGroupBox.ResumeLayout(false);
         this.FilteringGroupBox.ResumeLayout(false);
         this.InstallingFMsGroupBox.ResumeLayout(false);
         this.InstallingFMsGroupBox.PerformLayout();
@@ -416,7 +396,6 @@ sealed partial class OtherPage
         this.UninstallingFMsGroupBox.ResumeLayout(false);
         this.UninstallingFMsGroupBox.PerformLayout();
         this.FMSettingsGroupBox.ResumeLayout(false);
-        this.TagsGroupBox.ResumeLayout(false);
         this.ResumeLayout(false);
     }
 }

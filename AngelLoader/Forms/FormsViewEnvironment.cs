@@ -129,6 +129,10 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public void PreloadTheme(VisualTheme theme)
     {
+        // UI doesn't work with this crap
+#if DEBUG
+        return;
+#endif
         try
         {
             if (theme != VisualTheme.Classic)

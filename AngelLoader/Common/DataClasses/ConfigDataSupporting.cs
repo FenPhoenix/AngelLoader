@@ -544,6 +544,7 @@ internal enum SettingsTab
 {
     Paths,
     Appearance,
+    AudioFiles,
     Other,
     ThiefBuddy,
     Update,

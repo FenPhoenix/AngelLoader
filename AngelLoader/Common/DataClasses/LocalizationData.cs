@@ -870,13 +870,25 @@ internal sealed class LText_Class
         internal readonly string Appearance_PlayWithoutFM_SingleButton = "Single button with menu";
         internal readonly string Appearance_PlayWithoutFM_MultiButton = "Multiple buttons";
         [FenGenBlankLine]
+        internal readonly string AudioFiles_TabText = "Audio Files";
+        [FenGenBlankLine]
+        internal readonly string AudioFiles_Global = "Global";
+        internal readonly string AudioFiles_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
+        internal readonly string AudioFiles_ConvertOGGsToWAVsOnInstall_ToolTip = "Fixes stuttering on some systems when loading .ogg files.";
+        [FenGenBlankLine]
+        internal readonly string AudioFiles_NewDark_127 = "NewDark 1.27 and older";
+        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_127 = "Convert .wavs to 16 bit on install";
+        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_ToolTip = "Fixes static in certain .wav files when OpenAL audio is enabled.";
+        internal readonly string AudioFiles_ConvertMP3sToWavOnInstall_NewDark_127 = "Convert .mp3s to .wavs on install (required)";
+        [FenGenBlankLine]
+        internal readonly string AudioFiles_NewDark_128 = "NewDark 1.28 and newer";
+        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_128 = "Convert .wavs to 16 bit on install (not required)";
+        internal readonly string AudioFiles_ConvertMP3sToWavOnInstall_NewDark_128 = "Convert .mp3s to .wavs on install";
+        // @ND128: We might want a tooltip for mp3 conversion
+        [FenGenBlankLine]
         internal readonly string Other_TabText = "Other";
         [FenGenBlankLine]
         internal readonly string Other_FMSettings = "FM settings";
-        internal readonly string Other_ConvertWAVsTo16BitOnInstall = "Convert .wavs to 16 bit on install";
-        internal readonly string Other_ConvertWAVsTo16BitOnInstall_ToolTip = "Fixes static in certain .wav files when OpenAL audio is enabled.";
-        internal readonly string Other_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
-        internal readonly string Other_ConvertOGGsToWAVsOnInstall_ToolTip = "Fixes stuttering on some systems when loading .ogg files.";
         [FenGenBlankLine]
         internal readonly string Other_UseOldMantlingForOldDarkFMs = "Use old mantling for OldDark FMs";
         [FenGenBlankLine]

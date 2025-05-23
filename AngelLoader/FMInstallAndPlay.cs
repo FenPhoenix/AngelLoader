@@ -2125,8 +2125,13 @@ internal static partial class FMInstallAndPlay
                 1.28+ supports higher than 16bit bitrates in OpenAL, so we should disable the convert-to-16-bit
                 option for 1.28+. We should put some "not needed for 1.28+" message in the places where we disable
                 it, to let users know why it's disabled.
+
+                @ND128(Manual audio convert): Decide what to do about menu option.
+                -We could disable it for 1.28 games, but then if we select multiple FMs with different ND versions
+                 then we need to decide what to do. We could leave it enabled and just don't convert for games that
+                 don't want the convert.
                 */
-                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) || Config.ConvertMP3sToWavOnInstall)
+                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) || Config.ConvertMP3sToWAVsOnInstall_ND128)
                 {
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
+
 public sealed partial class IOThreadingPage : UserControl, Interfaces.ISettingsPage
 {
     /// <summary>

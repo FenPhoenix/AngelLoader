@@ -109,6 +109,8 @@ public static partial class Misc
         {
             "#settings_paths_section",
             "#settings_appearance_section",
+            // @ND128: Add this section to the help file
+            "#settings_audio_files_section",
             "#settings_other_section",
             "#settings_thief_buddy_section",
             "#settings_update_section",

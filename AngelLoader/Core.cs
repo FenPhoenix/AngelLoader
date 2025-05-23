@@ -632,8 +632,9 @@ internal static class Core
 
         #region Other page
 
-        Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
         Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
+        Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
+        Config.ConvertMP3sToWAVsOnInstall_ND128 = outConfig.ConvertMP3sToWAVsOnInstall_ND128;
 
         Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
 

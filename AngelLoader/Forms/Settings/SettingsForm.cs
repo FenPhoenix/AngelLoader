@@ -115,6 +115,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private readonly PathsPage PathsPage;
     private readonly AppearancePage AppearancePage;
+    private readonly AudioFilesPage AudioFilesPage;
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
     private readonly UpdatePage UpdatePage;
@@ -205,6 +206,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
             (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
+            (AudioFilesRadioButton, AudioFilesPage = new AudioFilesPage { Visible = false }),
             (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
             (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
             (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
@@ -608,8 +610,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region File conversion
 
-            OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked = config.ConvertWAVsTo16BitOnInstall;
-            OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
+            AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
+            AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Checked = config.ConvertWAVsTo16BitOnInstall;
+            AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Checked = config.ConvertMP3sToWAVsOnInstall_ND128;
 
             #endregion
 
@@ -1146,15 +1149,36 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #endregion
 
+                #region Audio Files page
+
+                AudioFilesRadioButton.Text = LText.SettingsWindow.AudioFiles_TabText;
+
+                AudioFilesPage.GlobalGroupBox.Text = LText.SettingsWindow.AudioFiles_Global;
+
+                AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall;
+                MainToolTip.SetToolTip(AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall_ToolTip);
+
+                AudioFilesPage.ND127GroupBox.Text = LText.SettingsWindow.AudioFiles_NewDark_127;
+
+                AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_127;
+                MainToolTip.SetToolTip(AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox, LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_ToolTip);
+
+                AudioFilesPage.ND127_ConvertMP3sToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertMP3sToWavOnInstall_NewDark_127;
+
+                AudioFilesPage.ND128GroupBox.Text = LText.SettingsWindow.AudioFiles_NewDark_128;
+
+                AudioFilesPage.ND128_ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_128;
+                AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertMP3sToWavOnInstall_NewDark_128;
+
+                // @ND128: We may want a tooltip for mp3 conversion and whatever else
+
+                #endregion
+
                 #region Other page
 
                 OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
 
                 OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
-                OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
-                MainToolTip.SetToolTip(OtherPage.ConvertWAVsTo16BitOnInstallCheckBox, LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall_ToolTip);
-                OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
-                MainToolTip.SetToolTip(OtherPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall_ToolTip);
 
                 OtherPage.OldMantleForOldDarkFMsCheckBox.Text = LText.SettingsWindow.Other_UseOldMantlingForOldDarkFMs;
 
@@ -1552,8 +1576,9 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region File conversion
 
-            OutConfig.ConvertWAVsTo16BitOnInstall = OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked;
-            OutConfig.ConvertOGGsToWAVsOnInstall = OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
+            OutConfig.ConvertOGGsToWAVsOnInstall = AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
+            OutConfig.ConvertWAVsTo16BitOnInstall = AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Checked;
+            OutConfig.ConvertMP3sToWAVsOnInstall_ND128 = AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Checked;
 
             #endregion
 

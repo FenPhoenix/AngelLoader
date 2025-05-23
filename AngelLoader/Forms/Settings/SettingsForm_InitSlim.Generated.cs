@@ -22,6 +22,7 @@ partial class SettingsForm
         this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.PagePanel = new System.Windows.Forms.Panel();
+        this.AudioFilesRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
         this.BottomFLP.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -80,6 +81,7 @@ partial class SettingsForm
         this.MainSplitContainer.Panel1.Controls.Add(this.UpdateRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
+        this.MainSplitContainer.Panel1.Controls.Add(this.AudioFilesRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
         this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
         // 
@@ -95,7 +97,7 @@ partial class SettingsForm
         // 
         this.IOThreadingRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.IOThreadingRadioButton.Location = new System.Drawing.Point(8, 128);
+        this.IOThreadingRadioButton.Location = new System.Drawing.Point(8, 152);
         this.IOThreadingRadioButton.Size = new System.Drawing.Size(136, 23);
         this.IOThreadingRadioButton.TabIndex = 5;
         this.IOThreadingRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
@@ -104,7 +106,7 @@ partial class SettingsForm
         // 
         this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.UpdateRadioButton.Location = new System.Drawing.Point(8, 104);
+        this.UpdateRadioButton.Location = new System.Drawing.Point(8, 128);
         this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
         this.UpdateRadioButton.TabIndex = 4;
         this.UpdateRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
@@ -113,7 +115,7 @@ partial class SettingsForm
         // 
         this.ThiefBuddyRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.ThiefBuddyRadioButton.Location = new System.Drawing.Point(8, 80);
+        this.ThiefBuddyRadioButton.Location = new System.Drawing.Point(8, 104);
         this.ThiefBuddyRadioButton.Size = new System.Drawing.Size(136, 23);
         this.ThiefBuddyRadioButton.TabIndex = 3;
         this.ThiefBuddyRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
@@ -122,7 +124,7 @@ partial class SettingsForm
         // 
         this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
         | System.Windows.Forms.AnchorStyles.Right)));
-        this.OtherRadioButton.Location = new System.Drawing.Point(8, 56);
+        this.OtherRadioButton.Location = new System.Drawing.Point(8, 80);
         this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
         this.OtherRadioButton.TabIndex = 2;
         this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
@@ -150,6 +152,15 @@ partial class SettingsForm
         this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
         this.PagePanel.Size = new System.Drawing.Size(535, 613);
         this.PagePanel.TabIndex = 2;
+        // 
+        // AudioFilesRadioButton
+        // 
+        this.AudioFilesRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+        | System.Windows.Forms.AnchorStyles.Right)));
+        this.AudioFilesRadioButton.Location = new System.Drawing.Point(8, 56);
+        this.AudioFilesRadioButton.Size = new System.Drawing.Size(136, 23);
+        this.AudioFilesRadioButton.TabIndex = 1;
+        this.AudioFilesRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
         // 
         // SettingsForm
         // 

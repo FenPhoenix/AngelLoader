@@ -139,6 +139,11 @@ internal static class Win32ThemeHooks
 
     internal static void InstallHooks()
     {
+        // UI doesn't work with this crap
+#if DEBUG
+        return;
+#endif
+
         if (_hooksInstalled) return;
 
         PreloadHooks();
