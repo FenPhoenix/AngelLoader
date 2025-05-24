@@ -2107,6 +2107,10 @@ internal static partial class FMInstallAndPlay
                 1.28+ directly supports MP3s in-game now (the patents have expired since NewDark first released),
                 so it's no longer true that MP3s always need converting. We should have the option not to convert
                 for 1.28+.
+
+                @ND128(MP3):
+                Test if mp3s have the same delay in loading as oggs do. If they do, we should make mp3-to-wav
+                the default even for 1.28+, that way there'll be no perf regression from the 1.27 experience.
                 
                 @ND128(Audio files, conversion, and backup restore):
                 If we allow MP3s to not be converted, then a backup restore will put the previously converted
@@ -2120,16 +2124,6 @@ internal static partial class FMInstallAndPlay
                 convert all stock audio to the destination format (both of them - .wav AND .wav-16!) and then
                 diff every single one with the backup set to see if any have changed outside conversion. That's
                 insanely slow, so excluding audio from backup is probably the better option.
-
-                @ND128(Convert .wav to 16-bit):
-                1.28+ supports higher than 16bit bitrates in OpenAL, so we should disable the convert-to-16-bit
-                option for 1.28+. We should put some "not needed for 1.28+" message in the places where we disable
-                it, to let users know why it's disabled.
-
-                @ND128(Manual audio convert): Decide what to do about menu option.
-                -We could disable it for 1.28 games, but then if we select multiple FMs with different ND versions
-                 then we need to decide what to do. We could leave it enabled and just don't convert for games that
-                 don't want the convert.
                 */
                 if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) || Config.ConvertMP3sToWAVsOnInstall_ND128)
                 {
