@@ -26,18 +26,10 @@ partial class SettingsForm
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
-            this.IOThreadingRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
-            this.UpdateRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
-            this.ThiefBuddyRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
-            this.OtherRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
-            this.AppearanceRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
-            this.PathsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.PagePanel = new System.Windows.Forms.Panel();
-            this.AudioFilesRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButtonCustom();
             this.BottomFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
-            this.MainSplitContainer.Panel1.SuspendLayout();
             this.MainSplitContainer.Panel2.SuspendLayout();
             this.MainSplitContainer.SuspendLayout();
             this.SuspendLayout();
@@ -106,13 +98,6 @@ partial class SettingsForm
             // MainSplitContainer.Panel1
             // 
             this.MainSplitContainer.Panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.MainSplitContainer.Panel1.Controls.Add(this.IOThreadingRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.UpdateRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.ThiefBuddyRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.OtherRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.AudioFilesRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.AppearanceRadioButton);
-            this.MainSplitContainer.Panel1.Controls.Add(this.PathsRadioButton);
             // 
             // MainSplitContainer.Panel2
             // 
@@ -122,72 +107,6 @@ partial class SettingsForm
             this.MainSplitContainer.SplitterDistance = 155;
             this.MainSplitContainer.TabIndex = 5;
             // 
-            // IOThreadingRadioButton
-            // 
-            this.IOThreadingRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.IOThreadingRadioButton.Location = new System.Drawing.Point(8, 152);
-            this.IOThreadingRadioButton.Name = "IOThreadingRadioButton";
-            this.IOThreadingRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.IOThreadingRadioButton.TabIndex = 5;
-            this.IOThreadingRadioButton.Text = "I/O Threading";
-            this.IOThreadingRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
-            // UpdateRadioButton
-            // 
-            this.UpdateRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.UpdateRadioButton.Location = new System.Drawing.Point(8, 128);
-            this.UpdateRadioButton.Name = "UpdateRadioButton";
-            this.UpdateRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.UpdateRadioButton.TabIndex = 4;
-            this.UpdateRadioButton.Text = "Update";
-            this.UpdateRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
-            // ThiefBuddyRadioButton
-            // 
-            this.ThiefBuddyRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.ThiefBuddyRadioButton.Location = new System.Drawing.Point(8, 104);
-            this.ThiefBuddyRadioButton.Name = "ThiefBuddyRadioButton";
-            this.ThiefBuddyRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.ThiefBuddyRadioButton.TabIndex = 3;
-            this.ThiefBuddyRadioButton.Text = "Thief Buddy";
-            this.ThiefBuddyRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
-            // OtherRadioButton
-            // 
-            this.OtherRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.OtherRadioButton.Location = new System.Drawing.Point(8, 80);
-            this.OtherRadioButton.Name = "OtherRadioButton";
-            this.OtherRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.OtherRadioButton.TabIndex = 2;
-            this.OtherRadioButton.Text = "Other";
-            this.OtherRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
-            // AppearanceRadioButton
-            // 
-            this.AppearanceRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AppearanceRadioButton.Location = new System.Drawing.Point(8, 32);
-            this.AppearanceRadioButton.Name = "AppearanceRadioButton";
-            this.AppearanceRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.AppearanceRadioButton.TabIndex = 1;
-            this.AppearanceRadioButton.Text = "FM Display";
-            this.AppearanceRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
-            // PathsRadioButton
-            // 
-            this.PathsRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PathsRadioButton.Location = new System.Drawing.Point(8, 8);
-            this.PathsRadioButton.Name = "PathsRadioButton";
-            this.PathsRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.PathsRadioButton.TabIndex = 0;
-            this.PathsRadioButton.Text = "Paths";
-            this.PathsRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
-            // 
             // PagePanel
             // 
             this.PagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -195,17 +114,6 @@ partial class SettingsForm
             this.PagePanel.Name = "PagePanel";
             this.PagePanel.Size = new System.Drawing.Size(535, 613);
             this.PagePanel.TabIndex = 2;
-            // 
-            // AudioFilesRadioButton
-            // 
-            this.AudioFilesRadioButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.AudioFilesRadioButton.Location = new System.Drawing.Point(8, 56);
-            this.AudioFilesRadioButton.Name = "AudioFilesRadioButton";
-            this.AudioFilesRadioButton.Size = new System.Drawing.Size(136, 23);
-            this.AudioFilesRadioButton.TabIndex = 1;
-            this.AudioFilesRadioButton.Text = "Audio Files";
-            this.AudioFilesRadioButton.CheckedChanged += new System.EventHandler(this.PageRadioButtons_CheckedChanged);
             // 
             // SettingsForm
             // 
@@ -226,7 +134,6 @@ partial class SettingsForm
             this.BottomFLP.ResumeLayout(false);
             this.BottomFLP.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).EndInit();
-            this.MainSplitContainer.Panel1.ResumeLayout(false);
             this.MainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).EndInit();
             this.MainSplitContainer.ResumeLayout(false);
@@ -244,12 +151,5 @@ partial class SettingsForm
     private CustomControls.ToolTipCustom MainToolTip;
     private AngelLoader.Forms.CustomControls.DarkLabel ErrorLabel;
     private AngelLoader.Forms.CustomControls.DarkSplitContainerCustom MainSplitContainer;
-    private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom OtherRadioButton;
-    private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom AppearanceRadioButton;
-    private AngelLoader.Forms.CustomControls.DarkRadioButtonCustom PathsRadioButton;
     private System.Windows.Forms.PictureBox ErrorIconPictureBox;
-    private CustomControls.DarkRadioButtonCustom ThiefBuddyRadioButton;
-    private CustomControls.DarkRadioButtonCustom UpdateRadioButton;
-    private CustomControls.DarkRadioButtonCustom IOThreadingRadioButton;
-    private CustomControls.DarkRadioButtonCustom AudioFilesRadioButton;
 }

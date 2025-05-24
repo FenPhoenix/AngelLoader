@@ -54,7 +54,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private VisualTheme _selfTheme;
 
-    private readonly (DarkRadioButtonCustom Button, ISettingsPage Page)[] PageControls;
+    private sealed class PageButtonAndPage
+    {
+        internal readonly DarkRadioButtonCustom Button;
+        internal readonly ISettingsPage Page;
+
+        public PageButtonAndPage(DarkRadioButtonCustom button, ISettingsPage page)
+        {
+            Button = button;
+            Page = page;
+        }
+    }
+
+    private readonly PageButtonAndPage[] PageControls;
     private readonly int?[] _pageVScrollValues = new int?[SettingsTabCount];
 
     // @TDM(Settings/Paths page organization):
@@ -136,6 +148,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     public readonly ConfigData OutConfig;
     public bool AskForImport;
 
+    private void CreateButtonAndPage<T>(SettingsTab tab, out T Page) where T : Control, ISettingsPage, new()
+    {
+        DarkRadioButtonCustom button = new();
+
+        MainSplitContainer.Panel1.Controls.Add(button);
+
+        button.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        button.Location = new Point(8, 8 + (24 * (int)tab));
+        button.Size = new Size(136, 23);
+        button.TabIndex = (int)tab;
+        button.CheckedChanged += PageRadioButtons_CheckedChanged;
+
+        Page = new T { Visible = false };
+
+        PageControls[(int)tab] = new PageButtonAndPage(button, Page);
+    }
+
+    private DarkRadioButtonCustom GetPageButton(SettingsTab tab) => PageControls[(int)tab].Button;
+
     protected override void WndProc(ref Message m)
     {
         if (_state.IsStartup())
@@ -199,20 +230,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
-        // IMPORTANT: Settings page controls: Don't reorder without also reordering SettingsTab enum
-#pragma warning disable IDE0300 // Simplify collection initialization
-        // ReSharper disable once RedundantExplicitArraySize
-        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[SettingsTabCount]
-        {
-            (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
-            (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
-            (AudioFilesRadioButton, AudioFilesPage = new AudioFilesPage { Visible = false }),
-            (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
-            (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
-            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
-            (IOThreadingRadioButton, IOThreadingPage = new IOThreadingPage { Visible = false }),
-        };
-#pragma warning restore IDE0300 // Simplify collection initialization
+        PageControls = new PageButtonAndPage[SettingsTabCount];
+
+        CreateButtonAndPage(SettingsTab.Paths, out PathsPage);
+        CreateButtonAndPage(SettingsTab.Appearance, out AppearancePage);
+        CreateButtonAndPage(SettingsTab.AudioFiles, out AudioFilesPage);
+        CreateButtonAndPage(SettingsTab.Other, out OtherPage);
+        CreateButtonAndPage(SettingsTab.ThiefBuddy, out ThiefBuddyPage);
+        CreateButtonAndPage(SettingsTab.Update, out UpdatePage);
+        CreateButtonAndPage(SettingsTab.IOThreading, out IOThreadingPage);
+
+        // IMPORTANT: If there exists a page field that isn't in the array, we'll get a non-compiling null error,
+        // but if we have a SettingsTab item but no field yet, then we need this to catch that (at runtime, unfortunately).
+        Utils.AssertR(PageControls.All(static x => x != null), nameof(PageControls) + " is missing at least one item");
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -357,11 +387,12 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
-                PathsRadioButton.Checked = true;
+                DarkRadioButtonCustom pathsButton = GetPageButton(SettingsTab.Paths);
+                pathsButton.Checked = true;
                 for (int i = 0; i < SettingsTabCount; i++)
                 {
                     DarkRadioButtonCustom button = PageControls[i].Button;
-                    if (button != PathsRadioButton) button.Hide();
+                    if (button != pathsButton) button.Hide();
                 }
             }
             else
@@ -1055,7 +1086,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Paths page
 
-            PathsRadioButton.Text = _state.IsStartup()
+            GetPageButton(SettingsTab.Paths).Text = _state.IsStartup()
                 ? LText.SettingsWindow.InitialSettings_TabText
                 : LText.SettingsWindow.Paths_TabText;
 
@@ -1102,7 +1133,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 #region Appearance page
 
-                AppearanceRadioButton.Text = LText.SettingsWindow.Appearance_TabText;
+                GetPageButton(SettingsTab.Appearance).Text = LText.SettingsWindow.Appearance_TabText;
 
                 AppearancePage.LanguageGroupBox.Text = LText.SettingsWindow.Appearance_Language;
 
@@ -1151,7 +1182,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Audio Files page
 
-                AudioFilesRadioButton.Text = LText.SettingsWindow.AudioFiles_TabText;
+                GetPageButton(SettingsTab.AudioFiles).Text = LText.SettingsWindow.AudioFiles_TabText;
 
                 AudioFilesPage.GlobalGroupBox.Text = LText.SettingsWindow.AudioFiles_Global;
 
@@ -1176,7 +1207,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Other page
 
-                OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
+                GetPageButton(SettingsTab.Other).Text = LText.SettingsWindow.Other_TabText;
 
                 OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
 
@@ -1219,7 +1250,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Thief Buddy page
 
-                ThiefBuddyRadioButton.Text = NonLocalizableText.ThiefBuddy;
+                GetPageButton(SettingsTab.ThiefBuddy).Text = NonLocalizableText.ThiefBuddy;
 
                 ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.ThiefBuddy_ThiefBuddyOptions;
 
@@ -1237,7 +1268,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Update page
 
-                UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
+                GetPageButton(SettingsTab.Update).Text = LText.SettingsWindow.Update_TabText;
                 UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
                 UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
 
@@ -1245,7 +1276,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region I/O Threading page
 
-                IOThreadingRadioButton.Text = LText.SettingsWindow.IOThreading_TabText;
+                GetPageButton(SettingsTab.IOThreading).Text = LText.SettingsWindow.IOThreading_TabText;
 
                 IOThreadingPage.IOThreadCountGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
 
@@ -2301,7 +2332,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         if (error)
         {
             // Currently, all errors happen on the Paths page, so go to that page automatically.
-            PathsRadioButton.Checked = true;
+            GetPageButton(SettingsTab.Paths).Checked = true;
 
             // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
             // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen

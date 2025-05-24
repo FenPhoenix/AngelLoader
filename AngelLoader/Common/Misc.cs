@@ -103,20 +103,22 @@ public static partial class Misc
     {
         internal static readonly string InitialSettings = "#initial_setup";
 
-#pragma warning disable IDE0300 // Simplify collection initialization
-        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
-        internal static readonly string[] SettingsPages = new string[SettingsTabCount]
+        internal static readonly string[] SettingsPages = RunFunc(static () =>
         {
-            "#settings_paths_section",
-            "#settings_appearance_section",
+            string[] array = new string[SettingsTabCount];
+            array[(int)SettingsTab.Paths] = "#settings_paths_section";
+            array[(int)SettingsTab.Appearance] = "#settings_appearance_section";
             // @ND128: Add this section to the help file
-            "#settings_audio_files_section",
-            "#settings_other_section",
-            "#settings_thief_buddy_section",
-            "#settings_update_section",
-            "#settings_io_threading_section",
-        };
-#pragma warning restore IDE0300 // Simplify collection initialization
+            array[(int)SettingsTab.AudioFiles] = "#settings_audio_files_section";
+            array[(int)SettingsTab.Other] = "#settings_other_section";
+            array[(int)SettingsTab.ThiefBuddy] = "#settings_thief_buddy_section";
+            array[(int)SettingsTab.Update] = "#settings_update_section";
+            array[(int)SettingsTab.IOThreading] = "#settings_io_threading_section";
+
+            Utils.AssertR(array.All(static x => x != null), nameof(SettingsPages) + " is missing at least one item");
+
+            return array;
+        });
 
         internal static readonly string MainWindow = "#main_window";
         internal static readonly string MissionList = "#mission_list";
