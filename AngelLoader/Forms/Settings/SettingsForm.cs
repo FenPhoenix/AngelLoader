@@ -199,7 +199,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
-        // IMPORTANT: Settings page controls: Don't reorder
+        // IMPORTANT: Settings page controls: Don't reorder without also reordering SettingsTab enum
 #pragma warning disable IDE0300 // Simplify collection initialization
         // ReSharper disable once RedundantExplicitArraySize
         PageControls = new (DarkRadioButtonCustom, ISettingsPage)[SettingsTabCount]
