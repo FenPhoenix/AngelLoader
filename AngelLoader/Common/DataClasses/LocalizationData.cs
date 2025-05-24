@@ -488,7 +488,7 @@ internal sealed class LText_Class
         internal readonly string FMMenu_ScanFMs = "Scan FMs...";
         internal readonly string FMMenu_WebSearch = "Web search";
         [FenGenBlankLine]
-        internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit";
+        internal readonly string ConvertAudioMenu_ConvertWAVsTo16Bit = "Convert .wav files to 16 bit (not needed for NewDark 1.28 and newer)";
         internal readonly string ConvertAudioMenu_ConvertOGGsToWAVs = "Convert .ogg files to .wav";
     }
 
