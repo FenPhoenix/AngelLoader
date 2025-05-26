@@ -538,7 +538,6 @@ internal sealed class TagsFilter
 
 #endregion
 
-// IMPORTANT: SettingsTab enum used as indexes; don't reorder
 [FenGenEnumCount]
 internal enum SettingsTab
 {
