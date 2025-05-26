@@ -544,10 +544,11 @@ internal enum SettingsTab
     Paths,
     Appearance,
     AudioFiles,
-    Other,
     ThiefBuddy,
     Update,
     IOThreading,
+    // Ideally Other will always be at the bottom
+    Other,
 }
 
 /*
