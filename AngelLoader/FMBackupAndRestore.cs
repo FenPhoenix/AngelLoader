@@ -376,7 +376,11 @@ internal static partial class FMInstallAndPlay
                             if (!startsWithRemoveFile) continue;
 
                             string val = line.Substring(_removeFileEqLen).Trim();
-                            if (!val.PathStartsWithI(savesDirS) &&
+                            if (// We must not exclude (delete) any ignored files, otherwise if for example audio
+                                // was mp3s and was converted to wavs and thus all mp3s were marked as remove,
+                                // all audio will be deleted on install and not replaced.
+                                !IsIgnoredFile(val) &&
+                                !val.PathStartsWithI(savesDirS) &&
                                 !val.PathStartsWithI(_darkNetSavesDirS) &&
                                 !val.PathStartsWithI(_screensDirS) &&
                                 (fm.Game != Game.SS2 ||
