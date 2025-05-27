@@ -210,13 +210,22 @@ internal static class Language
                 EqualsValueClauseSyntax? initializer;
                 if (m.IsKind(SyntaxKind.FieldDeclaration))
                 {
-                    var vds = ((FieldDeclarationSyntax)m).Declaration.Variables[0];
+                    var fds = (FieldDeclarationSyntax)m;
+
+                    string type = fds.Declaration.Type.ToString();
+                    if (!TypeIsString(type)) continue;
+
+                    var vds = fds.Declaration.Variables[0];
                     fName = vds.Identifier.ToString();
                     initializer = vds.Initializer;
                 }
                 else
                 {
                     var pds = (PropertyDeclarationSyntax)m;
+
+                    string type = pds.Type.ToString();
+                    if (!TypeIsString(type)) continue;
+
                     fName = pds.Identifier.ToString();
                     initializer = pds.Initializer;
                 }
@@ -254,6 +263,8 @@ internal static class Language
         }
 
         return (sections, perGameSets);
+
+        static bool TypeIsString(string type) => type is "string" or "String" or "System.String";
     }
 
     private static void WritePerGameStringGetterFile(
