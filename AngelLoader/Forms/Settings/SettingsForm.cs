@@ -188,6 +188,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal SettingsForm(ISettingsChangeableView? ownerForm, ConfigData config, SettingsWindowState state)
     {
+        // Simply opening the language files (not even reading them) can take >50ms for the 11 file set on my
+        // system, inexplicably. So overlap the read.
+        IOrderedEnumerable<KeyValuePair<string, string>>? langsList = null;
+        using Task readLanguagesTask = Task.Run(() =>
+        {
+            langsList = ReadLanguages().OrderBy(static x => x.Key, StringComparer.Ordinal);
+        });
+
 #if DEBUG
         InitializeComponent();
 #else
@@ -424,30 +432,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
 
         #region Set page UI state
-
-        #region Load languages
-
-        const string engLang = "English";
-
-        var langsList = ReadLanguages().OrderBy(static x => x.Key, StringComparer.Ordinal);
-
-        using (new UpdateRegion(LangComboBox))
-        {
-            LangComboBox.AddFullItem(engLang, engLang);
-            foreach (var item in langsList)
-            {
-                if (!item.Key.EqualsI(engLang))
-                {
-                    LangComboBox.AddFullItem(item.Key, item.Value);
-                }
-            }
-        }
-
-        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language, StringComparer.Ordinal)
-            ? config.Language
-            : engLang);
-
-        #endregion
 
         #region Paths page
 
@@ -840,6 +824,34 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             ErrorIconPictureBox.Image = Images.RedExclCircle;
         }
+
+        // Do this last so that language reading can have the longest overlap window possible
+        #region Load languages
+
+        const string engLang = "English";
+
+        readLanguagesTask.Wait();
+
+        using (new UpdateRegion(LangComboBox))
+        {
+            LangComboBox.AddFullItem(engLang, engLang);
+            if (langsList != null)
+            {
+                foreach (var item in langsList)
+                {
+                    if (!item.Key.EqualsI(engLang))
+                    {
+                        LangComboBox.AddFullItem(item.Key, item.Value);
+                    }
+                }
+            }
+        }
+
+        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language, StringComparer.Ordinal)
+            ? config.Language
+            : engLang);
+
+        #endregion
 
         // Comes last so we don't have to use any DisableEvents blocks
         #region Hook up page events
