@@ -407,7 +407,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 if (state == SettingsWindowState.BackupPathSet)
                 {
-                    PageControls[(int)SettingsTab.Paths].Button.Checked = true;
+                    GetPageButton(SettingsTab.Paths).Checked = true;
                     for (int i = 0; i < PageControls.Length; i++)
                     {
                         if (i != (int)SettingsTab.Paths)
