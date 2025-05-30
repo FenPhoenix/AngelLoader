@@ -630,28 +630,11 @@ internal static class Core
 
         #endregion
 
-        #region Other page
+        #region Audio files page
 
         Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
         Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
         Config.ConvertMP3sToWAVsOnInstall_ND128 = outConfig.ConvertMP3sToWAVsOnInstall_ND128;
-
-        Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
-
-        Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
-
-        Config.ConfirmUninstall = outConfig.ConfirmUninstall;
-
-        Config.BackupFMData = outConfig.BackupFMData;
-        Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
-
-        Array.Copy(outConfig.WebSearchUrls, Config.WebSearchUrls, SupportedGameCount);
-
-        Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
-
-        Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
-
-        Config.ShowPresetTags = outConfig.ShowPresetTags;
 
         #endregion
 
@@ -674,6 +657,27 @@ internal static class Core
 
         // Don't clear the existing dict; we want to keep settings even for drives that have been removed
         outConfig.DriveLettersAndTypes.CopyTo_NoClearDest(Config.DriveLettersAndTypes);
+
+        #endregion
+
+        #region Other page
+
+        Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
+
+        Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
+
+        Config.ConfirmUninstall = outConfig.ConfirmUninstall;
+
+        Config.BackupFMData = outConfig.BackupFMData;
+        Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
+
+        Array.Copy(outConfig.WebSearchUrls, Config.WebSearchUrls, SupportedGameCount);
+
+        Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
+
+        Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
+
+        Config.ShowPresetTags = outConfig.ShowPresetTags;
 
         #endregion
 
