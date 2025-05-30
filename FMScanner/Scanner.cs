@@ -505,27 +505,19 @@ public sealed class Scanner : IDisposable
         internal string FullName;
         internal long Length;
 
-        private SevenZipArchiveEntry? _archiveFileInfo;
-
-        private bool _rar;
+        private SevenZipArchiveEntry? _sevenZipArchiveEntry;
 
         private DateTime? _lastWriteTime;
         internal DateTime LastWriteTime
         {
             get
             {
-                if (_rar)
+                if (_sevenZipArchiveEntry != null)
                 {
-                    return (DateTime)_lastWriteTime!;
+                    _lastWriteTime = _sevenZipArchiveEntry.LastModifiedTime ?? DateTime.MinValue;
+                    _sevenZipArchiveEntry = null;
                 }
-                else
-                {
-                    if (_archiveFileInfo != null)
-                    {
-                        _lastWriteTime = _archiveFileInfo.LastModifiedTime ?? DateTime.MinValue;
-                        _archiveFileInfo = null;
-                    }
-                }
+
                 return (DateTime)_lastWriteTime!;
             }
         }
@@ -548,31 +540,28 @@ public sealed class Scanner : IDisposable
         [MemberNotNull(nameof(FullName))]
         internal void Set(FileInfo fileInfo)
         {
-            _rar = false;
             FullName = fileInfo.FullName;
             Length = fileInfo.Length;
             _lastWriteTime = fileInfo.LastWriteTime;
-            _archiveFileInfo = null;
+            _sevenZipArchiveEntry = null;
         }
 
         [MemberNotNull(nameof(FullName))]
         internal void Set(SevenZipArchiveEntry archiveFileInfo)
         {
-            _rar = false;
             FullName = archiveFileInfo.FileName;
             Length = archiveFileInfo.UncompressedSize;
             _lastWriteTime = null;
-            _archiveFileInfo = archiveFileInfo;
+            _sevenZipArchiveEntry = archiveFileInfo;
         }
 
         [MemberNotNull(nameof(FullName))]
         internal void Set(RarArchiveEntry entry)
         {
-            _rar = true;
             FullName = entry.Key;
             Length = entry.Size;
             _lastWriteTime = entry.LastModifiedTime ?? DateTime.MinValue;
-            _archiveFileInfo = null;
+            _sevenZipArchiveEntry = null;
         }
     }
 
