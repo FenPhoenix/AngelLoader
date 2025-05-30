@@ -1273,7 +1273,7 @@ public sealed class Scanner : IDisposable
             if (__zipEntries == null)
             {
                 _archive?.Dispose();
-                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false, darkModMode: true);
+                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false, darkMod: true);
                 if (zipResult.Success)
                 {
                     _archive = zipResult.Archive!;
@@ -6098,7 +6098,7 @@ public sealed class Scanner : IDisposable
     };
 
     private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
-    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
+    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkMod = false)
     {
         ZipArchiveFast? ret;
 
@@ -6107,7 +6107,7 @@ public sealed class Scanner : IDisposable
             ret = ZipArchiveFast.Create_Scan(
                 stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
                 context: zipContext,
-                darkMod: darkModMode);
+                darkMod: darkMod);
 
             // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
             // thrown while loading them. If this passes, we're definitely good.
