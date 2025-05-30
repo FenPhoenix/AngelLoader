@@ -455,9 +455,6 @@ internal static partial class FMInstallAndPlay
                 if (ct.IsCancellationRequested) return;
             }
         }
-
-        return;
-
     }
 
     /*
