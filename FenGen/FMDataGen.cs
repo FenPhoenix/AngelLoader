@@ -132,11 +132,6 @@ internal static class FMData
 
         static void FillFieldFromAttributes(MemberDeclarationSyntax member, Field field, out bool ignore)
         {
-            static string GetStringValue(AttributeSyntax attr) =>
-                ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
-                .Token
-                .Value!.ToString();
-
             ignore = false;
 
             foreach (AttributeListSyntax attrList in member.AttributeLists)
@@ -210,6 +205,13 @@ internal static class FMData
                     }
                 }
             }
+
+            return;
+
+            static string GetStringValue(AttributeSyntax attr) =>
+                ((LiteralExpressionSyntax)attr.ArgumentList!.Arguments[0].Expression)
+                .Token
+                .Value!.ToString();
         }
 
         #endregion
@@ -565,29 +567,6 @@ internal static class FMData
 
     private static void WriteWriter(CodeWriters.IndentingWriter w, string obj, List<Field> fields)
     {
-        static void WriteEnumSingle(
-            CodeWriters.IndentingWriter writer,
-            string obj,
-            string enumName,
-            string fieldName,
-            string fieldIniName,
-            List<string> enumNames,
-            bool writeValuesLowercase = false)
-        {
-            writer.WL("switch (" + obj + "." + fieldName + ")");
-            writer.WL("{");
-            for (int gi = 1; gi < enumNames.Count; gi++)
-            {
-                if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
-                writer.WL("case " + enumName + "." + enumNames[gi] + ":");
-                writer.WL("sw.WriteLine(\"" + fieldIniName + "=" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
-                writer.WL("break;");
-            }
-            string enumDotEnumTypeZero = enumName + "." + enumNames[0];
-            writer.WL("// Don't handle " + enumDotEnumTypeZero + " because we don't want to write out defaults");
-            writer.WL("}");
-        }
-
         w.WL("#region Generated code for writer");
         w.WL();
 
@@ -617,13 +596,6 @@ internal static class FMData
             string fieldIniName = field.IniName.IsEmpty() ? field.Name : field.IniName;
 
             if (field.DoNotWrite) continue;
-
-            void swlSBAppend(string objField, string value, string suffix = "")
-            {
-                if (!suffix.IsEmpty()) suffix = "." + suffix;
-                w.WL("sw.Write(\"" + objField + "=\");");
-                w.WL("sw.WriteLine(" + value + suffix + ");");
-            }
 
             if (field.IsReadmeEncoding)
             {
@@ -655,20 +627,20 @@ internal static class FMData
                     w.WL("for (int i = 0; i < list.Count; i++)");
                     w.WL("{");
                     w.WL("var item = list[i];");
-                    swlSBAppend(fieldIniName, "item", !listTypeIsString ? toString : "");
+                    swlSBAppend(w, fieldIniName, "item", !listTypeIsString ? toString : "");
                     w.WL("}");
                 }
                 else
                 {
                     // WriteEmptyValues check disabled here as well to match the above
-                    swlSBAppend(fieldIniName, "CommaCombine(" + objDotField + ")");
+                    swlSBAppend(w, fieldIniName, "CommaCombine(" + objDotField + ")");
                 }
             }
             else if (field.Type == "string")
             {
                 w.WL("if (!string.IsNullOrEmpty(" + objDotField + "))");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField);
+                swlSBAppend(w, fieldIniName, objDotField);
                 w.WL("}");
             }
             else if (field.Type == "bool")
@@ -685,7 +657,7 @@ internal static class FMData
             {
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField + " == true ? bool.TrueString : bool.FalseString");
+                swlSBAppend(w, fieldIniName, objDotField + " == true ? bool.TrueString : bool.FalseString");
                 w.WL("}");
             }
             else if (_numericTypes.Contains(field.Type))
@@ -694,12 +666,12 @@ internal static class FMData
                 {
                     w.WL("if (" + objDotField + " != " + ((long)field.NumericEmpty).ToStrInv() + ")");
                     w.WL("{");
-                    swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
+                    swlSBAppend(w, fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                     w.WL("}");
                 }
                 else
                 {
-                    swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
+                    swlSBAppend(w, fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 }
             }
             else if (field.Type == "TimeSpan")
@@ -708,12 +680,12 @@ internal static class FMData
                 {
                     w.WL("if (" + objDotField + ".Ticks != " + ((long)field.NumericEmpty).ToStrInv() + ")");
                     w.WL("{");
-                    swlSBAppend(fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
+                    swlSBAppend(w, fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
                     w.WL("}");
                 }
                 else
                 {
-                    swlSBAppend(fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
+                    swlSBAppend(w, fieldIniName, objDotField, "Ticks.ToString(" + numericInvariantArgs + ")");
                 }
             }
             else if (field.Type[^1] == '?' &&
@@ -721,7 +693,7 @@ internal static class FMData
             {
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
+                swlSBAppend(w, fieldIniName, objDotField, "ToString(" + numericInvariantArgs + ")");
                 w.WL("}");
             }
             else if (field.Type == Cache.GamesEnum.Name)
@@ -760,7 +732,7 @@ internal static class FMData
             {
                 w.WL("if (!string.IsNullOrEmpty(" + objDotField + ".UnixDateString))");
                 w.WL("{");
-                swlSBAppend(fieldIniName, objDotField, unixDateString);
+                swlSBAppend(w, fieldIniName, objDotField, unixDateString);
                 w.WL("}");
             }
             else if (field.Type == "DateTime?")
@@ -772,7 +744,7 @@ internal static class FMData
 
                 w.WL("if (" + objDotField + " != null)");
                 w.WL("{");
-                swlSBAppend(fieldIniName, val);
+                swlSBAppend(w, fieldIniName, val);
                 w.WL("}");
             }
             else if (field.Type == "CustomResources")
@@ -822,5 +794,37 @@ internal static class FMData
         w.WL("}");
         w.WL();
         w.WL("#endregion");
+
+        return;
+
+        static void WriteEnumSingle(
+            CodeWriters.IndentingWriter writer,
+            string obj,
+            string enumName,
+            string fieldName,
+            string fieldIniName,
+            List<string> enumNames,
+            bool writeValuesLowercase = false)
+        {
+            writer.WL("switch (" + obj + "." + fieldName + ")");
+            writer.WL("{");
+            for (int gi = 1; gi < enumNames.Count; gi++)
+            {
+                if (gi == 1) writer.WL("// Much faster to do this than Enum.ToString()");
+                writer.WL("case " + enumName + "." + enumNames[gi] + ":");
+                writer.WL("sw.WriteLine(\"" + fieldIniName + "=" + (writeValuesLowercase ? enumNames[gi].ToLowerInvariant() : enumNames[gi]) + "\");");
+                writer.WL("break;");
+            }
+            string enumDotEnumTypeZero = enumName + "." + enumNames[0];
+            writer.WL("// Don't handle " + enumDotEnumTypeZero + " because we don't want to write out defaults");
+            writer.WL("}");
+        }
+
+        static void swlSBAppend(CodeWriters.IndentingWriter w, string objField, string value, string suffix = "")
+        {
+            if (!suffix.IsEmpty()) suffix = "." + suffix;
+            w.WL("sw.Write(\"" + objField + "=\");");
+            w.WL("sw.WriteLine(" + value + suffix + ");");
+        }
     }
 }
