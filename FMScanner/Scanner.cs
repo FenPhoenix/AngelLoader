@@ -4104,6 +4104,7 @@ public sealed class Scanner : IDisposable
                     !title.EqualsI_Local("Play") && !title.EqualsI_Local("Start") &&
                     !title.EqualsI_Local("Begin") && !title.EqualsI_Local("Begin...") &&
                     !title.EqualsI_Local("skip training") &&
+                    !title.EqualsI_Local("Demo") &&
                     // starting strings
                     !title.StartsWithI_Local("Let's go") && !title.StartsWithI_Local("Let's rock this boat") &&
                     !title.StartsWithI_Local("Play ") && !title.StartsWithI_Local("Continue") &&
