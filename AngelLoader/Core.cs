@@ -243,13 +243,14 @@ internal static class Core
             string langIni = "";
             try
             {
-                langIni = Path.Combine(Paths.Languages, Config.Language + ".ini");
+                string langIniFileNameOnly = Config.Language + ".ini";
+                langIni = Path.Combine(Paths.Languages, langIniFileNameOnly);
 
                 // We can't show a message until we've read the config file (to know which language to use) and
                 // the current language file (to get the translated message strings). So just show the lang ini
                 // file name, so it's as clear as possible what we're doing without actually having to display a
                 // translated string.
-                splashScreen.SetMessage(langIni);
+                splashScreen.SetMessage(langIniFileNameOnly);
 
                 if (File.Exists(langIni))
                 {
