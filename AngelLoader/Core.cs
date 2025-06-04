@@ -249,7 +249,7 @@ internal static class Core
                 // the current language file (to get the translated message strings). So just show the lang ini
                 // file name, so it's as clear as possible what we're doing without actually having to display a
                 // translated string.
-                splashScreen.SetMessage(Paths.Languages);
+                splashScreen.SetMessage(langIni);
 
                 if (File.Exists(langIni))
                 {
