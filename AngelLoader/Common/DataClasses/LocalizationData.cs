@@ -878,7 +878,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string AudioFiles_NewDark_127 = "NewDark 1.27 and older";
         internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_127 = "Convert .wavs to 16 bit on install";
-        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_ToolTip = "Fixes static in certain .wav files when OpenAL audio is enabled.";
+        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_ToolTip = "Fixes static in certain .wav files when OpenAL audio is enabled. Not required for NewDark 1.28 and newer.";
         internal readonly string AudioFiles_ConvertMP3sToWavOnInstall_NewDark_127 = "Convert .mp3s to .wavs on install (required)";
         [FenGenBlankLine]
         internal readonly string AudioFiles_NewDark_128 = "NewDark 1.28 and newer";
