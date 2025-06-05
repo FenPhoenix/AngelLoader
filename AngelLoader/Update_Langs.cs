@@ -9,14 +9,15 @@ internal static class LangUpdate
 {
     public sealed class LanguageUpdateInfo
     {
-        // @LangUpdate: App version needs to be a range
-        public readonly Version AppVersion;
+        public readonly Version AppVersionMin;
+        public readonly Version AppVersionMax;
         public readonly uint Revision;
         public Uri? DownloadUrl;
 
-        public LanguageUpdateInfo(Version appVersion, uint revision)
+        public LanguageUpdateInfo(Version appVersionMin, Version appVersionMax, uint revision)
         {
-            AppVersion = appVersion;
+            AppVersionMin = appVersionMin;
+            AppVersionMax = appVersionMax;
             Revision = revision;
         }
     }
