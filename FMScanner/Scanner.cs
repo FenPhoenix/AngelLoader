@@ -4845,7 +4845,7 @@ public sealed class Scanner : IDisposable
     *Block headers are 24 bytes (12 bytes name + 12 bytes cruft), so our byte is at header end + 14, or byte 13
      after header if counting from 0.
 
-    @ND128: DromEd auto-detects the game hint byte in the absence of the user setting in explicitly, apparently
+    @ND128: DromEd auto-detects the game hint byte in the absence of the user setting it explicitly, apparently
     based on "dark1" presence in cam_ext.cfg (which is the normal way of specifying the game type for NewDark
     installs). So it's likely that 1.28 FMs will have the correct byte. However, out of an abundance of caution,
     let's disable the game descriptor byte detection for now, until we've seen a reasonable number of 1.28 FMs
