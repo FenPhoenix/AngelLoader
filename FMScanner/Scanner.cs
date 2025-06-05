@@ -3,6 +3,7 @@
 //#define INDIVIDUAL_FM_TIMING
 //#define ScanSynchronous
 //#define StoreCurrentFM
+//#define ND128_GAME_HINT
 
 /*
 @MEM(Scanner readme line splitting):
@@ -4843,6 +4844,13 @@ public sealed class Scanner : IDisposable
 
     *Block headers are 24 bytes (12 bytes name + 12 bytes cruft), so our byte is at header end + 14, or byte 13
      after header if counting from 0.
+
+    @ND128: DromEd auto-detects the game hint byte in the absence of the user setting in explicitly, apparently
+    based on "dark1" presence in cam_ext.cfg (which is the normal way of specifying the game type for NewDark
+    installs). So it's likely that 1.28 FMs will have the correct byte. However, out of an abundance of caution,
+    let's disable the game descriptor byte detection for now, until we've seen a reasonable number of 1.28 FMs
+    and can have good confidence there won't be a wrong byte. All we're losing is performance, and we're already
+    very fast.
     */
     private Game GetGameType()
     {
@@ -4906,17 +4914,21 @@ public sealed class Scanner : IDisposable
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
 
+#if ND128_GAME_HINT
                     if (i == 0 && TryGetGameFromDARKMISS_StreamableArchive(buffer, out Game gameFromDARKMISS))
                     {
                         return gameFromDARKMISS;
                     }
+#endif
                 }
                 else
                 {
+#if ND128_GAME_HINT
                     if (i == 0 && TryGetGameFromDARKMISS_OnDisk(misStream, _darkmissChunkBuffer, out Game gameFromDARKMISS))
                     {
                         return gameFromDARKMISS;
                     }
+#endif
 
                     buffer = _gameDetectStringBuffer;
                     misStream.Position = _ctx.GameDetect_KeyPhraseLocations[i];
@@ -4963,6 +4975,7 @@ public sealed class Scanner : IDisposable
             return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
 
+#if ND128_GAME_HINT
         static bool TryGetGameFromDARKMISS_StreamableArchive(byte[] buffer, out Game game)
         {
             if (buffer.Length <= Thief_128_GameDescriptor_Location ||
@@ -4999,6 +5012,7 @@ public sealed class Scanner : IDisposable
             0x3 => Game.Thief2,
             _ => Game.Null,
         };
+#endif
     }
 
     private Game GameType_DoMainCheck(Entry misFileEntry)
