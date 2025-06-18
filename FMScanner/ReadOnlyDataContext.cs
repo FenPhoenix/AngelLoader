@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define ND128_GAME_HINT
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -461,10 +463,12 @@ public sealed class ReadOnlyDataContext
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
 
+#if ND128_GAME_HINT
     // NewDark 1.28 fast game descriptor byte check
     internal const int Thief_DARKMISS_Location = 612;
     internal const int Thief_128_GameDescriptor_Location = 649;
     internal const int Thief_128_GameDescriptor_OffsetFromDARKMISS = 37;
+#endif
 
     // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
     internal const int SS2_Gam_GAMEPARAM_Location1 = 1194;
@@ -476,8 +480,10 @@ public sealed class ReadOnlyDataContext
     internal const ulong SymName_First = 0x6D614E6D79532450;
     internal const uint SymName_Second = 0x00000065;
 
+#if ND128_GAME_HINT
     internal const ulong DARKMISS_First = 0x5353494D4B524144;
     internal const uint DARKMISS_Second = 0x00000000;
+#endif
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is

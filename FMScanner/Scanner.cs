@@ -112,7 +112,9 @@ public sealed class Scanner : IDisposable
 
     private readonly byte[] _misChunkHeaderBuffer = new byte[12];
 
+#if ND128_GAME_HINT
     private readonly byte[] _darkmissChunkBuffer = new byte[38];
+#endif
 
     private const int _gameTypeBufferSize = 81_920;
 
