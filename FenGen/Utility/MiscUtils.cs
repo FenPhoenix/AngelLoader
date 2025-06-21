@@ -450,4 +450,31 @@ internal static partial class Misc
     }
 
     #endregion
+
+    internal static string GetStringParamValue(AttributeSyntax attrSyntax, int argIndex)
+    {
+        ExpressionSyntax arg0Exp = attrSyntax.ArgumentList!.Arguments[argIndex].Expression;
+
+        if (arg0Exp is InvocationExpressionSyntax ies &&
+            ies.ChildNodes().First() is IdentifierNameSyntax ins)
+        {
+            if (ins.Identifier.ToString() == "nameof")
+            {
+                SyntaxNode? argSyntax = ies.ChildNodes().FirstOrDefault(static x => x is ArgumentListSyntax);
+                if (argSyntax is ArgumentListSyntax als && als.Arguments.Count == 1)
+                {
+                    return als.Arguments[0].Expression.ToString();
+                }
+            }
+        }
+
+        return ((LiteralExpressionSyntax)arg0Exp).Token.ValueText;
+    }
+
+    internal static bool GetBoolParamValue(AttributeSyntax attrSyntax, int argIndex)
+    {
+        return
+            (bool)((LiteralExpressionSyntax)attrSyntax.ArgumentList!.Arguments[argIndex].Expression).Token
+            .Value!;
+    }
 }

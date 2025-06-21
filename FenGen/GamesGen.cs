@@ -58,33 +58,15 @@ internal static class Games
                         ThrowErrorAndTerminate(nameof(GenAttributes.FenGenGame) + " had other than " + reqArgCount + " args");
                     }
 
-                    string prefixArg =
-                        ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[0].Expression).Token
-                        .ValueText;
-                    string steamIdArg =
-                        ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[1].Expression).Token
-                        .ValueText;
-                    string editorNameArg =
-                        ((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[2].Expression).Token
-                        .ValueText;
-                    bool isDarkEngine =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[3].Expression).Token
-                        .Value!;
-                    bool supportsMods =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[4].Expression).Token
-                        .Value!;
-                    bool supportsImport =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[5].Expression).Token
-                        .Value!;
-                    bool supportsLanguages =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[6].Expression).Token
-                        .Value!;
-                    bool supportsResourceDetection =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[7].Expression).Token
-                        .Value!;
-                    bool requiresBackupPath =
-                        (bool)((LiteralExpressionSyntax)gameAttr.ArgumentList!.Arguments[8].Expression).Token
-                        .Value!;
+                    string prefixArg = GetStringParamValue(gameAttr, 0);
+                    string steamIdArg = GetStringParamValue(gameAttr, 1);
+                    string editorNameArg = GetStringParamValue(gameAttr, 2);
+                    bool isDarkEngine = GetBoolParamValue(gameAttr, 3);
+                    bool supportsMods = GetBoolParamValue(gameAttr, 4);
+                    bool supportsImport = GetBoolParamValue(gameAttr, 5);
+                    bool supportsLanguages = GetBoolParamValue(gameAttr, 6);
+                    bool supportsResourceDetection = GetBoolParamValue(gameAttr, 7);
+                    bool requiresBackupPath = GetBoolParamValue(gameAttr, 8);
 
                     ret.GamePrefixes.Add(prefixArg);
                     ret.SteamIds.Add(steamIdArg);
