@@ -400,7 +400,7 @@ internal static class Filtering
 
                 if (ratingIsSet)
                 {
-                    if ((fm.Rating < filterRatingFrom || fm.Rating > filterRatingTo))
+                    if (fm.Rating < filterRatingFrom || fm.Rating > filterRatingTo)
                     {
                         shownInFilter = false;
                     }
@@ -414,11 +414,11 @@ internal static class Filtering
 
                 if (releaseDateFilterSet)
                 {
-                    if ((fm.ReleaseDate.DateTime == null ||
-                         (filterReleaseDateFrom != null &&
-                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(filterReleaseDateFrom.Value.Date) < 0) ||
-                         (filterReleaseDateTo != null &&
-                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(filterReleaseDateTo.Value.Date) > 0)))
+                    if (fm.ReleaseDate.DateTime == null ||
+                        (filterReleaseDateFrom != null &&
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(filterReleaseDateFrom.Value.Date) < 0) ||
+                        (filterReleaseDateTo != null &&
+                         fm.ReleaseDate.DateTime.Value.Date.CompareTo(filterReleaseDateTo.Value.Date) > 0))
                     {
                         shownInFilter = false;
                     }
@@ -432,11 +432,11 @@ internal static class Filtering
 
                 if (lastPlayedFilterSet)
                 {
-                    if ((fm.LastPlayed.DateTime == null ||
-                         (filterLastPlayedFrom != null &&
-                          fm.LastPlayed.DateTime.Value.Date.CompareTo(filterLastPlayedFrom.Value.Date) < 0) ||
-                         (filterLastPlayedTo != null &&
-                          fm.LastPlayed.DateTime.Value.Date.CompareTo(filterLastPlayedTo.Value.Date) > 0)))
+                    if (fm.LastPlayed.DateTime == null ||
+                        (filterLastPlayedFrom != null &&
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(filterLastPlayedFrom.Value.Date) < 0) ||
+                        (filterLastPlayedTo != null &&
+                         fm.LastPlayed.DateTime.Value.Date.CompareTo(filterLastPlayedTo.Value.Date) > 0))
                     {
                         shownInFilter = false;
                     }
@@ -453,10 +453,10 @@ internal static class Filtering
                     uint fmFinished = fm.FinishedOn;
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
-                    if ((((fmFinished > 0 || fmFinishedOnUnknown) &&
-                          !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
-                         (fmFinished == 0 && !fmFinishedOnUnknown &&
-                          !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished))))
+                    if (((fmFinished > 0 || fmFinishedOnUnknown) &&
+                         !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
+                        (fmFinished == 0 && !fmFinishedOnUnknown &&
+                         !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished)))
                     {
                         shownInFilter = false;
                     }

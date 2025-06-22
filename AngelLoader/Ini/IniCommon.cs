@@ -578,7 +578,7 @@ internal static partial class Ini
         }
 
         int secondLen = second.Length;
-        if ((end - start) < secondLen - 1) return false;
+        if (end - start < secondLen - 1) return false;
 
         int i = start;
         int i2 = 0;

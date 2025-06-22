@@ -335,6 +335,8 @@ internal static class Utility
     {
         if (value.IsEmpty() || value[0] != '(' || value[^1] != ')') return value;
 
+        stack.ClearFast();
+
         ReadOnlySpan<char> valueSpan = value.AsSpan();
 
         bool surroundedByParens = false;

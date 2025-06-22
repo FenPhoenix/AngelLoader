@@ -1137,9 +1137,11 @@ public sealed class Scanner : IDisposable
                                 ? FMFormat.Rar
                                 : FMFormat.NotInArchive;
 
+            // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
             _archive?.Dispose();
             _rarArchive?.Dispose();
             _rarStream?.Dispose();
+            // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
             if (_fmFormat > FMFormat.NotInArchive)
             {
@@ -5138,7 +5140,7 @@ public sealed class Scanner : IDisposable
         */
 
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if ((_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+        if (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles))
         {
             using Stream stream =
                 _solidGamFileToUse != null

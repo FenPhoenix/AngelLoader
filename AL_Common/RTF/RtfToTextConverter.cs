@@ -1859,7 +1859,7 @@ public sealed partial class RtfToTextConverter
             }
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
-                return RtfError.OK;
+                break;
         }
 
         return RtfError.OK;
@@ -2875,7 +2875,6 @@ public sealed partial class RtfToTextConverter
             {
                 _charGeneralBuffer.Count = GetEncodingFromCachedList(codePage)
                     .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
-                return _charGeneralBuffer;
             }
             else
             {
@@ -2884,20 +2883,19 @@ public sealed partial class RtfToTextConverter
                 {
                     _charGeneralBuffer.Count = enc
                         .GetChars(_byteBuffer4, 0, 4, _charGeneralBuffer.ItemsArray, 0);
-                    return _charGeneralBuffer;
                 }
                 else
                 {
                     SetListFastToUnknownChar(_charGeneralBuffer);
-                    return _charGeneralBuffer;
                 }
             }
         }
         catch
         {
             SetListFastToUnknownChar(_charGeneralBuffer);
-            return _charGeneralBuffer;
         }
+
+        return _charGeneralBuffer;
     }
 
     #endregion
@@ -2946,26 +2944,18 @@ public sealed partial class RtfToTextConverter
     /// <param name="codePage"></param>
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Encoding GetEncodingFromCachedList(int codePage)
+    private Encoding GetEncodingFromCachedList(int codePage) => codePage switch
     {
-        switch (codePage)
-        {
-            case _windows1252:
-                return _windows1252Encoding;
-            case 1250:
-                return _windows1250Encoding;
-            case 1251:
-                return _windows1251Encoding;
-            case _shiftJisWin:
-                return _shiftJisWinEncoding;
-            default:
-                return _encodings.TryGetValue(codePage, out Encoding result)
-                    ? result
-                    // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
-                    // TODO: But weird that we don't put the try-catch here and just return null...?
-                    : _encodings.AddAndReturn(codePage, Encoding.GetEncoding(codePage));
-        }
-    }
+        _windows1252 => _windows1252Encoding,
+        1250 => _windows1250Encoding,
+        1251 => _windows1251Encoding,
+        _shiftJisWin => _shiftJisWinEncoding,
+        _ => _encodings.TryGetValue(codePage, out Encoding result)
+            ? result
+            // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
+            // TODO: But weird that we don't put the try-catch here and just return null...?
+            : _encodings.AddAndReturn(codePage, Encoding.GetEncoding(codePage)),
+    };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private (bool Success, bool CodePageWas42, Encoding? Encoding, FontEntry? FontEntry)

@@ -195,7 +195,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 break;
             default:
                 HandleSpecialTypeFont(_ctx, specialType, param);
-                return RtfError.OK;
+                break;
         }
 
         return RtfError.OK;

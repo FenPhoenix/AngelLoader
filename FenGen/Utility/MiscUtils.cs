@@ -461,7 +461,7 @@ internal static partial class Misc
             if (ins.Identifier.ToString() == "nameof")
             {
                 SyntaxNode? argSyntax = ies.ChildNodes().FirstOrDefault(static x => x is ArgumentListSyntax);
-                if (argSyntax is ArgumentListSyntax als && als.Arguments.Count == 1)
+                if (argSyntax is ArgumentListSyntax { Arguments.Count: 1 } als)
                 {
                     return als.Arguments[0].Expression.ToString();
                 }
