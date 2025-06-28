@@ -137,7 +137,7 @@ internal static class FMCache
                 if (fmArchivePath.IsEmpty()) return new CacheData();
 
                 if ((fm.Game == Game.TDM &&
-                     (fmArchivePath.EndsWithI(".pk4") || fmArchivePath.EndsWithI(".zip"))) ||
+                     (fmArchivePath.ExtIsPk4() || fmArchivePath.ExtIsZip())) ||
                     fm.Archive.ExtIsZip())
                 {
                     IOBufferPools ioBufferPools = new();
