@@ -352,7 +352,8 @@ internal static class Filtering
 
             bool shownInFilter = true;
 
-            if (!fm.IsTopped())
+            // Always show pinned FMs, but filter out recent ones as normal.
+            if (!fm.Pinned)
             {
                 (bool Match, bool ExactMatch) match;
 
@@ -507,7 +508,10 @@ internal static class Filtering
             if (viewFilter.Games > Game.Null)
             {
                 if (GameIsKnownAndSupported(fm.Game) &&
-                    (Config.GameOrganization == GameOrganization.ByTab || !fm.IsTopped()) &&
+                    (Config.GameOrganization == GameOrganization.ByTab ||
+                     // Hide recent FMs that don't match the game filter, but not pinned ones
+                     !fm.Pinned
+                     ) &&
                     !viewFilter.Games.HasFlagFast(fm.Game))
                 {
                     shownInFilter = false;
