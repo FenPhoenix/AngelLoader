@@ -76,7 +76,10 @@ internal sealed partial class RichTextBoxCustom
     {
         _currentReadmeType = readmeType;
 
-        (BackColor, ForeColor) = (readmeType is ReadmeType.PlainText or ReadmeType.Wri) && _darkModeEnabled
+        (BackColor, ForeColor) =
+            // Always set fore and back colors - because on Wine (Mono), setting back color actually works for
+            // rtf format! While the clever background insert thing doesn't. Killing me, man.
+            _darkModeEnabled
             ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
             : (SystemColors.Window, SystemColors.WindowText);
     }
