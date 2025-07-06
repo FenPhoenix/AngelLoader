@@ -4545,7 +4545,10 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ShowReadmeControls(bool enabled)
     {
-        ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
+        if (enabled && !ChooseReadmeComboBox.Visible)
+        {
+            ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
+        }
         if (enabled != _readmeControlsOtherThanComboBoxVisible)
         {
             foreach (DarkButton button in _readmeControlButtons)
@@ -5073,7 +5076,13 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void ShowReadmeChooser(bool visible) => ChooseReadmeComboBox.Visible = visible;
+    public void ShowReadmeChooser(bool visible)
+    {
+        if (visible && !ChooseReadmeComboBox.Visible)
+        {
+            ChooseReadmeComboBox.Visible = visible;
+        }
+    }
 
     public void ShowInitialReadmeChooser(bool visible) => Lazy_ChooseReadmePanel.ShowPanel(visible);
 
