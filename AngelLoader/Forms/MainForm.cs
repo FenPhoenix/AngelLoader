@@ -4545,10 +4545,21 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ShowReadmeControls(bool enabled)
     {
-        if (enabled && !ChooseReadmeComboBox.Visible)
+        if (enabled)
         {
-            ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
+            if (!ChooseReadmeComboBox.Visible)
+            {
+                ChooseReadmeComboBox.Visible = ChooseReadmeComboBox.Items.Count > 0;
+            }
         }
+        else
+        {
+            if (ReadmeComboBoxShouldHide_WineFriendly())
+            {
+                ChooseReadmeComboBox.Visible = false;
+            }
+        }
+
         if (enabled != _readmeControlsOtherThanComboBoxVisible)
         {
             foreach (DarkButton button in _readmeControlButtons)
@@ -5078,10 +5089,27 @@ public sealed partial class MainForm : DarkFormBase,
 
     public void ShowReadmeChooser(bool visible)
     {
-        if (visible && !ChooseReadmeComboBox.Visible)
+        if (visible)
         {
-            ChooseReadmeComboBox.Visible = visible;
+            if (!ChooseReadmeComboBox.Visible)
+            {
+                ChooseReadmeComboBox.Visible = true;
+            }
         }
+        else
+        {
+            if (ReadmeComboBoxShouldHide_WineFriendly())
+            {
+                ChooseReadmeComboBox.Visible = false;
+            }
+        }
+    }
+
+    // @Wine: If we try to set the combobox state - even if it's the same as previous - its dropdown closes.
+    // We need to keep it open so the user can interact with it.
+    private bool ReadmeComboBoxShouldHide_WineFriendly()
+    {
+        return ChooseReadmeComboBox.Visible && (!ChooseReadmeComboBox.DroppedDown || !CursorOverReadmeArea());
     }
 
     public void ShowInitialReadmeChooser(bool visible) => Lazy_ChooseReadmePanel.ShowPanel(visible);
