@@ -2123,6 +2123,9 @@ public static class Images
 
     #endregion
 
+    // @Wine(Horizontal divs): Remember to pass y positions relative to controls, because Wine's absolute
+    // positioning is different than on Windows. And test on Wine before every release that adds or changes any
+    // drawn horizontal divs.
     internal static void DrawHorizDiv(Graphics g, int left, int top, int width)
     {
         const int height = 16;

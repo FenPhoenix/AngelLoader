@@ -41,6 +41,6 @@ public sealed partial class Lazy_StatsPage : UserControl
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
-        Images.DrawHorizDiv(e.Graphics, 6, 24, ClientSize.Width - 8);
+        Images.DrawHorizDiv(e.Graphics, 6, CustomResourcesLabel.Top - 20, ClientSize.Width - 8);
     }
 }
