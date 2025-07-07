@@ -111,6 +111,24 @@ public static class Images
 {
     #region Path points and types
 
+    private static readonly float[] _pinPoints =
+    {
+        97.01389f, -0.2686153f, 161.1586f, 63.87606f, 155.9468f, 69.08781f, 134.4316f, 63.87605f, 134.4316f,
+        63.87605f, 87.83392f, 110.1689f, 93.17931f, 126.2051f, 95.852f, 139.5686f, 85.16122f, 150.2593f,
+        51.59705f, 116.6952f, 7.824475f, 160.4677f, 4.072543f, 164.2197f, -3.431337f, 156.7158f, 0.3205929f,
+        152.9639f, 44.09317f, 109.1913f, 10.32576f, 75.42387f, 21.04626f, 64.35098f, 34.38002f, 67.40578f,
+        50.41619f, 72.75117f, 97.01389f, 26.45833f, 97.01389f, 26.45833f, 91.80213f, 4.943136f, 97.01389f,
+        -0.2686157f, 97.01389f, -0.2686153f, 0f, 0f, 98.01389f, 0f,
+    };
+
+    private static readonly byte[] _pinTypes =
+    {
+        0, 1, 3, 3, 3, 1, 3, 3, 3, 1, 1, 3, 3, 3, 1, 1, 3, 3, 3, 1, 3, 3, 3, 129, 0, 1,
+    };
+
+    private static GraphicsPath? _pinGPath;
+    private static GraphicsPath PinGPath => _pinGPath ??= MakeGraphicsPath(_pinPoints, _pinTypes);
+
     #region Magnifying glass
 
     /*
