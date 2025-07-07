@@ -127,7 +127,7 @@ public static class Images
     };
 
     private static GraphicsPath? _pinGPath;
-    private static GraphicsPath PinGPath => _pinGPath ??= MakeGraphicsPath(_pinPoints, _pinTypes);
+    internal static GraphicsPath PinGPath => _pinGPath ??= MakeGraphicsPath(_pinPoints, _pinTypes);
 
     #region Magnifying glass
 

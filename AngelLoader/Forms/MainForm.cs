@@ -4097,10 +4097,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-        const string pinChar = "\U0001F4CC ";
-
-        bool fmShouldBePinned = fm.Pinned && !GetShowUnavailableFMsFilter();
-
         switch ((Column)e.ColumnIndex)
         {
 #if DateAccTest
@@ -4152,26 +4148,16 @@ public sealed partial class MainForm : DarkFormBase,
                     finalTitle = fm.Title;
                 }
 
-                if (TitleColumn.Visible && fmShouldBePinned)
-                {
-                    finalTitle = pinChar + finalTitle;
-                }
-
                 e.Value = finalTitle;
 
                 break;
 
             case Column.Archive:
-                string value = fm.DisplayArchive;
-                e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
-                    ? pinChar + value
-                    : value;
+                e.Value = fm.DisplayArchive;
                 break;
 
             case Column.Author:
-                e.Value = !TitleColumn.Visible && !ArchiveColumn.Visible && AuthorColumn.Visible && fmShouldBePinned
-                    ? pinChar + fm.Author
-                    : fm.Author;
+                e.Value = fm.Author;
                 break;
 
             case Column.Size:
