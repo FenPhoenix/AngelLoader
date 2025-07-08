@@ -81,5 +81,5 @@ rem Exclude "history" dir without having to copy and delete it afterwards (it's 
 rem Personal local-only file (git-ignored). It contains stuff that is only appropriate for my personal setup and
 rem might well mess up someone else's. So don't worry about it.
 if exist "%ProjectDir%post_build_fen_personal_dev.bat" (
-	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%" "%PlatformName%" "%TargetFramework%"
+	"%ProjectDir%post_build_fen_personal_dev.bat" "%ConfigurationName%" "%TargetDir%" "%ProjectDir%" "%SolutionDir%" "%PlatformName%" "%TargetFramework%" "false"
 )
