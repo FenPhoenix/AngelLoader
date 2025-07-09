@@ -39,6 +39,7 @@ internal static class Win32ThemeHooks
 #endif
         DrawThemeBackground,
         GetThemeColor,
+        PatBlt,
         Length,
     }
 
@@ -115,6 +116,24 @@ internal static class Win32ThemeHooks
 
     #endregion
 
+    #region PatBlt
+
+    private static LocalHook? _patBltHook;
+
+    private static PatBltDelegate? PatBlt_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private delegate bool PatBltDelegate(
+        nint hdc,
+        int x,
+        int y,
+        int w,
+        int h,
+        int rop);
+
+    #endregion
+
     #endregion
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -126,6 +145,7 @@ internal static class Win32ThemeHooks
 #endif
         new("uxtheme.dll", "DrawThemeBackground"),
         new("uxtheme.dll", "GetThemeColor"),
+        new("gdi32.dll", "PatBlt"),
     };
 
     private static HookData GetHookData(HookType hookType) => _hookData[(int)hookType];
@@ -172,6 +192,10 @@ internal static class Win32ThemeHooks
             (_getThemeColorHook, GetThemeColor_Original) = InstallHook<GetThemeColorDelegate>(
                 HookType.GetThemeColor,
                 GetThemeColor_Hooked);
+
+            (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(
+                HookType.PatBlt,
+                PatBlt_Hooked);
         }
         catch
         {
@@ -182,6 +206,7 @@ internal static class Win32ThemeHooks
 #endif
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
+            _patBltHook?.Dispose();
         }
         finally
         {
@@ -213,6 +238,7 @@ internal static class Win32ThemeHooks
 #endif
             _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
             _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
+            _procAddresses[(int)HookType.PatBlt] = GetProcAddressForHookData(GetHookData(HookType.PatBlt));
 
             _hooksPreloaded = true;
 
@@ -394,6 +420,42 @@ internal static class Win32ThemeHooks
 
 #endif
 
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static bool PatBlt_Hooked(
+        nint hdc,
+        int x,
+        int y,
+        int w,
+        int h,
+        int rop)
+    {
+        if (!_disableHookedTheming && Global.Config.DarkMode && ScrollBarEnabled())
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            if (c is ScrollBar sb && PointIsOnScrollBarTrackArea(sb, x, y))
+            {
+                nint currentObject = Native.GetCurrentObject(hdc, Native.OBJ_BRUSH);
+                if (currentObject != 0)
+                {
+                    nint prevObject = Native.SelectObject(hdc, NativeBrush_DarkBackground);
+
+                    try
+                    {
+                        bool result = PatBlt_Original!(hdc, x, y, w, h, Native.PATCOPY);
+                        return result;
+                    }
+                    finally
+                    {
+                        Native.SelectObject(hdc, prevObject);
+                    }
+                }
+            }
+        }
+
+        return PatBlt_Original!(hdc, x, y, w, h, rop);
+    }
+
     #endregion
 
     #endregion
@@ -466,6 +528,8 @@ internal static class Win32ThemeHooks
     private static readonly nint SysColorBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
 
 #endif
+
+    private static readonly nint NativeBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
 
     #endregion
 
@@ -928,6 +992,77 @@ internal static class Win32ThemeHooks
             return false;
         }
     }
+
+    #region Wine-friendly scroll bar interior theming
+
+    /*
+    @Wine: Wine's scroll bars don't respond to the usual hook for the track area (or "interior" or whatever it's
+    really called), so use a different technique.
+    @Wine: We could disable this if we detect we're not on Wine, for efficiency.
+    */
+
+    private static bool PointIsOnScrollBarTrackArea(ScrollBar scrollBar, int x, int y)
+    {
+        Native.SCROLLBARINFO sbi = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.GetScrollBarInfo(scrollBar.Handle, Native.OBJID_CLIENT, ref sbi);
+
+        Rectangle thumbRect;
+        Rectangle firstArrowRect;
+        Rectangle secondArrowRect;
+
+        if (scrollBar is VScrollBar)
+        {
+            int vsbWidth = SystemInformation.VerticalScrollBarWidth;
+            int vsbArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
+
+            thumbRect = new Rectangle(
+                x: 0,
+                y: sbi.xyThumbTop,
+                width: sbi.dxyLineButton,
+                height: sbi.xyThumbBottom - sbi.xyThumbTop
+            );
+
+            firstArrowRect = new Rectangle(
+                x: 0,
+                y: 0,
+                width: vsbWidth,
+                height: vsbArrowHeight);
+
+            secondArrowRect = new Rectangle(
+                x: 0,
+                y: scrollBar.Height - vsbArrowHeight,
+                width: vsbWidth,
+                height: vsbArrowHeight);
+        }
+        else
+        {
+            int hsbHeight = SystemInformation.HorizontalScrollBarHeight;
+            int hsbArrowWidth = SystemInformation.HorizontalScrollBarArrowWidth;
+
+            thumbRect = new Rectangle(
+                x: sbi.xyThumbTop,
+                y: 0,
+                width: sbi.xyThumbBottom - sbi.xyThumbTop,
+                height: sbi.dxyLineButton
+            );
+
+            firstArrowRect = new Rectangle(
+                x: 0,
+                y: 0,
+                width: hsbArrowWidth,
+                height: hsbHeight);
+
+            secondArrowRect = new Rectangle(
+                x: scrollBar.Width - hsbArrowWidth,
+                y: 0,
+                width: hsbArrowWidth,
+                height: hsbHeight);
+        }
+
+        return !thumbRect.Contains(x, y) && !firstArrowRect.Contains(x, y) && !secondArrowRect.Contains(x, y);
+    }
+
+    #endregion
 
     #endregion
 

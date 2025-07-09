@@ -38,6 +38,19 @@ internal static class Native
     internal const int WM_PRINT = 0x0317;
     internal const int WM_PRINTCLIENT = 0x0318;
 
+    internal const int OBJ_BRUSH = 2;
+
+    internal const int PATCOPY = 0x00F00021;
+
+    [DllImport("user32.dll")]
+    internal static extern nint WindowFromDC(nint hDC);
+
+    [DllImport("gdi32.dll", EntryPoint = "SelectObject")]
+    internal static extern nint SelectObject(nint hdc, nint hgdiobj);
+
+    [DllImport("gdi32.dll")]
+    internal static extern nint GetCurrentObject(nint hdc, uint type);
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT
@@ -481,6 +494,7 @@ internal static class Native
 
     internal const uint OBJID_HSCROLL = 0xFFFFFFFA;
     internal const uint OBJID_VSCROLL = 0xFFFFFFFB;
+    internal const uint OBJID_CLIENT = 0xFFFFFFFC;
 
     internal const int SB_HORZ = 0;
     internal const int SB_VERT = 1;
@@ -526,11 +540,26 @@ internal static class Native
     internal unsafe struct SCROLLBARINFO
     {
         internal int cbSize;
+        /// <summary>
+        /// Coordinates of the scroll bar as specified in a RECT structure.
+        /// </summary>
         internal RECT rcScrollBar;
+        /// <summary>
+        /// Height or width of the thumb.
+        /// </summary>
         internal int dxyLineButton;
+        /// <summary>
+        /// Position of the top or left of the thumb.
+        /// </summary>
         internal int xyThumbTop;
+        /// <summary>
+        /// Position of the bottom or right of the thumb.
+        /// </summary>
         internal int xyThumbBottom;
         internal int reserved;
+        /// <summary>
+        /// An array of DWORD elements. Each element indicates the state of a scroll bar component.
+        /// </summary>
         internal fixed int rgstate[6];
     }
 
@@ -766,10 +795,8 @@ internal static class Native
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static extern bool IsThemeActive();
 
-#if !X64
     [DllImport("gdi32.dll", ExactSpelling = true, SetLastError = true)]
     internal static extern nint CreateSolidBrush(int crColor);
-#endif
 
     // Ridiculous Windows using a different value on different versions...
     internal const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
