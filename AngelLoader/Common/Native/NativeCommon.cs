@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Text;
 using Microsoft.Win32.SafeHandles;
 
 namespace AngelLoader;
@@ -116,4 +117,11 @@ internal static class NativeCommon
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
     internal static extern nint GetModuleHandleW(string lpModuleName);
+
+    [DllImport("psapi.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    internal static extern uint GetModuleFileNameEx(
+        IntPtr hProcess,
+        IntPtr hModule,
+        StringBuilder lpBaseName,
+        [MarshalAs(UnmanagedType.U4)] int nSize);
 }
