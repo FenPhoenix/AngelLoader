@@ -9,6 +9,7 @@ internal static class WinVersion
     internal static readonly bool Is11OrAbove = WinVersionIs11OrAbove();
     internal static readonly bool SupportsPersistentToolTips = OSSupportsPersistentToolTips();
     internal static readonly bool SupportsDarkMode = WinVersionSupportsDarkMode();
+    internal static readonly bool IsWine = RunningOnWine();
 
     private static bool WinVersionIs7OrAbove()
     {
@@ -73,6 +74,27 @@ internal static class WinVersion
         }
         catch
         {
+            return false;
+        }
+    }
+
+    private static bool RunningOnWine()
+    {
+        return ExportFound("wine_get_version") ||
+               ExportFound("wine_get_host_version");
+
+        static bool ExportFound(string name)
+        {
+            nint hModule = NativeCommon.GetModuleHandleW("ntdll.dll");
+            if (hModule != 0)
+            {
+                nint procAddress = NativeCommon.GetProcAddress(hModule, name);
+                if (procAddress != 0)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
     }

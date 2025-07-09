@@ -193,9 +193,10 @@ internal static class Win32ThemeHooks
                 HookType.GetThemeColor,
                 GetThemeColor_Hooked);
 
-            (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(
-                HookType.PatBlt,
-                PatBlt_Hooked);
+            if (WinVersion.IsWine)
+            {
+                (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(HookType.PatBlt, PatBlt_Hooked);
+            }
         }
         catch
         {
@@ -206,7 +207,10 @@ internal static class Win32ThemeHooks
 #endif
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
-            _patBltHook?.Dispose();
+            if (WinVersion.IsWine)
+            {
+                _patBltHook?.Dispose();
+            }
         }
         finally
         {
@@ -238,7 +242,10 @@ internal static class Win32ThemeHooks
 #endif
             _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
             _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
-            _procAddresses[(int)HookType.PatBlt] = GetProcAddressForHookData(GetHookData(HookType.PatBlt));
+            if (WinVersion.IsWine)
+            {
+                _procAddresses[(int)HookType.PatBlt] = GetProcAddressForHookData(GetHookData(HookType.PatBlt));
+            }
 
             _hooksPreloaded = true;
 
@@ -429,7 +436,7 @@ internal static class Win32ThemeHooks
         int h,
         int rop)
     {
-        if (!_disableHookedTheming && Global.Config.DarkMode && ScrollBarEnabled())
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode && ScrollBarEnabled())
         {
             nint wnd = Native.WindowFromDC(hdc);
             Control? c = Control.FromHandle(wnd);
