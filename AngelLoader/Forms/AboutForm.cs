@@ -22,14 +22,15 @@ public sealed partial class AboutForm : DarkFormBase
         SuspendLayout();
 
         int x = 32;
-        int y = 388;
+        int initialTopPosition = AngelLoaderUsesLabel.Bottom + 16;
+        int y = initialTopPosition;
         int tabIndex = 6;
         for (int i = 0; i < NonLocalizableText.DependenciesCount; i++, y += 16, tabIndex++)
         {
             if (i == 8)
             {
                 x = 232;
-                y = 388;
+                y = initialTopPosition;
             }
 
             DarkLinkLabel label = new()
