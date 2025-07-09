@@ -1005,7 +1005,6 @@ internal static class Win32ThemeHooks
     /*
     @Wine: Wine's scroll bars don't respond to the usual hook for the track area (or "interior" or whatever it's
     really called), so use a different technique.
-    @Wine: We could disable this if we detect we're not on Wine, for efficiency.
     */
 
     private static bool PointIsOnScrollBarTrackArea(ScrollBar scrollBar, int x, int y)
