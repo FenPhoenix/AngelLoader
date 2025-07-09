@@ -191,6 +191,7 @@ internal sealed class LText_Class
         internal readonly string DeleteFMArchives = "Delete FM archives";
         [FenGenBlankLine]
         internal readonly string DontAskAgain = "Don't ask again";
+        internal readonly string DontShowAgain = "Don't show again";
         [FenGenBlankLine]
         internal readonly string AppClosing_OperationInProgress = "An operation is in progress. Please cancel or wait for it to finish.";
         [FenGenBlankLine]
@@ -300,6 +301,9 @@ internal sealed class LText_Class
         internal readonly string NoWriteAccessToGameDir_Play = "AngelLoader does not have write access to the game directory. Unable to play.";
         internal readonly string GameDirInsideProgramFiles_Explanation = "A common reason for this is the game directory being located inside Program Files. If this is the case, you'll need to move it to another location.";
         internal readonly string NoWriteAccessToInstalledFMsDir = "AngelLoader does not have write access to the installed FMs directory.";
+        [FenGenBlankLine]
+        internal readonly string Wine_DllUpgradeMessage1 = "For the best experience on Wine, it's recommended to install the following winetricks packages:";
+        internal readonly string Wine_DllUpgradeMessage2 = "This will greatly improve app visuals and RTF readme display.";
     }
 
     internal sealed class MainMenu_Class

@@ -75,7 +75,7 @@ public interface IDialogs
         string title,
         MBoxIcon icon,
         string? yes,
-        string? no,
+        string? no = null,
         string? cancel = null,
         bool yesIsDangerous = false,
         bool noIsDangerous = false,

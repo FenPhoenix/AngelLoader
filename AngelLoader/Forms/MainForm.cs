@@ -1176,6 +1176,30 @@ public sealed partial class MainForm : DarkFormBase,
             AppUpdate.StartCheckIfUpdateAvailableThread();
         }
 
+        if (Config.ShowWineTricksMessageIfApplicable)
+        {
+            // Just in case, to make sure the backing dll is loaded before doing the dll check
+            _ = ReadmeRichTextBox.Handle;
+
+            if (!WinVersion.Wine_NativeDllsInstalled())
+            {
+                (_, bool dontShowAgain) = Core.Dialogs.ShowMultiChoiceDialog(
+                    message:
+                    LText.AlertMessages.Wine_DllUpgradeMessage1 + $"{NL}" + $"{NL}" +
+                    "gdiplus" + $"{NL}" +
+                    "msftedit" + $"{NL}" + $"{NL}" +
+                    LText.AlertMessages.Wine_DllUpgradeMessage2,
+                    // Product name, doesn't need translation
+                    title: "Wine",
+                    icon: MBoxIcon.Information,
+                    yes: LText.Global.OK,
+                    checkBoxText: LText.AlertMessages.DontShowAgain
+                );
+
+                Config.ShowWineTricksMessageIfApplicable = !dontShowAgain;
+            }
+        }
+
         // Must come after Show() I guess or it doesn't work?!
         FMsDGV.Focus();
     }

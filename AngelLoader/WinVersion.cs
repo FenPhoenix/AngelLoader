@@ -107,6 +107,8 @@ internal static class WinVersion
     /// <returns></returns>
     internal static bool Wine_NativeDllsInstalled()
     {
+        if (!IsWine) return true;
+
         return IsNativeMicrosoftDll("msftedit.dll") &&
                IsNativeMicrosoftDll("gdiplus.dll");
 
