@@ -519,6 +519,11 @@ internal static class Win32ThemeHooks
         {
             nint wnd = Native.WindowFromDC(hdc);
             Control? c = Control.FromHandle(wnd);
+            /*
+            @Wine: Fields on the text portion are now all the same bg color and not highlighted when selected.
+            We need to find out what the incoming brush is so we can adjust our bg color (and fg color for that
+            matter, probably) as needed.
+            */
             if (c is DateTimePicker dtp)
             {
                 nint brush = dtp.Enabled ? NativeBrush_LightBackground : NativeBrush_DarkBackground;
