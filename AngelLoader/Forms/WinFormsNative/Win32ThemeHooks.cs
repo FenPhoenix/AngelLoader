@@ -568,7 +568,9 @@ internal static class Win32ThemeHooks
         {
             nint wnd = Native.WindowFromDC(hdc);
             Control? c = Control.FromHandle(wnd);
-            // If it's disabled, just it render the default disabled color, as it looks fine
+            // If it's disabled, just let it render the default disabled color, as it looks fine.
+            // We'd like to use the brighter text color for selected fields, but we have no way to know from this
+            // function whether we're drawing text on a selected field or not. So, just leave it as is.
             if (c is DateTimePicker { Enabled: true })
             {
                 int prevColor = Native.SetTextColor(hdc, ColorTranslator.ToWin32(DarkColors.LightText));
