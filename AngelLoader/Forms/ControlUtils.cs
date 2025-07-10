@@ -1085,40 +1085,32 @@ internal static class ControlUtils
     to act on the WM_NCPAINT message, and messages ONLY get sent to the exact control that they're meant for.
     So we can't catch it in a main form WndProc() override nor in a message filter.
     */
-    internal static void Wine_DrawScrollBarCorner(ScrollableControl c)
+    internal static void Wine_DrawScrollBarCorner(ScrollableControl control)
     {
         if (!Config.DarkMode ||
             !WinVersion.IsWine ||
-            !c.VerticalScroll.Visible ||
-            !c.HorizontalScroll.Visible)
+            !control.VerticalScroll.Visible ||
+            !control.HorizontalScroll.Visible)
         {
             return;
         }
 
-        nint h = c.Handle;
+        nint controlHandle = control.Handle;
 
         Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
-        Native.GetScrollBarInfo(h, Native.OBJID_VSCROLL, ref sbi_v);
+        Native.GetScrollBarInfo(controlHandle, Native.OBJID_VSCROLL, ref sbi_v);
 
         Rectangle sbr = sbi_v.rcScrollBar.ToRectangle();
 
-        Point vertSB_BottomPoint = c.PointToClient_Fast(new Point(sbr.Right, sbr.Bottom));
+        Point vertSB_BottomPoint = control.PointToClient_Fast(new Point(sbr.Right, sbr.Bottom));
 
-        int verticalScrollBarArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
-
-        bool usingLightMode = WinVersion.Is11OrAbove && !Config.DarkMode && !Native.HighContrastEnabled();
-
-        Brush brush = usingLightMode
-            ? SystemBrushes.Control
-            : DarkColors.DarkBackgroundBrush;
-
-        using Native.GraphicsContext gc = new(h);
+        using Native.GraphicsContext gc = new(controlHandle);
         gc.G.FillRectangle(
-            brush,
+            DarkColors.DarkBackgroundBrush,
             vertSB_BottomPoint.X - sbr.Width,
             vertSB_BottomPoint.Y,
             sbr.Width,
-            verticalScrollBarArrowHeight
+            SystemInformation.VerticalScrollBarArrowHeight
         );
     }
 }
