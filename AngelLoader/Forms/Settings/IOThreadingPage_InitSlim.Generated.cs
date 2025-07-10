@@ -7,10 +7,10 @@ sealed partial class IOThreadingPage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
-        this.ActualPagePanel = new System.Windows.Forms.Panel();
-        this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.HelpPanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
+        this.ActualPagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
+        this.LayoutFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
+        this.HelpPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.HelpPictureBox = new System.Windows.Forms.PictureBox();
         this.HelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IOThreadingLevelGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();

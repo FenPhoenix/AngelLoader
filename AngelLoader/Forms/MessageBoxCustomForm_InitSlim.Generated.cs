@@ -10,13 +10,13 @@ partial class MessageBoxCustomForm
         this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.MainFLP = new System.Windows.Forms.Panel();
+        this.MainFLP = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-        this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.SelectButtonsFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.MessageBottomLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.OuterTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();

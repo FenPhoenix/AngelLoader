@@ -297,7 +297,10 @@ internal static class DesignerGen
                             if (nodeStr == nodeControlName + ".Controls.Add")
                             {
                                 if (controlTypes.TryGetValue(nodeControlName, out string nodeType) &&
-                                    (nodeType is "FlowLayoutPanel" or "DarkFlowLayoutPanel") &&
+                                    (nodeType
+                                        is "FlowLayoutPanel"
+                                        or "FlowLayoutPanelCustom"
+                                        or "DrawnFlowLayoutPanel") &&
                                     ies.ArgumentList.Arguments.Count == 1)
                                 {
                                     var arg = ies.ArgumentList.Arguments[0];
@@ -643,8 +646,11 @@ internal static class DesignerGen
                             or "PictureBox"
                             or "Control"
                             or "Panel"
+                            or "PanelCustom"
                             or "DrawnPanel"
-                            or "FlowLayoutPanel")
+                            or "FlowLayoutPanel"
+                            or "FlowLayoutPanelCustom"
+                            or "DrawnFlowLayoutPanel")
                         // TODO: Cheap hack temporarily
                         && destNode.ControlName != "PagePanel")
                     {

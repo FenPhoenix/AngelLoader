@@ -18,7 +18,7 @@ partial class FilterDateForm
         this.ToCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.NoMinLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.NoMaxLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 

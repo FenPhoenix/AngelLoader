@@ -7,16 +7,16 @@ sealed partial class PathsPage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
-        this.ActualPathsPanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
+        this.ActualPathsPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.FMArchivePathsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.IncludeSubfoldersCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.AddFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.RemoveFMArchivePathButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.FMArchivePathsListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-        this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.LayoutFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.BackupGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.BackupPathPanel = new System.Windows.Forms.Panel();
+        this.BackupPathPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.BackupHelpTDMPictureBox = new System.Windows.Forms.PictureBox();
         this.BackupPathTDMHelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.BackupHelpPictureBox = new System.Windows.Forms.PictureBox();
@@ -24,7 +24,7 @@ sealed partial class PathsPage
         this.BackupPathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.BackupPathBrowseButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.SteamOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.LaunchTheseGamesThroughSteamPanel = new System.Windows.Forms.Panel();
+        this.LaunchTheseGamesThroughSteamPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.LaunchTheseGamesThroughSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.Thief1UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.SS2UseSteamCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -37,7 +37,7 @@ sealed partial class PathsPage
         this.TDMExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.TDMExePathBrowseButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.TDMExePathTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.GameRequirementsPanel = new System.Windows.Forms.Panel();
+        this.GameRequirementsPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.GameRequirementsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.SS2ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.Thief3ExePathLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

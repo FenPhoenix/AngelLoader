@@ -2,12 +2,11 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class DarkFlowLayoutPanel : FlowLayoutPanel, IDarkable
+public sealed class DrawnFlowLayoutPanel : FlowLayoutPanelCustom, IDarkable
 {
     [PublicAPI]
     public Color DrawnBackColor = SystemColors.Control;
@@ -24,17 +23,5 @@ public sealed class DarkFlowLayoutPanel : FlowLayoutPanel, IDarkable
     {
         SolidBrush brush = DarkColors.GetCachedSolidBrush(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
         e.Graphics.FillRectangle(brush, ClientRectangle);
-    }
-
-    protected override void WndProc(ref Message m)
-    {
-        if (m.Msg == Native.WM_NCPAINT)
-        {
-            base.WndProc(ref m);
-            ControlUtils.Wine_DrawScrollBarCorner(this);
-            return;
-        }
-
-        base.WndProc(ref m);
     }
 }

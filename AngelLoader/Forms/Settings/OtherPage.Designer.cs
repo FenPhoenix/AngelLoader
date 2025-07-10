@@ -31,7 +31,7 @@ sealed partial class OtherPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.TagsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.AlwaysShowPresetTagsCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.FilteringGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -523,7 +523,7 @@ sealed partial class OtherPage
 
     #endregion
 
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox PlayFMOnDCOrEnterGroupBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ConfirmPlayOnDCOrEnterCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox WebSearchGroupBox;

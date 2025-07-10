@@ -691,7 +691,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 SettingsDriveData driveData = settingsDriveData[i];
 
-                Panel panel = new()
+                PanelCustom panel = new()
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     Location = new Point(8, y),

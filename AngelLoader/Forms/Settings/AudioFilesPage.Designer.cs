@@ -31,7 +31,7 @@ partial class AudioFilesPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.ND128_ConvertMP3sToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.GlobalGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -176,7 +176,7 @@ partial class AudioFilesPage
 
     internal CustomControls.DarkGroupBox GlobalGroupBox;
     internal CustomControls.DarkCheckBox ConvertOGGsToWAVsOnInstallCheckBox;
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal CustomControls.DarkCheckBox ND128_ConvertMP3sToWAVsOnInstallCheckBox;
     internal CustomControls.DarkCheckBox ND127_ConvertWAVsTo16BitOnInstallCheckBox;
     internal CustomControls.DarkGroupBox ND128GroupBox;

@@ -33,7 +33,7 @@ public sealed partial class Lazy_TagsPage
     {
         this.AddTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.AddTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBoxCustom();
-        this.AddRemoveTagFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+        this.AddRemoveTagFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
         this.RemoveTagButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.AddTagFromListButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.TagsTreeView = new AngelLoader.Forms.CustomControls.DarkTreeView();
@@ -139,7 +139,7 @@ public sealed partial class Lazy_TagsPage
 
     internal DarkButton AddTagButton;
     internal DarkTextBoxCustom AddTagTextBox;
-    internal DarkFlowLayoutPanel AddRemoveTagFLP;
+    internal DrawnFlowLayoutPanel AddRemoveTagFLP;
     internal DarkButton RemoveTagButton;
     internal DarkButton AddTagFromListButton;
     internal DarkTreeView TagsTreeView;

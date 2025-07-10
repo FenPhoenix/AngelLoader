@@ -32,7 +32,7 @@ partial class DarkTaskDialog
     private void InitializeComponent()
     {
             this.IconPictureBox = new System.Windows.Forms.PictureBox();
-            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
             this.ViewLogButton = new AngelLoader.Forms.CustomControls.DarkButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
             this.NoButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -172,7 +172,7 @@ partial class DarkTaskDialog
 
     private protected System.Windows.Forms.PictureBox IconPictureBox;
     private protected CustomControls.DarkLabel MessageLabel;
-    private protected System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private protected AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
     private protected CustomControls.DarkButton Cancel_Button;
     private protected CustomControls.DarkButton NoButton;
     private protected CustomControls.DarkButton YesButton;

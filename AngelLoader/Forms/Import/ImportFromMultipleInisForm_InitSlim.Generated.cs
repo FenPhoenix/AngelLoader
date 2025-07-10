@@ -9,7 +9,7 @@ sealed partial class ImportFromMultipleInisForm
     {
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.ImportControls = new AngelLoader.Forms.User_FMSel_NDL_ImportControls();
         this.ImportSizeCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();

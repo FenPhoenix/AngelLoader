@@ -34,7 +34,7 @@ partial class OriginalGameModsForm
         this.components = new System.ComponentModel.Container();
         this.OrigGameModsControl = new AngelLoader.Forms.CustomControls.ModsControl();
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.NewMantleCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.MainToolTip = new CustomControls.ToolTipCustom(this.components);
@@ -122,7 +122,7 @@ partial class OriginalGameModsForm
 
     private CustomControls.ModsControl OrigGameModsControl;
     private CustomControls.StandardButton OKButton;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
     private CustomControls.StandardButton Cancel_Button;
     private CustomControls.DarkCheckBox NewMantleCheckBox;
     private CustomControls.ToolTipCustom MainToolTip;

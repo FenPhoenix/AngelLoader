@@ -19,8 +19,8 @@ sealed partial class ScanAllFMsForm
         this.ScanButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ScanAllFMsForLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
+        this.SelectButtonsFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.MissionCountCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.BottomFLP.SuspendLayout();
         this.SelectButtonsFLP.SuspendLayout();

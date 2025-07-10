@@ -7,10 +7,10 @@ sealed partial class ThiefBuddyPage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.ThiefBuddyOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.TBInstallStatusLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.RunTBPanel = new System.Windows.Forms.Panel();
+        this.RunTBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.RunThiefBuddyWhenPlayingFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.RunTBAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.RunTBNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();

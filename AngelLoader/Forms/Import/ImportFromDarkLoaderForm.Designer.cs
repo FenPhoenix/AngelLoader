@@ -33,7 +33,7 @@ sealed partial class ImportFromDarkLoaderForm
     {
             this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
-            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
             this.ImportFinishedOnCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportLastPlayedCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.ImportReleaseDateCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
@@ -233,7 +233,7 @@ sealed partial class ImportFromDarkLoaderForm
 
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;
     private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
     private User_DL_ImportControls ImportControls;
     private AngelLoader.Forms.CustomControls.DarkCheckBox ImportFinishedOnCheckBox;
     private AngelLoader.Forms.CustomControls.DarkCheckBox ImportLastPlayedCheckBox;

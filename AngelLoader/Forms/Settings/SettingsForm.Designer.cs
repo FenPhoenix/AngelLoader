@@ -19,14 +19,14 @@ partial class SettingsForm
     private void InitializeComponent()
     {
             this.components = new System.ComponentModel.Container();
-            this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
             this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
             this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
             this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.BottomFLP.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();
@@ -144,8 +144,8 @@ partial class SettingsForm
 
     #endregion
 
-    private System.Windows.Forms.Panel PagePanel;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
     private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;
     private CustomControls.ToolTipCustom MainToolTip;

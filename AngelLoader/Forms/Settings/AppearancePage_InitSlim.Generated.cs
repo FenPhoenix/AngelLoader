@@ -7,27 +7,27 @@ sealed partial class AppearancePage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-        this.DateFormatRBPanel = new System.Windows.Forms.Panel();
+        this.DateFormatRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.DateCurrentCultureShortRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.DateCurrentCultureLongRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.DateCustomRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-        this.RatingDisplayStyleRBPanel = new System.Windows.Forms.Panel();
+        this.RatingDisplayStyleRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.RatingNDLDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.RatingFMSelDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-        this.GameOrganizationRBPanel = new System.Windows.Forms.Panel();
+        this.GameOrganizationRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.OrganizeGamesByTabRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.OrganizeGamesInOneListRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
         this.UseShortGameTabNamesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.RecentFMsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
         this.RecentFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.PreviewDateFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.PreviewDateFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.PreviewDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
+        this.DateCustomFormatPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.DateSeparator3TextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.DateSeparator2TextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.Date1ComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();

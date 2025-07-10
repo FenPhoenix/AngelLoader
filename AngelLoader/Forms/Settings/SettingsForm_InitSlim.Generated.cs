@@ -8,14 +8,14 @@ partial class SettingsForm
     private void InitSlim()
     {
         this.components = new System.ComponentModel.Container();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ErrorLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.ErrorIconPictureBox = new System.Windows.Forms.PictureBox();
         this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
-        this.PagePanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.BottomFLP.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)(this.ErrorIconPictureBox)).BeginInit();
         ((System.ComponentModel.ISupportInitialize)(this.MainSplitContainer)).BeginInit();

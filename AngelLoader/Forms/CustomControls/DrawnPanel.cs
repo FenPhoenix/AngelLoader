@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
-using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -10,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls;
 /// <summary>
 /// Regular Panels don't behave with their BackColors, so...
 /// </summary>
-public sealed class DrawnPanel : Panel, IDarkable
+public sealed class DrawnPanel : PanelCustom, IDarkable
 {
     [PublicAPI]
     public Color DrawnBackColor = SystemColors.Control;
@@ -59,17 +58,5 @@ public sealed class DrawnPanel : Panel, IDarkable
     {
         SolidBrush brush = DarkColors.GetCachedSolidBrush(DarkModeEnabled ? DarkModeDrawnBackColor : DrawnBackColor);
         e.Graphics.FillRectangle(brush, ClientRectangle);
-    }
-
-    protected override void WndProc(ref Message m)
-    {
-        if (m.Msg == Native.WM_NCPAINT)
-        {
-            base.WndProc(ref m);
-            ControlUtils.Wine_DrawScrollBarCorner(this);
-            return;
-        }
-
-        base.WndProc(ref m);
     }
 }

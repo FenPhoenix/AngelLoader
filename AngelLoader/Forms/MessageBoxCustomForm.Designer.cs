@@ -34,13 +34,13 @@ partial class MessageBoxCustomForm
         this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.MainFLP = new System.Windows.Forms.Panel();
+        this.MainFLP = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-        this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.SelectButtonsFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.MessageBottomLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.OuterTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
@@ -225,12 +225,12 @@ partial class MessageBoxCustomForm
     private System.Windows.Forms.PictureBox IconPictureBox;
     private System.Windows.Forms.TableLayoutPanel ContentTLP;
     private System.Windows.Forms.TableLayoutPanel OuterTLP;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private System.Windows.Forms.Panel MainFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
+    private AngelLoader.Forms.CustomControls.PanelCustom MainFLP;
     [AL_Common.FenGenAttributes.FenGenForceRemoveSizeAttribute]
     private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
     private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
-    private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom SelectButtonsFLP;
     private AngelLoader.Forms.CustomControls.StandardButton SelectAllButton;
     private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;

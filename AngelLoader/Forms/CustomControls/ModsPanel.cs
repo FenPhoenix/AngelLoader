@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class ModsPanel : Panel, IDarkable
+public sealed class ModsPanel : PanelCustom, IDarkable
 {
 #if DEBUG
     [PublicAPI]

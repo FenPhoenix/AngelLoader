@@ -48,13 +48,13 @@ sealed partial class MainForm
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
         System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
         this.GameTabsImageList = new System.Windows.Forms.ImageList(this.components);
-        this.BottomRightFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomRightFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.SettingsButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.FMCountLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.BottomLeftFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomLeftFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.PlayFMButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.PlayOriginalFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.EverythingPanel = new System.Windows.Forms.Panel();
+        this.PlayOriginalFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
+        this.EverythingPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.MainSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.TopSplitContainer = new AngelLoader.Forms.CustomControls.DarkSplitContainerCustom();
         this.MainMenuButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -76,7 +76,7 @@ sealed partial class MainForm
         this.PlayTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.DisabledModsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
         this.CommentColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        this.FilterBarFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.FilterBarFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.FilterGameButtonsToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
         this.GameFilterControlsShowHideButtonToolStrip = new AngelLoader.Forms.CustomControls.ToolStripCustom();
         this.GameFilterControlsShowHideButton = new AngelLoader.Forms.CustomControls.ToolStripArrowButton();
@@ -1257,7 +1257,7 @@ sealed partial class MainForm
     internal CustomControls.DarkCheckBox T2TitaniumModeCheckBox;
 #endif
 
-    internal System.Windows.Forms.Panel EverythingPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom EverythingPanel;
     internal CustomControls.DarkSplitContainerCustom MainSplitContainer;
     internal CustomControls.DarkSplitContainerCustom TopSplitContainer;
 
@@ -1267,7 +1267,7 @@ sealed partial class MainForm
 
     internal CustomControls.DarkButton MainMenuButton;
 
-    internal System.Windows.Forms.FlowLayoutPanel FilterBarFLP;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom FilterBarFLP;
 
     internal CustomControls.DarkArrowButton FilterBarScrollLeftButton;
     internal CustomControls.DarkArrowButton FilterBarScrollRightButton;
@@ -1373,11 +1373,11 @@ sealed partial class MainForm
 
     #region Bottom
 
-    internal System.Windows.Forms.FlowLayoutPanel BottomLeftFLP;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomLeftFLP;
     internal CustomControls.DarkButton PlayFMButton;
-    internal System.Windows.Forms.FlowLayoutPanel PlayOriginalFLP;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom PlayOriginalFLP;
 
-    internal System.Windows.Forms.FlowLayoutPanel BottomRightFLP;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomRightFLP;
     internal CustomControls.DarkLabel FMCountLabel;
     internal CustomControls.DarkButton SettingsButton;
 

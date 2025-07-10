@@ -31,27 +31,27 @@ sealed partial class AppearancePage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.PlayWithoutFMGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.PlayWithoutFM_MultipleButtonsRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.PlayWithoutFM_SingleButtonRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.FMsListGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
-            this.DateFormatRBPanel = new System.Windows.Forms.Panel();
+            this.DateFormatRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.DateCurrentCultureShortRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.DateCurrentCultureLongRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.DateCustomRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.RatingDisplayStyleRBPanel = new System.Windows.Forms.Panel();
+            this.RatingDisplayStyleRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.RatingNDLDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.RatingFMSelDisplayStyleRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
-            this.GameOrganizationRBPanel = new System.Windows.Forms.Panel();
+            this.GameOrganizationRBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.OrganizeGamesByTabRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.OrganizeGamesInOneListRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.UseShortGameTabNamesCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.RecentFMsNumericUpDown = new AngelLoader.Forms.CustomControls.DarkNumericUpDown();
             this.RecentFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.PreviewDateFLP = new System.Windows.Forms.FlowLayoutPanel();
+            this.PreviewDateFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
             this.PreviewDateLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.DateCustomFormatPanel = new System.Windows.Forms.Panel();
+            this.DateCustomFormatPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.DateSeparator3TextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.DateSeparator2TextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
             this.Date1ComboBox = new AngelLoader.Forms.CustomControls.DarkComboBox();
@@ -696,7 +696,7 @@ sealed partial class AppearancePage
 
     #endregion
 
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox LanguageGroupBox;
     internal AngelLoader.Forms.CustomControls.DarkComboBoxWithBackingItems LanguageComboBox;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox VisualThemeGroupBox;
@@ -705,9 +705,9 @@ sealed partial class AppearancePage
     internal AngelLoader.Forms.CustomControls.DarkGroupBox ReadmeGroupBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ReadmeFixedWidthFontCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkGroupBox FMsListGroupBox;
-    internal System.Windows.Forms.FlowLayoutPanel PreviewDateFLP;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom PreviewDateFLP;
     internal AngelLoader.Forms.CustomControls.DarkLabel PreviewDateLabel;
-    internal System.Windows.Forms.Panel DateCustomFormatPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom DateCustomFormatPanel;
     internal AngelLoader.Forms.CustomControls.DarkTextBox DateSeparator3TextBox;
     internal AngelLoader.Forms.CustomControls.DarkTextBox DateSeparator2TextBox;
     internal AngelLoader.Forms.CustomControls.DarkComboBox Date1ComboBox;
@@ -739,9 +739,9 @@ sealed partial class AppearancePage
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ShowExitButtonCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ShowFMListZoomButtonsCheckBox;
     internal AngelLoader.Forms.CustomControls.DarkCheckBox ShowUninstallButtonCheckBox;
-    internal System.Windows.Forms.Panel RatingDisplayStyleRBPanel;
-    internal System.Windows.Forms.Panel GameOrganizationRBPanel;
-    internal System.Windows.Forms.Panel DateFormatRBPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom RatingDisplayStyleRBPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom GameOrganizationRBPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom DateFormatRBPanel;
     internal CustomControls.DarkGroupBox PlayWithoutFMGroupBox;
     internal CustomControls.DarkRadioButton PlayWithoutFM_MultipleButtonsRadioButton;
     internal CustomControls.DarkRadioButton PlayWithoutFM_SingleButtonRadioButton;

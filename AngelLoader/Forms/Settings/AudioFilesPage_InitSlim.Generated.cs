@@ -7,7 +7,7 @@ partial class AudioFilesPage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.ND128_ConvertMP3sToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.GlobalGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.ConvertOGGsToWAVsOnInstallCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();

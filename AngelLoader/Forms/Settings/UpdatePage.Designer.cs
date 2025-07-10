@@ -31,7 +31,7 @@ sealed partial class UpdatePage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.UpdateOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.CheckForUpdatesOnStartupCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
             this.PagePanel.SuspendLayout();
@@ -88,7 +88,7 @@ sealed partial class UpdatePage
 
     #endregion
 
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal CustomControls.DarkGroupBox UpdateOptionsGroupBox;
     internal CustomControls.DarkCheckBox CheckForUpdatesOnStartupCheckBox;
 }

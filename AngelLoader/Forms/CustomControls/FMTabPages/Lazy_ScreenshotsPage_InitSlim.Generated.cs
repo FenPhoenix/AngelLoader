@@ -7,7 +7,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitSlim()
     {
-        this.ButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+        this.ButtonsFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
         this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
         this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();

@@ -31,10 +31,10 @@ sealed partial class IOThreadingPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
-            this.ActualPagePanel = new System.Windows.Forms.Panel();
-            this.LayoutFLP = new System.Windows.Forms.FlowLayoutPanel();
-            this.HelpPanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
+            this.ActualPagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
+            this.LayoutFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
+            this.HelpPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.HelpPictureBox = new System.Windows.Forms.PictureBox();
             this.HelpLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.IOThreadingLevelGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
@@ -234,7 +234,7 @@ sealed partial class IOThreadingPage
 
     #endregion
 
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal CustomControls.DarkGroupBox IOThreadCountGroupBox;
     internal CustomControls.DarkGroupBox IOThreadingLevelGroupBox;
     internal CustomControls.DarkButton IOThreadsResetButton;
@@ -242,9 +242,9 @@ sealed partial class IOThreadingPage
     internal CustomControls.DarkLabel CustomThreadsLabel;
     internal CustomControls.DarkRadioButton AutoModeRadioButton;
     internal CustomControls.DarkRadioButton CustomModeRadioButton;
-    internal System.Windows.Forms.Panel ActualPagePanel;
-    internal System.Windows.Forms.FlowLayoutPanel LayoutFLP;
-    internal System.Windows.Forms.Panel HelpPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom ActualPagePanel;
+    internal AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom LayoutFLP;
+    internal AngelLoader.Forms.CustomControls.PanelCustom HelpPanel;
     internal System.Windows.Forms.PictureBox HelpPictureBox;
     internal CustomControls.DarkLabel HelpLabel;
 }

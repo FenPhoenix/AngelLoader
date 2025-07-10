@@ -7,7 +7,7 @@ sealed partial class UpdatePage
     /// </summary>
     private void InitSlim()
     {
-        this.PagePanel = new System.Windows.Forms.Panel();
+        this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.UpdateOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
         this.CheckForUpdatesOnStartupCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.PagePanel.SuspendLayout();

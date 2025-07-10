@@ -31,10 +31,10 @@ sealed partial class ThiefBuddyPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.PagePanel = new System.Windows.Forms.Panel();
+            this.PagePanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.ThiefBuddyOptionsGroupBox = new AngelLoader.Forms.CustomControls.DarkGroupBox();
             this.TBInstallStatusLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-            this.RunTBPanel = new System.Windows.Forms.Panel();
+            this.RunTBPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
             this.RunThiefBuddyWhenPlayingFMsLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
             this.RunTBAlwaysRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
             this.RunTBNeverRadioButton = new AngelLoader.Forms.CustomControls.DarkRadioButton();
@@ -189,12 +189,12 @@ sealed partial class ThiefBuddyPage
 
     #endregion
 
-    internal System.Windows.Forms.Panel PagePanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom PagePanel;
     internal CustomControls.DarkGroupBox ThiefBuddyOptionsGroupBox;
     internal CustomControls.DarkRadioButton RunTBNeverRadioButton;
     internal CustomControls.DarkRadioButton RunTBAskRadioButton;
     internal CustomControls.DarkRadioButton RunTBAlwaysRadioButton;
-    internal System.Windows.Forms.Panel RunTBPanel;
+    internal AngelLoader.Forms.CustomControls.PanelCustom RunTBPanel;
     internal CustomControls.DarkLabel RunThiefBuddyWhenPlayingFMsLabel;
     internal System.Windows.Forms.PictureBox TBHelpPictureBox;
     internal CustomControls.DarkLabel WhatIsTBHelpLabel;
