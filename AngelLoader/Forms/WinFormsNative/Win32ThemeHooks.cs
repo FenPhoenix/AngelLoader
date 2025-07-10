@@ -49,11 +49,13 @@ internal static class Win32ThemeHooks
     {
         internal readonly string Dll;
         internal readonly string Method;
+        internal readonly bool WineOnly;
 
-        public HookData(string dll, string method)
+        public HookData(string dll, string method, bool wineOnly)
         {
             Dll = dll;
             Method = method;
+            WineOnly = wineOnly;
         }
     }
 
@@ -172,15 +174,15 @@ internal static class Win32ThemeHooks
     // ReSharper disable once RedundantExplicitArraySize
     private static readonly HookData[] _hookData = new HookData[(int)HookType.Length]
     {
-        new("user32.dll", "GetSysColor"),
+        new("user32.dll", "GetSysColor", wineOnly: false),
 #if !X64
-        new("user32.dll", "GetSysColorBrush"),
+        new("user32.dll", "GetSysColorBrush", wineOnly: false),
 #endif
-        new("uxtheme.dll", "DrawThemeBackground"),
-        new("uxtheme.dll", "GetThemeColor"),
-        new("gdi32.dll", "PatBlt"),
-        new("user32.dll", "FillRect"),
-        new("user32.dll", "DrawTextW"),
+        new("uxtheme.dll", "DrawThemeBackground", wineOnly: false),
+        new("uxtheme.dll", "GetThemeColor", wineOnly: false),
+        new("gdi32.dll", "PatBlt", wineOnly: true),
+        new("user32.dll", "FillRect", wineOnly: true),
+        new("user32.dll", "DrawTextW", wineOnly: true),
     };
 
     private static HookData GetHookData(HookType hookType) => _hookData[(int)hookType];
@@ -283,17 +285,13 @@ internal static class Win32ThemeHooks
 
             ReloadHThemes();
 
-            _procAddresses[(int)HookType.GetSysColor] = GetProcAddressForHookData(GetHookData(HookType.GetSysColor));
-#if !X64
-            _procAddresses[(int)HookType.GetSysColorBrush] = GetProcAddressForHookData(GetHookData(HookType.GetSysColorBrush));
-#endif
-            _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
-            _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
-            if (WinVersion.IsWine)
+            for (int i = 0; i < (int)HookType.Length; i++)
             {
-                _procAddresses[(int)HookType.PatBlt] = GetProcAddressForHookData(GetHookData(HookType.PatBlt));
-                _procAddresses[(int)HookType.FillRect] = GetProcAddressForHookData(GetHookData(HookType.FillRect));
-                _procAddresses[(int)HookType.DrawTextW] = GetProcAddressForHookData(GetHookData(HookType.DrawTextW));
+                HookData hookData = GetHookData((HookType)i);
+                if (WinVersion.IsWine || !hookData.WineOnly)
+                {
+                    _procAddresses[i] = GetProcAddressForHookData(hookData);
+                }
             }
 
             _hooksPreloaded = true;
