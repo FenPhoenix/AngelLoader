@@ -1079,4 +1079,38 @@ internal static class ControlUtils
             c.ForeColor,
             color);
     }
+
+    internal static void Wine_DrawScrollBarCorner(ScrollableControl c)
+    {
+        if (!WinVersion.IsWine || !c.VerticalScroll.Visible || !c.HorizontalScroll.Visible)
+        {
+            return;
+        }
+
+        nint h = c.Handle;
+
+        Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.GetScrollBarInfo(h, Native.OBJID_VSCROLL, ref sbi_v);
+
+        Rectangle sbr = sbi_v.rcScrollBar.ToRectangle();
+
+        Point vertSB_BottomPoint = c.PointToClient_Fast(new Point(sbr.Right, sbr.Bottom));
+
+        int verticalScrollBarArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
+
+        bool usingLightMode = WinVersion.Is11OrAbove && !Config.DarkMode && !Native.HighContrastEnabled();
+
+        Brush brush = usingLightMode
+            ? SystemBrushes.Control
+            : DarkColors.DarkBackgroundBrush;
+
+        using Native.GraphicsContext gc = new(h);
+        gc.G.FillRectangle(
+            brush,
+            vertSB_BottomPoint.X - sbr.Width,
+            vertSB_BottomPoint.Y,
+            sbr.Width,
+            verticalScrollBarArrowHeight
+        );
+    }
 }

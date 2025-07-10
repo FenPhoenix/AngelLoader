@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed partial class Lazy_StatsPage : UserControl
+public sealed partial class Lazy_StatsPage : UserControlCustom
 {
     internal readonly DarkCheckBox[] _checkBoxes = new DarkCheckBox[Misc.CustomResourcesCount - 1];
 

@@ -10,7 +10,7 @@ using static AngelLoader.Utils;
 
 namespace AngelLoader.Forms;
 
-public sealed class User_FMSel_NDL_ImportControls : UserControl
+public sealed class User_FMSel_NDL_ImportControls : UserControlCustom
 {
     private ImportType _importType;
 

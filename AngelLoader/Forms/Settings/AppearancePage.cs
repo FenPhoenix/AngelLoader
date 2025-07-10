@@ -1,8 +1,9 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPage
+public sealed partial class AppearancePage : UserControlCustom, Interfaces.ISettingsPage
 {
     public AppearancePage()
     {

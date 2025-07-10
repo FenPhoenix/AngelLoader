@@ -10,7 +10,7 @@ using static AngelLoader.Global;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed partial class ModsControl : UserControl, IEventDisabler
+public sealed partial class ModsControl : UserControlCustom, IEventDisabler
 {
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

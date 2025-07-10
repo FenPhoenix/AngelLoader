@@ -1,8 +1,8 @@
-﻿using System.Windows.Forms;
+﻿using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class UpdatePage : UserControl, Interfaces.ISettingsPage
+public sealed partial class UpdatePage : UserControlCustom, Interfaces.ISettingsPage
 {
     public UpdatePage()
     {

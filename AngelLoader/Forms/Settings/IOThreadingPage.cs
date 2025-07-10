@@ -5,7 +5,7 @@ using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class IOThreadingPage : UserControl, Interfaces.ISettingsPage
+public sealed partial class IOThreadingPage : UserControlCustom, Interfaces.ISettingsPage
 {
     /// <summary>
     /// Horrible hack, just set it to true when you want it to start doing the layout crap
