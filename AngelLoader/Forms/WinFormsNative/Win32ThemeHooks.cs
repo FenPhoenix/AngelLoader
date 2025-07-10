@@ -510,6 +510,12 @@ internal static class Win32ThemeHooks
         return PatBlt_Original!(hdc, x, y, w, h, rop);
     }
 
+    private static bool EqualsPhysically(this Color color1, Color color2) =>
+        color1.A == color2.A &&
+        color1.R == color2.R &&
+        color1.G == color2.G &&
+        color1.B == color2.B;
+
     private static int FillRect_Hooked(
         nint hdc,
         ref Native.RECT lprc,
@@ -519,16 +525,31 @@ internal static class Win32ThemeHooks
         {
             nint wnd = Native.WindowFromDC(hdc);
             Control? c = Control.FromHandle(wnd);
-            /*
-            @Wine: Fields on the text portion are now all the same bg color and not highlighted when selected.
-            We need to find out what the incoming brush is so we can adjust our bg color (and fg color for that
-            matter, probably) as needed.
-            */
             if (c is DateTimePicker dtp)
             {
-                nint brush = dtp.Enabled ? NativeBrush_LightBackground : NativeBrush_DarkBackground;
-                int result = FillRect_Original!(hdc, ref lprc, brush);
-                return result;
+                nint logBrushPtr = Marshal.AllocHGlobal(Marshal.SizeOf<Native.LOGBRUSH>());
+                try
+                {
+                    Native.GetObject(hbr, Marshal.SizeOf<Native.LOGBRUSH>(), logBrushPtr);
+                    Native.LOGBRUSH logBrush = Marshal.PtrToStructure<Native.LOGBRUSH>(logBrushPtr);
+                    Color color = ColorTranslator.FromWin32((int)logBrush.lbColor);
+                    nint brush;
+                    // Wine doesn't render any selection highlight when not focused, so we don't need to either
+                    if (color.EqualsPhysically(SystemColors.ActiveCaption))
+                    {
+                        brush = NativeBrush_BlueSelection;
+                    }
+                    else
+                    {
+                        brush = dtp.Enabled ? NativeBrush_LightBackground : NativeBrush_DarkBackground;
+                    }
+                    int result = FillRect_Original!(hdc, ref lprc, brush);
+                    return result;
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(logBrushPtr);
+                }
             }
         }
 
@@ -641,6 +662,7 @@ internal static class Win32ThemeHooks
 
     private static readonly nint NativeBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
     private static readonly nint NativeBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+    private static readonly nint NativeBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
 
     #endregion
 

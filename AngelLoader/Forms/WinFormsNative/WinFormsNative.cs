@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using JetBrains.Annotations;
@@ -53,6 +54,17 @@ internal static class Native
 
     [DllImport("gdi32.dll")]
     internal static extern int SetTextColor(nint hdc, int crColor);
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct LOGBRUSH
+    {
+        public uint lbStyle;
+        public UInt32 lbColor;
+        public HatchStyle lbHatch;
+    }
+
+    [DllImport("gdi32.dll")]
+    internal static extern int GetObject(nint hgdiobj, int cbBuffer, nint lpvObject);
 
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
