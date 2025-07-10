@@ -40,6 +40,8 @@ internal static class Win32ThemeHooks
         DrawThemeBackground,
         GetThemeColor,
         PatBlt,
+        FillRect,
+        DrawTextW,
         Length,
     }
 
@@ -134,6 +136,37 @@ internal static class Win32ThemeHooks
 
     #endregion
 
+    #region FillRect
+
+    private static LocalHook? _fillRectHook;
+
+    private static FillRectDelegate? FillRect_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    private delegate int FillRectDelegate(
+        nint hdc,
+        ref Native.RECT lprc,
+        nint hbr);
+
+    #endregion
+
+    #region DrawTextW
+
+    private static LocalHook? _drawTextWHook;
+
+    private static DrawTextWDelegate? DrawTextW_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    private delegate int DrawTextWDelegate(
+        nint hDC,
+        [MarshalAs(UnmanagedType.LPWStr)]
+        string lpszString,
+        int nCount,
+        ref Native.RECT lpRect,
+        int nFormat);
+
+    #endregion
+
     #endregion
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -146,6 +179,8 @@ internal static class Win32ThemeHooks
         new("uxtheme.dll", "DrawThemeBackground"),
         new("uxtheme.dll", "GetThemeColor"),
         new("gdi32.dll", "PatBlt"),
+        new("user32.dll", "FillRect"),
+        new("user32.dll", "DrawTextW"),
     };
 
     private static HookData GetHookData(HookType hookType) => _hookData[(int)hookType];
@@ -195,7 +230,17 @@ internal static class Win32ThemeHooks
 
             if (WinVersion.IsWine)
             {
-                (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(HookType.PatBlt, PatBlt_Hooked);
+                (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(
+                    HookType.PatBlt,
+                    PatBlt_Hooked);
+
+                (_fillRectHook, FillRect_Original) = InstallHook<FillRectDelegate>(
+                    HookType.FillRect,
+                    FillRect_Hooked);
+
+                (_drawTextWHook, DrawTextW_Original) = InstallHook<DrawTextWDelegate>(
+                    HookType.DrawTextW,
+                    DrawTextW_Hooked);
             }
         }
         catch
@@ -210,6 +255,8 @@ internal static class Win32ThemeHooks
             if (WinVersion.IsWine)
             {
                 _patBltHook?.Dispose();
+                _fillRectHook?.Dispose();
+                _drawTextWHook?.Dispose();
             }
         }
         finally
@@ -238,13 +285,15 @@ internal static class Win32ThemeHooks
 
             _procAddresses[(int)HookType.GetSysColor] = GetProcAddressForHookData(GetHookData(HookType.GetSysColor));
 #if !X64
-        _procAddresses[(int)HookType.GetSysColorBrush] = GetProcAddressForHookData(GetHookData(HookType.GetSysColorBrush));
+            _procAddresses[(int)HookType.GetSysColorBrush] = GetProcAddressForHookData(GetHookData(HookType.GetSysColorBrush));
 #endif
             _procAddresses[(int)HookType.DrawThemeBackground] = GetProcAddressForHookData(GetHookData(HookType.DrawThemeBackground));
             _procAddresses[(int)HookType.GetThemeColor] = GetProcAddressForHookData(GetHookData(HookType.GetThemeColor));
             if (WinVersion.IsWine)
             {
                 _procAddresses[(int)HookType.PatBlt] = GetProcAddressForHookData(GetHookData(HookType.PatBlt));
+                _procAddresses[(int)HookType.FillRect] = GetProcAddressForHookData(GetHookData(HookType.FillRect));
+                _procAddresses[(int)HookType.DrawTextW] = GetProcAddressForHookData(GetHookData(HookType.DrawTextW));
             }
 
             _hooksPreloaded = true;
@@ -463,6 +512,57 @@ internal static class Win32ThemeHooks
         return PatBlt_Original!(hdc, x, y, w, h, rop);
     }
 
+    private static int FillRect_Hooked(
+        nint hdc,
+        ref Native.RECT lprc,
+        nint hbr)
+    {
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode)
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            if (c is DateTimePicker dtp)
+            {
+                nint brush = dtp.Enabled ? NativeBrush_LightBackground : NativeBrush_DarkBackground;
+                int result = FillRect_Original!(hdc, ref lprc, brush);
+                return result;
+            }
+        }
+
+        return FillRect_Original!(hdc, ref lprc, hbr);
+    }
+
+    private static int DrawTextW_Hooked(
+        nint hdc,
+        [MarshalAs(UnmanagedType.LPWStr)]
+        string lpszString,
+        int nCount,
+        ref Native.RECT lpRect,
+        int nFormat)
+    {
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode)
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            // If it's disabled, just it render the default disabled color, as it looks fine
+            if (c is DateTimePicker { Enabled: true })
+            {
+                int prevColor = Native.SetTextColor(hdc, ColorTranslator.ToWin32(DarkColors.LightText));
+                try
+                {
+                    int result = DrawTextW_Original!(hdc, lpszString, nCount, ref lpRect, nFormat);
+                    return result;
+                }
+                finally
+                {
+                    Native.SetTextColor(hdc, prevColor);
+                }
+            }
+        }
+
+        return DrawTextW_Original!(hdc, lpszString, nCount, ref lpRect, nFormat);
+    }
+
     #endregion
 
     #endregion
@@ -537,6 +637,7 @@ internal static class Win32ThemeHooks
 #endif
 
     private static readonly nint NativeBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+    private static readonly nint NativeBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
 
     #endregion
 

@@ -51,6 +51,9 @@ internal static class Native
     [DllImport("gdi32.dll")]
     internal static extern nint GetCurrentObject(nint hdc, uint type);
 
+    [DllImport("gdi32.dll")]
+    internal static extern int SetTextColor(nint hdc, int crColor);
+
     [PublicAPI]
     [StructLayout(LayoutKind.Sequential)]
     public readonly struct RECT
