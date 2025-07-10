@@ -10,7 +10,7 @@ partial class MessageBoxCustomForm
         this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.MainFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.MainFLP = new System.Windows.Forms.Panel();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
         this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
@@ -30,6 +30,7 @@ partial class MessageBoxCustomForm
         // MessageTopLabel
         // 
         this.MessageTopLabel.AutoSize = true;
+        this.MessageTopLabel.Location = new System.Drawing.Point(0, 18);
         this.MessageTopLabel.Margin = new System.Windows.Forms.Padding(0, 18, 3, 21);
         // 
         // IconPictureBox
@@ -61,13 +62,13 @@ partial class MessageBoxCustomForm
         this.MainFLP.Controls.Add(this.SelectButtonsFLP);
         this.MainFLP.Controls.Add(this.MessageBottomLabel);
         this.MainFLP.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.MainFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
         this.MainFLP.Margin = new System.Windows.Forms.Padding(0);
         this.MainFLP.Size = new System.Drawing.Size(510, 294);
         this.MainFLP.TabIndex = 0;
         // 
         // ChoiceListBox
         // 
+        this.ChoiceListBox.Location = new System.Drawing.Point(0, 55);
         this.ChoiceListBox.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
         this.ChoiceListBox.MultiSelect = true;
         this.ChoiceListBox.Scrollable = true;
@@ -78,6 +79,7 @@ partial class MessageBoxCustomForm
         // 
         this.SelectButtonsFLP.Controls.Add(this.SelectAllButton);
         this.SelectButtonsFLP.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+        this.SelectButtonsFLP.Location = new System.Drawing.Point(0, 150);
         this.SelectButtonsFLP.Margin = new System.Windows.Forms.Padding(0);
         this.SelectButtonsFLP.Size = new System.Drawing.Size(493, 23);
         this.SelectButtonsFLP.TabIndex = 2;
@@ -91,6 +93,7 @@ partial class MessageBoxCustomForm
         // MessageBottomLabel
         // 
         this.MessageBottomLabel.AutoSize = true;
+        this.MessageBottomLabel.Location = new System.Drawing.Point(0, 176);
         this.MessageBottomLabel.Margin = new System.Windows.Forms.Padding(0, 3, 3, 21);
         // 
         // OuterTLP

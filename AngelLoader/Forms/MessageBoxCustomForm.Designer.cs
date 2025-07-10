@@ -34,7 +34,7 @@ partial class MessageBoxCustomForm
         this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.MainFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.MainFLP = new System.Windows.Forms.Panel();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
         this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
@@ -95,7 +95,6 @@ partial class MessageBoxCustomForm
         this.MainFLP.Controls.Add(this.SelectButtonsFLP);
         this.MainFLP.Controls.Add(this.MessageBottomLabel);
         this.MainFLP.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.MainFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
         this.MainFLP.Location = new System.Drawing.Point(60, 0);
         this.MainFLP.Margin = new System.Windows.Forms.Padding(0);
         this.MainFLP.Name = "MainFLP";
@@ -227,7 +226,7 @@ partial class MessageBoxCustomForm
     private System.Windows.Forms.TableLayoutPanel ContentTLP;
     private System.Windows.Forms.TableLayoutPanel OuterTLP;
     private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private System.Windows.Forms.FlowLayoutPanel MainFLP;
+    private System.Windows.Forms.Panel MainFLP;
     [AL_Common.FenGenAttributes.FenGenForceRemoveSizeAttribute]
     private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
     private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
