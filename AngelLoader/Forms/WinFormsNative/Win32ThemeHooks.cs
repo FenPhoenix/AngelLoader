@@ -11,7 +11,7 @@ Here's the deal with this thing:
  the [SuppressGCTransition] attribute on GetSysColor().
 */
 
-// @Wine: Test hooks with x86 app version on a 32-bit Wine prefix - make sure hooks all work
+// @Wine: 2025/07/11, tested all hooks work in 32-bit Wine
 
 using System;
 using System.Collections.Generic;
