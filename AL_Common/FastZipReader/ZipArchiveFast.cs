@@ -105,6 +105,8 @@ public sealed class ZipArchiveFast : IDisposable
         bool useEntryNameEncodingCodePath,
         bool ignoreNonBaseDirFileNames)
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         // Matching Framework
         if (useEntryNameEncodingCodePath &&
             entryNameEncoding != null &&

@@ -707,6 +707,8 @@ public sealed class Scanner : IDisposable
         ReadOnlyDataContext readOnlyDataContext,
         ScannerTDMContext tdmContext)
     {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
         _fullScanOptions = fullScanOptions;
 
         _ctx = readOnlyDataContext;

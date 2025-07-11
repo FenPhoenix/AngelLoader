@@ -5,9 +5,7 @@ namespace SharpCompress.Common;
 
 public static class ArchiveEncoding
 {
-#if !NETFRAMEWORK
     static ArchiveEncoding() => Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
 
     public static string Decode(byte[] bytes) => Decode(bytes, 0, bytes.Length);
 

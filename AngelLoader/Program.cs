@@ -64,6 +64,13 @@ internal static class Program
         System.Diagnostics.Trace.Listeners.Add(fl);
 #endif
 
+        /*
+        @Wine: We include this dependency solely for Wine, which requires it unless the user were to install real
+        .NET. Windows doesn't require this, but it does no harm - except bloating us up by 700k, but such are the
+        breaks. Other tradeoffs are substantially worse for user experience and reliability.
+        */
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+
 #if ENABLE_RTF_VISUAL_TEST_FORM && (DEBUG || Release_Testing)
         Forms.RTF_Visual_Test_Form.LoadIfCommandLineArgsArePresent();
         return;

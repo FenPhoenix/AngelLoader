@@ -32,7 +32,6 @@ del /F "%TargetDir%*xunit*.dll"
 del /F "%TargetDir%*TestPlatform*.dll"
 del /F "%TargetDir%testhost.dll"
 del /F "%TargetDir%EasyLoad*.dll"
-del /F "%TargetDir%System.Text.Encoding.CodePages.dll"
 
 if %PlatformName% == x86 (
 	del /F "%TargetDir%EasyHook64.dll"
