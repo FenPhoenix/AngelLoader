@@ -2147,7 +2147,7 @@ internal static partial class FMInstallAndPlay
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (Config.ConvertWAVsTo16BitOnInstall)
+                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) && Config.ConvertWAVsTo16BitOnInstall)
                 {
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,

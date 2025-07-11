@@ -932,7 +932,8 @@ internal static partial class Ini
 
     private static void Config_ExcludeSoundDirsFromBackupAndRestore_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.ExcludeSoundDirsFromBackupAndRestore = valTrimmed.EqualsTrue();
+        // @ND128: Don't save/restore this option for now
+        //config.ExcludeSoundDirsFromBackupAndRestore = valTrimmed.EqualsTrue();
     }
 
     private static void Config_ShowWineTricksMessageIfApplicable_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -1573,7 +1574,8 @@ internal static partial class Ini
         sw.AppendLine();
 
         sw.Append("ShowPresetTags=").AppendLine(config.ShowPresetTags);
-        sw.Append("ExcludeSoundDirsFromBackupAndRestore=").AppendLine(config.ExcludeSoundDirsFromBackupAndRestore);
+        // @ND128: Don't save/restore this option for now
+        //sw.Append("ExcludeSoundDirsFromBackupAndRestore=").AppendLine(config.ExcludeSoundDirsFromBackupAndRestore);
 
         sw.Append("ShowWineTricksMessageIfApplicable=").AppendLine(config.ShowWineTricksMessageIfApplicable);
     }
