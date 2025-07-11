@@ -1181,20 +1181,19 @@ public sealed partial class MainForm : DarkFormBase,
             // Just in case, to make sure the backing dll is loaded before doing the dll check
             _ = ReadmeRichTextBox.Handle;
 
-            // @Wine: Make the names be in a textbox for easy copy-pasting, and then also say which of them are
-            // and aren't installed, for clarity.
+            // @Wine: Also say which of them are and aren't installed, for clarity?
             if (!WinVersion.Wine_NativeDllsInstalled())
             {
-                (_, bool dontShowAgain) = Core.Dialogs.ShowMultiChoiceDialog(
-                    message:
-                    LText.AlertMessages.Wine_DllUpgradeMessage1 + $"{NL}" + $"{NL}" +
+                (_, bool dontShowAgain) = Core.Dialogs.ShowTextBoxDialog(
+                    messageTop: LText.AlertMessages.Wine_DllUpgradeMessage1,
+                    messageTextBox:
                     "gdiplus" + $"{NL}" +
-                    "msftedit" + $"{NL}" + $"{NL}" +
-                    LText.AlertMessages.Wine_DllUpgradeMessage2,
+                    "msftedit",
+                    messageBottom: LText.AlertMessages.Wine_DllUpgradeMessage2,
                     // Product name, doesn't need translation
                     title: "Wine",
                     icon: MBoxIcon.Information,
-                    yes: LText.Global.OK,
+                    okText: LText.Global.OK,
                     checkBoxText: LText.AlertMessages.DontShowAgain
                 );
 

@@ -134,6 +134,19 @@ public interface IDialogs
         bool okIsDangerous,
         string[] choiceStrings,
         bool multiSelectionAllowed);
+
+    (MBoxButton ButtonPressed, bool CheckBoxChecked)
+    ShowTextBoxDialog(
+        string messageTop,
+        string messageTextBox,
+        string messageBottom,
+        string title,
+        MBoxIcon icon = MBoxIcon.None,
+        string? okText = null,
+        string? cancelText = null,
+        bool okIsDangerous = false,
+        string? checkBoxText = null,
+        bool checkBoxChecked = false);
 }
 
 public interface IView : ISettingsChangeableView

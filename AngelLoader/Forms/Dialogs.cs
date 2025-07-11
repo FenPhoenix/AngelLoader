@@ -118,6 +118,40 @@ internal sealed class Dialogs : IDialogs
             return (result == DialogResult.OK, d.SelectedItems);
         });
 
+    public (MBoxButton ButtonPressed, bool CheckBoxChecked)
+    ShowTextBoxDialog(
+        string messageTop,
+        string messageTextBox,
+        string messageBottom,
+        string title,
+        MBoxIcon icon = MBoxIcon.None,
+        string? okText = null,
+        string? cancelText = null,
+        bool okIsDangerous = false,
+        string? checkBoxText = null,
+        bool checkBoxChecked = false) =>
+        ((MBoxButton, bool))InvokeIfViewExists(() =>
+        {
+            using MessageBoxWithTextBoxForm d = new(
+                messageTop: messageTop,
+                messageTextBox: messageTextBox,
+                messageBottom: messageBottom,
+                title: title,
+                icon: GetIcon(icon),
+                okText: okText,
+                cancelText: cancelText,
+                okIsDangerous: okIsDangerous,
+                checkBoxText: checkBoxText,
+                checkBoxChecked: checkBoxChecked
+            );
+
+            DialogResult result = FormsViewEnvironment.ViewCreated
+                ? d.ShowDialogDark(FormsViewEnvironment.ViewInternal)
+                : d.ShowDialogDark();
+
+            return (DialogResultToMBoxButton(result), d.IsVerificationChecked);
+        });
+
     public void ShowError(
         string message,
         string? title = null,
