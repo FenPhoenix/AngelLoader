@@ -63,8 +63,8 @@ public sealed partial class ProgressBox : UserControlCustom, IDarkable
     internal static string DefaultCancelMessage => LText.Global.Cancel;
     internal const ProgressType DefaultProgressType = ProgressType.Determinate;
 
-    private const int _regularHeight = 128;
-    private const int _extendedHeight = 192;
+    private readonly int _regularHeight;
+    private readonly int _extendedHeight;
 
     private readonly int _defaultWidth;
 
@@ -136,6 +136,9 @@ public sealed partial class ProgressBox : UserControlCustom, IDarkable
 #endif
 
         _defaultWidth = Width;
+        // Fix yet another Wine layout breakage
+        _regularHeight = MainProgressBar.Bottom + Cancel_Button.Height + 26;
+        _extendedHeight = SubProgressBar.Bottom + Cancel_Button.Height + 26;
 
         // ReSharper disable once RedundantExplicitArraySize
         MessageItems = new MessageItem[5]
