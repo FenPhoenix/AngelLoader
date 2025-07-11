@@ -797,6 +797,48 @@ internal static class Native
 
     #endregion
 
+    #region Progress bar parts
+
+    // PROGRESSPARTS
+    internal const int PP_BAR = 1;
+    internal const int PP_BARVERT = 2;
+    internal const int PP_CHUNK = 3;
+    internal const int PP_CHUNKVERT = 4;
+    internal const int PP_FILL = 5;
+    internal const int PP_FILLVERT = 6;
+    internal const int PP_PULSEOVERLAY = 7;
+    internal const int PP_MOVEOVERLAY = 8;
+    internal const int PP_PULSEOVERLAYVERT = 9;
+    internal const int PP_MOVEOVERLAYVERT = 10;
+    internal const int PP_TRANSPARENTBAR = 11;
+    internal const int PP_TRANSPARENTBARVERT = 12;
+
+    #endregion
+
+    #region Progress bar states
+
+    // TRANSPARENTBARSTATES
+    internal const int PBBS_NORMAL = 1;
+    internal const int PBBS_PARTIAL = 2;
+
+    // TRANSPARENTBARVERTSTATES
+    internal const int PBBVS_NORMAL = 1;
+    internal const int PBBVS_PARTIAL = 2;
+
+    // FILLSTATES
+    internal const int PBFS_NORMAL = 1;
+    internal const int PBFS_ERROR = 2;
+    internal const int PBFS_PAUSED = 3;
+    internal const int PBFS_PARTIAL = 4;
+
+    // FILLVERTSTATES
+    internal const int PBFVS_NORMAL = 1;
+    internal const int PBFVS_ERROR = 2;
+    internal const int PBFVS_PAUSED = 3;
+    internal const int PBFVS_PARTIAL = 4;
+
+    #endregion
+
     [DllImport("uxtheme.dll", ExactSpelling = true, CharSet = CharSet.Unicode)]
     internal static extern int SetWindowTheme(nint hWnd, string appname, string idlist);
 

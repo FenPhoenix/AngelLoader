@@ -102,7 +102,7 @@ internal static class Win32ThemeHooks
         int partId,
         int stateId,
         ref Native.RECT pRect,
-        ref Native.RECT pClipRect);
+        nint pClipRect);
 
     #endregion
 
@@ -337,7 +337,7 @@ internal static class Win32ThemeHooks
         int iPartId,
         int iStateId,
         ref Native.RECT pRect,
-        ref Native.RECT pClipRect)
+        nint pClipRect)
     {
         const int success = 0;
         bool succeeded = false;
@@ -364,11 +364,15 @@ internal static class Win32ThemeHooks
             {
                 succeeded = TrackBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
             }
+            else if (hTheme == _hThemes[(int)RenderedControl.Progress] && ProgressBarEnabled())
+            {
+                succeeded = ProgressBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect, pClipRect);
+            }
         }
 
         return succeeded
             ? success
-            : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
+            : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, pClipRect);
     }
 
     private static int GetThemeColor_Hooked(
@@ -698,7 +702,6 @@ internal static class Win32ThemeHooks
 
     #region Arrays
 
-    private const int _renderedControlCount = 5;
     private enum RenderedControl
     {
         ScrollBar,
@@ -706,17 +709,21 @@ internal static class Win32ThemeHooks
         TreeView,
         TabScrollButtons,
         Trackbar,
+        Progress,
+        Length,
     }
 
-    private static readonly nint[] _hThemes = new nint[_renderedControlCount];
+    private static readonly nint[] _hThemes = new nint[(int)RenderedControl.Length];
 
-    private static readonly string[] _clSids =
+    // ReSharper disable once RedundantExplicitArraySize
+    private static readonly string[] _clSids = new string[(int)RenderedControl.Length]
     {
         "Scrollbar",
         "ToolTip",
         "TreeView",
         "Spin",
         "Trackbar",
+        "Progress",
     };
 
     #endregion
@@ -725,7 +732,7 @@ internal static class Win32ThemeHooks
 
     private static void ReloadHThemes()
     {
-        for (int i = 0; i < _renderedControlCount; i++)
+        for (int i = 0; i < (int)RenderedControl.Length; i++)
         {
             Native.CloseThemeData(_hThemes[i]);
             using Control c = new();
@@ -1276,6 +1283,57 @@ internal static class Win32ThemeHooks
             pen: Global.Config.DarkMode ? DarkColors.LightTextPen : SystemPens.WindowText);
 
         return true;
+    }
+
+    #endregion
+
+    #region Progress bar
+
+    private static bool ProgressBarEnabled() => Global.Config.DarkMode && WinVersion.IsWine;
+
+    private static bool ProgressBar_TryDrawThemeBackground(
+        nint hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect,
+        nint pClipRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        Rectangle rect = pRect.ToRectangle();
+
+        /*
+        PP_FILL = foreground
+        PP_BAR = background
+        */
+
+        switch (iPartId)
+        {
+            case Native.PP_FILL:
+            case Native.PP_FILLVERT:
+            {
+                g.FillRectangle(DarkColors.BlueHighlightBrush, rect);
+                return true;
+            }
+            case Native.PP_BAR:
+            case Native.PP_BARVERT:
+            {
+                if (pClipRect != 0)
+                {
+                    Native.RECT clipRectNative = Marshal.PtrToStructure<Native.RECT>(pClipRect);
+                    Rectangle clipRect = clipRectNative.ToRectangle();
+                    g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, clipRect);
+                }
+                else
+                {
+                    Rectangle modRect = rect with { Width = rect.Width - 1, Height = rect.Height - 1 };
+                    g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, modRect);
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion
