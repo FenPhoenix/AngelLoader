@@ -1,5 +1,8 @@
-﻿//@LangUpdate: Comment out for final
+﻿//#define ENABLE
+//@LangUpdate: Comment out for final
 #define TESTING
+
+#if ENABLE
 
 using System;
 
@@ -32,3 +35,4 @@ internal static class LangUpdate
     private const string _langLatestVersionFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _langUpdatesRepoDir + "/latest_version.txt";
     private const string _langVersionsFile = "https://fenphoenix.github.io/AngelLoaderUpdates/" + _langUpdatesRepoDir + "/versions.ini";
 }
+#endif
