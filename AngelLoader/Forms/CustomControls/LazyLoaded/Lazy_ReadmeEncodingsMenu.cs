@@ -400,7 +400,7 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
                 if (encItem.Field >= 0)
                 {
                     _menuItemsDict[encItem.Field] = encItem;
-                    Encoding enc = Encoding.GetEncoding(encItem.Field);
+                    Encoding enc = GetEncoding_Arbitrary(encItem.Field);
                     encItem.Text = enc.EncodingName + " (" + enc.CodePage.ToStrCur() + ")";
                     encItem.CheckOnClick = true;
                 }

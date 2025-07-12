@@ -2954,7 +2954,7 @@ public sealed partial class RtfToTextConverter
             ? result
             // NOTE: This can throw, but all calls to this are wrapped in try-catch blocks.
             // TODO: But weird that we don't put the try-catch here and just return null...?
-            : _encodings.AddAndReturn(codePage, Encoding.GetEncoding(codePage)),
+            : _encodings.AddAndReturn(codePage, GetEncoding_Arbitrary(codePage)),
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

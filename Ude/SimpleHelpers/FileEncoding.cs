@@ -104,7 +104,7 @@ public sealed class FileEncoding
             }
 
             Charset charset = GetCurrentEncoding();
-            return charset == Charset.Null ? null : Encoding.GetEncoding(CharsetDetector.GetCharsetCodePage(charset));
+            return charset == Charset.Null ? null : GetEncoding_Arbitrary(CharsetDetector.GetCharsetCodePage(charset));
         }
         catch
         {

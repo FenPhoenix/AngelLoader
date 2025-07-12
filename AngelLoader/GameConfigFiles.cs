@@ -102,7 +102,7 @@ internal static class GameConfigFiles
         using FileStream_Read_WithRentedBuffer fs = new(camModIni);
         using (StreamReaderCustom.SRC_Wrapper sr = new(
                    stream: fs.FileStream,
-                   encoding: Encoding.Default,
+                   encoding: GetLegacyDefaultEncoding(),
                    detectEncodingFromByteOrderMarks: true,
                    sr: new StreamReaderCustom()))
         {

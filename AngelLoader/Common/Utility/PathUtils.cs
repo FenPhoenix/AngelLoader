@@ -285,7 +285,7 @@ public static partial class Utils
     {
         try
         {
-            lines = File_ReadAllLines_List(file, Encoding.Default, true);
+            lines = File_ReadAllLines_List(file, GetLegacyDefaultEncoding(), true);
             return true;
         }
         catch (Exception ex)
@@ -301,7 +301,7 @@ public static partial class Utils
         try
         {
             // @FileStreamNET: Implicit use of FileStream
-            File.WriteAllLines(file, lines, Encoding.Default);
+            File.WriteAllLines(file, lines, GetLegacyDefaultEncoding());
             exception = null;
             return true;
         }
