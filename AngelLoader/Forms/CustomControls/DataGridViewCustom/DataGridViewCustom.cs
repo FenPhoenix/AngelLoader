@@ -680,7 +680,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
                 Images.FitRectInBounds(
                     e.Graphics,
-                    Images.PinGPath.GetBounds(),
+                    Images.PinGPathBounds,
                     pinGlyphRect
                 );
                 e.Graphics.FillPath(foreColorBrush, Images.PinGPath);

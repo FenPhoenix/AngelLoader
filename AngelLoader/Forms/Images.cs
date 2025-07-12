@@ -129,6 +129,10 @@ public static class Images
     private static GraphicsPath? _pinGPath;
     internal static GraphicsPath PinGPath => _pinGPath ??= MakeGraphicsPath(_pinPoints, _pinTypes);
 
+    // Stupid micro-optimization, because we call this a lot potentially
+    private static RectangleF? _pinGPathBounds;
+    internal static RectangleF PinGPathBounds => _pinGPathBounds ??= PinGPath.GetBounds();
+
     #region Magnifying glass
 
     /*
@@ -163,6 +167,10 @@ public static class Images
 
     private static GraphicsPath? _magnifierEmptyGPath;
     private static GraphicsPath MagnifierEmptyGPath => _magnifierEmptyGPath ??= MakeGraphicsPath(_magnifierEmptyPoints, _magnifierEmptyTypes);
+
+    // Stupid micro-optimization, because we call this a lot potentially
+    private static RectangleF? _magnifierEmptyGPathBounds;
+    private static RectangleF MagnifierEmptyGPathBounds => _magnifierEmptyGPathBounds ??= MagnifierEmptyGPath.GetBounds();
 
     #endregion
 
@@ -1914,7 +1922,7 @@ public static class Images
 
         FitRectInBounds(
             e.Graphics,
-            MagnifierEmptyGPath.GetBounds(),
+            MagnifierEmptyGPathBounds,
             new RectangleF(
                 (cr.X + 3f),//- (cr.Height - 4),
                 cr.Y + 3f,
