@@ -4508,8 +4508,16 @@ public sealed partial class MainForm : DarkFormBase,
     // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
     internal void ReadmeArea_MouseLeave(object sender, EventArgs e)
     {
-        nint hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
-        if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+        /*
+        @Wine: Unfortunately, this causes the readme chooser dropdown premature closing (among possibly other
+        things?). So we'll have to take the slight sacrifice of the readme not hiding when the mouse moves
+        out of the window or whatever, for the far more important benefit of fixing the readme auto-closing.
+        */
+        if (!WinVersion.IsWine)
+        {
+            nint hWnd = Native.WindowFromPoint(Native.GetCursorPosition_Fast());
+            if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+        }
     }
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
