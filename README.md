@@ -32,7 +32,7 @@ AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, Sy
 - Plays nice with other loaders: AngelLoader doesn't store any .dlls or data files in your game folders, making it truly portable and non-intrusive
 
 ## About Wine
-AngelLoader can run on Wine, but there will be imperfections. A best effort is made to work around Wine bugs, but note that these are _Wine_ bugs, not AngelLoader bugs, and some of them can't be fixed or I don't know to fix them or if I can fix them.
+AngelLoader can run on Wine, but there will be imperfections. A best effort is made to work around Wine bugs, but note that these are _Wine_ bugs, not AngelLoader bugs, and some of them can't be fixed or I don't know how to fix them or if I can fix them.
 
 - It's recommended to install `gdiplus` through winetricks. This will fix the garbled rendering of certain images on the UI.
 - Wine's RichTextBox is rudimentary and doesn't display images. You can install `msftedit` through winetricks to improve this, **BUT** then it will crash if asked to display readmes with certain non-ASCII characters, so it may not be a good trade.
