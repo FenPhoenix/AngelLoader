@@ -107,6 +107,10 @@ internal static class WinVersion
     /// <returns></returns>
     internal static bool Wine_NativeDllsInstalled()
     {
+        // @Wine: Since msftedit crashes on random non-ASCII chars whenever it feels like it, let's just disable
+        // this whole clever garbage for now...
+        return true;
+
         if (!IsWine) return true;
 
         return IsNativeMicrosoftDll("msftedit.dll") &&
