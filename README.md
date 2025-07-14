@@ -35,10 +35,10 @@ AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, Sy
 AngelLoader can run on Wine, but there will be imperfections. A best effort is made to work around Wine bugs, but note that these are _Wine_ bugs, not AngelLoader bugs, and some of them can't be fixed or I don't know how to fix them or if I can fix them.
 
 - It's recommended to install `gdiplus` through winetricks. This will fix the garbled rendering of certain images on the UI.
-- Wine's RichTextBox is rudimentary and doesn't display images. You can install `msftedit` through winetricks to improve this, **BUT** then it will crash if asked to display readmes with certain non-ASCII characters, so it may not be a good trade.
-- Wine's support for non-ASCII characters in general does not seem to be very good; non-English text may show up as square "unknown character" glyphs.
+- It's recommended to install `msftedit` and `ie8` through winetricks. This will upgrade the readme textbox to a much nicer one that's able to display images and so on. `ie8` is required because it includes the correct version of `msls31.dll` that `msftedit` is expecting, and fixes a crash that would otherwise occur when attempting to display non-ASCII characters.
+- Wine's support for non-ASCII characters in general does not seem to be as good as Windows; non-English text may show up as square "unknown character" glyphs.
 
-To guarantee a problem-free experience, you really need to use Windows. I know the arguments against Windows and I don't even really disagree with them, but that's the state of things. If you choose to use Linux and Wine, you're accepting that some of the very most basic things you'd expect to work may not work, and I may not be able to fix them. Decide for yourself with that knowledge.
+In short, the nature of Wine is that there may be issues, and I may or may not be able to fix them. Proceed with that knowledge.
 
 ## Installing
 Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/releases) and unzip it to a folder of your choice. For example, `C:\AngelLoader`. New versions can be extracted right on top of old ones: your data files will not be overwritten.
