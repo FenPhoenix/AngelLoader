@@ -876,7 +876,7 @@ internal sealed class LText_Class
         [FenGenBlankLine]
         internal readonly string AudioFiles_TabText = "Audio Files";
         [FenGenBlankLine]
-        internal readonly string AudioFiles_Global = "Global";
+        internal readonly string AudioFiles_AllNewDarkVersions = "All NewDark versions";
         internal readonly string AudioFiles_ConvertOGGsToWAVsOnInstall = "Convert .oggs to .wavs on install";
         internal readonly string AudioFiles_ConvertOGGsToWAVsOnInstall_ToolTip = "Fixes stuttering on some systems when loading .ogg files.";
         [FenGenBlankLine]

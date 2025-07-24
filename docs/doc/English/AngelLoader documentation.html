@@ -80,10 +80,11 @@
     <ul>
       <li><a href="#settings_paths_section">Paths</a></li>
       <li><a href="#settings_appearance_section">Appearance</a></li>
-      <li><a href="#settings_other_section">Other</a></li>
+      <li><a href="#settings_audio_files_section">Audio Files</a></li>
       <li><a href="#settings_thief_buddy_section">Thief Buddy</a></li>
       <li><a href="#settings_update_section">Update</a></li>
       <li><a href="#settings_io_threading_section">I/O Threading</a></li>
+      <li><a href="#settings_other_section">Other</a></li>
     </ul>
   </li>
   <li>
@@ -601,12 +602,9 @@ Some readmes may look better when displayed in a fixed-width font. This option o
 <p><img src="images/settings_appr_no_fm.png" /></p>
 Choose what style to display the "Play without FM" controls in.
 
-<h3><a id="settings_other_section"></a>Other section</h3>
+<h3><a id="settings_audio_files_section"></a>Audio Files section</h3>
 
-<p><img src="images/setup_other_tab.png" /></p>
-
-<h4><a id="use_old_mantle_for_olddark_fms"></a>Use old mantling for OldDark FMs</h4>
-NewDark introduced an improved mantling (ledge climbing) system that greatly increases reliability, but also allows mantling in many places that were not originally possible or intended in OldDark. Enabling this option will allow you to play OldDark missions "as intended" with regards to mantling. You can override this option per-FM in the <a href="#patch_tab">Patch & Customize tab</a>.
+<p><img src="images/settings_audio_files_tab.png" /></p>
 
 <h4><a id="settings_audio_conversion"></a>Convert .wavs to 16 bit on install</h4>
 Depending on your setup, .wav files that are higher than 16 bit may cause audio problems when played by Dark Engine games, such as intermittent or constant static noise. Converting all .wav files to 16 bit will solve this issue, and does not result in a perceptible loss of fidelity. Therefore, this option is turned on by default.<br>
@@ -616,32 +614,6 @@ Depending on your setup, .wav files that are higher than 16 bit may cause audio 
 Quoted from the FMSel manual:<br>
 <i>The game </i>can<i> play OGG files but it can under some circumstance cause short hiccups, on less powerful computers, performance heavy missions or with large OGG files. In such cases it might help to convert them to WAV files during installation</i>.<br>
 <b>This option has no effect for Thief: Deadly Shadows or The Dark Mod.</b>
-
-<h4>Installing FMs</h4>
-Choose whether to be prompted before installing FM(s).
-
-<h4>Confirm before uninstalling</h4>
-If this is enabled, you will be prompted for confirmation when uninstalling FM(s).
-
-<h4><a id="settings_backup"></a>Back up data when uninstalling</h4>
-When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
-
-<h4><a id="settings_web_search"></a>Web search</h4>
-Here you can edit the URLs that will be used when searching for FMs on the web. The string <code>$TITLE$</code> can be placed anywhere in a URL to insert the fan mission's title into the final string. For instance, if the URL was
-
-<p><code>https://www.google.com/search?q="$TITLE$" site:ttlg.com</code></p>
-
-<p>and the currently selected FM's title was "Broken Triad", then the final URL actually passed to your web browser would be:</p>
-
-<p><code>https://www.google.com/search?q="Broken Triad" site:ttlg.com</code></p>
-
-<h4><a id="settings_play_on_dc_or_enter_ask"></a>Play on double-click / Enter</h4>
-When you double-click on an FM in the list or press Enter when the list is focused,
-the selected FM will be played. Check this box to enable asking for confirmation in that case,
-to prevent accidental playing from a stray click or key press.
-
-<h4>Enable fuzzy search for title and author</h4>
-When this option is enabled, the title and author filters will match approximately. For example, "kinstory" would match "King's Story". When this option is disabled, the filters will match exact text only.
 
 <h3><a id="settings_thief_buddy_section"></a>Thief Buddy section</h3>
 
@@ -674,6 +646,39 @@ Modern solid-state drives can often handle many requests at once, and allowing m
 can greatly increase performance for these drives. This can result in faster installs, scans, etc.
         
 <p />
+
+<h3><a id="settings_other_section"></a>Other section</h3>
+
+<p><img src="images/setup_other_tab.png" /></p>
+
+<h4><a id="use_old_mantle_for_olddark_fms"></a>Use old mantling for OldDark FMs</h4>
+NewDark introduced an improved mantling (ledge climbing) system that greatly increases reliability, but also allows mantling in many places that were not originally possible or intended in OldDark. Enabling this option will allow you to play OldDark missions "as intended" with regards to mantling. You can override this option per-FM in the <a href="#patch_tab">Patch & Customize tab</a>.
+
+<h4>Installing FMs</h4>
+Choose whether to be prompted before installing FM(s).
+
+<h4>Confirm before uninstalling</h4>
+If this is enabled, you will be prompted for confirmation when uninstalling FM(s).
+
+<h4><a id="settings_backup"></a>Back up data when uninstalling</h4>
+When an FM is uninstalled, you will normally want to back up its saves and screenshots so they can be restored if you install it again. You can also choose to back up all changed files, in which case the backup will also include all files in the installed folder that have been added, removed, or modified as compared to the files in the archive. This is useful if you have added <a href="#dml_patches">.dml patches</a> to the FM, or made other modifications such as creating or modifying an fm.cfg file, fixing readables, etc. Because AngelLoader aims to be patch-friendly, this option is the default. You can also choose to always be asked if you want to back up data when uninstalling an FM.
+
+<h4><a id="settings_web_search"></a>Web search</h4>
+Here you can edit the URLs that will be used when searching for FMs on the web. The string <code>$TITLE$</code> can be placed anywhere in a URL to insert the fan mission's title into the final string. For instance, if the URL was
+
+<p><code>https://www.google.com/search?q="$TITLE$" site:ttlg.com</code></p>
+
+<p>and the currently selected FM's title was "Broken Triad", then the final URL actually passed to your web browser would be:</p>
+
+<p><code>https://www.google.com/search?q="Broken Triad" site:ttlg.com</code></p>
+
+<h4><a id="settings_play_on_dc_or_enter_ask"></a>Play on double-click / Enter</h4>
+When you double-click on an FM in the list or press Enter when the list is focused,
+the selected FM will be played. Check this box to enable asking for confirmation in that case,
+to prevent accidental playing from a stray click or key press.
+
+<h4>Enable fuzzy search for title and author</h4>
+When this option is enabled, the title and author filters will match approximately. For example, "kinstory" would match "King's Story". When this option is disabled, the filters will match exact text only.
 
 <hr>
 

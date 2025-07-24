@@ -1196,7 +1196,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 GetPageButton(SettingsTab.AudioFiles).Text = LText.SettingsWindow.AudioFiles_TabText;
 
-                AudioFilesPage.GlobalGroupBox.Text = LText.SettingsWindow.AudioFiles_Global;
+                AudioFilesPage.GlobalGroupBox.Text = LText.SettingsWindow.AudioFiles_AllNewDarkVersions;
 
                 AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall;
                 MainToolTip.SetToolTip(AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall_ToolTip);
