@@ -42,7 +42,7 @@ Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/r
 The latest version of AngelLoader runs well under Linux using Wine or Proton, with some tweaking:
 
 - For now, the **32-bit** version is easier to get up and running and recommended. Make sure to download the version with `x86` in the name from [latest release](https://github.com/FenPhoenix/AngelLoader/releases).
-- You will need to install the following dependencies into you AngelLoader prefix: `gdiplus`, `msftedit` and `msls31`. Use either winetricks for Wine, protontricks for Proton, or add them as dependencies in Bottles if using that.
+- You will need to install the following dependencies into your AngelLoader prefix: `gdiplus`, `msftedit` and `msls31`. Use either winetricks for Wine, protontricks for Proton, or add them as dependencies in Bottles if using that.
 
 That's it! Launch AngelLoader and you're good to go.
 
@@ -50,7 +50,7 @@ If you did want to use the **64-bit** version of AngelLoader, a few more steps a
 
   - Download [IE8-WindowsServer2003-x64-ENU.exe](https://download.microsoft.com/download/7/5/4/754D6601-662D-4E39-9788-6F90D8E5C097/IE8-WindowsServer2003-x64-ENU.exe)
   - Extract the exe using Ark, 7-zip or whatever archive program your system has.
-  - Copy `msls31.dll` from the extracted files to `drive_c/windows/system32` inside your prefix, overwritting what's there.
+  - Copy `msls31.dll` from the extracted files to `drive_c/windows/system32` inside your prefix, overwriting what's there.
 
   Alternatively, if you have access to an actual Windows 10/11 install, you can grab the dll from `C:\Windows\System32\msls31.dll` and copy it over.
 
