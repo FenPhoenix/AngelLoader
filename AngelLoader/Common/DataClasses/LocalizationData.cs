@@ -886,7 +886,7 @@ internal sealed class LText_Class
         internal readonly string AudioFiles_ConvertMP3sToWavOnInstall_NewDark_127 = "Convert .mp3s to .wavs on install (required)";
         [FenGenBlankLine]
         internal readonly string AudioFiles_NewDark_128 = "NewDark 1.28 and newer";
-        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_128 = "Convert .wavs to 16 bit on install (not required)";
+        internal readonly string AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_128 = "Convert .wavs to 16 bit on install (unnecessary)";
         internal readonly string AudioFiles_ConvertMP3sToWavOnInstall_NewDark_128 = "Convert .mp3s to .wavs on install";
         // @ND128: We might want a tooltip for mp3 conversion
         [FenGenBlankLine]
