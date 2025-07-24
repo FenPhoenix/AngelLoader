@@ -108,7 +108,6 @@ public static partial class Misc
             string[] array = new string[SettingsTabCount];
             array[(int)SettingsTab.Paths] = "#settings_paths_section";
             array[(int)SettingsTab.Appearance] = "#settings_appearance_section";
-            // @ND128: Add this section to the help file
             array[(int)SettingsTab.AudioFiles] = "#settings_audio_files_section";
             array[(int)SettingsTab.Other] = "#settings_other_section";
             array[(int)SettingsTab.ThiefBuddy] = "#settings_thief_buddy_section";
