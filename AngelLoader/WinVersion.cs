@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Text;
 using Microsoft.Win32;
 
 namespace AngelLoader;
@@ -98,45 +96,6 @@ internal static class WinVersion
             }
 
             return false;
-        }
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if the native Microsoft versions of msftedit.dll and gdiplus.dll are installed.
-    /// </summary>
-    /// <returns></returns>
-    internal static bool Wine_NativeDllsInstalled()
-    {
-        // @Wine: Since msftedit crashes on random non-ASCII chars whenever it feels like it, let's just disable
-        // this whole clever garbage for now...
-        return true;
-
-        if (!IsWine) return true;
-
-        return IsNativeMicrosoftDll("msftedit.dll") &&
-               IsNativeMicrosoftDll("gdiplus.dll");
-
-        static bool IsNativeMicrosoftDll(string dllName)
-        {
-            try
-            {
-                nint handle = NativeCommon.GetModuleHandleW(dllName);
-                if (handle == 0) return true;
-
-                StringBuilder sb = new(1024);
-                uint result = NativeCommon.GetModuleFileNameEx(Process.GetCurrentProcess().Handle, handle, sb, sb.Capacity);
-                if (result == 0) return true;
-
-                string fileName = sb.ToString();
-
-                var vi = FileVersionInfo.GetVersionInfo(fileName);
-
-                return vi.ProductName.ContainsI("Microsoft") && !vi.ProductName.ContainsI("Wine");
-            }
-            catch (Exception ex)
-            {
-                return true;
-            }
         }
     }
 }

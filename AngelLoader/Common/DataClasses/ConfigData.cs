@@ -477,8 +477,6 @@ public sealed class ConfigData
     // @ND128: Make this a UI option
     internal bool ExcludeSoundDirsFromBackupAndRestore = true;
 
-    internal bool ShowWineTricksMessageIfApplicable = true;
-
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now
     internal bool ForceWindowed;
