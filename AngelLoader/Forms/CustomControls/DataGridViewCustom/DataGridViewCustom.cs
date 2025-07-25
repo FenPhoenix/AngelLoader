@@ -636,7 +636,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         }
     }
 
-    private void DrawPinIconIfNeeded(DataGridViewCellPaintingEventArgs e, FanMission fm, Color bgBrushColor, bool isSelected)
+    private void DrawPinIconIfNeeded(DataGridViewCellPaintingEventArgs e, FanMission fm, bool isSelected)
     {
         bool fmShouldBePinned = fm.Pinned && !_owner.GetShowUnavailableFMsFilter();
         if (!fmShouldBePinned) return;
@@ -651,7 +651,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
              this.Columns[(int)Column.Author].Visible &&
              e.ColumnIndex == (int)Column.Author))
         {
-            float sliceOfCellHeight = (e.CellBounds.Height - 1) - (GetValueFromPercent_Float(36, e.CellBounds.Height));
+            float sliceOfCellHeight = (e.CellBounds.Height - 1) - GetValueFromPercent_Float(36, e.CellBounds.Height);
             RectangleF pinGlyphRect = new()
             {
                 X = e.CellBounds.Left + (sliceOfCellHeight / 4),
@@ -706,7 +706,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
             if (e is { RowIndex: > -1, CellStyle: not null })
             {
                 FanMission fm = GetFMFromIndex(e.RowIndex);
-                DrawPinIconIfNeeded(e, fm, Color.Empty, isSelected);
+                DrawPinIconIfNeeded(e, fm, isSelected);
             }
 
             return;
@@ -743,7 +743,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                     ? DarkColors.Fen_HighlightText
                     : DarkColors.Fen_DarkForeground;
 
-                DrawPinIconIfNeeded(e, fm, bgBrush.Color, isSelected);
+                DrawPinIconIfNeeded(e, fm, isSelected);
             }
 
             e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);
