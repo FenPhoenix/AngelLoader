@@ -108,20 +108,24 @@ public sealed partial class UpdateForm : DarkFormBase, IWaitCursorSettable, IDar
 
     protected override void OnKeyDown(KeyEventArgs e)
     {
-        switch (e.KeyCode)
+        if (e.KeyCode == Keys.Escape)
         {
-            case Keys.Escape:
-                Close();
-                break;
-            case Keys.Add or Keys.Oemplus:
-                ReleaseNotesRichTextBox.Zoom(Zoom.In);
-                break;
-            case Keys.Subtract or Keys.OemMinus:
-                ReleaseNotesRichTextBox.Zoom(Zoom.Out);
-                break;
-            case Keys.D0 or Keys.NumPad0:
-                ReleaseNotesRichTextBox.Zoom(Zoom.Reset);
-                break;
+            Close();
+        }
+        else if (e.Control)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Add or Keys.Oemplus:
+                    ReleaseNotesRichTextBox.Zoom(Zoom.In);
+                    break;
+                case Keys.Subtract or Keys.OemMinus:
+                    ReleaseNotesRichTextBox.Zoom(Zoom.Out);
+                    break;
+                case Keys.D0 or Keys.NumPad0:
+                    ReleaseNotesRichTextBox.Zoom(Zoom.Reset);
+                    break;
+            }
         }
 
         base.OnKeyDown(e);
