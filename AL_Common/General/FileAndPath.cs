@@ -676,7 +676,7 @@ public static partial class Common
 
     #region Path.GetRandomFileName() from modern .NET
 
-    private static ReadOnlySpan<byte> Base32Char => "abcdefghijklmnopqrstuvwxyz012345"u8;
+    private static readonly byte[] Base32Char = "abcdefghijklmnopqrstuvwxyz012345"u8.ToArray();
 
     /// <summary>
     /// Returns a cryptographically strong random 8.3 string that can be
