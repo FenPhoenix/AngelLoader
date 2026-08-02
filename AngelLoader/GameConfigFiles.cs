@@ -123,8 +123,11 @@ internal static class GameConfigFiles
                 string lineTS = line.TrimStart();
 
                 // Quick check; these lines will be checked more thoroughly when we go to use them
-                if (!langOnly && lineTS.ContainsI(key_fm_selector)) fmSelectorLines.Add(lineTS);
-                if (!langOnly && lineTS.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
+                if (!langOnly)
+                {
+                    if (lineTS.ContainsI(key_fm_selector)) fmSelectorLines.Add(lineTS);
+                    if (lineTS.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
+                }
 
                 if (lineTS.IsEmpty() || lineTS[0] == ';') continue;
 
