@@ -76,11 +76,13 @@ internal static class NativeCommon
     {
         try
         {
-            nint pidl = ILCreateFromPathW(filePath);
-            if (pidl == 0) return false;
+            nint pidl = 0;
 
             try
             {
+                pidl = ILCreateFromPathW(filePath);
+                if (pidl == 0) return false;
+
                 int result = SHOpenFolderAndSelectItems(pidl, 0, 0, 0);
                 return result == 0;
             }
