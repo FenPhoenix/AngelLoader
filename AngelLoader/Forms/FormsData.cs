@@ -54,6 +54,11 @@ is "in use" and will cause delete attempts (like FM uninstallation) to fail. So 
 of loading the file into a memory stream first, so it's only the memory stream being kept alive. This does
 mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
 displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
+
+TODO(MemoryImage): Update 2026-08-02:
+So it seems that it only holds the file handle when you call Image.FromFile(), but if you wrap a call to
+Image.FromStream() in a using block, it seems to load fine and doesn't hold the file handle. So we could just do
+that, but test to make sure there's no regressions.
 */
 public sealed class MemoryImage : IDisposable
 {
