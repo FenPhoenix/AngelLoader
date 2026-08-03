@@ -49,36 +49,41 @@ internal sealed class FMTabControlGroup(
 }
 
 /*
-Images loaded from files keep the file stream alive for their entire lifetime, insanely. This means the file
-is "in use" and will cause delete attempts (like FM uninstallation) to fail. So we need to use this workaround
-of loading the file into a memory stream first, so it's only the memory stream being kept alive. This does
-mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
-displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
+Images loaded with Image.FromFile() keep the file handle alive for their entire lifetime, insanely. This means
+the file is "in use" and will cause delete attempts (like FM uninstallation) to fail. However, images loaded with
+Image.FromStream() do NOT keep the file in use. This is completely non-obvious, because every other file API in
+the known universe has the path-taking version just construct and pass a stream to the stream-taking version
+internally. But this one, alone, calls two completely different Windows API functions internally, and the path-
+taking one holds the file handle for the life of the Image.
 
-TODO(MemoryImage): Update 2026-08-02:
-So it seems that it only holds the file handle when you call Image.FromFile(), but if you wrap a call to
-Image.FromStream() in a using block, it seems to load fine and doesn't hold the file handle. So we could just do
-that, but test to make sure there's no regressions.
+Because I, quite reasonably, assumed that Image.FromStream() would have the same issue as Image.FromFile(), I
+made this class to load the file into a MemoryStream and then pass that to Image.FromStream(), so that when it
+"held the stream open" (which it turns out it doesn't), it would only hold the MemoryStream and not the file,
+thereby avoiding the file being in use when we're trying to delete it.
+
+But yeah, turns out we can just load the file with Image.FromStream() and everything's fine.
+
+It's possible we might be able to get rid of this class entirely, but it also holds a Path string that gets
+cleared on Dispose() but then gets compared to another string later, potentially after disposal, and the whole
+thing is nasty and might break if we change it without going through the screenshots tab page code with a fine-
+toothed comb. So let's just keep the class for now, but save memory by not keeping a MemoryStream around.
 */
 public sealed class MemoryImage : IDisposable
 {
-    private readonly MemoryStream _memoryStream;
     public readonly Image Img;
     public string Path { get; private set; }
 
     public MemoryImage(string path)
     {
         Path = path;
-        byte[] bytes = File_ReadAllBytesFast(path);
-        _memoryStream = new MemoryStream(bytes);
-        Img = Image.FromStream(_memoryStream);
+        using FileStream_NET fileStream = File_OpenReadFast(path, FileStreamBufferSize);
+        Img = Image.FromStream(fileStream);
     }
 
     public void Dispose()
     {
         Path = "";
         Img.Dispose();
-        _memoryStream.Dispose();
     }
 }
 
