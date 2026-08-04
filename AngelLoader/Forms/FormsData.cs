@@ -79,6 +79,18 @@ public sealed class MemoryImage : IDisposable
         Img = Image.FromStream(fileStream);
     }
 
+    /// <summary>
+    /// Disposes and assigns a new one.
+    /// </summary>
+    /// <param name="memoryImage"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static MemoryImage Recreate(MemoryImage? memoryImage, string path)
+    {
+        memoryImage?.Dispose();
+        return new MemoryImage(path);
+    }
+
     public void Dispose()
     {
         Path = "";
