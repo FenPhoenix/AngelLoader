@@ -3963,10 +3963,57 @@ public sealed class Scanner : IDisposable
 
         if (value.IsEmpty()) return;
 
-        if (!titles.ContainsI(value))
+        /*
+        If we have titles like "A benevolent Master" and "A Benevolent Master", use the latter. We're currently
+        not outright converting titles to title-case ourselves, as that could get complicated and might result
+        in mistakes or inaccuracy, plus it might mess with author intent. This does mean we sometimes don't get
+        any perfectly title-cased titles and the best one is still only partially title-cased. We could go full
+        title-case conversion later if we decide that's a better idea.
+        */
+        for (int titlesI = 0; titlesI < titles.Count; titlesI++)
         {
-            titles.Add(value);
+            string title = titles[titlesI];
+            if (title.Equals(value))
+            {
+                return;
+            }
+            else if (title.EqualsI(value))
+            {
+                if (Utility.AnyConsecutiveAsciiUppercaseChars(value))
+                {
+                    return;
+                }
+
+                int existingTitlePoints = 0;
+                int incomingTitlePoints = 0;
+
+                for (int titleI = 0; titleI < title.Length; titleI++)
+                {
+                    char existingTitleChar = title[titleI];
+                    char incomingTitleChar = value[titleI];
+
+                    if (titleI == 0 || title[titleI - 1] == ' ')
+                    {
+                        if (existingTitleChar.IsAsciiUpper())
+                        {
+                            existingTitlePoints++;
+                        }
+                        if (incomingTitleChar.IsAsciiUpper())
+                        {
+                            incomingTitlePoints++;
+                        }
+                    }
+                }
+
+                if (incomingTitlePoints > existingTitlePoints)
+                {
+                    titles[titlesI] = value;
+                }
+                return;
+            }
         }
+
+        titles.Add(value);
     }
 
     private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)

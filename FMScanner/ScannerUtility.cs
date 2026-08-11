@@ -419,6 +419,29 @@ internal static class Utility
         return false;
     }
 
+    internal static bool AnyConsecutiveAsciiUppercaseChars(string value)
+    {
+        int consecutiveAsciiUppercaseCharCount = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+            if (c.IsAsciiUpper())
+            {
+                consecutiveAsciiUppercaseCharCount++;
+                if (consecutiveAsciiUppercaseCharCount > 1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                consecutiveAsciiUppercaseCharCount = 0;
+            }
+        }
+
+        return false;
+    }
+
     #region Acronym detection
 
     internal static void GetAcronym(string title, ListFast<char> acronymChars)
