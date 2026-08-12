@@ -1116,14 +1116,14 @@ public sealed class Scanner : IDisposable
         // in parallelized scenario.
         string tempRandomName = Path_GetRandomFileName().Trim();
 
-        bool nullAlreadyAdded = false;
+        bool blankAlreadyAdded = false;
 
         #region Init
 
         if (fm.Path.IsEmpty())
         {
             scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-            nullAlreadyAdded = true;
+            blankAlreadyAdded = true;
         }
         else
         {
@@ -1155,7 +1155,7 @@ public sealed class Scanner : IDisposable
                 {
                     Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
                     scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-                    nullAlreadyAdded = true;
+                    blankAlreadyAdded = true;
                 }
             }
             else
@@ -1180,8 +1180,8 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        // If there was an error then we already added null to the list. DON'T add any extra items!
-        if (!nullAlreadyAdded)
+        // If there was an error then we already added a blank item to the list. DON'T add any extra items!
+        if (!blankAlreadyAdded)
         {
             ScannedFMDataAndError scannedFMAndError = new(fm.OriginalIndex);
             ScanOptions? _tempScanOptions = null;
