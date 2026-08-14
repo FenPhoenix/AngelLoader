@@ -133,6 +133,7 @@ public sealed class ReadOnlyDataContext
         new('\x2013', '-'),
         new('\x2018', '\''),
         new('\x2019', '\''),
+        new('\xB4', '\''),
         new('\x201C', '"'),
         new('\x201D', '"'),
     };
