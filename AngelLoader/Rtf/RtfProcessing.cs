@@ -92,7 +92,7 @@ internal static class RtfProcessing
                                                                + "}}}}}";
     private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
-    private static ListFast<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
+    private static ListFast<byte> CreateColorTableRTFBytes(List<RtfColor>? colorTable)
     {
         // "\red255\green255\blue255;" = 25 chars
         const int maxColorEntryStringLength = 25;
@@ -109,9 +109,9 @@ internal static class RtfProcessing
         {
             for (int i = 0; i < colorTable.Count; i++)
             {
-                Color invertedColor;
-                Color currentColor = colorTable[i];
-                if (i == 0 && currentColor.A == 0)
+                RtfColor invertedColor;
+                RtfColor currentColor = colorTable[i];
+                if (i == 0 && currentColor.IsDefaultColor)
                 {
                     // We can just do the standard thing now, because with the sys color hook our default color
                     // is now our bright foreground color
@@ -122,11 +122,11 @@ internal static class RtfProcessing
                 // white and that's a bit too bright.
                 else if (currentColor is { R: 0, G: 0, B: 0 })
                 {
-                    invertedColor = DarkColors.Fen_DarkForeground;
+                    invertedColor = DarkColors.Fen_DarkForeground_Rtf;
                 }
                 else if (ColorIsTheSameAsBackground(currentColor))
                 {
-                    invertedColor = DarkColors.Fen_DarkBackground;
+                    invertedColor = DarkColors.Fen_DarkBackground_Rtf;
                 }
                 else
                 {
@@ -136,7 +136,7 @@ internal static class RtfProcessing
                     // 254 or less... don't ask me
                     if (invertedColor is { R: 255, G: 255, B: 255 })
                     {
-                        invertedColor = Color.FromArgb(254, 254, 254);
+                        invertedColor = new RtfColor(254, 254, 254);
                     }
                 }
 
@@ -161,7 +161,7 @@ internal static class RtfProcessing
 
         // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
         // new background color to keep author intent (avoiding spoilers etc.)
-        static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
+        static bool ColorIsTheSameAsBackground(RtfColor color) => color is { R: 255, G: 255, B: 255 };
 
         static ListFast<byte> ByteToASCIICharBytes(byte number)
         {
@@ -281,7 +281,7 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, List<LangItem>? langItems) =
+        (bool success, List<RtfColor>? colorTable, List<LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: colorTableWorkRequired,

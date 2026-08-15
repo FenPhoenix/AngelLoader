@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using static AngelLoader.Utils;
 
@@ -42,7 +41,7 @@ internal static class ColorUtils
         }
     }
 
-    private static Lab ColorToOklab(Color color)
+    private static Lab ColorToOklab(RtfColor color)
     {
         // Convert 0-255 -> 0-1.0
         float r = color.R / 255.0f;
@@ -66,7 +65,7 @@ internal static class ColorUtils
         return new Lab(l_, a_, b_);
     }
 
-    private static Color OklabToColor(Lab lab)
+    private static RtfColor OklabToColor(Lab lab)
     {
         // Convert Oklab -> linear sRGB
         float l = lab.L + (0.3963377774f * lab.a) + (0.2158037573f * lab.b);
@@ -87,11 +86,11 @@ internal static class ColorUtils
         b = b > 0.0031308 ? (1.055 * Math.Pow(b, 1 / 2.4)) - 0.055 : 12.92 * b;
 
         // Convert 0-1.0 -> 0-255, and clamp (clamping should be sufficient for our use case)
-        int cr = (int)(r * 255f).Clamp(0f, 255f);
-        int cg = (int)(g * 255f).Clamp(0f, 255f);
-        int cb = (int)(b * 255f).Clamp(0f, 255f);
+        byte cr = (byte)(r * 255f).Clamp(0f, 255f);
+        byte cg = (byte)(g * 255f).Clamp(0f, 255f);
+        byte cb = (byte)(b * 255f).Clamp(0f, 255f);
 
-        return Color.FromArgb(cr, cg, cb);
+        return new RtfColor(cr, cg, cb);
     }
 
     private static LCh OklabToLCh(Lab lab)
@@ -112,7 +111,7 @@ internal static class ColorUtils
 
     #endregion
 
-    internal static Color InvertLightness(Color color)
+    internal static RtfColor InvertLightness(RtfColor color)
     {
         // We unfortunately still need janky tuning of lightness and desaturation for good visibility, but
         // Oklab does give us a beautiful perceptual lightness scale (dark blue goes to light blue!) unlike
@@ -160,7 +159,7 @@ internal static class ColorUtils
         // Slight global desaturation
         lab = LChToOklab(new LCh(lch.L, (lch.C - (redDesaturated ? 0.015f : 0.04f)).ClampZeroToOne(), lch.h));
 
-        Color retColor = OklabToColor(lab);
+        RtfColor retColor = OklabToColor(lab);
 
         return retColor;
     }

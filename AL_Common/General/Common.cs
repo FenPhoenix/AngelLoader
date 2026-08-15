@@ -84,6 +84,30 @@ public static partial class Common
         }
     }
 
+    public readonly struct RtfColor
+    {
+        public readonly byte R;
+        public readonly byte G;
+        public readonly byte B;
+        public readonly bool IsDefaultColor;
+
+        public RtfColor(byte r, byte g, byte b)
+        {
+            R = r;
+            G = g;
+            B = b;
+            IsDefaultColor = false;
+        }
+
+        public RtfColor(byte r, byte g, byte b, bool isDefaultColor)
+        {
+            R = r;
+            G = g;
+            B = b;
+            IsDefaultColor = isDefaultColor;
+        }
+    }
+
     #endregion
 
     #region Methods

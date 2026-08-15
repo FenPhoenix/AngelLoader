@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
@@ -17,7 +16,7 @@ public sealed partial class RtfDisplayedReadmeParser
 {
     #region Resettables
 
-    private List<Color>? _colorTable;
+    private List<RtfColor>? _colorTable;
     private bool _foundColorTable;
     private bool _getColorTable;
     private bool _getLangs;
@@ -50,7 +49,7 @@ public sealed partial class RtfDisplayedReadmeParser
     #region Public API
 
     [PublicAPI]
-    public (bool Success, List<Color>? ColorTable, List<LangItem>? LangItems)
+    public (bool Success, List<RtfColor>? ColorTable, List<LangItem>? LangItems)
     GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
@@ -306,7 +305,7 @@ public sealed partial class RtfDisplayedReadmeParser
             realEntryCount--;
         }
 
-        _colorTable = new List<Color>(realEntryCount);
+        _colorTable = new List<RtfColor>(realEntryCount);
 
         for (int i = 0; i < realEntryCount; i++)
         {
@@ -314,8 +313,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             if (entry.IsEmpty())
             {
-                // 0 alpha will be the flag for "this is the omitted default/auto color"
-                _colorTable.Add(Color.FromArgb(0, 0, 0, 0));
+                _colorTable.Add(new RtfColor(0, 0, 0, isDefaultColor: true));
             }
             else
             {
@@ -330,7 +328,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     GetColorByte(entry, greenString, greenStringLen, out byte green) &&
                     GetColorByte(entry, blueString, blueStringLen, out byte blue))
                 {
-                    _colorTable.Add(Color.FromArgb(red, green, blue));
+                    _colorTable.Add(new RtfColor(red, green, blue));
                 }
             }
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
 using System.Text;
 using AngelLoader.DataClasses;
@@ -16,18 +15,11 @@ internal static class GLMLConversion
         // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
         string glml = Encoding.UTF8.GetString(glmlBytes);
 
-        static string AddColorToTable(string table, Color color) =>
-            table +
-            @"\red" + color.R.ToStrInv() +
-            @"\green" + color.G.ToStrInv() +
-            @"\blue" + color.B.ToStrInv() +
-            ";";
-
         string colorTable = @"{\colortbl ";
         colorTable = darkMode
-            ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground)
+            ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground_Rtf)
             : colorTable + ";";
-        colorTable = AddColorToTable(colorTable, darkMode ? DarkColors.GLMLRed_Dark : DarkColors.GLMLRed_Light);
+        colorTable = AddColorToTable(colorTable, darkMode ? DarkColors.GLMLRed_Dark_Rtf : DarkColors.GLMLRed_Light_Rtf);
         colorTable += "}";
 
         string rtfHeader =
@@ -302,5 +294,12 @@ internal static class GLMLConversion
         sb.Append('}');
 
         return sb.ToString();
+
+        static string AddColorToTable(string table, RtfColor color) =>
+            table +
+            @"\red" + color.R.ToStrInv() +
+            @"\green" + color.G.ToStrInv() +
+            @"\blue" + color.B.ToStrInv() +
+            ";";
     }
 }

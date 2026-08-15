@@ -68,8 +68,14 @@ public static class DarkColors
     public static readonly Color GLMLRed_Light = Color.Red;
     public static readonly Color GLMLRed_Dark = Color.FromArgb(222, 73, 64);
 
+    public static readonly RtfColor GLMLRed_Light_Rtf = ColorToRtfColor(GLMLRed_Light);
+    public static readonly RtfColor GLMLRed_Dark_Rtf = ColorToRtfColor(GLMLRed_Dark);
+
     public static readonly Color Fen_DarkBackground = Color.FromArgb(32, 32, 32);
     public static readonly Color Fen_DarkForeground = Color.FromArgb(200, 200, 200);
+
+    public static readonly RtfColor Fen_DarkBackground_Rtf = ColorToRtfColor(Fen_DarkBackground);
+    public static readonly RtfColor Fen_DarkForeground_Rtf = ColorToRtfColor(Fen_DarkForeground);
 
     public static readonly Color Fen_ControlBackground = Color.FromArgb(48, 48, 48);
     public static readonly Color Fen_DeselectedTabBackground = Color.FromArgb(44, 44, 44);
@@ -234,4 +240,6 @@ public static class DarkColors
     public static readonly SolidBrush LightScrollBarButtonHotBrush = new SolidBrush(LightScrollBarButtonHot);
 
     #endregion
+
+    private static RtfColor ColorToRtfColor(Color color) => new(color.R, color.G, color.B);
 }
