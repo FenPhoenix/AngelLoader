@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
+using AL_Common.CommunityToolkit;
 using JetBrains.Annotations;
 using static AL_Common.RTFParserCommon;
 
@@ -273,67 +274,46 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #endregion
 
-    // @MEM(Color table parser): We could still reduce allocations in here a bit more (but by making the code even more terrible)
     private RtfError ParseAndBuildColorTable()
     {
         ClearColorTable(RtfError.OK);
 
-        StringBuilder _colorTableSB = new(4096);
+        int closingBraceIndex = Array_IndexOfByte_Fast(_rtfBytes.Array, (byte)'}', CurrentPos, _rtfBytes.Length - CurrentPos);
+        if (closingBraceIndex == -1) return ClearColorTable(RtfError.OK);
 
-        while (true)
+        ReadOnlySpan<byte> colorTableSpan = _rtfBytes.Array.AsSpan(CurrentPos, closingBraceIndex - CurrentPos);
+
+        // 64 x 4 bytes == 256 bytes, totally fine and unlikely to need to grow (largest known is 23), and saves
+        // counting all ';' chars
+        _colorTable = new List<RtfColor>(64);
+
+        ReadOnlySpan<byte> redString = "\\red"u8;
+        ReadOnlySpan<byte> greenString = "\\green"u8;
+        ReadOnlySpan<byte> blueString = "\\blue"u8;
+
+        bool first = true;
+        foreach (ReadOnlySpan<byte> entry in colorTableSpan.Tokenize((byte)';'))
         {
-            char ch = (char)_rtfBytes[CurrentPos++];
-            if (ch == '}')
+            if (entry.IsWhiteSpace())
             {
-                CurrentPos--;
-                break;
-            }
-            _colorTableSB.Append(ch);
-        }
-
-        string[] entries = _colorTableSB.ToString().Split(CA_Semicolon);
-
-        int realEntryCount = entries.Length;
-        if (entries.Length == 0)
-        {
-            return ClearColorTable(RtfError.OK);
-        }
-        // Remove the last blank entry so we don't count it as the auto/default one by hitting a blank entry
-        // in the loop below
-        else if (entries.Length > 1 && entries[^1].IsWhiteSpace())
-        {
-            realEntryCount--;
-        }
-
-        _colorTable = new List<RtfColor>(realEntryCount);
-
-        for (int i = 0; i < realEntryCount; i++)
-        {
-            string entry = entries[i].Trim();
-
-            if (entry.IsEmpty())
-            {
-                _colorTable.Add(new RtfColor(0, 0, 0, isDefaultColor: true));
+                if (first)
+                {
+                    _colorTable.Add(new RtfColor(0, 0, 0, isDefaultColor: true));
+                }
             }
             else
             {
-                const string redString = "\\red";
-                const int redStringLen = 4;
-                const string greenString = "\\green";
-                const int greenStringLen = 6;
-                const string blueString = "\\blue";
-                const int blueStringLen = 5;
-
-                if (GetColorByte(entry, redString, redStringLen, out byte red) &&
-                    GetColorByte(entry, greenString, greenStringLen, out byte green) &&
-                    GetColorByte(entry, blueString, blueStringLen, out byte blue))
+                if (GetColorByte(entry, redString, out byte red) &&
+                    GetColorByte(entry, greenString, out byte green) &&
+                    GetColorByte(entry, blueString, out byte blue))
                 {
                     _colorTable.Add(new RtfColor(red, green, blue));
                 }
             }
+            first = false;
         }
 
-        return RtfError.OK;
+        return first ? ClearColorTable(RtfError.OK) : RtfError.OK;
 
         RtfError ClearColorTable(RtfError error)
         {
@@ -341,21 +321,21 @@ public sealed partial class RtfDisplayedReadmeParser
             return error;
         }
 
-        static bool GetColorByte(string entry, string hueString, int hueStringLen, out byte result)
+        static bool GetColorByte(ReadOnlySpan<byte> entry, ReadOnlySpan<byte> hueWord, out byte result)
         {
-            int hueIndex = FindIndexOfCharSequence(entry, hueString);
+            int hueIndex = entry.IndexOf(hueWord);
             if (hueIndex > -1)
             {
-                int indexPastHue = hueIndex + hueStringLen;
+                int indexPastHue = hueIndex + hueWord.Length;
                 if (indexPastHue < entry.Length)
                 {
-                    char firstDigit = entry[indexPastHue];
+                    byte firstDigit = entry[indexPastHue];
                     if (firstDigit.IsAsciiNumeric())
                     {
                         int colorValue = firstDigit - '0';
                         for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
                         {
-                            char c = entry[colorI];
+                            byte c = entry[colorI];
                             if (!c.IsAsciiNumeric()) break;
                             // Color value too long, must be 1-3 digits
                             if (colorI >= indexPastHue + 3)

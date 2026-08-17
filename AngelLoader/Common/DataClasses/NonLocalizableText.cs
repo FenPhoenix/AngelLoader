@@ -78,7 +78,8 @@ internal static partial class NonLocalizableText
         ("SimpleHelpers.Net", "https://github.com/khalidsalomao/SimpleHelpers.Net/"),
         ("Ude.NetStandard", "https://github.com/yinyue200/ude"),
         ("Ookii Dialogs", "https://github.com/augustoproiete/ookii-dialogs-winforms"),
-        ("Ported code from modern .NET", "https://github.com/dotnet"),
+        ("Portions of code from modern .NET", "https://github.com/dotnet"),
+        ("Portions of code from .NET Community Toolkit", "https://github.com/CommunityToolkit/dotnet"),
         ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
 #if X64
         ("CoreHook", "https://github.com/unknownv2/CoreHook/"),

@@ -215,6 +215,15 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsWhiteSpace([NotNullWhen(false)] this string? value) => string.IsNullOrWhiteSpace(value);
 
+    public static bool IsWhiteSpace(this ReadOnlySpan<byte> span)
+    {
+        for (int i = 0; i < span.Length; i++)
+        {
+            if (!char.IsWhiteSpace((char)span[i])) return false;
+        }
+        return true;
+    }
+
     #endregion
 
     #region Equals
