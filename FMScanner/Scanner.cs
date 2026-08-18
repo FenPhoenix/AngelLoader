@@ -182,8 +182,8 @@ public sealed class Scanner : IDisposable
 
     private ScanOptions _scanOptions = new();
 
-    private RtfToTextConverter? _rtfConverter;
-    private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
+    private ReasonableRTF.RtfToTextConverter? _rtfConverter;
+    private ReasonableRTF.RtfToTextConverter RtfConverter => _rtfConverter ??= new ReasonableRTF.RtfToTextConverter();
 
     private FMFormat _fmFormat = FMFormat.NotInArchive;
 
@@ -3586,21 +3586,10 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.Open()
                         : readmeStream;
 
-                    // @MEM(RTF pooled byte arrays): This pool barely helps us
-                    // Most of the arrays are used only once, a handful are used twice.
-                    byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
-                    try
+                    ReasonableRTF.Models.RtfResult rtfResult = RtfConverter.Convert(stream);
+                    if (rtfResult.Error == ReasonableRTF.Enums.RtfError.OK)
                     {
-                        int bytesRead = stream.ReadAll(rtfBytes, 0, readmeFileLen);
-                        (bool success, string text) = RtfConverter.Convert(new ArrayWithLength<byte>(rtfBytes, bytesRead));
-                        if (success)
-                        {
-                            last.Text = text;
-                        }
-                    }
-                    finally
-                    {
-                        _sevenZipContext.ByteArrayPool.Return(rtfBytes);
+                        last.Text = rtfResult.Text;
                     }
                 }
                 else if (readmeFile.Name.ExtIsGlml())
