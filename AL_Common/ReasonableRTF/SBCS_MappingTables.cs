@@ -4,9 +4,22 @@ namespace ReasonableRTF;
 
 public sealed partial class RtfToTextConverter
 {
-    // These are generated from the results of Encoding.GetChars() for the respective code pages, and so include
-    // best-fit mappings (ie. there are no undefined characters).
-    private readonly Dictionary<ushort, char[]> _sbcsToUtf16Dict = new()
+    /*
+    These are generated from the results of Encoding.GetChars() for the respective code pages, and so include
+    best-fit mappings (ie. there are no undefined characters).
+
+    @RTF(SBCS table): Static because we don't want one instance per thread of this huge thing.
+    Estimated size is ~16KB.
+    We could make this part of the scanner's ReadOnlyDataContext and pass it in, but then it couldn't be lazy
+    loaded (we'd init it even in the fairly common case where we don't use it because there is no rtf readme).
+    But static keeps it around forever even if we never use it again.
+    We could lazy-init it in ReadOnlyDataContext and add our own manual thread-safety for the init.
+    */
+    private
+#if true
+        static 
+#endif
+        readonly Dictionary<ushort, char[]> _sbcsToUtf16Dict = new()
     {
         {
             437,
