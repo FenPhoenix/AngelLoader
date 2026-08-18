@@ -4400,12 +4400,7 @@ public sealed class Scanner : IDisposable
 
         if (mainTitle.Value.IsEmpty()) return;
 
-        _titleAcronymChars.ClearFast();
-
-        byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
-
         bool mainTitleContainsAcronym = _ctx.AcronymRegex.Match(mainTitle.Value).Success;
-        Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
 
         bool swapDone = false;
 
@@ -4414,7 +4409,12 @@ public sealed class Scanner : IDisposable
 
         if (mainTitleContainsAcronym)
         {
+            _titleAcronymChars.ClearFast();
+            Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
+
             ListFast<char> romanNumeralRun = RomanNumeralRun;
+
+            byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
 
             for (int i = 1; i < titles.Count; i++)
             {
