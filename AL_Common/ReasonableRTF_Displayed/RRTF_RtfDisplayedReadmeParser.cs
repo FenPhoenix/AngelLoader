@@ -88,16 +88,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #endregion
 
-    // Officially, the header is supposed to be "{\rtf1", but some files have just "{\rtf" or "{\rtf0" or other
-    // crap. RichTextBox also only checks for "{\rtf", no doubt for that very reason.
-    private static readonly byte[] _rtfHeaderBytes = @"{\rtf"u8.ToArray();
-    private readonly ulong _rtfHeaderMask = BitConverter.IsLittleEndian
-        ? 0x00_00_00_FF_FF_FF_FF_FFul
-        : 0xFF_FF_FF_FF_FF_00_00_00ul;
-    private readonly ulong _rtfHeaderAsULong = BitConverter.IsLittleEndian
-        ? 0x00_00_00_66_74_72_5C_7Bul
-        : 0x7B_5C_72_74_66_00_00_00ul;
-
     // Cache it for perf
     private static readonly char[] LineBreakString = Environment.NewLine.ToCharArray();
     private static readonly int LineBreakStringLength = LineBreakString.Length;
@@ -177,11 +167,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private const int _charSetToCodePageLength = 256;
 
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<ushort> _charSetToCodePage =>
-#else
     private static readonly ushort[] _charSetToCodePage =
-#endif
     [
         1252, // 0 - "ANSI" (1252) (Yes, this is specified as _explicitly_ 1252, so this isn't a straggling 1252-default)
         0, // 1 - Default
@@ -548,11 +534,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private const int _minSupportedSymbolFontNameLength = 6;
     private const int _maxSupportedSymbolFontNameLength = 17;
 
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<bool> _symbolFontNameLengths =>
-#else
     private static readonly bool[] _symbolFontNameLengths =
-#endif
     [
         false, // 0
         false, // 1
@@ -1994,11 +1976,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     // Perf: On modern .NET, the "ReadOnlySpan<> x =>" pattern removes bounds checking (assuming you index with a
     // numeric type that's <= the length of the span), and generates only a tiny amount of asm. But on Framework,
     // the JIT doesn't recognize the pattern, and performance is catastrophic. So ugly ifdefs everywhere it is...
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<bool> _isNonPlainText =>
-#else
     private static readonly bool[] _isNonPlainText =
-#endif
     [
         true, // '\0' (0)
         false, false, false, false, false, false, false, false, false,
@@ -2069,11 +2047,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         false, false,
     ];
 
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<bool> _isSeparatorChar =>
-#else
     private static readonly bool[] _isSeparatorChar =
-#endif
     [
         false, false, false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false, false, false,
@@ -2125,11 +2099,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     they are). So let's just make them int32.
     */
 
-#if NET8_0_OR_GREATER
-    private readonly Dictionary<int, FontEntry> _fontDictionary;
-#else
     private Dictionary<int, FontEntry> _fontDictionary;
-#endif
 
     private Stream? _bufferedStream;
 
@@ -2193,11 +2163,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     // DON'T reset this. We want to build up a dictionary of encodings and amortize it over the entire list
     // of RTF files.
-#if NET8_0_OR_GREATER
-    private readonly Dictionary<ushort, Encoding> _encodings;
-#else
     private Dictionary<ushort, Encoding> _encodings;
-#endif
 
     #endregion
 
@@ -2319,117 +2285,11 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     public void ResetMemory()
     {
         GroupStack_ResetCapacityToDefault();
-#if NET8_0_OR_GREATER
-        _fontDictionary.Reset(_internalBufferDefaultCapacity);
-        _encodings.Reset(_internalBufferDefaultCapacity);
-#else
         _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
         _encodings = new Dictionary<ushort, Encoding>(_internalBufferDefaultCapacity);
-#endif
     }
 
     #endregion
-
-    private RtfResult ConvertInternal(byte[] bytes, int bytesLength, RtfToTextConverterOptions options, Stream? bufferedStream, int bufferSize)
-    {
-        try
-        {
-            if (bufferedStream == null)
-            {
-                _buffer = bytes;
-                SetBufferLength(bytesLength);
-                _leadingBufferByteCount = 0;
-            }
-            else
-            {
-                _bufferedStream = bufferedStream;
-                bufferSize = Math.Max(bufferSize, _minimumBufferSize);
-                _buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
-                SetBufferLength(bufferSize);
-                _leadingBufferByteCount = _maxSeekBackBytes;
-            }
-
-            SetOptions(options);
-
-            #region Reset
-
-            _reachedEndOfStream = false;
-
-            GroupStack_Reset();
-            _fontDictionary.Clear();
-
-            _headerCodePage = 0;
-            _headerDefaultFontSet = false;
-            _headerDefaultFontNum = 0;
-
-            _skipDestinationIfUnknown = false;
-
-            _chunksRead = 0;
-            _currentPos = _leadingBufferByteCount;
-
-            _inHandleSkippableHexData = false;
-            _inFontTable = false;
-
-            _lastUsedFontWithCodePage42 = NoFontNumber;
-
-            #endregion
-
-            if (_bufferedStream != null)
-            {
-                LoadNextChunkIntoBuffer();
-            }
-            else
-            {
-                _chunksRead = 1;
-            }
-
-            // The user may already have validated, but this check is ultra-fast so we can afford to do it
-            // without complicating the logic with a user option and all.
-            if (!IsValidRtfFile())
-            {
-                return new RtfResult(RtfError.NotAnRtfFile, 0, null);
-            }
-
-            RtfError error = ParseRtf();
-            if (error == RtfError.OK)
-            {
-                return new RtfResult("");
-            }
-            else
-            {
-                RtfResult ret = new(error, GetCurrentOverallPos(), null);
-#if DEBUG
-                System.Diagnostics.Trace.WriteLine(ret);
-#endif
-                return ret;
-            }
-        }
-        catch (IndexOutOfRangeException ex)
-        {
-            return new RtfResult(RtfError.UnexpectedEndOfFile, GetCurrentOverallPos(), ex);
-        }
-        catch (EndOfStreamException ex)
-        {
-            return new RtfResult(RtfError.UnexpectedEndOfFile, GetCurrentOverallPos(), ex);
-        }
-        catch (UnmatchedBraceException ex)
-        {
-            return new RtfResult(RtfError.UnmatchedBrace, GetCurrentOverallPos(), ex);
-        }
-        catch (Exception ex)
-        {
-            return new RtfResult(RtfError.UnexpectedError, GetCurrentOverallPos(), ex);
-        }
-        finally
-        {
-            if (_bufferedStream != null)
-            {
-                ArrayPool<byte>.Shared.Return(_buffer);
-            }
-            _buffer = Array.Empty<byte>();
-            _bufferedStream = null;
-        }
-    }
 
     #region Parse
 
@@ -2437,51 +2297,26 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private RtfError ParseKeyword(ref byte bufferRef)
     {
         // The keyword parsers are JIT inlined now, so make sure to have only one call to each!
-
-#if NET8_0_OR_GREATER
-        RtfError error;
-        if (System.Runtime.Intrinsics.Vector128.IsHardwareAccelerated &&
-            _currentPos < _currentBufferChunkLength - _keywordVector128ParseMaxRequiredBytes &&
-            (error = ParseKeyword_Fast_Vector128(ref bufferRef)) != RtfError.KeywordTooLong)
+        if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
         {
-            return error;
+            return ParseKeyword_Fast(ref bufferRef);
         }
         else
-#endif
         {
-            if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
-            {
-                return ParseKeyword_Fast(ref bufferRef);
-            }
-            else
-            {
-                return ParseKeyword_Slow(ref bufferRef);
-            }
+            return ParseKeyword_Slow(ref bufferRef);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseKeyword_FontTable(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
     {
-#if NET8_0_OR_GREATER
-        RtfError error;
-        if (System.Runtime.Intrinsics.Vector128.IsHardwareAccelerated &&
-            _currentPos < _currentBufferChunkLength - _keywordVector128ParseMaxRequiredBytes &&
-            (error = ParseKeyword_FontTable_Fast_Vector128(ref bufferRef, out fontTableKeyword, out param)) != RtfError.KeywordTooLong)
+        if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
         {
-            return error;
+            return ParseKeyword_FontTable_Fast(ref bufferRef, out fontTableKeyword, out param);
         }
         else
-#endif
         {
-            if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
-            {
-                return ParseKeyword_FontTable_Fast(ref bufferRef, out fontTableKeyword, out param);
-            }
-            else
-            {
-                return ParseKeyword_FontTable_Slow(ref bufferRef, out fontTableKeyword, out param);
-            }
+            return ParseKeyword_FontTable_Slow(ref bufferRef, out fontTableKeyword, out param);
         }
     }
 
@@ -2612,13 +2447,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool ShouldUseSimdFontNameCodePath()
     {
-#if NET8_0_OR_GREATER
-        return System.Runtime.Intrinsics.Vector512.IsHardwareAccelerated ||
-               System.Runtime.Intrinsics.Vector256.IsHardwareAccelerated ||
-               System.Runtime.Intrinsics.Vector128.IsHardwareAccelerated;
-#else
         return System.Numerics.Vector.IsHardwareAccelerated && _vectorLengthFitsInAByte;
-#endif
     }
 
     private SymbolFont GetSymbolFont_Scalar(ref byte bufferRef, char ch, int symbolFontNameCountStart = 0)
@@ -2993,36 +2822,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #region Helpers
 
-    private bool IsValidRtfFile()
-    {
-        if (_currentBufferChunkLength >= _leadingBufferByteCount + sizeof(ulong))
-        {
-            ulong chunk = Unsafe.ReadUnaligned<ulong>(ref _buffer[_leadingBufferByteCount]);
-            if ((chunk & _rtfHeaderMask) != _rtfHeaderAsULong)
-            {
-                return false;
-            }
-        }
-        else if (_currentBufferChunkLength >= _leadingBufferByteCount + _rtfHeaderBytes.Length)
-        {
-            for (int i = 0; i < _rtfHeaderBytes.Length; i++)
-            {
-                // GetByte() because if we use the raw buffer, Framework x64 goes back to its trailer and refuses
-                // to perform. Even though we never hit this path. Ugh.
-                if (GetByte(_leadingBufferByteCount + i) != _rtfHeaderBytes[i])
-                {
-                    return false;
-                }
-            }
-        }
-        else
-        {
-            return false;
-        }
-
-        return true;
-    }
-
     /*
     This MUST have AggressiveInlining on it, or else .NET Framework x64 gets significantly slower. Also if we
     pull the code inline physically, .NET Framework x64 is ALSO slower. No, we have to make this method separate
@@ -3322,9 +3121,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         }
     }
 
-#if NET8_0_OR_GREATER
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
     private void LoadNextChunkIntoBuffer()
     {
         Debug.Assert(_bufferedStream != null);
@@ -3589,11 +3385,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private const int MAX_HASH_VALUE = 407;
     /* maximum key range = 377, duplicates = 0 */
 
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<ushort> asso_values =>
-#else
     private static readonly ushort[] asso_values =
-#endif
     [
         408, 408, 408, 408, 408, 408, 408, 408, 408, 408,
         408, 408, 408, 408, 408, 408, 408, 408, 408, 408,
@@ -3625,11 +3417,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private static readonly Symbol _fontSymbol = new("f", 0, false, KeywordType.Property, (ushort)Property.FontNum);
 
-#if NET8_0_OR_GREATER
-    private static ReadOnlySpan<ushort> _symbolFirstCharTable =>
-#else
     private static readonly ushort[] _symbolFirstCharTable =
-#endif
     [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x7501, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x7002, 0, 0x7402, 0,
@@ -3910,48 +3698,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 // Entry 45
         new Symbol("footerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
     ];
-
-#if NET8_0_OR_GREATER
-    // Construct dynamically (static, so only done once) to cut down on file size for the .NET versions. We do
-    // this because we can't do the ReadOnlySpan<> => trick with structs, so there's no gain in writing it all
-    // out manually.
-    private static System.Runtime.Intrinsics.Vector128<byte>[] InitVectorKeywordTable()
-    {
-        System.Runtime.Intrinsics.Vector128<byte>[] ret = new System.Runtime.Intrinsics.Vector128<byte>[_symbolTable.Length];
-
-        Span<byte> keywordBytes = stackalloc byte[16];
-
-        for (int symbolTableIndex = 0; symbolTableIndex < _symbolTable.Length; symbolTableIndex++)
-        {
-            Symbol? symbol = _symbolTable[symbolTableIndex];
-            if (symbol == null)
-            {
-                ret[symbolTableIndex] = System.Runtime.Intrinsics.Vector128<byte>.Zero;
-            }
-            else
-            {
-                string keyword = symbol.Keyword;
-                if (keyword.Length > 16)
-                {
-                    ret[symbolTableIndex] = System.Runtime.Intrinsics.Vector128<byte>.Zero;
-                }
-                else
-                {
-                    keywordBytes.Clear();
-                    for (int i = 0; i < keyword.Length; i++)
-                    {
-                        keywordBytes[i] = (byte)keyword[i];
-                    }
-                    ret[symbolTableIndex] = System.Runtime.Intrinsics.Vector128.Create(keywordBytes);
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    private static readonly System.Runtime.Intrinsics.Vector128<byte>[] _vectorKeywordTable = InitVectorKeywordTable();
-#endif
 
     private static char[] InitControlSymbolArray()
     {

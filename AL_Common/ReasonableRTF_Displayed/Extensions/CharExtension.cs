@@ -39,18 +39,10 @@ internal static class CharExtension
     /// or 'a' through 'z', inclusive.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NET8_0_OR_GREATER
-    internal static bool IsAsciiLetter(char c) => char.IsAsciiLetter(c);
-#else
     internal static bool IsAsciiLetter(char c) => (uint)((c | 0x20) - 'a') <= 'z' - 'a';
-#endif
 
     /// <summary>Map from an ASCII char to its hex value, e.g. arr['b'] == 11. 0xFF means it's not a hex digit.</summary>
-#if NET8_0_OR_GREATER
-    internal static ReadOnlySpan<byte> CharToHexLookup =>
-#else
     internal static readonly byte[] CharToHexLookup =
-#endif
     [
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 15
         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // 31
@@ -78,9 +70,6 @@ internal static class CharExtension
     /// 'A' through 'F', inclusive, or 'a' through 'f', inclusive.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NET8_0_OR_GREATER
-    internal static bool IsAsciiHexDigit(char c) => char.IsAsciiHexDigit(c);
-#else
     internal static bool IsAsciiHexDigit(char c) => IsHexChar(c);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,7 +108,6 @@ internal static class CharExtension
     {
         return c >= CharToHexLookup.Length ? 0xFF : CharToHexLookup[c];
     }
-#endif
 
     /// <summary>Indicates whether a character is categorized as an ASCII digit.</summary>
     /// <param name="c">The character to evaluate.</param>
@@ -128,9 +116,6 @@ internal static class CharExtension
     /// This determines whether the character is in the range '0' through '9', inclusive.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#if NET8_0_OR_GREATER
-    internal static bool IsAsciiDigit(char c) => char.IsAsciiDigit(c);
-#else
     internal static bool IsAsciiDigit(char c) => IsBetween(c, '0', '9');
 
     /// <summary>Indicates whether a character is within the specified inclusive range.</summary>
@@ -146,7 +131,6 @@ internal static class CharExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
         (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
-#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsBetween(this int value, int minInclusive, int maxInclusive) =>

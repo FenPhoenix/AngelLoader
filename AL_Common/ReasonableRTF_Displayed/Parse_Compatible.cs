@@ -1,5 +1,4 @@
-﻿#if !NET8_0_OR_GREATER
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ReasonableRTF.Enums;
 
@@ -133,4 +132,3 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         }
     }
 }
-#endif

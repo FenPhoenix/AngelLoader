@@ -1,5 +1,4 @@
-﻿#if !NET8_0_OR_GREATER
-using System;
+﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -128,4 +127,3 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         }
     }
 }
-#endif

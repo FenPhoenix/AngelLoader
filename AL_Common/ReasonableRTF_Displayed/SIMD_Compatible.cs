@@ -25,10 +25,8 @@
  *
 */
 
-#if !NET8_0_OR_GREATER
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace ReasonableRTF_Displayed;
 
@@ -345,4 +343,3 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #endregion
 }
-#endif

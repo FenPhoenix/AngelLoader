@@ -45,29 +45,11 @@ internal static class UtilHelper
         return ret;
     }
 
-#if NET8_0_OR_GREATER
-    /// <summary>
-    /// Clears the dictionary and sets its internal storage to zero-length.
-    /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
-    /// <param name="dictionary"></param>
-    /// <param name="capacity"></param>
-    internal static void Reset<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, int capacity) where TKey : notnull
-    {
-        dictionary.Clear();
-        dictionary.TrimExcess(capacity);
-    }
-#endif
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static int Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex, int count)
     {
-        // On .NET, Array.IndexOf() uses crazy fast SIMD. On Framework, it normally doesn't.
-#if NET8_0_OR_GREATER
-        return Array.IndexOf(array, value, startIndex, count);
-#else
         /*
+         On .NET, Array.IndexOf() uses crazy fast SIMD. On Framework, it normally doesn't.
         However, on Framework 64-bit only, we can make it use SIMD by using span.IndexOf(), if we reference the
         appropriate package (directly or indirectly), System.Memory or whatever it is.
         If we're 32-bit, though, SIMD is not supported, so we just stick to the regular Array.IndexOf(), which
@@ -85,7 +67,6 @@ internal static class UtilHelper
         {
             return Array.IndexOf(array, value, startIndex, count);
         }
-#endif
     }
 
     internal static void ValidateArgs(byte[] source, int length)
@@ -95,20 +76,4 @@ internal static class UtilHelper
             throw new ArgumentException(nameof(length) + " is greater than the length of " + nameof(source) + ".", nameof(length));
         }
     }
-
-#if NET8_0_OR_GREATER
-    /// <summary>
-    /// Returns the correct (clamped to 16) number of trailing zeros given a uint bitmask.
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int Vector128_TrailingZeroCount(uint value)
-    {
-        int tzc = System.Numerics.BitOperations.TrailingZeroCount(value);
-        return tzc > System.Runtime.Intrinsics.Vector128<byte>.Count
-            ? System.Runtime.Intrinsics.Vector128<byte>.Count
-            : tzc;
-    }
-#endif
 }

@@ -8,7 +8,6 @@ namespace ReasonableRTF_Displayed;
 
 public sealed partial class RRTF_RtfDisplayedReadmeParser
 {
-#if !NET8_0_OR_GREATER
     internal static class PerTypeValues<T>
     {
         internal static readonly nint ArrayAdjustment = MeasureArrayAdjustment();
@@ -37,60 +36,27 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private static readonly nint _char_ByteOffset = PerTypeValues<char>.ArrayAdjustment;
     private static readonly nint _bool_ByteOffset = PerTypeValues<bool>.ArrayAdjustment;
 
-#if false
-    private static readonly nint _ushort_ByteOffset = PerTypeValues<ushort>.ArrayAdjustment;
-#endif
-#endif
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref GroupStackFrame GetArrayDataReference(GroupStackFrame[] array)
     {
-#if NET8_0_OR_GREATER
-        return ref MemoryMarshal.GetArrayDataReference(array);
-#else
         return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<GroupStackFrame>>(array).Data, _groupStackFrame_ByteOffset);
-#endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref byte GetArrayDataReference(byte[] array)
     {
-#if NET8_0_OR_GREATER
-        return ref MemoryMarshal.GetArrayDataReference(array);
-#else
         return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<byte>>(array).Data, _byte_ByteOffset);
-#endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref char GetArrayDataReference(char[] array)
     {
-#if NET8_0_OR_GREATER
-        return ref MemoryMarshal.GetArrayDataReference(array);
-#else
         return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<char>>(array).Data, _char_ByteOffset);
-#endif
     }
-
-#if false
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref ushort GetArrayDataReference(ushort[] array)
-    {
-#if NET8_0_OR_GREATER
-        return ref MemoryMarshal.GetArrayDataReference(array);
-#else
-        return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<ushort>>(array).Data, _ushort_ByteOffset);
-#endif
-    }
-#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref bool GetArrayDataReference(bool[] array)
     {
-#if NET8_0_OR_GREATER
-        return ref MemoryMarshal.GetArrayDataReference(array);
-#else
         return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<bool>>(array).Data, _bool_ByteOffset);
-#endif
     }
 }
