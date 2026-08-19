@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace ReasonableRTF.Extensions;
+namespace AL_Common.RTF;
 
 internal static class CharExtension
 {

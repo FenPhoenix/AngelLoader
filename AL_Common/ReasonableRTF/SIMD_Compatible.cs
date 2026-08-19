@@ -27,7 +27,7 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using static AL_Common.RTFParserCommon;
+using static AL_Common.RTF.RTFParserCommon;
 
 namespace ReasonableRTF;
 

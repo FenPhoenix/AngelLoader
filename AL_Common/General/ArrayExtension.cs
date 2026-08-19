@@ -1,6 +1,6 @@
 ﻿namespace System;
 
-internal static class ArrayExtension
+public static class ArrayExtension
 {
     extension(Array)
     {

@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace AL_Common;
+namespace AL_Common.RTF;
 
 public static class RTFParserCommon
 {
@@ -693,6 +693,30 @@ public static class RTFParserCommon
 
     #endregion
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RTF_Array_IndexOfByte_Fast(byte[] array, byte value, int startIndex, int count)
+    {
+        /*
+        On .NET, Array.IndexOf() uses crazy fast SIMD. On Framework, it normally doesn't.
+        However, on Framework 64-bit only, we can make it use SIMD by using span.IndexOf(), if we reference the
+        appropriate package (directly or indirectly), System.Memory or whatever it is.
+        If we're 32-bit, though, SIMD is not supported, so we just stick to the regular Array.IndexOf(), which
+        while substantially slower than the SIMD version, is still reasonably fast.
+
+        But instead of checking for 64-bit vs. 32-bit, we can just check directly if SIMD is supported.
+        */
+        if (Vector.IsHardwareAccelerated)
+        {
+            int index = array.AsSpan(startIndex, count).IndexOf(value);
+            if (index > -1) index += startIndex;
+            return index;
+        }
+        else
+        {
+            return Array.IndexOf(array, value, startIndex, count);
+        }
+    }
+
     // Total hack so we don't have to return and check a value eight trillion times (perf)
     public sealed class UnmatchedBraceException : Exception;
 
@@ -751,4 +775,37 @@ public static class RTFParserCommon
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBetween(this ushort value, int minInclusive, int maxInclusive) =>
         (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    internal enum KeywordType : byte
+    {
+        Character,
+        Property,
+        Destination,
+        Special,
+        F,
+        FCharset,
+        CPG,
+    }
+
+    internal sealed class Symbol
+    {
+        internal readonly string Keyword;
+        internal readonly int DefaultParam;
+        internal readonly bool UseDefaultParam;
+        internal readonly KeywordType KeywordType;
+        /// <summary>
+        /// Index into the property table, or a regular enum member, or a character literal, depending on <see cref="KeywordType"/>.
+        /// </summary>
+        internal readonly ushort Index;
+
+        internal Symbol(string keyword, int defaultParam, bool useDefaultParam, KeywordType keywordType, ushort index)
+        {
+            Keyword = keyword;
+            DefaultParam = defaultParam;
+            UseDefaultParam = useDefaultParam;
+            KeywordType = keywordType;
+            Index = index;
+        }
+    }
+
 }

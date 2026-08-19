@@ -42,6 +42,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common.FastZipReader;
+using AL_Common.RTF;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -3587,7 +3588,7 @@ public sealed class Scanner : IDisposable
                         : readmeStream;
 
                     ReasonableRTF.Models.RtfResult rtfResult = RtfConverter.Convert(stream);
-                    if (rtfResult.Error == ReasonableRTF.Enums.RtfError.OK)
+                    if (rtfResult.Error == RtfError.OK)
                     {
                         last.Text = rtfResult.Text;
                     }

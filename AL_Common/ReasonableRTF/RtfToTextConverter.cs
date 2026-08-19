@@ -55,13 +55,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
-using ReasonableRTF.Helper;
+using AL_Common.RTF;
 using ReasonableRTF.Models;
-using ReasonableRTF.Models.Fonts;
-using ReasonableRTF.Models.Symbols;
-using static AL_Common.RTFParserCommon;
+using static AL_Common.RTF.RTFParserCommon;
 
 namespace ReasonableRTF;
 
@@ -1755,7 +1751,7 @@ public sealed partial class RtfToTextConverter
     /// <exception cref="ArgumentException"></exception>
     public RtfResult Convert(byte[] source, int length)
     {
-        UtilHelper.ValidateArgs(source, length);
+        ValidateArgs(source, length);
         return ConvertInternal(source, length, _defaultOptions, null, _defaultStreamBufferSize);
     }
 
@@ -1769,7 +1765,7 @@ public sealed partial class RtfToTextConverter
     /// <exception cref="ArgumentException"></exception>
     public RtfResult Convert(byte[] source, int length, RtfToTextConverterOptions options)
     {
-        UtilHelper.ValidateArgs(source, length);
+        ValidateArgs(source, length);
         return ConvertInternal(source, length, options, null, _defaultStreamBufferSize);
     }
 
@@ -4006,6 +4002,14 @@ public sealed partial class RtfToTextConverter
 
     #region Helpers
 
+    private static void ValidateArgs(byte[] source, int length)
+    {
+        if (length > source.Length)
+        {
+            throw new ArgumentException(nameof(length) + " is greater than the length of " + nameof(source) + ".", nameof(length));
+        }
+    }
+
     /*
     This MUST have AggressiveInlining on it, or else .NET Framework x64 gets significantly slower. Also if we
     pull the code inline physically, .NET Framework x64 is ALSO slower. No, we have to make this method separate
@@ -4097,7 +4101,7 @@ public sealed partial class RtfToTextConverter
     {
         while (!_reachedEndOfStream)
         {
-            int foundIndex = UtilHelper.Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
+            int foundIndex = RTF_Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
             if (foundIndex > -1)
             {
                 return foundIndex;

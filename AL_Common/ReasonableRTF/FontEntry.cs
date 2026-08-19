@@ -22,27 +22,23 @@
  * SOFTWARE.
 */
 
-using ReasonableRTF.Enums;
+using System.Runtime.InteropServices;
+using AL_Common.RTF;
 
-namespace ReasonableRTF.Models.Symbols;
+namespace ReasonableRTF;
 
-internal sealed class Symbol
+// Sequential makes it 4 bytes on all targets. If Auto, then it's 8 bytes on .NET Framework x64.
+[StructLayout(LayoutKind.Sequential)]
+internal readonly struct FontEntry
 {
-    internal readonly string Keyword;
-    internal readonly int DefaultParam;
-    internal readonly bool UseDefaultParam;
-    internal readonly KeywordType KeywordType;
-    /// <summary>
-    /// Index into the property table, or a regular enum member, or a character literal, depending on <see cref="KeywordType"/>.
-    /// </summary>
-    internal readonly ushort Index;
+    internal readonly ushort CodePage;
+    internal readonly bool IsSet;
+    internal readonly SymbolFont SymbolFont;
 
-    internal Symbol(string keyword, int defaultParam, bool useDefaultParam, KeywordType keywordType, ushort index)
+    internal FontEntry(ushort codePage, SymbolFont symbolFont)
     {
-        Keyword = keyword;
-        DefaultParam = defaultParam;
-        UseDefaultParam = useDefaultParam;
-        KeywordType = keywordType;
-        Index = index;
+        CodePage = codePage;
+        SymbolFont = symbolFont;
+        IsSet = true;
     }
 }

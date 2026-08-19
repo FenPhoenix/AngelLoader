@@ -24,7 +24,7 @@
 
 using System;
 using System.Globalization;
-using ReasonableRTF.Enums;
+using AL_Common.RTF;
 
 namespace ReasonableRTF.Models;
 

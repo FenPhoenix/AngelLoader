@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using AL_Common;
-using ReasonableRTF_Displayed.Enums;
-using static AL_Common.RTFParserCommon;
+using AL_Common.RTF;
+using static AL_Common.RTF.RTFParserCommon;
 
 namespace ReasonableRTF_Displayed;
 

@@ -2,9 +2,8 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
-using static AL_Common.RTFParserCommon;
+using AL_Common.RTF;
+using static AL_Common.RTF.RTFParserCommon;
 
 namespace ReasonableRTF;
 

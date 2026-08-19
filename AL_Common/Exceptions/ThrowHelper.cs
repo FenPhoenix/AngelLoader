@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
-using ReasonableRTF.Helper;
+using AL_Common.RTF;
 
 namespace AL_Common;
 

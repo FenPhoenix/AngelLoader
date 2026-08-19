@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using AL_Common.RTF;
 using AngelLoader.DataClasses;
 using ReasonableRTF_Displayed;
 using static ReasonableRTF_Displayed.RRTF_RtfDisplayedReadmeParser;
