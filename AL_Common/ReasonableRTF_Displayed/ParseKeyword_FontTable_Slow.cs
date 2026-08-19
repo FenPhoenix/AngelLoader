@@ -17,7 +17,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         if (!CharExtension.IsAsciiLetter(ch))
         {
-            return HandleControlChar(ref bufferRef, ch);
+            return HandleControlChar(ch);
         }
         else
         {

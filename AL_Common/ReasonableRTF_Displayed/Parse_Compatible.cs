@@ -9,11 +9,11 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private RtfError ParseRtf()
     {
         // Avoid bounds checks by passing a buffer reference everywhere. We do our own bounds checking.
-        ref byte bufferRef = ref GetArrayDataReference(_buffer);
+        ref byte bufferRef = ref GetArrayDataReference(_rtfBytes);
         ref bool isNonPlainTextCharRef = ref GetArrayDataReference(_isNonPlainText);
         ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(_isIgnoreChar);
 
-        while (_currentPos < _currentBufferChunkLength)
+        while (_currentPos < _rtfBytesLength)
         {
             if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
 
@@ -40,7 +40,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         !GroupStack_CurrentSkipDest)
                     {
                         // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
-                        char currentChar = (char)(_currentPos < _currentBufferChunkLength
+                        char currentChar = (char)(_currentPos < _rtfBytesLength
                             ? GetByteAtPos(ref bufferRef, _currentPos)
                             : GetByte(_currentPos));
 
@@ -70,7 +70,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             }
         }
 
-        while (_currentPos < _currentBufferChunkLength)
+        while (_currentPos < _rtfBytesLength)
         {
             char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
             if (_isNonPlainText[(byte)ch])

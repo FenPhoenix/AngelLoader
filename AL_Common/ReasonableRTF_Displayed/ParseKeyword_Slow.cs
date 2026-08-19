@@ -14,7 +14,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         if (!CharExtension.IsAsciiLetter(ch))
         {
-            return HandleControlChar(ref bufferRef, ch);
+            return HandleControlChar(ch);
         }
         else
         {
@@ -114,7 +114,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError HandleControlChar(ref byte bufferRef, char ch)
+    private RtfError HandleControlChar(char ch)
     {
         /*
         From the spec:

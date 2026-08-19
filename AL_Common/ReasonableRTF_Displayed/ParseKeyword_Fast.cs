@@ -18,7 +18,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         {
             ++_currentPos;
 
-            return HandleControlChar(ref bufferRef, ch);
+            return HandleControlChar(ch);
         }
         else
         {

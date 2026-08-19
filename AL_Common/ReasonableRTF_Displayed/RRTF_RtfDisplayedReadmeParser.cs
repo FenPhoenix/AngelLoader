@@ -40,7 +40,6 @@ using JetBrains.Annotations;
 using ReasonableRTF_Displayed.Enums;
 using ReasonableRTF_Displayed.Extensions;
 using ReasonableRTF_Displayed.Helper;
-using ReasonableRTF_Displayed.Models;
 using ReasonableRTF_Displayed.Models.Fonts;
 using ReasonableRTF_Displayed.Models.Symbols;
 
@@ -555,8 +554,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private Dictionary<int, FontEntry> _fontDictionary;
 
-    private int _leadingBufferByteCount;
-
     private bool _skipDestinationIfUnknown;
 
     private int _currentPos;
@@ -589,12 +586,37 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     {
         try
         {
-            // Reset before because at least one thing (current group) needs it in order to be in a valid
-            // state to start with
-            Reset(rtfBytes);
+            _rtfBytes = rtfBytes.Array;
+            _rtfBytesLength = rtfBytes.Length;
+
+            #region Reset
+
+            GroupStack_Reset();
+            _fontDictionary.Clear();
+
+            _headerCodePage = 0;
+            _headerDefaultFontSet = false;
+            _headerDefaultFontNum = 0;
+
+            _skipDestinationIfUnknown = false;
+
+            _currentPos = 0;
+
+            _inHandleSkippableHexData = false;
+            _inFontTable = false;
+
+
+            _foundColorTable = false;
+            _getColorTable = false;
+            _getLangs = false;
+
+            _colorTable = null;
+            _langItems = null;
 
             _getColorTable = getColorTable;
             _getLangs = getLangs;
+
+            #endregion
 
             if (!getLangs && !getColorTable)
             {
@@ -618,58 +640,15 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         finally
         {
             // Reset after so we don't carry around any waste after running
-            Reset(ArrayWithLength<byte>.Empty());
+            GroupStack_ResetCapacityToDefault();
+            if (_fontDictionary.Count > _internalBufferDefaultCapacity)
+            {
+                _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
+            }
 
-            _buffer = Array.Empty<byte>();
+            _rtfBytes = Array.Empty<byte>();
+            _rtfBytesLength = 0;
         }
-    }
-
-    private void Reset(in ArrayWithLength<byte> rtfBytes)
-    {
-        _buffer = rtfBytes.Array;
-        SetBufferLength(rtfBytes.Length);
-        _leadingBufferByteCount = 0;
-
-        #region Reset
-
-        GroupStack_Reset();
-        _fontDictionary.Clear();
-
-        _headerCodePage = 0;
-        _headerDefaultFontSet = false;
-        _headerDefaultFontNum = 0;
-
-        _skipDestinationIfUnknown = false;
-
-        _currentPos = _leadingBufferByteCount;
-
-        _inHandleSkippableHexData = false;
-        _inFontTable = false;
-
-        #endregion
-
-        // Don't carry around the font entry pool for the entire app lifetime
-        ResetMemory();
-
-        #region Fixed-size fields
-
-        _foundColorTable = false;
-        _getColorTable = false;
-        _getLangs = false;
-
-        #endregion
-
-        _colorTable = null;
-        _langItems = null;
-    }
-
-    /// <summary>
-    /// Resets all buffers back to default capacity, releasing excess memory.
-    /// </summary>
-    public void ResetMemory()
-    {
-        GroupStack_ResetCapacityToDefault();
-        _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
     }
 
     #endregion
@@ -680,7 +659,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private RtfError ParseKeyword(ref byte bufferRef)
     {
         // The keyword parsers are JIT inlined now, so make sure to have only one call to each!
-        if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
+        if (_currentPos < _rtfBytesLength - _keywordParseMaxRequiredBytes)
         {
             return ParseKeyword_Fast(ref bufferRef);
         }
@@ -693,7 +672,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseKeyword_FontTable(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
     {
-        if (_currentPos < _currentBufferChunkLength - _keywordParseMaxRequiredBytes)
+        if (_currentPos < _rtfBytesLength - _keywordParseMaxRequiredBytes)
         {
             return ParseKeyword_FontTable_Fast(ref bufferRef, out fontTableKeyword, out param);
         }
@@ -715,7 +694,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         int currentFontNumber = NoFontNumber;
         ushort currentFontCodePage = NoCodePage;
 
-        while (_currentPos < _currentBufferChunkLength)
+        while (_currentPos < _rtfBytesLength)
         {
             char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
 
@@ -935,8 +914,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 else
                 {
                     _currentPos = IndexOfNextClosingBrace_ChunkAware();
-                    return RtfError.OK;
                 }
+                break;
         }
 
         return RtfError.OK;
@@ -946,10 +925,10 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     {
         ClearColorTable(RtfError.OK);
 
-        int closingBraceIndex = Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
+        int closingBraceIndex = Array_IndexOfByte_Fast(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
         if (closingBraceIndex == -1) return ClearColorTable(RtfError.OK);
 
-        ReadOnlySpan<byte> colorTableSpan = _buffer.AsSpan(_currentPos, closingBraceIndex - _currentPos);
+        ReadOnlySpan<byte> colorTableSpan = _rtfBytes.AsSpan(_currentPos, closingBraceIndex - _currentPos);
 
         // 64 x 4 bytes == 256 bytes, totally fine and unlikely to need to grow (largest known is 23), and saves
         // counting all ';' chars
@@ -1109,8 +1088,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private int IndexOfNextClosingBrace_ChunkAware()
     {
-        int foundIndex = UtilHelper.Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
-        return foundIndex > -1 ? foundIndex : _currentBufferChunkLength;
+        int foundIndex = UtilHelper.Array_IndexOfByte_Fast(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
+        return foundIndex > -1 ? foundIndex : _rtfBytesLength;
     }
 
     private RtfError HandleSkippableHexData(ref byte bufferRef)
@@ -1122,7 +1101,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         int startGroupLevel = _groupStackTopIndex;
 
-        while (_currentPos < _currentBufferChunkLength)
+        while (_currentPos < _rtfBytesLength)
         {
             char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
 
@@ -1180,9 +1159,9 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         int startGroupLevel = _groupStackTopIndex;
 
         int index = _currentPos;
-        while (_currentPos < _currentBufferChunkLength)
+        while (_currentPos < _rtfBytesLength)
         {
-            index = SIMD_SkipDest(ref bufferRef, index, _currentBufferChunkLength - index);
+            index = SIMD_SkipDest(ref bufferRef, index, _rtfBytesLength - index);
 
             /*
             Curly braces can be escaped like \{ and \}. But there can be an arbitrary amount of backslashes
@@ -1192,7 +1171,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             current buffer chunk, just give up and take the slow path that properly parses escapes.
             */
             if (index <= 0 ||
-                index >= _currentBufferChunkLength ||
+                index >= _rtfBytesLength ||
                 GetByteAtPos(ref bufferRef, index - 1) == '\\')
             {
                 _groupStackTopIndex = startGroupLevel;
@@ -1214,7 +1193,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 // If we find \bin, run away: it could contain unescaped curly braces that are just part of
                 // the raw binary.
                 case (byte)'\\':
-                    if (index > _currentBufferChunkLength - _binLength ||
+                    if (index > _rtfBytesLength - _binLength ||
                         (GetByteAtPos(ref bufferRef, index + 1) == 'b' &&
                          GetByteAtPos(ref bufferRef, index + 2) == 'i' &&
                          GetByteAtPos(ref bufferRef, index + 3) == 'n'))
@@ -1235,21 +1214,21 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte GetByteAtCurrentPosAndIncrement(ref byte bufferRef)
     {
-        Debug.Assert(_currentPos < _currentBufferChunkLength);
+        Debug.Assert(_currentPos < _rtfBytesLength);
         return Unsafe.AddByteOffset(ref bufferRef, (nint)IncrementCurrentPos());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte GetByteAtPos(ref byte bufferRef, int pos)
     {
-        Debug.Assert(pos < _currentBufferChunkLength);
+        Debug.Assert(pos < _rtfBytesLength);
         return Unsafe.AddByteOffset(ref bufferRef, (nint)pos);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref byte GetRefAtPos(ref byte bufferRef, int pos)
     {
-        Debug.Assert(pos < _currentBufferChunkLength);
+        Debug.Assert(pos < _rtfBytesLength);
         return ref Unsafe.AddByteOffset(ref bufferRef, (nint)pos);
     }
 
@@ -1275,18 +1254,11 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #region Buffer
 
-    private byte[] _buffer = Array.Empty<byte>();
-    private int _bufferLength;
-    private int _currentBufferChunkLength;
-
-    private void SetBufferLength(int length)
-    {
-        _bufferLength = length;
-        _currentBufferChunkLength = length;
-    }
+    private byte[] _rtfBytes = Array.Empty<byte>();
+    private int _rtfBytesLength;
 
     /// <summary>
-    /// Manually bounds-checked past <see cref="T:_currentBufferChunkLength"/>.
+    /// Manually bounds-checked past <see cref="T:_rtfBytesLength"/>.
     /// Now that we have stream support, this method should always be called for array accesses to ensure the
     /// chunks are loaded when needed. Only access <see cref="T:Array"/> directly in cases where you know for
     /// sure you don't need the chunk load triggering in your particular scenario.
@@ -1298,7 +1270,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     {
         // Very unfortunately, we have to manually bounds-check here, because our array could be longer than
         // Length (such as when it comes from a pool).
-        if (index > _currentBufferChunkLength - 1)
+        if (index > _rtfBytesLength - 1)
         {
             /*
             Putting the ThrowHelper call here makes us full speed (on the byte array path). Putting this here
@@ -1308,7 +1280,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             */
             index = HandleOutOfBounds();
         }
-        return _buffer[index];
+        return _rtfBytes[index];
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -1760,54 +1732,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 // Entry 45
         new Symbol("footerf", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
     ];
-
-    private static char[] InitControlSymbolArray()
-    {
-        char[] ret = new char[256];
-        ret['\''] = '\'';
-        /*
-        NOTE(KeywordType.Character and symbol fonts):
-        \, {, and } are the only KeywordType.Character chars that can be in a symbol font. Everything else is
-        either below 0x20 or more than one byte, which in either case means they can't be symbol font chars.
-        ~ is nominally a non-breaking space, and in RichEdit is displayed as such (or at least whitespace of
-        some kind), but in LibreOffice is displayed as a square dot when set to Wingdings (as expected).
-        We could maybe figure out a way to not have to do the symbol font check/conversion in the common case
-        where we don't need to, is the point of this whole soliloquy.
-        */
-        ret['\\'] = '\\';
-        ret['{'] = '{';
-        ret['}'] = '}';
-
-        // Non-breaking space (0xA0)
-        ret['~'] = '\xA0';
-
-        // Non-breaking hyphen (0x2011)
-        ret['_'] = '\x2011';
-
-        // Soft hyphen (Spec calls this "Optional hyphen")
-        ret['-'] = '\xAD';
-
-        // There's also \: which "specifies a subentry in an index entry" (it's not clear even from the spec what
-        // exactly an "index entry" is).
-
-        /*
-        Spec:
-        "A carriage return (character value 13) or line feed (character value 10) is treated as a \par
-        control if the character is preceded by a backslash. You must include the backslash; otherwise,
-        RTF ignores the control word."
-        */
-        ret['\r'] = '\n';
-        ret['\n'] = '\n';
-        return ret;
-    }
-
-    private static readonly char[] _controlSymbols = InitControlSymbolArray();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static char LookUpControlSymbol(byte ch)
-    {
-        return Unsafe.Add(ref GetArrayDataReference(_controlSymbols), (nint)ch);
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Symbol? LookUpControlWord(ref byte keywordRef, byte len)

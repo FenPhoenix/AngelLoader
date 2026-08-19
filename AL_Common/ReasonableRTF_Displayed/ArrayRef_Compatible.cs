@@ -49,12 +49,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref char GetArrayDataReference(char[] array)
-    {
-        return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<char>>(array).Data, _char_ByteOffset);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ref bool GetArrayDataReference(bool[] array)
     {
         return ref Unsafe.AddByteOffset(ref Unsafe.As<Pinnable<bool>>(array).Data, _bool_ByteOffset);
