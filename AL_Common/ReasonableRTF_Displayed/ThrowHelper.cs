@@ -25,7 +25,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ReasonableRTF_Displayed.Helper;
+namespace ReasonableRTF_Displayed;
 
 // Total hack so we don't have to return and check a value eight trillion times (perf)
 internal sealed class UnmatchedBraceException : Exception;
