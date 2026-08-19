@@ -4,9 +4,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace ReasonableRTF_Displayed;
+namespace AL_Common.RTF;
 
-public sealed partial class RRTF_RtfDisplayedReadmeParser
+public sealed partial class RtfDisplayedReadmeParser
 {
     internal static class PerTypeValues<T>
     {

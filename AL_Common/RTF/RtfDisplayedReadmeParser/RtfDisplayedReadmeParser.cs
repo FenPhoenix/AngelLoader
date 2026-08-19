@@ -35,43 +35,41 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using AL_Common;
 using AL_Common.CommunityToolkit;
-using AL_Common.RTF;
 using JetBrains.Annotations;
-using static AL_Common.RTF.RTFParserCommon;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF_Displayed;
+namespace AL_Common.RTF;
 
-public sealed partial class RRTF_RtfDisplayedReadmeParser
+public sealed class LangItem
+{
+    private static int GetDigitsUpTo5(int number) =>
+        number <= 9 ? 1 :
+        number <= 99 ? 2 :
+        number <= 999 ? 3 :
+        number <= 9999 ? 4 :
+        5;
+
+    public int Index;
+    public readonly int CodePage;
+    public readonly int DigitsCount;
+
+    public LangItem(int index, int codePage)
+    {
+        Index = index;
+        CodePage = codePage;
+        DigitsCount = GetDigitsUpTo5(codePage);
+    }
+}
+
+public sealed partial class RtfDisplayedReadmeParser
 {
     private List<RtfColor>? _colorTable;
     private bool _foundColorTable;
     private bool _getColorTable;
     private bool _getLangs;
 
-    public sealed class RRTF_LangItem
-    {
-        private static int GetDigitsUpTo5(int number) =>
-            number <= 9 ? 1 :
-            number <= 99 ? 2 :
-            number <= 999 ? 3 :
-            number <= 9999 ? 4 :
-            5;
-
-        public int Index;
-        public readonly int CodePage;
-        public readonly int DigitsCount;
-
-        public RRTF_LangItem(int index, int codePage)
-        {
-            Index = index;
-            CodePage = codePage;
-            DigitsCount = GetDigitsUpTo5(codePage);
-        }
-    }
-
-    private List<RRTF_LangItem>? _langItems;
+    private List<LangItem>? _langItems;
 
     #region Private fields
 
@@ -113,9 +111,9 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     #region Public API
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RRTF_RtfDisplayedReadmeParser"/> class.
+    /// Initializes a new instance of the <see cref="RtfDisplayedReadmeParser"/> class.
     /// </summary>
-    public RRTF_RtfDisplayedReadmeParser()
+    public RtfDisplayedReadmeParser()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -125,7 +123,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     }
 
     [PublicAPI]
-    public (bool Success, List<RtfColor>? ColorTable, List<RRTF_LangItem>? LangItems)
+    public (bool Success, List<RtfColor>? ColorTable, List<LangItem>? LangItems)
     GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
     {
         try
@@ -403,7 +401,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                             currentFontCodePage = _headerCodePage;
                         }
 
-                        _fontDictionary[currentFontNumber] = new FontEntry(currentFontCodePage);
+                        _fontDictionary[currentFontNumber] = new FontEntry(currentFontCodePage, SymbolFont.None);
                         currentFontNumber = NoFontNumber;
                         currentFontCodePage = NoCodePage;
                     }
@@ -656,8 +654,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         int langCodePage = LangToCodePage[param];
                         if (langCodePage == NoCodePage)
                         {
-                            _langItems ??= new List<RRTF_LangItem>();
-                            _langItems.Add(new RRTF_LangItem(_currentPos, currentCodePage));
+                            _langItems ??= new List<LangItem>();
+                            _langItems.Add(new LangItem(_currentPos, currentCodePage));
                         }
                     }
                 }
@@ -668,8 +666,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         int langCodePage = LangToCodePage[param];
                         if (langCodePage != NoCodePage && langCodePage != currentCodePage)
                         {
-                            _langItems ??= new List<RRTF_LangItem>();
-                            _langItems.Add(new RRTF_LangItem(_currentPos, langCodePage));
+                            _langItems ??= new List<LangItem>();
+                            _langItems.Add(new LangItem(_currentPos, langCodePage));
                         }
                     }
                 }

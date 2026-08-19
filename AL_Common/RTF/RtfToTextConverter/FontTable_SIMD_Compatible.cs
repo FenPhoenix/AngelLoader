@@ -2,10 +2,9 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
 public sealed partial class RtfToTextConverter
 {

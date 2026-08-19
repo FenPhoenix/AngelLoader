@@ -27,11 +27,11 @@
 
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using static AL_Common.RTF.RTFParserCommon;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF_Displayed;
+namespace AL_Common.RTF;
 
-public sealed partial class RRTF_RtfDisplayedReadmeParser
+public sealed partial class RtfDisplayedReadmeParser
 {
     #region API
 

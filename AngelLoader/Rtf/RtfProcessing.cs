@@ -6,8 +6,6 @@ using System.Drawing;
 using System.Text;
 using AL_Common.RTF;
 using AngelLoader.DataClasses;
-using ReasonableRTF_Displayed;
-using static ReasonableRTF_Displayed.RRTF_RtfDisplayedReadmeParser;
 
 namespace AngelLoader;
 
@@ -55,8 +53,8 @@ internal static class RtfProcessing
 
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
     // to make a new one every time.
-    private static RRTF_RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
-    private static RRTF_RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RRTF_RtfDisplayedReadmeParser();
+    private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
+    private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
 
     #region Colors
 
@@ -79,7 +77,7 @@ internal static class RtfProcessing
     #region Langs
 
     // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
+    private static readonly ListFast<byte> _codePageBytes = new(RtfCommon.MaxLangNumDigits + 1);
 
     private static readonly byte[] _lang = @"\lang"u8.ToArray();
 
@@ -235,7 +233,7 @@ internal static class RtfProcessing
         {
             (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
             if ((start | end) > -1 &&
-                end - (start + 5) <= RTFParserCommon.MaxLangNumDigits)
+                end - (start + 5) <= RtfCommon.MaxLangNumDigits)
             {
                 int num = 0;
                 for (int i = start + 5; i < end; i++)
@@ -248,9 +246,9 @@ internal static class RtfProcessing
                     }
                 }
 
-                if (num <= RTFParserCommon.MaxLangNumIndex)
+                if (num <= RtfCommon.MaxLangNumIndex)
                 {
-                    int codePage = RTFParserCommon.LangToCodePage[num];
+                    int codePage = RtfCommon.LangToCodePage[num];
                     // The only known broken readmes only need code page 1251 to fix them, so for now let's just
                     // only support that, to exclude as many readmes as possible from an expensive full parse.
 #if true
@@ -283,7 +281,7 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<RtfColor>? colorTable, List<RRTF_LangItem>? langItems) =
+        (bool success, List<RtfColor>? colorTable, List<LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: colorTableWorkRequired,
@@ -324,7 +322,7 @@ internal static class RtfProcessing
         {
             for (int i = 0; i < langItems.Count; i++)
             {
-                RRTF_LangItem item = langItems[i];
+                LangItem item = langItems[i];
                 item.Index += colorTableEntryLength;
                 // +1 for adding a space after the digits
                 extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
@@ -505,7 +503,7 @@ internal static class RtfProcessing
     }
 
     private static void CopyInserts(
-        List<RRTF_LangItem> langItems,
+        List<LangItem> langItems,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
         int ansiCpgLength,
@@ -516,7 +514,7 @@ internal static class RtfProcessing
         ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
         for (int i = 0; i < langItems.Count; i++)
         {
-            RRTF_LangItem item = langItems[i];
+            LangItem item = langItems[i];
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
             ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);

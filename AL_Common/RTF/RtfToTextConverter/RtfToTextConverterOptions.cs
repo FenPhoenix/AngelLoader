@@ -22,9 +22,7 @@
  * SOFTWARE.
 */
 
-using AL_Common.RTF;
-
-namespace ReasonableRTF.Models;
+namespace AL_Common.RTF;
 
 /// <summary>
 /// The options for the conversion.

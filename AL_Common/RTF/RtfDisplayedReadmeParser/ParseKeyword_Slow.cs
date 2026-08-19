@@ -1,22 +1,18 @@
-using System.Runtime.CompilerServices;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+﻿using System.Runtime.CompilerServices;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
-public sealed partial class RtfToTextConverter
+public sealed partial class RtfDisplayedReadmeParser
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseKeyword_FontTable_Slow(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
+    private RtfError ParseKeyword_Slow(ref byte bufferRef)
     {
-        param = 0;
-        fontTableKeyword = default;
-
         char ch = (char)GetByte(IncrementCurrentPos());
 
         if (!ch.IsAsciiAlpha())
         {
-            return HandleControlChar(ref bufferRef, ch);
+            return HandleControlChar(ch);
         }
         else
         {
@@ -45,6 +41,7 @@ public sealed partial class RtfToTextConverter
                 ch = (char)GetByte(IncrementCurrentPos());
             }
             bool hasParam = false;
+            int param = 0;
             if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
@@ -83,10 +80,9 @@ public sealed partial class RtfToTextConverter
 
                 if (firstChar == (byte)'f')
                 {
+                    symbol = _fontSymbol;
                     _skipDestinationIfUnknown = false;
-                    // \f default param is 0 but param will already be 0 if we didn't parse any, so no need to set it
-                    fontTableKeyword = KeywordType.F;
-                    return RtfError.OK;
+                    return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
                 }
                 else
                 {
@@ -110,10 +106,21 @@ public sealed partial class RtfToTextConverter
 
             _skipDestinationIfUnknown = false;
 
-            fontTableKeyword = symbol.KeywordType;
-            return fontTableKeyword < KeywordType.F
-                ? DispatchKeyword(ref bufferRef, symbol, param, hasParam)
-                : RtfError.OK;
+            return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
         }
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError HandleControlChar(char ch)
+    {
+        /*
+        From the spec:
+        "A control symbol consists of a backslash followed by a single, non-alphabetical character.
+        For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
+        delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
+        */
+        _skipDestinationIfUnknown = ch == '*';
+        return RtfError.OK;
     }
 }

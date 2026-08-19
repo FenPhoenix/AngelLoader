@@ -1,50 +1,44 @@
-using System.Runtime.CompilerServices;
-using AL_Common;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+﻿using System.Runtime.CompilerServices;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF_Displayed;
+namespace AL_Common.RTF;
 
-public sealed partial class RRTF_RtfDisplayedReadmeParser
+public sealed partial class RtfToTextConverter
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseKeyword_Fast(ref byte bufferRef)
+    private RtfError ParseKeyword_Slow(ref byte bufferRef)
     {
-        int startingCurrentPos = _currentPos;
-
-        char ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos);
+        char ch = (char)GetByte(IncrementCurrentPos());
 
         if (!ch.IsAsciiAlpha())
         {
-            ++_currentPos;
-
-            return HandleControlChar(ch);
+            return HandleControlChar(ref bufferRef, ch);
         }
         else
         {
-            ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + 1);
-
             Symbol? symbol;
+            ref byte keywordRef = ref GetArrayDataReference(_keyword);
+
+            Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref keywordRef, (nint)0), (byte)ch);
+            ch = (char)GetByte(IncrementCurrentPos());
+
             byte keywordCount;
             for (keywordCount = 1;
                  keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
-                 keywordCount++,
-                 ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + keywordCount))
+                 keywordCount++, ch = (char)GetByte(IncrementCurrentPos()))
             {
+                Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref keywordRef, (nint)keywordCount), (byte)ch);
             }
             if (keywordCount > KeywordMaxLen)
             {
                 return RtfError.KeywordTooLong;
             }
 
-            int accumulatedPos = startingCurrentPos + keywordCount;
-
             int negateParam = 0;
             if (ch == '-')
             {
                 negateParam = 1;
-                accumulatedPos += 1;
-                ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
+                ch = (char)GetByte(IncrementCurrentPos());
             }
             bool hasParam = false;
             int param = 0;
@@ -52,13 +46,12 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             {
                 hasParam = true;
                 long longParam = ch - '0';
-                ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + 1);
+                ch = (char)GetByte(IncrementCurrentPos());
 
                 int paramLength;
                 for (paramLength = 1;
                      paramLength < ParamMaxLen + 1 && ch.IsAsciiNumeric();
-                     paramLength++,
-                     ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + paramLength))
+                     paramLength++, ch = (char)GetByte(IncrementCurrentPos()))
                 {
                     longParam = (longParam * 10) + (ch - '0');
                 }
@@ -69,7 +62,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
                 param = (int)longParam;
 
-                accumulatedPos += paramLength;
                 /*
                 NOTE: Turns out the branches are actually faster than the branchless black magic. On all targets.
                 Go figure...
@@ -78,9 +70,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 if (negateParam == 1) param = -param;
             }
 
-            _currentPos = accumulatedPos + (ch == ' ' ? 1 : 0);
-
-            ref byte keywordRef = ref GetRefAtPos(ref bufferRef, startingCurrentPos);
+            if (ch != ' ') --_currentPos;
 
             // 33% of hit keywords and 97% of hit single-char keywords are \f, so fast-pathing nets substantial
             // performance gain.
@@ -118,5 +108,49 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
             return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
         }
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError HandleControlChar(ref byte bufferRef, char ch)
+    {
+        /*
+        From the spec:
+        "A control symbol consists of a backslash followed by a single, non-alphabetical character.
+        For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
+        delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
+        */
+
+        // Fast path for destination marker - claws us back a small amount of perf
+        if (ch == '*')
+        {
+            _skipDestinationIfUnknown = true;
+            return RtfError.OK;
+        }
+
+        char symbol = LookUpControlSymbol((byte)ch);
+
+        if (symbol == 0)
+        {
+            /*
+            NOTE(Control symbol skippable destination check):
+            Technically, only control words (not control symbols) can be destinations, so we don't necessarily
+            have to check for a skippable destination here by spec. LibreOffice skips unknown control symbol
+            "destinations", while RichEdit fails the whole read. So we'd be within reason to assume this will
+            never happen. But if we do, then any text inside a skippable control word "destination" group WILL
+            be output. It's a vanishingly unlikely scenario, but the perf loss from this check is also tiny.
+            So let's just leave it in for now.
+            */
+            if (_skipDestinationIfUnknown)
+            {
+                _skipDestinationIfUnknown = false;
+                SkipDest(ref bufferRef);
+            }
+            return RtfError.OK;
+        }
+
+        _skipDestinationIfUnknown = false;
+
+        return DispatchControlSymbol(ref bufferRef, symbol);
     }
 }

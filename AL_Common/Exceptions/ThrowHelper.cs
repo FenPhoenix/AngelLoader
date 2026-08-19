@@ -92,5 +92,5 @@ public static class ThrowHelper
     }
 
     [DoesNotReturn]
-    public static void UnmatchedBraceException() => throw new RTFParserCommon.UnmatchedBraceException();
+    public static void UnmatchedBraceException() => throw new RtfCommon.UnmatchedBraceException();
 }

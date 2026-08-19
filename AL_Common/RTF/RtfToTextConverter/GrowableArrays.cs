@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
 public sealed partial class RtfToTextConverter
 {

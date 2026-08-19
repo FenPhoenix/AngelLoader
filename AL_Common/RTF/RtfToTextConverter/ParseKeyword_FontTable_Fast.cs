@@ -1,11 +1,9 @@
 using System.Runtime.CompilerServices;
-using AL_Common;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF_Displayed;
+namespace AL_Common.RTF;
 
-public sealed partial class RRTF_RtfDisplayedReadmeParser
+public sealed partial class RtfToTextConverter
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseKeyword_FontTable_Fast(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
@@ -21,7 +19,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         {
             ++_currentPos;
 
-            return HandleControlChar(ch);
+            return HandleControlChar(ref bufferRef, ch);
         }
         else
         {

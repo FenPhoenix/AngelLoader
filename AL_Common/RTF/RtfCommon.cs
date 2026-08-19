@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace AL_Common.RTF;
 
-public static class RTFParserCommon
+public static class RtfCommon
 {
     public const int KeywordMaxLen = 32;
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)

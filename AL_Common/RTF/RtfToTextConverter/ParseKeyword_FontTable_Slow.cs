@@ -1,14 +1,16 @@
-﻿using System.Runtime.CompilerServices;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+using System.Runtime.CompilerServices;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
 public sealed partial class RtfToTextConverter
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseKeyword_Slow(ref byte bufferRef)
+    private RtfError ParseKeyword_FontTable_Slow(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
     {
+        param = 0;
+        fontTableKeyword = default;
+
         char ch = (char)GetByte(IncrementCurrentPos());
 
         if (!ch.IsAsciiAlpha())
@@ -42,7 +44,6 @@ public sealed partial class RtfToTextConverter
                 ch = (char)GetByte(IncrementCurrentPos());
             }
             bool hasParam = false;
-            int param = 0;
             if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
@@ -81,9 +82,10 @@ public sealed partial class RtfToTextConverter
 
                 if (firstChar == (byte)'f')
                 {
-                    symbol = _fontSymbol;
                     _skipDestinationIfUnknown = false;
-                    return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
+                    // \f default param is 0 but param will already be 0 if we didn't parse any, so no need to set it
+                    fontTableKeyword = KeywordType.F;
+                    return RtfError.OK;
                 }
                 else
                 {
@@ -107,51 +109,10 @@ public sealed partial class RtfToTextConverter
 
             _skipDestinationIfUnknown = false;
 
-            return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
+            fontTableKeyword = symbol.KeywordType;
+            return fontTableKeyword < KeywordType.F
+                ? DispatchKeyword(ref bufferRef, symbol, param, hasParam)
+                : RtfError.OK;
         }
-    }
-
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError HandleControlChar(ref byte bufferRef, char ch)
-    {
-        /*
-        From the spec:
-        "A control symbol consists of a backslash followed by a single, non-alphabetical character.
-        For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
-        delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
-        */
-
-        // Fast path for destination marker - claws us back a small amount of perf
-        if (ch == '*')
-        {
-            _skipDestinationIfUnknown = true;
-            return RtfError.OK;
-        }
-
-        char symbol = LookUpControlSymbol((byte)ch);
-
-        if (symbol == 0)
-        {
-            /*
-            NOTE(Control symbol skippable destination check):
-            Technically, only control words (not control symbols) can be destinations, so we don't necessarily
-            have to check for a skippable destination here by spec. LibreOffice skips unknown control symbol
-            "destinations", while RichEdit fails the whole read. So we'd be within reason to assume this will
-            never happen. But if we do, then any text inside a skippable control word "destination" group WILL
-            be output. It's a vanishingly unlikely scenario, but the perf loss from this check is also tiny.
-            So let's just leave it in for now.
-            */
-            if (_skipDestinationIfUnknown)
-            {
-                _skipDestinationIfUnknown = false;
-                SkipDest(ref bufferRef);
-            }
-            return RtfError.OK;
-        }
-
-        _skipDestinationIfUnknown = false;
-
-        return DispatchControlSymbol(ref bufferRef, symbol);
     }
 }

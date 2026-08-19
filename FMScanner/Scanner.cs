@@ -183,8 +183,8 @@ public sealed class Scanner : IDisposable
 
     private ScanOptions _scanOptions = new();
 
-    private ReasonableRTF.RtfToTextConverter? _rtfConverter;
-    private ReasonableRTF.RtfToTextConverter RtfConverter => _rtfConverter ??= new ReasonableRTF.RtfToTextConverter();
+    private RtfToTextConverter? _rtfConverter;
+    private RtfToTextConverter RtfConverter => _rtfConverter ??= new RtfToTextConverter();
 
     private FMFormat _fmFormat = FMFormat.NotInArchive;
 
@@ -3587,7 +3587,7 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.Open()
                         : readmeStream;
 
-                    ReasonableRTF.Models.RtfResult rtfResult = RtfConverter.Convert(stream);
+                    var rtfResult = RtfConverter.Convert(stream);
                     if (rtfResult.Error == RtfError.OK)
                     {
                         last.Text = rtfResult.Text;

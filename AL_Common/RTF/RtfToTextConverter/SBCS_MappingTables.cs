@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
 public sealed partial class RtfToTextConverter
 {

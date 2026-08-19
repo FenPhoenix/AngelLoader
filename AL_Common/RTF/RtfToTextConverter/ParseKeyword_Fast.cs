@@ -1,17 +1,13 @@
 using System.Runtime.CompilerServices;
-using AL_Common.RTF;
-using static AL_Common.RTF.RTFParserCommon;
+using static AL_Common.RTF.RtfCommon;
 
-namespace ReasonableRTF;
+namespace AL_Common.RTF;
 
 public sealed partial class RtfToTextConverter
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError ParseKeyword_FontTable_Fast(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
+    private RtfError ParseKeyword_Fast(ref byte bufferRef)
     {
-        param = 0;
-        fontTableKeyword = default;
-
         int startingCurrentPos = _currentPos;
 
         char ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos);
@@ -26,8 +22,8 @@ public sealed partial class RtfToTextConverter
         {
             ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + 1);
 
-            byte keywordCount;
             Symbol? symbol;
+            byte keywordCount;
             for (keywordCount = 1;
                  keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
                  keywordCount++,
@@ -49,6 +45,7 @@ public sealed partial class RtfToTextConverter
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
             }
             bool hasParam = false;
+            int param = 0;
             if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
@@ -91,10 +88,9 @@ public sealed partial class RtfToTextConverter
 
                 if (firstChar == (byte)'f')
                 {
+                    symbol = _fontSymbol;
                     _skipDestinationIfUnknown = false;
-                    // \f default param is 0 but param will already be 0 if we didn't parse any, so no need to set it
-                    fontTableKeyword = KeywordType.F;
-                    return RtfError.OK;
+                    return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
                 }
                 else
                 {
@@ -118,10 +114,7 @@ public sealed partial class RtfToTextConverter
 
             _skipDestinationIfUnknown = false;
 
-            fontTableKeyword = symbol.KeywordType;
-            return fontTableKeyword < KeywordType.F
-                ? DispatchKeyword(ref bufferRef, symbol, param, hasParam)
-                : RtfError.OK;
+            return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
         }
     }
 }
