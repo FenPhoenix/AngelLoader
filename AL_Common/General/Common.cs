@@ -150,5 +150,61 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T RunFunc<T>(Func<T> initFunc) => initFunc.Invoke();
 
+    /// <summary>Indicates whether a <see langword="char"/> is within the specified inclusive range.</summary>
+    /// <param name="c">The <see langword="char"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
+        (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether an <see langword="int"/> is within the specified inclusive range.</summary>
+    /// <param name="c">The <see langword="uint"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this int value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether a <see langword="uint"/> is within the specified inclusive range.</summary>
+    /// <param name="c">The <see langword="uint"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this uint value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether a <see langword="ushort"/> is within the specified inclusive range.</summary>
+    /// <param name="c">The <see langword="ushort"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this ushort value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
     #endregion
 }

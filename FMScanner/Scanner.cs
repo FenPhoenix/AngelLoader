@@ -3587,7 +3587,7 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.Open()
                         : readmeStream;
 
-                    var rtfResult = RtfConverter.Convert(stream);
+                    RtfResult rtfResult = RtfConverter.Convert(stream);
                     if (rtfResult.Error == RtfError.OK)
                     {
                         last.Text = rtfResult.Text;
