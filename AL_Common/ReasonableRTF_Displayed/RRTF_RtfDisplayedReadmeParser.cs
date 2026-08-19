@@ -2255,17 +2255,20 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             _getColorTable = getColorTable;
             _getLangs = getLangs;
 
-            _getLangs = false;
-
             if (!getLangs && !getColorTable)
             {
                 return (false, ColorTable: _colorTable, LangItems: _langItems);
             }
 
             RtfError error = ParseRtf();
-            return error == RtfError.OK
-                ? (true, ColorTable: _colorTable, LangItems: _langItems)
-                : (false, ColorTable: _colorTable, LangItems: _langItems);
+            if (error == RtfError.OK)
+            {
+                return (true, ColorTable: _colorTable, LangItems: _langItems);
+            }
+            else
+            {
+                return (false, ColorTable: _colorTable, LangItems: _langItems);
+            }
         }
         catch
         {
@@ -2936,9 +2939,15 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             switch (symbol.KeywordType)
             {
                 case KeywordType.Property:
+                // @RTF: Enable later once we've de-crufted
+#if false
+                    if (_getLangs && !GroupStack_CurrentSkipDest)
+#endif
+                {
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     ChangeProperty((Property)symbol.Index, param);
-                    return RtfError.OK;
+                }
+                return RtfError.OK;
                 case KeywordType.Character:
                     if (!GroupStack_CurrentPropertyHidden)
                     {
@@ -3176,6 +3185,42 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             }
             case Property.Lang:
             {
+                int currentLang = GroupStack_CurrentPropertyLang;
+
+                int groupFontNum = GroupStack_CurrentPropertyFontNum;
+                if (groupFontNum == NoFontNumber) groupFontNum = _headerDefaultFontNum;
+
+                _fontDictionary.TryGetValue(groupFontNum, out FontEntry fontEntry);
+
+                ushort headerCodePage = _headerCodePage == 0 ? (ushort)1252 : _headerCodePage;
+
+                int currentCodePage = fontEntry.IsSet && fontEntry.CodePage != NoCodePage ? fontEntry.CodePage : headerCodePage;
+
+                if (currentLang != NoLang && currentLang != _undefinedLanguage && param != _undefinedLanguage)
+                {
+                    if (param.IsBetween(0, _maxLangNumber))
+                    {
+                        int langCodePage = _langToCodePage[param];
+                        if (langCodePage == NoCodePage)
+                        {
+                            _langItems ??= new List<RRTF_LangItem>();
+                            _langItems.Add(new RRTF_LangItem(_currentPos, currentCodePage));
+                        }
+                    }
+                }
+                else
+                {
+                    if (param.IsBetween(0, _maxLangNumber))
+                    {
+                        int langCodePage = _langToCodePage[param];
+                        if (langCodePage != NoCodePage && langCodePage != currentCodePage)
+                        {
+                            _langItems ??= new List<RRTF_LangItem>();
+                            _langItems.Add(new RRTF_LangItem(_currentPos, langCodePage));
+                        }
+                    }
+                }
+
                 if (param != _undefinedLanguage)
                 {
                     GroupStack_CurrentPropertyLang = IsNonEmptyUShortParam(param) ? (ushort)param : NoLang;
