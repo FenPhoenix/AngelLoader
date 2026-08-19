@@ -23,7 +23,6 @@
 */
 
 using System.Runtime.InteropServices;
-using ReasonableRTF_Displayed.Enums;
 
 namespace ReasonableRTF_Displayed.Models.Fonts;
 
@@ -33,12 +32,10 @@ internal readonly struct FontEntry
 {
     internal readonly ushort CodePage;
     internal readonly bool IsSet;
-    internal readonly SymbolFont SymbolFont;
 
-    internal FontEntry(ushort codePage, SymbolFont symbolFont)
+    internal FontEntry(ushort codePage)
     {
         CodePage = codePage;
-        SymbolFont = symbolFont;
         IsSet = true;
     }
 }

@@ -220,7 +220,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     the current position for the next vector load to just after the \par either, because that's still slower for
     some reason. Too many overlapping loads just like the keyword thing, I guess.
     */
-    private bool SIMD_CopyPlainText(ref byte bufferRef)
+    private bool SIMD_SkipPlainText(ref byte bufferRef)
     {
         if (!Vector.IsHardwareAccelerated)
         {
@@ -255,24 +255,18 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                     int index = LocateFirstFoundByte(equals);
                     if (index > 0)
                     {
-                        CopyVector(current, index);
+                        _currentPos += index;
                     }
 
                     return true;
                 }
 
-                CopyVector(current, Vector<byte>.Count);
+                _currentPos += Vector<byte>.Count;
                 currentSearchSpace = ref Unsafe.AddByteOffset(ref currentSearchSpace, (nint)Vector<byte>.Count);
             } while (!Unsafe.IsAddressGreaterThan(ref currentSearchSpace, ref oneVectorAwayFromEnd));
         }
 
         return false;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void CopyVector(Vector<byte> current, int index)
-    {
-        _currentPos += index;
     }
 
     #endregion

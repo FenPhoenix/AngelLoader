@@ -63,38 +63,20 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         if (System.Numerics.Vector.IsHardwareAccelerated)
         {
-            bool finishedOnNonPlainTextChar = SIMD_CopyPlainText(ref bufferRef);
-
+            bool finishedOnNonPlainTextChar = SIMD_SkipPlainText(ref bufferRef);
             if (finishedOnNonPlainTextChar)
             {
                 return;
             }
         }
 
-        if (System.Numerics.Vector.IsHardwareAccelerated)
+        while (_currentPos < _currentBufferChunkLength)
         {
-            // Break out of the scalar loop at the buffer boundary, so that if the plaintext run continues
-            // after the next buffer load, we'll be able to jump back into a SIMD parse.
-            while (_currentPos < _currentBufferChunkLength)
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+            if (_isNonPlainText[(byte)ch])
             {
-                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                if (_isNonPlainText[(byte)ch])
-                {
-                    _currentPos--;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            while (_currentPos < _currentBufferChunkLength)
-            {
-                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                if (_isNonPlainText[(byte)ch])
-                {
-                    _currentPos--;
-                    return;
-                }
+                _currentPos--;
+                return;
             }
         }
     }
