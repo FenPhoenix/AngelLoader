@@ -35,12 +35,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using AL_Common;
 using AL_Common.CommunityToolkit;
 using JetBrains.Annotations;
 using ReasonableRTF_Displayed.Enums;
-using ReasonableRTF_Displayed.Extensions;
-using ReasonableRTF_Displayed.Models.Fonts;
-using ReasonableRTF_Displayed.Models.Symbols;
+using static AL_Common.RTFParserCommon;
 
 namespace ReasonableRTF_Displayed;
 
@@ -77,463 +76,9 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     #region Private fields
 
     // +1 to allow reading one beyond the max and then checking for it to return an error
-    private readonly byte[] _keyword = new byte[_keywordMaxLen + 1];
-
-    private const int _keywordParseMaxRequiredBytes =
-        _keywordMaxLen + 1 + // +1 to read one beyond for length checking purposes
-        1 + // Minus sign
-        _paramMaxLen + 1 + // +1 to read one beyond for length checking purposes
-        1; // Space at end
-
-    // "\bin"
-    private const int _binLength = 4;
-    private readonly uint _binUInt = BitConverter.IsLittleEndian ? 0x6E69625Cu : 0x5C62696Eu;
+    private readonly byte[] _keyword = new byte[KeywordMaxLen + 1];
 
     private const int _internalBufferDefaultCapacity = 32;
-
-    /// <summary>
-    /// Since font numbers can be negative, let's just use a slightly less likely value than the already unlikely
-    /// enough -1...
-    /// </summary>
-    private const int NoFontNumber = int.MinValue;
-    private const ushort NoLang = ushort.MaxValue;
-    private const ushort NoCodePage = ushort.MaxValue;
-
-    private const int _keywordMaxLen = 32;
-    // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
-    private const int _paramMaxLen = 10;
-
-    private const int _undefinedLanguage = 1024;
-
-    #region Tables
-
-    #region Conversion tables
-
-    #region Charset to code page
-
-    private const int _charSetToCodePageLength = 256;
-
-    private static readonly ushort[] _charSetToCodePage =
-    [
-        1252, // 0 - "ANSI" (1252) (Yes, this is specified as _explicitly_ 1252, so this isn't a straggling 1252-default)
-        0, // 1 - Default
-        42, // 2 - Symbol
-        NoCodePage, // 3
-        NoCodePage, // 4
-        NoCodePage, // 5
-        NoCodePage, // 6
-        NoCodePage, // 7
-        NoCodePage, // 8
-        NoCodePage, // 9
-        NoCodePage, // 10
-        NoCodePage, // 11
-        NoCodePage, // 12
-        NoCodePage, // 13
-        NoCodePage, // 14
-        NoCodePage, // 15
-        NoCodePage, // 16
-        NoCodePage, // 17
-        NoCodePage, // 18
-        NoCodePage, // 19
-        NoCodePage, // 20
-        NoCodePage, // 21
-        NoCodePage, // 22
-        NoCodePage, // 23
-        NoCodePage, // 24
-        NoCodePage, // 25
-        NoCodePage, // 26
-        NoCodePage, // 27
-        NoCodePage, // 28
-        NoCodePage, // 29
-        NoCodePage, // 30
-        NoCodePage, // 31
-        NoCodePage, // 32
-        NoCodePage, // 33
-        NoCodePage, // 34
-        NoCodePage, // 35
-        NoCodePage, // 36
-        NoCodePage, // 37
-        NoCodePage, // 38
-        NoCodePage, // 39
-        NoCodePage, // 40
-        NoCodePage, // 41
-        NoCodePage, // 42
-        NoCodePage, // 43
-        NoCodePage, // 44
-        NoCodePage, // 45
-        NoCodePage, // 46
-        NoCodePage, // 47
-        NoCodePage, // 48
-        NoCodePage, // 49
-        NoCodePage, // 50
-        NoCodePage, // 51
-        NoCodePage, // 52
-        NoCodePage, // 53
-        NoCodePage, // 54
-        NoCodePage, // 55
-        NoCodePage, // 56
-        NoCodePage, // 57
-        NoCodePage, // 58
-        NoCodePage, // 59
-        NoCodePage, // 60
-        NoCodePage, // 61
-        NoCodePage, // 62
-        NoCodePage, // 63
-        NoCodePage, // 64
-        NoCodePage, // 65
-        NoCodePage, // 66
-        NoCodePage, // 67
-        NoCodePage, // 68
-        NoCodePage, // 69
-        NoCodePage, // 70
-        NoCodePage, // 71
-        NoCodePage, // 72
-        NoCodePage, // 73
-        NoCodePage, // 74
-        NoCodePage, // 75
-        NoCodePage, // 76
-        10000, // 77 - Mac Roman
-        10001, // 78 - Mac Shift Jis
-        10003, // 79 - Mac Hangul
-        10008, // 80 - Mac GB2312
-        10002, // 81 - Mac Big5
-        NoCodePage, // 82 - Mac Johab (old) (codepage unknown)
-        10005, // 83 - Mac Hebrew
-        10004, // 84 - Mac Arabic
-        10006, // 85 - Mac Greek
-        10081, // 86 - Mac Turkish
-        10021, // 87 - Mac Thai
-        10029, // 88 - Mac East Europe
-        10007, // 89 - Mac Russian
-        NoCodePage, // 90
-        NoCodePage, // 91
-        NoCodePage, // 92
-        NoCodePage, // 93
-        NoCodePage, // 94
-        NoCodePage, // 95
-        NoCodePage, // 96
-        NoCodePage, // 97
-        NoCodePage, // 98
-        NoCodePage, // 99
-        NoCodePage, // 100
-        NoCodePage, // 101
-        NoCodePage, // 102
-        NoCodePage, // 103
-        NoCodePage, // 104
-        NoCodePage, // 105
-        NoCodePage, // 106
-        NoCodePage, // 107
-        NoCodePage, // 108
-        NoCodePage, // 109
-        NoCodePage, // 110
-        NoCodePage, // 111
-        NoCodePage, // 112
-        NoCodePage, // 113
-        NoCodePage, // 114
-        NoCodePage, // 115
-        NoCodePage, // 116
-        NoCodePage, // 117
-        NoCodePage, // 118
-        NoCodePage, // 119
-        NoCodePage, // 120
-        NoCodePage, // 121
-        NoCodePage, // 122
-        NoCodePage, // 123
-        NoCodePage, // 124
-        NoCodePage, // 125
-        NoCodePage, // 126
-        NoCodePage, // 127
-        932, // 128 - Shift JIS (Windows-31J) (932)
-        949, // 129 - Hangul
-        1361, // 130 - Johab
-        NoCodePage, // 131
-        NoCodePage, // 132
-        NoCodePage, // 133
-        936, // 134 - GB2312
-        NoCodePage, // 135
-        950, // 136 - Big5
-        NoCodePage, // 137
-        NoCodePage, // 138
-        NoCodePage, // 139
-        NoCodePage, // 140
-        NoCodePage, // 141
-        NoCodePage, // 142
-        NoCodePage, // 143
-        NoCodePage, // 144
-        NoCodePage, // 145
-        NoCodePage, // 146
-        NoCodePage, // 147
-        NoCodePage, // 148
-        NoCodePage, // 149
-        NoCodePage, // 150
-        NoCodePage, // 151
-        NoCodePage, // 152
-        NoCodePage, // 153
-        NoCodePage, // 154
-        NoCodePage, // 155
-        NoCodePage, // 156
-        NoCodePage, // 157
-        NoCodePage, // 158
-        NoCodePage, // 159
-        NoCodePage, // 160
-        1253, // 161 - Greek
-        1254, // 162 - Turkish
-        1258, // 163 - Vietnamese
-        NoCodePage, // 164
-        NoCodePage, // 165
-        NoCodePage, // 166
-        NoCodePage, // 167
-        NoCodePage, // 168
-        NoCodePage, // 169
-        NoCodePage, // 170
-        NoCodePage, // 171
-        NoCodePage, // 172
-        NoCodePage, // 173
-        NoCodePage, // 174
-        NoCodePage, // 175
-        NoCodePage, // 176
-        1255, // 177 - Hebrew
-        1256, // 178 - Arabic
-        NoCodePage, // 179 - Arabic Traditional (old) (codepage unknown)
-        NoCodePage, // 180 - Arabic user (old) (codepage unknown)
-        NoCodePage, // 181 - Hebrew user (old) (codepage unknown)
-        NoCodePage, // 182
-        NoCodePage, // 183
-        NoCodePage, // 184
-        NoCodePage, // 185
-        1257, // 186 - Baltic
-        NoCodePage, // 187
-        NoCodePage, // 188
-        NoCodePage, // 189
-        NoCodePage, // 190
-        NoCodePage, // 191
-        NoCodePage, // 192
-        NoCodePage, // 193
-        NoCodePage, // 194
-        NoCodePage, // 195
-        NoCodePage, // 196
-        NoCodePage, // 197
-        NoCodePage, // 198
-        NoCodePage, // 199
-        NoCodePage, // 200
-        NoCodePage, // 201
-        NoCodePage, // 202
-        NoCodePage, // 203
-        1251, // 204 - Russian
-        NoCodePage, // 205
-        NoCodePage, // 206
-        NoCodePage, // 207
-        NoCodePage, // 208
-        NoCodePage, // 209
-        NoCodePage, // 210
-        NoCodePage, // 211
-        NoCodePage, // 212
-        NoCodePage, // 213
-        NoCodePage, // 214
-        NoCodePage, // 215
-        NoCodePage, // 216
-        NoCodePage, // 217
-        NoCodePage, // 218
-        NoCodePage, // 219
-        NoCodePage, // 220
-        NoCodePage, // 221
-        874, // 222 - Thai
-        NoCodePage, // 223
-        NoCodePage, // 224
-        NoCodePage, // 225
-        NoCodePage, // 226
-        NoCodePage, // 227
-        NoCodePage, // 228
-        NoCodePage, // 229
-        NoCodePage, // 230
-        NoCodePage, // 231
-        NoCodePage, // 232
-        NoCodePage, // 233
-        NoCodePage, // 234
-        NoCodePage, // 235
-        NoCodePage, // 236
-        NoCodePage, // 237
-        1250, // 238 - Eastern European
-        NoCodePage, // 239
-        NoCodePage, // 240
-        NoCodePage, // 241
-        NoCodePage, // 242
-        NoCodePage, // 243
-        NoCodePage, // 244
-        NoCodePage, // 245
-        NoCodePage, // 246
-        NoCodePage, // 247
-        NoCodePage, // 248
-        NoCodePage, // 249
-        NoCodePage, // 250
-        NoCodePage, // 251
-        NoCodePage, // 252
-        NoCodePage, // 253
-        437, // 254 - PC 437
-        850, // 255 - OEM
-    ];
-
-    #endregion
-
-    #region Lang to code page
-
-    private const int _maxLangNumber = 16385;
-    private static readonly ushort[] _langToCodePage = InitializeLangToCodePage();
-
-    private static ushort[] InitializeLangToCodePage()
-    {
-        ushort[] langToCodePage = InitializedArray(_maxLangNumber + 1, NoCodePage);
-
-        /*
-        There's a ton more languages than this, but it's not clear what code page they all translate to.
-        This should be enough to get on with for now though...
-
-        Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
-        */
-
-        // Arabic
-        langToCodePage[1065] = 1256;
-        langToCodePage[1025] = 1256;
-        langToCodePage[2049] = 1256;
-        langToCodePage[3073] = 1256;
-        langToCodePage[4097] = 1256;
-        langToCodePage[5121] = 1256;
-        langToCodePage[6145] = 1256;
-        langToCodePage[7169] = 1256;
-        langToCodePage[8193] = 1256;
-        langToCodePage[9217] = 1256;
-        langToCodePage[10241] = 1256;
-        langToCodePage[11265] = 1256;
-        langToCodePage[12289] = 1256;
-        langToCodePage[13313] = 1256;
-        langToCodePage[14337] = 1256;
-        langToCodePage[15361] = 1256;
-        langToCodePage[16385] = 1256;
-        langToCodePage[1056] = 1256;
-        langToCodePage[2118] = 1256;
-        langToCodePage[2137] = 1256;
-        langToCodePage[1119] = 1256;
-        langToCodePage[1120] = 1256;
-        langToCodePage[1123] = 1256;
-        langToCodePage[1164] = 1256;
-
-        // Cyrillic
-        langToCodePage[1049] = 1251;
-        langToCodePage[1026] = 1251;
-        langToCodePage[10266] = 1251;
-        langToCodePage[1058] = 1251;
-        langToCodePage[2073] = 1251;
-        langToCodePage[3098] = 1251;
-        langToCodePage[7194] = 1251;
-        langToCodePage[8218] = 1251;
-        langToCodePage[12314] = 1251;
-        langToCodePage[1059] = 1251;
-        langToCodePage[1064] = 1251;
-        langToCodePage[2092] = 1251;
-        langToCodePage[1071] = 1251;
-        langToCodePage[1087] = 1251;
-        langToCodePage[1088] = 1251;
-        langToCodePage[2115] = 1251;
-        langToCodePage[1092] = 1251;
-        langToCodePage[1104] = 1251;
-        langToCodePage[1133] = 1251;
-        langToCodePage[1157] = 1251;
-
-        // Greek
-        langToCodePage[1032] = 1253;
-
-        // Hebrew
-        langToCodePage[1037] = 1255;
-        langToCodePage[1085] = 1255;
-
-        // Vietnamese
-        langToCodePage[1066] = 1258;
-
-        // Western European
-        langToCodePage[1033] = 1252;
-
-        return langToCodePage;
-    }
-
-    #endregion
-
-    #endregion
-
-    // Perf: On modern .NET, the "ReadOnlySpan<> x =>" pattern removes bounds checking (assuming you index with a
-    // numeric type that's <= the length of the span), and generates only a tiny amount of asm. But on Framework,
-    // the JIT doesn't recognize the pattern, and performance is catastrophic. So ugly ifdefs everywhere it is...
-    private static readonly bool[] _isNonPlainText =
-    [
-        true, // '\0' (0)
-        false, false, false, false, false, false, false, false, false,
-        true, // '\n' (10)
-        false, false,
-        true, // '\r' (13)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false,
-        true, // '\\' (92)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        true, // '{' (123)
-        false,
-        true, // '}' (125)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-    ];
-
-    private static ReadOnlySpan<bool> _isIgnoreChar =>
-    [
-        true, // '\0' (0)
-        false, false, false, false, false, false, false, false, false,
-        true, // '\n' (10)
-        false, false,
-        true, // '\r' (13)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false,
-    ];
-
-    #endregion
 
     #region Resettables
 
@@ -654,11 +199,86 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #region Parse
 
+    private RtfError ParseRtf()
+    {
+        // Avoid bounds checks by passing a buffer reference everywhere. We do our own bounds checking.
+        ref byte bufferRef = ref GetArrayDataReference(_rtfBytes);
+        ref bool isNonPlainTextCharRef = ref GetArrayDataReference(IsNonPlainText);
+        ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(IsIgnoreChar);
+
+        while (_currentPos < _rtfBytesLength)
+        {
+            if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
+
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+
+            // Ordered by most frequently appearing first
+            switch (ch)
+            {
+                case '\\':
+                    RtfError ec = ParseKeyword(ref bufferRef);
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '{':
+                    GroupStack_DeepCopyToNext();
+                    break;
+                case '}':
+                    if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
+                    --_groupStackTopIndex;
+                    if (_groupStackTopIndex == 0) return RtfError.OK;
+                    break;
+                default:
+                {
+                    if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
+                        !GroupStack_CurrentSkipDest)
+                    {
+                        // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
+                        char currentChar = (char)(_currentPos < _rtfBytesLength
+                            ? GetByteAtPos(ref bufferRef, _currentPos)
+                            : GetByte(_currentPos));
+
+                        if (!Unsafe.AddByteOffset(ref isNonPlainTextCharRef, (nint)currentChar))
+                        {
+                            HandlePlainTextRun(ref bufferRef);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        return _groupStackTopIndex > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
+    }
+
+    private void HandlePlainTextRun(ref byte bufferRef)
+    {
+        _currentPos--;
+
+        if (System.Numerics.Vector.IsHardwareAccelerated)
+        {
+            bool finishedOnNonPlainTextChar = SIMD_SkipPlainText(ref bufferRef);
+            if (finishedOnNonPlainTextChar)
+            {
+                return;
+            }
+        }
+
+        while (_currentPos < _rtfBytesLength)
+        {
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+            if (IsNonPlainText[(byte)ch])
+            {
+                _currentPos--;
+                return;
+            }
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseKeyword(ref byte bufferRef)
     {
         // The keyword parsers are JIT inlined now, so make sure to have only one call to each!
-        if (_currentPos < _rtfBytesLength - _keywordParseMaxRequiredBytes)
+        if (_currentPos < _rtfBytesLength - KeywordParseMaxRequiredBytes)
         {
             return ParseKeyword_Fast(ref bufferRef);
         }
@@ -671,7 +291,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError ParseKeyword_FontTable(ref byte bufferRef, out KeywordType fontTableKeyword, out int param)
     {
-        if (_currentPos < _rtfBytesLength - _keywordParseMaxRequiredBytes)
+        if (_currentPos < _rtfBytesLength - KeywordParseMaxRequiredBytes)
         {
             return ParseKeyword_FontTable_Fast(ref bufferRef, out fontTableKeyword, out param);
         }
@@ -749,8 +369,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         {
                             case KeywordType.FCharset:
                             {
-                                currentFontCodePage = param.IsBetween(0, _charSetToCodePageLength - 1)
-                                    ? _charSetToCodePage[param]
+                                currentFontCodePage = param.IsBetween(0, CharSetToCodePageLength - 1)
+                                    ? CharSetToCodePage[param]
                                     : _headerCodePage;
                                 break;
                             }
@@ -799,7 +419,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool ShouldUseSimdFontNameCodePath()
     {
-        return System.Numerics.Vector.IsHardwareAccelerated && _vectorLengthFitsInAByte;
+        return System.Numerics.Vector.IsHardwareAccelerated && VectorLengthFitsInAByte;
     }
 
     #endregion
@@ -1029,11 +649,11 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
                 int currentCodePage = fontEntry.IsSet && fontEntry.CodePage != NoCodePage ? fontEntry.CodePage : headerCodePage;
 
-                if (currentLang != NoLang && currentLang != _undefinedLanguage && param != _undefinedLanguage)
+                if (currentLang != NoLang && currentLang != UndefinedLanguage && param != UndefinedLanguage)
                 {
-                    if (param.IsBetween(0, _maxLangNumber))
+                    if (param.IsBetween(0, MaxLangNumIndex))
                     {
-                        int langCodePage = _langToCodePage[param];
+                        int langCodePage = LangToCodePage[param];
                         if (langCodePage == NoCodePage)
                         {
                             _langItems ??= new List<RRTF_LangItem>();
@@ -1043,9 +663,9 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 }
                 else
                 {
-                    if (param.IsBetween(0, _maxLangNumber))
+                    if (param.IsBetween(0, MaxLangNumIndex))
                     {
-                        int langCodePage = _langToCodePage[param];
+                        int langCodePage = LangToCodePage[param];
                         if (langCodePage != NoCodePage && langCodePage != currentCodePage)
                         {
                             _langItems ??= new List<RRTF_LangItem>();
@@ -1054,7 +674,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                     }
                 }
 
-                if (param != _undefinedLanguage)
+                if (param != UndefinedLanguage)
                 {
                     GroupStack_CurrentPropertyLang = IsNonEmptyUShortParam(param) ? (ushort)param : NoLang;
                 }
@@ -1216,7 +836,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 // If we find \bin, run away: it could contain unescaped curly braces that are just part of
                 // the raw binary.
                 case (byte)'\\':
-                    if (index > _rtfBytesLength - _binLength ||
+                    if (index > _rtfBytesLength - BinLength ||
                         (GetByteAtPos(ref bufferRef, index + 1) == 'b' &&
                          GetByteAtPos(ref bufferRef, index + 2) == 'i' &&
                          GetByteAtPos(ref bufferRef, index + 3) == 'n'))
@@ -1804,7 +1424,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         return Unsafe.AddByteOffset(ref keywordRef, (nint)pos);
     }
 
-    private static Symbol?[] InitSingleCharSymbolTable()
+    private static readonly Symbol?[] _singleCharSymbolTable = RunFunc(static () =>
     {
         Symbol?[] ret = new Symbol?[256];
 
@@ -1812,9 +1432,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         ret['v'] = new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden);
 
         return ret;
-    }
-
-    private static readonly Symbol?[] _singleCharSymbolTable = InitSingleCharSymbolTable();
+    });
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Symbol? LookUpControlWord_LengthOne(byte firstChar)

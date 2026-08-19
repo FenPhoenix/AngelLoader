@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ReasonableRTF.Enums;
 using ReasonableRTF.Extensions;
+using static AL_Common.RTFParserCommon;
 
 namespace ReasonableRTF;
 
@@ -46,13 +47,13 @@ public sealed partial class RtfToTextConverter
             ref byte searchSpace = ref GetRefAtPos(ref bufferRef, _currentPos);
             Vector<byte> vector = Unsafe.ReadUnaligned<Vector<byte>>(ref searchSpace);
             Vector<byte> equalsTerminatingChar =
-                Vector.Equals(_zeroVector, vector) |
-                Vector.Equals(_lfVector, vector) |
-                Vector.Equals(_crVector, vector) |
-                Vector.Equals(_backslashVector, vector) |
-                Vector.Equals(_openBraceVector, vector) |
-                Vector.Equals(_closingBraceVector, vector) |
-                Vector.Equals(_semicolonVector, vector);
+                Vector.Equals(ZeroVector, vector) |
+                Vector.Equals(LF_Vector, vector) |
+                Vector.Equals(CR_Vector, vector) |
+                Vector.Equals(BackslashVector, vector) |
+                Vector.Equals(OpenBraceVector, vector) |
+                Vector.Equals(ClosingBraceVector, vector) |
+                Vector.Equals(SemicolonVector, vector);
 
             if (equalsTerminatingChar != Vector<byte>.Zero)
             {
@@ -65,7 +66,7 @@ public sealed partial class RtfToTextConverter
                     return SymbolFont.None;
                 }
 
-                Vector<byte> maskVec = Vector.GreaterThan(new Vector<byte>((byte)terminatingCharIndex), _indexVec);
+                Vector<byte> maskVec = Vector.GreaterThan(new Vector<byte>((byte)terminatingCharIndex), IndexVec);
                 Vector<byte> fontName = Vector.BitwiseAnd(vector, maskVec);
 
                 _currentPos += ch == ';' ? terminatingCharIndex + 1 : terminatingCharIndex;
@@ -74,7 +75,7 @@ public sealed partial class RtfToTextConverter
             else
             {
                 ch = (char)GetByteAtPos(ref bufferRef, _currentPos + Vector<byte>.Count);
-                if (ch == ';' || _isNonPlainText[(byte)ch])
+                if (ch == ';' || IsNonPlainText[(byte)ch])
                 {
                     if (EarlyOut(Vector<byte>.Count))
                     {

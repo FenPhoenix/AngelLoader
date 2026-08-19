@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
+using ReasonableRTF.Helper;
 
 namespace AL_Common;
 
@@ -85,8 +86,11 @@ public static class ThrowHelper
     }
 
     [DoesNotReturn]
-    internal static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(string argument)
+    public static void ThrowArgumentOutOfRange_IndexMustBeLessOrEqualException(string argument)
     {
         throw new ArgumentOutOfRangeException(argument, SR.ArgumentOutOfRange_IndexMustBeLessOrEqual);
     }
+
+    [DoesNotReturn]
+    public static void UnmatchedBraceException() => throw new RTFParserCommon.UnmatchedBraceException();
 }

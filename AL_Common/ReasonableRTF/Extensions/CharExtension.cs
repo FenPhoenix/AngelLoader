@@ -31,16 +31,6 @@ namespace ReasonableRTF.Extensions;
 
 internal static class CharExtension
 {
-    /// <summary>Indicates whether a character is categorized as an ASCII letter.</summary>
-    /// <param name="c">The character to evaluate.</param>
-    /// <returns>true if <paramref name="c"/> is an ASCII letter; otherwise, false.</returns>
-    /// <remarks>
-    /// This determines whether the character is in the range 'A' through 'Z', inclusive,
-    /// or 'a' through 'z', inclusive.
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsAsciiLetter(char c) => (uint)((c | 0x20) - 'a') <= 'z' - 'a';
-
     /// <summary>Map from an ASCII char to its hex value, e.g. arr['b'] == 11. 0xFF means it's not a hex digit.</summary>
     internal static readonly byte[] CharToHexLookup =
     [
@@ -108,39 +98,4 @@ internal static class CharExtension
     {
         return c >= CharToHexLookup.Length ? 0xFF : CharToHexLookup[c];
     }
-
-    /// <summary>Indicates whether a character is categorized as an ASCII digit.</summary>
-    /// <param name="c">The character to evaluate.</param>
-    /// <returns>true if <paramref name="c"/> is an ASCII digit; otherwise, false.</returns>
-    /// <remarks>
-    /// This determines whether the character is in the range '0' through '9', inclusive.
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsAsciiDigit(char c) => IsBetween(c, '0', '9');
-
-    /// <summary>Indicates whether a character is within the specified inclusive range.</summary>
-    /// <param name="c">The character to evaluate.</param>
-    /// <param name="minInclusive">The lower bound, inclusive.</param>
-    /// <param name="maxInclusive">The upper bound, inclusive.</param>
-    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
-    /// <remarks>
-    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
-    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
-    /// <paramref name="minInclusive"/>, the behavior is undefined.
-    /// </remarks>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
-        (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsBetween(this int value, int minInclusive, int maxInclusive) =>
-        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsBetween(this uint value, int minInclusive, int maxInclusive) =>
-        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static bool IsBetween(this ushort value, int minInclusive, int maxInclusive) =>
-        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
 }

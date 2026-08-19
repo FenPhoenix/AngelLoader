@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using ReasonableRTF.Enums;
 using ReasonableRTF.Extensions;
 using ReasonableRTF.Models.Symbols;
+using static AL_Common.RTFParserCommon;
 
 namespace ReasonableRTF;
 
@@ -17,7 +18,7 @@ public sealed partial class RtfToTextConverter
 
         char ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos);
 
-        if (!CharExtension.IsAsciiLetter(ch))
+        if (!ch.IsAsciiAlpha())
         {
             ++_currentPos;
 
@@ -30,12 +31,12 @@ public sealed partial class RtfToTextConverter
             byte keywordCount;
             Symbol? symbol;
             for (keywordCount = 1;
-                 keywordCount < _keywordMaxLen + 1 && CharExtension.IsAsciiLetter(ch);
+                 keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
                  keywordCount++,
                  ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + keywordCount))
             {
             }
-            if (keywordCount > _keywordMaxLen)
+            if (keywordCount > KeywordMaxLen)
             {
                 return RtfError.KeywordTooLong;
             }
@@ -50,7 +51,7 @@ public sealed partial class RtfToTextConverter
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
             }
             bool hasParam = false;
-            if (CharExtension.IsAsciiDigit(ch))
+            if (ch.IsAsciiNumeric())
             {
                 hasParam = true;
                 long longParam = ch - '0';
@@ -58,13 +59,13 @@ public sealed partial class RtfToTextConverter
 
                 int paramLength;
                 for (paramLength = 1;
-                     paramLength < _paramMaxLen + 1 && CharExtension.IsAsciiDigit(ch);
+                     paramLength < ParamMaxLen + 1 && ch.IsAsciiNumeric();
                      paramLength++,
                      ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + paramLength))
                 {
                     longParam = (longParam * 10) + (ch - '0');
                 }
-                if (paramLength > _paramMaxLen || longParam > int.MaxValue)
+                if (paramLength > ParamMaxLen || longParam > int.MaxValue)
                 {
                     return RtfError.ParameterOutOfRange;
                 }

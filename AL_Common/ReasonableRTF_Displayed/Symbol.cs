@@ -24,7 +24,7 @@
 
 using ReasonableRTF_Displayed.Enums;
 
-namespace ReasonableRTF_Displayed.Models.Symbols;
+namespace ReasonableRTF_Displayed;
 
 internal sealed class Symbol
 {

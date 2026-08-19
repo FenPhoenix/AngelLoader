@@ -24,7 +24,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace ReasonableRTF_Displayed.Models.Fonts;
+namespace ReasonableRTF_Displayed;
 
 // Sequential makes it 4 bytes on all targets. If Auto, then it's 8 bytes on .NET Framework x64.
 [StructLayout(LayoutKind.Sequential)]
