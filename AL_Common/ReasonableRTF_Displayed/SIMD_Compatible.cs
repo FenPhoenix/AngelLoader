@@ -274,13 +274,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void CopyVector(Vector<byte> current, int index)
     {
-        Vector.Widen(current, out Vector<ushort> lower, out Vector<ushort> upper);
-
-        PlainText_EnsureCapacity(_plainText_Count + Vector<byte>.Count);
-        lower.CopyTo(Unsafe.As<char[], ushort[]>(ref _plainText), _plainText_Count);
-        upper.CopyTo(Unsafe.As<char[], ushort[]>(ref _plainText), _plainText_Count + (Vector<byte>.Count / 2));
-
-        _plainText_Count += index;
         _currentPos += index;
     }
 
