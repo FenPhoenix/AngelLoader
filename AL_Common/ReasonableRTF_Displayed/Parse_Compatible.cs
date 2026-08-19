@@ -13,47 +13,44 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         ref bool isNonPlainTextCharRef = ref GetArrayDataReference(_isNonPlainText);
         ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(_isIgnoreChar);
 
-        while (!_reachedEndOfStream)
+        while (_currentPos < _currentBufferChunkLength)
         {
-            while (_currentPos < _currentBufferChunkLength)
+            if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
+
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+
+            // Ordered by most frequently appearing first
+            switch (ch)
             {
-                if (!_getLangs && _getColorTable && _foundColorTable) return RtfError.OK;
-
-                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-
-                // Ordered by most frequently appearing first
-                switch (ch)
+                case '\\':
+                    RtfError ec = ParseKeyword(ref bufferRef);
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '{':
+                    GroupStack_DeepCopyToNext();
+                    break;
+                case '}':
+                    if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
+                    --_groupStackTopIndex;
+                    if (_groupStackTopIndex == 0) return RtfError.OK;
+                    break;
+                default:
                 {
-                    case '\\':
-                        RtfError ec = ParseKeyword(ref bufferRef);
-                        if (ec != RtfError.OK) return ec;
-                        break;
-                    case '{':
-                        GroupStack_DeepCopyToNext();
-                        break;
-                    case '}':
-                        if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
-                        --_groupStackTopIndex;
-                        if (_groupStackTopIndex == 0) return RtfError.OK;
-                        break;
-                    default:
+                    if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
+                        !GroupStack_CurrentSkipDest &&
+                        !GroupStack_CurrentPropertyHidden)
                     {
-                        if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
-                            !GroupStack_CurrentSkipDest &&
-                            !GroupStack_CurrentPropertyHidden)
-                        {
-                            // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
-                            char currentChar = (char)(_currentPos < _currentBufferChunkLength
-                                ? GetByteAtPos(ref bufferRef, _currentPos)
-                                : GetByte(_currentPos));
+                        // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
+                        char currentChar = (char)(_currentPos < _currentBufferChunkLength
+                            ? GetByteAtPos(ref bufferRef, _currentPos)
+                            : GetByte(_currentPos));
 
-                            if (!Unsafe.AddByteOffset(ref isNonPlainTextCharRef, (nint)currentChar))
-                            {
-                                HandlePlainTextRun(ref bufferRef);
-                            }
+                        if (!Unsafe.AddByteOffset(ref isNonPlainTextCharRef, (nint)currentChar))
+                        {
+                            HandlePlainTextRun(ref bufferRef);
                         }
-                        break;
                     }
+                    break;
                 }
             }
         }
@@ -69,16 +66,13 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         if (symbolFont > SymbolFont.None)
         {
             uint[] table = _symbolFontTables[(int)symbolFont];
-            while (!_reachedEndOfStream)
+            while (_currentPos < _currentBufferChunkLength)
             {
-                while (_currentPos < _currentBufferChunkLength)
+                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+                if (_isNonPlainText[(byte)ch])
                 {
-                    char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                    if (_isNonPlainText[(byte)ch])
-                    {
-                        _currentPos--;
-                        return;
-                    }
+                    _currentPos--;
+                    return;
                 }
             }
         }
@@ -110,16 +104,13 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             }
             else
             {
-                while (!_reachedEndOfStream)
+                while (_currentPos < _currentBufferChunkLength)
                 {
-                    while (_currentPos < _currentBufferChunkLength)
+                    char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+                    if (_isNonPlainText[(byte)ch])
                     {
-                        char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                        if (_isNonPlainText[(byte)ch])
-                        {
-                            _currentPos--;
-                            return;
-                        }
+                        _currentPos--;
+                        return;
                     }
                 }
             }

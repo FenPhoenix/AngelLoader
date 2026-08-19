@@ -32,7 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -2038,8 +2037,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private Dictionary<int, FontEntry> _fontDictionary;
 
-    private bool _reachedEndOfStream;
-
     private int _leadingBufferByteCount;
 
     private bool _skipDestinationIfUnknown;
@@ -2177,8 +2174,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         #region Reset
 
-        _reachedEndOfStream = false;
-
         GroupStack_Reset();
         _fontDictionary.Clear();
 
@@ -2266,108 +2261,105 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         int currentFontNumber = NoFontNumber;
         ushort currentFontCodePage = NoCodePage;
 
-        while (!_reachedEndOfStream)
+        while (_currentPos < _currentBufferChunkLength)
         {
-            while (_currentPos < _currentBufferChunkLength)
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+
+            switch (ch)
             {
-                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-
-                switch (ch)
-                {
-                    case '{':
-                        GroupStack_DeepCopyToNext();
-                        break;
-                    case '}':
-                        if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
-                        --_groupStackTopIndex;
-                        if (_groupStackTopIndex < fontTableGroupLevel)
-                        {
-                            // We can't actually set the symbol font as soon as we see \deffN, because we won't
-                            // have any font entry objects yet. Now that we do, we can retroactively set all
-                            // previous groups' fonts as appropriate, as if they had propagated up automatically.
-                            int defaultFontNum = _headerDefaultFontNum;
-                            if (_fontDictionary.TryGetValue(defaultFontNum, out FontEntry fontEntry))
-                            {
-                                SymbolFont symbolFont = fontEntry.SymbolFont;
-                                /*
-                                Start at 1 because the "base" group is still inside an opening { so it's really
-                                group 1.
-                                NOTE: The <= is correct. It's an index, not a length.
-                                */
-                                for (int i = 1; i <= _groupStackTopIndex; i++)
-                                {
-                                    if (_groupStackFrames[i].PropFontNum == NoFontNumber)
-                                    {
-                                        _groupStackFrames[i].PropFontNum = defaultFontNum;
-                                        _groupStackFrames[i].SymbolFont = symbolFont;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-
-                            _inFontTable = false;
-                            return RtfError.OK;
-                        }
-                        break;
-                    case '\\':
-                        RtfError error = ParseKeyword_FontTable(
-                            ref bufferRef,
-                            out KeywordType fontTableKeyword,
-                            out int param);
-                        if (error != RtfError.OK) return error;
-
-                        if (fontTableKeyword == KeywordType.F)
-                        {
-                            currentFontNumber = param;
-                        }
-                        else if (currentFontNumber > NoFontNumber)
-                        {
-                            switch (fontTableKeyword)
-                            {
-                                case KeywordType.FCharset:
-                                {
-                                    currentFontCodePage = param.IsBetween(0, _charSetToCodePageLength - 1)
-                                        ? _charSetToCodePage[param]
-                                        : _headerCodePage;
-                                    break;
-                                }
-                                case KeywordType.CPG:
-                                    currentFontCodePage = IsNonEmptyUShortParam(param)
-                                        ? (ushort)param
-                                        : _headerCodePage;
-                                    break;
-                            }
-                        }
-                        break;
-                    case '\r':
-                    case '\n':
-                        break;
-                    default:
+                case '{':
+                    GroupStack_DeepCopyToNext();
+                    break;
+                case '}':
+                    if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
+                    --_groupStackTopIndex;
+                    if (_groupStackTopIndex < fontTableGroupLevel)
                     {
-                        if (!GroupStack_CurrentSkipDest &&
-                            // We can't check for codepage 42, because symbol fonts can have other codepages
-                            // (although that may be a quirk/bug or whatever, but it can happen). Too bad,
-                            // otherwise we could save time here...
-                            currentFontNumber > NoFontNumber)
+                        // We can't actually set the symbol font as soon as we see \deffN, because we won't
+                        // have any font entry objects yet. Now that we do, we can retroactively set all
+                        // previous groups' fonts as appropriate, as if they had propagated up automatically.
+                        int defaultFontNum = _headerDefaultFontNum;
+                        if (_fontDictionary.TryGetValue(defaultFontNum, out FontEntry fontEntry))
                         {
-                            SymbolFont currentFontSymbolFont = ShouldUseSimdFontNameCodePath()
-                                ? SIMD_TryGetFontName(ref bufferRef, ch)
-                                : GetSymbolFont_Scalar(ref bufferRef, ch);
-
-                            if (currentFontCodePage == NoCodePage)
+                            SymbolFont symbolFont = fontEntry.SymbolFont;
+                            /*
+                            Start at 1 because the "base" group is still inside an opening { so it's really
+                            group 1.
+                            NOTE: The <= is correct. It's an index, not a length.
+                            */
+                            for (int i = 1; i <= _groupStackTopIndex; i++)
                             {
-                                currentFontCodePage = _headerCodePage;
+                                if (_groupStackFrames[i].PropFontNum == NoFontNumber)
+                                {
+                                    _groupStackFrames[i].PropFontNum = defaultFontNum;
+                                    _groupStackFrames[i].SymbolFont = symbolFont;
+                                }
+                                else
+                                {
+                                    break;
+                                }
                             }
-
-                            _fontDictionary[currentFontNumber] = new FontEntry(currentFontCodePage, currentFontSymbolFont);
-                            currentFontNumber = NoFontNumber;
-                            currentFontCodePage = NoCodePage;
                         }
-                        break;
+
+                        _inFontTable = false;
+                        return RtfError.OK;
                     }
+                    break;
+                case '\\':
+                    RtfError error = ParseKeyword_FontTable(
+                        ref bufferRef,
+                        out KeywordType fontTableKeyword,
+                        out int param);
+                    if (error != RtfError.OK) return error;
+
+                    if (fontTableKeyword == KeywordType.F)
+                    {
+                        currentFontNumber = param;
+                    }
+                    else if (currentFontNumber > NoFontNumber)
+                    {
+                        switch (fontTableKeyword)
+                        {
+                            case KeywordType.FCharset:
+                            {
+                                currentFontCodePage = param.IsBetween(0, _charSetToCodePageLength - 1)
+                                    ? _charSetToCodePage[param]
+                                    : _headerCodePage;
+                                break;
+                            }
+                            case KeywordType.CPG:
+                                currentFontCodePage = IsNonEmptyUShortParam(param)
+                                    ? (ushort)param
+                                    : _headerCodePage;
+                                break;
+                        }
+                    }
+                    break;
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                {
+                    if (!GroupStack_CurrentSkipDest &&
+                        // We can't check for codepage 42, because symbol fonts can have other codepages
+                        // (although that may be a quirk/bug or whatever, but it can happen). Too bad,
+                        // otherwise we could save time here...
+                        currentFontNumber > NoFontNumber)
+                    {
+                        SymbolFont currentFontSymbolFont = ShouldUseSimdFontNameCodePath()
+                            ? SIMD_TryGetFontName(ref bufferRef, ch)
+                            : GetSymbolFont_Scalar(ref bufferRef, ch);
+
+                        if (currentFontCodePage == NoCodePage)
+                        {
+                            currentFontCodePage = _headerCodePage;
+                        }
+
+                        _fontDictionary[currentFontNumber] = new FontEntry(currentFontCodePage, currentFontSymbolFont);
+                        currentFontNumber = NoFontNumber;
+                        currentFontCodePage = NoCodePage;
+                    }
+                    break;
                 }
             }
         }
@@ -2803,20 +2795,8 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private int IndexOfNextClosingBrace_ChunkAware()
     {
-        while (!_reachedEndOfStream)
-        {
-            int foundIndex = UtilHelper.Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
-            if (foundIndex > -1)
-            {
-                return foundIndex;
-            }
-            else
-            {
-                return _currentBufferChunkLength;
-            }
-        }
-
-        return _currentBufferChunkLength;
+        int foundIndex = UtilHelper.Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
+        return foundIndex > -1 ? foundIndex : _currentBufferChunkLength;
     }
 
     private RtfError HandleSkippableHexData(ref byte bufferRef)
@@ -2828,41 +2808,38 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
         int startGroupLevel = _groupStackTopIndex;
 
-        while (!_reachedEndOfStream)
+        while (_currentPos < _currentBufferChunkLength)
         {
-            while (_currentPos < _currentBufferChunkLength)
-            {
-                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+            char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
 
-                switch (ch)
-                {
-                    case '{':
-                        GroupStack_DeepCopyToNext();
-                        break;
-                    case '}':
-                        if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
-                        --_groupStackTopIndex;
-                        if (_groupStackTopIndex < startGroupLevel)
-                        {
-                            _inHandleSkippableHexData = false;
-                            return RtfError.OK;
-                        }
-                        break;
-                    case '\\':
-                        // This implicitly also handles the case where the data is \binN instead of hex
-                        RtfError ec = ParseKeyword(ref bufferRef);
-                        if (ec != RtfError.OK) return ec;
-                        break;
-                    case '\r':
-                    case '\n':
-                        break;
-                    default:
-                        if (_groupStackTopIndex == startGroupLevel)
-                        {
-                            _currentPos = IndexOfNextClosingBrace_ChunkAware();
-                        }
-                        break;
-                }
+            switch (ch)
+            {
+                case '{':
+                    GroupStack_DeepCopyToNext();
+                    break;
+                case '}':
+                    if (_groupStackTopIndex == 0) return RtfError.StackUnderflow;
+                    --_groupStackTopIndex;
+                    if (_groupStackTopIndex < startGroupLevel)
+                    {
+                        _inHandleSkippableHexData = false;
+                        return RtfError.OK;
+                    }
+                    break;
+                case '\\':
+                    // This implicitly also handles the case where the data is \binN instead of hex
+                    RtfError ec = ParseKeyword(ref bufferRef);
+                    if (ec != RtfError.OK) return ec;
+                    break;
+                case '\r':
+                case '\n':
+                    break;
+                default:
+                    if (_groupStackTopIndex == startGroupLevel)
+                    {
+                        _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                    }
+                    break;
             }
         }
 
@@ -2889,7 +2866,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         int startGroupLevel = _groupStackTopIndex;
 
         int index = _currentPos;
-        while (!_reachedEndOfStream)
+        while (_currentPos < _currentBufferChunkLength)
         {
             index = SIMD_SkipDest(ref bufferRef, index, _currentBufferChunkLength - index);
 
