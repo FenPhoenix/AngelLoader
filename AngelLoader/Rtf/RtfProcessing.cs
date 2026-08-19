@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using AngelLoader.DataClasses;
-using static AL_Common.RtfDisplayedReadmeParser;
+using ReasonableRTF_Displayed;
+using static ReasonableRTF_Displayed.RRTF_RtfDisplayedReadmeParser;
 
 namespace AngelLoader;
 
@@ -53,8 +54,8 @@ internal static class RtfProcessing
 
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
     // to make a new one every time.
-    private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
-    private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
+    private static RRTF_RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
+    private static RRTF_RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RRTF_RtfDisplayedReadmeParser();
 
     #region Colors
 
@@ -281,7 +282,7 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<RtfColor>? colorTable, List<LangItem>? langItems) =
+        (bool success, List<RtfColor>? colorTable, List<RRTF_LangItem>? langItems) =
             RtfDisplayedReadmeParser.GetData(
                 new ArrayWithLength<byte>(currentReadmeBytes),
                 getColorTable: colorTableWorkRequired,
@@ -322,7 +323,7 @@ internal static class RtfProcessing
         {
             for (int i = 0; i < langItems.Count; i++)
             {
-                LangItem item = langItems[i];
+                RRTF_LangItem item = langItems[i];
                 item.Index += colorTableEntryLength;
                 // +1 for adding a space after the digits
                 extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
@@ -503,7 +504,7 @@ internal static class RtfProcessing
     }
 
     private static void CopyInserts(
-        List<LangItem> langItems,
+        List<RRTF_LangItem> langItems,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
         int ansiCpgLength,
@@ -514,7 +515,7 @@ internal static class RtfProcessing
         ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
         for (int i = 0; i < langItems.Count; i++)
         {
-            LangItem item = langItems[i];
+            RRTF_LangItem item = langItems[i];
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
             ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
