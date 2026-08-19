@@ -2,8 +2,8 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
+using ReasonableRTF_Displayed.Enums;
+using ReasonableRTF_Displayed.Extensions;
 
 namespace ReasonableRTF_Displayed;
 

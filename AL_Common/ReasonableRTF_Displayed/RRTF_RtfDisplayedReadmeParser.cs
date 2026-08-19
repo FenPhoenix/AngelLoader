@@ -37,12 +37,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using AL_Common.CommunityToolkit;
 using JetBrains.Annotations;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
-using ReasonableRTF.Helper;
-using ReasonableRTF.Models;
-using ReasonableRTF.Models.Fonts;
-using ReasonableRTF.Models.Symbols;
+using ReasonableRTF_Displayed.Enums;
+using ReasonableRTF_Displayed.Extensions;
+using ReasonableRTF_Displayed.Helper;
+using ReasonableRTF_Displayed.Models;
+using ReasonableRTF_Displayed.Models.Fonts;
+using ReasonableRTF_Displayed.Models.Symbols;
 
 namespace ReasonableRTF_Displayed;
 
@@ -86,10 +86,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     #endregion
 
-    // Cache it for perf
-    private static readonly char[] LineBreakString = Environment.NewLine.ToCharArray();
-    private static readonly int LineBreakStringLength = LineBreakString.Length;
-
     // +1 to allow reading one beyond the max and then checking for it to return an error
     private readonly byte[] _keyword = new byte[_keywordMaxLen + 1];
 
@@ -120,8 +116,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private const int _undefinedLanguage = 1024;
 
     private const char _unicodeUnknown_Char = '\u25A1';
-
-    private const int _maxSeekBackBytes = 8;
 
     // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
     // bounds-checked read-and-throw-away of the rest of the bytes.
@@ -2046,56 +2040,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private bool _inHandleSkippableHexData;
 
-    /*
-    From the spec:
-    "Occasionally Word writes SYMBOL_CHARSET (nonUnicode) characters in the range U+F020..U+F0FF instead
-    of U+0020..U+00FF. Internally Word uses the values U+F020..U+F0FF for these characters so that plain-
-    text searches don't mistakenly match SYMBOL_CHARSET characters when searching for Unicode characters
-    in the range U+0020..U+00FF. To find out the correct symbol font to use, e.g., Wingdings, Symbol,
-    etc., find the last SYMBOL_CHARSET font control word \fN used, look up font N in the font table and
-    find the face name. The charset is specified by the \fcharsetN control word and SYMBOL_CHARSET is for
-    N = 2. This corresponds to codepage 42."
-
-    However, there's also a weird quirk with the "RichEdit50W" version of the Windows RichEdit control, which is
-    that fonts that were set in a non-destination group above us ALSO count as potentially "last used". In other
-    words, these fonts leak right out of their stack frames. So that means we have to globally track the last set
-    font whose codepage is 42.
-
-    However, this quirk appears to ONLY happen with the "RichEdit50W" version of the Windows RichEdit control
-    (it doesn't happen with LibreOffice or Microsoft Word 2010 or "RichEdit20W"). So we just have to decide whose
-    expectations we're going to match. We're going with RichEdit's behavior for now.
-
-    TODO: If we wanted to support this "properly", we would actually need another field in the group stack to
-    track codepage 42 fonts, because it says "last SYMBOL_CHARSET font control \fN used", which I take to mean
-    not "the last font used and if it's not codepage 42 then quit", but rather "the last codepage 42 font used
-    even if it's not the last font used". Which means we either keep track of codepage 42 fonts in the stack, or
-    we just search backward in the stack for the last used font when we need it.
-    The group stack frame is currently 13 bytes, so another 4 bytes for another font number puts us one byte over
-    the 16-byte boundary and we'd be up to 20. We would have to see if that's worse or if a linear stack search
-    is worse.
-    Unless the spec doesn't mean what I interpret it as. I'd have to test that too.
-    * Update: Nope, it does mean "the last font used and if it's not codepage 42 then quit", apparently. At least
-      that's how Word 2010 and LibreOffice both treat it. So, we wouldn't have to search the stack or add a field
-      or anything.
-    */
-    private int _lastUsedFontWithCodePage42 = NoFontNumber;
-
     private bool _inFontTable;
-
-    #endregion
-
-    #region Reusable buffers
-
-    private readonly byte[] _byteBuffer1 = new byte[1];
-    private readonly byte[] _byteBuffer4 = new byte[4];
-
-    #endregion
-
-    #region Cached encodings
-
-    // DON'T reset this. We want to build up a dictionary of encodings and amortize it over the entire list
-    // of RTF files.
-    private Dictionary<ushort, Encoding> _encodings;
 
     #endregion
 
@@ -2117,8 +2062,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         InitSymbolFontData();
 
         _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
-
-        _encodings = new Dictionary<ushort, Encoding>(_internalBufferDefaultCapacity);
 
         InitGroupStack();
     }
@@ -2189,8 +2132,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         _inHandleSkippableHexData = false;
         _inFontTable = false;
 
-        _lastUsedFontWithCodePage42 = NoFontNumber;
-
         #endregion
 
         // Don't carry around the font entry pool for the entire app lifetime
@@ -2215,7 +2156,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     {
         GroupStack_ResetCapacityToDefault();
         _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
-        _encodings = new Dictionary<ushort, Encoding>(_internalBufferDefaultCapacity);
     }
 
     #endregion
@@ -2281,7 +2221,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         int defaultFontNum = _headerDefaultFontNum;
                         if (_fontDictionary.TryGetValue(defaultFontNum, out FontEntry fontEntry))
                         {
-                            SymbolFont symbolFont = fontEntry.SymbolFont;
                             /*
                             Start at 1 because the "base" group is still inside an opening { so it's really
                             group 1.
@@ -2292,7 +2231,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                                 if (_groupStackFrames[i].PropFontNum == NoFontNumber)
                                 {
                                     _groupStackFrames[i].PropFontNum = defaultFontNum;
-                                    _groupStackFrames[i].SymbolFont = symbolFont;
                                 }
                                 else
                                 {
@@ -2451,17 +2389,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     #endregion
 
     #region Act on keywords
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError DispatchControlSymbol(ref byte bufferRef, char symbol)
-    {
-        if (GroupStack_CurrentSkipDest || GroupStack_CurrentPropertyHidden || _inFontTable)
-        {
-            return RtfError.OK;
-        }
-
-        return RtfError.OK;
-    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private RtfError DispatchKeyword(ref byte bufferRef, Symbol symbol, int param, bool hasParam)
@@ -2670,15 +2597,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         {
             case Property.FontNum:
             {
-                if (_fontDictionary.TryGetValue(param, out FontEntry fontEntry))
-                {
-                    if (fontEntry.CodePage == 42)
-                    {
-                        _lastUsedFontWithCodePage42 = param;
-                    }
-
-                    GroupStack_CurrentSymbolFont = fontEntry.SymbolFont;
-                }
                 // \fN supersedes \langN
                 GroupStack_CurrentPropertyLang = NoLang;
                 GroupStack_CurrentPropertyFontNum = param;
@@ -2726,17 +2644,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 }
                 break;
             }
-            case Property.Hidden:
-            {
-                if (!_convertHiddenText)
-                {
-                    GroupStack_CurrentPropertyHidden = param > 0;
-                }
-                break;
-            }
-            default:
-                GroupStack_CurrentPropertyUnicodeCharSkipCount = param;
-                break;
         }
     }
 
@@ -3019,10 +2926,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     private struct GroupStackFrame
     {
         internal bool SkipDestination;
-        internal SymbolFont SymbolFont;
 
-        internal bool PropHidden;
-        internal int PropUnicodeSkipCharCount;
         internal int PropFontNum;
         internal ushort PropLang;
     }
@@ -3080,30 +2984,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         set => _groupStackFrames[_groupStackTopIndex].SkipDestination = value;
     }
 
-    private SymbolFont GroupStack_CurrentSymbolFont
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _groupStackFrames[_groupStackTopIndex].SymbolFont;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _groupStackFrames[_groupStackTopIndex].SymbolFont = value;
-    }
-
-    private bool GroupStack_CurrentPropertyHidden
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _groupStackFrames[_groupStackTopIndex].PropHidden;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _groupStackFrames[_groupStackTopIndex].PropHidden = value;
-    }
-
-    private int GroupStack_CurrentPropertyUnicodeCharSkipCount
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _groupStackFrames[_groupStackTopIndex].PropUnicodeSkipCharCount;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _groupStackFrames[_groupStackTopIndex].PropUnicodeSkipCharCount = value;
-    }
-
     private int GroupStack_CurrentPropertyFontNum
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -3131,9 +3011,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         _groupStackFrames[0] = new GroupStackFrame
         {
             SkipDestination = false,
-            SymbolFont = SymbolFont.None,
-            PropHidden = false,
-            PropUnicodeSkipCharCount = 1,
             PropFontNum = NoFontNumber,
             PropLang = NoLang,
         };

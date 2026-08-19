@@ -10,8 +10,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Models.Symbols;
+using ReasonableRTF_Displayed.Enums;
+using ReasonableRTF_Displayed.Models.Symbols;
 
 namespace ReasonableRTF_Displayed;
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ReasonableRTF.Enums;
+using ReasonableRTF_Displayed.Enums;
 
 namespace ReasonableRTF_Displayed;
 
@@ -37,8 +37,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                 default:
                 {
                     if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
-                        !GroupStack_CurrentSkipDest &&
-                        !GroupStack_CurrentPropertyHidden)
+                        !GroupStack_CurrentSkipDest)
                     {
                         // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
                         char currentChar = (char)(_currentPos < _currentBufferChunkLength
@@ -62,10 +61,20 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     {
         _currentPos--;
 
-        SymbolFont symbolFont = GroupStack_CurrentSymbolFont;
-        if (symbolFont > SymbolFont.None)
+        if (System.Numerics.Vector.IsHardwareAccelerated)
         {
-            uint[] table = _symbolFontTables[(int)symbolFont];
+            bool finishedOnNonPlainTextChar = SIMD_CopyPlainText(ref bufferRef);
+
+            if (finishedOnNonPlainTextChar)
+            {
+                return;
+            }
+        }
+
+        if (System.Numerics.Vector.IsHardwareAccelerated)
+        {
+            // Break out of the scalar loop at the buffer boundary, so that if the plaintext run continues
+            // after the next buffer load, we'll be able to jump back into a SIMD parse.
             while (_currentPos < _currentBufferChunkLength)
             {
                 char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
@@ -78,40 +87,13 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         }
         else
         {
-            if (System.Numerics.Vector.IsHardwareAccelerated)
+            while (_currentPos < _currentBufferChunkLength)
             {
-                bool finishedOnNonPlainTextChar = SIMD_CopyPlainText(ref bufferRef);
-
-                if (finishedOnNonPlainTextChar)
+                char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
+                if (_isNonPlainText[(byte)ch])
                 {
+                    _currentPos--;
                     return;
-                }
-            }
-
-            if (System.Numerics.Vector.IsHardwareAccelerated)
-            {
-                // Break out of the scalar loop at the buffer boundary, so that if the plaintext run continues
-                // after the next buffer load, we'll be able to jump back into a SIMD parse.
-                while (_currentPos < _currentBufferChunkLength)
-                {
-                    char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                    if (_isNonPlainText[(byte)ch])
-                    {
-                        _currentPos--;
-                        return;
-                    }
-                }
-            }
-            else
-            {
-                while (_currentPos < _currentBufferChunkLength)
-                {
-                    char ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                    if (_isNonPlainText[(byte)ch])
-                    {
-                        _currentPos--;
-                        return;
-                    }
                 }
             }
         }

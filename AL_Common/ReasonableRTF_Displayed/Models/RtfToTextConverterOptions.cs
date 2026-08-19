@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 
-using ReasonableRTF.Enums;
+using ReasonableRTF_Displayed.Enums;
 
 namespace ReasonableRTF_Displayed.Models;
 

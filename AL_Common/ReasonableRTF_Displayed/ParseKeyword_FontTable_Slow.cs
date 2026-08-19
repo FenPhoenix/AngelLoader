@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
-using ReasonableRTF.Models.Symbols;
+using ReasonableRTF_Displayed.Enums;
+using ReasonableRTF_Displayed.Extensions;
+using ReasonableRTF_Displayed.Models.Symbols;
 
 namespace ReasonableRTF_Displayed;
 

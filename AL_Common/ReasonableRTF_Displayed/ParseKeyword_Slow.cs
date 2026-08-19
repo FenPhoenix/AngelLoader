@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using ReasonableRTF.Enums;
-using ReasonableRTF.Extensions;
-using ReasonableRTF.Models.Symbols;
+using ReasonableRTF_Displayed.Enums;
+using ReasonableRTF_Displayed.Extensions;
+using ReasonableRTF_Displayed.Models.Symbols;
 
 namespace ReasonableRTF_Displayed;
 
@@ -122,37 +122,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         For example, \~ (backslash tilde) represents a non-breaking space. Control symbols do not have
         delimiters, i.e., a space following a control symbol is treated as text, not a delimiter."
         */
-
-        // Fast path for destination marker - claws us back a small amount of perf
-        if (ch == '*')
-        {
-            _skipDestinationIfUnknown = true;
-            return RtfError.OK;
-        }
-
-        char symbol = LookUpControlSymbol((byte)ch);
-
-        if (symbol == 0)
-        {
-            /*
-            NOTE(Control symbol skippable destination check):
-            Technically, only control words (not control symbols) can be destinations, so we don't necessarily
-            have to check for a skippable destination here by spec. LibreOffice skips unknown control symbol
-            "destinations", while RichEdit fails the whole read. So we'd be within reason to assume this will
-            never happen. But if we do, then any text inside a skippable control word "destination" group WILL
-            be output. It's a vanishingly unlikely scenario, but the perf loss from this check is also tiny.
-            So let's just leave it in for now.
-            */
-            if (_skipDestinationIfUnknown)
-            {
-                _skipDestinationIfUnknown = false;
-                SkipDest(ref bufferRef);
-            }
-            return RtfError.OK;
-        }
-
-        _skipDestinationIfUnknown = false;
-
-        return DispatchControlSymbol(ref bufferRef, symbol);
+        _skipDestinationIfUnknown = ch == '*';
+        return RtfError.OK;
     }
 }
