@@ -56,8 +56,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                     }
                 }
             }
-
-            if (_bufferedStream != null) { HandleOutOfBounds(); } else { break; }
         }
 
         return _groupStackTopIndex > 0 ? RtfError.UnmatchedBrace : RtfError.OK;
@@ -82,8 +80,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         return;
                     }
                 }
-
-                if (_bufferedStream != null) { HandleOutOfBounds(); } else { break; }
             }
         }
         else
@@ -125,8 +121,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                             return;
                         }
                     }
-
-                    if (_bufferedStream != null) { HandleOutOfBounds(); } else { break; }
                 }
             }
         }

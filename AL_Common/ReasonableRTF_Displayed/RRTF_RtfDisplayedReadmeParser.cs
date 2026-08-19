@@ -29,7 +29,6 @@
 // the color table is important enough to take the perf hit and the small amount of code duplication.
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -101,20 +100,9 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         _paramMaxLen + 1 + // +1 to read one beyond for length checking purposes
         1; // Space at end
 
-    private const int _keywordVector128ParseMaxRequiredBytes =
-        16 + // Vector128<byte>.Count (no need for +1 for this codepath)
-        1 + // Minus sign
-        _paramMaxLen + 1 + // +1 to read one beyond for length checking purposes
-        1; // Space at end
-
     // "\bin"
     private const int _binLength = 4;
     private readonly uint _binUInt = BitConverter.IsLittleEndian ? 0x6E69625Cu : 0x5C62696Eu;
-    // "\par " (ending space optional)
-    private const int _parMaxLength = 5;
-    private readonly uint _parUInt = BitConverter.IsLittleEndian ? 0x7261705Cu : 0x5C706172u;
-    // "\tab " (ending space optional)
-    private readonly uint _tabUInt = BitConverter.IsLittleEndian ? 0x6261745Cu : 0x5C746162u;
 
     private const int _internalBufferDefaultCapacity = 32;
 
@@ -134,28 +122,11 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private const char _unicodeUnknown_Char = '\u25A1';
 
-    private const int _defaultStreamBufferSize = 81920;
     private const int _maxSeekBackBytes = 8;
-    private const int _minimumBufferSize = _maxSeekBackBytes * 2;
-
-    private const int _plainTextRunFastPathAmountBackFromBufferEnd = 512;
-
-    private readonly byte[] _SYMBOLName = "SYMBOL "u8.ToArray();
-    private readonly ulong _SYMBOLKeywordAsULong = BitConverter.IsLittleEndian
-        ? 0x00_20_4C_4F_42_4D_59_53ul
-        : 0x53_59_4D_42_4F_4C_20_00ul;
-    private readonly ulong _SYMBOLKeywordAsULong_Mask = BitConverter.IsLittleEndian
-        ? 0x00_FF_FF_FF_FF_FF_FF_FFul
-        : 0xFF_FF_FF_FF_FF_FF_FF_00ul;
 
     // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
     // bounds-checked read-and-throw-away of the rest of the bytes.
     private const int _maxSymbolFontNameLength = 64;
-
-    private const int _fldinstSymbolNumberMaxLen = 10;
-    private readonly char[] _fldinstSymbolNumber = new char[_fldinstSymbolNumberMaxLen + 1];
-
-    private readonly char[] _fldinstSymbolFontName = new char[_maxSymbolFontNameLength + 1];
 
     private readonly byte[] _symbolFontNameBuffer = new byte[_maxSymbolFontNameLength];
 
@@ -2047,40 +2018,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         false, false,
     ];
 
-    private static readonly bool[] _isSeparatorChar =
-    [
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false,
-        true, // '\\' (92)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        true, // '{' (123)
-        false,
-        true, // '}' (125)
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-        false, false, false, false, false, false, false, false, false, false,
-    ];
-
     #endregion
 
     #region Resettables
@@ -2100,8 +2037,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     */
 
     private Dictionary<int, FontEntry> _fontDictionary;
-
-    private Stream? _bufferedStream;
 
     private bool _reachedEndOfStream;
 
@@ -2229,7 +2164,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             Reset(ArrayWithLength<byte>.Empty());
 
             _buffer = Array.Empty<byte>();
-            _bufferedStream = null;
         }
     }
 
@@ -2436,8 +2370,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                     }
                 }
             }
-
-            if (_bufferedStream != null) { HandleOutOfBounds(); } else { break; }
         }
 
         _inFontTable = false;
@@ -2763,9 +2695,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             case Property.Lang:
             {
                 int currentLang = GroupStack_CurrentPropertyLang;
-
-                int groupFontNum = GroupStack_CurrentPropertyFontNum;
-                if (groupFontNum == NoFontNumber) groupFontNum = _headerDefaultFontNum;
+                int groupFontNum = HeaderDefaultIfNotSet(GroupStack_CurrentPropertyFontNum);
 
                 _fontDictionary.TryGetValue(groupFontNum, out FontEntry fontEntry);
 
@@ -2853,14 +2783,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
         };
     }
 
-    // Calculate it at the end from values we already have, rather than changing an additional value in hot loops
-    private int GetCurrentOverallPos()
-    {
-        return _bufferedStream == null
-            ? _currentPos
-            : ((_chunksRead - 1) * (_bufferLength - _leadingBufferByteCount)) + _currentPos - _leadingBufferByteCount;
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsNonEmptyUShortParam(int value)
     {
@@ -2890,14 +2812,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
             }
             else
             {
-                if (_bufferedStream != null)
-                {
-                    LoadNextChunkIntoBuffer();
-                }
-                else
-                {
-                    return _currentBufferChunkLength;
-                }
+                return _currentBufferChunkLength;
             }
         }
 
@@ -2949,8 +2864,6 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
                         break;
                 }
             }
-
-            if (_bufferedStream != null) { HandleOutOfBounds(); } else { break; }
         }
 
         _inHandleSkippableHexData = false;
@@ -3061,92 +2974,7 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
 
     private void IncrementCurrentPos_ArbitraryAmountForward(int amount)
     {
-        if (_bufferedStream == null)
-        {
-            _currentPos += amount;
-        }
-        else
-        {
-            IncrementCurrentPos_Stream_PossiblySkippingMultipleChunks(amount);
-        }
-    }
-
-    private int IncrementCurrentPos_Stream(int originalPos)
-    {
-        if (_currentPos + 1 > _currentBufferChunkLength - 1)
-        {
-            int difference = (_currentPos + 1) - _currentBufferChunkLength;
-
-            LoadNextChunkIntoBuffer();
-            _currentPos += difference;
-            originalPos = _currentPos - 1;
-        }
-        else
-        {
-            _currentPos += 1;
-        }
-
-        return originalPos;
-    }
-
-    private void IncrementCurrentPos_Stream_PossiblySkippingMultipleChunks(int amount)
-    {
-        if (_currentPos + amount > _currentBufferChunkLength - 1)
-        {
-            bool skippingMultipleChunks;
-            do
-            {
-                int savedAmount = amount;
-
-                skippingMultipleChunks = amount > _currentBufferChunkLength;
-
-                if (skippingMultipleChunks)
-                {
-                    amount = _currentBufferChunkLength - _currentPos;
-                    savedAmount -= amount;
-                }
-
-                int difference = (_currentPos + amount) - _currentBufferChunkLength;
-
-                LoadNextChunkIntoBuffer();
-                _currentPos += difference;
-
-                amount = savedAmount;
-
-            } while (skippingMultipleChunks);
-        }
-        else
-        {
-            _currentPos += amount;
-        }
-    }
-
-    private void LoadNextChunkIntoBuffer()
-    {
-        Debug.Assert(_bufferedStream != null);
-
-        // This path should only be hit when in streaming mode, and when therefore the buffer size is supposed
-        // to have an enforced minimum.
-        Debug.Assert(_buffer.Length >= _maxSeekBackBytes);
-
-        byte[] buffer = _buffer;
-
-        ulong endChunk = Unsafe.ReadUnaligned<ulong>(ref buffer[_currentBufferChunkLength - _maxSeekBackBytes]);
-        Unsafe.WriteUnaligned(ref buffer[0], endChunk);
-
-        int bytesRead = _bufferedStream!.ReadAll(buffer, _maxSeekBackBytes, _bufferLength - _maxSeekBackBytes);
-
-        if (bytesRead == 0)
-        {
-            // Drop-in that loops can check to achieve the same effect as checking the length the way we used to
-            _reachedEndOfStream = true;
-        }
-        else
-        {
-            _chunksRead++;
-            _currentPos = _maxSeekBackBytes;
-            _currentBufferChunkLength = bytesRead + _maxSeekBackBytes;
-        }
+        _currentPos += amount;
     }
 
     #endregion
@@ -3195,42 +3023,15 @@ public sealed partial class RRTF_RtfDisplayedReadmeParser
     [MethodImpl(MethodImplOptions.NoInlining)]
     private int HandleOutOfBounds()
     {
-        if (_bufferedStream != null)
+        if (_groupStackTopIndex > 0)
         {
-            _currentPos--;
-            int originalPos = _currentPos;
-            int ret = IncrementCurrentPos_Stream(_currentPos);
-            if (_currentPos > _currentBufferChunkLength)
-            {
-                if (_groupStackTopIndex > 0)
-                {
-                    _currentPos = originalPos;
-                    ThrowHelper.UnmatchedBraceException();
-                }
-                else
-                {
-                    _currentPos = originalPos;
-                    ThrowHelper.IndexOutOfRange();
-                }
-                return 0;
-            }
-            else
-            {
-                return ret;
-            }
+            ThrowHelper.UnmatchedBraceException();
         }
         else
         {
-            if (_groupStackTopIndex > 0)
-            {
-                ThrowHelper.UnmatchedBraceException();
-            }
-            else
-            {
-                ThrowHelper.IndexOutOfRange();
-            }
-            return 0;
+            ThrowHelper.IndexOutOfRange();
         }
+        return 0;
     }
 
     #endregion
