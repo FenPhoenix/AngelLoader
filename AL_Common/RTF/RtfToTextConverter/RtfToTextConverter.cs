@@ -4799,7 +4799,7 @@ public sealed partial class RtfToTextConverter
         return Unsafe.AddByteOffset(ref keywordRef, (nint)pos);
     }
 
-    private static Symbol?[] InitSingleCharSymbolTable()
+    private static readonly Symbol?[] _singleCharSymbolTable = RunFunc(static () =>
     {
         Symbol?[] ret = new Symbol?[256];
 
@@ -4807,9 +4807,7 @@ public sealed partial class RtfToTextConverter
         ret['v'] = new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden);
 
         return ret;
-    }
-
-    private static readonly Symbol?[] _singleCharSymbolTable = InitSingleCharSymbolTable();
+    });
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Symbol? LookUpControlWord_LengthOne(byte firstChar)
