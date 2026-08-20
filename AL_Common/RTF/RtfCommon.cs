@@ -36,7 +36,8 @@ public static class RtfCommon
 
     // Perf: On modern .NET, the "ReadOnlySpan<> x =>" pattern removes bounds checking (assuming you index with a
     // numeric type that's <= the length of the span), and generates only a tiny amount of asm. But on Framework,
-    // the JIT doesn't recognize the pattern, and performance is catastrophic. So ugly ifdefs everywhere it is...
+    // the JIT doesn't recognize the pattern, and performance is catastrophic. So we have to use an old-fashioned
+    // bounds-checked array.
     public static readonly bool[] IsNonPlainText =
     [
         true, // '\0' (0)
@@ -74,6 +75,8 @@ public static class RtfCommon
         false, false, false, false, false, false, false, false, false, false,
     ];
 
+    // This is fine to use the "ReadOnlySpan<> x =>" pattern with though, because we only take a reference to it
+    // and then just use the reference from then on.
     public static ReadOnlySpan<bool> IsIgnoreChar =>
     [
         true, // '\0' (0)
@@ -455,6 +458,8 @@ public static class RtfCommon
 
     #endregion
 
+    #region SIMD
+
     public static readonly Vector<byte> ZeroVector = new((byte)'\0');
     public static readonly Vector<byte> LF_Vector = new((byte)'\n');
     public static readonly Vector<byte> CR_Vector = new((byte)'\r');
@@ -491,7 +496,6 @@ public static class RtfCommon
         }
     });
 
-    #region SIMD
 
     // Heavily modified version of .NET SpanHelpers.IndexOfAnyValueType().
     // Made to handle the \binN situation while losing as little performance as possible.
@@ -725,15 +729,4 @@ public static class RtfCommon
 
     // Total hack so we don't have to return and check a value eight trillion times (perf)
     public sealed class UnmatchedBraceException : Exception;
-
-    internal enum KeywordType : byte
-    {
-        Character,
-        Property,
-        Destination,
-        Special,
-        F,
-        FCharset,
-        CPG,
-    }
 }

@@ -1,6 +1,4 @@
-﻿using static AL_Common.RTF.RtfCommon;
-
-namespace AL_Common.RTF;
+﻿namespace AL_Common.RTF;
 
 internal sealed class Symbol
 {

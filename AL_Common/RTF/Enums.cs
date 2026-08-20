@@ -103,3 +103,14 @@ internal enum SymbolFont : byte
     ITCZapfDingbats,
     ZapfDingbats,
 }
+
+internal enum KeywordType : byte
+{
+    Character,
+    Property,
+    Destination,
+    Special,
+    F,
+    FCharset,
+    CPG,
+}
