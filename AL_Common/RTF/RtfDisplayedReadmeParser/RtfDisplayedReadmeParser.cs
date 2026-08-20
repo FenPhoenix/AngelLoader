@@ -214,16 +214,6 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
                         !GroupStack_CurrentSkipDest)
                     {
-                        /*
-                        @RTF(Hex degenerate case):
-                        Since we don't handle hex explicitly in this parser, \'xx is going to be read like this:
-                        - \' is control char, so skip
-                        - Read 'x', it's plaintext, read next 'x', it's also plaintext, so go into SIMD
-                        - SIMD does a huge setup and overhead, reads one char (the second 'x'), and returns
-
-                        We should bring back hex handling, just to make sure we skip the two chars scalar and
-                        avoid the degenerate SIMD case.
-                        */
                         // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
                         char currentChar = (char)(_currentPos < _rtfBytesLength
                             ? GetByteAtPos(ref bufferRef, _currentPos)
@@ -526,6 +516,75 @@ public sealed partial class RtfDisplayedReadmeParser
         }
 
         return RtfError.OK;
+    }
+
+    /*
+    Handle hex run separately in scalar so as to avoid the degenerate case of \'xx being read like this:
+    - \' is control char, so skip
+    - Read 'x', it's plaintext, read next 'x', it's also plaintext, so go into SIMD
+    - SIMD does a huge setup and overhead, reads one char (the second 'x'), and returns
+    */
+    private void HandleHexRun(ref byte bufferRef)
+    {
+        if (_currentPos < _rtfBytesLength - 1)
+        {
+            _currentPos += 2;
+        }
+        else
+        {
+            _ = GetByte(IncrementCurrentPos());
+            _ = GetByte(IncrementCurrentPos());
+        }
+
+        // TODO: Manually duplicated code for performance - should be automated if possible
+        while (_currentPos < _rtfBytesLength - 3)
+        {
+            byte b = GetByteAtCurrentPosAndIncrement(ref bufferRef);
+            if (b == (byte)'\\')
+            {
+                b = GetByteAtCurrentPosAndIncrement(ref bufferRef);
+                if (b == (byte)'\'')
+                {
+                    _currentPos += 2;
+                }
+                else
+                {
+                    _currentPos -= 2;
+                    return;
+                }
+            }
+            // Spaces end a hex run, but linebreaks don't.
+            else if (b is not (byte)'\r' and not (byte)'\n')
+            {
+                _currentPos--;
+                return;
+            }
+        }
+
+        while (_currentPos < _rtfBytesLength)
+        {
+            byte b = GetByte(IncrementCurrentPos());
+            if (b == (byte)'\\')
+            {
+                b = GetByte(IncrementCurrentPos());
+                if (b == (byte)'\'')
+                {
+                    _ = GetByte(IncrementCurrentPos());
+                    _ = GetByte(IncrementCurrentPos());
+                }
+                else
+                {
+                    _currentPos -= 2;
+                    return;
+                }
+            }
+            // Spaces end a hex run, but linebreaks don't.
+            else if (b is not (byte)'\r' and not (byte)'\n')
+            {
+                _currentPos--;
+                return;
+            }
+        }
     }
 
     private RtfError ParseAndBuildColorTable()

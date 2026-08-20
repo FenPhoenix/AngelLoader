@@ -19,7 +19,7 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             ++_currentPos;
 
-            return HandleControlChar(ch);
+            return HandleControlChar(ref bufferRef, ch);
         }
         else
         {
