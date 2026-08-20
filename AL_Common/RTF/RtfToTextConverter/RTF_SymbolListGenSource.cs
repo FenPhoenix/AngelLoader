@@ -6,10 +6,14 @@ TODO(gperf stuff): Tidy this up and get rid of hardcoded directories and whatnot
 
 #if SYMBOL_PERFECT_HASH_GEN
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
