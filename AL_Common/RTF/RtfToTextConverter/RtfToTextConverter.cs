@@ -64,9 +64,20 @@ public sealed partial class RtfToTextConverter
 
     #region Options
 
-    private LineBreakStyle _lineBreakStyle;
-    private bool _convertHiddenText;
-    private ushort _defaultCodePage;
+    // Hard-code them to what we want. We can change them here if we need to, without using a heavyweight options
+    // object.
+    private const bool _convertHiddenText = false;
+    private const ushort _defaultCodePage = 1252;
+
+    // Unicode uppercase phi: 0x03D5
+    // Unicode lowercase phi: 0x03C6
+    private const uint SymbolFont_Phi1 = 0x03D5;
+    private const uint SymbolFont_Phi2 = 0x03C6;
+
+    // Euro sign:     0x20AC
+    // Numeric space: 0x2007
+    // Undefined:     _unicodeUnknown_Char
+    private const uint SymbolFont_EuroSignChar = 0x20AC;
 
     #endregion
 
@@ -236,14 +247,14 @@ public sealed partial class RtfToTextConverter
             0x03B5,
 
             // Nominally lowercase phi (0x3C6), but is uppercase phi in Windows Symbol
-            0x03D5,
+            SymbolFont_Phi1,
 
             0x03B3,
             0x03B7,
             0x03B9,
 
             // Nominally uppercase phi (0x3D5), but is lowercase phi in Windows Symbol
-            0x03C6,
+            SymbolFont_Phi2,
 
             0x03BA,
             0x03BB,
@@ -300,7 +311,7 @@ public sealed partial class RtfToTextConverter
             _unicodeUnknown_Char,
 
             // Euro sign, but undefined in Win10 Symbol font at least
-            0x20AC,
+            SymbolFont_EuroSignChar,
 
             0x03D2,
             0x2032,
@@ -1692,8 +1703,6 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    private readonly RtfToTextConverterOptions _defaultOptions;
-
     #endregion
 
     #region Public API
@@ -1704,8 +1713,6 @@ public sealed partial class RtfToTextConverter
     public RtfToTextConverter()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-        _defaultOptions = new RtfToTextConverterOptions();
 
         InitSymbolFontData();
 
@@ -1725,7 +1732,7 @@ public sealed partial class RtfToTextConverter
     /// <returns>An <see cref="RtfResult"/> containing the converted plain text, or error information if the conversion was not successful.</returns>
     public RtfResult Convert(Stream stream)
     {
-        return ConvertInternal(Array.Empty<byte>(), 0, _defaultOptions, stream, _defaultStreamBufferSize);
+        return ConvertInternal(Array.Empty<byte>(), 0, stream, _defaultStreamBufferSize);
     }
 
     #endregion
@@ -1745,7 +1752,7 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    private RtfResult ConvertInternal(byte[] bytes, int bytesLength, RtfToTextConverterOptions options, Stream? bufferedStream, int bufferSize)
+    private RtfResult ConvertInternal(byte[] bytes, int bytesLength, Stream? bufferedStream, int bufferSize)
     {
         try
         {
@@ -1763,8 +1770,6 @@ public sealed partial class RtfToTextConverter
                 SetBufferLength(bufferSize);
                 _leadingBufferByteCount = _maxSeekBackBytes;
             }
-
-            SetOptions(options);
 
             #region Reset
 
@@ -3781,48 +3786,9 @@ public sealed partial class RtfToTextConverter
 
     private void AddLineBreak()
     {
-        switch (_lineBreakStyle)
-        {
-            case LineBreakStyle.EnvironmentDefault:
-                // Try to be efficient - should be branch predictor friendly with no loop overhead in the expected
-                // cases.
-                switch (LineBreakStringLength)
-                {
-                    case 2:
-                        PlainText_EnsureCapacity(_plainText_Count + 2);
-                        char[] plainText = _plainText;
-                        plainText[_plainText_Count] = LineBreakString[0];
-                        plainText[_plainText_Count + 1] = LineBreakString[1];
-                        _plainText_Count += 2;
-                        break;
-                    case 1:
-                        PlainText_Add(LineBreakString[0]);
-                        break;
-                    default:
-                    {
-                        // Shouldn't ever hit this, but maybe Microsoft vibe-codes a patch into Windows that makes
-                        // the line break be three characters. Just kidding. Probably.
-                        for (int i = 0; i < LineBreakString.Length; i++)
-                        {
-                            PlainText_Add(LineBreakString[i]);
-                        }
-                        break;
-                    }
-                }
-                break;
-            case LineBreakStyle.CRLF:
-            {
-                PlainText_EnsureCapacity(_plainText_Count + 2);
-                char[] plainText = _plainText;
-                plainText[_plainText_Count] = '\r';
-                plainText[_plainText_Count + 1] = '\n';
-                _plainText_Count += 2;
-                break;
-            }
-            default:
-                PlainText_Add('\n');
-                break;
-        }
+        // Matches previous AngelLoader parser - always output LF only. Faster, simpler, less memory use, more
+        // modern, and we only use the output internally so we don't have to care about user display preference.
+        PlainText_Add('\n');
     }
 
     #endregion
@@ -3835,37 +3801,6 @@ public sealed partial class RtfToTextConverter
         {
             throw new ArgumentException(nameof(length) + " is greater than the length of " + nameof(source) + ".", nameof(length));
         }
-    }
-
-    /*
-    This MUST have AggressiveInlining on it, or else .NET Framework x64 gets significantly slower. Also if we
-    pull the code inline physically, .NET Framework x64 is ALSO slower. No, we have to make this method separate
-    BUT THEN ALSO tell the JIT to inline it, and only then do we keep performance. Yeah okay sure.
-    */
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void SetOptions(RtfToTextConverterOptions src)
-    {
-        _lineBreakStyle = src._lineBreakStyle;
-        _convertHiddenText = src._convertHiddenText;
-        _defaultCodePage = src._defaultCodePage;
-
-        if (src._swapUppercaseAndLowercasePhiSymbols)
-        {
-            _symbolFontTables[(int)SymbolFont.Symbol][0x66 - 0x20] = 0x03D5;
-            _symbolFontTables[(int)SymbolFont.Symbol][0x6A - 0x20] = 0x03C6;
-        }
-        else
-        {
-            _symbolFontTables[(int)SymbolFont.Symbol][0x66 - 0x20] = 0x03C6;
-            _symbolFontTables[(int)SymbolFont.Symbol][0x6A - 0x20] = 0x03D5;
-        }
-
-        _symbolFontTables[(int)SymbolFont.Symbol][0xA0 - 0x20] = src._symbolFontA0Char switch
-        {
-            SymbolFontA0Char.EuroSign => '\x20AC',
-            SymbolFontA0Char.NumericSpace => '\x2007',
-            _ => _unicodeUnknown_Char,
-        };
     }
 
     /// <summary>
