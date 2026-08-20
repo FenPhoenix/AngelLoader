@@ -2370,12 +2370,6 @@ public sealed partial class RtfToTextConverter
     {
         switch (specialType)
         {
-            case SpecialType.HexEncodedChar:
-                if (!GroupStack_CurrentSkipDest && !GroupStack_CurrentPropertyHidden && !_inFontTable)
-                {
-                    HandleHexRun(ref bufferRef);
-                }
-                break;
             case SpecialType.SkipNumberOfBytes:
                 if (symbol.UseDefaultParam) param = symbol.DefaultParam;
                 if (param < 0) return RtfError.AbortedForSafety;

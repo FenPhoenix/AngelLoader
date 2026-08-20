@@ -31,22 +31,6 @@ internal enum DestinationType : byte
     SkippableHex,
 }
 
-public enum LineBreakStyle
-{
-    /// <summary>
-    /// Uses the line break style of the platform you're running on.
-    /// </summary>
-    EnvironmentDefault,
-    /// <summary>
-    /// Uses Windows-style line breaks.
-    /// </summary>
-    CRLF,
-    /// <summary>
-    /// Uses Unix-style line breaks.
-    /// </summary>
-    LF,
-}
-
 internal enum Property : byte
 {
     Hidden,
@@ -101,7 +85,6 @@ internal enum SpecialType : byte
     DefaultFont,
     FontTable,
     UnicodeChar,
-    HexEncodedChar,
     SkipNumberOfBytes,
     ColorTable,
     CellRowEnd,
@@ -119,11 +102,4 @@ internal enum SymbolFont : byte
     Webdings,
     ITCZapfDingbats,
     ZapfDingbats,
-}
-
-public enum SymbolFontA0Char
-{
-    EuroSign,
-    NumericSpace,
-    Unassigned,
 }
