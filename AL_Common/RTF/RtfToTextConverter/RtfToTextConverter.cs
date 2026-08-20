@@ -1699,8 +1699,6 @@ public sealed partial class RtfToTextConverter
         InitGroupStack();
     }
 
-    #region Stream
-
     /// <summary>
     /// Converts a stream of RTF data into plain text.
     /// </summary>
@@ -1710,8 +1708,6 @@ public sealed partial class RtfToTextConverter
     {
         return ConvertInternal(Array.Empty<byte>(), 0, stream, _defaultStreamBufferSize);
     }
-
-    #endregion
 
     /// <summary>
     /// Resets all buffers back to default capacity, releasing excess memory.

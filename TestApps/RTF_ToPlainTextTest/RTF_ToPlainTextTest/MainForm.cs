@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common.RTF;
 
 namespace RTF_ToPlainTextTest;
 
@@ -194,65 +195,71 @@ public sealed partial class MainForm : Form
 
         var rtfConverter = new RtfToTextConverter();
 
-        ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
-
-        long totalSize = 0;
-
-        for (int i = 0; i < rtfFiles.Length; i++)
+        FileStream[] fileStreams = new FileStream[rtfFiles.Length];
+        try
         {
-            string f = rtfFiles[i];
-            using var fs = File.OpenRead(f);
-            byte[] array = new byte[fs.Length];
-            int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-            byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
-            totalSize += byteArrays[i].Length;
-        }
+            long totalSize = 0;
 
-        if (write)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-
-            for (int i = 0; i < byteArrays.Length; i++)
+            for (int i = 0; i < rtfFiles.Length; i++)
             {
-                string f = rtfFiles[i];
-                Trace.WriteLine(f);
-                ArrayWithLength<byte> array = byteArrays[i];
-                (_, string text) = rtfConverter.Convert(array);
-                WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
+                FileStream fileStream = File.OpenRead(rtfFiles[i]);
+                fileStreams[i] = fileStream;
+                totalSize += fileStream.Length;
             }
 
-            sw.Stop();
-            ShowPerfResults(sw, totalSize);
-        }
-        else if (handleAllType == HandleAllType.RunSetOnce)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-
-            for (int i = 0; i < byteArrays.Length; i++)
+            if (write)
             {
-                _ = rtfConverter.Convert(byteArrays[i]);
-            }
+                var sw = new Stopwatch();
+                sw.Start();
 
-            sw.Stop();
-            ShowPerfResults(sw, totalSize);
-        }
-        else if (handleAllType == HandleAllType.RunSetXTimes)
-        {
-            var sw = new Stopwatch();
-            sw.Start();
-
-            for (int c = 0; c < 20; c++)
-            {
-                for (int i = 0; i < byteArrays.Length; i++)
+                for (int i = 0; i < fileStreams.Length; i++)
                 {
-                    _ = rtfConverter.Convert(byteArrays[i]);
+                    string f = rtfFiles[i];
+                    Trace.WriteLine(f);
+                    FileStream fileStream = fileStreams[i];
+                    (_, string text) = rtfConverter.Convert(fileStream);
+                    WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
                 }
-            }
 
-            sw.Stop();
-            ShowPerfResults(sw, totalSize * 20);
+                sw.Stop();
+                ShowPerfResults(sw, totalSize);
+            }
+            else if (handleAllType == HandleAllType.RunSetOnce)
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+
+                for (int i = 0; i < fileStreams.Length; i++)
+                {
+                    _ = rtfConverter.Convert(fileStreams[i]);
+                }
+
+                sw.Stop();
+                ShowPerfResults(sw, totalSize);
+            }
+            else if (handleAllType == HandleAllType.RunSetXTimes)
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+
+                for (int c = 0; c < 20; c++)
+                {
+                    for (int i = 0; i < fileStreams.Length; i++)
+                    {
+                        _ = rtfConverter.Convert(fileStreams[i]);
+                    }
+                }
+
+                sw.Stop();
+                ShowPerfResults(sw, totalSize * 20);
+            }
+        }
+        finally
+        {
+            for (int i = 0; i < fileStreams.Length; i++)
+            {
+                fileStreams[i].Dispose();
+            }
         }
     }
 
@@ -296,10 +303,8 @@ public sealed partial class MainForm : Form
         //___test___!!!Christmas_present_I__Christmas Present.rtf
         string file = @"C:\rtf_plaintext_test\Original_Full_Set_From_Cache\___test___!!!Christmas_present_I__Christmas Present.rtf";
 
-        using var fs = File.OpenRead(file);
-        byte[] array = new byte[fs.Length];
-        int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-        (_, string text) = rtfConverter.Convert(new ArrayWithLength<byte>(array, bytesRead));
+        using FileStream fileStream = File.OpenRead(file);
+        (_, string text) = rtfConverter.Convert(fileStream);
         if (write)
         {
             WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
