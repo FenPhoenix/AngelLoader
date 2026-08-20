@@ -16,7 +16,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 	  <PackageReference Include="System.Memory" Version="4.6.3" />
-	  <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.10" />
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.11" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
