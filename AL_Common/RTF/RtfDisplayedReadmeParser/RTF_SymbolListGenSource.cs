@@ -64,15 +64,15 @@ public static class RTF_SymbolListGenSource
 
         new Symbol("tab", 0, false, KeywordType.Character, '\t'),
         new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
-        new Symbol("emspace", 0, false, KeywordType.Character, '\x2003'),
-        new Symbol("enspace", 0, false, KeywordType.Character, '\x2002'),
-        new Symbol("qmspace", 0, false, KeywordType.Character, '\x2005'),
-        new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
-        new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
-        new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
-        new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
-        new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
-        new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+        new Symbol("emspace", 0, false, KeywordType.Character, ' '),
+        new Symbol("enspace", 0, false, KeywordType.Character, ' '),
+        new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
+        new Symbol("emdash", 0, false, KeywordType.Character, '-'),
+        new Symbol("endash", 0, false, KeywordType.Character, '-'),
+        new Symbol("lquote", 0, false, KeywordType.Character, '\''),
+        new Symbol("rquote", 0, false, KeywordType.Character, '\''),
+        new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
+        new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
 
         new Symbol("zwbo", 0, false, KeywordType.Character, '\x200B'),
         new Symbol("zwnbo", 0, false, KeywordType.Character, '\xFEFF'),
@@ -92,8 +92,8 @@ public static class RTF_SymbolListGenSource
         #region Custom skip-destinations
 
         // TODO(listtext/pntext): Temporarily disabled with a hack, but decide what we want to do here
-        new Symbol("listtext", 0, false, KeywordType.Destination, 255),
-        new Symbol("pntext", 0, false, KeywordType.Destination, 255),
+        new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
+        new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 
         #endregion
 

@@ -117,8 +117,11 @@ public static class RtfCommon
         This should be enough to get on with for now though...
 
         Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
+
+        2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
         */
 
+#if false
         // Arabic
         langToCodePage[1065] = 1256;
         langToCodePage[1025] = 1256;
@@ -144,9 +147,11 @@ public static class RtfCommon
         langToCodePage[1120] = 1256;
         langToCodePage[1123] = 1256;
         langToCodePage[1164] = 1256;
+#endif
 
         // Cyrillic
         langToCodePage[1049] = 1251;
+#if false
         langToCodePage[1026] = 1251;
         langToCodePage[10266] = 1251;
         langToCodePage[1058] = 1251;
@@ -176,6 +181,7 @@ public static class RtfCommon
 
         // Vietnamese
         langToCodePage[1066] = 1258;
+#endif
 
         // Western European
         langToCodePage[1033] = 1252;

@@ -432,10 +432,6 @@ public sealed partial class RtfDisplayedReadmeParser
             switch (symbol.KeywordType)
             {
                 case KeywordType.Property:
-                // @RTF: Enable later once we've de-crufted
-#if false
-                    if (_getLangs && !GroupStack_CurrentSkipDest)
-#endif
                 {
                     if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
                     ChangeProperty((Property)symbol.Index, param);
@@ -1133,7 +1129,7 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("pca", 850, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
         null, null,
 // Entry 37
-        new Symbol("pntext", 0, false, KeywordType.Destination, 255),
+        new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null, null, null, null,
 // Entry 70
         new Symbol("themedata", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
@@ -1159,13 +1155,13 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("cell", 0, false, KeywordType.Character, '\t'),
         null, null, null,
 // Entry 22
-        new Symbol("endash", 0, false, KeywordType.Character, '\x2013'),
+        new Symbol("endash", 0, false, KeywordType.Character, '-'),
         null,
 // Entry 66
         new Symbol("title", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null,
 // Entry 23
-        new Symbol("lquote", 0, false, KeywordType.Character, '\x2018'),
+        new Symbol("lquote", 0, false, KeywordType.Character, '\''),
         null, null, null,
 // Entry 77
         new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
@@ -1203,7 +1199,7 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
         null, null, null, null,
 // Entry 36
-        new Symbol("listtext", 0, false, KeywordType.Destination, 255),
+        new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null,
 // Entry 34
         new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
@@ -1215,14 +1211,14 @@ public sealed partial class RtfDisplayedReadmeParser
 // Entry 33
         new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
 // Entry 25
-        new Symbol("ldblquote", 0, false, KeywordType.Character, '\x201C'),
+        new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
 // Entry 21
-        new Symbol("emdash", 0, false, KeywordType.Character, '\x2014'),
+        new Symbol("emdash", 0, false, KeywordType.Character, '-'),
 // Entry 2
         new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
         null,
 // Entry 24
-        new Symbol("rquote", 0, false, KeywordType.Character, '\x2019'),
+        new Symbol("rquote", 0, false, KeywordType.Character, '\''),
 // Entry 4
         new Symbol("ansicpg", 0, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 // Entry 62
@@ -1254,7 +1250,7 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("par", 0, false, KeywordType.Character, '\n'),
         null, null,
 // Entry 19
-        new Symbol("enspace", 0, false, KeywordType.Character, '\x2002'),
+        new Symbol("enspace", 0, false, KeywordType.Character, ' '),
         null, null, null, null,
 // Entry 16
         new Symbol("tab", 0, false, KeywordType.Character, '\t'),
@@ -1281,7 +1277,7 @@ public sealed partial class RtfDisplayedReadmeParser
 // Entry 43
         new Symbol("doccomm", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 26
-        new Symbol("rdblquote", 0, false, KeywordType.Character, '\x201D'),
+        new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
 // Entry 57
         new Symbol("keywords", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null, null, null, null, null, null, null, null, null,
@@ -1301,9 +1297,9 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("nestrow", 0, false, KeywordType.Special, (ushort)SpecialType.CellRowEnd),
         null, null, null, null, null,
 // Entry 20
-        new Symbol("qmspace", 0, false, KeywordType.Character, '\x2005'),
+        new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
 // Entry 18
-        new Symbol("emspace", 0, false, KeywordType.Character, '\x2003'),
+        new Symbol("emspace", 0, false, KeywordType.Character, ' '),
 // Entry 6
         new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
         null, null, null, null, null, null, null, null, null,
