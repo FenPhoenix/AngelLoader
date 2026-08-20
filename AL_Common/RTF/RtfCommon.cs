@@ -196,265 +196,51 @@ public static class RtfCommon
 
     public const int CharSetToCodePageLength = 256;
 
-    public static readonly ushort[] CharSetToCodePage =
-    [
-        1252, // 0 - "ANSI" (1252) (Yes, this is specified as _explicitly_ 1252, so this isn't a straggling 1252-default)
-        0, // 1 - Default
-        42, // 2 - Symbol
-        NoCodePage, // 3
-        NoCodePage, // 4
-        NoCodePage, // 5
-        NoCodePage, // 6
-        NoCodePage, // 7
-        NoCodePage, // 8
-        NoCodePage, // 9
-        NoCodePage, // 10
-        NoCodePage, // 11
-        NoCodePage, // 12
-        NoCodePage, // 13
-        NoCodePage, // 14
-        NoCodePage, // 15
-        NoCodePage, // 16
-        NoCodePage, // 17
-        NoCodePage, // 18
-        NoCodePage, // 19
-        NoCodePage, // 20
-        NoCodePage, // 21
-        NoCodePage, // 22
-        NoCodePage, // 23
-        NoCodePage, // 24
-        NoCodePage, // 25
-        NoCodePage, // 26
-        NoCodePage, // 27
-        NoCodePage, // 28
-        NoCodePage, // 29
-        NoCodePage, // 30
-        NoCodePage, // 31
-        NoCodePage, // 32
-        NoCodePage, // 33
-        NoCodePage, // 34
-        NoCodePage, // 35
-        NoCodePage, // 36
-        NoCodePage, // 37
-        NoCodePage, // 38
-        NoCodePage, // 39
-        NoCodePage, // 40
-        NoCodePage, // 41
-        NoCodePage, // 42
-        NoCodePage, // 43
-        NoCodePage, // 44
-        NoCodePage, // 45
-        NoCodePage, // 46
-        NoCodePage, // 47
-        NoCodePage, // 48
-        NoCodePage, // 49
-        NoCodePage, // 50
-        NoCodePage, // 51
-        NoCodePage, // 52
-        NoCodePage, // 53
-        NoCodePage, // 54
-        NoCodePage, // 55
-        NoCodePage, // 56
-        NoCodePage, // 57
-        NoCodePage, // 58
-        NoCodePage, // 59
-        NoCodePage, // 60
-        NoCodePage, // 61
-        NoCodePage, // 62
-        NoCodePage, // 63
-        NoCodePage, // 64
-        NoCodePage, // 65
-        NoCodePage, // 66
-        NoCodePage, // 67
-        NoCodePage, // 68
-        NoCodePage, // 69
-        NoCodePage, // 70
-        NoCodePage, // 71
-        NoCodePage, // 72
-        NoCodePage, // 73
-        NoCodePage, // 74
-        NoCodePage, // 75
-        NoCodePage, // 76
-        10000, // 77 - Mac Roman
-        10001, // 78 - Mac Shift Jis
-        10003, // 79 - Mac Hangul
-        10008, // 80 - Mac GB2312
-        10002, // 81 - Mac Big5
-        NoCodePage, // 82 - Mac Johab (old) (codepage unknown)
-        10005, // 83 - Mac Hebrew
-        10004, // 84 - Mac Arabic
-        10006, // 85 - Mac Greek
-        10081, // 86 - Mac Turkish
-        10021, // 87 - Mac Thai
-        10029, // 88 - Mac East Europe
-        10007, // 89 - Mac Russian
-        NoCodePage, // 90
-        NoCodePage, // 91
-        NoCodePage, // 92
-        NoCodePage, // 93
-        NoCodePage, // 94
-        NoCodePage, // 95
-        NoCodePage, // 96
-        NoCodePage, // 97
-        NoCodePage, // 98
-        NoCodePage, // 99
-        NoCodePage, // 100
-        NoCodePage, // 101
-        NoCodePage, // 102
-        NoCodePage, // 103
-        NoCodePage, // 104
-        NoCodePage, // 105
-        NoCodePage, // 106
-        NoCodePage, // 107
-        NoCodePage, // 108
-        NoCodePage, // 109
-        NoCodePage, // 110
-        NoCodePage, // 111
-        NoCodePage, // 112
-        NoCodePage, // 113
-        NoCodePage, // 114
-        NoCodePage, // 115
-        NoCodePage, // 116
-        NoCodePage, // 117
-        NoCodePage, // 118
-        NoCodePage, // 119
-        NoCodePage, // 120
-        NoCodePage, // 121
-        NoCodePage, // 122
-        NoCodePage, // 123
-        NoCodePage, // 124
-        NoCodePage, // 125
-        NoCodePage, // 126
-        NoCodePage, // 127
-        932, // 128 - Shift JIS (Windows-31J) (932)
-        949, // 129 - Hangul
-        1361, // 130 - Johab
-        NoCodePage, // 131
-        NoCodePage, // 132
-        NoCodePage, // 133
-        936, // 134 - GB2312
-        NoCodePage, // 135
-        950, // 136 - Big5
-        NoCodePage, // 137
-        NoCodePage, // 138
-        NoCodePage, // 139
-        NoCodePage, // 140
-        NoCodePage, // 141
-        NoCodePage, // 142
-        NoCodePage, // 143
-        NoCodePage, // 144
-        NoCodePage, // 145
-        NoCodePage, // 146
-        NoCodePage, // 147
-        NoCodePage, // 148
-        NoCodePage, // 149
-        NoCodePage, // 150
-        NoCodePage, // 151
-        NoCodePage, // 152
-        NoCodePage, // 153
-        NoCodePage, // 154
-        NoCodePage, // 155
-        NoCodePage, // 156
-        NoCodePage, // 157
-        NoCodePage, // 158
-        NoCodePage, // 159
-        NoCodePage, // 160
-        1253, // 161 - Greek
-        1254, // 162 - Turkish
-        1258, // 163 - Vietnamese
-        NoCodePage, // 164
-        NoCodePage, // 165
-        NoCodePage, // 166
-        NoCodePage, // 167
-        NoCodePage, // 168
-        NoCodePage, // 169
-        NoCodePage, // 170
-        NoCodePage, // 171
-        NoCodePage, // 172
-        NoCodePage, // 173
-        NoCodePage, // 174
-        NoCodePage, // 175
-        NoCodePage, // 176
-        1255, // 177 - Hebrew
-        1256, // 178 - Arabic
-        NoCodePage, // 179 - Arabic Traditional (old) (codepage unknown)
-        NoCodePage, // 180 - Arabic user (old) (codepage unknown)
-        NoCodePage, // 181 - Hebrew user (old) (codepage unknown)
-        NoCodePage, // 182
-        NoCodePage, // 183
-        NoCodePage, // 184
-        NoCodePage, // 185
-        1257, // 186 - Baltic
-        NoCodePage, // 187
-        NoCodePage, // 188
-        NoCodePage, // 189
-        NoCodePage, // 190
-        NoCodePage, // 191
-        NoCodePage, // 192
-        NoCodePage, // 193
-        NoCodePage, // 194
-        NoCodePage, // 195
-        NoCodePage, // 196
-        NoCodePage, // 197
-        NoCodePage, // 198
-        NoCodePage, // 199
-        NoCodePage, // 200
-        NoCodePage, // 201
-        NoCodePage, // 202
-        NoCodePage, // 203
-        1251, // 204 - Russian
-        NoCodePage, // 205
-        NoCodePage, // 206
-        NoCodePage, // 207
-        NoCodePage, // 208
-        NoCodePage, // 209
-        NoCodePage, // 210
-        NoCodePage, // 211
-        NoCodePage, // 212
-        NoCodePage, // 213
-        NoCodePage, // 214
-        NoCodePage, // 215
-        NoCodePage, // 216
-        NoCodePage, // 217
-        NoCodePage, // 218
-        NoCodePage, // 219
-        NoCodePage, // 220
-        NoCodePage, // 221
-        874, // 222 - Thai
-        NoCodePage, // 223
-        NoCodePage, // 224
-        NoCodePage, // 225
-        NoCodePage, // 226
-        NoCodePage, // 227
-        NoCodePage, // 228
-        NoCodePage, // 229
-        NoCodePage, // 230
-        NoCodePage, // 231
-        NoCodePage, // 232
-        NoCodePage, // 233
-        NoCodePage, // 234
-        NoCodePage, // 235
-        NoCodePage, // 236
-        NoCodePage, // 237
-        1250, // 238 - Eastern European
-        NoCodePage, // 239
-        NoCodePage, // 240
-        NoCodePage, // 241
-        NoCodePage, // 242
-        NoCodePage, // 243
-        NoCodePage, // 244
-        NoCodePage, // 245
-        NoCodePage, // 246
-        NoCodePage, // 247
-        NoCodePage, // 248
-        NoCodePage, // 249
-        NoCodePage, // 250
-        NoCodePage, // 251
-        NoCodePage, // 252
-        NoCodePage, // 253
-        437, // 254 - PC 437
-        850, // 255 - OEM
-    ];
+    public static readonly ushort[] CharSetToCodePage = RunFunc(static () =>
+    {
+        ushort[] charSetToCodePage = InitializedArray(CharSetToCodePageLength, NoCodePage);
+
+        charSetToCodePage[0] = 1252;   // "ANSI" (1252) (Yes, this is specified as _explicitly_ 1252, so this
+                                       // isn't a straggling 1252-default)
+
+        charSetToCodePage[1] = 0;      // Default
+
+        charSetToCodePage[2] = 42;     // Symbol
+        charSetToCodePage[77] = 10000; // Mac Roman
+        charSetToCodePage[78] = 10001; // Mac Shift Jis
+        charSetToCodePage[79] = 10003; // Mac Hangul
+        charSetToCodePage[80] = 10008; // Mac GB2312
+        charSetToCodePage[81] = 10002; // Mac Big5
+        //charSetToCodePage[82] = ?    // Mac Johab (old)
+        charSetToCodePage[83] = 10005; // Mac Hebrew
+        charSetToCodePage[84] = 10004; // Mac Arabic
+        charSetToCodePage[85] = 10006; // Mac Greek
+        charSetToCodePage[86] = 10081; // Mac Turkish
+        charSetToCodePage[87] = 10021; // Mac Thai
+        charSetToCodePage[88] = 10029; // Mac East Europe
+        charSetToCodePage[89] = 10007; // Mac Russian
+        charSetToCodePage[128] = 932;  // Shift JIS (Windows-31J) (932)
+        charSetToCodePage[129] = 949;  // Hangul
+        charSetToCodePage[130] = 1361; // Johab
+        charSetToCodePage[134] = 936;  // GB2312
+        charSetToCodePage[136] = 950;  // Big5
+        charSetToCodePage[161] = 1253; // Greek
+        charSetToCodePage[162] = 1254; // Turkish
+        charSetToCodePage[163] = 1258; // Vietnamese
+        charSetToCodePage[177] = 1255; // Hebrew
+        charSetToCodePage[178] = 1256; // Arabic
+        //charSetToCodePage[179] = ?   // Arabic Traditional (old)
+        //charSetToCodePage[180] = ?   // Arabic user (old)
+        //charSetToCodePage[181] = ?   // Hebrew user (old)
+        charSetToCodePage[186] = 1257; // Baltic
+        charSetToCodePage[204] = 1251; // Russian
+        charSetToCodePage[222] = 874;  // Thai
+        charSetToCodePage[238] = 1250; // Eastern European
+        charSetToCodePage[254] = 437;  // PC 437
+        charSetToCodePage[255] = 850;  // OEM
+
+        return charSetToCodePage;
+    });
 
     #endregion
 
