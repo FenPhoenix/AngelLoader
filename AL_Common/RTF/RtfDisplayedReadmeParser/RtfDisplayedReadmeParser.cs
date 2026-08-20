@@ -69,6 +69,8 @@ public sealed class LangItem
 
 public sealed partial class RtfDisplayedReadmeParser
 {
+    #region Private fields
+
     private List<RtfColor>? _colorTable;
     private bool _foundColorTable;
     private bool _getColorTable;
@@ -76,7 +78,8 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private List<LangItem>? _langItems;
 
-    #region Private fields
+    private byte[] _rtfBytes = Array.Empty<byte>();
+    private int _rtfBytesLength;
 
     // +1 to allow reading one beyond the max and then checking for it to return an error
     private readonly byte[] _keyword = new byte[KeywordMaxLen + 1];
@@ -860,6 +863,14 @@ public sealed partial class RtfDisplayedReadmeParser
         return ref Unsafe.AddByteOffset(ref bufferRef, (nint)pos);
     }
 
+    // Let the internal bounds-checker handle it - we don't need a soft bounds-check because we don't use streams
+    // and don't support arrays with virtual lengths.
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private byte GetByte(int index)
+    {
+        return _rtfBytes[index];
+    }
+
     /// <summary>
     /// Increment _currentPos. Behaves like _currentPos++, returning the value before it was modified.
     /// </summary>
@@ -873,56 +884,6 @@ public sealed partial class RtfDisplayedReadmeParser
     private void IncrementCurrentPos_ArbitraryAmountForward(int amount)
     {
         _currentPos += amount;
-    }
-
-    #endregion
-
-    // Pulling previously separate classes into the main class increases performance: the fewer separate classes
-    // we have to reference in hot loops, the better.
-
-    #region Buffer
-
-    private byte[] _rtfBytes = Array.Empty<byte>();
-    private int _rtfBytesLength;
-
-    /// <summary>
-    /// Manually bounds-checked past <see cref="T:_rtfBytesLength"/>.
-    /// Now that we have stream support, this method should always be called for array accesses to ensure the
-    /// chunks are loaded when needed. Only access <see cref="T:Array"/> directly in cases where you know for
-    /// sure you don't need the chunk load triggering in your particular scenario.
-    /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private byte GetByte(int index)
-    {
-        // Very unfortunately, we have to manually bounds-check here, because our array could be longer than
-        // Length (such as when it comes from a pool).
-        if (index > _rtfBytesLength - 1)
-        {
-            /*
-            Putting the ThrowHelper call here makes us full speed (on the byte array path). Putting this here
-            instead loses us like 6-10% again. Even though HandleOutOfBounds() has the no inlining attribute!
-            Argh!
-            But, this system does make us a little faster than before (especially on the streaming path), so hey.
-            */
-            index = HandleOutOfBounds();
-        }
-        return _rtfBytes[index];
-    }
-
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private int HandleOutOfBounds()
-    {
-        if (_groupStackTopIndex > 0)
-        {
-            ThrowHelper.UnmatchedBraceException();
-        }
-        else
-        {
-            ThrowHelper.IndexOutOfRange();
-        }
-        return 0;
     }
 
     #endregion
