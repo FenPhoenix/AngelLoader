@@ -3587,10 +3587,10 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.Open()
                         : readmeStream;
 
-                    RtfResult rtfResult = RtfConverter.Convert(stream);
-                    if (rtfResult.Error == RtfError.OK)
+                    (bool success, string text) = RtfConverter.Convert(stream);
+                    if (success)
                     {
-                        last.Text = rtfResult.Text;
+                        last.Text = text;
                     }
                 }
                 else if (readmeFile.Name.ExtIsGlml())

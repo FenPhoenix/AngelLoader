@@ -1706,7 +1706,7 @@ public sealed partial class RtfToTextConverter
     /// </summary>
     /// <param name="stream">A stream containing the RTF to convert.</param>
     /// <returns>An <see cref="RtfResult"/> containing the converted plain text, or error information if the conversion was not successful.</returns>
-    public RtfResult Convert(Stream stream)
+    public (bool Success, string Text) Convert(Stream stream)
     {
         return ConvertInternal(Array.Empty<byte>(), 0, stream, _defaultStreamBufferSize);
     }
@@ -1728,7 +1728,7 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    private RtfResult ConvertInternal(byte[] bytes, int bytesLength, Stream? bufferedStream, int bufferSize)
+    private (bool Success, string Text) ConvertInternal(byte[] bytes, int bytesLength, Stream? bufferedStream, int bufferSize)
     {
         try
         {
@@ -1786,33 +1786,76 @@ public sealed partial class RtfToTextConverter
             RtfError error = ParseRtf();
             if (error == RtfError.OK)
             {
-                return new RtfResult(new string(_plainText, 0, _plainText_Count));
+                return (true, new string(_plainText, 0, _plainText_Count));
             }
             else
             {
-                RtfResult ret = new(error, GetCurrentOverallPos(), null);
 #if DEBUG
-                System.Diagnostics.Trace.WriteLine(ret);
+                string errorMessage = "Error encountered." + $"{NL}" +
+                    "Error: " + error + $"{NL}" +
+                    "Position: " + GetCurrentOverallPos();
+                System.Diagnostics.Trace.WriteLine(errorMessage);
 #endif
-                return ret;
+                return (false, "");
             }
         }
+#if DEBUG
         catch (IndexOutOfRangeException ex)
         {
-            return new RtfResult(RtfError.UnexpectedEndOfFile, GetCurrentOverallPos(), ex);
+            string errorMessage = "Exception encountered." + $"{NL}" +
+                "Exception type: " + nameof(IndexOutOfRangeException) + $"{NL}" +
+                "Error from exception: " + RtfError.UnexpectedEndOfFile + $"{NL}" +
+                "Position: " + GetCurrentOverallPos() + $"{NL}" +
+                "Exception:" + $"{NL}" +
+                "----------" + $"{NL}" +
+                ex.ToString();
+            System.Diagnostics.Trace.WriteLine(errorMessage);
+
+            return (false, "");
         }
         catch (EndOfStreamException ex)
         {
-            return new RtfResult(RtfError.UnexpectedEndOfFile, GetCurrentOverallPos(), ex);
+            string errorMessage = "Exception encountered." + $"{NL}" +
+                "Exception type: " + nameof(EndOfStreamException) + $"{NL}" +
+                "Error from exception: " + RtfError.UnexpectedEndOfFile + $"{NL}" +
+                "Position: " + GetCurrentOverallPos() + $"{NL}" +
+                "Exception:" + $"{NL}" +
+                "----------" + $"{NL}" +
+                ex.ToString();
+            System.Diagnostics.Trace.WriteLine(errorMessage);
+
+            return (false, "");
         }
         catch (UnmatchedBraceException ex)
         {
-            return new RtfResult(RtfError.UnmatchedBrace, GetCurrentOverallPos(), ex);
+            string errorMessage = "Exception encountered." + $"{NL}" +
+                "Exception type: " + nameof(UnmatchedBraceException) + $"{NL}" +
+                "Error from exception: " + RtfError.UnmatchedBrace + $"{NL}" +
+                "Position: " + GetCurrentOverallPos() + $"{NL}" +
+                "Exception:" + $"{NL}" +
+                "----------" + $"{NL}" +
+                ex.ToString();
+            System.Diagnostics.Trace.WriteLine(errorMessage);
+
+            return (false, "");
         }
         catch (Exception ex)
         {
-            return new RtfResult(RtfError.UnexpectedError, GetCurrentOverallPos(), ex);
+            string errorMessage = "Exception encountered." + $"{NL}" +
+                "Exception type: " + nameof(Exception) + $"{NL}" +
+                "Position: " + GetCurrentOverallPos() + $"{NL}" +
+                "Exception:" + $"{NL}" +
+                "----------" + $"{NL}" +
+                ex.ToString();
+            System.Diagnostics.Trace.WriteLine(errorMessage);
+            return (false, "");
         }
+#else
+        catch (Exception)
+        {
+            return (false, "");
+        }
+#endif
         finally
         {
             if (_bufferedStream != null)
