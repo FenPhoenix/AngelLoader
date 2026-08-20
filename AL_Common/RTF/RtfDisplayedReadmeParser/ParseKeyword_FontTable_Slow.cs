@@ -89,7 +89,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 }
                 else
                 {
-                    symbol = LookUpControlWord_LengthOne(firstChar);
+                    symbol = null;
                 }
             }
             else

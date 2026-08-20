@@ -46,48 +46,9 @@ public static class RTF_SymbolListGenSource
 
         new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
 
-        #region Encoded characters
-
-        new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
-        new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
-
-        #endregion
-
-        // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
-        new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
-
-        #region Newlines
-
-        new Symbol("par", 0, false, KeywordType.Character, '\n'),
-        new Symbol("line", 0, false, KeywordType.Character, '\n'),
-        new Symbol("sect", 0, false, KeywordType.Character, '\n'),
-
-        #endregion
-
-        #region Control words that map to a single character
-
-        new Symbol("tab", 0, false, KeywordType.Character, '\t'),
-        new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
-        new Symbol("emspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("enspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("emdash", 0, false, KeywordType.Character, '-'),
-        new Symbol("endash", 0, false, KeywordType.Character, '-'),
-        new Symbol("lquote", 0, false, KeywordType.Character, '\''),
-        new Symbol("rquote", 0, false, KeywordType.Character, '\''),
-        new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
-        new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
-
-        new Symbol("zwbo", 0, false, KeywordType.Character, '\x200B'),
-        new Symbol("zwnbo", 0, false, KeywordType.Character, '\xFEFF'),
-        new Symbol("zwj", 0, false, KeywordType.Character, '\x200D'),
-        new Symbol("zwnj", 0, false, KeywordType.Character, '\x200C'),
-
-        #endregion
-
         new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
-        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
+        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
 
         new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
         new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
@@ -146,15 +107,6 @@ public static class RTF_SymbolListGenSource
         new Symbol("objdata", 1, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         new Symbol("blipuid", 32, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
         new Symbol("panose", 20, true, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
-
-        #endregion
-
-        #region Quick table hacks
-
-        new Symbol("row", 0, false, KeywordType.Special, (ushort)SpecialType.CellRowEnd),
-        new Symbol("cell", 0, false, KeywordType.Character, '\t'),
-        new Symbol("nestrow", 0, false, KeywordType.Special, (ushort)SpecialType.CellRowEnd),
-        new Symbol("nestcell", 0, false, KeywordType.Character, '\t'),
 
         #endregion
 
