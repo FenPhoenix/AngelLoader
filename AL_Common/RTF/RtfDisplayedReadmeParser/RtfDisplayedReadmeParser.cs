@@ -230,6 +230,16 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
                         !GroupStack_CurrentSkipDest)
                     {
+                        /*
+                        @RTF(Hex degenerate case):
+                        Since we don't handle hex explicitly in this parser, \'xx is going to be read like this:
+                        - \' is control char, so skip
+                        - Read 'x', it's plaintext, read next 'x', it's also plaintext, so go into SIMD
+                        - SIMD does a huge setup and overhead, reads one char (the second 'x'), and returns
+
+                        We should bring back hex handling, just to make sure we skip the two chars scalar and
+                        avoid the degenerate SIMD case.
+                        */
                         // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
                         char currentChar = (char)(_currentPos < _rtfBytesLength
                             ? GetByteAtPos(ref bufferRef, _currentPos)
