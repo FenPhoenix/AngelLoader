@@ -41,24 +41,29 @@ using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
+/*
+@RTF(LangItem):
+Can be a struct, but then we have to do a read-modify-write dance when changing Index. I don't have access to my
+usual profiler at the moment so I'm not going to guess at what's faster. This thing works at an acceptable perf
+level already, so let's just leave it for now.
+*/
 public sealed class LangItem
 {
-    private static int GetDigitsUpTo5(int number) =>
-        number <= 9 ? 1 :
-        number <= 99 ? 2 :
-        number <= 999 ? 3 :
-        number <= 9999 ? 4 :
-        5;
-
     public int Index;
-    public readonly int CodePage;
-    public readonly int DigitsCount;
+    public readonly ushort CodePage;
+    public readonly byte DigitsCount;
 
-    public LangItem(int index, int codePage)
+    public LangItem(int index, ushort codePage)
     {
         Index = index;
         CodePage = codePage;
-        DigitsCount = GetDigitsUpTo5(codePage);
+        DigitsCount = (byte)(
+            codePage <= 9 ? 1 :
+            codePage <= 99 ? 2 :
+            codePage <= 999 ? 3 :
+            codePage <= 9999 ? 4 :
+            5
+        );
     }
 }
 
@@ -651,13 +656,13 @@ public sealed partial class RtfDisplayedReadmeParser
 
                 ushort headerCodePage = _headerCodePage == 0 ? (ushort)1252 : _headerCodePage;
 
-                int currentCodePage = fontEntry.IsSet && fontEntry.CodePage != NoCodePage ? fontEntry.CodePage : headerCodePage;
+                ushort currentCodePage = fontEntry.IsSet && fontEntry.CodePage != NoCodePage ? fontEntry.CodePage : headerCodePage;
 
                 if (currentLang != NoLang && currentLang != UndefinedLanguage && param != UndefinedLanguage)
                 {
                     if (param.IsBetween(0, MaxLangNumIndex))
                     {
-                        int langCodePage = LangToCodePage[param];
+                        ushort langCodePage = LangToCodePage[param];
                         if (langCodePage == NoCodePage)
                         {
                             _langItems ??= new List<LangItem>();
@@ -669,7 +674,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 {
                     if (param.IsBetween(0, MaxLangNumIndex))
                     {
-                        int langCodePage = LangToCodePage[param];
+                        ushort langCodePage = LangToCodePage[param];
                         if (langCodePage != NoCodePage && langCodePage != currentCodePage)
                         {
                             _langItems ??= new List<LangItem>();
