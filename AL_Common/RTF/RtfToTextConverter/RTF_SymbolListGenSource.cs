@@ -17,7 +17,7 @@ using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
-public static class RTF_SymbolListGenSource
+public sealed partial class RtfToTextConverter
 {
     // This is the original "canonical" list, generate the perfect hash from this
     private static readonly Symbol[] _symbolList =
@@ -172,26 +172,29 @@ public static class RTF_SymbolListGenSource
     Instructions for semi-automatic perfect hash function regeneration (for updates requiring such):
 
     1. Call ConvertSymbolListToGPerfFormat().
-    3. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
+    2. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
        Call it symbolsCodeFile.
-    4. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
+    3. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
        Call it inputFile.
-    5. Call ConvertGPerfOutputToCSharp().
-    6. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
+    4. Call ConvertGPerfOutputToCSharp().
+    5. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
        main file, overwriting the previous symbols array body.
-    7. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
+    6. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
        have changed).
-    8. Done!
+    7. Call GenerateFirstCharAndLengthArray().
+    8. Copy the output from firstCharAndLengthArray.txt and paste it into the symbol-and-first-char array in the
+       main file, overwriting the previous array body.
+    9. Done!
     */
 
-    private const string genDir = @"C:\_al_rtf_table_gen";
-    private const string gperfExePath = @"C:\gperf\tools\gperf.exe";
+    private const string _genDir = @"C:\_al_rtf_table_gen";
+    private const string _gperfExePath = @"C:\gperf\tools\gperf.exe";
 
     public static void ConvertSymbolListToGPerfFormat()
     {
-        Directory.CreateDirectory(genDir);
+        Directory.CreateDirectory(_genDir);
 
-        string gperfFormatFile = Path.Combine(genDir, "gperfFormatFile.txt");
+        string gperfFormatFile = Path.Combine(_genDir, "gperfFormatFile.txt");
 
         List<string> outLines = new()
         {
@@ -208,8 +211,8 @@ public static class RTF_SymbolListGenSource
 
         // gperf --output-file=[gperf output file] -t [gperfFormatFile]
         using (Process.Start(
-                   gperfExePath,
-                   "--output-file=" + Path.Combine(genDir, "gperfOutputFile.txt") + " " +
+                   _gperfExePath,
+                   "--output-file=" + Path.Combine(_genDir, "gperfOutputFile.txt") + " " +
                    // -r = random, which increases the size of the table, leading to faster misses from more null
                    // hits
                    "-r " +
@@ -221,9 +224,9 @@ public static class RTF_SymbolListGenSource
 
     public static void ConvertGPerfOutputToCSharp()
     {
-        string inputFile = Path.Combine(genDir, "inputFile.txt");
-        string outputFile = Path.Combine(genDir, "outputFile.txt");
-        string symbolsCodeFile = Path.Combine(genDir, "symbolsCodeFile.txt");
+        string inputFile = Path.Combine(_genDir, "inputFile.txt");
+        string outputFile = Path.Combine(_genDir, "outputFile.txt");
+        string symbolsCodeFile = Path.Combine(_genDir, "symbolsCodeFile.txt");
 
         static int FindIndexOfValueInSymbolList(string value)
         {
@@ -286,14 +289,39 @@ public static class RTF_SymbolListGenSource
         File.WriteAllLines(outputFile, lines);
     }
 
+    public static void GenerateFirstCharAndLengthArray()
+    {
+        string firstCharString = "";
+        for (int i = 0; i < _symbolTable.Length; i++)
+        {
+            Symbol? symbol = _symbolTable[i];
+
+            if (symbol == null)
+            {
+                firstCharString += "0, ";
+            }
+            else
+            {
+                char firstChar = symbol.Keyword[0];
+                ushort firstCharAndLength = (ushort)((ushort)(firstChar << 8) + (byte)symbol.Keyword.Length);
+                firstCharString += "0x" + firstCharAndLength.ToString("X4").PadLeft(4, '0') + ", ";
+            }
+        }
+
+        File.WriteAllText(Path.Combine(_genDir, "firstCharAndLengthArray.txt"), firstCharString);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool Int_TryParseInv(string s, out int result)
     {
         return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
+}
 
+internal static class Extensions_Gen
+{
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
+    internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
 }
 
 #endif
