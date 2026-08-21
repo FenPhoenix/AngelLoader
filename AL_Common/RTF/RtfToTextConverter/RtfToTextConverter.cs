@@ -4211,9 +4211,6 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    // Pulling previously separate classes into the main class increases performance: the fewer separate classes
-    // we have to reference in hot loops, the better.
-
     #region Buffer
 
     private byte[] _buffer = Array.Empty<byte>();
