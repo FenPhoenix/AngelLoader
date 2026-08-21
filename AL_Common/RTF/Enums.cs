@@ -4,7 +4,7 @@ internal enum DestinationType : byte
 {
     FieldInstruction,
     /// <summary>
-    /// This is for \csN, \dsN, and \tsN.
+    /// This is for \csN, \dsN, and \tsN (but can be used for any \*-prefixed destination keyword that requires it).
     /// <para/>
     /// These are weird hybrids that can either be written as destinations (eg. "\*\cs15") or not (eg. "\cs15").
     /// <para/>
@@ -26,7 +26,7 @@ internal enum DestinationType : byte
     /// ignoring the word is a no-op in \stylesheet, and also a no-op in a regular group, which is what we want<br/>
     /// in both cases.
     /// </summary>
-    CanBeDestOrNotDest,
+    SkipKeywordButNotGroup,
     Skip,
     SkippableHex,
 }

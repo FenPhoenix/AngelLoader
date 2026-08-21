@@ -1099,11 +1099,11 @@ public sealed partial class RtfDisplayedReadmeParser
     [
         null, null, null, null, null,
 // Entry 13
-        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
         null, null, null, null, null, null, null, null, null,
         null, null,
 // Entry 14
-        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
         null, null, null, null, null, null, null, null, null,
 // Entry 53
         new Symbol("datafield", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
@@ -1112,7 +1112,7 @@ public sealed partial class RtfDisplayedReadmeParser
 // Entry 43
         new Symbol("subject", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 // Entry 12
-        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
         null, null, null, null, null, null, null,
 // Entry 8
         new Symbol("cpg", ushort.MaxValue, false, KeywordType.CPG, 0),
@@ -1124,7 +1124,7 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("tc", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null,
 // Entry 11
-        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
         null, null,
 // Entry 4
         new Symbol("ansicpg", 0, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),

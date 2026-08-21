@@ -2327,8 +2327,6 @@ public sealed partial class RtfToTextConverter
                             return RtfError.OK;
                         case DestinationType.FieldInstruction:
                             return HandleFieldInstruction(ref bufferRef);
-                        // Stupid crazy type of control word, see description for enum field
-                        case DestinationType.CanBeDestOrNotDest:
                         default:
                             return RtfError.OK;
                     }
@@ -4545,20 +4543,20 @@ public sealed partial class RtfToTextConverter
         new Symbol("line", 0, false, KeywordType.Character, '\n'),
         null,
 // Entry 35
-        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
         null, null, null, null,
 // Entry 36
         new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         null,
 // Entry 34
-        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 // Entry 32
         new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
 // Entry 71
         new Symbol("colorschememapping", 0, false, KeywordType.Destination, (ushort)DestinationType.SkippableHex),
         null,
 // Entry 33
-        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 // Entry 25
         new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
 // Entry 21

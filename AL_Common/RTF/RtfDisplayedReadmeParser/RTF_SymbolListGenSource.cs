@@ -54,11 +54,11 @@ public sealed partial class RtfDisplayedReadmeParser
         would be skipped. The reason we don't want to skip the \*\fldinst group is that it may have \lang keywords
         that affect visible text, and we want to perform the charset patch on those if necessary.
         */
-        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 
-        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
+        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
+        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 
         #region Custom skip-destinations
 
