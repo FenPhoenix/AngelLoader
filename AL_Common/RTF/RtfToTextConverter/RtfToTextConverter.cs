@@ -4442,20 +4442,12 @@ public sealed partial class RtfToTextConverter
     ];
 
     /*
-    For "listtext", "pntext"
-    Ignore list item bullets and numeric prefixes etc. We don't need them.
-
-    For "v"
-    \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
-
-    For "mac"
-    The spec calls this "Apple Macintosh" but again says nothing about what codepage that is. I'll
-    assume 10000 ("Mac Roman")
-
     NOTE: This is generated. Values can be modified, but not keys (keys are the first string params).
     Also no reordering. Adding, removing, reordering, or modifying keys requires generating a new version.
     See RTF_SymbolListGenSource.cs for how to generate a new version (it also contains the original
     Symbol list which must be used as the source to generate this one).
+
+    See RTF_SymbolListGenSource.cs for comments on the keywords.
     */
     private static readonly Symbol?[] _symbolTable =
     [

@@ -48,6 +48,12 @@ public sealed partial class RtfDisplayedReadmeParser
 
         new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
+        /*
+        Piggyback this onto the logic from \cs \ds \ts, because we want to just ignore the keyword and continue
+        parsing as normal, but since it's a \* destination, if we left it out of the table then its whole group
+        would be skipped. The reason we don't want to skip the \*\fldinst group is that it may have \lang keywords
+        that affect visible text, and we want to perform the charset patch on those if necessary.
+        */
         new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
 
         new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
