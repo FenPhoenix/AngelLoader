@@ -151,24 +151,24 @@ public static partial class Common
     public static T RunFunc<T>(Func<T> initFunc) => initFunc.Invoke();
 
     /// <summary>Indicates whether a <see langword="char"/> is within the specified inclusive range.</summary>
-    /// <param name="c">The <see langword="char"/> to evaluate.</param>
+    /// <param name="value">The <see langword="char"/> to evaluate.</param>
     /// <param name="minInclusive">The lower bound, inclusive.</param>
     /// <param name="maxInclusive">The upper bound, inclusive.</param>
-    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
     /// <remarks>
     /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
     /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
     /// <paramref name="minInclusive"/>, the behavior is undefined.
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
-        (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
+    public static bool IsBetween(char value, char minInclusive, char maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
 
     /// <summary>Indicates whether an <see langword="int"/> is within the specified inclusive range.</summary>
-    /// <param name="c">The <see langword="uint"/> to evaluate.</param>
+    /// <param name="value">The <see langword="int"/> to evaluate.</param>
     /// <param name="minInclusive">The lower bound, inclusive.</param>
     /// <param name="maxInclusive">The upper bound, inclusive.</param>
-    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
     /// <remarks>
     /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
     /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
@@ -179,10 +179,10 @@ public static partial class Common
         (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
 
     /// <summary>Indicates whether a <see langword="uint"/> is within the specified inclusive range.</summary>
-    /// <param name="c">The <see langword="uint"/> to evaluate.</param>
+    /// <param name="value">The <see langword="uint"/> to evaluate.</param>
     /// <param name="minInclusive">The lower bound, inclusive.</param>
     /// <param name="maxInclusive">The upper bound, inclusive.</param>
-    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
     /// <remarks>
     /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
     /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
@@ -193,10 +193,10 @@ public static partial class Common
         (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
 
     /// <summary>Indicates whether a <see langword="ushort"/> is within the specified inclusive range.</summary>
-    /// <param name="c">The <see langword="ushort"/> to evaluate.</param>
+    /// <param name="value">The <see langword="ushort"/> to evaluate.</param>
     /// <param name="minInclusive">The lower bound, inclusive.</param>
     /// <param name="maxInclusive">The upper bound, inclusive.</param>
-    /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
     /// <remarks>
     /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
     /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than

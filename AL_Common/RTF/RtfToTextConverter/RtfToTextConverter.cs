@@ -105,10 +105,6 @@ public sealed partial class RtfToTextConverter
 
     #endregion
 
-    // Cache it for perf
-    private static readonly char[] LineBreakString = Environment.NewLine.ToCharArray();
-    private static readonly int LineBreakStringLength = LineBreakString.Length;
-
     // +1 to allow reading one beyond the max and then checking for it to return an error
     private readonly byte[] _keyword = new byte[KeywordMaxLen + 1];
 
@@ -1747,21 +1743,11 @@ public sealed partial class RtfToTextConverter
         InitGroupStack();
     }
 
-    /// <summary>
-    /// Converts a byte array of RTF data into plain text.
-    /// </summary>
-    /// <param name="source">The byte array containing the RTF to convert.</param>
-    /// <returns>An <see cref="RtfResult"/> containing the converted plain text, or error information if the conversion was not successful.</returns>
     public (bool Success, string Text) Convert(byte[] source)
     {
         return ConvertInternal(source, source.Length, null, _defaultStreamBufferSize);
     }
 
-    /// <summary>
-    /// Converts a stream of RTF data into plain text.
-    /// </summary>
-    /// <param name="stream">A stream containing the RTF to convert.</param>
-    /// <returns>An <see cref="RtfResult"/> containing the converted plain text, or error information if the conversion was not successful.</returns>
     public (bool Success, string Text) Convert(Stream stream)
     {
         return ConvertInternal(Array.Empty<byte>(), 0, stream, _defaultStreamBufferSize);
@@ -3860,14 +3846,6 @@ public sealed partial class RtfToTextConverter
 
     #region Helpers
 
-    private static void ValidateArgs(byte[] source, int length)
-    {
-        if (length > source.Length)
-        {
-            throw new ArgumentException(nameof(length) + " is greater than the length of " + nameof(source) + ".", nameof(length));
-        }
-    }
-
     /// <summary>
     /// Only call this if <paramref name="chars"/>'s length is > 0 and consists solely of the characters '0' through '9'.
     /// It does no checks at all and will throw if either of these things is false.
@@ -3898,6 +3876,7 @@ public sealed partial class RtfToTextConverter
         return true;
     }
 
+#if DEBUG
     // Calculate it at the end from values we already have, rather than changing an additional value in hot loops
     private int GetCurrentOverallPos()
     {
@@ -3905,6 +3884,7 @@ public sealed partial class RtfToTextConverter
             ? _currentPos
             : ((_chunksRead - 1) * (_bufferLength - _leadingBufferByteCount)) + _currentPos - _leadingBufferByteCount;
     }
+#endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsNonEmptyUShortParam(int value)

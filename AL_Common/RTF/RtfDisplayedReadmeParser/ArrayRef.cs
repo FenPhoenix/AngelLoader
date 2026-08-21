@@ -33,7 +33,6 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private static readonly nint _groupStackFrame_ByteOffset = PerTypeValues<GroupStackFrame>.ArrayAdjustment;
     private static readonly nint _byte_ByteOffset = PerTypeValues<byte>.ArrayAdjustment;
-    private static readonly nint _char_ByteOffset = PerTypeValues<char>.ArrayAdjustment;
     private static readonly nint _bool_ByteOffset = PerTypeValues<bool>.ArrayAdjustment;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
