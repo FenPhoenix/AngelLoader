@@ -75,9 +75,7 @@ public static class RtfCommon
         false, false, false, false, false, false, false, false, false, false,
     ];
 
-    // This is fine to use the "ReadOnlySpan<> x =>" pattern with though, because we only take a reference to it
-    // and then just use the reference from then on.
-    public static ReadOnlySpan<bool> IsIgnoreChar =>
+    public static readonly bool[] IsIgnoreChar =
     [
         true, // '\0' (0)
         false, false, false, false, false, false, false, false, false,

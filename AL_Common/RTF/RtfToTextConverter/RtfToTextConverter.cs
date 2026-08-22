@@ -1914,7 +1914,7 @@ public sealed partial class RtfToTextConverter
         // Avoid bounds checks by passing a buffer reference everywhere. We do our own bounds checking.
         ref byte bufferRef = ref GetArrayDataReference(_buffer);
         ref bool isNonPlainTextCharRef = ref GetArrayDataReference(IsNonPlainText);
-        ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(IsIgnoreChar);
+        ref bool isIgnoreCharRef = ref GetArrayDataReference(IsIgnoreChar);
 
         while (!_reachedEndOfStream)
         {
