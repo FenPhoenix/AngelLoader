@@ -46,10 +46,6 @@ public enum RtfError : byte
     /// </summary>
     OK,
     /// <summary>
-    /// The file did not have a valid rtf header.
-    /// </summary>
-    NotAnRtfFile,
-    /// <summary>
     /// Unmatched '}'.
     /// </summary>
     StackUnderflow,
