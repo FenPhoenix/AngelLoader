@@ -1113,20 +1113,19 @@ public sealed class ReadOnlyDataContext
     {
         public int Compare(string x, string y)
         {
-            if (x == y) return 0;
-            if (x.IsEmpty()) return -1;
-            if (y.IsEmpty()) return 1;
-
             // int32 max digits minus 1 (to avoid having to check for overflow)
             const int maxDigits = 9;
 
             // Line is guaranteed to start with "title_"
             const int underscoreIndex = 6;
 
-            int xIndex2 = x.IndexOf(':', underscoreIndex);
+            // This also means we don't need to do any guard checks. Any failure case will be caught by the
+            // normal logic.
+
+            int xIndexOfColon = x.IndexOf(':', underscoreIndex);
 
             int xNum = 0;
-            int xEnd = Math.Min(xIndex2, underscoreIndex + maxDigits);
+            int xEnd = Math.Min(xIndexOfColon, underscoreIndex + maxDigits);
             for (int i = underscoreIndex; i < xEnd; i++)
             {
                 char c = x[i];
@@ -1141,10 +1140,10 @@ public sealed class ReadOnlyDataContext
                 }
             }
 
-            int yIndex2 = y.IndexOf(':', underscoreIndex);
+            int yIndexOfColon = y.IndexOf(':', underscoreIndex);
 
             int yNum = 0;
-            int yEnd = Math.Min(yIndex2, underscoreIndex + maxDigits);
+            int yEnd = Math.Min(yIndexOfColon, underscoreIndex + maxDigits);
             for (int i = underscoreIndex; i < yEnd; i++)
             {
                 char c = y[i];
