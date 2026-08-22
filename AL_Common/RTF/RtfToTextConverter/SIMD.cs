@@ -25,8 +25,10 @@
  *
 */
 
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
@@ -106,13 +108,26 @@ public sealed partial class RtfToTextConverter
 
     private void InitSymbolFontNameVectors()
     {
+        Span<byte> bytes = stackalloc byte[Vector<byte>.Count];
+
         for (int i = _symbolArraysStartingIndex; i < _symbolArraysLength; i++)
         {
-            byte[] name = _symbolFontCharsArrays[i];
-            _symbolFontNameVectors[i] =
-                name.Length > Vector<byte>.Count
-                ? Vector<byte>.Zero
-                : Unsafe.ReadUnaligned<Vector<byte>>(ref GetArrayDataReference(name));
+            _symbolFontNameVectors[i] = GetZeroPaddedVector(bytes, _symbolFontCharsArrays[i]);
+        }
+
+        return;
+
+        static Vector<byte> GetZeroPaddedVector(Span<byte> bytes, byte[] name)
+        {
+            if (name.Length > Vector<byte>.Count)
+            {
+                return Vector<byte>.Zero;
+            }
+
+            bytes.Clear();
+            name.CopyTo(bytes);
+
+            return Unsafe.ReadUnaligned<Vector<byte>>(ref MemoryMarshal.GetReference(bytes));
         }
     }
 
