@@ -195,6 +195,12 @@ internal static class RtfProcessing
         /*
         It's much faster on average to run pre-checks and be able to avoid an expensive parse.
         We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
+
+        2026-08-23:
+        Parsing is not nearly so expensive as it used to be, and we could probably get rid of both of these
+        pre-checks and be totally fine. But then our output changes because the files that previously had their
+        lang work skipped now have it done. In theory the output change should be inert, but we'd have to test
+        all the files by eye again and I don't feel like doing that at the moment, so meh.
         */
 
         bool colorTableWorkRequired = false;
