@@ -1,4 +1,5 @@
 ﻿//#define PROCESS_README_TIME_TEST
+//#define PATCH_MORE_THAN_ONE_LANG
 
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,11 @@ internal static class RtfProcessing
     // +1 for adding a space after the digits
     private static readonly ListFast<byte> _codePageBytes = new(RtfCommon.MaxLangNumDigits + 1);
 
+#if PATCH_MORE_THAN_ONE_LANG
     private static readonly byte[] _lang = @"\lang"u8.ToArray();
+#else
+    private static readonly byte[] _lang1049 = @"\lang1049"u8.ToArray();
+#endif
 
     private static readonly byte[] _ansicpg = @"\ansicpg"u8.ToArray();
 
@@ -202,6 +207,11 @@ internal static class RtfProcessing
         changes because the files that previously had their lang work skipped now have it done. In theory the
         output change should be inert, but we'd have to test all the files by eye again and I don't feel like
         doing that at the moment, so meh.
+
+        2026-08-23 update:
+        Since we're only checking for \lang1049 now, we can do an even faster pre-check for just that one phrase.
+        Also, even though our parse time isn't a problem anymore, we still want to avoid inserting an excessive
+        amount of byte sequences into the rtf (or any, if we can help it), as they could potentially add up.
         */
 
         bool colorTableWorkRequired = false;
@@ -235,6 +245,7 @@ internal static class RtfProcessing
         preCheckForLangsTimer.Start();
 #endif
 
+#if PATCH_MORE_THAN_ONE_LANG
         int startFrom = 0;
         while (startFrom > -1 && startFrom < currentReadmeBytes.Length - 1)
         {
@@ -256,13 +267,7 @@ internal static class RtfProcessing
                 if (num <= RtfCommon.MaxLangNumIndex)
                 {
                     int codePage = RtfCommon.LangToCodePage[num];
-                    // The only known broken readmes only need code page 1251 to fix them, so for now let's just
-                    // only support that, to exclude as many readmes as possible from an expensive full parse.
-#if true
-                    if (codePage is 1251)
-#else
                     if (codePage is > -1 and not 1252)
-#endif
                     {
                         langWorkRequired = true;
                         break;
@@ -271,6 +276,12 @@ internal static class RtfProcessing
             }
             startFrom = end;
         }
+#else
+        // The only known broken readmes only need code page 1251 (\lang1049) to fix them, so for now let's just
+        // only support that, to exclude as many readmes as possible from having unnecessary work done to patch
+        // them.
+        langWorkRequired = currentReadmeBytes.Contains(_lang1049);
+#endif
 
 #if PROCESS_README_TIME_TEST
         preCheckForLangsTimer.Stop();
@@ -463,51 +474,49 @@ internal static class RtfProcessing
 
             return currentReadmeBytes;
         }
+    }
 
-        #region Local functions
+#if PATCH_MORE_THAN_ONE_LANG
+    private static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
+    {
+        byte firstByte = _lang[0];
+        int index = Array_IndexOfByte_Fast(input, firstByte, start);
 
-        static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
+        while (index > -1)
         {
-            byte firstByte = _lang[0];
-            int index = Array_IndexOfByte_Fast(input, firstByte, start);
-
-            while (index > -1)
+            for (int i = 0; i < _lang.Length; i++)
             {
-                for (int i = 0; i < _lang.Length; i++)
+                if (index + i >= input.Length) return (-1, -1);
+                if (_lang[i] != input[index + i])
                 {
-                    if (index + i >= input.Length) return (-1, -1);
-                    if (_lang[i] != input[index + i])
+                    if ((index = Array_IndexOfByte_Fast(input, firstByte, index + i)) == -1) return (-1, -1);
+                    break;
+                }
+
+                if (i == _lang.Length - 1)
+                {
+                    int firstDigitIndex = index + i + 1;
+
+                    int numIndex = firstDigitIndex;
+                    while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
                     {
-                        if ((index = Array_IndexOfByte_Fast(input, firstByte, index + i)) == -1) return (-1, -1);
-                        break;
+                        numIndex++;
                     }
-
-                    if (i == _lang.Length - 1)
+                    if (numIndex > firstDigitIndex)
                     {
-                        int firstDigitIndex = index + i + 1;
-
-                        int numIndex = firstDigitIndex;
-                        while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
-                        {
-                            numIndex++;
-                        }
-                        if (numIndex > firstDigitIndex)
-                        {
-                            return (index, numIndex);
-                        }
-                        else
-                        {
-                            index = numIndex;
-                        }
+                        return (index, numIndex);
+                    }
+                    else
+                    {
+                        index = numIndex;
                     }
                 }
             }
-
-            return (-1, -1);
         }
 
-        #endregion
+        return (-1, -1);
     }
+#endif
 
     private static void CopyInserts(
         List<LangItem> langItems,

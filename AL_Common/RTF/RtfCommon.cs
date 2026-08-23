@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define PATCH_ALL_LANGS
+
+using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -134,7 +136,7 @@ public static class RtfCommon
         2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
         */
 
-#if false
+#if PATCH_ALL_LANGS
         // Arabic
         langToCodePage[1065] = 1256;
         langToCodePage[1025] = 1256;
@@ -164,7 +166,7 @@ public static class RtfCommon
 
         // Cyrillic
         langToCodePage[1049] = 1251;
-#if false
+#if PATCH_ALL_LANGS
         langToCodePage[1026] = 1251;
         langToCodePage[10266] = 1251;
         langToCodePage[1058] = 1251;
