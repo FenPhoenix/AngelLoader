@@ -406,120 +406,6 @@ public sealed partial class RtfDisplayedReadmeParser
         return System.Numerics.Vector.IsHardwareAccelerated && VectorLengthFitsInAByte;
     }
 
-    #endregion
-
-    #region Act on keywords
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError DispatchKeyword(ref byte bufferRef, Symbol symbol, int param, bool hasParam)
-    {
-        if (!GroupStack_CurrentSkipDest)
-        {
-            switch (symbol.KeywordType)
-            {
-                case KeywordType.Property:
-                {
-                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                    ChangeProperty((Property)symbol.Index, param);
-                }
-                return RtfError.OK;
-                case KeywordType.Special:
-                    SpecialType specialType = (SpecialType)symbol.Index;
-                    return DispatchSpecialKeyword(ref bufferRef, specialType, symbol, param);
-                case KeywordType.Destination:
-                    DestinationType destType = (DestinationType)symbol.Index;
-                    switch (destType)
-                    {
-                        case DestinationType.SkippableHex:
-                            if (symbol.DefaultParam == 1)
-                            {
-                                return HandleSkippableHexData(ref bufferRef);
-                            }
-                            else
-                            {
-                                _currentPos = IndexOfNextClosingBrace_ChunkAware();
-                                return RtfError.OK;
-                            }
-                        case DestinationType.Skip:
-                            SkipDest(ref bufferRef);
-                            return RtfError.OK;
-                        default:
-                            return RtfError.OK;
-                    }
-                default:
-                    return RtfError.OK;
-            }
-        }
-        else
-        {
-            switch (symbol.KeywordType)
-            {
-                case KeywordType.Destination:
-                {
-                    if ((DestinationType)symbol.Index == DestinationType.SkippableHex)
-                    {
-                        if (symbol.DefaultParam == 1)
-                        {
-                            return HandleSkippableHexData(ref bufferRef);
-                        }
-                        else
-                        {
-                            _currentPos = IndexOfNextClosingBrace_ChunkAware();
-                        }
-                    }
-                    return RtfError.OK;
-                }
-                case KeywordType.Special:
-                    SpecialType specialType = (SpecialType)symbol.Index;
-                    return specialType == SpecialType.SkipNumberOfBytes
-                        ? DispatchSpecialKeyword(ref bufferRef, specialType, symbol, param)
-                        : RtfError.OK;
-                default:
-                    return RtfError.OK;
-            }
-        }
-    }
-
-    private RtfError DispatchSpecialKeyword(ref byte bufferRef, SpecialType specialType, Symbol symbol, int param)
-    {
-        switch (specialType)
-        {
-            case SpecialType.SkipNumberOfBytes:
-                if (symbol.UseDefaultParam) param = symbol.DefaultParam;
-                if (param < 0) return RtfError.AbortedForSafety;
-                IncrementCurrentPos_ArbitraryAmountForward(param);
-                break;
-            case SpecialType.HeaderCodePage:
-                _headerCodePage = IsNonEmptyUShortParam(param) ? (ushort)param : (ushort)0;
-                break;
-            case SpecialType.DefaultFont:
-                if (!_headerDefaultFontSet)
-                {
-                    _headerDefaultFontNum = param;
-                    _headerDefaultFontSet = true;
-                }
-                break;
-            case SpecialType.FontTable:
-            {
-                return ParseFontTable(ref bufferRef);
-            }
-            case SpecialType.ColorTable:
-                // Spec is to ignore any further color tables after the first one
-                if (_getColorTable && !_foundColorTable)
-                {
-                    _foundColorTable = true;
-                    return ParseAndBuildColorTable();
-                }
-                else
-                {
-                    _currentPos = IndexOfNextClosingBrace_ChunkAware();
-                }
-                break;
-        }
-
-        return RtfError.OK;
-    }
-
     /*
     Handle hex run separately in scalar so as to avoid the degenerate case of \'xx being read like this:
     - \' is control char, so skip
@@ -673,6 +559,120 @@ public sealed partial class RtfDisplayedReadmeParser
             result = 0;
             return false;
         }
+    }
+
+    #endregion
+
+    #region Act on keywords
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private RtfError DispatchKeyword(ref byte bufferRef, Symbol symbol, int param, bool hasParam)
+    {
+        if (!GroupStack_CurrentSkipDest)
+        {
+            switch (symbol.KeywordType)
+            {
+                case KeywordType.Property:
+                {
+                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
+                    ChangeProperty((Property)symbol.Index, param);
+                }
+                return RtfError.OK;
+                case KeywordType.Special:
+                    SpecialType specialType = (SpecialType)symbol.Index;
+                    return DispatchSpecialKeyword(ref bufferRef, specialType, symbol, param);
+                case KeywordType.Destination:
+                    DestinationType destType = (DestinationType)symbol.Index;
+                    switch (destType)
+                    {
+                        case DestinationType.SkippableHex:
+                            if (symbol.DefaultParam == 1)
+                            {
+                                return HandleSkippableHexData(ref bufferRef);
+                            }
+                            else
+                            {
+                                _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                                return RtfError.OK;
+                            }
+                        case DestinationType.Skip:
+                            SkipDest(ref bufferRef);
+                            return RtfError.OK;
+                        default:
+                            return RtfError.OK;
+                    }
+                default:
+                    return RtfError.OK;
+            }
+        }
+        else
+        {
+            switch (symbol.KeywordType)
+            {
+                case KeywordType.Destination:
+                {
+                    if ((DestinationType)symbol.Index == DestinationType.SkippableHex)
+                    {
+                        if (symbol.DefaultParam == 1)
+                        {
+                            return HandleSkippableHexData(ref bufferRef);
+                        }
+                        else
+                        {
+                            _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                        }
+                    }
+                    return RtfError.OK;
+                }
+                case KeywordType.Special:
+                    SpecialType specialType = (SpecialType)symbol.Index;
+                    return specialType == SpecialType.SkipNumberOfBytes
+                        ? DispatchSpecialKeyword(ref bufferRef, specialType, symbol, param)
+                        : RtfError.OK;
+                default:
+                    return RtfError.OK;
+            }
+        }
+    }
+
+    private RtfError DispatchSpecialKeyword(ref byte bufferRef, SpecialType specialType, Symbol symbol, int param)
+    {
+        switch (specialType)
+        {
+            case SpecialType.SkipNumberOfBytes:
+                if (symbol.UseDefaultParam) param = symbol.DefaultParam;
+                if (param < 0) return RtfError.AbortedForSafety;
+                IncrementCurrentPos_ArbitraryAmountForward(param);
+                break;
+            case SpecialType.HeaderCodePage:
+                _headerCodePage = IsNonEmptyUShortParam(param) ? (ushort)param : (ushort)0;
+                break;
+            case SpecialType.DefaultFont:
+                if (!_headerDefaultFontSet)
+                {
+                    _headerDefaultFontNum = param;
+                    _headerDefaultFontSet = true;
+                }
+                break;
+            case SpecialType.FontTable:
+            {
+                return ParseFontTable(ref bufferRef);
+            }
+            case SpecialType.ColorTable:
+                // Spec is to ignore any further color tables after the first one
+                if (_getColorTable && !_foundColorTable)
+                {
+                    _foundColorTable = true;
+                    return ParseAndBuildColorTable();
+                }
+                else
+                {
+                    _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                }
+                break;
+        }
+
+        return RtfError.OK;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
