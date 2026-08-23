@@ -209,6 +209,8 @@ public sealed partial class RtfDisplayedReadmeParser
                     --_groupStackTopIndex;
                     if (_groupStackTopIndex == 0) return RtfError.OK;
                     break;
+                // Although we don't convert plain text, we still want to know about it so we can efficiently
+                // skip it.
                 default:
                 {
                     if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
