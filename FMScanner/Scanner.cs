@@ -3,7 +3,7 @@
 //#define INDIVIDUAL_FM_TIMING
 //#define ScanSynchronous
 //#define StoreCurrentFM
-//#define ND128_GAME_HINT
+#define ND128_GAME_HINT
 
 /*
 @MEM(Scanner readme line splitting):

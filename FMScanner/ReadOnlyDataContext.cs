@@ -1,4 +1,4 @@
-﻿//#define ND128_GAME_HINT
+﻿#define ND128_GAME_HINT
 
 using System;
 using System.Collections.Generic;
