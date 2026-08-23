@@ -17,15 +17,10 @@ using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
-/*
-@RTF(LangItem):
-Can be a struct, but then we have to do a read-modify-write dance when changing Index. I don't have access to my
-usual profiler at the moment so I'm not going to guess at what's faster. This thing works at an acceptable perf
-level already, so let's just leave it for now.
-*/
-public sealed class LangItem
+[StructLayout(LayoutKind.Sequential)]
+public readonly struct LangItem
 {
-    public int Index;
+    public readonly int Index;
     public readonly ushort CodePage;
     public readonly byte DigitsCount;
 

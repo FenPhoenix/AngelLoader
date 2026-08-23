@@ -340,10 +340,8 @@ internal static class RtfProcessing
         {
             for (int i = 0; i < langItems.Count; i++)
             {
-                LangItem item = langItems[i];
-                item.Index += colorTableEntryLength;
                 // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
+                extraAnsiCpgCombinedLength += ansiCpgLength + langItems[i].DigitsCount + 1;
             }
         }
 
@@ -395,7 +393,7 @@ internal static class RtfProcessing
 
             if (success && langWorkRequired && langItems?.Count > 0)
             {
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
@@ -465,7 +463,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(langItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
@@ -520,6 +518,7 @@ internal static class RtfProcessing
 
     private static void CopyInserts(
         List<LangItem> langItems,
+        int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
         int ansiCpgLength,
@@ -533,7 +532,9 @@ internal static class RtfProcessing
             LangItem item = langItems[i];
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
-            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
+            int itemIndex = item.Index + colorTableEntryLength;
+
+            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (itemIndex - lastIndexDest) + plus);
             bodySpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
