@@ -36,8 +36,9 @@ public static class RtfCommon
     Fonts can specify themselves as whatever number they want, so we can't just count by index
     eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
 
-    KeyValuePair<int, FontEntry> = (4 bytes int + 4 bytes FontEntry) = 8 bytes, x 150 = 1200 bytes.
-    Totally fine to keep around permanently.
+    The size of a Dictionary<int, FontEntry> with 150 entries when FontEntry is 4 bytes would be approximately
+    3 KB (from looking at its internal memory use per entry, which is larger than just the KeyValuePair<>).
+    That's totally fine to keep around permanently.
     */
     public const int FontTableDefaultCapacity = 150;
 
