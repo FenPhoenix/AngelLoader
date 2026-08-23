@@ -692,7 +692,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
                 _fontDictionary.TryGetValue(groupFontNum, out FontEntry fontEntry);
 
-                ushort headerCodePage = _headerCodePage == 0 ? (ushort)1252 : _headerCodePage;
+                ushort headerCodePage = _headerCodePage;
 
                 ushort currentCodePage = fontEntry.IsSet && fontEntry.CodePage != NoCodePage ? fontEntry.CodePage : headerCodePage;
 
