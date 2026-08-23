@@ -106,11 +106,11 @@ public sealed partial class RtfDisplayedReadmeParser
 
     [PublicAPI]
     public (bool Success, List<RtfColor>? ColorTable, List<LangItem>? LangItems)
-    GetData(in ArrayWithLength<byte> rtfBytes, bool getColorTable, bool getLangs)
+    GetData(in byte[] rtfBytes, bool getColorTable, bool getLangs)
     {
         try
         {
-            _rtfBytes = rtfBytes.Array;
+            _rtfBytes = rtfBytes;
             _rtfBytesLength = rtfBytes.Length;
 
             #region Reset

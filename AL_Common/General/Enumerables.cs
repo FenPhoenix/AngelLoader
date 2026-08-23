@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AL_Common;
@@ -11,53 +10,6 @@ namespace AL_Common;
 public static partial class Common
 {
     #region Classes
-
-    [PublicAPI]
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct ArrayWithLength<T>
-    {
-        public readonly T[] Array;
-        public readonly int Length;
-
-        public ArrayWithLength()
-        {
-            Array = System.Array.Empty<T>();
-            Length = 0;
-        }
-
-        public ArrayWithLength(T[] array)
-        {
-            Array = array;
-            Length = array.Length;
-        }
-
-        public ArrayWithLength(T[] array, int length)
-        {
-            Array = array;
-            Length = length;
-        }
-
-        // This MUST be a method (not a static field) to maintain performance!
-        public static ArrayWithLength<T> Empty() => new();
-
-        /// <summary>
-        /// Manually bounds-checked past <see cref="T:Length"/>.
-        /// If you don't need bounds-checking past <see cref="T:Length"/>, access <see cref="T:Array"/> directly.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public T this[int index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                // Very unfortunately, we have to manually bounds-check here, because our array could be longer
-                // than Length (such as when it comes from a pool).
-                if (index > Length - 1) ThrowHelper.IndexOutOfRange();
-                return Array[index];
-            }
-        }
-    }
 
     // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
     // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
