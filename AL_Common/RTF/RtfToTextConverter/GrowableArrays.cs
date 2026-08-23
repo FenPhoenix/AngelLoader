@@ -45,7 +45,8 @@ public sealed partial class RtfToTextConverter
 
     #region Plain text buffer
 
-    private const int _plainTextDefaultCapacity = 4096;
+    // Highest measured was 56192
+    private const int _plainTextDefaultCapacity = ByteSize.KB * 60;
 
     private char[] _plainText = new char[_plainTextDefaultCapacity];
     private int _plainText_Capacity = _plainTextDefaultCapacity;

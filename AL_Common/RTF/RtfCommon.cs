@@ -30,6 +30,17 @@ public static class RtfCommon
         ParamMaxLen + 1 + // +1 to read one beyond for length checking purposes
         1; // Space at end
 
+    /*
+    FMs can have 100+ of these...
+    Highest measured was 131
+    Fonts can specify themselves as whatever number they want, so we can't just count by index
+    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
+
+    KeyValuePair<int, FontEntry> = (4 bytes int + 4 bytes FontEntry) = 8 bytes, x 150 = 1200 bytes.
+    Totally fine to keep around permanently.
+    */
+    public const int FontTableDefaultCapacity = 150;
+
     // "\bin"
     public const int BinLength = 4;
     public const uint BinUInt = 0x6E69625Cu;

@@ -60,8 +60,6 @@ public sealed partial class RtfDisplayedReadmeParser
     // +1 to allow reading one beyond the max and then checking for it to return an error
     private readonly byte[] _keyword = new byte[KeywordMaxLen + 1];
 
-    private const int _internalBufferDefaultCapacity = 32;
-
     #region Resettables
 
     #region Header
@@ -101,7 +99,7 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
+        _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
 
         InitGroupStack();
     }
@@ -167,9 +165,9 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             // Reset after so we don't carry around any waste after running
             GroupStack_ResetCapacityToDefault();
-            if (_fontDictionary.Count > _internalBufferDefaultCapacity)
+            if (_fontDictionary.Count > FontTableDefaultCapacity)
             {
-                _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
+                _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
             }
 
             _rtfBytes = Array.Empty<byte>();

@@ -1736,7 +1736,7 @@ public sealed partial class RtfToTextConverter
 
         InitSymbolFontData();
 
-        _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
+        _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
 
         _encodings = new Dictionary<ushort, Encoding>(_internalBufferDefaultCapacity);
 
@@ -1762,7 +1762,7 @@ public sealed partial class RtfToTextConverter
         PlainText_ResetCapacityToDefault();
         HexBuffer_ResetCapacityToDefault();
         UnicodeBuffer_ResetCapacityToDefault();
-        _fontDictionary = new Dictionary<int, FontEntry>(_internalBufferDefaultCapacity);
+        _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
         _encodings = new Dictionary<ushort, Encoding>(_internalBufferDefaultCapacity);
     }
 
