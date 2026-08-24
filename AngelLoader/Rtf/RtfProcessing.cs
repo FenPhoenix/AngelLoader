@@ -11,7 +11,7 @@ namespace AngelLoader;
 
 internal static class RtfProcessing
 {
-    #region Private fields
+    #region Fields
 
     #region Horizontal line setup
 
@@ -51,19 +51,6 @@ internal static class RtfProcessing
 
     #endregion
 
-    /*
-    The first parse takes like 20ms, even when subsequent ones take <1ms. So do the first slow parse in parallel
-    during startup if we're not already loading an RTF readme right away (if we are then it will already do the
-    parse then). This speeds up the first selection of an FM with an RTF readme when the startup FM readme was
-    plain text.
-    */
-    internal static void WarmUpRtfParser()
-    {
-        // This string contains enough RTF data to trigger the main codepaths to run and warm up. Just "{\rtf1}"
-        // is not sufficient.
-        _ = _rtfDisplayedReadmeParser.GetData(@"{\rtf1\ansicpg1252{\fonttbl\f0\cpg1252 Dummy;}{\colortbl;}}"u8.ToArray(), true);
-    }
-
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
     // to make a new one every time.
     private static readonly RtfDisplayedReadmeParser _rtfDisplayedReadmeParser = new();
@@ -92,110 +79,30 @@ internal static class RtfProcessing
 
     #endregion
 
-    #endregion
-
     internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
                                                                + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground).ToStrInv()
                                                                + "}}}}}";
     private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
-    private static ListFast<byte> CreateColorTableRTFBytes(List<RtfColor>? colorTable)
+    #endregion
+
+    /*
+    The first parse takes like 20ms, even when subsequent ones take <1ms. So do the first slow parse in parallel
+    during startup if we're not already loading an RTF readme right away (if we are then it will already do the
+    parse then). This speeds up the first selection of an FM with an RTF readme when the startup FM readme was
+    plain text.
+    */
+    internal static void WarmUpRtfParser()
     {
-        // "\red255\green255\blue255;" = 25 chars
-        const int maxColorEntryStringLength = 25;
-
-        // Size us large enough that we don't reallocate
-        ListFast<byte> colorEntriesBytesList = new(
-            _colortbl.Length +
-            (maxColorEntryStringLength * colorTable?.Count ?? 0)
-            + 2);
-
-        colorEntriesBytesList.AddRange_Large(_colortbl);
-
-        if (colorTable != null)
-        {
-            for (int i = 0; i < colorTable.Count; i++)
-            {
-                RtfColor invertedColor;
-                RtfColor currentColor = colorTable[i];
-                if (i == 0 && currentColor.IsDefaultColor)
-                {
-                    // We can just do the standard thing now, because with the sys color hook our default color
-                    // is now our bright foreground color
-                    colorEntriesBytesList.Add((byte)';');
-                    continue;
-                }
-                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
-                // white and that's a bit too bright.
-                else if (currentColor is { R: 0, G: 0, B: 0 })
-                {
-                    invertedColor = DarkColors.Fen_DarkForeground_Rtf;
-                }
-                else if (ColorIsTheSameAsBackground(currentColor))
-                {
-                    invertedColor = DarkColors.Fen_DarkBackground_Rtf;
-                }
-                else
-                {
-                    invertedColor = ColorUtils.InvertLightness(currentColor);
-
-                    // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be
-                    // 254 or less... don't ask me
-                    if (invertedColor is { R: 255, G: 255, B: 255 })
-                    {
-                        invertedColor = new RtfColor(254, 254, 254);
-                    }
-                }
-
-                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
-
-                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
-
-                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
-
-                colorEntriesBytesList.Add((byte)';');
-            }
-        }
-
-        colorEntriesBytesList.Add((byte)'}');
-
-        return colorEntriesBytesList;
-
-        #region Local functions
-
-        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
-        // new background color to keep author intent (avoiding spoilers etc.)
-        static bool ColorIsTheSameAsBackground(RtfColor color) => color is { R: 255, G: 255, B: 255 };
-
-        static ListFast<byte> ByteToASCIICharBytes(byte number)
-        {
-            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
-            // a new byte array EVERY time through here (which is a lot)
-            _colorNumberBytes.ClearFast();
-
-            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
-
-            for (int i = 0; i < digits; i++)
-            {
-                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
-                number /= 10;
-            }
-
-            return _colorNumberBytes;
-        }
-
-        #endregion
+        // This string contains enough RTF data to trigger the main codepaths to run and warm up. Just "{\rtf1}"
+        // is not sufficient.
+        _ = _rtfDisplayedReadmeParser.GetData(@"{\rtf1\ansicpg1252{\fonttbl\f0\cpg1252 Dummy;}{\colortbl;}}"u8.ToArray(), true);
     }
 
     internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
     {
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
-
-        #region Parse
 
 #if PROCESS_README_TIME_TEST
         System.Diagnostics.Stopwatch parseTimer = new();
@@ -210,8 +117,6 @@ internal static class RtfProcessing
         TimeSpan parseTimerElapsed = parseTimer.Elapsed;
         System.Diagnostics.Trace.WriteLine(nameof(_rtfDisplayedReadmeParser) + "." + nameof(RtfDisplayedReadmeParser.GetData) + "() took:\r\n" + parseTimerElapsed);
 #endif
-
-        #endregion
 
         int colorTableEntryLength = 0;
 
@@ -395,5 +300,96 @@ internal static class RtfProcessing
             lastIndexDest += codePageSpan.Length;
             plus += cpgLength + RtfCommon.FontNameSuffixCodePageLength;
         }
+    }
+
+    private static ListFast<byte> CreateColorTableRTFBytes(List<RtfColor>? colorTable)
+    {
+        // "\red255\green255\blue255;" = 25 chars
+        const int maxColorEntryStringLength = 25;
+
+        // Size us large enough that we don't reallocate
+        ListFast<byte> colorEntriesBytesList = new(
+            _colortbl.Length +
+            (maxColorEntryStringLength * colorTable?.Count ?? 0)
+            + 2);
+
+        colorEntriesBytesList.AddRange_Large(_colortbl);
+
+        if (colorTable != null)
+        {
+            for (int i = 0; i < colorTable.Count; i++)
+            {
+                RtfColor invertedColor;
+                RtfColor currentColor = colorTable[i];
+                if (i == 0 && currentColor.IsDefaultColor)
+                {
+                    // We can just do the standard thing now, because with the sys color hook our default color
+                    // is now our bright foreground color
+                    colorEntriesBytesList.Add((byte)';');
+                    continue;
+                }
+                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                // white and that's a bit too bright.
+                else if (currentColor is { R: 0, G: 0, B: 0 })
+                {
+                    invertedColor = DarkColors.Fen_DarkForeground_Rtf;
+                }
+                else if (ColorIsTheSameAsBackground(currentColor))
+                {
+                    invertedColor = DarkColors.Fen_DarkBackground_Rtf;
+                }
+                else
+                {
+                    invertedColor = ColorUtils.InvertLightness(currentColor);
+
+                    // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be
+                    // 254 or less... don't ask me
+                    if (invertedColor is { R: 255, G: 255, B: 255 })
+                    {
+                        invertedColor = new RtfColor(254, 254, 254);
+                    }
+                }
+
+                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
+
+                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
+
+                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
+
+                colorEntriesBytesList.Add((byte)';');
+            }
+        }
+
+        colorEntriesBytesList.Add((byte)'}');
+
+        return colorEntriesBytesList;
+
+        #region Local functions
+
+        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
+        // new background color to keep author intent (avoiding spoilers etc.)
+        static bool ColorIsTheSameAsBackground(RtfColor color) => color is { R: 255, G: 255, B: 255 };
+
+        static ListFast<byte> ByteToASCIICharBytes(byte number)
+        {
+            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
+            // a new byte array EVERY time through here (which is a lot)
+            _colorNumberBytes.ClearFast();
+
+            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
+
+            for (int i = 0; i < digits; i++)
+            {
+                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
+                number /= 10;
+            }
+
+            return _colorNumberBytes;
+        }
+
+        #endregion
     }
 }
