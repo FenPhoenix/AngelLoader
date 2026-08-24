@@ -272,7 +272,7 @@ internal static class RtfProcessing
 
             if (success && codePageItems?.Count > 0)
             {
-                CopyInserts(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
@@ -342,7 +342,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
@@ -353,7 +353,7 @@ internal static class RtfProcessing
         }
     }
 
-    private static void CopyInserts(
+    private static void InsertCodePages(
         List<CodePageItem> codePageItems,
         int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
