@@ -51,10 +51,22 @@ internal static class RtfProcessing
 
     #endregion
 
+    /*
+    The first parse takes like 20ms, even when subsequent ones take <1ms. So do the first slow parse in parallel
+    during startup if we're not already loading an RTF readme right away (if we are then it will already do the
+    parse then). This speeds up the first selection of an FM with an RTF readme when the startup FM readme was
+    plain text.
+    */
+    internal static void WarmUpRtfParser()
+    {
+        // This string contains enough RTF data to trigger the main codepaths to run and warm up. Just "{\rtf1}"
+        // is not sufficient.
+        _ = _rtfDisplayedReadmeParser.GetData(@"{\rtf1\ansicpg1252{\fonttbl\f0\cpg1252 Dummy;}{\colortbl;}}"u8.ToArray(), true);
+    }
+
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
     // to make a new one every time.
-    private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
-    private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
+    private static readonly RtfDisplayedReadmeParser _rtfDisplayedReadmeParser = new();
 
     #region Colors
 
@@ -191,12 +203,12 @@ internal static class RtfProcessing
 #endif
 
         (bool success, List<RtfColor>? colorTable, List<CodePageItem>? codePageItems) =
-            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
+            _rtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
         TimeSpan parseTimerElapsed = parseTimer.Elapsed;
-        System.Diagnostics.Trace.WriteLine(nameof(RtfDisplayedReadmeParser) + "." + nameof(RtfDisplayedReadmeParser.GetData) + "() took:\r\n" + parseTimerElapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(_rtfDisplayedReadmeParser) + "." + nameof(RtfDisplayedReadmeParser.GetData) + "() took:\r\n" + parseTimerElapsed);
 #endif
 
         #endregion
