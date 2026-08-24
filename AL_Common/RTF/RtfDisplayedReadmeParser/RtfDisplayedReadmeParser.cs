@@ -22,19 +22,13 @@ public readonly struct CodePageItem
 {
     public readonly int Index;
     public readonly ushort CodePage;
-    public readonly byte DigitsCount;
+    public readonly byte[] CodePageBytes;
 
-    public CodePageItem(int index, ushort codePage)
+    public CodePageItem(int index, ushort codePage, byte[] codePageBytes)
     {
         Index = index;
         CodePage = codePage;
-        DigitsCount = (byte)(
-            codePage <= 9 ? 1 :
-            codePage <= 99 ? 2 :
-            codePage <= 999 ? 3 :
-            codePage <= 9999 ? 4 :
-            5
-        );
+        CodePageBytes = codePageBytes;
     }
 }
 
@@ -364,7 +358,9 @@ public sealed partial class RtfDisplayedReadmeParser
                         // otherwise we could save time here...
                         currentFontNumber > NoFontNumber)
                     {
-                        ushort codePageOverride = GetCodePageOverride_Scalar(ref bufferRef, ch);
+                        FontNameData fontNameData = GetFontNameData_Scalar(ref bufferRef, ch);
+
+                        ushort codePageOverride = fontNameData.CodePage;
 
                         if (codePageOverride != NoCodePage)
                         {
@@ -372,7 +368,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             if (lastCodePageIndex > -1)
                             {
                                 _codePageItems ??= new List<CodePageItem>();
-                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, currentFontCodePage));
+                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, currentFontCodePage, fontNameData.CodePageBytes));
                             }
                         }
                         else if (currentFontCodePage == NoCodePage)
@@ -394,7 +390,7 @@ public sealed partial class RtfDisplayedReadmeParser
         return RtfError.OK;
     }
 
-    private ushort GetCodePageOverride_Scalar(ref byte bufferRef, char ch, int symbolFontNameCountStart = 0)
+    private FontNameData GetFontNameData_Scalar(ref byte bufferRef, char ch, int symbolFontNameCountStart = 0)
     {
         int symbolFontNameCount;
         _fontNameBuffer_Count = 0;
@@ -450,15 +446,15 @@ public sealed partial class RtfDisplayedReadmeParser
 
         ReadOnlySpan<byte> fontNameBufferSpan = _fontNameBuffer.AsSpan(0, _fontNameBuffer_Count);
 
-        foreach (FontNameSuffix fontNameSuffix in FontNameSuffixes)
+        foreach (FontNameData fontNameSuffix in FontNameSuffixes)
         {
             if (fontNameBufferSpan.EndsWith(fontNameSuffix.Bytes))
             {
-                return fontNameSuffix.CodePage;
+                return fontNameSuffix;
             }
         }
 
-        return NoCodePage;
+        return new FontNameData(Array.Empty<byte>(), NoCodePage, Array.Empty<byte>());
     }
 
     /*

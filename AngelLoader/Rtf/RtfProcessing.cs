@@ -76,9 +76,6 @@ internal static class RtfProcessing
 
     #region Code pages
 
-    // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RtfCommon.MaxCodePageDigits + 1);
-
     private static readonly byte[] _cpg = @"\cpg"u8.ToArray();
 
     #endregion
@@ -223,7 +220,7 @@ internal static class RtfProcessing
             colorTableEntryLength = colorEntriesBytesList.Count;
         }
 
-        int extraAnsiCpgCombinedLength = 0;
+        int extraCpgCombinedLength = 0;
         int cpgLength = _cpg.Length;
 
         if (!(success && codePageItems?.Count > 0) && !darkMode)
@@ -233,11 +230,7 @@ internal static class RtfProcessing
 
         if (success && codePageItems?.Count > 0)
         {
-            for (int i = 0; i < codePageItems.Count; i++)
-            {
-                // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += cpgLength + codePageItems[i].DigitsCount + 1;
-            }
+            extraCpgCombinedLength = (cpgLength + RtfCommon.FontNameSuffixCodePageLength) * codePageItems.Count;
         }
 
         byte[] retBytes;
@@ -247,7 +240,7 @@ internal static class RtfProcessing
                 currentReadmeBytes.Length +
                 colorTableEntryLength +
                 RTF_DarkBackgroundBytes.Length +
-                extraAnsiCpgCombinedLength;
+                extraCpgCombinedLength;
             retBytes = new byte[retBytesLength];
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
@@ -350,7 +343,7 @@ internal static class RtfProcessing
         {
             if (success && codePageItems?.Count > 0)
             {
-                retBytes = new byte[currentReadmeBytes.Length + extraAnsiCpgCombinedLength];
+                retBytes = new byte[currentReadmeBytes.Length + extraCpgCombinedLength];
 
                 ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
                 Span<byte> retBytesSpan = retBytes.AsSpan();
@@ -374,7 +367,7 @@ internal static class RtfProcessing
         int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
-        int ansiCpgLength,
+        int cpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
     {
@@ -383,7 +376,7 @@ internal static class RtfProcessing
         for (int i = 0; i < codePageItems.Count; i++)
         {
             CodePageItem item = codePageItems[i];
-            ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
+            byte[] cpgBytes = item.CodePageBytes;
 
             int itemIndex = item.Index + colorTableEntryLength;
 
@@ -393,29 +386,11 @@ internal static class RtfProcessing
             lastIndexDest += bodySpan.Length;
 
             cpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
-            lastIndexDest += ansiCpgLength;
-            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan()[..cpgBytes.Count];
+            lastIndexDest += cpgLength;
+            ReadOnlySpan<byte> codePageSpan = cpgBytes.AsSpan();
             codePageSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += codePageSpan.Length;
-            plus += ansiCpgLength + codePageSpan.Length;
-        }
-
-        return;
-
-        static ListFast<byte> CodePageToBytes(int codePage, int digits)
-        {
-            _codePageBytes.ClearFast();
-
-            for (int i = 0; i < digits; i++)
-            {
-                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
-                codePage /= 10;
-            }
-
-            // Use the option for control words to have a space after them, for safety
-            _codePageBytes.Add((byte)' ');
-
-            return _codePageBytes;
+            plus += cpgLength + RtfCommon.FontNameSuffixCodePageLength;
         }
     }
 }

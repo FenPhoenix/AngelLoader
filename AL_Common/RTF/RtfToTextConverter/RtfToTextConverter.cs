@@ -2305,7 +2305,7 @@ public sealed partial class RtfToTextConverter
 
         ReadOnlySpan<byte> fontNameBufferSpan = _fontNameBuffer.AsSpan(0, _fontNameBuffer_Count);
 
-        foreach (FontNameSuffix fontNameSuffix in FontNameSuffixes)
+        foreach (FontNameData fontNameSuffix in FontNameSuffixes)
         {
             if (fontNameBufferSpan.EndsWith(fontNameSuffix.Bytes))
             {
