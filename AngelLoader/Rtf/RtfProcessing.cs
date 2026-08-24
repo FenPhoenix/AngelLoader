@@ -1,5 +1,4 @@
 ﻿//#define PROCESS_README_TIME_TEST
-//#define PATCH_MORE_THAN_ONE_LANG
 
 using System;
 using System.Collections.Generic;
@@ -75,18 +74,12 @@ internal static class RtfProcessing
 
     #endregion
 
-    #region Langs
+    #region Code pages
 
     // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RtfCommon.MaxLangNumDigits + 1);
+    private static readonly ListFast<byte> _codePageBytes = new(RtfCommon.MaxCodePageDigits + 1);
 
-#if PATCH_MORE_THAN_ONE_LANG
-    private static readonly byte[] _lang = @"\lang"u8.ToArray();
-#else
-    private static readonly byte[] _lang1049 = @"\lang1049"u8.ToArray();
-#endif
-
-    private static readonly byte[] _ansicpg = @"\ansicpg"u8.ToArray();
+    private static readonly byte[] _cpg = @"\cpg"u8.ToArray();
 
     #endregion
 
@@ -197,101 +190,6 @@ internal static class RtfProcessing
         TimeSpan totalTime = TimeSpan.Zero;
 #endif
 
-        /*
-        It's much faster on average to run pre-checks and be able to avoid an expensive parse.
-        We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
-
-        2026-08-23:
-        Parsing is not nearly so expensive as it used to be - these pre-checks were added when the parser was 
-        running at ~250MB/s! We could probably get rid of both of them and be totally fine. But then our output
-        changes because the files that previously had their lang work skipped now have it done. In theory the
-        output change should be inert, but we'd have to test all the files by eye again and I don't feel like
-        doing that at the moment, so meh.
-
-        2026-08-23 update:
-        Since we're only checking for \lang1049 now, we can do an even faster pre-check for just that one phrase.
-        Also, even though our parse time isn't a problem anymore, we still want to avoid inserting an excessive
-        amount of byte sequences into the rtf (or any, if we can help it), as they could potentially add up.
-        */
-
-        bool colorTableWorkRequired = false;
-        bool langWorkRequired = false;
-
-        if (darkMode)
-        {
-            #region Precheck for \colortbl
-
-#if PROCESS_README_TIME_TEST
-            System.Diagnostics.Stopwatch preCheckForColorTableTimer = new();
-            preCheckForColorTableTimer.Start();
-#endif
-
-            colorTableWorkRequired = currentReadmeBytes.Contains(_colortbl);
-
-#if PROCESS_README_TIME_TEST
-            preCheckForColorTableTimer.Stop();
-            TimeSpan preCheckForColorTableTimerElapsed = preCheckForColorTableTimer.Elapsed;
-            totalTime = totalTime.Add(preCheckForColorTableTimerElapsed);
-            System.Diagnostics.Trace.WriteLine(nameof(preCheckForColorTableTimer) + " took:\r\n" + preCheckForColorTableTimerElapsed);
-#endif
-
-            #endregion
-        }
-
-        #region Precheck for \lang fixing work required
-
-#if PROCESS_README_TIME_TEST
-        System.Diagnostics.Stopwatch preCheckForLangsTimer = new();
-        preCheckForLangsTimer.Start();
-#endif
-
-#if PATCH_MORE_THAN_ONE_LANG
-        int startFrom = 0;
-        while (startFrom > -1 && startFrom < currentReadmeBytes.Length - 1)
-        {
-            (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
-            if ((start | end) > -1 &&
-                end - (start + 5) <= RtfCommon.MaxLangNumDigits)
-            {
-                int num = 0;
-                for (int i = start + 5; i < end; i++)
-                {
-                    byte b = currentReadmeBytes[i];
-                    if (b.IsAsciiNumeric())
-                    {
-                        num *= 10;
-                        num += b - '0';
-                    }
-                }
-
-                if (num <= RtfCommon.MaxLangNumIndex)
-                {
-                    int codePage = RtfCommon.LangToCodePage[num];
-                    if (codePage is > -1 and not 1252)
-                    {
-                        langWorkRequired = true;
-                        break;
-                    }
-                }
-            }
-            startFrom = end;
-        }
-#else
-        // The only known broken readmes only need code page 1251 (\lang1049) to fix them, so for now let's just
-        // only support that, to exclude as many readmes as possible from having unnecessary work done to patch
-        // them.
-        langWorkRequired = currentReadmeBytes.Contains(_lang1049);
-#endif
-
-#if PROCESS_README_TIME_TEST
-        preCheckForLangsTimer.Stop();
-        TimeSpan preCheckForLangsTimerElapsed = preCheckForLangsTimer.Elapsed;
-        totalTime = totalTime.Add(preCheckForLangsTimerElapsed);
-        System.Diagnostics.Trace.WriteLine(nameof(preCheckForLangsTimer) + " took:\r\n" + preCheckForLangsTimerElapsed);
-#endif
-
-        #endregion
-
         #region Parse
 
 #if PROCESS_README_TIME_TEST
@@ -299,11 +197,8 @@ internal static class RtfProcessing
         parseTimer.Start();
 #endif
 
-        (bool success, List<RtfColor>? colorTable, List<LangItem>? langItems) =
-            RtfDisplayedReadmeParser.GetData(
-                currentReadmeBytes,
-                getColorTable: colorTableWorkRequired,
-                getLangs: langWorkRequired);
+        (bool success, List<RtfColor>? colorTable, List<CodePageItem>? codePageItems) =
+            RtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
@@ -322,26 +217,26 @@ internal static class RtfProcessing
 
         ListFast<byte>? colorEntriesBytesList = null;
 
-        if (success && colorTableWorkRequired)
+        if (success && colorTable?.Count > 0)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
         }
 
         int extraAnsiCpgCombinedLength = 0;
-        int ansiCpgLength = _ansicpg.Length;
+        int cpgLength = _cpg.Length;
 
-        if (!(success && langWorkRequired && langItems?.Count > 0) && !darkMode)
+        if (!(success && codePageItems?.Count > 0) && !darkMode)
         {
             return currentReadmeBytes;
         }
 
-        if (success && langWorkRequired && langItems?.Count > 0)
+        if (success && codePageItems?.Count > 0)
         {
-            for (int i = 0; i < langItems.Count; i++)
+            for (int i = 0; i < codePageItems.Count; i++)
             {
                 // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += ansiCpgLength + langItems[i].DigitsCount + 1;
+                extraAnsiCpgCombinedLength += cpgLength + codePageItems[i].DigitsCount + 1;
             }
         }
 
@@ -391,9 +286,9 @@ internal static class RtfProcessing
                 lastIndexDest += colorTableEntryLength;
             }
 
-            if (success && langWorkRequired && langItems?.Count > 0)
+            if (success && codePageItems?.Count > 0)
             {
-                CopyInserts(langItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
@@ -453,7 +348,7 @@ internal static class RtfProcessing
         }
         else
         {
-            if (success && langWorkRequired && langItems?.Count > 0)
+            if (success && codePageItems?.Count > 0)
             {
                 retBytes = new byte[currentReadmeBytes.Length + extraAnsiCpgCombinedLength];
 
@@ -463,7 +358,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(langItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                CopyInserts(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
@@ -474,50 +369,8 @@ internal static class RtfProcessing
         }
     }
 
-#if PATCH_MORE_THAN_ONE_LANG
-    private static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
-    {
-        byte firstByte = _lang[0];
-        int index = Array_IndexOfByte_Fast(input, firstByte, start);
-
-        while (index > -1)
-        {
-            for (int i = 0; i < _lang.Length; i++)
-            {
-                if (index + i >= input.Length) return (-1, -1);
-                if (_lang[i] != input[index + i])
-                {
-                    if ((index = Array_IndexOfByte_Fast(input, firstByte, index + i)) == -1) return (-1, -1);
-                    break;
-                }
-
-                if (i == _lang.Length - 1)
-                {
-                    int firstDigitIndex = index + i + 1;
-
-                    int numIndex = firstDigitIndex;
-                    while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
-                    {
-                        numIndex++;
-                    }
-                    if (numIndex > firstDigitIndex)
-                    {
-                        return (index, numIndex);
-                    }
-                    else
-                    {
-                        index = numIndex;
-                    }
-                }
-            }
-        }
-
-        return (-1, -1);
-    }
-#endif
-
     private static void CopyInserts(
-        List<LangItem> langItems,
+        List<CodePageItem> codePageItems,
         int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
@@ -526,10 +379,10 @@ internal static class RtfProcessing
         ref int lastIndexDest)
     {
         int plus = 0;
-        ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
-        for (int i = 0; i < langItems.Count; i++)
+        ReadOnlySpan<byte> cpgSpan = _cpg.AsSpan();
+        for (int i = 0; i < codePageItems.Count; i++)
         {
-            LangItem item = langItems[i];
+            CodePageItem item = codePageItems[i];
             ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
 
             int itemIndex = item.Index + colorTableEntryLength;
@@ -539,7 +392,7 @@ internal static class RtfProcessing
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ansiCpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
+            cpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += ansiCpgLength;
             ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan()[..cpgBytes.Count];
             codePageSpan.CopyTo(retBytesSpan[lastIndexDest..]);

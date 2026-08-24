@@ -36,7 +36,6 @@ internal enum Property : byte
     Hidden,
     UnicodeCharSkipCount,
     FontNum,
-    Lang,
 }
 
 public enum RtfError : byte

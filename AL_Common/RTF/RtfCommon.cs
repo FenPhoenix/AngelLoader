@@ -20,7 +20,7 @@ public static class RtfCommon
     /// </summary>
     public const int NoFontNumber = int.MinValue;
 
-    public const int MaxLangNumDigits = 5;
+    public const int MaxCodePageDigits = 5;
     public const int MaxLangNumIndex = 21514;
     public const ushort NoLang = ushort.MaxValue;
 
@@ -122,227 +122,6 @@ public static class RtfCommon
         false, false, false, false, false, false, false, false, false, false,
         false, false,
     ];
-
-    public static readonly ushort[] LangToCodePage = RunFunc(static () =>
-    {
-        ushort[] langToCodePage = InitializedArray(MaxLangNumIndex + 1, NoCodePage);
-
-        /*
-        Generated from the list here: https://github.com/lovasoa/lcid-to-codepage/blob/main/windows_locales_extended.csv
-        And then trimmed down to only the ones listed in the RTF spec.
-
-        Note: 1024 is implicitly rejected by simply not being in the list, so we're all good there.
-
-        2023-03-31: Only handle 1049 for now (and leave in 1033 for the plaintext converter).
-        */
-
-#if PATCH_ALL_LANGS
-        langToCodePage[1025] = 1256;  // Arabic / Saudi Arabia
-        langToCodePage[1026] = 1251;  // Bulgarian / Bulgaria
-        langToCodePage[1027] = 1252;  // Catalan / Spain
-        langToCodePage[1028] = 950;   // Chinese (Traditional) / Taiwan
-        langToCodePage[1029] = 1250;  // Czech / Czechia
-        langToCodePage[1030] = 1252;  // Danish / Denmark
-        langToCodePage[1031] = 1252;  // German / Germany
-        langToCodePage[1032] = 1253;  // Greek / Greece
-#endif
-        langToCodePage[1033] = 1252;  // English / United States
-#if PATCH_ALL_LANGS
-        langToCodePage[1034] = 1252;  // Spanish / Spain
-        langToCodePage[1035] = 1252;  // Finnish / Finland
-        langToCodePage[1036] = 1252;  // French / France
-        langToCodePage[1037] = 1255;  // Hebrew / Israel
-        langToCodePage[1038] = 1250;  // Hungarian / Hungary
-        langToCodePage[1039] = 1252;  // Icelandic / Iceland
-        langToCodePage[1040] = 1252;  // Italian / Italy
-        langToCodePage[1041] = 932;   // Japanese / Japan
-        langToCodePage[1042] = 949;   // Korean / Korea
-        langToCodePage[1043] = 1252;  // Dutch / Netherlands
-        langToCodePage[1044] = 1252;  // Norwegian Bokmål / Norway
-        langToCodePage[1045] = 1250;  // Polish / Poland
-        langToCodePage[1046] = 1252;  // Portuguese / Brazil
-        langToCodePage[1047] = 1252;  // Romansh / Switzerland
-        langToCodePage[1048] = 1250;  // Romanian / Romania
-#endif
-        langToCodePage[1049] = 1251;  // Russian / Russia
-#if PATCH_ALL_LANGS
-        langToCodePage[1050] = 1250;  // Croatian / Croatia
-        langToCodePage[1051] = 1250;  // Slovak / Slovakia
-        langToCodePage[1052] = 1250;  // Albanian / Albania
-        langToCodePage[1053] = 1252;  // Swedish / Sweden
-        langToCodePage[1054] = 874;   // Thai / Thailand
-        langToCodePage[1055] = 1254;  // Turkish / Türkiye
-        langToCodePage[1056] = 1256;  // Urdu / Pakistan
-        langToCodePage[1057] = 1252;  // Indonesian / Indonesia
-        langToCodePage[1058] = 1251;  // Ukrainian / Ukraine
-        langToCodePage[1059] = 1251;  // Belarusian / Belarus
-        langToCodePage[1060] = 1250;  // Slovenian / Slovenia
-        langToCodePage[1061] = 1257;  // Estonian / Estonia
-        langToCodePage[1062] = 1257;  // Latvian / Latvia
-        langToCodePage[1063] = 1257;  // Lithuanian / Lithuania
-        langToCodePage[1064] = 1251;  // Tajik (Cyrillic) / Tajikistan
-        langToCodePage[1065] = 1256;  // Persian / Iran
-        langToCodePage[1066] = 1258;  // Vietnamese / Vietnam
-        langToCodePage[1068] = 1254;  // Azerbaijani (Latin) / Azerbaijan
-        langToCodePage[1069] = 1252;  // Basque / Spain
-        langToCodePage[1070] = 1252;  // Upper Sorbian / Germany
-        langToCodePage[1071] = 1251;  // Macedonian / North Macedonia
-        langToCodePage[1074] = 1252;  // Setswana / South Africa
-        langToCodePage[1076] = 1252;  // isiXhosa / South Africa
-        langToCodePage[1077] = 1252;  // isiZulu / South Africa
-        langToCodePage[1078] = 1252;  // Afrikaans / South Africa
-        langToCodePage[1080] = 1252;  // Faroese / Faroe Islands
-        langToCodePage[1083] = 1252;  // Northern Sami / Norway
-        langToCodePage[1086] = 1252;  // Malay / Malaysia
-        langToCodePage[1088] = 1251;  // Kyrgyz / Kyrgyzstan
-        langToCodePage[1089] = 1252;  // Kiswahili / Kenya
-        langToCodePage[1090] = 1250;  // Turkmen / Turkmenistan
-        langToCodePage[1091] = 1254;  // Uzbek (Latin) / Uzbekistan
-        langToCodePage[1092] = 1251;  // Tatar / Russia
-        langToCodePage[1104] = 1251;  // Mongolian / Mongolia
-        langToCodePage[1106] = 1252;  // Welsh / United Kingdom
-        langToCodePage[1110] = 1252;  // Galician / Spain
-        langToCodePage[1119] = 1256;  // Central Atlas Tamazight (Arabic) / Morocco
-        langToCodePage[1122] = 1252;  // Western Frisian / Netherlands
-        langToCodePage[1124] = 1252;  // Filipino / Philippines
-        langToCodePage[1126] = 1252;  // Edo / Nigeria
-        langToCodePage[1127] = 1252;  // Fulah (Latin) / Nigeria
-        langToCodePage[1128] = 1252;  // Hausa (Latin) / Nigeria
-        langToCodePage[1129] = 1252;  // Ibibio / Nigeria
-        langToCodePage[1130] = 1252;  // Yoruba / Nigeria
-        langToCodePage[1131] = 1252;  // Quechua / Bolivia
-        langToCodePage[1132] = 1252;  // Sesotho sa Leboa / South Africa
-        langToCodePage[1133] = 1251;  // Bashkir / Russia
-        langToCodePage[1134] = 1252;  // Luxembourgish / Luxembourg
-        langToCodePage[1135] = 1252;  // Kalaallisut / Greenland
-        langToCodePage[1136] = 1252;  // Igbo / Nigeria
-        langToCodePage[1137] = 1252;  // Kanuri / Nigeria
-        langToCodePage[1140] = 1252;  // Guarani / Paraguay
-        langToCodePage[1141] = 1252;  // Hawaiian / United States
-        langToCodePage[1142] = 1252;  // Latin / World
-        langToCodePage[1145] = 1252;  // Papiamento / Caribbean
-        langToCodePage[1146] = 1252;  // Mapuche / Chile
-        langToCodePage[1148] = 1252;  // Mohawk / Canada
-        langToCodePage[1150] = 1252;  // Breton / France
-        langToCodePage[1152] = 1256;  // Uyghur / China
-        langToCodePage[1154] = 1252;  // Occitan / France
-        langToCodePage[1155] = 1252;  // Corsican / France
-        langToCodePage[1156] = 1252;  // Alsatian / France
-        langToCodePage[1157] = 1251;  // Sakha / Russia
-        langToCodePage[1158] = 1252;  // K'iche' / Guatemala
-        langToCodePage[1159] = 1252;  // Kinyarwanda / Rwanda
-        langToCodePage[1160] = 1252;  // Wolof / Senegal
-        langToCodePage[1164] = 1256;  // Dari / Afghanistan
-        langToCodePage[2049] = 1256;  // Arabic / Iraq
-        langToCodePage[2052] = 936;   // Chinese (Simplified) / China
-        langToCodePage[2055] = 1252;  // German / Switzerland
-        langToCodePage[2057] = 1252;  // English / United Kingdom
-        langToCodePage[2058] = 1252;  // Spanish / Mexico
-        langToCodePage[2060] = 1252;  // French / Belgium
-        langToCodePage[2064] = 1252;  // Italian / Switzerland
-        langToCodePage[2067] = 1252;  // Dutch / Belgium
-        langToCodePage[2068] = 1252;  // Norwegian Nynorsk / Norway
-        langToCodePage[2070] = 1252;  // Portuguese / Portugal
-        langToCodePage[2072] = 1250;  // Romanian / Moldova
-        langToCodePage[2073] = 1251;  // Russian / Moldova
-        langToCodePage[2077] = 1252;  // Swedish / Finland
-        langToCodePage[2080] = 1256;  // Urdu / India
-        langToCodePage[2092] = 1251;  // Azerbaijani (Cyrillic) / Azerbaijan
-        langToCodePage[2094] = 1252;  // Lower Sorbian / Germany
-        langToCodePage[2107] = 1252;  // Sami (Northern) / Sweden
-        langToCodePage[2108] = 1252;  // Irish / Ireland
-        langToCodePage[2110] = 1252;  // Malay / Brunei
-        langToCodePage[2115] = 1251;  // Uzbek (Cyrillic) / Uzbekistan
-        langToCodePage[2118] = 1256;  // Punjabi / Pakistan
-        langToCodePage[2137] = 1256;  // Sindhi / Pakistan
-        langToCodePage[2141] = 1252;  // Inuktitut (Latin) / Canada
-        langToCodePage[2143] = 1252;  // Central Atlas Tamazight (Latin) / Algeria
-        langToCodePage[2155] = 1252;  // Quechua / Ecuador
-        langToCodePage[3073] = 1256;  // Arabic / Egypt
-        langToCodePage[3076] = 950;   // Chinese (Traditional) / Hong Kong SAR
-        langToCodePage[3079] = 1252;  // German / Austria
-        langToCodePage[3081] = 1252;  // English / Australia
-        langToCodePage[3082] = 1252;  // Spanish / Spain
-        langToCodePage[3084] = 1252;  // French / Canada
-        langToCodePage[3131] = 1252;  // Sami (Northern) / Finland
-        langToCodePage[3179] = 1252;  // Quechua / Peru
-        langToCodePage[4097] = 1256;  // Arabic / Libya
-        langToCodePage[4100] = 936;   // Chinese (Simplified) / Singapore
-        langToCodePage[4103] = 1252;  // German / Luxembourg
-        langToCodePage[4105] = 1252;  // English / Canada
-        langToCodePage[4106] = 1252;  // Spanish / Guatemala
-        langToCodePage[4108] = 1252;  // French / Switzerland
-        langToCodePage[4122] = 1250;  // Croatian / Bosnia & Herzegovina
-        langToCodePage[4155] = 1252;  // Sami (Lule) / Norway
-        langToCodePage[5121] = 1256;  // Arabic / Algeria
-        langToCodePage[5124] = 950;   // Chinese (Traditional) / Macao SAR
-        langToCodePage[5127] = 1252;  // German / Liechtenstein
-        langToCodePage[5129] = 1252;  // English / New Zealand
-        langToCodePage[5130] = 1252;  // Spanish / Costa Rica
-        langToCodePage[5132] = 1252;  // French / Luxembourg
-        langToCodePage[5146] = 1250;  // Bosnian (Latin) / Bosnia & Herzegovina
-        langToCodePage[5179] = 1252;  // Sami (Lule) / Sweden
-        langToCodePage[6145] = 1256;  // Arabic / Morocco
-        langToCodePage[6153] = 1252;  // English / Ireland
-        langToCodePage[6154] = 1252;  // Spanish / Panama
-        langToCodePage[6156] = 1252;  // French / Monaco
-        langToCodePage[6170] = 1250;  // Serbian (Latin) / Bosnia & Herzegovina
-        langToCodePage[6203] = 1252;  // Sami (Southern) / Norway
-        langToCodePage[7169] = 1256;  // Arabic / Tunisia
-        langToCodePage[7177] = 1252;  // English / South Africa
-        langToCodePage[7178] = 1252;  // Spanish / Dominican Republic
-        langToCodePage[7180] = 1252;  // French / Caribbean
-        langToCodePage[7194] = 1251;  // Serbian (Cyrillic) / Bosnia and Herzegovina
-        langToCodePage[7227] = 1252;  // Sami (Southern) / Sweden
-        langToCodePage[8193] = 1256;  // Arabic / Oman
-        langToCodePage[8201] = 1252;  // English / Jamaica
-        langToCodePage[8202] = 1252;  // Spanish / Venezuela
-        langToCodePage[8204] = 1252;  // French / Réunion
-        langToCodePage[8218] = 1251;  // Bosnian (Cyrillic) / Bosnia and Herzegovina
-        langToCodePage[8251] = 1252;  // Sami (Skolt) / Finland
-        langToCodePage[9217] = 1256;  // Arabic / Yemen
-        langToCodePage[9225] = 1252;  // English / Caribbean
-        langToCodePage[9226] = 1252;  // Spanish / Colombia
-        langToCodePage[9228] = 1252;  // French / Congo (DRC)
-        langToCodePage[9275] = 1252;  // Sami (Inari) / Finland
-        langToCodePage[10241] = 1256; // Arabic / Syria
-        langToCodePage[10249] = 1252; // English / Belize
-        langToCodePage[10250] = 1252; // Spanish / Peru
-        langToCodePage[10252] = 1252; // French / Senegal
-        langToCodePage[11265] = 1256; // Arabic / Jordan
-        langToCodePage[11273] = 1252; // English / Trinidad & Tobago
-        langToCodePage[11274] = 1252; // Spanish / Argentina
-        langToCodePage[11276] = 1252; // French / Cameroon
-        langToCodePage[12289] = 1256; // Arabic / Lebanon
-        langToCodePage[12297] = 1252; // English / Zimbabwe
-        langToCodePage[12298] = 1252; // Spanish / Ecuador
-        langToCodePage[12300] = 1252; // French / Côte d’Ivoire
-        langToCodePage[13313] = 1256; // Arabic / Kuwait
-        langToCodePage[13321] = 1252; // English / Philippines
-        langToCodePage[13322] = 1252; // Spanish / Chile
-        langToCodePage[13324] = 1252; // French / Mali
-        langToCodePage[14337] = 1256; // Arabic / United Arab Emirates
-        langToCodePage[14345] = 1252; // English / Indonesia
-        langToCodePage[14346] = 1252; // Spanish / Uruguay
-        langToCodePage[14348] = 1252; // French / Morocco
-        langToCodePage[15361] = 1256; // Arabic / Bahrain
-        langToCodePage[15369] = 1252; // English / Hong Kong SAR
-        langToCodePage[15370] = 1252; // Spanish / Paraguay
-        langToCodePage[15372] = 1252; // French / Haiti
-        langToCodePage[16385] = 1256; // Arabic / Qatar
-        langToCodePage[16393] = 1252; // English / India
-        langToCodePage[16394] = 1252; // Spanish / Bolivia
-        langToCodePage[17417] = 1252; // English / Malaysia
-        langToCodePage[17418] = 1252; // Spanish / El Salvador
-        langToCodePage[18441] = 1252; // English / Singapore
-        langToCodePage[18442] = 1252; // Spanish / Honduras
-        langToCodePage[19466] = 1252; // Spanish / Nicaragua
-        langToCodePage[20490] = 1252; // Spanish / Puerto Rico
-        langToCodePage[21514] = 1252; // Spanish / United States
-#endif
-
-        return langToCodePage;
-    });
 
     #region Charset to code page
 
@@ -667,4 +446,43 @@ public static class RtfCommon
 
     // Total hack so we don't have to return and check a value eight trillion times (perf)
     public sealed class UnmatchedBraceException : Exception;
+
+    public readonly struct FontNameSuffix
+    {
+        public readonly byte[] Bytes;
+        public readonly ushort CodePage;
+
+        public FontNameSuffix(byte[] bytes, ushort codePage)
+        {
+            Bytes = bytes;
+            CodePage = codePage;
+        }
+    }
+
+    public static readonly FontNameSuffix[] FontNameSuffixes =
+    [
+        new FontNameSuffix(" Baltic"u8.ToArray(), 1257),
+        new FontNameSuffix(" CE"u8.ToArray(), 1250),
+        new FontNameSuffix(" Cyr"u8.ToArray(), 1251),
+        new FontNameSuffix(" Greek"u8.ToArray(), 1253),
+        new FontNameSuffix(" Tur"u8.ToArray(), 1254),
+        new FontNameSuffix(" (Hebrew)"u8.ToArray(), 1255),
+        new FontNameSuffix(" (Arabic)"u8.ToArray(), 1256),
+        new FontNameSuffix(" (Vietnamese)"u8.ToArray(), 1258),
+    ];
+
+    // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
+    // bounds-checked read-and-throw-away of the rest of the bytes.
+    public const int MaxSymbolFontNameLength = 64;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsNonEmptyUShortParam(int value)
+    {
+        /*
+        The whole ushort range except 0xFFFF - that's our value for "not set" (-1 equivalent). As 0xFFFF (65535)
+        is not a valid codepage in either the RTF spec or .NET (any version), we can hijack it for this
+        purpose without issue.
+        */
+        return (uint)(value - ushort.MinValue) <= (ushort.MaxValue - 1) - ushort.MinValue;
+    }
 }

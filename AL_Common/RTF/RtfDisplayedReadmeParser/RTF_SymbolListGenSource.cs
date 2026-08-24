@@ -13,7 +13,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
@@ -43,8 +42,6 @@ public sealed partial class RtfDisplayedReadmeParser
         new Symbol("cpg", ushort.MaxValue, false, KeywordType.CPG, 0),
 
         #endregion
-
-        new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
 
         new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
