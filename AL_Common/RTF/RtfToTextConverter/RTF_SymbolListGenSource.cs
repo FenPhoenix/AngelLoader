@@ -170,14 +170,13 @@ public sealed partial class RtfToTextConverter
 
     1. Call ConvertSymbolListToGPerfFormat().
     2. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
-       Call it symbolsCodeFile.
+       Call it symbolsCodeFile.txt.
     3. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
-       Call it inputFile.
+       Call it inputFile.txt.
     4. Call ConvertGPerfOutputToCSharp().
     5. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
        main file, overwriting the previous symbols array body.
-    6. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
-       have changed).
+    6. Port over the rest of the relevant code in gperfOutputFile.txt (if necessary - some of it may not have changed).
     7. Call GenerateFirstCharAndLengthArray().
     8. Copy the output from firstCharAndLengthArray.txt and paste it into the symbol-and-first-char array in the
        main file, overwriting the previous array body.
