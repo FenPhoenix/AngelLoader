@@ -12,17 +12,11 @@ public static class RtfCommon
     // Most are signed int16 (5 chars), but a few can be signed int32 (10 chars)
     public const int ParamMaxLen = 10;
 
-    public const int UndefinedLanguage = 1024;
-
     /// <summary>
     /// Since font numbers can be negative, let's just use a slightly less likely value than the already unlikely
     /// enough -1...
     /// </summary>
     public const int NoFontNumber = int.MinValue;
-
-    public const int MaxCodePageDigits = 5;
-    public const int MaxLangNumIndex = 21514;
-    public const ushort NoLang = ushort.MaxValue;
 
     public const ushort NoCodePage = ushort.MaxValue;
 
