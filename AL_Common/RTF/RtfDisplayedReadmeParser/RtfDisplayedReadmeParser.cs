@@ -36,8 +36,10 @@ public sealed partial class RtfDisplayedReadmeParser
 {
     #region Private fields
 
+    private bool _parsedFontTable;
+
     private List<RtfColor>? _colorTable;
-    private bool _foundColorTable;
+    private bool _parsedColorTable;
     private bool _getColorTable;
     private List<CodePageItem>? _codePageItems;
 
@@ -118,7 +120,8 @@ public sealed partial class RtfDisplayedReadmeParser
             _inHandleSkippableHexData = false;
             _inFontTable = false;
 
-            _foundColorTable = false;
+            _parsedFontTable = false;
+            _parsedColorTable = false;
             _getColorTable = getColorTable;
 
             _colorTable = null;
@@ -526,12 +529,12 @@ public sealed partial class RtfDisplayedReadmeParser
         }
     }
 
-    private RtfError ParseAndBuildColorTable()
+    private void ParseAndBuildColorTable()
     {
-        ClearColorTable(RtfError.OK);
+        _colorTable = null;
 
         int closingBraceIndex = Array_IndexOfByte_Fast(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
-        if (closingBraceIndex == -1) return ClearColorTable(RtfError.OK);
+        if (closingBraceIndex == -1) return;
 
         ReadOnlySpan<byte> colorTableSpan = _rtfBytes.AsSpan(_currentPos, closingBraceIndex - _currentPos);
 
@@ -565,13 +568,8 @@ public sealed partial class RtfDisplayedReadmeParser
             first = false;
         }
 
-        return first ? ClearColorTable(RtfError.OK) : RtfError.OK;
-
-        RtfError ClearColorTable(RtfError error)
-        {
-            _colorTable = null;
-            return error;
-        }
+        if (first) _colorTable = null;
+        return;
 
         static bool GetColorByte(ReadOnlySpan<byte> entry, ReadOnlySpan<byte> hueWord, out byte result)
         {
@@ -711,14 +709,26 @@ public sealed partial class RtfDisplayedReadmeParser
                 break;
             case SpecialType.FontTable:
             {
-                return ParseFontTable(ref bufferRef);
+                RtfError error = ParseFontTable(ref bufferRef);
+                _parsedFontTable = true;
+
+                if (!_getColorTable || _parsedColorTable)
+                {
+                    EndParse();
+                }
+                return error;
             }
             case SpecialType.ColorTable:
                 // Spec is to ignore any further color tables after the first one
-                if (_getColorTable && !_foundColorTable)
+                if (_getColorTable && !_parsedColorTable)
                 {
-                    _foundColorTable = true;
-                    return ParseAndBuildColorTable();
+                    _parsedColorTable = true;
+                    ParseAndBuildColorTable();
+                    if (_parsedFontTable)
+                    {
+                        EndParse();
+                        return RtfError.OK;
+                    }
                 }
                 else
                 {
@@ -733,6 +743,12 @@ public sealed partial class RtfDisplayedReadmeParser
     #endregion
 
     #region Helpers
+
+    private void EndParse()
+    {
+        _currentPos = _rtfBytesLength;
+        _groupStackTopIndex = 0;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int HeaderDefaultIfNotSet(int fontNum) => fontNum > NoFontNumber ? fontNum : _headerDefaultFontNum;
