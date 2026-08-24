@@ -21,7 +21,7 @@ public static class RtfCommon
     public const int NoFontNumber = int.MinValue;
 
     public const int MaxLangNumDigits = 5;
-    public const int MaxLangNumIndex = 21514;
+    public const int MaxLangNumIndex = 16385;
     public const ushort NoLang = ushort.MaxValue;
 
     public const ushort NoCodePage = ushort.MaxValue;
