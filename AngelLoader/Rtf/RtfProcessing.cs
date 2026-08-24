@@ -183,10 +183,6 @@ internal static class RtfProcessing
         // Avoid allocations as much as possible here, because glibly converting back and forth between lists
         // and arrays for our readme bytes is going to blow out memory.
 
-#if PROCESS_README_TIME_TEST
-        TimeSpan totalTime = TimeSpan.Zero;
-#endif
-
         #region Parse
 
 #if PROCESS_README_TIME_TEST
@@ -200,15 +196,10 @@ internal static class RtfProcessing
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
         TimeSpan parseTimerElapsed = parseTimer.Elapsed;
-        totalTime = totalTime.Add(parseTimerElapsed);
-        System.Diagnostics.Trace.WriteLine(nameof(parseTimer) + " took:\r\n" + parseTimerElapsed);
+        System.Diagnostics.Trace.WriteLine(nameof(RtfDisplayedReadmeParser) + "." + nameof(RtfDisplayedReadmeParser.GetData) + "() took:\r\n" + parseTimerElapsed);
 #endif
 
         #endregion
-
-#if PROCESS_README_TIME_TEST
-        System.Diagnostics.Trace.WriteLine("Total time:\r\n" + totalTime);
-#endif
 
         int colorTableEntryLength = 0;
 
