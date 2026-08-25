@@ -104,9 +104,6 @@ public sealed class Scanner : IDisposable
 
     private readonly byte[] _rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 
-    private ListFast<char>? _utf32CharBuffer;
-    private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
-
     private readonly BinaryBuffer _binaryReadBuffer = new();
 
     #region Game detection
@@ -3598,7 +3595,7 @@ public sealed class Scanner : IDisposable
                     using Stream stream = _fmFormat.IsStreamableArchive()
                         ? readmeEntry.Open()
                         : readmeStream;
-                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
+                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream));
                 }
                 else
                 {
