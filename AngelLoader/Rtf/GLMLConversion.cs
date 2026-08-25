@@ -6,6 +6,12 @@ using AngelLoader.DataClasses;
 
 namespace AngelLoader;
 
+/*
+@GLML(Character encoding): Some GLML files have non-ASCII chars directly in them, rather than specified with an
+HTML numeric specifier or whatnot. We're not handling these correctly. We may need to run encoding detection on
+them.
+*/
+
 internal static class GLMLConversion
 {
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
