@@ -302,7 +302,7 @@ internal static class Core
 
         async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_, Task? darkModeHooksTask_)
         {
-            splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
+            splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + $"{NL}" +
                                     LText.SplashScreen.LoadingMainApp);
             // We set this beforehand because we thought there was some cross-thread font access problem, but
             // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this

@@ -420,7 +420,7 @@ internal static class Program
             string message = canceled ? "Update canceled but the rollback failed." : "Update failed and the rollback failed as well.";
             Log(message, ex);
             Utils.ShowError(View,
-                (canceled ? LText.Update.CanceledAndRollbackFailed : LText.Update.RollbackFailed) + Environment.NewLine +
+                (canceled ? LText.Update.CanceledAndRollbackFailed : LText.Update.RollbackFailed) + $"{NL}" +
                 LText.Update.RecommendManualUpdate);
         }
     }

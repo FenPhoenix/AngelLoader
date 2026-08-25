@@ -1112,7 +1112,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
             PathsPage.GameRequirementsLabel.Text =
-                LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +
+                LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + $"{NL}" +
                 LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
 
             PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
