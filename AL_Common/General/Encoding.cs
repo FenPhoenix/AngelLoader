@@ -70,8 +70,9 @@ public static partial class Common
     /// codepages. So call through this custom method to intercept such codepages and redirect them to the
     /// built-in .NET static cached versions.
     /// <para/>
-    /// This is not necessary on Framework, as there the codepages are all built-in so there isn't this layering
-    /// quirk.
+    /// This is not normally necessary on Framework, as there the codepages are all built-in so there isn't this
+    /// layering quirk. However, we're registering CodePagesEncodingProvider because Wine requires it, so we're
+    /// back to needing to do this even on Framework.
     /// </summary>
     /// <param name="codePage"></param>
     /// <returns></returns>
