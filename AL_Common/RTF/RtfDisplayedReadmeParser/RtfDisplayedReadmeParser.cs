@@ -21,13 +21,11 @@ namespace AL_Common.RTF;
 public readonly struct CodePageItem
 {
     public readonly int Index;
-    public readonly ushort CodePage;
     public readonly byte[] CodePageBytes;
 
-    public CodePageItem(int index, ushort codePage, byte[] codePageBytes)
+    public CodePageItem(int index, byte[] codePageBytes)
     {
         Index = index;
-        CodePage = codePage;
         CodePageBytes = codePageBytes;
     }
 }
@@ -371,7 +369,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             if (lastCodePageIndex > -1)
                             {
                                 _codePageItems ??= new List<CodePageItem>();
-                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, currentFontCodePage, fontNameData.CodePageBytes));
+                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, fontNameData.CodePageBytes));
                             }
                         }
                         else if (currentFontCodePage == NoCodePage)
