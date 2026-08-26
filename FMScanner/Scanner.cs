@@ -4913,7 +4913,7 @@ public sealed class Scanner : IDisposable
 
         if (_solidGamFileToUse == null)
         {
-            NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
+            NameAndIndex smallestUsedMisFile = GameType_GetSmallestUsedMisFile();
             misFileEntry = GetEntry(smallestUsedMisFile);
 
             game = GameType_DoQuickCheck(misFileEntry);
@@ -5228,7 +5228,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private NameAndIndex GameType_GetSmallestMisFile()
+    private NameAndIndex GameType_GetSmallestUsedMisFile()
     {
         if (_solidMisFileToUse is { } solidMisFileToUse)
         {
