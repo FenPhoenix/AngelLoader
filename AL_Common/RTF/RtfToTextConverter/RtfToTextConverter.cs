@@ -2284,11 +2284,7 @@ public sealed partial class RtfToTextConverter
                         break;
                     default:
                     {
-                        if (!GroupStack_CurrentSkipDest &&
-                            // We can't check for codepage 42, because symbol fonts can have other codepages
-                            // (although that may be a quirk/bug or whatever, but it can happen). Too bad,
-                            // otherwise we could save time here...
-                            currentFontNumber > NoFontNumber)
+                        if (!GroupStack_CurrentSkipDest && currentFontNumber > NoFontNumber)
                         {
                             (SymbolFont currentFontSymbolFont, ushort codePageOverride) =
                                 GetSymbolFontAndCodePageOverride_Scalar(ref bufferRef, ch);
