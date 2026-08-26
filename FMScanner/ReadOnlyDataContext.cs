@@ -746,6 +746,10 @@ public sealed class ReadOnlyDataContext
         new Regex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
             RegexOptions.ExplicitCapture);
 
+    internal readonly Regex TitleFromThiefGuildArchiveNameFormatRegex =
+        new Regex(@"^(?<Title>.+)\s+(\(|\[)\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*(\)|\])\s*T(1|G|2|3|(DM))\s",
+            Regex_IgnoreCaseInvariant | RegexOptions.ExplicitCapture);
+
     #endregion
 
     #region Titles.str encoding detection

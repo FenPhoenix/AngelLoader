@@ -1936,6 +1936,8 @@ public sealed class Scanner : IDisposable
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
 
+            if (fm.IsArchive) SetOrAddTitle(titles, GetTitleFromThiefGuildFormatArchiveName(fm));
+
             EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
         }
 
@@ -4236,6 +4238,15 @@ public sealed class Scanner : IDisposable
             }
             return false;
         }
+    }
+
+    // Thief Guild now has a standard archive name format, and that's the only reason I'm willing to go near the
+    // archive name with a ten foot pole: we're basically guaranteed to get the correct title when we know we've
+    // got a standard format.
+    private string GetTitleFromThiefGuildFormatArchiveName(FMToScan fm)
+    {
+        Match match = _ctx.TitleFromThiefGuildArchiveNameFormatRegex.Match(fm.DisplayName);
+        return match.Success ? match.Groups["Title"].Value : "";
     }
 
     private ListFast<string>? GetTitlesStrLines()
