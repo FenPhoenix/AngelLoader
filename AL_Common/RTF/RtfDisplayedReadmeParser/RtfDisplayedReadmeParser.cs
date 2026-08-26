@@ -36,14 +36,21 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private readonly struct FontNameData
     {
+        internal readonly bool HasCodePageOverride;
         internal readonly byte[] Bytes;
-        internal readonly ushort CodePage;
         internal readonly byte[] CodePageInsertBytes;
 
-        internal FontNameData(byte[] bytes, ushort codePage, byte[] codePageInsertBytes)
+        public FontNameData()
         {
+            HasCodePageOverride = false;
+            Bytes = Array.Empty<byte>();
+            CodePageInsertBytes = Array.Empty<byte>();
+        }
+
+        internal FontNameData(byte[] bytes, byte[] codePageInsertBytes)
+        {
+            HasCodePageOverride = true;
             Bytes = bytes;
-            CodePage = codePage;
             CodePageInsertBytes = codePageInsertBytes;
         }
     }
@@ -56,14 +63,14 @@ public sealed partial class RtfDisplayedReadmeParser
     private static readonly FontNameData[] FontNameSuffixes =
     [
         // IMPORTANT: Spaces at the end serve as the keyword-ending spaces for safety. Do not remove!
-        new FontNameData(" Baltic"u8.ToArray(), 1257, @"\cpg1257 "u8.ToArray()),
-        new FontNameData(" CE"u8.ToArray(), 1250, @"\cpg1250 "u8.ToArray()),
-        new FontNameData(" Cyr"u8.ToArray(), 1251, @"\cpg1251 "u8.ToArray()),
-        new FontNameData(" Greek"u8.ToArray(), 1253, @"\cpg1253 "u8.ToArray()),
-        new FontNameData(" Tur"u8.ToArray(), 1254, @"\cpg1254 "u8.ToArray()),
-        new FontNameData(" (Hebrew)"u8.ToArray(), 1255, @"\cpg1255 "u8.ToArray()),
-        new FontNameData(" (Arabic)"u8.ToArray(), 1256, @"\cpg1256 "u8.ToArray()),
-        new FontNameData(" (Vietnamese)"u8.ToArray(), 1258, @"\cpg1258 "u8.ToArray()),
+        new FontNameData(" Baltic"u8.ToArray(), @"\cpg1257 "u8.ToArray()),
+        new FontNameData(" CE"u8.ToArray(), @"\cpg1250 "u8.ToArray()),
+        new FontNameData(" Cyr"u8.ToArray(), @"\cpg1251 "u8.ToArray()),
+        new FontNameData(" Greek"u8.ToArray(), @"\cpg1253 "u8.ToArray()),
+        new FontNameData(" Tur"u8.ToArray(), @"\cpg1254 "u8.ToArray()),
+        new FontNameData(" (Hebrew)"u8.ToArray(), @"\cpg1255 "u8.ToArray()),
+        new FontNameData(" (Arabic)"u8.ToArray(), @"\cpg1256 "u8.ToArray()),
+        new FontNameData(" (Vietnamese)"u8.ToArray(), @"\cpg1258 "u8.ToArray()),
     ];
 
     private bool _parsedFontTable;
@@ -81,21 +88,11 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #region Resettables
 
-    #region Header
-
-    private ushort _headerCodePage;
-    private bool _headerDefaultFontSet;
-    private int _headerDefaultFontNum;
-
-    #endregion
-
     /*
     \fN params are normally in the signed int16 range, but the Windows RichEdit control supports them in the
     -30064771071 - 30064771070 (-0x6ffffffff - 0x6fffffffe) range (yes, bizarre numbers, but I tested and there
     they are). So let's just make them int32.
     */
-
-    private Dictionary<int, FontEntry> _fontDictionary;
 
     private bool _skipDestinationIfUnknown;
 
@@ -118,8 +115,6 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
-
         InitGroupStack();
     }
 
@@ -135,11 +130,6 @@ public sealed partial class RtfDisplayedReadmeParser
             #region Reset
 
             GroupStack_Reset();
-            _fontDictionary.Clear();
-
-            _headerCodePage = 0;
-            _headerDefaultFontSet = false;
-            _headerDefaultFontNum = 0;
 
             _fontNameBuffer_Count = 0;
 
@@ -179,10 +169,6 @@ public sealed partial class RtfDisplayedReadmeParser
             _colorTable = null;
             _codePageItems = null;
             GroupStack_ResetCapacityToDefault();
-            if (_fontDictionary.Count > FontTableDefaultCapacity)
-            {
-                _fontDictionary = new Dictionary<int, FontEntry>(FontTableDefaultCapacity);
-            }
             FontNameBuffer_ResetCapacityToDefault();
 
             _rtfBytes = Array.Empty<byte>();
@@ -305,8 +291,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         int fontTableGroupLevel = _groupStackTopIndex;
 
-        int currentFontNumber = NoFontNumber;
-        ushort currentFontCodePage = NoCodePage;
+        bool acquiredFont = false;
         int lastCodePageIndex = -1;
 
         while (_currentPos < _rtfBytesLength)
@@ -323,27 +308,6 @@ public sealed partial class RtfDisplayedReadmeParser
                     --_groupStackTopIndex;
                     if (_groupStackTopIndex < fontTableGroupLevel)
                     {
-                        // We can't actually set the symbol font as soon as we see \deffN, because we won't
-                        // have any font entry objects yet. Now that we do, we can retroactively set all
-                        // previous groups' fonts as appropriate, as if they had propagated up automatically.
-                        int defaultFontNum = _headerDefaultFontNum;
-                        /*
-                        Start at 1 because the "base" group is still inside an opening { so it's really
-                        group 1.
-                        NOTE: The <= is correct. It's an index, not a length.
-                        */
-                        for (int i = 1; i <= _groupStackTopIndex; i++)
-                        {
-                            if (_groupStackFrames[i].PropFontNum == NoFontNumber)
-                            {
-                                _groupStackFrames[i].PropFontNum = defaultFontNum;
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-
                         _inFontTable = false;
                         return RtfError.OK;
                     }
@@ -357,27 +321,11 @@ public sealed partial class RtfDisplayedReadmeParser
 
                     if (fontTableKeyword == KeywordType.F)
                     {
-                        currentFontNumber = param;
+                        acquiredFont = param != NoFontNumber;
                     }
-                    else if (currentFontNumber > NoFontNumber)
+                    else if (acquiredFont && (fontTableKeyword is KeywordType.FCharset or KeywordType.CPG))
                     {
-                        switch (fontTableKeyword)
-                        {
-                            case KeywordType.FCharset:
-                            {
-                                currentFontCodePage = param.IsBetween(0, CharSetToCodePageLength - 1)
-                                    ? CharSetToCodePage[param]
-                                    : _headerCodePage;
-                                lastCodePageIndex = _currentPos;
-                                break;
-                            }
-                            case KeywordType.CPG:
-                                currentFontCodePage = IsNonEmptyUShortParam(param)
-                                    ? (ushort)param
-                                    : _headerCodePage;
-                                lastCodePageIndex = _currentPos;
-                                break;
-                        }
+                        lastCodePageIndex = _currentPos;
                     }
                     break;
                 case '\r':
@@ -389,29 +337,20 @@ public sealed partial class RtfDisplayedReadmeParser
                         // We can't check for codepage 42, because symbol fonts can have other codepages
                         // (although that may be a quirk/bug or whatever, but it can happen). Too bad,
                         // otherwise we could save time here...
-                        currentFontNumber > NoFontNumber)
+                        acquiredFont)
                     {
                         FontNameData fontNameData = GetFontNameData_Scalar(ref bufferRef, ch);
 
-                        ushort codePageOverride = fontNameData.CodePage;
-
-                        if (codePageOverride != NoCodePage)
+                        if (fontNameData.HasCodePageOverride)
                         {
-                            currentFontCodePage = codePageOverride;
                             if (lastCodePageIndex > -1)
                             {
                                 _codePageItems ??= new List<CodePageItem>();
                                 _codePageItems.Add(new CodePageItem(lastCodePageIndex, fontNameData.CodePageInsertBytes));
                             }
                         }
-                        else if (currentFontCodePage == NoCodePage)
-                        {
-                            currentFontCodePage = _headerCodePage;
-                        }
 
-                        _fontDictionary[currentFontNumber] = new FontEntry(currentFontCodePage, SymbolFont.None);
-                        currentFontNumber = NoFontNumber;
-                        currentFontCodePage = NoCodePage;
+                        acquiredFont = false;
                         lastCodePageIndex = -1;
                     }
                     break;
@@ -487,7 +426,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
         }
 
-        return new FontNameData(Array.Empty<byte>(), NoCodePage, Array.Empty<byte>());
+        return new FontNameData();
     }
 
     /*
@@ -651,16 +590,6 @@ public sealed partial class RtfDisplayedReadmeParser
         {
             switch (symbol.KeywordType)
             {
-                case KeywordType.Property:
-                {
-                    if (symbol.UseDefaultParam || !hasParam) param = symbol.DefaultParam;
-                    if ((Property)symbol.Index == Property.FontNum)
-                    {
-                        GroupStack_CurrentPropertyFontNum = param;
-                        return RtfError.OK;
-                    }
-                }
-                return RtfError.OK;
                 case KeywordType.Special:
                     SpecialType specialType = (SpecialType)symbol.Index;
                     return DispatchSpecialKeyword(ref bufferRef, specialType, symbol, param);
@@ -727,16 +656,6 @@ public sealed partial class RtfDisplayedReadmeParser
                 if (param < 0) return RtfError.AbortedForSafety;
                 IncrementCurrentPos_ArbitraryAmountForward(param);
                 break;
-            case SpecialType.HeaderCodePage:
-                _headerCodePage = IsNonEmptyUShortParam(param) ? (ushort)param : (ushort)0;
-                break;
-            case SpecialType.DefaultFont:
-                if (!_headerDefaultFontSet)
-                {
-                    _headerDefaultFontNum = param;
-                    _headerDefaultFontSet = true;
-                }
-                break;
             case SpecialType.FontTable:
             {
                 RtfError error = ParseFontTable(ref bufferRef);
@@ -779,9 +698,6 @@ public sealed partial class RtfDisplayedReadmeParser
         _currentPos = _rtfBytesLength;
         _groupStackTopIndex = 0;
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private int HeaderDefaultIfNotSet(int fontNum) => fontNum > NoFontNumber ? fontNum : _headerDefaultFontNum;
 
     #endregion
 
@@ -964,8 +880,6 @@ public sealed partial class RtfDisplayedReadmeParser
     private struct GroupStackFrame
     {
         internal bool SkipDestination;
-
-        internal int PropFontNum;
     }
 
     private const int _groupStackDefaultCapacity = 100;
@@ -1021,14 +935,6 @@ public sealed partial class RtfDisplayedReadmeParser
         set => _groupStackFrames[_groupStackTopIndex].SkipDestination = value;
     }
 
-    private int GroupStack_CurrentPropertyFontNum
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => _groupStackFrames[_groupStackTopIndex].PropFontNum;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => _groupStackFrames[_groupStackTopIndex].PropFontNum = value;
-    }
-
     #endregion
 
     // Current group always begins at group 0, so reset just that one
@@ -1040,7 +946,6 @@ public sealed partial class RtfDisplayedReadmeParser
         _groupStackFrames[0] = new GroupStackFrame
         {
             SkipDestination = false,
-            PropFontNum = NoFontNumber,
         };
     }
 
