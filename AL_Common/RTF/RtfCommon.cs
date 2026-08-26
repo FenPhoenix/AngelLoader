@@ -24,18 +24,6 @@ public static class RtfCommon
         ParamMaxLen + 1 + // +1 to read one beyond for length checking purposes
         1; // Space at end
 
-    /*
-    FMs can have 100+ of these...
-    Highest measured was 131
-    Fonts can specify themselves as whatever number they want, so we can't just count by index
-    eg. you could have \f1 \f2 \f3 but you could also have \f1 \f14 \f45
-
-    The size of a Dictionary<int, FontEntry> with 150 entries when FontEntry is 4 bytes would be approximately
-    3 KB (from looking at its internal memory use per entry, which is larger than just the KeyValuePair<>).
-    That's totally fine to keep around permanently.
-    */
-    public const int FontTableDefaultCapacity = 150;
-
     // "\bin"
     public const int BinLength = 4;
     public const uint BinUInt = 0x6E69625Cu;
@@ -114,58 +102,6 @@ public static class RtfCommon
         false, false, false, false, false, false, false, false, false, false,
         false, false,
     ];
-
-    #region Charset to code page
-
-    public const int CharSetToCodePageLength = 256;
-
-    public static readonly ushort[] CharSetToCodePage = RunFunc(static () =>
-    {
-        ushort[] charSetToCodePage = InitializedArray(CharSetToCodePageLength, NoCodePage);
-
-        charSetToCodePage[0] = 1252;   // "ANSI" (1252) (Yes, this is specified as _explicitly_ 1252, so this
-                                       // isn't a straggling 1252-default)
-
-        charSetToCodePage[1] = 0;      // Default
-
-        charSetToCodePage[2] = 42;     // Symbol
-        charSetToCodePage[77] = 10000; // Mac Roman
-        charSetToCodePage[78] = 10001; // Mac Shift Jis
-        charSetToCodePage[79] = 10003; // Mac Hangul
-        charSetToCodePage[80] = 10008; // Mac GB2312
-        charSetToCodePage[81] = 10002; // Mac Big5
-        //charSetToCodePage[82] = ?    // Mac Johab (old)
-        charSetToCodePage[83] = 10005; // Mac Hebrew
-        charSetToCodePage[84] = 10004; // Mac Arabic
-        charSetToCodePage[85] = 10006; // Mac Greek
-        charSetToCodePage[86] = 10081; // Mac Turkish
-        charSetToCodePage[87] = 10021; // Mac Thai
-        charSetToCodePage[88] = 10029; // Mac East Europe
-        charSetToCodePage[89] = 10007; // Mac Russian
-        charSetToCodePage[128] = 932;  // Shift JIS (Windows-31J) (932)
-        charSetToCodePage[129] = 949;  // Hangul
-        charSetToCodePage[130] = 1361; // Johab
-        charSetToCodePage[134] = 936;  // GB2312
-        charSetToCodePage[136] = 950;  // Big5
-        charSetToCodePage[161] = 1253; // Greek
-        charSetToCodePage[162] = 1254; // Turkish
-        charSetToCodePage[163] = 1258; // Vietnamese
-        charSetToCodePage[177] = 1255; // Hebrew
-        charSetToCodePage[178] = 1256; // Arabic
-        //charSetToCodePage[179] = ?   // Arabic Traditional (old)
-        //charSetToCodePage[180] = ?   // Arabic user (old)
-        //charSetToCodePage[181] = ?   // Hebrew user (old)
-        charSetToCodePage[186] = 1257; // Baltic
-        charSetToCodePage[204] = 1251; // Russian
-        charSetToCodePage[222] = 874;  // Thai
-        charSetToCodePage[238] = 1250; // Eastern European
-        charSetToCodePage[254] = 437;  // PC 437
-        charSetToCodePage[255] = 850;  // OEM
-
-        return charSetToCodePage;
-    });
-
-    #endregion
 
     #region SIMD
 
@@ -442,15 +378,4 @@ public static class RtfCommon
     // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
     // bounds-checked read-and-throw-away of the rest of the bytes.
     public const int MaxSymbolFontNameLength = 64;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNonEmptyUShortParam(int value)
-    {
-        /*
-        The whole ushort range except 0xFFFF - that's our value for "not set" (-1 equivalent). As 0xFFFF (65535)
-        is not a valid codepage in either the RTF spec or .NET (any version), we can hijack it for this
-        purpose without issue.
-        */
-        return (uint)(value - ushort.MinValue) <= (ushort.MaxValue - 1) - ushort.MinValue;
-    }
 }
