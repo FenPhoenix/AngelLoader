@@ -336,11 +336,7 @@ public sealed partial class RtfDisplayedReadmeParser
                     break;
                 default:
                 {
-                    if (!GroupStack_CurrentSkipDest &&
-                        // We can't check for codepage 42, because symbol fonts can have other codepages
-                        // (although that may be a quirk/bug or whatever, but it can happen). Too bad,
-                        // otherwise we could save time here...
-                        acquiredFont)
+                    if (!GroupStack_CurrentSkipDest && acquiredFont)
                     {
                         FontNameData fontNameData = GetFontNameData_Scalar(ref bufferRef, ch);
 
