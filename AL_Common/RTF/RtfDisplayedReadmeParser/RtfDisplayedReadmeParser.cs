@@ -292,7 +292,7 @@ public sealed partial class RtfDisplayedReadmeParser
         int fontTableGroupLevel = _groupStackTopIndex;
 
         bool acquiredFont = false;
-        int lastCodePageIndex = -1;
+        int codePageInsertIndex = -1;
 
         while (_currentPos < _rtfBytesLength)
         {
@@ -322,10 +322,13 @@ public sealed partial class RtfDisplayedReadmeParser
                     if (fontTableKeyword == KeywordType.F)
                     {
                         acquiredFont = param != NoFontNumber;
+                        // If we don't find any actual codepage keywords, then we should put ours right after
+                        // the \fN keyword.
+                        codePageInsertIndex = _currentPos;
                     }
                     else if (acquiredFont && (fontTableKeyword is KeywordType.FCharset or KeywordType.CPG))
                     {
-                        lastCodePageIndex = _currentPos;
+                        codePageInsertIndex = _currentPos;
                     }
                     break;
                 case '\r':
@@ -343,15 +346,15 @@ public sealed partial class RtfDisplayedReadmeParser
 
                         if (fontNameData.HasCodePageOverride)
                         {
-                            if (lastCodePageIndex > -1)
+                            if (codePageInsertIndex > -1)
                             {
                                 _codePageItems ??= new List<CodePageItem>();
-                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, fontNameData.CodePageInsertBytes));
+                                _codePageItems.Add(new CodePageItem(codePageInsertIndex, fontNameData.CodePageInsertBytes));
                             }
                         }
 
                         acquiredFont = false;
-                        lastCodePageIndex = -1;
+                        codePageInsertIndex = -1;
                     }
                     break;
                 }
