@@ -1,6 +1,4 @@
-﻿//#define PATCH_ALL_LANGS
-
-using System;
+﻿using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -440,38 +438,6 @@ public static class RtfCommon
 
     // Total hack so we don't have to return and check a value eight trillion times (perf)
     public sealed class UnmatchedBraceException : Exception;
-
-    public readonly struct FontNameData
-    {
-        public readonly byte[] Bytes;
-        public readonly ushort CodePage;
-        public readonly byte[] CodePageBytes;
-
-        public FontNameData(byte[] bytes, ushort codePage, byte[] codePageBytes)
-        {
-            Bytes = bytes;
-            CodePage = codePage;
-            CodePageBytes = codePageBytes;
-        }
-    }
-
-    // All code pages are 4 in length plus 1 for the keyword-ending space, and since these are old-style RTF and
-    // the RTF spec hasn't been updated since 2008 in any case, it's basically impossible that this ever changes.
-    // So let's be efficient and use a constant.
-    public const int FontNameSuffixCodePageLength = 5;
-
-    public static readonly FontNameData[] FontNameSuffixes =
-    [
-        // IMPORTANT: Spaces at the end serve as the keyword-ending spaces for safety. Do not remove!
-        new FontNameData(" Baltic"u8.ToArray(), 1257, "1257 "u8.ToArray()),
-        new FontNameData(" CE"u8.ToArray(), 1250, "1250 "u8.ToArray()),
-        new FontNameData(" Cyr"u8.ToArray(), 1251, "1251 "u8.ToArray()),
-        new FontNameData(" Greek"u8.ToArray(), 1253, "1253 "u8.ToArray()),
-        new FontNameData(" Tur"u8.ToArray(), 1254, "1254 "u8.ToArray()),
-        new FontNameData(" (Hebrew)"u8.ToArray(), 1255, "1255 "u8.ToArray()),
-        new FontNameData(" (Arabic)"u8.ToArray(), 1256, "1256 "u8.ToArray()),
-        new FontNameData(" (Vietnamese)"u8.ToArray(), 1258, "1258 "u8.ToArray()),
-    ];
 
     // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
     // bounds-checked read-and-throw-away of the rest of the bytes.

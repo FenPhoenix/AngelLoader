@@ -34,6 +34,38 @@ public sealed partial class RtfDisplayedReadmeParser
 {
     #region Private fields
 
+    private readonly struct FontNameData
+    {
+        internal readonly byte[] Bytes;
+        internal readonly ushort CodePage;
+        internal readonly byte[] CodePageInsertBytes;
+
+        internal FontNameData(byte[] bytes, ushort codePage, byte[] codePageInsertBytes)
+        {
+            Bytes = bytes;
+            CodePage = codePage;
+            CodePageInsertBytes = codePageInsertBytes;
+        }
+    }
+
+    // All code pages are 4 in length plus 1 for the keyword-ending space, and since these are old-style RTF and
+    // the RTF spec hasn't been updated since 2008 in any case, it's basically impossible that this ever changes.
+    // So let's be efficient and use a constant: 4 for the keyword, 4 for the param, 1 for the space = 9.
+    public const int FontNameSuffixCodePageLength = 9;
+
+    private static readonly FontNameData[] FontNameSuffixes =
+    [
+        // IMPORTANT: Spaces at the end serve as the keyword-ending spaces for safety. Do not remove!
+        new FontNameData(" Baltic"u8.ToArray(), 1257, @"\cpg1257 "u8.ToArray()),
+        new FontNameData(" CE"u8.ToArray(), 1250, @"\cpg1250 "u8.ToArray()),
+        new FontNameData(" Cyr"u8.ToArray(), 1251, @"\cpg1251 "u8.ToArray()),
+        new FontNameData(" Greek"u8.ToArray(), 1253, @"\cpg1253 "u8.ToArray()),
+        new FontNameData(" Tur"u8.ToArray(), 1254, @"\cpg1254 "u8.ToArray()),
+        new FontNameData(" (Hebrew)"u8.ToArray(), 1255, @"\cpg1255 "u8.ToArray()),
+        new FontNameData(" (Arabic)"u8.ToArray(), 1256, @"\cpg1256 "u8.ToArray()),
+        new FontNameData(" (Vietnamese)"u8.ToArray(), 1258, @"\cpg1258 "u8.ToArray()),
+    ];
+
     private bool _parsedFontTable;
 
     private List<RtfColor>? _colorTable;
@@ -369,7 +401,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             if (lastCodePageIndex > -1)
                             {
                                 _codePageItems ??= new List<CodePageItem>();
-                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, fontNameData.CodePageBytes));
+                                _codePageItems.Add(new CodePageItem(lastCodePageIndex, fontNameData.CodePageInsertBytes));
                             }
                         }
                         else if (currentFontCodePage == NoCodePage)

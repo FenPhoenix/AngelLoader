@@ -86,6 +86,31 @@ public sealed partial class RtfToTextConverter
 {
     #region Private fields
 
+    public readonly struct FontNameData
+    {
+        public readonly byte[] Bytes;
+        public readonly ushort CodePage;
+
+        public FontNameData(byte[] bytes, ushort codePage)
+        {
+            Bytes = bytes;
+            CodePage = codePage;
+        }
+    }
+
+    public static readonly FontNameData[] FontNameSuffixes =
+    [
+    // IMPORTANT: Spaces at the end serve as the keyword-ending spaces for safety. Do not remove!
+        new FontNameData(" Baltic"u8.ToArray(), 1257),
+        new FontNameData(" CE"u8.ToArray(), 1250),
+        new FontNameData(" Cyr"u8.ToArray(), 1251),
+        new FontNameData(" Greek"u8.ToArray(), 1253),
+        new FontNameData(" Tur"u8.ToArray(), 1254),
+        new FontNameData(" (Hebrew)"u8.ToArray(), 1255),
+        new FontNameData(" (Arabic)"u8.ToArray(), 1256),
+        new FontNameData(" (Vietnamese)"u8.ToArray(), 1258),
+    ];
+
     #region Options
 
     // Hard-code them to what we want. We can change them here if we need to, without using a heavyweight options
@@ -126,16 +151,12 @@ public sealed partial class RtfToTextConverter
         ? 0x00_FF_FF_FF_FF_FF_FF_FFul
         : 0xFF_FF_FF_FF_FF_FF_FF_00ul;
 
-    // Set to a length that no reasonable font name would be above, to minimize the chance of having to do a slow
-    // bounds-checked read-and-throw-away of the rest of the bytes.
-    private const int _maxSymbolFontNameLength = 64;
-
     private const int _fldinstSymbolNumberMaxLen = 10;
     private readonly char[] _fldinstSymbolNumber = new char[_fldinstSymbolNumberMaxLen + 1];
 
-    private readonly char[] _fldinstSymbolFontName = new char[_maxSymbolFontNameLength + 1];
+    private readonly char[] _fldinstSymbolFontName = new char[MaxSymbolFontNameLength + 1];
 
-    private readonly byte[] _symbolFontNameBuffer = new byte[_maxSymbolFontNameLength];
+    private readonly byte[] _symbolFontNameBuffer = new byte[MaxSymbolFontNameLength];
 
     #region Tables
 
@@ -2245,12 +2266,12 @@ public sealed partial class RtfToTextConverter
         int symbolFontNameCount;
         _fontNameBuffer_Count = 0;
         bool isNonSemicolonSeparatorChar = false;
-        if (_currentPos < _currentBufferChunkLength - (_maxSymbolFontNameLength + 1))
+        if (_currentPos < _currentBufferChunkLength - (MaxSymbolFontNameLength + 1))
         {
-            ref byte fontNameBufferRef = ref FontNameBuffer_EnsureCapacityAndGetRef(_maxSymbolFontNameLength + 1);
+            ref byte fontNameBufferRef = ref FontNameBuffer_EnsureCapacityAndGetRef(MaxSymbolFontNameLength + 1);
 
             for (symbolFontNameCount = symbolFontNameCountStart;
-                 symbolFontNameCount < _maxSymbolFontNameLength &&
+                 symbolFontNameCount < MaxSymbolFontNameLength &&
                  ch != ';' &&
                  !(isNonSemicolonSeparatorChar = IsNonPlainText[(byte)ch]);
                  symbolFontNameCount++, ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef))
@@ -2262,7 +2283,7 @@ public sealed partial class RtfToTextConverter
         else
         {
             for (symbolFontNameCount = symbolFontNameCountStart;
-                 symbolFontNameCount < _maxSymbolFontNameLength &&
+                 symbolFontNameCount < MaxSymbolFontNameLength &&
                  ch != ';' &&
                  !(isNonSemicolonSeparatorChar = IsNonPlainText[(byte)ch]);
                  symbolFontNameCount++, ch = (char)GetByte(IncrementCurrentPos()))
@@ -2271,7 +2292,7 @@ public sealed partial class RtfToTextConverter
             }
         }
 
-        if (symbolFontNameCount == _maxSymbolFontNameLength)
+        if (symbolFontNameCount == MaxSymbolFontNameLength)
         {
             while (ch != ';' && !(isNonSemicolonSeparatorChar = IsNonPlainText[(byte)ch]))
             {
@@ -3530,7 +3551,7 @@ public sealed partial class RtfToTextConverter
 
                     while ((ch = (char)GetByte(IncrementCurrentPos())) != '\"')
                     {
-                        if (fontNameCharCount >= _maxSymbolFontNameLength || _isSeparatorChar[(byte)ch])
+                        if (fontNameCharCount >= MaxSymbolFontNameLength || _isSeparatorChar[(byte)ch])
                         {
                             return FieldInst_RewindAndSkipGroup(ref bufferRef);
                         }

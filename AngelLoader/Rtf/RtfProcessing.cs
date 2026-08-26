@@ -73,12 +73,6 @@ internal static class RtfProcessing
 
     #endregion
 
-    #region Code pages
-
-    private static readonly byte[] _cpg = @"\cpg"u8.ToArray();
-
-    #endregion
-
     internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
                                                                + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground).ToStrInv()
                                                                + "}}}}}";
@@ -129,7 +123,6 @@ internal static class RtfProcessing
         }
 
         int extraCpgCombinedLength = 0;
-        int cpgLength = _cpg.Length;
 
         if (!(success && codePageItems?.Count > 0) && !darkMode)
         {
@@ -138,7 +131,7 @@ internal static class RtfProcessing
 
         if (success && codePageItems?.Count > 0)
         {
-            extraCpgCombinedLength = (cpgLength + RtfCommon.FontNameSuffixCodePageLength) * codePageItems.Count;
+            extraCpgCombinedLength = (RtfDisplayedReadmeParser.FontNameSuffixCodePageLength) * codePageItems.Count;
         }
 
         byte[] retBytes;
@@ -189,7 +182,7 @@ internal static class RtfProcessing
 
             if (success && codePageItems?.Count > 0)
             {
-                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
@@ -259,7 +252,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, cpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
@@ -275,16 +268,13 @@ internal static class RtfProcessing
         int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
-        int cpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
     {
         int plus = 0;
-        ReadOnlySpan<byte> cpgSpan = _cpg.AsSpan();
         for (int i = 0; i < codePageItems.Count; i++)
         {
             CodePageItem item = codePageItems[i];
-            byte[] cpgBytes = item.CodePageBytes;
 
             int itemIndex = item.Index + colorTableEntryLength;
 
@@ -293,12 +283,10 @@ internal static class RtfProcessing
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            cpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
-            lastIndexDest += cpgLength;
-            ReadOnlySpan<byte> codePageSpan = cpgBytes.AsSpan();
+            ReadOnlySpan<byte> codePageSpan = item.CodePageBytes.AsSpan();
             codePageSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += codePageSpan.Length;
-            plus += cpgLength + RtfCommon.FontNameSuffixCodePageLength;
+            plus += RtfDisplayedReadmeParser.FontNameSuffixCodePageLength;
         }
     }
 
