@@ -4240,9 +4240,15 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    // Thief Guild now has a standard archive name format, and that's the only reason I'm willing to go near the
-    // archive name with a ten foot pole: we're basically guaranteed to get the correct title when we know we've
-    // got a standard format.
+    /*
+    Thief Guild now has a standard archive name format, and that's the only reason I'm willing to go near the
+    archive name with a ten foot pole: we're basically guaranteed to get the correct title when we know we've
+    got a standard format.
+    @Scanner(Thief Guild archive name format): We could get the date from here too, but it's the first release
+    date, not the latest update date (according to this thread: https://www.thiefguild.com/topics/108869/the-thief-guild-fm-hosting-is-ready).
+    In contrast, we get the latest release date if we can, so switching would be a big ("breaking", if you will)
+    change. So let's avoid doing it for now.
+    */
     private string GetTitleFromThiefGuildFormatArchiveName(FMToScan fm)
     {
         Match match = _ctx.TitleFromThiefGuildArchiveNameFormatRegex.Match(fm.DisplayName);
