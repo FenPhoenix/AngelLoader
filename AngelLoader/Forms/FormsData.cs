@@ -74,6 +74,7 @@ public sealed class MemoryImage : IDisposable
 {
     private GCHandle _pfimHandle;
     public readonly Image Img;
+    private readonly Targa? _tgaImg;
     public string Path { get; private set; }
     private readonly bool _isTga;
 
@@ -84,8 +85,8 @@ public sealed class MemoryImage : IDisposable
         {
             _isTga = true;
 
-            using Targa tgaImage = Pfimage.FromFile(path);
-            PixelFormat format = tgaImage.Format switch
+            _tgaImg = Pfimage.FromFile(path);
+            PixelFormat format = _tgaImg.Format switch
             {
                 Pfim.ImageFormat.Rgb24 => PixelFormat.Format24bppRgb,
                 Pfim.ImageFormat.Rgba32 => PixelFormat.Format32bppArgb,
@@ -95,10 +96,10 @@ public sealed class MemoryImage : IDisposable
                 Pfim.ImageFormat.Rgb8 => PixelFormat.Format8bppIndexed,
                 _ => throw new InvalidDataException("Couldn't load '" + path + "'; pixel format not supported."),
             };
-            _pfimHandle = GCHandle.Alloc(tgaImage.Data, GCHandleType.Pinned);
-            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(tgaImage.Data, 0);
+            _pfimHandle = GCHandle.Alloc(_tgaImg.Data, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(_tgaImg.Data, 0);
 
-            Img = new Bitmap(tgaImage.Width, tgaImage.Height, tgaImage.Stride, format, ptr);
+            Img = new Bitmap(_tgaImg.Width, _tgaImg.Height, _tgaImg.Stride, format, ptr);
         }
         else
         {
@@ -137,6 +138,10 @@ public sealed class MemoryImage : IDisposable
             catch
             {
                 // It might still throw if some weird thread access to the handle happens I guess, so just in case
+            }
+            finally
+            {
+                _tgaImg?.Dispose();
             }
         }
     }
