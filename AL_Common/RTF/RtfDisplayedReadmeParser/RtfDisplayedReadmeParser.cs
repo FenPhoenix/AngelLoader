@@ -1,10 +1,4 @@
-﻿// @DarkModeNote(RtfColorTableParser):
-// We use a full parser here because rather than simply replacing all byte sequences with another, here we
-// need to parse and return the first and ONLY the first {\colortbl} group. In theory that could be in a
-// comment or invalidly in the middle of another group or something. I mean it won't, let's be honest, but
-// the color table is important enough to take the perf hit and the small amount of code duplication.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
