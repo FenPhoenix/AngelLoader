@@ -1561,7 +1561,7 @@ internal static class Core
             #endregion
 
             Encoding? encoding = null;
-            if (fileType == ReadmeType.PlainText &&
+            if (ReadmeTypeSupportsEncodingChange(fileType) &&
                 fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
             {
                 try
@@ -1580,7 +1580,7 @@ internal static class Core
 
             // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
             // every time until the user explicitly requests something different.
-            if (fileType == ReadmeType.PlainText)
+            if (ReadmeTypeSupportsEncodingChange(fileType))
             {
                 if (newEncoding?.CodePage > 0)
                 {

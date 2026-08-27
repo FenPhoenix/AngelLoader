@@ -16,11 +16,8 @@ internal static class GLMLConversion
 {
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
-    internal static string GLMLToRTF(byte[] glmlBytes, bool darkMode)
+    internal static string GLMLToRTF(string glml, bool darkMode)
     {
-        // IMPORTANT: Use Encoding.UTF8 because anything else will break the character encoding!
-        string glml = Encoding.UTF8.GetString(glmlBytes);
-
         string colorTable = @"{\colortbl ";
         colorTable = darkMode
             ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground_Rtf)

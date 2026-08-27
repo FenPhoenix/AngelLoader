@@ -334,7 +334,6 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
             switch (fileType)
             {
-                case ReadmeType.GLML:
                 case ReadmeType.RichText:
                     _currentReadmeSupportsEncodingChange = false;
 
@@ -362,9 +361,10 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                         skipSuspend: true);
 
                     break;
+                case ReadmeType.GLML:
                 case ReadmeType.PlainText:
                 case ReadmeType.Wri:
-                    ContentIsPlainText = true;
+                    ContentIsPlainText = fileType != ReadmeType.GLML;
 
                     byte[] bytes = File_ReadAllBytesFast(path);
 
@@ -431,7 +431,16 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             }
 
             using StreamReader sr = new(ms, encoding);
-            Text = sr.ReadToEnd();
+            string text = sr.ReadToEnd();
+
+            if (_currentReadmeType == ReadmeType.GLML)
+            {
+                Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
+            }
+            else
+            {
+                Text = text;
+            }
 
             return retEncoding;
         }

@@ -93,6 +93,8 @@ public static partial class Misc
     */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
+    public static bool ReadmeTypeSupportsEncodingChange(ReadmeType readmeType) => readmeType is ReadmeType.PlainText or ReadmeType.GLML;
+
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 
     internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }

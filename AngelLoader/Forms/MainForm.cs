@@ -5123,7 +5123,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             SetReadmeVisible(true);
             Lazy_ViewHTMLReadmeButton.Hide();
-            ReadmeEncodingButton.Enabled = fileType == ReadmeType.PlainText;
+            ReadmeEncodingButton.Enabled = ReadmeTypeSupportsEncodingChange(fileType);
             return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
         }
     }

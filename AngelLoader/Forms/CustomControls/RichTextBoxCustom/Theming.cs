@@ -135,10 +135,6 @@ internal sealed partial class RichTextBoxCustom
 #endif
                 }
             }
-            else if (_currentReadmeType == ReadmeType.GLML)
-            {
-                Rtf = GLMLConversion.GLMLToRTF(_currentReadmeBytes, _darkModeEnabled);
-            }
         }
         // Let exceptions propagate back, so we'll get the "unable to load readme" message.
         finally
