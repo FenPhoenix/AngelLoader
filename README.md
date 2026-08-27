@@ -3,14 +3,6 @@ AngelLoader
 </h1>
 <p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v194_900w.png" /></p>
 
-<hr>
-<h4 align="center">
-Thanks to JetBrains for providing their tools to AngelLoader under their Open Source License.
-</h4>
-<p align="center">
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="128" height="128"/></a>
-</p>
-
 ## Description
 AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, System Shock 2, and The Dark Mod. Unlike FMSel, which requires a separate copy for each game, AngelLoader allows you to manage and play all your FMs in one place. The interface is inspired by DarkLoader (by Björn Henke and Tom N. Harris) and NewDarkLoader (by Robin Collier).
 
