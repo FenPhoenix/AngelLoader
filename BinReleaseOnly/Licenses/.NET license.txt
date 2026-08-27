@@ -1,7 +1,7 @@
 AngelLoader contains ported and/or modified portions of code from .NET Core 3 and newer.
 
 The full source code can be obtained from: https://github.com/dotnet
----------------------------------------------------------------------------
+--------------------------------------------------------------------
 
 The MIT License (MIT)
 

@@ -139,6 +139,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AL_Common\AL_Common.csproj" />
 		<ProjectReference Include="..\FMScanner\FMScanner.csproj" />
+		<ProjectReference Include="..\Pfim\Pfim.csproj" />
 		<ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
 		<ProjectReference Include="..\Ude\Ude.NetStandard.csproj" />
 		<ProjectReference Include="..\Update\Update.csproj" />

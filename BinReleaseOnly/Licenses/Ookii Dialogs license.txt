@@ -1,6 +1,6 @@
 AngelLoader contains portions of code from Ookii Dialogs.
 The full source code may be obtained from https://github.com/augustoproiete/ookii-dialogs-winforms
------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------
 
 License agreement for Ookii.Dialogs.
 

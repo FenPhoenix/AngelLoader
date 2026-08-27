@@ -233,6 +233,7 @@ public static partial class Misc
         ".gif",
         ".tif",
         ".tiff",
+        ".tga",
     };
 
     // ReSharper disable once RedundantExplicitArraySize

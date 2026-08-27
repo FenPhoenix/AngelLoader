@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
 using AngelLoader.Forms.WinFormsNative;
+using Pfim;
 
 namespace AngelLoader.Forms;
 
@@ -69,14 +72,41 @@ toothed comb. So let's just keep the class for now, but save memory by not keepi
 */
 public sealed class MemoryImage : IDisposable
 {
+    private GCHandle _pfimHandle;
     public readonly Image Img;
     public string Path { get; private set; }
+    private readonly bool _isTga;
 
     public MemoryImage(string path)
     {
         Path = path;
-        using FileStream_NET fileStream = File_OpenReadFast(path, FileStreamBufferSize);
-        Img = Image.FromStream(fileStream);
+        if (path.EndsWithI(".tga"))
+        {
+            _isTga = true;
+
+            using IImage image = Pfimage.FromFile(path);
+            PixelFormat format = image.Format switch
+            {
+                Pfim.ImageFormat.Rgb24 => PixelFormat.Format24bppRgb,
+                Pfim.ImageFormat.Rgba32 => PixelFormat.Format32bppArgb,
+                Pfim.ImageFormat.R5g5b5 => PixelFormat.Format16bppRgb555,
+                Pfim.ImageFormat.R5g6b5 => PixelFormat.Format16bppRgb565,
+                Pfim.ImageFormat.R5g5b5a1 => PixelFormat.Format16bppArgb1555,
+                Pfim.ImageFormat.Rgb8 => PixelFormat.Format8bppIndexed,
+                _ => throw new InvalidDataException("Couldn't load '" + path + "'; pixel format not supported."),
+            };
+            _pfimHandle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
+
+            Img = new Bitmap(image.Width, image.Height, image.Stride, format, ptr);
+        }
+        else
+        {
+            _isTga = false;
+
+            using FileStream_NET fileStream = File_OpenReadFast(path, FileStreamBufferSize);
+            Img = Image.FromStream(fileStream);
+        }
     }
 
     /// <summary>
@@ -95,6 +125,20 @@ public sealed class MemoryImage : IDisposable
     {
         Path = "";
         Img.Dispose();
+        if (_isTga)
+        {
+            try
+            {
+                if (_pfimHandle.IsAllocated)
+                {
+                    _pfimHandle.Free();
+                }
+            }
+            catch
+            {
+                // It might still throw if some weird thread access to the handle happens I guess, so just in case
+            }
+        }
     }
 }
 
