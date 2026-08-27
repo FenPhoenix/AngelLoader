@@ -69,6 +69,12 @@ It's possible we might be able to get rid of this class entirely, but it also ho
 cleared on Dispose() but then gets compared to another string later, potentially after disposal, and the whole
 thing is nasty and might break if we change it without going through the screenshots tab page code with a fine-
 toothed comb. So let's just keep the class for now, but save memory by not keeping a MemoryStream around.
+
+@TDM(TGA format): 2026-08-27: At the time of this writing (TDM 2.14 is the latest), TDM only writes TGA files in
+uncompressed true-color format (value 2). Pfim handles RLE and uncompressed, but not "huffman-delta-run-length
+encoded color-mapped" or "huffman-delta-run-length-4-pass-quadtree-type process encoded color-mapped", from the
+looks of it. If we wanted to be obsessive we could remove the compressed TGA handling code, but we've got Pfim
+down to like 18K already so meh.
 */
 public sealed class MemoryImage : IDisposable
 {
