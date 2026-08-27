@@ -1,14 +1,17 @@
-﻿namespace Pfim
+﻿using System.Buffers;
+
+namespace Pfim
 {
-    class DefaultAllocator : IImageAllocator
+    public static class DefaultAllocator
     {
-        public byte[] Rent(int size)
+        public static byte[] Rent(int size)
         {
-            return new byte[size];
+            return ArrayPool<byte>.Shared.Rent(size);
         }
 
-        public void Return(byte[] data)
+        public static void Return(byte[] data)
         {
+            ArrayPool<byte>.Shared.Return(data);
         }
     }
 }

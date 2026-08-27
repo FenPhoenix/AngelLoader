@@ -7,11 +7,11 @@ namespace Pfim
     /// <summary>
     /// Defines a series of functions that can decode a compressed targa image
     /// </summary>
-    public class CompressedTarga : IDecodeTarga
+    public sealed class CompressedTarga : IDecodeTarga
     {
         internal static readonly CompressedTarga Instance = new CompressedTarga();
 
-        unsafe byte[] FastPass(byte[] data, ArraySegment<byte> arr, TargaHeader header, int stride, long arrPosition)
+        private static unsafe byte[] FastPass(byte[] data, ArraySegment<byte> arr, TargaHeader header, int stride, long arrPosition)
         {
             var dataLen = header.Height * stride;
             int bytesPerPixel = header.PixelDepthBytes;
@@ -82,7 +82,7 @@ namespace Pfim
         {
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
             var dataLen = header.Height * stride;
-            var data = config.Allocator.Rent(dataLen);
+            var data = DefaultAllocator.Rent(dataLen);
 
             if (str is MemoryStream s && s.TryGetBuffer(out var arr))
             {
@@ -102,7 +102,7 @@ namespace Pfim
                 throw new ArgumentException($"Buffer size not big enough to read {maxRead} bytes", nameof(config.BufferSize));
             }
 
-            byte[] filebuffer = config.Allocator.Rent(config.BufferSize);
+            byte[] filebuffer = DefaultAllocator.Rent(config.BufferSize);
             try
             {
                 int workingSize = Util.ReadFill(str, filebuffer, 0, config.BufferSize);
@@ -146,7 +146,7 @@ namespace Pfim
             }
             finally
             {
-                config.Allocator.Return(filebuffer);
+                DefaultAllocator.Return(filebuffer);
             }
         }
 
@@ -163,7 +163,7 @@ namespace Pfim
         public byte[] TopLeft(Stream str, TargaHeader header, PfimConfig config)
         {
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
-            var data = config.Allocator.Rent(header.Height * stride);
+            var data = DefaultAllocator.Rent(header.Height * stride);
 
             int dataIndex = 0;
             int bytesPerPixel = header.PixelDepthBytes;
@@ -178,7 +178,7 @@ namespace Pfim
                 throw new ArgumentException($"Buffer size not big enough to read {maxRead} bytes", nameof(config.BufferSize));
             }
 
-            byte[] filebuffer = config.Allocator.Rent(config.BufferSize);
+            byte[] filebuffer = DefaultAllocator.Rent(config.BufferSize);
             int workingSize = Util.ReadFill(str, filebuffer, 0, config.BufferSize);
 
             try
@@ -222,7 +222,7 @@ namespace Pfim
             }
             finally
             {
-                config.Allocator.Return(filebuffer);
+                DefaultAllocator.Return(filebuffer);
             }
         }
 
@@ -272,7 +272,7 @@ namespace Pfim
         /// <param name="dataIndex">Index of where to start storing the expanded data.</param>
         /// <param name="streamBufferIndex">Index of where the compressed data.</param>
         /// <param name="colorDepth">The number of bytes in a pixel</param>
-        public static unsafe void RunLength(byte[] data, byte[] streamBuffer,
+        private static unsafe void RunLength(byte[] data, byte[] streamBuffer,
             int dataIndex, int streamBufferIndex, int colorDepth)
         {
             int runLength = streamBuffer[streamBufferIndex++] - 127;

@@ -84,8 +84,8 @@ public sealed class MemoryImage : IDisposable
         {
             _isTga = true;
 
-            using IImage image = Pfimage.FromFile(path);
-            PixelFormat format = image.Format switch
+            using Targa tgaImage = Pfimage.FromFile(path);
+            PixelFormat format = tgaImage.Format switch
             {
                 Pfim.ImageFormat.Rgb24 => PixelFormat.Format24bppRgb,
                 Pfim.ImageFormat.Rgba32 => PixelFormat.Format32bppArgb,
@@ -95,10 +95,10 @@ public sealed class MemoryImage : IDisposable
                 Pfim.ImageFormat.Rgb8 => PixelFormat.Format8bppIndexed,
                 _ => throw new InvalidDataException("Couldn't load '" + path + "'; pixel format not supported."),
             };
-            _pfimHandle = GCHandle.Alloc(image.Data, GCHandleType.Pinned);
-            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(image.Data, 0);
+            _pfimHandle = GCHandle.Alloc(tgaImage.Data, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(tgaImage.Data, 0);
 
-            Img = new Bitmap(image.Width, image.Height, image.Stride, format, ptr);
+            Img = new Bitmap(tgaImage.Width, tgaImage.Height, tgaImage.Stride, format, ptr);
         }
         else
         {

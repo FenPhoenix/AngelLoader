@@ -31,6 +31,6 @@
         /// <summary>
         /// Single channel 32-bit floating-point format.
         /// </summary>
-        R32f
+        R32f,
     }
 }

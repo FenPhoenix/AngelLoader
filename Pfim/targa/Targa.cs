@@ -7,54 +7,28 @@ namespace Pfim
     /// Provides a mechanism for decoding and storing the decoded information
     /// about a targa image
     /// </summary>
-    public class Targa : IImage
+    public sealed class Targa : IDisposable
     {
-        private readonly PfimConfig _config;
-
         /// <summary>
         /// Constructs a targa image from a targa image and raw data
         /// </summary>
-        private Targa(TargaHeader header, PfimConfig config, byte[] data, int dataLen)
+        private Targa(TargaHeader header, byte[] data, int dataLen)
         {
-            _config = config;
             Header = header;
             Data = data;
             DataLen = dataLen;
         }
 
-        public static Targa Create(byte[] data, PfimConfig config)
+        internal static Targa CreateWithPartialHeader(Stream str, PfimConfig config, byte[] magic)
         {
-            return Create(Util.CreateExposed(data), config);
-        }
-
-        public bool Compressed => false;
-        public void Decompress()
-        {
-            // Never compressed
-        }
-
-        /// <summary>
-        /// Creates a targa image from a given stream. The type of targa is determined from the
-        /// targa header, which is assumed to be a part of the stream
-        /// </summary>
-        /// <param name="str">Stream to read the targa image from</param>
-        /// <returns>A targa image</returns>
-        public static Targa Create(Stream str, PfimConfig config)
-        {
-            var header = new TargaHeader(str, config);
-            return DecodeTarga(str, config, header);
-        }
-
-        internal static IImage CreateWithPartialHeader(Stream str, PfimConfig config, byte[] magic)
-        {
-            var header = new TargaHeader(str, magic, 4, config);
+            var header = new TargaHeader(str, magic, 4);
             return DecodeTarga(str, config, header);
         }
 
         private static Targa DecodeTarga(Stream str, PfimConfig config, TargaHeader header)
         {
             var targa = (header.IsCompressed)
-                ? (IDecodeTarga) (CompressedTarga.Instance)
+                ? (IDecodeTarga)(CompressedTarga.Instance)
                 : UncompressedTarga.Instance;
 
             byte[] data;
@@ -82,7 +56,7 @@ namespace Pfim
 
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
             var len = header.Height * stride;
-            var result = new Targa(header, config, data, len);
+            var result = new Targa(header, data, len);
 
             if (config.ApplyColorMap)
             {
@@ -92,14 +66,15 @@ namespace Pfim
             return result;
         }
 
-        public void ApplyColorMap()
+        private void ApplyColorMap()
         {
-            // Check targa header field 2 and 3 as "it is best to check Field 3, Image Type, 
+            // Check targa header field 2 and 3 as "it is best to check Field 3, Image Type,
             // to make sure you have a file which can use the data stored in the Color Map Field.
             // Otherwise ignore the information"
-            if (!Header.HasColorMap || 
+            if (!Header.HasColorMap ||
                 (Header.ImageType != TargaHeader.TargaImageType.RunLengthColorMap &&
-                Header.ImageType != TargaHeader.TargaImageType.UncompressedColorMap)) {
+                Header.ImageType != TargaHeader.TargaImageType.UncompressedColorMap))
+            {
                 return;
             }
 
@@ -107,7 +82,7 @@ namespace Pfim
             var oldStride = Stride;
             var newStride = Util.Stride(Header.Width, colorMapDepthBytes * 8);
             var newLen = colorMapDepthBytes * DataLen;
-            var newData = _config.Allocator.Rent(newLen);
+            var newData = DefaultAllocator.Rent(newLen);
             switch (Header.ColorMapDepthBits)
             {
                 case 16:
@@ -131,7 +106,7 @@ namespace Pfim
                     throw new NotImplementedException($"Unrecognized color map depth {Header.ColorMapDepthBits}");
             }
 
-            _config.Allocator.Return(Data);
+            DefaultAllocator.Return(Data);
             Data = newData;
             DataLen = newLen;
             Header.PixelDepthBits = (byte)Header.ColorMapDepthBits;
@@ -141,14 +116,12 @@ namespace Pfim
             Header.ColorMapDepthBits = 0;
         }
 
-        public MipMapOffset[] MipMaps => Array.Empty<MipMapOffset>();
-
         /// <summary>The raw image data</summary>
         public byte[] Data { get; private set; }
 
-        public int DataLen { get; private set; }
+        private int DataLen { get; set; }
 
-        public TargaHeader Header { get; private set; }
+        private TargaHeader Header { get; }
 
         /// <summary>Width of the image in pixels</summary>
         public int Width => Header.Width;
@@ -158,8 +131,6 @@ namespace Pfim
 
         /// <summary>The number of bytes that compose one line</summary>
         public int Stride => Util.Stride(Header.Width, Header.PixelDepthBits);
-
-        public int BitsPerPixel => Header.PixelDepthBits;
 
         /// <summary>The format of the raw data</summary>
         public ImageFormat Format
@@ -179,7 +150,7 @@ namespace Pfim
 
         public void Dispose()
         {
-            _config.Allocator.Return(Data);
+            DefaultAllocator.Return(Data);
         }
     }
 }

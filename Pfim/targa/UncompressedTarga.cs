@@ -6,7 +6,7 @@ namespace Pfim
     /// <summary>
     /// Defines a series of functions that can decode a uncompressed targa image
     /// </summary>
-    public class UncompressedTarga : IDecodeTarga
+    public sealed class UncompressedTarga : IDecodeTarga
     {
         internal static readonly UncompressedTarga Instance = new UncompressedTarga();
 
@@ -15,7 +15,7 @@ namespace Pfim
         {
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
             var len = header.Height * stride;
-            var data = config.Allocator.Rent(len);
+            var data = DefaultAllocator.Rent(len);
             var width = header.PixelDepthBytes * header.Width;
             InnerBottomLeft(str, config, data, len, stride, width);
             return data;
@@ -34,14 +34,14 @@ namespace Pfim
             }
             else
             {
-                var buffer = config.Allocator.Rent(config.BufferSize);
+                var buffer = DefaultAllocator.Rent(config.BufferSize);
                 try
                 {
                     Util.FillBottomLeft(str, data, dataLen, width, stride, buffer, config.BufferSize);
                 }
                 finally
                 {
-                    config.Allocator.Return(buffer);
+                    DefaultAllocator.Return(buffer);
                 }
             }
         }
@@ -61,7 +61,7 @@ namespace Pfim
         {
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
             var len = header.Height * stride;
-            var data = config.Allocator.Rent(header.Height * stride);
+            var data = DefaultAllocator.Rent(header.Height * stride);
 
             // If an image stride doesn't need any padding, we can
             // use an optimization where we can just copy the whole stream
@@ -77,7 +77,7 @@ namespace Pfim
             return data;
         }
 
-        private void StrideTopLeft(Stream str, PfimConfig config, TargaHeader header, byte[] data)
+        private static void StrideTopLeft(Stream str, PfimConfig config, TargaHeader header, byte[] data)
         {
             var stride = Util.Stride(header.Width, header.PixelDepthBits);
             var width = header.Width * header.PixelDepthBytes;

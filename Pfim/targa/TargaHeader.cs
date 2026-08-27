@@ -5,7 +5,7 @@ using System.Text;
 namespace Pfim
 {
     /// <summary>Class for parsing and storing information from a targa header</summary>
-    public class TargaHeader
+    public sealed class TargaHeader
     {
         /// <summary>The targa image's type</summary>
         public enum TargaImageType
@@ -57,27 +57,27 @@ namespace Pfim
             /// <summary>
             /// First byte read corresponds to the pixel in the top right
             /// </summary>
-            TopRight = 3
+            TopRight = 3,
         }
 
         private const int MINIMUM_SIZE = 18;
 
-        internal TargaHeader(Stream str, byte[] partial, int partialLen, PfimConfig config)
+        internal TargaHeader(Stream str, byte[] partial, int partialLen)
         {
-            DecodeTargaHeader(str, partial, partialLen, config);
+            DecodeTargaHeader(str, partial, partialLen);
         }
 
         /// <summary>
         /// Instantiate a targa header from a given stream. The stream will be parsed
         /// </summary>
-        public TargaHeader(Stream str, PfimConfig config)
+        public TargaHeader(Stream str)
         {
             byte[] buf = new byte[MINIMUM_SIZE];
             Util.ReadExactly(str, buf, 0, buf.Length);
-            DecodeTargaHeader(str, buf, MINIMUM_SIZE, config);
+            DecodeTargaHeader(str, buf, MINIMUM_SIZE);
         }
 
-        private void DecodeTargaHeader(Stream str, byte[] partial, int partialLen, PfimConfig config)
+        private void DecodeTargaHeader(Stream str, byte[] partial, int partialLen)
         {
             byte[] buf;
 

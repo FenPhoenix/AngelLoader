@@ -13,11 +13,6 @@ namespace Pfim
         /// </summary>
         private const int BUFFER_SIZE = 0x8000;
 
-        internal static MemoryStream CreateExposed(byte[] data)
-        {
-            return new MemoryStream(data, 0, data.Length, false, true);
-        }
-
         /// <summary>
         /// Takes all the bytes at and after an index and moves them to the front and fills the rest
         /// of the buffer with information from the stream.
@@ -94,9 +89,6 @@ namespace Pfim
             }
         }
 
-        public static void Fill(Stream stream, byte[] data, int dataLen, int bufSize = BUFFER_SIZE) =>
-            Fill(stream, data, dataLen, bufSize, 0);
-
         public static void InnerFillUnaligned(Stream str, byte[] buf, int bufLen, int width, int stride, int bufSize = BUFFER_SIZE, int offset = 0)
         {
             for (int i = offset; i < bufLen + offset; i += stride)
@@ -104,10 +96,6 @@ namespace Pfim
                 ReadExactly(str, buf, i, width);
             }
         }
-
-
-        public static void InnerFillUnaligned(Stream str, byte[] buf, int bufLen, int width, int stride, int bufSize = BUFFER_SIZE) =>
-            InnerFillUnaligned(str, buf, bufLen, width, stride, bufSize, 0);
 
         /// <summary>
         /// Fills the buffer all the way up with info from the stream
