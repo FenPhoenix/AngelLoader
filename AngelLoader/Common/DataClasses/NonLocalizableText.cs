@@ -89,7 +89,7 @@ internal static partial class NonLocalizableText
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
         ("DeviceIoControlLib", "https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib"),
         ("Pfim", "https://github.com/nickbabcock/Pfim"),
-        ("ImageFormats.NetStandard", "https://github.com/DogGodGit/imageformats"),
+        ("ImageFormats", "github.com/dbrant/imageformats/"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 
