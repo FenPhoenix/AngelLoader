@@ -111,7 +111,7 @@ public sealed class MemoryImage : IDisposable
         {
             _isTga = false;
 
-            Img = ImageFormats.NetStandard.PcxReader.Load(path);
+            Img = DmitryBrant.ImageFormats.PcxReader.Load(path);
         }
         else
         {
