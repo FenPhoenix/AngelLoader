@@ -5041,7 +5041,9 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 FillReadmeListControl(ChooseReadmeComboBox, readmeFiles);
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
-                ChooseReadmeComboBox.Show();
+                // Don't show if the cursor's not over it, otherwise it shows on startup (but not the other
+                // controls) until you mouse somewhere over the window.
+                ChooseReadmeComboBox.Visible = CursorOverReadmeArea();
             }
         }
     }
