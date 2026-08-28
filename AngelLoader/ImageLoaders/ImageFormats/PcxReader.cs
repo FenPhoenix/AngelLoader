@@ -111,8 +111,6 @@ public static class PcxReader
         int bytesPerLine = (int)LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[66]));
         if (bytesPerLine == 0) bytesPerLine = xmax - xmin + 1;
 
-        int paletteInfo = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[68]));
-
         if (imgBpp == 8 && numPlanes == 1)
         {
             if (bytes.Length < 768)
