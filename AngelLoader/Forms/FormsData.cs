@@ -107,6 +107,12 @@ public sealed class MemoryImage : IDisposable
 
             Img = new Bitmap(_tgaImg.Width, _tgaImg.Height, _tgaImg.Stride, format, ptr);
         }
+        else if (path.EndsWithI(".pcx"))
+        {
+            _isTga = false;
+
+            Img = ImageFormats.NetStandard.PcxReader.Load(path);
+        }
         else
         {
             _isTga = false;

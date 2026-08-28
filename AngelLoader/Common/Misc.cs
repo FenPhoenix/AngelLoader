@@ -220,9 +220,6 @@ public static partial class Misc
         internal const uint MaxDaysRecent = 99999;
     }
 
-    // Another leak of view implementation details into here (GDI+/Bitmap supported formats)
-    // @ScreenshotDisplay: NewDark games can also have .pcx, and TDM can also have .tga
-    // Neither are supported by Bitmap, so, you're kinda outta luck on those.
     public static readonly string[] SupportedScreenshotExtensions =
     {
         // Common/likely ones first
@@ -234,6 +231,7 @@ public static partial class Misc
         ".tif",
         ".tiff",
         ".tga",
+        ".pcx",
     };
 
     // ReSharper disable once RedundantExplicitArraySize
