@@ -435,6 +435,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
             if (_currentReadmeType == ReadmeType.GLML)
             {
+                // TODO:/BUG: Theme doesn't change on dark mode change. Complicated to fix, needs re-architecting
+                // or a disgusting kludge.
                 Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
             }
             else
