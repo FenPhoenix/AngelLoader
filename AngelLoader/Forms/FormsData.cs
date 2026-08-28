@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TIME_TEST
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -89,6 +91,10 @@ public sealed class MemoryImage : IDisposable
         Path = path;
         if (path.EndsWithI(".tga"))
         {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
             _isTga = true;
 
             _tgaImg = Pfimage.FromFile(path);
@@ -106,19 +112,43 @@ public sealed class MemoryImage : IDisposable
             IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(_tgaImg.Data, 0);
 
             Img = new Bitmap(_tgaImg.Width, _tgaImg.Height, _tgaImg.Stride, format, ptr);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(TGA) Time: " + sw.Elapsed);
+#endif
         }
+        // PCX loading is somewhat slow, but then again it's unlikely most people will use it.
         else if (path.EndsWithI(".pcx"))
         {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
             _isTga = false;
 
             Img = DmitryBrant.ImageFormats.PcxReader.Load(path);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(PCX) Time: " + sw.Elapsed);
+#endif
         }
         else
         {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
             _isTga = false;
 
             using FileStream_NET fileStream = File_OpenReadFast(path, FileStreamBufferSize);
             Img = Image.FromStream(fileStream);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(Other) Time: " + sw.Elapsed);
+#endif
         }
     }
 
