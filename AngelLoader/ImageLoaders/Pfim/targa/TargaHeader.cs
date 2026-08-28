@@ -219,9 +219,9 @@ namespace Pfim
         /// indicating that no Image ID exists then these bytes are not
         /// written to the file
         /// </summary>
-        public string ImageId { get; private set; }
+        public string ImageId { get; private set; } = "";
 
-        public byte[] ColorMap { get; internal set; }
+        public byte[] ColorMap { get; internal set; } = Array.Empty<byte>();
 
         //public List<Color> ColorMap { get; private set; }
 

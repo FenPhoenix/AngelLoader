@@ -177,6 +177,10 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="ImageLoaders\Pfim\" />
+	</ItemGroup>
+
 	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
 		<Exec Command="pre_build.bat &quot;$(Configuration)&quot; &quot;$(TargetDir)&quot; &quot;$(ProjectDir)&quot; &quot;$(SolutionDir)&quot; &quot;$(PlatformName)&quot; &quot;$(TargetFramework)&quot;" WorkingDirectory="$(ProjectDir)" />
 	</Target>

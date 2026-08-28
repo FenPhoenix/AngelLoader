@@ -123,7 +123,7 @@ namespace Pfim
             int dataLen,
             int rowSize,
             int stride,
-            byte[] buffer = null,
+            byte[]? buffer = null,
             int bufSize = BUFFER_SIZE)
         {
             buffer = buffer ?? new byte[BUFFER_SIZE];
