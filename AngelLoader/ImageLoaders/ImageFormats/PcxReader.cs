@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -53,6 +54,10 @@ public static class PcxReader
         0x555555, 0x5555FF, 0x55FF55, 0x55FFFF, 0xFF5555, 0xFF55FF, 0xFFFF55, 0xFFFFFF,
     };
 
+    private static int _currentPosition;
+    private static int _currentByte;
+    private static int _runLength;
+
     /// <summary>
     /// Reads a PCX image from a file.
     /// </summary>
@@ -88,10 +93,10 @@ public static class PcxReader
         if (imgBpp != 8 && imgBpp != 4 && imgBpp != 2 && imgBpp != 1)
             throw new InvalidDataException("Only 8, 4, 2, and 1-bit PCX samples are supported.");
 
-        ushort xmin = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[4]));
-        ushort ymin = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[6]));
-        ushort xmax = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[8]));
-        ushort ymax = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[10]));
+        ushort xmin = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[4]));
+        ushort ymin = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[6]));
+        ushort xmax = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[8]));
+        ushort ymax = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[10]));
 
         int imgWidth = xmax - xmin + 1;
         int imgHeight = ymax - ymin + 1;
@@ -103,10 +108,10 @@ public static class PcxReader
         Array.Copy(bytes, 16, colorPalette, 0, 48);
 
         int numPlanes = bytes[65];
-        int bytesPerLine = (int)Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[66]));
+        int bytesPerLine = (int)LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[66]));
         if (bytesPerLine == 0) bytesPerLine = xmax - xmin + 1;
 
-        int paletteInfo = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[68]));
+        int paletteInfo = LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[68]));
 
         if (imgBpp == 8 && numPlanes == 1)
         {
@@ -172,7 +177,9 @@ public static class PcxReader
         byte[] bmpData = new byte[(imgWidth + 1) * 4 * imgHeight];
         int x, y, i;
 
-        RleReader rleReader = new(bytes);
+        _currentPosition = 128;
+        _currentByte = 0;
+        _runLength = 0;
 
         try
         {
@@ -192,7 +199,7 @@ public static class PcxReader
                         x = 0;
                         for (i = 0; i < bytesPerLine; i++)
                         {
-                            scanline[i] = (byte)rleReader.ReadByte();
+                            scanline[i] = (byte)ReadByte(bytes);
 
                             for (b = 7; b >= 0; b--)
                             {
@@ -233,7 +240,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)rleReader.ReadByte();
+                                scanline[i] = (byte)ReadByte(bytes);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -250,7 +257,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)rleReader.ReadByte();
+                                scanline[i] = (byte)ReadByte(bytes);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -271,7 +278,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)rleReader.ReadByte();
+                                scanline[i] = (byte)ReadByte(bytes);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -307,11 +314,11 @@ public static class PcxReader
                     for (y = 0; y < imgHeight; y++)
                     {
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineR[i] = (byte)rleReader.ReadByte();
+                            scanlineR[i] = (byte)ReadByte(bytes);
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineG[i] = (byte)rleReader.ReadByte();
+                            scanlineG[i] = (byte)ReadByte(bytes);
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineB[i] = (byte)rleReader.ReadByte();
+                            scanlineB[i] = (byte)ReadByte(bytes);
 
                         for (int n = 0; n < imgWidth; n++)
                         {
@@ -340,45 +347,25 @@ public static class PcxReader
         return bmp;
     }
 
-    private static class Util
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int ReadByte(byte[] bytes)
     {
-        public static ushort LittleEndian(ushort val)
+        _runLength--;
+        if (_runLength <= 0)
         {
-            return BitConverter.IsLittleEndian ? val : ConvEndian(val);
+            _currentByte = bytes[_currentPosition++];
+            if (_currentByte > 191)
+            {
+                _runLength = _currentByte - 192;
+                _currentByte = bytes[_currentPosition++];
+            }
         }
-
-        private static ushort ConvEndian(ushort val)
-        {
-            ushort temp = (ushort)(val << 8); temp &= 0xFF00; temp |= (ushort)((val >> 8) & 0xFF);
-            return temp;
-        }
+        return _currentByte;
     }
 
-    /// <summary>
-    /// Helper class for reading a run-length encoded stream in a PCX file.
-    /// </summary>
-    private sealed class RleReader
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ushort LittleEndian(ushort val)
     {
-        private int _currentPosition = 128;
-        private int _currentByte;
-        private int _runLength;
-        private readonly byte[] _bytes;
-
-        public RleReader(byte[] bytes) => _bytes = bytes;
-
-        public int ReadByte()
-        {
-            _runLength--;
-            if (_runLength <= 0)
-            {
-                _currentByte = _bytes[_currentPosition++];
-                if (_currentByte > 191)
-                {
-                    _runLength = _currentByte - 192;
-                    _currentByte = _bytes[_currentPosition++];
-                }
-            }
-            return _currentByte;
-        }
+        return BitConverter.IsLittleEndian ? val : BinaryPrimitives.ReverseEndianness(val);
     }
 }
