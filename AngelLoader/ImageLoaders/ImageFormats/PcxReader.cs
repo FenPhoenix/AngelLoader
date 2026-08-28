@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 /*
@@ -35,6 +36,7 @@ limitations under the License.
 -Use stream.ReadAll()
 -Use some internal, faster versions of things
 -General cleanup
+-Performance
 
 */
 
@@ -58,28 +60,16 @@ public static class PcxReader
     /// <returns>Bitmap that contains the image that was read.</returns>
     public static Bitmap Load(string fileName)
     {
-        using FileStream_NET f = File_OpenReadFast(fileName, FileStreamBufferSize);
-        return Load(f);
-    }
+        byte[] bytes = File_ReadAllBytesFast(fileName);
 
-    /// <summary>
-    /// Reads a PCX image from a stream.
-    /// </summary>
-    /// <param name="stream">Stream from which to read the image.</param>
-    /// <param name="useCgaPalette">Whether to treat the image as having a CGA palette configuration.
-    /// This is impossible to detect automatically from the file header, so this parameter can be
-    /// specified explicitly if you expect this image to use CGA palette information, as defined in
-    /// the PCX specification.</param>
-    /// <returns>Bitmap that contains the image that was read.</returns>
-    public static Bitmap Load(Stream stream, bool useCgaPalette = false)
-    {
-        BinaryBuffer binaryBuffer = new();
+        if (bytes.Length < 128)
+            throw new InvalidDataException("PCX file isn't long enough to have a valid header.");
 
-        byte tempByte = (byte)stream.ReadByte();
+        byte tempByte = bytes[0];
         if (tempByte != 10)
             throw new InvalidDataException("This is not a valid PCX file.");
 
-        byte version = (byte)stream.ReadByte();
+        byte version = bytes[1];
         if (version > 5)
             throw new InvalidDataException("Only Version 5 or lower PCX files are supported.");
 
@@ -90,18 +80,18 @@ public static class PcxReader
         // If the colors in your decoded picture look weird, try tweaking this variable.
         bool usePalette = version != 3 && version != 4; // PaintBrush 2.8 without palette information.
 
-        tempByte = (byte)stream.ReadByte();
+        tempByte = bytes[2];
         if (tempByte != 1)
             throw new InvalidDataException("Invalid PCX compression type.");
 
-        int imgBpp = stream.ReadByte();
+        int imgBpp = bytes[3];
         if (imgBpp != 8 && imgBpp != 4 && imgBpp != 2 && imgBpp != 1)
             throw new InvalidDataException("Only 8, 4, 2, and 1-bit PCX samples are supported.");
 
-        ushort xmin = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
-        ushort ymin = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
-        ushort xmax = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
-        ushort ymax = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
+        ushort xmin = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[4]));
+        ushort ymin = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[6]));
+        ushort xmax = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[8]));
+        ushort ymax = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[10]));
 
         int imgWidth = xmax - xmin + 1;
         int imgHeight = ymax - ymin + 1;
@@ -109,24 +99,22 @@ public static class PcxReader
         if ((imgWidth < 1) || (imgHeight < 1) || (imgWidth > 32767) || (imgHeight > 32767))
             throw new InvalidDataException("This PCX file appears to have invalid dimensions.");
 
-        Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer)); //hdpi
-        Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer)); //vdpi
-
         byte[] colorPalette = new byte[48];
-        stream.ReadAll(colorPalette, 0, 48);
-        stream.ReadByte();
+        Array.Copy(bytes, 16, colorPalette, 0, 48);
 
-        int numPlanes = stream.ReadByte();
-        int bytesPerLine = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
+        int numPlanes = bytes[65];
+        int bytesPerLine = (int)Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[66]));
         if (bytesPerLine == 0) bytesPerLine = xmax - xmin + 1;
 
-        int paletteInfo = Util.LittleEndian(BinaryRead.ReadUInt16(stream, binaryBuffer));
+        int paletteInfo = Util.LittleEndian(Unsafe.ReadUnaligned<ushort>(ref bytes[68]));
 
         if (imgBpp == 8 && numPlanes == 1)
         {
+            if (bytes.Length < 768)
+                throw new InvalidDataException("PCX file not long enough to have 768-byte palette.");
+
             colorPalette = new byte[768];
-            stream.Seek(-768, SeekOrigin.End);
-            stream.ReadAll(colorPalette, 0, 768);
+            Array.Copy(bytes, bytes.Length - 768, colorPalette, 0, 768);
         }
 
         if (imgBpp == 1 && numPlanes == 1 && usePalette)
@@ -181,59 +169,10 @@ public static class PcxReader
             }
         }
 
-        if (useCgaPalette && usePalette)
-        {
-            int backgroundColor = colorPalette[0] >> 4;
-            int flags = colorPalette[3] >> 5;
-            int[] newColors = new int[4];
-
-            if (imgBpp == 1)
-            {
-                // For monochrome images, the background color actually goes in palette index 1,
-                // and index 0 is always black.
-                newColors[0] = 0;
-                newColors[1] = _egaColors[backgroundColor];
-            }
-            else if (imgBpp == 2)
-            {
-                bool intensity;
-                bool palette0or1;
-                if (paletteInfo == 0)
-                {
-                    palette0or1 = (flags & 0x2) != 0;
-                    intensity = (flags & 0x1) != 0;
-                }
-                else
-                {
-                    palette0or1 = colorPalette[4] <= colorPalette[5];
-                    intensity = colorPalette[4] > 200 || colorPalette[5] > 200;
-                }
-
-                newColors[0] = _egaColors[backgroundColor];
-                if (!palette0or1)
-                {
-                    if (!intensity) { newColors[1] = 0x00AA00; newColors[2] = 0xAA0000; newColors[3] = 0xAA5500; }
-                    else { newColors[1] = 0x55FF55; newColors[2] = 0xFF5555; newColors[3] = 0xFFFF55; }
-                }
-                else
-                {
-                    if (!intensity) { newColors[1] = 0x00AAAA; newColors[2] = 0xAA00AA; newColors[3] = 0xAAAAAA; }
-                    else { newColors[1] = 0x55FFFF; newColors[2] = 0xFF55FF; newColors[3] = 0xFFFFFF; }
-                }
-            }
-            for (int c = 0; c < 4; c++)
-            {
-                colorPalette[c * 3] = (byte)((newColors[c] >> 16) & 0xFF);
-                colorPalette[c * 3 + 1] = (byte)((newColors[c] >> 8) & 0xFF);
-                colorPalette[c * 3 + 2] = (byte)(newColors[c] & 0xFF);
-            }
-        }
-
         byte[] bmpData = new byte[(imgWidth + 1) * 4 * imgHeight];
-        stream.Seek(128, SeekOrigin.Begin);
         int x, y, i;
 
-        RleReader rleReader = new(stream);
+        RleReader rleReader = new(bytes);
 
         try
         {
@@ -358,6 +297,8 @@ public static class PcxReader
                 }
                 else if (numPlanes == 3)
                 {
+                    // *** This is the one it ends up at for our Thief-generated PCX images
+
                     byte[] scanlineR = new byte[bytesPerLine];
                     byte[] scanlineG = new byte[bytesPerLine];
                     byte[] scanlineB = new byte[bytesPerLine];
@@ -418,22 +359,23 @@ public static class PcxReader
     /// </summary>
     private sealed class RleReader
     {
+        private int _currentPosition = 128;
         private int _currentByte;
         private int _runLength;
-        private readonly Stream _stream;
+        private readonly byte[] _bytes;
 
-        public RleReader(Stream stream) => _stream = stream;
+        public RleReader(byte[] bytes) => _bytes = bytes;
 
         public int ReadByte()
         {
             _runLength--;
             if (_runLength <= 0)
             {
-                _currentByte = _stream.ReadByte();
+                _currentByte = _bytes[_currentPosition++];
                 if (_currentByte > 191)
                 {
                     _runLength = _currentByte - 192;
-                    _currentByte = _stream.ReadByte();
+                    _currentByte = _bytes[_currentPosition++];
                 }
             }
             return _currentByte;
