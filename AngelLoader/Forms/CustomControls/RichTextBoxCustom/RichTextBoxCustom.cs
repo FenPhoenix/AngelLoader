@@ -55,6 +55,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
     internal ReadmeLocalizableMessage LocalizableMessageType = ReadmeLocalizableMessage.None;
 
+    private Encoding? _glmlEncoding;
+
     private Font? _monospaceFont;
     private Font MonospaceFont => _monospaceFont ??= new Font(FontFamily.GenericMonospace, 10.0f);
 
@@ -220,6 +222,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
     {
         try
         {
+            _glmlEncoding = null;
+
             RTFPreprocessing.SwitchOffPreloadState();
 
             _currentReadmeSupportsEncodingChange = false;
@@ -245,10 +249,12 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
     /// <exception cref="InvalidDataException"></exception>
     internal void LoadControlledRtf(Stream stream)
     {
-        SetFullUrlsDetect();
-
         try
         {
+            _glmlEncoding = null;
+
+            SetFullUrlsDetect();
+
             SuspendState(toggleReadOnly: true);
 
             SetReadmeTypeAndColorState(ReadmeType.RichText);
@@ -291,6 +297,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
         if (fileType is not ReadmeType.RichText) RTFPreprocessing.SwitchOffPreloadState();
 
         AssertR(fileType != ReadmeType.HTML, nameof(fileType) + " is ReadmeType.HTML");
+
+        _glmlEncoding = null;
 
         Encoding? retEncoding = null;
 
@@ -335,7 +343,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
             switch (fileType)
             {
                 case ReadmeType.RichText:
-                    _currentReadmeSupportsEncodingChange = false;
+                case ReadmeType.GLML:
+                    _currentReadmeSupportsEncodingChange = fileType == ReadmeType.GLML;
 
                     PreProcessedRTF? preProcessedRTF = null;
                     _currentReadmeBytes =
@@ -353,6 +362,11 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                     // This resets the font if false, so don't do it after the load or it messes up the RTF.
                     ContentIsPlainText = false;
 
+                    if (fileType == ReadmeType.GLML)
+                    {
+                        _glmlEncoding = encoding;
+                    }
+
                     RefreshDarkModeState(
 #if BYTE_IDENTICALITY_TEST
                         path: path,
@@ -360,11 +374,15 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
                         preProcessedRtf: preProcessedRTF,
                         skipSuspend: true);
 
+                    if (fileType == ReadmeType.GLML)
+                    {
+                        retEncoding = _glmlEncoding;
+                    }
+
                     break;
-                case ReadmeType.GLML:
                 case ReadmeType.PlainText:
                 case ReadmeType.Wri:
-                    ContentIsPlainText = fileType != ReadmeType.GLML;
+                    ContentIsPlainText = true;
 
                     byte[] bytes = File_ReadAllBytesFast(path);
 
@@ -435,9 +453,8 @@ internal sealed partial class RichTextBoxCustom : RichTextBox, IDarkable, IDarkC
 
             if (_currentReadmeType == ReadmeType.GLML)
             {
-                // TODO:/BUG: Theme doesn't change on dark mode change. Complicated to fix, needs re-architecting
-                // or a disgusting kludge.
-                Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
+                _glmlEncoding = encoding;
+                RefreshDarkModeState(text: text, skipSuspend: suspendResume);
             }
             else
             {

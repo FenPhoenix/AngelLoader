@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
+using Ude.NetStandard.SimpleHelpers;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -89,6 +90,7 @@ internal sealed partial class RichTextBoxCustom
         string path = "",
 #endif
         PreProcessedRTF? preProcessedRtf = null,
+        string? text = null,
         bool skipSuspend = false)
     {
         // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
@@ -133,6 +135,29 @@ internal sealed partial class RichTextBoxCustom
                         File.WriteAllBytes(Path.Combine(dir, path.Replace(":", "_").Replace("\\", "_").Replace("/", "_")), bytes);
                     }
 #endif
+                }
+            }
+            else if (_currentReadmeType == ReadmeType.GLML)
+            {
+                if (!text.IsEmpty())
+                {
+                    Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
+                }
+                else
+                {
+                    using MemoryStream ms = new(_currentReadmeBytes);
+
+                    if (_glmlEncoding == null)
+                    {
+                        FileEncoding fe = new();
+                        _glmlEncoding = fe.DetectFileEncoding(ms) ?? GetLegacyDefaultEncoding();
+                        ms.Position = 0;
+                    }
+
+                    using StreamReader sr = new(ms, _glmlEncoding);
+                    string finalText = sr.ReadToEnd();
+
+                    Rtf = GLMLConversion.GLMLToRTF(finalText, _darkModeEnabled);
                 }
             }
         }
