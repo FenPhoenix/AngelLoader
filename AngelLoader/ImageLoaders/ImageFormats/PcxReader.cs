@@ -54,10 +54,6 @@ public static class PcxReader
         0x555555, 0x5555FF, 0x55FF55, 0x55FFFF, 0xFF5555, 0xFF55FF, 0xFFFF55, 0xFFFFFF,
     };
 
-    private static int _currentPosition;
-    private static int _currentByte;
-    private static int _runLength;
-
     /// <summary>
     /// Reads a PCX image from a file.
     /// </summary>
@@ -175,9 +171,9 @@ public static class PcxReader
         byte[] bmpData = new byte[(imgWidth + 1) * 4 * imgHeight];
         int x, y, i;
 
-        _currentPosition = 128;
-        _currentByte = 0;
-        _runLength = 0;
+        int currentPosition = 128;
+        int currentByte = 0;
+        int runLength = 0;
 
         try
         {
@@ -197,7 +193,7 @@ public static class PcxReader
                         x = 0;
                         for (i = 0; i < bytesPerLine; i++)
                         {
-                            scanline[i] = (byte)ReadByte(bytes);
+                            scanline[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
 
                             for (b = 7; b >= 0; b--)
                             {
@@ -238,7 +234,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)ReadByte(bytes);
+                                scanline[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -255,7 +251,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)ReadByte(bytes);
+                                scanline[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -276,7 +272,7 @@ public static class PcxReader
                         for (y = 0; y < imgHeight; y++)
                         {
                             for (i = 0; i < bytesPerLine; i++)
-                                scanline[i] = (byte)ReadByte(bytes);
+                                scanline[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
 
                             for (x = 0; x < imgWidth; x++)
                             {
@@ -312,11 +308,11 @@ public static class PcxReader
                     for (y = 0; y < imgHeight; y++)
                     {
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineR[i] = (byte)ReadByte(bytes);
+                            scanlineR[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineG[i] = (byte)ReadByte(bytes);
+                            scanlineG[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
                         for (i = 0; i < bytesPerLine; i++)
-                            scanlineB[i] = (byte)ReadByte(bytes);
+                            scanlineB[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
 
                         for (int n = 0; n < imgWidth; n++)
                         {
@@ -346,19 +342,19 @@ public static class PcxReader
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int ReadByte(byte[] bytes)
+    private static int ReadByte(byte[] bytes, ref int currentPosition, ref int currentByte, ref int runLength)
     {
-        _runLength--;
-        if (_runLength <= 0)
+        runLength--;
+        if (runLength <= 0)
         {
-            _currentByte = bytes[_currentPosition++];
-            if (_currentByte > 191)
+            currentByte = bytes[currentPosition++];
+            if (currentByte > 191)
             {
-                _runLength = _currentByte - 192;
-                _currentByte = bytes[_currentPosition++];
+                runLength = currentByte - 192;
+                currentByte = bytes[currentPosition++];
             }
         }
-        return _currentByte;
+        return currentByte;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
