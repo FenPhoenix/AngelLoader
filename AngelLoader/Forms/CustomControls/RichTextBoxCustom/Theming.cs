@@ -139,7 +139,7 @@ internal sealed partial class RichTextBoxCustom
             }
             else if (_currentReadmeType == ReadmeType.GLML)
             {
-                if (!text.IsEmpty())
+                if (text != null)
                 {
                     Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
                 }
