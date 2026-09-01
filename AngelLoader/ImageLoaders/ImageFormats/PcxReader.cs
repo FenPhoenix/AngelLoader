@@ -300,26 +300,77 @@ public static class PcxReader
                 {
                     // *** This is the one it ends up at for our Thief-generated PCX images
 
-                    byte[] scanlineR = new byte[bytesPerLine];
-                    byte[] scanlineG = new byte[bytesPerLine];
-                    byte[] scanlineB = new byte[bytesPerLine];
-                    int bytePtr = 0;
-
-                    for (y = 0; y < imgHeight; y++)
+                    // Pre-bounds check for Unsafe code.
+                    // We can't elide bounds checking for source read, as the data is compressed, and if it were
+                    // malformed we could easily go out bounds.
+                    if (imgWidth == bytesPerLine)
                     {
-                        for (i = 0; i < bytesPerLine; i++)
-                            scanlineR[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
-                        for (i = 0; i < bytesPerLine; i++)
-                            scanlineG[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
-                        for (i = 0; i < bytesPerLine; i++)
-                            scanlineB[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                        // Write the bytes straight from source to output with no intermediary arrays (perf). We
+                        // have to write to output in BGR order, and output is BGRA so we have to skip writing
+                        // the A byte too.
 
-                        for (int n = 0; n < imgWidth; n++)
+                        // The other codepaths don't have any perf optimizations, but we expect this to be the
+                        // path that runs most or all of the time (NewDark is closed source so we can't know for
+                        // sure).
+
+                        ref byte bmpDataRef = ref Unsafe.AddByteOffset(ref MemoryMarshal.GetReference(bmpData.AsSpan()), 2);
+                        ref byte origBmpDataRef = ref bmpDataRef;
+
+                        int imageWidthTimes4 = imgWidth * 4;
+
+                        for (y = 0; y < imgHeight; y++)
                         {
-                            bmpData[bytePtr++] = scanlineB[n];
-                            bmpData[bytePtr++] = scanlineG[n];
-                            bmpData[bytePtr++] = scanlineR[n];
-                            bytePtr++;
+                            for (i = 0; i < imgWidth; i++)
+                            {
+                                bmpDataRef = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                                bmpDataRef = ref Unsafe.AddByteOffset(ref bmpDataRef, 4);
+                            }
+
+                            bmpDataRef = ref Unsafe.Subtract(ref origBmpDataRef, 1);
+
+                            for (i = 0; i < imgWidth; i++)
+                            {
+                                bmpDataRef = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                                bmpDataRef = ref Unsafe.AddByteOffset(ref bmpDataRef, 4);
+                            }
+
+                            bmpDataRef = ref Unsafe.Subtract(ref origBmpDataRef, 2);
+
+                            for (i = 0; i < imgWidth; i++)
+                            {
+                                bmpDataRef = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                                bmpDataRef = ref Unsafe.AddByteOffset(ref bmpDataRef, 4);
+                            }
+
+                            origBmpDataRef = ref Unsafe.AddByteOffset(ref origBmpDataRef, (nint)imageWidthTimes4);
+                            bmpDataRef = ref origBmpDataRef;
+                        }
+                    }
+                    // Should only happen in malformed data case, we'll get as much as we can and then probably
+                    // throw on failed bounds check
+                    else
+                    {
+                        byte[] scanlineR = new byte[bytesPerLine];
+                        byte[] scanlineG = new byte[bytesPerLine];
+                        byte[] scanlineB = new byte[bytesPerLine];
+                        int bytePtr = 0;
+
+                        for (y = 0; y < imgHeight; y++)
+                        {
+                            for (i = 0; i < bytesPerLine; i++)
+                                scanlineR[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                            for (i = 0; i < bytesPerLine; i++)
+                                scanlineG[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+                            for (i = 0; i < bytesPerLine; i++)
+                                scanlineB[i] = (byte)ReadByte(bytes, ref currentPosition, ref currentByte, ref runLength);
+
+                            for (int n = 0; n < imgWidth; n++)
+                            {
+                                bmpData[bytePtr++] = scanlineB[n];
+                                bmpData[bytePtr++] = scanlineG[n];
+                                bmpData[bytePtr++] = scanlineR[n];
+                                bytePtr++;
+                            }
                         }
                     }
                 }
