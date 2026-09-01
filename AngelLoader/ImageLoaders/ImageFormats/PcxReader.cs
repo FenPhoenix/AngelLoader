@@ -302,7 +302,7 @@ public static class PcxReader
 
                     // Pre-bounds check for Unsafe code.
                     // We can't elide bounds checking for source read, as the data is compressed, and if it were
-                    // malformed we could easily go out bounds.
+                    // malformed we could easily go out of bounds.
                     if (imgWidth == bytesPerLine)
                     {
                         // Write the bytes straight from source to output with no intermediary arrays (perf). We
