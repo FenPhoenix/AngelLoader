@@ -52,16 +52,7 @@ If you did want to use the **64-bit** version of AngelLoader, a few more steps a
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
 ## License
-AngelLoader's code is released under the MIT license, except portions which are otherwise specified.
-AngelLoader contains portions of code from the following:
-- Ookii Dialogs by [Sven Groot](http://www.ookii.org/software/dialogs/), modified by [Caio Proiete](https://github.com/caioproiete/ookii-dialogs-winforms), and further modified and slimmed down by myself. This code is released under the BSD 3-clause license.
-- DarkUI by [Robin Perris](https://github.com/RobinPerris/DarkUI)
-- FFmpeg.NET by [Tobias Haimerl](https://github.com/cmxl/FFmpeg.NET)
-- SharpCompress (stripped down to the bare minimum for 7z archive entry enumeration) by [Adam Hathcock](https://github.com/adamhathcock/sharpcompress)
-
-FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
-- [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
-- Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
+AngelLoader's code is released under the MIT license, except portions which are otherwise specified in the About window and in the [Licenses directory](https://github.com/FenPhoenix/AngelLoader/tree/master/BinReleaseOnly/Licenses)
 
 ## Statement on the Non-Use of AI
 I do not use AI to generate any of my code, and in fact I don't use it in any area of my programming workflow, period. All my code is written by me. I can't vouch that third-party dependencies don't contain any AI generated code, but thankfully most of them are old enough that they probably don't, so there's that.
