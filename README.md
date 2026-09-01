@@ -62,3 +62,6 @@ AngelLoader contains portions of code from the following:
 FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
 - [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
 - Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
+
+## Statement on the Non-Use of AI
+I do not use AI to generate any of my code, and in fact I don't use it in any area of my programming workflow, period. All my code is written by me. I can't vouch that third-party dependencies don't contain any AI generated code, but thankfully most of them are old enough that they probably don't, so there's that.
