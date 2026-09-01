@@ -86,6 +86,7 @@ public sealed partial class RtfToTextConverter
 {
     #region Private fields
 
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct FontNameData
     {
         public readonly byte[] Bytes;

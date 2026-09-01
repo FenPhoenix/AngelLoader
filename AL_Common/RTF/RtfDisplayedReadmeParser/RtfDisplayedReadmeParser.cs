@@ -11,7 +11,7 @@ using static AL_Common.RTF.RtfCommon;
 
 namespace AL_Common.RTF;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Auto)]
 public readonly struct CodePageItem
 {
     public readonly int Index;
@@ -28,6 +28,7 @@ public sealed partial class RtfDisplayedReadmeParser
 {
     #region Private fields
 
+    [StructLayout(LayoutKind.Auto)]
     private readonly struct FontNameData
     {
         internal readonly bool HasCodePageOverride;
@@ -146,11 +147,11 @@ public sealed partial class RtfDisplayedReadmeParser
             RtfError error = ParseRtf();
             if (error == RtfError.OK)
             {
-                return (true, ColorTable: _colorTable, CodePageItems: _codePageItems);
+                return (true, _colorTable, _codePageItems);
             }
             else
             {
-                return (false, ColorTable: _colorTable, CodePageItems: _codePageItems);
+                return (false, _colorTable, _codePageItems);
             }
         }
         catch
