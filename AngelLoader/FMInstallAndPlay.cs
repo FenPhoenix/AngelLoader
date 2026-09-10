@@ -413,6 +413,10 @@ internal static partial class FMInstallAndPlay
             problem. If anyone else reports this we could go back to the arg passing, but eh...
             */
             gameIndex == GameIndex.TDM ? "" :
+            // We don't use the -fm argument for Steam, but "fm" gets written to cam_mod.ini before play, which
+            // does the same thing. I forget why we don't use the argument, but I assume Steam just doesn't
+            // accept it. We could probably just get rid of the -fm entirely even for the non-Steam path, given
+            // the above, but everything works as is so let's just leave it alone for now.
             !steamArgs.IsEmpty() ? steamArgs :
             "-fm";
 
