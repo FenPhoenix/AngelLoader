@@ -305,6 +305,8 @@ internal static partial class FMInstallAndPlay
             var nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
 
 #if !ReleaseBeta && !ReleasePublic
+            // This gets overwritten if Steam is used, but it's private-build only and I don't use Steam, so it
+            // doesn't affect me in practice.
             string args = Config.ForceWindowed
                 ? nd128 ? "-force_windowed=1"  : "force_windowed=1"
                 : "";
