@@ -166,13 +166,19 @@ internal static class RtfProcessing
             int lastIndexSource = firstIndexPastHeader;
             int lastIndexDest = firstIndexPastHeader;
 
-            // Copy color table
-            // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
-            // and not even have to awkwardly delete the old color table.
-            // Now watch Windows get an update that breaks that.
-            // @DarkModeNote: We could add code to delete the old color table at some point.
-            // This would make us some amount slower, and it's not necessary currently, so let's just not do it
-            // for now.
+            /*
+            Copy color table
+            We insert our new color table right after the header (and thus before the old color table) so as to
+            "override" the old one, which we don't remove. And by "override" I mean that both color tables are
+            still technically read and "used", but since the color indexes are implicit, the old color table's
+            indexes are all now out of range of anything that's actually used in the file, because our new one
+            uses all the previous indexes for itself. So, yeah, we should actually be removing the old color
+            table, but that would be work and stuff so whatever...
+
+            @DarkModeNote: We could add code to delete the old color table at some point.
+            This would make us some amount slower, and it's not necessary currently, so let's just not do it for
+            now.
+            */
             if (colorEntriesBytesList != null)
             {
                 ReadOnlySpan<byte> colorTableSpan = colorEntriesBytesList.ItemsArray.AsSpan(0, colorTableEntryLength);

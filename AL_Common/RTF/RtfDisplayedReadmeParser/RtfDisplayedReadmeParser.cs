@@ -68,10 +68,12 @@ public sealed partial class RtfDisplayedReadmeParser
         new FontNameData(" (Vietnamese)"u8.ToArray(), @"\cpg1258 "u8.ToArray()),
     ];
 
+    // We're just assuming files don't have multiple font tables or color tables, because that would be stupid.
+    // Except when we do it, then it's not stupid, it's efficient, obviously. (But we don't write it out, so it's fine.)
     private bool _parsedFontTable;
+    private bool _parsedColorTable;
 
     private List<RtfColor>? _colorTable;
-    private bool _parsedColorTable;
     private bool _getColorTable;
     private List<CodePageItem>? _codePageItems;
 
@@ -662,7 +664,6 @@ public sealed partial class RtfDisplayedReadmeParser
                 return error;
             }
             case SpecialType.ColorTable:
-                // Spec is to ignore any further color tables after the first one
                 if (_getColorTable && !_parsedColorTable)
                 {
                     _parsedColorTable = true;
