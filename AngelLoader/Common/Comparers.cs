@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using AngelLoader.DataClasses;
@@ -142,10 +143,10 @@ internal static class Comparers
         */
         if (title1Length == title2Length && EqualsHelper(title1, title2, title1Length))
         {
-            int earlyRet = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+            int earlyRet = CultureInfo.InvariantCulture.CompareInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
             return earlyRet != 0
                 ? earlyRet
-                : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
+                : CultureInfo.InvariantCulture.CompareInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
         }
 
         if (title1Length == 0) return -1;
@@ -181,22 +182,22 @@ internal static class Comparers
             }
 
             ret = (xStart | yStart) == 0
-                ? string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase)
+                ? CultureInfo.InvariantCulture.CompareInfo.Compare(title1, title2, CompareOptions.IgnoreCase)
                 : string.Compare(title1, xStart, title2, yStart, Math.Max(title1Length, title2Length),
                     StringComparison.InvariantCultureIgnoreCase);
         }
         else
         {
-            ret = string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase);
+            ret = CultureInfo.InvariantCulture.CompareInfo.Compare(title1, title2, CompareOptions.IgnoreCase);
         }
 
         if (ret != 0) return ret;
 
-        ret = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
+        ret = CultureInfo.InvariantCulture.CompareInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
 
         return ret != 0
             ? ret
-            : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
+            : CultureInfo.InvariantCulture.CompareInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
     }
 
     #endregion
