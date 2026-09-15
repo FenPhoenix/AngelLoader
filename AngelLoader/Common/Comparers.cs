@@ -161,9 +161,11 @@ internal static class Comparers
             bool xArticleSet = false;
             bool yArticleSet = false;
 
-            for (int i = 0; i < Config.Articles.Count; i++)
+            List<string> articles = Config.Articles;
+
+            for (int i = 0; i < articles.Count; i++)
             {
-                string article = Config.Articles[i];
+                string article = articles[i];
                 int aLen = article.Length;
 
                 if (!xArticleSet && title1.StartsWithIPlusWhiteSpace(article, aLen))

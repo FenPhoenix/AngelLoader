@@ -1,4 +1,5 @@
 ﻿//#define ENABLE_README_TESTS
+//#define SORT_TIMING_TEST
 
 /*
 NOTE(Core notes):
@@ -1039,7 +1040,16 @@ internal static class Core
 
         comparer.SortDirection = sortDirection;
 
+#if SORT_TIMING_TEST
+        Stopwatch sw = Stopwatch.StartNew();
+#endif
+
         FMsViewList.Sort(comparer);
+
+#if SORT_TIMING_TEST
+        sw.Stop();
+        Trace.WriteLine(sw.Elapsed.ToString());
+#endif
 
         if (View.GetShowRecentAtTop())
         {
