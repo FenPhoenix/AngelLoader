@@ -203,24 +203,24 @@ internal static class Comparers
 
     #region Column comparers
 
-    // Having every comparer inherit this (instead of having its own implemented property) reduces file size
-    private class ColumnComparer
+    private sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-    }
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
 
-    private sealed class FMTitleComparer : ColumnComparer, IDirectionalSortFMComparer
-    {
         public int Compare(FanMission x, FanMission y)
         {
             int ret = TitleCompare(x, y);
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
 #if DateAccTest
-    private sealed class FMDateAccuracyComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -231,13 +231,16 @@ internal static class Comparers
 
             ret = -ret;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 #endif
 
-    private sealed class FMGameComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMGameComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -246,12 +249,15 @@ internal static class Comparers
                 y.Game == Game.Null ? 1 :
                 x.Game < y.Game ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMInstalledComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMInstalledComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -259,12 +265,15 @@ internal static class Comparers
                 // Installed goes on top, non-installed (blank icon) goes on bottom
                 x.Installed ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMMisCountComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMMisCountComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -273,12 +282,15 @@ internal static class Comparers
                 y.MisCount == -1 ? 1 :
                 x.MisCount < y.MisCount ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMArchiveComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMArchiveComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             string xArchive = x.DisplayArchive;
@@ -288,12 +300,15 @@ internal static class Comparers
                 EqualsFast(xArchive, yArchive) ? TitleCompare(x, y) :
                     string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMAuthorComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMAuthorComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             string xAuthor = x.Author;
@@ -305,12 +320,15 @@ internal static class Comparers
                 yAuthor.Length == 0 ? 1 :
                 string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMSizeComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMSizeComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -319,12 +337,15 @@ internal static class Comparers
                 y.SizeBytes == 0 ? 1 :
                 x.SizeBytes < y.SizeBytes ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMRatingComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMRatingComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -332,7 +353,7 @@ internal static class Comparers
 #if false
             if (false)
             {
-                int one = SortDirection == SortDirection.Ascending ? 1 : -1;
+                int one = _sortDirection == SortDirection.Ascending ? 1 : -1;
 
                 ret =
                     x.Rating == y.Rating ? TitleCompare(x, y) :
@@ -350,12 +371,15 @@ internal static class Comparers
                     x.Rating < y.Rating ? -1 : 1;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMFinishedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMFinishedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -383,12 +407,15 @@ internal static class Comparers
                                 x.FinishedOn < y.FinishedOn ? -1 : 1;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMReleaseDateComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             // Sort this one down to the day only, because the exact time may very well not be known, and
@@ -413,12 +440,15 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMLastPlayedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -442,12 +472,15 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMDateAddedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDateAddedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -470,12 +503,15 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMPlayTimeComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMPlayTimeComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -484,12 +520,15 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMDisabledModsComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret;
@@ -520,12 +559,15 @@ internal static class Comparers
                 }
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMCommentComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMCommentComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
+
         public int Compare(FanMission x, FanMission y)
         {
             string xCommentSingleLine = x.CommentSingleLine;
@@ -538,7 +580,7 @@ internal static class Comparers
                 yCommentSingleLine.Length == 0 ? -1 :
                 string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
