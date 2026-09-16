@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -68,11 +67,8 @@ internal static class Comparers
     // From .NET Framework 4.8 source
     private static unsafe bool EqualsHelper(string strA_Str, string strB_Str, int length)
     {
-        ReadOnlySpan<char> strA = strA_Str.AsSpan();
-        ReadOnlySpan<char> strB = strB_Str.AsSpan();
-
-        fixed (char* ap = &MemoryMarshal.GetReference(strA))
-        fixed (char* bp = &MemoryMarshal.GetReference(strB))
+        fixed (char* ap = strA_Str)
+        fixed (char* bp = strB_Str)
         {
             char* a = ap;
             char* b = bp;
@@ -123,6 +119,8 @@ internal static class Comparers
         return str1Length == str2.Length && EqualsHelper(str1, str2, str1Length);
     }
 
+    private static readonly CompareInfo _invariantCultureComapreInfo = CultureInfo.InvariantCulture.CompareInfo;
+
     // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
     // new title-sort classes in a loop!
     private static int TitleCompare(FanMission x, FanMission y)
@@ -143,10 +141,10 @@ internal static class Comparers
         */
         if (title1Length == title2Length && EqualsHelper(title1, title2, title1Length))
         {
-            int earlyRet = CultureInfo.InvariantCulture.CompareInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
+            int earlyRet = _invariantCultureComapreInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
             return earlyRet != 0
                 ? earlyRet
-                : CultureInfo.InvariantCulture.CompareInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
+                : _invariantCultureComapreInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
         }
 
         if (title1Length == 0) return -1;
@@ -164,7 +162,9 @@ internal static class Comparers
 
             List<string> articles = Config.Articles;
 
-            for (int i = 0; i < articles.Count; i++)
+            int articlesCount = articles.Count;
+
+            for (int i = 0; i < articlesCount; i++)
             {
                 string article = articles[i];
                 int aLen = article.Length;
@@ -182,22 +182,22 @@ internal static class Comparers
             }
 
             ret = (xStart | yStart) == 0
-                ? CultureInfo.InvariantCulture.CompareInfo.Compare(title1, title2, CompareOptions.IgnoreCase)
+                ? _invariantCultureComapreInfo.Compare(title1, title2, CompareOptions.IgnoreCase)
                 : string.Compare(title1, xStart, title2, yStart, Math.Max(title1Length, title2Length),
                     StringComparison.InvariantCultureIgnoreCase);
         }
         else
         {
-            ret = CultureInfo.InvariantCulture.CompareInfo.Compare(title1, title2, CompareOptions.IgnoreCase);
+            ret = _invariantCultureComapreInfo.Compare(title1, title2, CompareOptions.IgnoreCase);
         }
 
         if (ret != 0) return ret;
 
-        ret = CultureInfo.InvariantCulture.CompareInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
+        ret = _invariantCultureComapreInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
 
         return ret != 0
             ? ret
-            : CultureInfo.InvariantCulture.CompareInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
+            : _invariantCultureComapreInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
     }
 
     #endregion
