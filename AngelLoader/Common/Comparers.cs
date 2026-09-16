@@ -123,6 +123,15 @@ internal static class Comparers
 
     // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
     // new title-sort classes in a loop!
+
+    /*
+    TODO: OrdinalIgnoreCase is like 2-3x faster than InvariantCultureIgnoreCase, but it can't be used for non-ascii
+    titles due to it sorting all non-ascii names at the bottom of the list, which is a no-go for UX.
+    We could check each string for all-ascii and use the fast path then and fall back to the slow path if either
+    are non-ascii. We could either do that check (SIMD/SWAR) here, or we could check on FanMission field set and
+    store the value, which would make this faster but would make the initial load slower (but since we have to
+    both load and sort on startup anyway, there would really be no difference).
+    */
     private static int TitleCompare(FanMission x, FanMission y)
     {
         string title1 = x.Title;
