@@ -1,6 +1,6 @@
 ﻿//#define ENABLE_README_TESTS
 //#define SORT_TIMING_TEST
-//#define USE_HPCSHARP
+#define USE_HPCSHARP
 
 /*
 NOTE(Core notes):
@@ -1049,7 +1049,10 @@ internal static class Core
 #endif
 
 #if USE_HPCSHARP
-        FMsViewList.SortMergePseudoInPlacePar(comparer, 1500);
+        // It returns the new list, so we have to clear and assign it...
+        List<FanMission> sortedList = FMsViewList.SortMergePseudoInPlacePar(comparer, 1500);
+        FMsViewList.Clear();
+        FMsViewList.AddRange(sortedList);
 #else
         FMsViewList.Sort(comparer);
 #endif
