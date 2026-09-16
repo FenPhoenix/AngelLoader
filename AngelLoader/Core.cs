@@ -1,5 +1,6 @@
 ﻿//#define ENABLE_README_TESTS
 //#define SORT_TIMING_TEST
+//#define USE_HPCSHARP
 
 /*
 NOTE(Core notes):
@@ -22,6 +23,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+#if USE_HPCSHARP
+using HPCsharp;
+#endif
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using static AL_Common.LanguageSupport;
@@ -1044,7 +1048,11 @@ internal static class Core
         Stopwatch sw = Stopwatch.StartNew();
 #endif
 
+#if USE_HPCSHARP
+        FMsViewList.SortMergePseudoInPlacePar(comparer, 1500);
+#else
         FMsViewList.Sort(comparer);
+#endif
 
 #if SORT_TIMING_TEST
         sw.Stop();
