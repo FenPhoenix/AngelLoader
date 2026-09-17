@@ -376,12 +376,16 @@ internal static class Filtering
 
                 #endregion
 
+                #region Tags
+
                 if (andTags.Count > 0 ||
                     orTags.Count > 0 ||
                     notTags.Count > 0)
                 {
                     if (!FilterTags(fm.Tags, andTags, orTags, notTags)) continue;
                 }
+
+                #endregion
 
                 #region Rating
 
