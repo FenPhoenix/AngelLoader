@@ -1,5 +1,5 @@
 ﻿//#define ENABLE_README_TESTS
-//#define SORT_TIMING_TEST
+#define SORT_TIMING_TEST
 #define USE_HPCSHARP
 
 /*

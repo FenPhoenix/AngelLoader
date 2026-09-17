@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
@@ -119,8 +118,6 @@ internal static class Comparers
         return str1Length == str2.Length && EqualsHelper(str1, str2, str1Length);
     }
 
-    private static readonly CompareInfo _invariantCultureComapreInfo = CultureInfo.InvariantCulture.CompareInfo;
-
     // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
     // new title-sort classes in a loop!
 
@@ -134,11 +131,18 @@ internal static class Comparers
     */
     private static int TitleCompare(FanMission x, FanMission y)
     {
-        string title1 = x.Title;
-        string title2 = y.Title;
+        string title1 = x.TitleDirect;
+        string title2 = y.TitleDirect;
 
         int title1Length = title1.Length;
         int title2Length = title2.Length;
+
+        // OrdinalIgnoreCase is 2-3x faster than InvariantCultureIgnoreCase, but doesn't sort non-ASCII strings
+        // in a desirable way.
+        StringComparison comparison =
+            x.TitleIsAscii && y.TitleIsAscii
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.InvariantCultureIgnoreCase;
 
         /*
         Domain knowledge:
@@ -150,10 +154,10 @@ internal static class Comparers
         */
         if (title1Length == title2Length && EqualsHelper(title1, title2, title1Length))
         {
-            int earlyRet = _invariantCultureComapreInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
+            int earlyRet = string.Compare(x.Archive, y.Archive, comparison);
             return earlyRet != 0
                 ? earlyRet
-                : _invariantCultureComapreInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
+                : string.Compare(x.InstalledDir, y.InstalledDir, comparison);
         }
 
         if (title1Length == 0) return -1;
@@ -191,22 +195,22 @@ internal static class Comparers
             }
 
             ret = (xStart | yStart) == 0
-                ? _invariantCultureComapreInfo.Compare(title1, title2, CompareOptions.IgnoreCase)
+                ? string.Compare(title1, title2, comparison)
                 : string.Compare(title1, xStart, title2, yStart, Math.Max(title1Length, title2Length),
                     StringComparison.InvariantCultureIgnoreCase);
         }
         else
         {
-            ret = _invariantCultureComapreInfo.Compare(title1, title2, CompareOptions.IgnoreCase);
+            ret = string.Compare(title1, title2, comparison);
         }
 
         if (ret != 0) return ret;
 
-        ret = _invariantCultureComapreInfo.Compare(x.Archive, y.Archive, CompareOptions.IgnoreCase);
+        ret = string.Compare(x.Archive, y.Archive, comparison);
 
         return ret != 0
             ? ret
-            : _invariantCultureComapreInfo.Compare(x.InstalledDir, y.InstalledDir, CompareOptions.IgnoreCase);
+            : string.Compare(x.InstalledDir, y.InstalledDir, comparison);
     }
 
     #endregion

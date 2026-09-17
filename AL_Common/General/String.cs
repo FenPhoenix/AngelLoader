@@ -193,6 +193,15 @@ public static partial class Common
         return true;
     }
 
+    public static bool IsAscii(this string str)
+    {
+        for(int i = 0; i < str.Length; i++)
+        {
+            if (str[i] > 127) return false;
+        }
+        return true;
+    }
+
     #endregion
 
     #region Empty / whitespace checks
