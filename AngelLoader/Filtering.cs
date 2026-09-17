@@ -154,147 +154,136 @@ internal static class Filtering
         }
     }
 
-    private static void FilterTags(
+    private static bool FilterTags(
         FMCategoriesCollection fmTags,
         FMCategoriesCollection andTags,
         FMCategoriesCollection orTags,
-        FMCategoriesCollection notTags,
-        ref bool shownInFilter)
+        FMCategoriesCollection notTags)
     {
-        if (andTags.Count > 0 ||
-            orTags.Count > 0 ||
-            notTags.Count > 0)
+        if (fmTags.Count == 0 && notTags.Count == 0)
         {
-            if (fmTags.Count == 0 && notTags.Count == 0)
-            {
-                shownInFilter = false;
-                return;
-            }
-
-            // I don't ever want to see these damn things again
-
-            #region And
-
-            if (andTags.Count > 0)
-            {
-                bool andPass = true;
-                foreach (CatAndTagsList andTag in andTags)
-                {
-                    if (!fmTags.TryGetValue(andTag.Category, out FMTagsCollection match))
-                    {
-                        andPass = false;
-                        break;
-                    }
-
-                    if (andTag.Tags.Count > 0)
-                    {
-                        foreach (string andTagTag in andTag.Tags)
-                        {
-                            if (!match.Contains(andTagTag))
-                            {
-                                andPass = false;
-                                break;
-                            }
-                        }
-
-                        if (!andPass) break;
-                    }
-                }
-
-                if (!andPass)
-                {
-                    shownInFilter = false;
-                    return;
-                }
-            }
-
-            #endregion
-
-            #region Or
-
-            if (orTags.Count > 0)
-            {
-                bool orPass = false;
-                foreach (CatAndTagsList orTag in orTags)
-                {
-                    if (!fmTags.TryGetValue(orTag.Category, out FMTagsCollection match))
-                    {
-                        continue;
-                    }
-
-                    if (orTag.Tags.Count > 0)
-                    {
-                        foreach (string orTagTag in orTag.Tags)
-                        {
-                            if (match.Contains(orTagTag))
-                            {
-                                orPass = true;
-                                break;
-                            }
-                        }
-
-                        if (orPass) break;
-                    }
-                    else
-                    {
-                        orPass = true;
-                    }
-                }
-
-                if (!orPass)
-                {
-                    shownInFilter = false;
-                    return;
-                }
-            }
-
-            #endregion
-
-            #region Not
-
-            if (notTags.Count > 0)
-            {
-                bool notPass = true;
-                foreach (CatAndTagsList notTag in notTags)
-                {
-                    if (!fmTags.TryGetValue(notTag.Category, out FMTagsCollection match))
-                    {
-                        continue;
-                    }
-
-                    if (notTag.Tags.Count == 0)
-                    {
-                        notPass = false;
-                        continue;
-                    }
-
-                    if (notTag.Tags.Count > 0)
-                    {
-                        foreach (string notTagTag in notTag.Tags)
-                        {
-                            if (match.Contains(notTagTag))
-                            {
-                                notPass = false;
-                                break;
-                            }
-                        }
-
-                        if (!notPass) break;
-                    }
-                }
-
-                if (!notPass)
-                {
-                    shownInFilter = false;
-                    // Explicit continue for safety in case the order of these gets changed or another
-                    // gets added
-                    // ReSharper disable once RedundantJumpStatement
-                    return;
-                }
-            }
-
-            #endregion
+            return false;
         }
+
+        // I don't ever want to see these damn things again
+
+        #region And
+
+        if (andTags.Count > 0)
+        {
+            bool andPass = true;
+            foreach (CatAndTagsList andTag in andTags)
+            {
+                if (!fmTags.TryGetValue(andTag.Category, out FMTagsCollection match))
+                {
+                    andPass = false;
+                    break;
+                }
+
+                if (andTag.Tags.Count > 0)
+                {
+                    foreach (string andTagTag in andTag.Tags)
+                    {
+                        if (!match.Contains(andTagTag))
+                        {
+                            andPass = false;
+                            break;
+                        }
+                    }
+
+                    if (!andPass) break;
+                }
+            }
+
+            if (!andPass)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Or
+
+        if (orTags.Count > 0)
+        {
+            bool orPass = false;
+            foreach (CatAndTagsList orTag in orTags)
+            {
+                if (!fmTags.TryGetValue(orTag.Category, out FMTagsCollection match))
+                {
+                    continue;
+                }
+
+                if (orTag.Tags.Count > 0)
+                {
+                    foreach (string orTagTag in orTag.Tags)
+                    {
+                        if (match.Contains(orTagTag))
+                        {
+                            orPass = true;
+                            break;
+                        }
+                    }
+
+                    if (orPass) break;
+                }
+                else
+                {
+                    orPass = true;
+                }
+            }
+
+            if (!orPass)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Not
+
+        if (notTags.Count > 0)
+        {
+            bool notPass = true;
+            foreach (CatAndTagsList notTag in notTags)
+            {
+                if (!fmTags.TryGetValue(notTag.Category, out FMTagsCollection match))
+                {
+                    continue;
+                }
+
+                if (notTag.Tags.Count == 0)
+                {
+                    notPass = false;
+                    continue;
+                }
+
+                if (notTag.Tags.Count > 0)
+                {
+                    foreach (string notTagTag in notTag.Tags)
+                    {
+                        if (match.Contains(notTagTag))
+                        {
+                            notPass = false;
+                            break;
+                        }
+                    }
+
+                    if (!notPass) break;
+                }
+            }
+
+            if (!notPass)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        return true;
     }
 
     internal static (FanMission? TitleExactMatch, FanMission? AuthorExactMatch)
@@ -350,8 +339,6 @@ internal static class Filtering
         {
             FanMission fm = FMsViewList[i];
 
-            bool shownInFilter = true;
-
             // Always show pinned FMs, but filter out recent ones as normal.
             if (!fm.Pinned)
             {
@@ -363,7 +350,7 @@ internal static class Filtering
                 {
                     if (!(match = FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed)).Match)
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                     else if (match.ExactMatch && ret.titleExactMatch == null)
                     {
@@ -373,15 +360,13 @@ internal static class Filtering
 
                 #endregion
 
-                if (!shownInFilter) continue;
-
                 #region Author
 
                 if (!authorIsWhitespace)
                 {
                     if (!(match = fm.Author.ContainsI_TextFilter(viewFilter.Author)).Match)
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                     else if (match.ExactMatch && ret.authorExactMatch == null)
                     {
@@ -391,11 +376,12 @@ internal static class Filtering
 
                 #endregion
 
-                if (!shownInFilter) continue;
-
-                FilterTags(fm.Tags, andTags, orTags, notTags, ref shownInFilter);
-
-                if (!shownInFilter) continue;
+                if (andTags.Count > 0 ||
+                    orTags.Count > 0 ||
+                    notTags.Count > 0)
+                {
+                    if (!FilterTags(fm.Tags, andTags, orTags, notTags)) continue;
+                }
 
                 #region Rating
 
@@ -403,13 +389,11 @@ internal static class Filtering
                 {
                     if (fm.Rating < filterRatingFrom || fm.Rating > filterRatingTo)
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                 }
 
                 #endregion
-
-                if (!shownInFilter) continue;
 
                 #region Release date
 
@@ -421,13 +405,11 @@ internal static class Filtering
                         (filterReleaseDateTo != null &&
                          fm.ReleaseDate.DateTime.Value.Date.CompareTo(filterReleaseDateTo.Value.Date) > 0))
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                 }
 
                 #endregion
-
-                if (!shownInFilter) continue;
 
                 #region Last played
 
@@ -439,13 +421,11 @@ internal static class Filtering
                         (filterLastPlayedTo != null &&
                          fm.LastPlayed.DateTime.Value.Date.CompareTo(filterLastPlayedTo.Value.Date) > 0))
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                 }
 
                 #endregion
-
-                if (!shownInFilter) continue;
 
                 #region Finished
 
@@ -459,13 +439,11 @@ internal static class Filtering
                         (fmFinished == 0 && !fmFinishedOnUnknown &&
                          !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished)))
                     {
-                        shownInFilter = false;
+                        continue;
                     }
                 }
 
                 #endregion
-
-                if (!shownInFilter) continue;
             }
 
             #region Marked unavailable
@@ -474,20 +452,18 @@ internal static class Filtering
             {
                 if (fm.MarkedUnavailable)
                 {
-                    shownInFilter = false;
+                    continue;
                 }
             }
             else
             {
                 if (!fm.MarkedUnavailable)
                 {
-                    shownInFilter = false;
+                    continue;
                 }
             }
 
             #endregion
-
-            if (!shownInFilter) continue;
 
             #region Show unsupported
 
@@ -495,13 +471,11 @@ internal static class Filtering
             {
                 if (fm.Game == Game.Unsupported)
                 {
-                    shownInFilter = false;
+                    continue;
                 }
             }
 
             #endregion
-
-            if (!shownInFilter) continue;
 
             #region Games
 
@@ -514,13 +488,11 @@ internal static class Filtering
                      ) &&
                     !viewFilter.Games.HasFlagFast(fm.Game))
                 {
-                    shownInFilter = false;
+                    continue;
                 }
             }
 
             #endregion
-
-            if (!shownInFilter) continue;
 
             filterShownIndexList.Add(i);
         }
