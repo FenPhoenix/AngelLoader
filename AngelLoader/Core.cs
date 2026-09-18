@@ -1049,10 +1049,18 @@ internal static class Core
 #endif
 
 #if USE_HPCSHARP
-        // It returns the new list, so we have to clear and assign it...
-        List<FanMission> sortedList = FMsViewList.SortMergePseudoInPlacePar(comparer, 1500);
-        FMsViewList.Clear();
-        FMsViewList.AddRange(sortedList);
+        // Do the threshold manually, so we don't waste memory copying lists if we're single-core
+        if (FMsViewList.Count >= 2000)
+        {
+            // It returns the new list, so we have to clear and assign it...
+            List<FanMission> sortedList = FMsViewList.SortMergePseudoInPlacePar(comparer, 0);
+            FMsViewList.Clear();
+            FMsViewList.AddRange(sortedList);
+        }
+        else
+        {
+            FMsViewList.Sort(comparer);
+        }
 #else
         FMsViewList.Sort(comparer);
 #endif
