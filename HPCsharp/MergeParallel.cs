@@ -19,11 +19,8 @@
 #pragma warning disable CA1002
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using HPCsharp.ParallelAlgorithms;
 
 namespace HPCsharp
 {
@@ -36,87 +33,7 @@ namespace HPCsharp
         /// Smaller than threshold will use non-parallel algorithm to merge arrays
         /// </summary>
         public static Int32 MergeParallelArrayThreshold { get; set; } = 128 * 1024;
-        /// <summary>
-        /// Divide-and-Conquer Merge of two ranges of source array src[ p1 .. r1 ] and src[ p2 .. r2 ] into destination array starting at index p3.
-        /// </summary>
-        /// <typeparam name="T">data type of each array element</typeparam>
-        /// <param name="src">source array</param>
-        /// <param name="p1">starting index of the first  segment, inclusive</param>
-        /// <param name="r1">ending   index of the first  segment, inclusive</param>
-        /// <param name="p2">starting index of the second segment, inclusive</param>
-        /// <param name="r2">ending   index of the second segment, inclusive</param>
-        /// <param name="dst">destination array</param>
-        /// <param name="p3">starting index of the result</param>
-        /// <param name="comparer">method to compare array elements</param>
-        internal static void MergeInnerPar<T>(T[] src, Int32 p1, Int32 r1, Int32 p2, Int32 r2, T[] dst, Int32 p3, IComparer<T> comparer = null)
-        {
-            //Console.WriteLine("#1 " + p1 + " " + r1 + " " + p2 + " " + r2);
-            Int32 length1 = r1 - p1 + 1;
-            Int32 length2 = r2 - p2 + 1;
-            if (length1 < length2)
-            {
-                Algorithm.Swap(ref p1, ref p2);
-                Algorithm.Swap(ref r1, ref r2);
-                Algorithm.Swap(ref length1, ref length2);
-            }
-            if (length1 == 0) return;
-            if ((length1 + length2) <= MergeParallelArrayThreshold)
-            {
-                //Console.WriteLine("#3 " + p1 + " " + length1 + " " + p2 + " " + length2 + " " + p3);
-                HPCsharp.Algorithm.Merge<T>(src, p1, length1,
-                                            src, p2, length2,
-                                            dst, p3, comparer);  // in Dr. Dobb's Journal paper
-                //HPCsharp.Algorithm.MergeFaster<T>(src, p1, length1,
-                //                                       p2, length2,
-                //                                  dst, p3, comparer);
-            }
-            else
-            {
-                Int32 q1 = p1 / 2 + r1 / 2 + (p1 % 2 + r1 % 2) / 2;                // (p1 + r1) / 2 without overflow
-                Int32 q2 = Algorithm.BinarySearch(src[q1], src, p2, r2, comparer);
-                Int32 q3 = p3 + (q1 - p1) + (q2 - p2);
-                dst[q3] = src[q1];
-                Parallel.Invoke(
-                    () => { MergeInnerPar<T>(src, p1,     q1 - 1, p2, q2 - 1, dst, p3,     comparer); },
-                    () => { MergeInnerPar<T>(src, q1 + 1, r1,     q2, r2,     dst, q3 + 1, comparer); }
-                );
-            }
-        }
 
-        internal static void MergeInnerParNew<T>(T[] src, Int32 p1, Int32 r1, Int32 p2, Int32 r2, T[] dst, Int32 p3, IComparer<T> comparer = null)
-        {
-            //Console.WriteLine("#1 " + p1 + " " + r1 + " " + p2 + " " + r2);
-            Int32 length1 = r1 - p1 + 1;
-            Int32 length2 = r2 - p2 + 1;
-            if (length1 < length2)
-            {
-                Algorithm.Swap(ref p1, ref p2);
-                Algorithm.Swap(ref r1, ref r2);
-                Algorithm.Swap(ref length1, ref length2);
-            }
-            if (length1 == 0) return;
-            if ((length1 + length2) <= MergeParallelArrayThreshold)
-            {
-                //Console.WriteLine("#3 " + p1 + " " + length1 + " " + p2 + " " + length2 + " " + p3);
-                HPCsharp.Algorithm.MergeWithCopy<T>(src, p1, length1,
-                                                    src, p2, length2,
-                                                    dst, p3, comparer);
-                //HPCsharp.Algorithm.MergeFaster<T>(src, p1, length1,
-                //                                       p2, length2,
-                //                                  dst, p3, comparer);
-            }
-            else
-            {
-                Int32 q1 = p1 / 2 + r1 / 2 + (p1 % 2 + r1 % 2) / 2;                // (p1 + r1) / 2 without overflow
-                Int32 q2 = Algorithm.BinarySearch(src[q1], src, p2, r2, comparer);
-                Int32 q3 = p3 + (q1 - p1) + (q2 - p2);
-                dst[q3] = src[q1];
-                Parallel.Invoke(
-                    () => { MergeInnerPar<T>(src, p1, q1 - 1, p2, q2 - 1, dst, p3, comparer); },
-                    () => { MergeInnerPar<T>(src, q1 + 1, r1, q2, r2, dst, q3 + 1, comparer); }
-                );
-            }
-        }
         /// <summary>
         /// Divide-and-Conquer Merge of two ranges of source array src[ p1 .. r1 ] and src[ p2 .. r2 ] into destination array starting at index p3.
         /// </summary>
@@ -160,35 +77,6 @@ namespace HPCsharp
                 );
             }
         }
-        /// <summary>
-        /// Divide-and-Conquer Merge of two segments of a source array into destination array starting at index dstStart.
-        /// </summary>
-        /// <typeparam name="T">data type of each array element</typeparam>
-        /// <param name="src">source array</param>
-        /// <param name="aStart">starting index of the first  segment, inclusive</param>
-        /// <param name="aLength">number of array elements in the first segment</param>
-        /// <param name="bStart">starting index of the second segment, inclusive</param>
-        /// <param name="bLength">number of array elements in the second segment</param>
-        /// <param name="dst">destination array</param>
-        /// <param name="dstStart">starting index of the destination/result</param>
-        /// <param name="comparer">method to compare array elements</param>
-        public static void MergePar<T>(T[] src, Int32 aStart, Int32 aLength, Int32 bStart, Int32 bLength, T[] dst, Int32 dstStart, IComparer<T> comparer = null)
-        {
-            if (src == null)
-                throw new ArgumentNullException(nameof(src));
-            if (dst == null)
-                throw new ArgumentNullException(nameof(dst));
-            MergeInnerPar<T>(src, aStart, aStart + aLength - 1, bStart, bStart + bLength - 1, dst, dstStart, comparer);
-        }
-
-        public static void MergePar2<T>(T[] src, Int32 aStart, Int32 aLength, Int32 bStart, Int32 bLength, T[] dst, Int32 dstStart, IComparer<T> comparer = null)
-        {
-            if (src == null)
-                throw new ArgumentNullException(nameof(src));
-            if (dst == null)
-                throw new ArgumentNullException(nameof(dst));
-            MergeInnerParNew<T>(src, aStart, aStart + aLength - 1, bStart, bStart + bLength - 1, dst, dstStart, comparer);
-        }
 
         /// <summary>
         /// Divide-and-Conquer Merge of two ranges of source array src[ p1 .. r1 ] and src[ p2 .. r2 ] into destination array starting at index p3.
@@ -229,11 +117,11 @@ namespace HPCsharp
                 Int32 q1 = p1 / 2 + r1 / 2 + (p1 % 2 + r1 % 2) / 2;                // (p1 + r1) / 2 without overflow
                 Int32 q2 = Algorithm.BinarySearch(srcKeys[q1], srcKeys, p2, r2, comparer);
                 Int32 q3 = p3 + (q1 - p1) + (q2 - p2);
-                dstKeys[ q3] = srcKeys[ q1];
+                dstKeys[q3] = srcKeys[q1];
                 dstItems[q3] = srcItems[q1];
                 Parallel.Invoke(
-                    () => { MergeInnerPar<T1, T2>(srcKeys, srcItems, p1,     q1 - 1, p2, q2 - 1, dstKeys, dstItems, p3,     comparer); },
-                    () => { MergeInnerPar<T1, T2>(srcKeys, srcItems, q1 + 1, r1,     q2, r2,     dstKeys, dstItems, q3 + 1, comparer); }
+                    () => { MergeInnerPar<T1, T2>(srcKeys, srcItems, p1, q1 - 1, p2, q2 - 1, dstKeys, dstItems, p3, comparer); },
+                    () => { MergeInnerPar<T1, T2>(srcKeys, srcItems, q1 + 1, r1, q2, r2, dstKeys, dstItems, q3 + 1, comparer); }
                 );
             }
         }
@@ -259,14 +147,14 @@ namespace HPCsharp
 
                 if (length1 < threshold1)
                 {
-                    MergeDivideAndConquerInPlacePar(arr, startIndex, q1 - 1, q3 - 1,   comparer);
-                    MergeDivideAndConquerInPlacePar(arr, q3 + 1,     q2 - 1, endIndex, comparer);
+                    MergeDivideAndConquerInPlacePar(arr, startIndex, q1 - 1, q3 - 1, comparer);
+                    MergeDivideAndConquerInPlacePar(arr, q3 + 1, q2 - 1, endIndex, comparer);
                 }
                 else
                 {
                     Parallel.Invoke(
-                        () => { MergeDivideAndConquerInPlacePar(arr, startIndex, q1 - 1, q3 - 1,   comparer); },   // note that q3 is now in its final place and no longer participates in further processing
-                        () => { MergeDivideAndConquerInPlacePar(arr, q3 + 1,     q2 - 1, endIndex, comparer); }
+                        () => { MergeDivideAndConquerInPlacePar(arr, startIndex, q1 - 1, q3 - 1, comparer); },   // note that q3 is now in its final place and no longer participates in further processing
+                        () => { MergeDivideAndConquerInPlacePar(arr, q3 + 1, q2 - 1, endIndex, comparer); }
                     );
                 }
             }
@@ -282,181 +170,15 @@ namespace HPCsharp
 
                 if (length1 < threshold1)
                 {
-                    MergeDivideAndConquerInPlacePar(arr, startIndex, q2 - 1, q3 - 1,   comparer);
-                    MergeDivideAndConquerInPlacePar(arr, q3 + 1,     q1,     endIndex, comparer);
+                    MergeDivideAndConquerInPlacePar(arr, startIndex, q2 - 1, q3 - 1, comparer);
+                    MergeDivideAndConquerInPlacePar(arr, q3 + 1, q1, endIndex, comparer);
                 }
                 else
                 {
                     Parallel.Invoke(
-                        () => { MergeDivideAndConquerInPlacePar(arr, startIndex, q2 - 1, q3 - 1,   comparer); },   // note that q3 is now in its final place and no longer participates in further processing
-                        () => { MergeDivideAndConquerInPlacePar(arr, q3 + 1,     q1,     endIndex, comparer); }
+                        () => { MergeDivideAndConquerInPlacePar(arr, startIndex, q2 - 1, q3 - 1, comparer); },   // note that q3 is now in its final place and no longer participates in further processing
+                        () => { MergeDivideAndConquerInPlacePar(arr, q3 + 1, q1, endIndex, comparer); }
                     );
-                }
-            }
-        }
-
-        /// <summary>
-        /// Parallel In-Place Adaptive Merge of two ranges of source array src[ startIndex .. midIndex ] and src[ midIndex+1 .. endIndex ]
-        /// If there is enough system memory to allocate a temporary array of the same size as input array then run not-in-place Parallel Merge,
-        /// and copy the result back into the source array. Otherwise, run serial In-Place Merge.
-        /// This merge is not stable.
-        /// </summary>
-        /// <typeparam name="T">data type of each array element</typeparam>
-        /// <param name="arr">source array</param>
-        /// <param name="startIndex">starting index of the first  segment, inclusive</param>
-        /// <param name="midIndex">ending   index of the first  segment, inclusive</param>
-        /// <param name="endIndex">ending   index of the second segment, inclusive</param>
-        /// <param name="comparer">method to compare array elements</param>
-        public static void MergeInPlaceAdaptivePar<T>(T[] arr, int startIndex, int midIndex, int endIndex, IComparer<T> comparer = null, int threshold = 16 * 1024)
-        {
-            if (arr == null)
-                throw new ArgumentNullException(nameof(arr));
-            if ((endIndex - startIndex) < threshold)
-            {
-                Algorithm.MergeInPlaceDivideAndConquer(arr, startIndex, midIndex, endIndex, comparer);          // Serial In-Place Merge
-            }
-            else
-            {
-                try
-                {
-                    T[] tmpBuff = new T[arr.Length];
-                    MergeInnerPar(arr, startIndex, midIndex, midIndex + 1, endIndex, tmpBuff, startIndex, comparer); // Parallel Not-In-Place Merge
-                    Array.Copy(tmpBuff, startIndex, arr, startIndex, endIndex - startIndex + 1);
-                }
-                catch (System.OutOfMemoryException)
-                {
-                    Algorithm.MergeInPlaceDivideAndConquer(arr, startIndex, midIndex, endIndex, comparer);      // Serial In-Place Merge
-                }
-            }
-       }
-
-        /// <summary>
-        /// Smaller than threshold will use non-parallel algorithm to merge arrays
-        /// </summary>
-        static Int32 MergeParallelListThreshold { get; set; } = 64000;
-#if false
-        // TODO: Figure out why this is so slow and does not accelerate
-        /// <summary>
-        /// Divide-and-Conquer Merge of two ranges of source List src[ p1 .. r1 ] and src[ p2 .. r2 ] into destination List starting at index p3.
-        /// </summary>
-        /// <typeparam name="T">data type of each List element</typeparam>
-        /// <param name="src">source List</param>
-        /// <param name="p1">starting index of the first  segment, inclusive</param>
-        /// <param name="r1">ending   index of the first  segment, inclusive</param>
-        /// <param name="p2">starting index of the second segment, inclusive</param>
-        /// <param name="r2">ending   index of the second segment, inclusive</param>
-        /// <param name="dst">destination List</param>
-        /// <param name="p3">starting index of the result</param>
-        /// <param name="comparer">method to compare array elements</param>
-        public static void MergeParallel<T>(List<T> src, Int32 p1, Int32 r1, Int32 p2, Int32 r2, List<T> dst, Int32 p3, Comparer<T> comparer = null)
-        {
-            Int32 length1 = r1 - p1 + 1;
-            Int32 length2 = r2 - p2 + 1;
-            if (length1 < length2)
-            {
-                Exchange(ref p1, ref p2);
-                Exchange(ref r1, ref r2);
-                Exchange(ref length1, ref length2);
-            }
-            if (length1 == 0) return;
-            if ((length1 + length2) <= MergeParallelListThreshold)
-            {   // 8192 threshold is much better than 16 (is it for C#)
-                HPCsharp.Algorithm.Merge<T>(src, p1, p1 + length1, src, p2, p2 + length2, dst, p3, comparer);  // in DDJ paper
-            }
-            else
-            {
-                Int32 q1 = p1 / 2 + r1 / 2 + (p1 % 2 + r1 % 2) / 2;                // (p1 + r1) / 2 without overflow
-                Int32 q2 = Algorithm.BinarySearch(src[q1], src, p2, r2);
-                Int32 q3 = p3 + (q1 - p1) + (q2 - p2);
-                dst[q3] = src[q1];
-                Parallel.Invoke(
-                    () => { MergeParallel<T>(src, p1,     q1 - 1, p2, q2 - 1, dst, p3,     comparer); },
-                    () => { MergeParallel<T>(src, q1 + 1, r1,     q2, r2,     dst, q3 + 1, comparer); }
-                );
-            }
-        }
-#endif
-        /// <summary>
-        /// Divide-and-Conquer Merge of two segments of source List into destination List starting at index p3.
-        /// </summary>
-        /// <typeparam name="T">data type of each List element</typeparam>
-        /// <param name="src">source List</param>
-        /// <param name="aStart">starting index of the first  segment, inclusive</param>
-        /// <param name="aLength">number of array elements in the first segment</param>
-        /// <param name="bStart">starting index of the second segment, inclusive</param>
-        /// <param name="bLength">number of array elements in the second segment</param>
-        /// <param name="dstStart">starting index of the destination/result</param>
-        /// <param name="comparer">method to compare array elements</param>
-        public static List<T> MergePar<T>(List<T> src, Int32 aStart, Int32 aLength, Int32 bStart, Int32 bLength, Int32 dstStart, Comparer<T> comparer = null)
-        {
-            T[] srcCopy = src.ToArrayPar();
-            T[] dstCopy = new T[src.Count];
-            MergePar(srcCopy, aStart, aLength, bStart, bLength, dstCopy, dstStart, comparer);
-            return new List<T>(dstCopy);
-        }
-
-        /// <summary>
-        /// Merge two or more sorted array spans, placing the result into a destination array as a single sorted span.
-        /// The destination array must be as big as the source, otherwise an ArgumentException is thrown.
-        /// </summary>
-        /// <typeparam name="T">data type of each List element</typeparam>
-        /// <param name="sourceArray">source array</param>
-        /// <param name="sourceSpans">List of sorted spans, specified by starting and ending indexes (both inclusive)</param>
-        /// <param name="destinationArray">destination Array where the result of merged spans is placed</param>
-        /// <param name="comparer">(optional) method to compare array elements</param>
-        public static void MergePar<T>( T[] sourceArray, List<SortedSpan> sourceSpans,
-                                        T[] destinationArray,
-                                        Comparer<T> comparer = null)
-        {
-            if (sourceArray == null)
-                throw new ArgumentNullException(nameof(sourceArray));
-            if (destinationArray == null)
-                throw new ArgumentNullException(nameof(destinationArray));
-            if (destinationArray.Length != sourceArray.Length)
-            {
-                throw new ArgumentException("Destination array must be the same size as the source array");
-            }
-            if (sourceSpans == null || sourceSpans.Count == 0)    // nothing to merge
-            {
-                return;
-            }
-            else
-            {
-                bool srcToDst = true;
-                while (sourceSpans.Count >= 1)
-                {
-                    if (sourceSpans.Count == 1)
-                    {
-                        if (srcToDst)
-                            Array.Copy(sourceArray, sourceSpans[0].Start, destinationArray, sourceSpans[0].Start, sourceSpans[0].Length);
-                        return;
-                    }
-
-                    var dstSpans = new List<SortedSpan>();
-                    Int32 i = 0;
-
-                    // Merge neighboring pairs of spans
-                    Int32 numPairs = sourceSpans.Count / 2;
-                    for (Int32 p = 0; p < numPairs; p++)
-                    {
-                        MergePar<T>(sourceArray,      sourceSpans[i    ].Start, sourceSpans[i    ].Length,
-                                                      sourceSpans[i + 1].Start, sourceSpans[i + 1].Length,
-                                    destinationArray, sourceSpans[i    ].Start,
-                                    comparer);
-                        dstSpans.Add(new SortedSpan { Start = sourceSpans[i].Start, Length = sourceSpans[i].Length + sourceSpans[i + 1].Length });
-                        i += 2;
-                    }
-                    // Copy the last left over odd segment (if there is one) from src to dst and add it to dstSpans
-                    if (i == (sourceSpans.Count - 1))
-                    {
-                        Array.Copy(sourceArray, sourceSpans[i].Start, destinationArray, sourceSpans[i].Start, sourceSpans[i].Length);
-                        dstSpans.Add(new SortedSpan { Start = sourceSpans[i].Start, Length = sourceSpans[i].Length });
-                    }
-                    sourceSpans = dstSpans;
-                    var tmp = sourceArray;          // swap src and dst arrays
-                    sourceArray = destinationArray;
-                    destinationArray = tmp;
-                    srcToDst = srcToDst ? false : true; // keep track of merge direction
                 }
             }
         }

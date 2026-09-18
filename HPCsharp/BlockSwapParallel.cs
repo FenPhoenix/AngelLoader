@@ -5,12 +5,7 @@
 //       in parallel to see if it speeds up at all.
 // TODO: Write a blog on parallelizing BlockSwap Reversal algorithm
 // TODO: Implement a C# .Reverse() as a parallel function version
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Schema;
-using HPCsharp.ParallelAlgorithms;
 
 namespace HPCsharp
 {

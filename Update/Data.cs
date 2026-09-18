@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Update;
+﻿namespace Update;
 
 public enum VisualTheme
 {
