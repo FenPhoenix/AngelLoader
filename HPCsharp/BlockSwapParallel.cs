@@ -42,39 +42,5 @@ namespace HPCsharp
                 //);
             }
         }
-
-        public static void BlockSwapReversalPar2<T>(T[] array, int l, int m, int r, int threshold = 16 * 1024)
-        {
-            int length = r - l + 1;
-            if (length < threshold)
-            {
-                array.Reversal(l,     m);
-                array.Reversal(m + 1, r);
-                array.Reversal(l,     r);
-            }
-            else
-            {
-                int firstLength = (((m - l + 1) + 2) / 4) * 2;  // how much first  core will swap. Guaranteed to be an even value
-                int firstSwapLength = firstLength / 2;
-                int secondLength = (((r - (m + 1) + 1) + 2) / 4) * 2;  // how much first  core will swap. Guaranteed to be an even value
-                int secondSwapLength = secondLength / 2;
-                Parallel.Invoke(
-                    //() => { array.Reversal(l,     m); },
-                    () => { array.Swap(    l,                   m - firstSwapLength + 1, firstSwapLength, true); },
-                    () => { array.Reversal(l + firstSwapLength, m - firstSwapLength); },
-                    //() => { array.Reversal(m + 1,               r); }
-                    () => { array.Swap(    m + 1,                    r - secondSwapLength + 1, secondSwapLength, true); },
-                    () => { array.Reversal(m + 1 + secondSwapLength, r - secondSwapLength); }
-                );
-                //array.Reversal(l, r);     // serial version of the rest of the code
-                firstLength = ((length + 2) / 4) * 2;  // how much first  core will swap. Guaranteed to be an even value
-                firstSwapLength = firstLength / 2;
-                Parallel.Invoke(
-                    () => { array.Swap(l, r - firstSwapLength + 1, firstSwapLength, true); },   // all but the last part need to be in Swap(startA, startB, length) form, since these are outer rings
-                                                                                                // to parallelize more, add more of the above parts (more outer onion rings/layers)
-                    () => { array.Reversal(l + firstSwapLength, r - firstSwapLength); }         // the last/innermost part needs to be in Reversal(l, r) form, since its the inner core of the onion
-                );
-            }
-        }
     }
 }

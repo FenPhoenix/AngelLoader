@@ -15,22 +15,11 @@
 #pragma warning disable CA1510
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HPCsharp
 {
     static public partial class Algorithm
     {
-        public static void Swap<T>(this T[] array, int indexA, int indexB)
-        {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
-            T temp        = array[indexA];
-            array[indexA] = array[indexB];
-            array[indexB] = temp;
-        }
-
         public static void Swap<T>(this T[] array, int indexA, int indexB, int length, bool reverse = false)
         {
             if (array == null)
@@ -54,49 +43,6 @@ namespace HPCsharp
                     array[currIndexB--] = temp;
                 }
             }
-        }
-
-        public static void SwapArray<T>(this T[] array, int indexA, int indexB, int length, bool reverse = false, int tempBufferSize = 1024)
-        {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
-            T[] tempBuffer = new T[tempBufferSize];
-
-            if (!reverse)
-            {
-                while ((length - tempBufferSize) > 0)
-                {
-                    Array.Copy(array,      indexA, tempBuffer, 0,      tempBufferSize);
-                    Array.Copy(array,      indexB, array,      indexA, tempBufferSize);
-                    Array.Copy(tempBuffer, 0,      array,      indexB, tempBufferSize);
-                    length -= tempBufferSize;
-                }
-                while (length-- > 0)
-                {
-                    T temp          = array[indexA];                 // inlining Swap() increases performance by 25%
-                    array[indexA++] = array[indexB];
-                    array[indexB++] = temp;
-                }
-            }
-            else
-            {
-                int currIndexB = indexB + length - 1;
-                while (length-- > 0)
-                {
-                    T temp              = array[indexA];                 // inlining Swap() increases performance by 25%
-                    array[indexA++]     = array[currIndexB];
-                    array[currIndexB--] = temp;
-                }
-            }
-        }
-
-        public static void Swap<T>(ref T B, T[] array, int indexA)
-        {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
-            T temp        = array[indexA];
-            array[indexA] = B;
-            B             = temp;
         }
 
         public static void Swap<T>(ref T a, ref T b)
@@ -136,14 +82,6 @@ namespace HPCsharp
             }
         }
 
-        public static void BlockSwapReversalReverseOrder<T>(T[] array, int l, int m, int r)
-        {
-            array.Reversal(l, r);
-            int mInDestination = r - (m - l + 1);
-            array.Reversal(l, mInDestination);
-            array.Reversal(mInDestination + 1, r);
-        }
-
         public static void BlockSwapGriesMills<T>(T[] array, int l, int m, int r)
         {
             int rotdist = m - l + 1;
@@ -166,47 +104,6 @@ namespace HPCsharp
                 }
             }
             array.Swap(p - i, p, i);
-        }
-
-        // Greatest Common Divisor.  Assumes that neither input is zero
-        public static int GreatestCommonDivisor(int i, int j)
-        {
-            if (i == 0) return j;
-            if (j == 0) return i;
-            while (i != j)
-            {
-                if (i > j) i -= j;
-                else j -= i;
-            }
-            return i;
-        }
-
-        public static void BlockSwapJugglingBentley<T>(T[] array, int l, int m, int r)
-        {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
-            int uLength = m - l + 1;
-            int vLength = r - m;
-            if (uLength <= 0 || vLength <= 0) return;
-            int rotdist = m - l + 1;
-            int n = r - l + 1;
-            int gcdRotdistN = GreatestCommonDivisor(rotdist, n);
-            for (int i = 0; i < gcdRotdistN; i++)
-            {
-                // move i-th values of blocks
-                T t = array[i];
-                int j = i;
-                while (true)
-                {
-                    int k = j + rotdist;
-                    if (k >= n)
-                        k -= n;
-                    if (k == i) break;
-                    array[j] = array[k];
-                    j = k;
-                }
-                array[j] = t;
-            }
         }
     }
 }
