@@ -62,6 +62,23 @@ public static partial class Common
             _itemsArrayLength = capacity;
         }
 
+        public bool Remove(T item)
+        {
+            int num = IndexOf(item);
+            if (num >= 0)
+            {
+                RemoveAt(num);
+                return true;
+            }
+
+            return false;
+        }
+
+        public int IndexOf(T item)
+        {
+            return Array.IndexOf(ItemsArray, item, 0, Count);
+        }
+
         public void RemoveAt(int index)
         {
             if ((uint)index >= (uint)Count)
@@ -137,11 +154,81 @@ public static partial class Common
             AddRange_Large(items);
         }
 
+        public void TrimExcess()
+        {
+            int num = (int)((double)ItemsArray.Length * 0.9);
+            if (Count < num)
+            {
+                Capacity = Count;
+            }
+        }
+
+        public void Insert(int index, T item)
+        {
+            if ((uint)index > (uint)Count)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_ListInsert);
+            }
+
+            if (Count == _itemsArrayLength)
+            {
+                EnsureCapacity(Count + 1);
+            }
+
+            if (index < Count)
+            {
+                Array.Copy(ItemsArray, index, ItemsArray, index + 1, Count - index);
+            }
+
+            ItemsArray[index] = item;
+            Count++;
+        }
+
         public void InsertAtZeroFast(T item)
         {
             Array.Copy(ItemsArray, 0, ItemsArray, 1, Count);
             ItemsArray[0] = item;
             Count++;
+        }
+
+        public T? Find(Predicate<T> match)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (match(ItemsArray[i]))
+                {
+                    return ItemsArray[i];
+                }
+            }
+
+            return default;
+        }
+
+        public bool Contains(T item)
+        {
+            if (item == null)
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    if (ItemsArray[i] == null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            EqualityComparer<T> equalityComparer = EqualityComparer<T>.Default;
+            for (int j = 0; j < Count; j++)
+            {
+                if (equalityComparer.Equals(ItemsArray[j], item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /*
@@ -189,6 +276,16 @@ public static partial class Common
                     Count = 0;
                 }
             }
+        }
+
+        public void CopyTo(T[] array)
+        {
+            CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            Array.Copy(ItemsArray, 0, array, arrayIndex, Count);
         }
 
         public void HardReset(int capacity)

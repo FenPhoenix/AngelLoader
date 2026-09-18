@@ -411,6 +411,58 @@ public static partial class Misc
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct NonEmptyListFast<T> : IEnumerable<T>
+    {
+        private readonly ListFast<T> _list;
+
+        private NonEmptyListFast(ListFast<T> list)
+        {
+            _list = list;
+            Count = _list.Count;
+            Single = Count == 1;
+        }
+
+        public readonly int Count;
+
+        public readonly bool Single;
+
+        /// <summary>
+        /// The internal list will be a reference copy of what you pass in. Use this method if you know the source
+        /// list won't change, and you want to avoid the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Ref(ListFast<T>? list, out NonEmptyListFast<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                result = new NonEmptyListFast<T>(list);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        [MustUseReturnValue]
+        public static NonEmptyListFast<T> CreateFrom(T item) => new(new ListFast<T>(1) { item });
+
+        public T this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _list[index];
+        }
+
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
     internal sealed class ThreadingData
     {
         internal readonly int Threads;

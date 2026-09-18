@@ -32,7 +32,7 @@ internal static class FMDelete
 
     internal static Task HandleDelete()
     {
-        List<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
+        ListFast<FanMission> fms = Core.View.GetSelectedFMs_InOrder_List();
 
         if (fms.Count == 0) return VoidTask;
 
@@ -61,7 +61,7 @@ internal static class FMDelete
 
     #region Delete from database
 
-    internal static Task DeleteFMsFromDB(List<FanMission> fmsToDelete)
+    internal static Task DeleteFMsFromDB(ListFast<FanMission> fmsToDelete)
     {
         if (fmsToDelete.Count == 0) return VoidTask;
         foreach (FanMission fm in fmsToDelete)
@@ -93,7 +93,7 @@ internal static class FMDelete
         return DeleteFromDBRefresh();
     }
 
-    private static void DeleteFMsFromDB_Internal(List<FanMission> fmsToDelete)
+    private static void DeleteFMsFromDB_Internal(ListFast<FanMission> fmsToDelete)
     {
         DictionaryI<List<FanMission>> iniDict = new(FMDataIniList.Count);
         for (int i = 0; i < FMDataIniList.Count; i++)
@@ -192,7 +192,7 @@ internal static class FMDelete
     }
 
     // * NIGHTMARE REALM *
-    internal static async Task DeleteFMsFromDisk(List<FanMission> fms)
+    internal static async Task DeleteFMsFromDisk(ListFast<FanMission> fms)
     {
         using DisableScreenshotWatchers dsw = new();
 
@@ -200,7 +200,7 @@ internal static class FMDelete
 
         bool single = origCount == 1;
 
-        List<FanMission> unavailableFMs = new(fms.Count);
+        ListFast<FanMission> unavailableFMs = new(fms.Count);
 
         MoveUnavailableFMsFromMainListToUnavailableList(fms, unavailableFMs);
 
@@ -419,7 +419,7 @@ internal static class FMDelete
 
         return;
 
-        static void MoveUnavailableFMsFromMainListToUnavailableList(List<FanMission> fms, List<FanMission> unavailableFMs)
+        static void MoveUnavailableFMsFromMainListToUnavailableList(ListFast<FanMission> fms, ListFast<FanMission> unavailableFMs)
         {
             for (int i = 0; i < fms.Count; i++)
             {

@@ -73,7 +73,7 @@ internal static class Core
         bool openSettings = false;
         SettingsWindowState settingsWindowState = SettingsWindowState.Startup;
 
-        List<FanMission>? fmsViewListUnscanned = null;
+        ListFast<FanMission>? fmsViewListUnscanned = null;
 
         #region Create required directories
 
@@ -578,7 +578,7 @@ internal static class Core
 
         #endregion
 
-        List<FanMission>? fmsViewListUnscanned = null;
+        ListFast<FanMission>? fmsViewListUnscanned = null;
 
         if (startup)
         {
@@ -773,7 +773,7 @@ internal static class Core
 
         #endregion
 
-        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             await FMScan.ScanNewFMs(fmsToScan);
         }
@@ -1044,37 +1044,7 @@ internal static class Core
 
         comparer.SortDirection = sortDirection;
 
-#if SORT_TIMING_TEST
-        Stopwatch sw = Stopwatch.StartNew();
-#endif
-
-#if USE_HPCSHARP
-        // Do the threshold manually, so we don't waste memory copying lists if we're single-core
-        if (FMsViewList.Count >= 2000)
-        {
-            /*
-            TODO: There's a huge amount of memory pressure with this sort: even with reusing the source list,
-            it creates TWO copies of the array (one to make the List into an array because all the internal
-            methods take arrays, and then another because it's not in-place).
-            At 24 bytes per object, this results in ~96KB allocated per keypress for 2000 FMs, or ~1.2MB(!)
-            allocated per keypress for the 25,000 set.
-            We could change the internal methods to take a List instead, or else we could use a ListFast or
-            other custom internal-array-accessible version and just pass that inner array to the sort method.
-            */
-            FMsViewList.SortMergePseudoInPlacePar_ReuseSourceList(comparer, 0);
-        }
-        else
-        {
-            FMsViewList.Sort(comparer);
-        }
-#else
-        FMsViewList.Sort(comparer);
-#endif
-
-#if SORT_TIMING_TEST
-        sw.Stop();
-        Trace.WriteLine(sw.Elapsed.ToString());
-#endif
+        SortList(FMsViewList, comparer);
 
         if (View.GetShowRecentAtTop())
         {
@@ -1097,7 +1067,7 @@ internal static class Core
                     (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
                 {
                     fm.MarkedRecent = true;
-                    FMsViewList.Remove(fm);
+                    FMsViewList.RemoveAt(i);
                     FMsViewList.Insert(0, fm);
                     recentFMCount++;
                 }
@@ -1106,7 +1076,7 @@ internal static class Core
             if (recentFMCount > 0)
             {
                 Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
-                FMsViewList.Sort(0, recentFMCount, Comparers.ColumnComparers[(int)Column.DateAdded]);
+                SortList(FMsViewList, Comparers.ColumnComparers[(int)Column.DateAdded], 0, recentFMCount);
             }
         }
         else
@@ -1134,6 +1104,33 @@ internal static class Core
         }
 
         #endregion
+
+        static void SortList(
+            ListFast<FanMission> fmsViewList,
+            Comparers.IDirectionalSortFMComparer comparer,
+            int startIndex = 0,
+            int length = -1)
+        {
+            if (length == -1) length = fmsViewList.Count;
+
+#if SORT_TIMING_TEST
+            Stopwatch sw = Stopwatch.StartNew();
+#endif
+
+#if USE_HPCSHARP
+            // Turn the entire codebase upside down to make the view list be a ListFast in order to get at its
+            // internal array in order to pass it to the fully-in-place method in order to avoid massive allocs
+            // for every keypress in the filter boxes.
+            fmsViewList.ItemsArray.SortMergeInPlacePar(startIndex, length, comparer, 2000);
+#else
+            fmsViewList.Sort(comparer);
+#endif
+
+#if SORT_TIMING_TEST
+            sw.Stop();
+            Trace.WriteLine(sw.Elapsed.ToString());
+#endif
+        }
     }
 
     // @BetterErrors(RefreshFMsListFromDisk): This one ties into FindFMs (see note there)
@@ -1146,7 +1143,7 @@ internal static class Core
             // and it also sets the wait cursor, to avoid flickering it on and off twice.
             View.SetWaitCursor(true);
 
-            List<FanMission> fmsViewListUnscanned = FindFMs.Find();
+            ListFast<FanMission> fmsViewListUnscanned = FindFMs.Find();
 
             // @TDM_CASE: Case-sensitive dictionary
             Dictionary<string, int> tdmFMsDict = new(FMDataIniListTDM.Count);
@@ -1180,7 +1177,7 @@ internal static class Core
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+            if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
             {
                 View.SetWaitCursor(false);
                 await FMScan.ScanNewFMs(fmsToScan);
@@ -2139,7 +2136,7 @@ internal static class Core
 
         if (fm.NeedsScan())
         {
-            if (await FMScan.ScanFMs(NonEmptyList<FanMission>.CreateFrom(fm), suppressSingleFMProgressBoxIfFast: true))
+            if (await FMScan.ScanFMs(NonEmptyListFast<FanMission>.CreateFrom(fm), suppressSingleFMProgressBoxIfFast: true))
             {
                 View.RefreshFM(fm, rowOnly: true);
             }

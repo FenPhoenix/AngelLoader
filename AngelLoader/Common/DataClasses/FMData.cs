@@ -449,7 +449,7 @@ public readonly struct ValidAudioConvertibleFM : IEquatable<ValidAudioConvertibl
         }
     }
 
-    public static List<ValidAudioConvertibleFM> CreateListFrom(List<FanMission> fms)
+    public static List<ValidAudioConvertibleFM> CreateListFrom(ListFast<FanMission> fms)
     {
         List<ValidAudioConvertibleFM> ret = new(fms.Count);
         for (int i = 0; i < fms.Count; i++)

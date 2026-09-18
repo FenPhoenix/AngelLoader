@@ -158,11 +158,11 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
     /// </summary>
     /// <returns></returns>
-    internal List<FanMission> GetSelectedFMs_InOrder_List()
+    internal ListFast<FanMission> GetSelectedFMs_InOrder_List()
     {
         DataGridViewRow[] selRows = GetOrderedRowsArray();
 
-        List<FanMission> ret = new(selRows.Length);
+        ListFast<FanMission> ret = new(selRows.Length);
         foreach (DataGridViewRow selRow in selRows)
         {
             ret.Add(GetFMFromIndex(selRow.Index));

@@ -42,7 +42,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public string ProductVersion => Application.ProductVersion;
 
-    public void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList)
+    public void PreloadScreenshot(ConfigData config, ListFast<FanMission> fmsViewList)
     {
         FMTabData screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
         if (screenshotsTab.Visible == FMTabVisibleIn.Top &&
@@ -85,7 +85,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
             screenshotFileNames);
     }
 
-    public void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned)
+    public void PreprocessRTFReadme(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
     {
         bool successfullyPreprocessedRtf = PreprocessReadme_Internal(config, fmsViewList, fmsViewListUnscanned);
         if (!successfullyPreprocessedRtf)
@@ -94,7 +94,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         }
     }
 
-    private bool PreprocessReadme_Internal(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned)
+    private bool PreprocessReadme_Internal(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
     {
         SelectedFM selFM = config.GameOrganization == GameOrganization.OneList
             ? config.SelFM

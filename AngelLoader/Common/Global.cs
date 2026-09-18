@@ -22,14 +22,14 @@ internal static class Global
     // reallocate them right away anyway.
     internal static readonly List<FanMission> FMDataIniList = new(0);
     internal static readonly List<FanMission> FMDataIniListTDM = new(0);
-    internal static readonly List<FanMission> FMsViewList = new(0);
+    internal static readonly ListFast<FanMission> FMsViewList = new(0);
 #else
     internal static bool ThreadLocked;
 
     private static readonly FMCategoriesCollection _globalTags = new(PresetTags.Count);
     private static readonly List<FanMission> _fmDataIniList = new(0);
     private static readonly List<FanMission> _fmDataIniListTDM = new(0);
-    private static readonly List<FanMission> _fmsViewList = new(0);
+    private static readonly ListFast<FanMission> _fmsViewList = new(0);
 
     internal static FMCategoriesCollection GlobalTags
     {
@@ -58,7 +58,7 @@ internal static class Global
         }
     }
 
-    internal static List<FanMission> FMsViewList
+    internal static ListFast<FanMission> FMsViewList
     {
         get
         {

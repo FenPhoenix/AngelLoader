@@ -207,7 +207,7 @@ internal static class FindFMs
     /// </summary>
     /// <param name="splashScreen">The splash screen for it to update with a checkmark when it's done.</param>
     /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-    internal static (List<FanMission> FMsViewListUnscanned, Exception? Ex)
+    internal static (ListFast<FanMission> FMsViewListUnscanned, Exception? Ex)
     Find_Startup(SplashScreen splashScreen)
     {
         // This will run in a thread, so we don't want to try throwing up any dialogs or running the shutdown
@@ -216,13 +216,13 @@ internal static class FindFMs
         {
             using DisableScreenshotWatchers dsw = new();
 
-            List<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
+            ListFast<FanMission> fmsViewListUnscanned = FindInternal(startup: true);
             splashScreen.SetCheckAtStoredMessageWidth();
             return (fmsViewListUnscanned, null);
         }
         catch (Exception ex)
         {
-            return (new List<FanMission>(), ex);
+            return (new ListFast<FanMission>(0), ex);
         }
     }
 
@@ -230,13 +230,13 @@ internal static class FindFMs
     /// Finds and merges new FMs (archives and installed) into the set.
     /// </summary>
     /// <returns>A list of FMs that are part of the view list and that require scanning. Empty if none.</returns>
-    internal static List<FanMission> Find()
+    internal static ListFast<FanMission> Find()
     {
         AssertR(Core.View != null!, "View was null during FindFMs.Find() call");
 
         using DisableScreenshotWatchers dsw = new();
 
-        List<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
+        ListFast<FanMission> fmsViewListUnscanned = FindInternal(startup: false);
         Core.View!.SetAvailableAndFinishedFMCount();
         return fmsViewListUnscanned;
     }
@@ -244,7 +244,7 @@ internal static class FindFMs
     // @THREADING: On startup only, this is run in parallel with view ctor
     // So don't touch anything the other touches: anything affecting the view.
     // @CAN_RUN_BEFORE_VIEW_INIT
-    private static List<FanMission> FindInternal(bool startup)
+    private static ListFast<FanMission> FindInternal(bool startup)
     {
         InstDirNameContext instDirNameContext = new();
 
@@ -285,7 +285,7 @@ internal static class FindFMs
 
         FMDataIniList.Clear();
         FMDataIniListTDM.Clear();
-        FMsViewList.Clear();
+        FMsViewList.ClearFull();
 
         bool fmDataIniExists = File.Exists(Paths.FMDataIni);
 
@@ -306,8 +306,8 @@ internal static class FindFMs
                 {
                     FMDataIniList.ClearAndAdd_Large(backupList);
                     FMDataIniListTDM.ClearAndAdd_Large(backupListTDM);
-                    FMsViewList.ClearAndAdd_Large(viewBackupList);
-                    return new List<FanMission>();
+                    FMsViewList.ClearFullAndAdd(viewBackupList);
+                    return new ListFast<FanMission>(0);
                 }
             }
         }
@@ -447,7 +447,7 @@ internal static class FindFMs
         EnsureUniqueInstalledNames();
 
         // Super quick-n-cheap hack for perf: So we don't have to iterate the whole list looking for unscanned FMs.
-        List<FanMission> fmsViewListUnscanned = new(FMDataIniList.Count);
+        ListFast<FanMission> fmsViewListUnscanned = new(FMDataIniList.Count);
 
         AddTdmFMs(files, dateTimes);
 
@@ -935,7 +935,7 @@ internal static class FindFMs
     private static void BuildViewList(
         DictionaryI<ExpandableDate_FromTicks> fmArchivesDict,
         DictionaryI<InstDirValueData>[] perGameInstalledFMDirsItems,
-        List<FanMission> fmsViewListUnscanned)
+        ListFast<FanMission> fmsViewListUnscanned)
     {
         FMsViewList.Capacity = FMDataIniList.Count + FMDataIniListTDM.Count;
 

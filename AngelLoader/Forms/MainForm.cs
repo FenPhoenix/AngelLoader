@@ -1096,7 +1096,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // This one can't be multithreaded because it depends on the FMs list
     // @ViewBusinessLogic(FinishInitAndShow)
-    public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport)
+    public async Task FinishInitAndShow(ListFast<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport)
     {
         _splashScreen = splashScreen;
 
@@ -1109,7 +1109,7 @@ public sealed partial class MainForm : DarkFormBase,
         // been run first. Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             Show();
             await FMScan.ScanNewFMs(fmsToScan);
@@ -1120,7 +1120,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (!Config.AskedToScanForMisCounts)
         {
-            List<FanMission> fmsNeedingMisCountScan = new();
+            ListFast<FanMission> fmsNeedingMisCountScan = new(0);
 
             for (int i = 0; i < FMsViewList.Count; i++)
             {
@@ -1131,7 +1131,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
+            if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
             {
                 Show();
                 await FMScan.ScanFMs(
@@ -2799,7 +2799,7 @@ public sealed partial class MainForm : DarkFormBase,
                     };
 
                     if (await FMScan.ScanFMs(
-                            NonEmptyList<FanMission>.CreateFrom(fm),
+                            NonEmptyListFast<FanMission>.CreateFrom(fm),
                             scanOptions,
                             suppressSingleFMProgressBoxIfFast: true))
                     {
@@ -3655,7 +3655,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
 
-    public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
+    public ListFast<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
 
     public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 

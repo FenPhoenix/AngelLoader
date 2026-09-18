@@ -44,8 +44,8 @@ public interface IViewEnvironment
     IDialogs GetDialogs();
     ISplashScreen GetSplashScreen();
     IView GetView();
-    void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList);
-    void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned);
+    void PreloadScreenshot(ConfigData config, ListFast<FanMission> fmsViewList);
+    void PreprocessRTFReadme(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned);
     void PreloadTheme(VisualTheme theme);
     (bool Accepted, ConfigData OutConfig, bool AskForImport)
     ShowSettingsWindow(ISettingsChangeableView? view, ConfigData inConfig, SettingsWindowData.SettingsWindowState state);
@@ -260,7 +260,7 @@ public interface IView : ISettingsChangeableView
     /// Call this only after the FindFMs() thread has finished.
     /// </summary>
     /// <returns></returns>
-    Task FinishInitAndShow(List<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport);
+    Task FinishInitAndShow(ListFast<FanMission> fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport);
 
     void Show();
 
@@ -381,7 +381,7 @@ public interface IView : ISettingsChangeableView
     /// <returns></returns>
     FanMission[] GetSelectedFMs();
 
-    List<FanMission> GetSelectedFMs_InOrder_List();
+    ListFast<FanMission> GetSelectedFMs_InOrder_List();
 
     SelectedFM? GetMainSelectedFMPosInfo();
 

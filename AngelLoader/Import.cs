@@ -180,7 +180,7 @@ internal static class Import
                 }
                 else // No error
                 {
-                    if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsToScan, out var fmsToScanNonEmpty))
+                    if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsToScan, out var fmsToScanNonEmpty))
                     {
                         ScanOptions scanOptions = importType == ImportType.FMSel
                             ? ScanOptions.FalseDefault(scanGameType: true, scanCustomResources: true, scanSize: true)
@@ -237,7 +237,7 @@ internal static class Import
 
     #region Private methods
 
-    private static (ImportError Error, List<FanMission> FMs)
+    private static (ImportError Error, ListFast<FanMission> FMs)
     ImportDarkLoaderInternal(string iniFile, bool importFMData, bool importSaves, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
         #region Local functions
@@ -287,13 +287,13 @@ internal static class Import
 
         #endregion
 
-        List<FanMission> fms = new();
+        ListFast<FanMission> fms = new(0);
 
         ImportError error = DoImport();
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
+        ListFast<FanMission> importedFMs = MergeImportedFMData_DL(fms, fields);
 
         return (ImportError.None, importedFMs);
 
@@ -588,20 +588,20 @@ internal static class Import
         return true;
     }
 
-    private static (ImportError Error, List<FanMission> FMs)
+    private static (ImportError Error, ListFast<FanMission> FMs)
     ImportFMSelInternal(string iniFile, FieldsToImport fields)
     {
         // As far as can be ascertained through manual testing, FMSel seems to read/write its ini file in UTF8.
         List<string> lines = File_ReadAllLines_List(iniFile);
-        List<FanMission> fms = new();
+        ListFast<FanMission> fms = new(0);
 
         DoImport(lines, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
+        ListFast<FanMission> importedFMs = MergeImportedFMData_FMSel(fms, fields);
 
         return (ImportError.None, importedFMs);
 
-        static void DoImport(List<string> lines, List<FanMission> fms)
+        static void DoImport(List<string> lines, ListFast<FanMission> fms)
         {
             HashSetI fmArchivesHash = new();
 
@@ -721,22 +721,22 @@ internal static class Import
                 return "";
         }
     */
-    private static (ImportError Error, List<FanMission> FMs)
+    private static (ImportError Error, ListFast<FanMission> FMs)
     ImportNDLInternal(string iniFile, FieldsToImport fields, InstDirNameContext instDirNameContext)
     {
         // NewDarkLoader uses Encoding.Default for NewDarkLoader.ini, confirmed from source and testing 1.7.0
         List<string> lines = File_ReadAllLines_List(iniFile, GetLegacyDefaultEncoding(), true);
-        List<FanMission> fms = new();
+        ListFast<FanMission> fms = new(0);
 
         ImportError error = DoImport(lines, fms, instDirNameContext);
 
         if (error != ImportError.None) return (error, fms);
 
-        List<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
+        ListFast<FanMission> importedFMs = MergeImportedFMData_NDL(fms, fields);
 
         return (ImportError.None, importedFMs);
 
-        static ImportError DoImport(List<string> lines, List<FanMission> fms, InstDirNameContext instDirNameContext)
+        static ImportError DoImport(List<string> lines, ListFast<FanMission> fms, InstDirNameContext instDirNameContext)
         {
             DictionaryI<FileInfo> archivesDict = new();
 
@@ -954,9 +954,9 @@ internal static class Import
         }
     }
 
-    private static List<FanMission> MergeImportedFMData_DL(List<FanMission> importedFMs, FieldsToImport fields)
+    private static ListFast<FanMission> MergeImportedFMData_DL(ListFast<FanMission> importedFMs, FieldsToImport fields)
     {
-        List<FanMission> importedFMsInMainList = new();
+        ListFast<FanMission> importedFMsInMainList = new(0);
 
         DictionaryI<FanMission> archivesDict = new();
         foreach (FanMission fm in FMDataIniList)
@@ -1046,9 +1046,9 @@ internal static class Import
         return importedFMsInMainList;
     }
 
-    private static List<FanMission> MergeImportedFMData_NDL(List<FanMission> importedFMs, FieldsToImport fields)
+    private static ListFast<FanMission> MergeImportedFMData_NDL(ListFast<FanMission> importedFMs, FieldsToImport fields)
     {
-        List<FanMission> importedFMsInMainList = new();
+        ListFast<FanMission> importedFMsInMainList = new(0);
 
         DictionaryI<FanMission> archivesDict = new();
         DictionaryI<FanMission> instDirsDict = new();
@@ -1178,9 +1178,9 @@ internal static class Import
         return importedFMsInMainList;
     }
 
-    private static List<FanMission> MergeImportedFMData_FMSel(List<FanMission> importedFMs, FieldsToImport fields)
+    private static ListFast<FanMission> MergeImportedFMData_FMSel(ListFast<FanMission> importedFMs, FieldsToImport fields)
     {
-        List<FanMission> importedFMsInMainList = new();
+        ListFast<FanMission> importedFMsInMainList = new(0);
 
         DictionaryI<FanMission> archivesDict = new();
         DictionaryI<FanMission> instDirsDict = new();

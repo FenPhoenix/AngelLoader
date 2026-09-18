@@ -85,6 +85,7 @@ public static class SR
     public static readonly string IO_FileNotFound_FileName = "Could not find file '{0}'.";
     public static readonly string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
     public static readonly string InvalidOperation_EmptyStack = "Stack empty.";
+    public static readonly string ArgumentOutOfRange_ListInsert = "Index must be within the bounds of the List.";
 #if ENABLE_UNUSED
     public static readonly string IO_UnknownFileName = "[Unknown]";
     public static readonly string Argument_InvalidSeekOrigin = "Invalid seek origin.";
