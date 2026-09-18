@@ -47,7 +47,6 @@ public sealed class FanMission
         DisableAllMods = 1 << 10,
         ResourcesScanned = 1 << 11,
         LangsScanned = 1 << 12,
-        TitleIsAscii = 1 << 13,
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,19 +148,7 @@ public sealed class FanMission
     [FenGenMaxDigits(10)]
     internal int TDMVersion;
 
-    [FenGenIgnore]
-    internal string TitleDirect = "";
-    internal string Title
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => TitleDirect;
-        set
-        {
-            TitleDirect = value;
-            // TODO: Make a SIMD/SWAR-fallback version of this
-            TitleIsAscii = value.IsAscii();
-        }
-    }
+    internal string Title = "";
 
     [FenGenTreatAsList("string")]
     [FenGenListType("MultipleLines")]
@@ -324,15 +311,6 @@ public sealed class FanMission
         get => GetFMFlag(FMFlag.LangsScanned);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         set => SetFMFlag(FMFlag.LangsScanned, value);
-    }
-
-    [FenGenIgnore]
-    internal bool TitleIsAscii
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => GetFMFlag(FMFlag.TitleIsAscii);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        set => SetFMFlag(FMFlag.TitleIsAscii, value);
     }
 
     [FenGenDoNotSubstring]

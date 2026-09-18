@@ -1,6 +1,4 @@
-﻿//#define USE_BROKEN_ASCII_COMPARE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using AngelLoader.DataClasses;
@@ -125,23 +123,13 @@ internal static class Comparers
 
     private static int TitleCompare(FanMission x, FanMission y)
     {
-        string title1 = x.TitleDirect;
-        string title2 = y.TitleDirect;
+        string title1 = x.Title;
+        string title2 = y.Title;
 
         int title1Length = title1.Length;
         int title2Length = title2.Length;
 
-        // OrdinalIgnoreCase is 2-3x faster than InvariantCultureIgnoreCase, but doesn't sort non-ASCII strings
-        // in a desirable way.
-        // UPDATE: But it's broken even for ASCII.
-#if USE_BROKEN_ASCII_COMPARE
-        StringComparison comparison =
-            x.TitleIsAscii && y.TitleIsAscii
-                ? StringComparison.OrdinalIgnoreCase
-                : StringComparison.InvariantCultureIgnoreCase;
-#else
         const StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
-#endif
 
         /*
         Domain knowledge:
