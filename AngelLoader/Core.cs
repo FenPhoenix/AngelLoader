@@ -1046,6 +1046,8 @@ internal static class Core
 
         SortList(FMsViewList, comparer);
 
+        // @PERF_TODO: If a large number of FMs are recent, this is REALLY slow.
+        // Maybe we could sort them to the top in the comparers, or in the filtering method.
         if (View.GetShowRecentAtTop())
         {
             // Store it so it doesn't change
@@ -1091,13 +1093,14 @@ internal static class Core
 
         #region Pinned
 
+        // @PERF_TODO: Ditto the above performance concern
         int pinnedFMCount = 0;
         for (int i = 0; i < FMsViewList.Count; i++)
         {
             FanMission fm = FMsViewList[i];
             if (fm.Pinned)
             {
-                FMsViewList.Remove(fm);
+                FMsViewList.RemoveAt(i);
                 FMsViewList.Insert(pinnedFMCount, fm);
                 pinnedFMCount++;
             }
@@ -1530,22 +1533,24 @@ internal static class Core
                 // keeping this array around permanently.
                 foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                 {
-                    foreach (string sr in safeReadmes)
+                    for (int i = 0; i < safeReadmes.Count; i++)
                     {
+                        string sr = safeReadmes[i];
                         if (Path.GetFileNameWithoutExtension(sr).EqualsI(item))
                         {
-                            safeReadmes.Remove(sr);
+                            safeReadmes.RemoveAt(i);
                             safeReadmes.Insert(0, sr);
                             break;
                         }
                     }
                 }
-                foreach (string sr in safeReadmes)
+                for (int i = 0; i < safeReadmes.Count; i++)
                 {
+                    string sr = safeReadmes[i];
                     string srNoExt = Path.GetFileNameWithoutExtension(sr);
                     if (langCodesExist && EndsWithLangCode(srNoExt, langCodes))
                     {
-                        safeReadmes.Remove(sr);
+                        safeReadmes.RemoveAt(i);
                         safeReadmes.Insert(0, sr);
                         break;
                     }
