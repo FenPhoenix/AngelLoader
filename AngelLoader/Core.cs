@@ -1052,10 +1052,16 @@ internal static class Core
         // Do the threshold manually, so we don't waste memory copying lists if we're single-core
         if (FMsViewList.Count >= 2000)
         {
-            // It returns the new list, so we have to clear and assign it...
-            List<FanMission> sortedList = FMsViewList.SortMergePseudoInPlacePar(comparer, 0);
-            FMsViewList.Clear();
-            FMsViewList.AddRange(sortedList);
+            /*
+            TODO: There's a huge amount of memory pressure with this sort: even with reusing the source list,
+            it creates TWO copies of the array (one to make the List into an array because all the internal
+            methods take arrays, and then another because it's not in-place).
+            At 24 bytes per object, this results in ~96KB allocated per keypress for 2000 FMs, or ~1.2MB(!)
+            allocated per keypress for the 25,000 set.
+            We could change the internal methods to take a List instead, or else we could use a ListFast or
+            other custom internal-array-accessible version and just pass that inner array to the sort method.
+            */
+            FMsViewList.SortMergePseudoInPlacePar_ReuseSourceList(comparer, 0);
         }
         else
         {

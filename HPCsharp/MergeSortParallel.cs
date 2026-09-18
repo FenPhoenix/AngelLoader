@@ -611,6 +611,26 @@ namespace HPCsharp
             List<T> dst = new List<T>(srcCopy);
             return dst;
         }
+
+        /// <summary>
+        /// Parallel Merge Sort with a Pseudo in-place algorithm.
+        /// Reuses the passed-in array (clear and repopulate) for memory efficiency.
+        /// </summary>
+        /// <typeparam name="T">data type of each array element</typeparam>
+        /// <param name="src">source array</param>
+        /// <param name="comparer">method to compare List elements</param>
+        /// <param name="parallelThreshold">arrays larger than this value will be sorted using multiple cores</param>
+        public static void SortMergePseudoInPlacePar_ReuseSourceList<T>(this List<T> src, IComparer<T> comparer = null, Int32 parallelThreshold = 24 * 1024)
+        {
+            T[] srcCopy = src.ToArrayPar();
+            if ((parallelThreshold * Environment.ProcessorCount) < src.Count)
+                parallelThreshold = src.Count / Environment.ProcessorCount;
+
+            SortMergePar(srcCopy, comparer, parallelThreshold);
+            src.Clear();
+            src.AddRange(srcCopy);
+        }
+
         /// <summary>
         /// Parallel Merge Sort (stable) with Pseudo in-place algorithm.
         /// Allocates the resulting array and returns it.
