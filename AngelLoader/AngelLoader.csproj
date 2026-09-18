@@ -126,7 +126,6 @@
 	<ItemGroup>
 		<PackageReference Condition="'$(Platform)'=='x86'" Include="EasyHook" Version="2.7.7097" />
 		<PackageReference Condition="'$(Platform)'=='x64'" Include="CoreHook" Version="1.0.4" />
-		<PackageReference Include="HPCsharp" Version="3.17.0" />
 		<PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
 		<PackageReference Include="PolySharp" Version="1.16.0">
 		  <PrivateAssets>all</PrivateAssets>
@@ -140,6 +139,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\AL_Common\AL_Common.csproj" />
 		<ProjectReference Include="..\FMScanner\FMScanner.csproj" />
+		<ProjectReference Include="..\HPCsharp\HPCsharp.csproj" />
 		<ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
 		<ProjectReference Include="..\Ude\Ude.NetStandard.csproj" />
 		<ProjectReference Include="..\Update\Update.csproj" />
