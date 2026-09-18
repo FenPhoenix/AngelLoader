@@ -14,7 +14,7 @@ using HPCsharp.ParallelAlgorithms;
 
 namespace HPCsharp
 {
-    static public partial class ParallelAlgorithm
+    public static partial class ParallelAlgorithm
     {
         // Swaps two sequential subarrays ranges a[ l .. m ] and a[ m + 1 .. r ]
         public static void BlockSwapReversalPar<T>(T[] array, int l, int m, int r, int threshold = 16 * 1024)

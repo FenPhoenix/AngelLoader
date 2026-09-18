@@ -30,7 +30,7 @@ namespace HPCsharp
     /// <summary>
     /// Parallel Algorithms operating on variety of containers, providing trade-off between abstraction and performance
     /// </summary>
-    static public partial class ParallelAlgorithm
+    public static partial class ParallelAlgorithm
     {
         /// <summary>
         /// Smaller than threshold will use non-parallel algorithm to merge arrays
@@ -404,7 +404,7 @@ namespace HPCsharp
         /// <param name="sourceSpans">List of sorted spans, specified by starting and ending indexes (both inclusive)</param>
         /// <param name="destinationArray">destination Array where the result of merged spans is placed</param>
         /// <param name="comparer">(optional) method to compare array elements</param>
-        static public void MergePar<T>( T[] sourceArray, List<SortedSpan> sourceSpans,
+        public static void MergePar<T>( T[] sourceArray, List<SortedSpan> sourceSpans,
                                         T[] destinationArray,
                                         Comparer<T> comparer = null)
         {

@@ -9,7 +9,7 @@ namespace HPCsharp
     /// <summary>
     /// Algorithms operating on variety of containers, providing trade-off between abstraction and performance
     /// </summary>
-    static public partial class Algorithm
+    public static partial class Algorithm
     {
         /// <summary>
         /// Binary Search algorithm which searches for a value within a sorted array

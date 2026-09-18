@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 namespace HPCsharp.ParallelAlgorithms
 {
-    static public partial class Copy
+    public static partial class Copy
     {
         private static void CopyToArrayParallelInnerDac<T>(this List<T> src, Int32 srcStart, T[] dst, Int32 dstStart, Int32 length, (Int32 minWorkQuanta, Int32 degreeOfParallelism)? parSettings = null)
         {

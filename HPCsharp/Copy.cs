@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace HPCsharp
 {
-    static public partial class Algorithm
+    public static partial class Algorithm
     {
         /// <summary>
         /// Faster Array Copy, which uses C# for loop for smaller arrays and Array.Copy for larger, providing higher performance for smaller arrays.
@@ -16,7 +16,7 @@ namespace HPCsharp
         /// <param name="destinationArray">second source Array to be merged</param>
         /// <param name="destinationIndex">starting index of the second sorted Array, inclusive</param>
         /// <param name="length">length of the second sorted segment</param>
-        static public void Copy<T>(T[] sourceArray, Int32 sourceIndex,
+        public static void Copy<T>(T[] sourceArray, Int32 sourceIndex,
                                    T[] destinationArray, Int32 destinationIndex, Int32 length, Int32 threshold = 128)
         {
             if (sourceArray == null)

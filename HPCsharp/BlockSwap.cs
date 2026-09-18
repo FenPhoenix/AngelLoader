@@ -18,7 +18,7 @@ using System;
 
 namespace HPCsharp
 {
-    static public partial class Algorithm
+    public static partial class Algorithm
     {
         public static void Swap<T>(this T[] array, int indexA, int indexB, int length, bool reverse = false)
         {

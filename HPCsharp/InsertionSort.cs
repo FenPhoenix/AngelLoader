@@ -13,7 +13,7 @@ namespace HPCsharp
     /// <summary>
     /// Container class for HPCsharp extension methods
     /// </summary>
-    static public partial class Algorithm
+    public static partial class Algorithm
     {
         // /// <summary>
         ///// O(n^2) sorting algorithm that's in-place. Fast for small arrays
