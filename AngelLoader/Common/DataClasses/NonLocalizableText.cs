@@ -90,6 +90,7 @@ internal static partial class NonLocalizableText
         ("DeviceIoControlLib", "https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib"),
         ("Pfim", "https://github.com/nickbabcock/Pfim"),
         ("ImageFormats", "https://github.com/dbrant/imageformats/"),
+        ("HPCsharp", "https://github.com/DragonSpit/HPCsharp"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 
