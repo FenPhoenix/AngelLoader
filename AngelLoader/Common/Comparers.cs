@@ -130,9 +130,30 @@ internal static class Comparers
             bool xIsRecent = IsRecent(x, dateTimeNow);
             bool yIsRecent = IsRecent(y, dateTimeNow);
 
-            ret =
-                xIsRecent && yIsRecent ? CompareDateAdded(x, y) :
-                xIsRecent ? 1 : -1;
+            if (xIsRecent == yIsRecent)
+            {
+                ret = CompareDateAdded(x, y);
+                bool xIsPinned = x.Pinned;
+                bool yIsPinned = y.Pinned;
+
+                if (xIsPinned && yIsPinned)
+                {
+                    ret = 0;
+                    return false;
+                }
+                else if (xIsPinned)
+                {
+                    ret = 1;
+                }
+                else if (yIsPinned)
+                {
+                    ret = -1;
+                }
+            }
+            else
+            {
+                ret = xIsRecent ? 1 : -1;
+            }
             return true;
         }
         else
@@ -194,7 +215,7 @@ internal static class Comparers
 
         return
             xIsPinned == yIsPinned ? 0 :
-            xIsPinned ? -1 : 1;
+            xIsPinned ? 1 : -1;
     }
 
     private static int TitleCompare(FanMission x, FanMission y)
