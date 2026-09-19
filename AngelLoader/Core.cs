@@ -1043,9 +1043,17 @@ internal static class Core
         Comparers.IDirectionalSortFMComparer comparer = Comparers.ColumnComparers[(int)column];
 
         comparer.SortDirection = sortDirection;
+        comparer.ShowRecentAtTop = View.GetShowRecentAtTop();
+        comparer.DateTimeNow = DateTime.Now;
+
+        for (int i = 0; i < FMsViewList.Count; i++)
+        {
+            FMsViewList[i].MarkedRecent = false;
+        }
 
         SortList(FMsViewList, comparer);
 
+#if false
         // @PERF_TODO: If a large number of FMs are recent, this is REALLY slow.
         // Maybe we could sort them to the top in the comparers, or in the filtering method.
         if (View.GetShowRecentAtTop())
@@ -1088,9 +1096,11 @@ internal static class Core
                 FMsViewList[i].MarkedRecent = false;
             }
         }
+#endif
 
         if (View.GetShowUnavailableFMsFilter()) return;
 
+#if false
         #region Pinned
 
         // @PERF_TODO: Ditto the above performance concern
@@ -1107,6 +1117,7 @@ internal static class Core
         }
 
         #endregion
+#endif
 
         static void SortList(
             ListFast<FanMission> fmsViewList,
