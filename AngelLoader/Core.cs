@@ -1053,71 +1053,7 @@ internal static class Core
 
         SortList(FMsViewList, comparer);
 
-#if false
-        // @PERF_TODO: If a large number of FMs are recent, this is REALLY slow.
-        // Maybe we could sort them to the top in the comparers, or in the filtering method.
-        if (View.GetShowRecentAtTop())
-        {
-            // Store it so it doesn't change
-            DateTime dtNow = DateTime.Now;
-
-            int recentFMCount = 0;
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FanMission fm = FMsViewList[i];
-                fm.MarkedRecent = false;
-
-                if (
-                    // Don't mess with the sort order of pinned FMs, because they should be in the same sort
-                    // order as the main list but just placed at the top. Whereas the recent FMs will always
-                    // be displayed in order of date added.
-                    !fm.Pinned &&
-                    fm.DateAdded != null &&
-                    ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
-                    (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
-                {
-                    fm.MarkedRecent = true;
-                    FMsViewList.RemoveAt(i);
-                    FMsViewList.Insert(0, fm);
-                    recentFMCount++;
-                }
-            }
-
-            if (recentFMCount > 0)
-            {
-                Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
-                SortList(FMsViewList, Comparers.ColumnComparers[(int)Column.DateAdded], 0, recentFMCount);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FMsViewList[i].MarkedRecent = false;
-            }
-        }
-#endif
-
         if (View.GetShowUnavailableFMsFilter()) return;
-
-#if false
-        #region Pinned
-
-        // @PERF_TODO: Ditto the above performance concern
-        int pinnedFMCount = 0;
-        for (int i = 0; i < FMsViewList.Count; i++)
-        {
-            FanMission fm = FMsViewList[i];
-            if (fm.Pinned)
-            {
-                FMsViewList.RemoveAt(i);
-                FMsViewList.Insert(pinnedFMCount, fm);
-                pinnedFMCount++;
-            }
-        }
-
-        #endregion
-#endif
 
         static void SortList(
             ListFast<FanMission> fmsViewList,

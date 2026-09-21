@@ -130,31 +130,26 @@ internal static class Comparers
             bool xIsRecent = IsRecent(x, dateTimeNow);
             bool yIsRecent = IsRecent(y, dateTimeNow);
 
-            if (xIsRecent == yIsRecent)
+            if (xIsRecent && yIsRecent)
             {
                 ret = CompareDateAdded(x, y);
-                bool xIsPinned = x.Pinned;
-                bool yIsPinned = y.Pinned;
-
-                if (xIsPinned && yIsPinned)
-                {
-                    ret = 0;
-                    return false;
-                }
-                else if (xIsPinned)
-                {
-                    ret = 1;
-                }
-                else if (yIsPinned)
-                {
-                    ret = -1;
-                }
+                return true;
+            }
+            else if (xIsRecent)
+            {
+                ret = -1;
+                return true;
+            }
+            else if (yIsRecent)
+            {
+                ret = 1;
+                return true;
             }
             else
             {
-                ret = xIsRecent ? 1 : -1;
+                ret = 0;
+                return false;
             }
-            return true;
         }
         else
         {
@@ -208,14 +203,31 @@ internal static class Comparers
         }
     }
 
-    private static int SortPinnedToTop(FanMission x, FanMission y)
+    private static bool TrySortPinnedToTop(FanMission x, FanMission y, out int ret)
     {
         bool xIsPinned = x.Pinned;
         bool yIsPinned = y.Pinned;
 
-        return
-            xIsPinned == yIsPinned ? 0 :
-            xIsPinned ? 1 : -1;
+        if (xIsPinned && yIsPinned)
+        {
+            ret = 0;
+            return false;
+        }
+        else if (xIsPinned)
+        {
+            ret = -1;
+            return true;
+        }
+        else if (yIsPinned)
+        {
+            ret = 1;
+            return true;
+        }
+        else
+        {
+            ret = 0;
+            return false;
+        }
     }
 
     private static int TitleCompare(FanMission x, FanMission y)
@@ -319,7 +331,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -371,7 +386,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -404,7 +422,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -436,7 +457,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -469,7 +493,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -503,7 +530,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -539,7 +569,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -572,7 +605,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -621,7 +657,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -675,7 +714,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -720,7 +762,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -767,7 +812,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -813,7 +861,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -843,7 +894,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
@@ -897,7 +951,10 @@ internal static class Comparers
                 return preRet;
             }
 
-            int ret = SortPinnedToTop(x, y);
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
 
             if (ret == 0)
             {
