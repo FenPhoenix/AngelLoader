@@ -1053,8 +1053,6 @@ internal static class Core
 
         SortList(FMsViewList, comparer);
 
-        if (View.GetShowUnavailableFMsFilter()) return;
-
         static void SortList(
             ListFast<FanMission> fmsViewList,
             Comparers.IDirectionalSortFMComparer comparer,
