@@ -313,6 +313,16 @@ internal static class Comparers
 
     #region Column comparers
 
+    /*
+    For performance, we integrate the sort-to-top logic into the normal sort. However, this makes the logic a bit
+    less clear. The logic is:
+
+    -If there is a set of pinned FMs and a set of recent FMs, the pinned FMs set goes above the recent FMs set.
+    -If an FM is both pinned and recent, its pinned status takes precedence.
+    -Within the pinned FMs group, FMs sort in the chosen order.
+    -Within the recent FMs group, FMs sort in recency order then title order, ignoring the chosen sort order.
+    */
+
     private sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
