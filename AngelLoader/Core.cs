@@ -1058,34 +1058,23 @@ internal static class Core
             FMsViewList[i].MarkedRecent = false;
         }
 
-        SortList(FMsViewList, comparer);
-
-        static void SortList(
-            ListFast<FanMission> fmsViewList,
-            Comparers.IDirectionalSortFMComparer comparer,
-            int startIndex = 0,
-            int length = -1)
-        {
-            if (length == -1) length = fmsViewList.Count;
-
 #if SORT_TIMING_TEST
             Stopwatch sw = Stopwatch.StartNew();
 #endif
 
 #if USE_HPCSHARP
-            // Turn the entire codebase upside down to make the view list be a ListFast in order to get at its
-            // internal array in order to pass it to the fully-in-place method in order to avoid massive allocs
-            // for every keypress in the filter boxes.
-            fmsViewList.ItemsArray.SortMergeInPlacePar(startIndex, length, comparer, 2000);
+        // Turn the entire codebase upside down to make the view list be a ListFast in order to get at its
+        // internal array in order to pass it to the fully-in-place method in order to avoid massive allocs
+        // for every keypress in the filter boxes.
+        FMsViewList.ItemsArray.SortMergeInPlacePar(0, FMsViewList.Count, comparer, 2000);
 #else
-            fmsViewList.Sort(comparer);
+        FMsViewList.Sort(comparer);
 #endif
 
 #if SORT_TIMING_TEST
             sw.Stop();
             Trace.WriteLine(sw.Elapsed.ToString());
 #endif
-        }
     }
 
     // @BetterErrors(RefreshFMsListFromDisk): This one ties into FindFMs (see note there)

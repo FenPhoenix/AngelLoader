@@ -62,18 +62,6 @@ public static partial class Common
             _itemsArrayLength = capacity;
         }
 
-        public bool Remove(T item)
-        {
-            int num = IndexOf(item);
-            if (num >= 0)
-            {
-                RemoveAt(num);
-                return true;
-            }
-
-            return false;
-        }
-
         public int IndexOf(T item)
         {
             return Array.IndexOf(ItemsArray, item, 0, Count);
@@ -156,8 +144,8 @@ public static partial class Common
 
         public void TrimExcess()
         {
-            int num = (int)((double)ItemsArray.Length * 0.9);
-            if (Count < num)
+            int threshold = (int)(((double)_itemsArrayLength) * 0.9);
+            if (Count < threshold)
             {
                 Capacity = Count;
             }
