@@ -58,6 +58,7 @@ internal static class Comparers
     {
         SortDirection SortDirection { get; set; }
         bool ShowRecentAtTop { get; set; }
+        bool ShowPinnedAtTop { get; set; }
         DateTime DateTimeNow { get; set; }
     }
 
@@ -203,25 +204,33 @@ internal static class Comparers
         }
     }
 
-    private static bool TrySortPinnedToTop(FanMission x, FanMission y, out int ret)
+    private static bool TrySortPinnedToTop(FanMission x, FanMission y, bool showPinnedAtTop, out int ret)
     {
-        bool xIsPinned = x.Pinned;
-        bool yIsPinned = y.Pinned;
+        if (showPinnedAtTop)
+        {
+            bool xIsPinned = x.Pinned;
+            bool yIsPinned = y.Pinned;
 
-        if (xIsPinned && yIsPinned)
-        {
-            ret = 0;
-            return false;
-        }
-        else if (xIsPinned)
-        {
-            ret = -1;
-            return true;
-        }
-        else if (yIsPinned)
-        {
-            ret = 1;
-            return true;
+            if (xIsPinned && yIsPinned)
+            {
+                ret = 0;
+                return false;
+            }
+            else if (xIsPinned)
+            {
+                ret = -1;
+                return true;
+            }
+            else if (yIsPinned)
+            {
+                ret = 1;
+                return true;
+            }
+            else
+            {
+                ret = 0;
+                return false;
+            }
         }
         else
         {
@@ -329,12 +338,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -382,12 +394,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -418,12 +433,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -453,12 +471,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -489,12 +510,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -531,12 +555,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -575,12 +602,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -611,12 +641,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -663,12 +696,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -717,12 +753,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -768,12 +807,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -818,12 +860,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -867,12 +912,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -900,12 +948,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }
@@ -962,12 +1013,15 @@ internal static class Comparers
         private bool _showRecentAtTop;
         public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
 
+        private bool _showPinnedAtTop;
+        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
+
         private DateTime _dateTimeNow;
         public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, out int ret))
+            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
             {
                 return ret;
             }

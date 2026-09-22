@@ -1044,6 +1044,7 @@ internal static class Core
 
         comparer.SortDirection = sortDirection;
         comparer.ShowRecentAtTop = View.GetShowRecentAtTop();
+        comparer.ShowPinnedAtTop = !View.GetShowUnavailableFMsFilter();
         comparer.DateTimeNow = DateTime.Now;
 
         /*
