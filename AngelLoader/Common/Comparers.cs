@@ -331,9 +331,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -384,9 +384,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -420,9 +420,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -455,9 +455,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -491,9 +491,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -528,9 +528,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -572,9 +572,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -608,9 +608,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -660,9 +660,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -717,9 +717,9 @@ internal static class Comparers
             // Sort this one down to the day only, because the exact time may very well not be known, and
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -765,9 +765,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -815,9 +815,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -864,9 +864,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -897,9 +897,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
@@ -954,9 +954,9 @@ internal static class Comparers
                 return ret;
             }
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
             {
-                return preRet;
+                return recentRet;
             }
 
             if (ret == 0)
