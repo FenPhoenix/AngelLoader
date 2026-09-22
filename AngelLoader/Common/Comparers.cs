@@ -326,22 +326,20 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
             {
                 ret = TitleCompare(x, y);
             }
-
-            if (x.Pinned || y.Pinned) return ret;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -381,14 +379,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -417,14 +415,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -452,14 +450,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -488,14 +486,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -525,14 +523,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -564,14 +562,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -600,14 +598,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -652,14 +650,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -706,17 +704,17 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
+            if (TrySortPinnedToTop(x, y, out int ret))
+            {
+                return ret;
+            }
+
             // Sort this one down to the day only, because the exact time may very well not be known, and
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
             if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
             {
                 return preRet;
-            }
-
-            if (TrySortPinnedToTop(x, y, out int ret))
-            {
-                return ret;
             }
 
             if (ret == 0)
@@ -757,14 +755,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -807,14 +805,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -856,14 +854,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -889,14 +887,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
@@ -946,14 +944,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
-            {
-                return preRet;
-            }
-
             if (TrySortPinnedToTop(x, y, out int ret))
             {
                 return ret;
+            }
+
+            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int preRet))
+            {
+                return preRet;
             }
 
             if (ret == 0)
