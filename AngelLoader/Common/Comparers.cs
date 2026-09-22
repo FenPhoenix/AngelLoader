@@ -543,6 +543,11 @@ internal static class Comparers
                     xAuthor.Length == 0 ? -1 :
                     yAuthor.Length == 0 ? 1 :
                     string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
+
+                if (ret == 0)
+                {
+                    ret = TitleCompare(x, y);
+                }
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
