@@ -1061,7 +1061,7 @@ internal static class Core
         }
 
 #if SORT_TIMING_TEST
-            Stopwatch sw = Stopwatch.StartNew();
+        Stopwatch sw = Stopwatch.StartNew();
 #endif
 
 #if USE_HPCSHARP
@@ -1074,8 +1074,8 @@ internal static class Core
 #endif
 
 #if SORT_TIMING_TEST
-            sw.Stop();
-            Trace.WriteLine(sw.Elapsed.ToString());
+        sw.Stop();
+        Trace.WriteLine(sw.Elapsed.ToString());
 #endif
     }
 
