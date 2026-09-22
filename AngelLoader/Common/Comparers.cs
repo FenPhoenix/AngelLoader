@@ -514,6 +514,11 @@ internal static class Comparers
                 ret =
                     EqualsFast(xArchive, yArchive) ? TitleCompare(x, y) :
                         string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
+
+                if (ret == 0)
+                {
+                    ret = TitleCompare(x, y);
+                }
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -938,6 +943,11 @@ internal static class Comparers
                                     ? -1
                                     : string.Compare(xDisabledMods, yDisabledMods,
                                         StringComparison.InvariantCultureIgnoreCase);
+
+                        if (ret == 0)
+                        {
+                            ret = TitleCompare(x, y);
+                        }
                     }
                 }
             }
@@ -980,6 +990,11 @@ internal static class Comparers
                     xCommentSingleLine.Length == 0 ? 1 :
                     yCommentSingleLine.Length == 0 ? -1 :
                     string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
+
+                if (ret == 0)
+                {
+                    ret = TitleCompare(x, y);
+                }
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
