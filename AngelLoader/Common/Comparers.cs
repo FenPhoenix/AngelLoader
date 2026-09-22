@@ -132,7 +132,7 @@ internal static class Comparers
 
             if (xIsRecent && yIsRecent)
             {
-                ret = CompareDateAdded(x, y);
+                ret = -CompareDateAdded(x, y);
                 return true;
             }
             else if (xIsRecent)
