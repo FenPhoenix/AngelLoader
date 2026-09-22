@@ -18,7 +18,6 @@
 #pragma warning disable CA1510
 #pragma warning disable CA1002
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -32,10 +31,8 @@ namespace HPCsharp
         // Merge two ranges of source array T[ l .. m, m+1 .. r ] in-place.
         // Based on not-in-place algorithm in 3rd ed. of "Introduction to Algorithms" p. 798-802, extending it to be in-place
         // and my Dr. Dobb's paper https://www.drdobbs.com/parallel/parallel-in-place-merge/240008783 or https://web.archive.org/web/20141217133856/http://www.drdobbs.com/parallel/parallel-in-place-merge/240008783
-        public static void MergeDivideAndConquerInPlacePar<T>(T[] arr, int startIndex, int midIndex, int endIndex, IComparer<T> comparer = null, int threshold0 = 16 * 1024, int threshold1 = 16 * 1024)
+        public static void MergeDivideAndConquerInPlacePar<T>(T[] arr, int startIndex, int midIndex, int endIndex, IComparer<T> comparer, int threshold0 = 16 * 1024, int threshold1 = 16 * 1024)
         {
-            if (arr == null)
-                throw new ArgumentNullException(nameof(arr));
             //Console.WriteLine("MergeDivideAndConquerInPlacePar: start = {0}, mid = {1}, end = {2}", startIndex, midIndex, endIndex);
             int length1 = midIndex - startIndex + 1;
             int length2 = endIndex - midIndex;

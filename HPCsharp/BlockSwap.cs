@@ -14,8 +14,6 @@
 
 #pragma warning disable CA1510
 
-using System;
-
 namespace HPCsharp
 {
     public static partial class Algorithm
@@ -23,8 +21,6 @@ namespace HPCsharp
         // reverse/mirror a range from l to r, inclusively, in-place
         public static void Reversal<T>(this T[] array, int l, int r)
         {
-            if (array == null)
-                throw new ArgumentNullException(nameof(array));
             for (; l < r; l++, r--)
             {
                 T temp   = array[l];  // swap of array[l] and array[r]

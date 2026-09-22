@@ -56,10 +56,8 @@ namespace HPCsharp
         /// <param name="length">number of elements starting with startIndex to be sorted</param>
         /// <param name="comparer">comparer used to compare two array elements of type T</param>
         /// <param name="parallelThreshold">arrays larger than this value will be sorted using multiple cores</param>
-        public static void SortMergeInPlacePar<T>(this T[] src, int startIndex, int length, IComparer<T> comparer = null, int parallelThreshold = 16 * 1024)
+        public static void SortMergeInPlacePar<T>(this T[] src, int startIndex, int length, IComparer<T> comparer, int parallelThreshold = 16 * 1024)
         {
-            if (src == null)
-                throw new ArgumentNullException(nameof(src));
             if ((parallelThreshold * Environment.ProcessorCount) < src.Length)
                 parallelThreshold = src.Length / Environment.ProcessorCount;
 
@@ -67,7 +65,7 @@ namespace HPCsharp
         }
 
         // start and end indexes are inclusive
-        private static void SortMergeInPlaceHybridInnerPar<T>(this T[] src, int startIndex, int endIndex, IComparer<T> comparer = null, int threshold0 = 16 * 1024,
+        private static void SortMergeInPlaceHybridInnerPar<T>(this T[] src, int startIndex, int endIndex, IComparer<T> comparer, int threshold0 = 16 * 1024,
                                                               int threshold1 = 256 * 1024, int threshold2 = 256 * 1024 )
         {
             //Console.WriteLine("merge sort: start = {0}, length = {1}", startIndex, length);
