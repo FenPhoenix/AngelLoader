@@ -1050,7 +1050,8 @@ internal static class Core
         @PERF_TODO(Remaining inefficiency with view list sorting):
         This loop is theoretically inefficient, as it's a full-set iteration in addition to the sort itself.
         However, it takes <3ms on the 200,000 set, so in practice it's not really a problem.
-        It's uncertain whether it would be safe to set MarkedRecent during the sort itself.
+        It's uncertain whether it would be safe to set MarkedRecent during the sort itself, so we're just leaving
+        this loop in for now.
         */
         for (int i = 0; i < FMsViewList.Count; i++)
         {
