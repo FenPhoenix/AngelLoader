@@ -381,6 +381,12 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
+            int ret =
+                x.DateAccuracy == y.DateAccuracy ? TitleCompare(x, y) :
+                x.DateAccuracy == DateAccuracy.Null ? -1 :
+                y.DateAccuracy == DateAccuracy.Null ? 1 :
+                x.DateAccuracy < y.DateAccuracy ? -1 : 1;
+
             ret = -ret;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
