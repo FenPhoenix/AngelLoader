@@ -174,31 +174,6 @@ internal static class Comparers
                 return false;
             }
         }
-
-        static int CompareDateAdded(FanMission x, FanMission y)
-        {
-            int ret;
-            if (x.DateAdded == null && y.DateAdded == null)
-            {
-                ret = TitleCompare(x, y);
-            }
-            else if (x.DateAdded == null)
-            {
-                ret = -1;
-            }
-            else if (y.DateAdded == null)
-            {
-                ret = 1;
-            }
-            else
-            {
-                // Sorting this one by exact DateTime is the appropriate method here
-                int cmp = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
-                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-            }
-
-            return ret;
-        }
     }
 
     private static bool TrySortPinnedToTop(FanMission x, FanMission y, bool showPinnedAtTop, out int ret)
@@ -311,6 +286,28 @@ internal static class Comparers
         return ret != 0
             ? ret
             : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    private static int CompareDateAdded(FanMission x, FanMission y)
+    {
+        if (x.DateAdded == null && y.DateAdded == null)
+        {
+            return TitleCompare(x, y);
+        }
+        else if (x.DateAdded == null)
+        {
+            return -1;
+        }
+        else if (y.DateAdded == null)
+        {
+            return 1;
+        }
+        else
+        {
+            // Sorting this one by exact DateTime is the appropriate method here
+            int ret = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
+            return ret == 0 ? TitleCompare(x, y) : ret;
+        }
     }
 
     #endregion
@@ -899,24 +896,7 @@ internal static class Comparers
 
             if (ret == 0)
             {
-                if (x.DateAdded == null && y.DateAdded == null)
-                {
-                    ret = TitleCompare(x, y);
-                }
-                else if (x.DateAdded == null)
-                {
-                    ret = -1;
-                }
-                else if (y.DateAdded == null)
-                {
-                    ret = 1;
-                }
-                else
-                {
-                    // Sorting this one by exact DateTime is the appropriate method here
-                    int cmp = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
-                    ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-                }
+                ret = CompareDateAdded(x, y);
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
