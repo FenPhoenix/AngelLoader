@@ -56,10 +56,7 @@ internal static class Comparers
 
     internal interface IDirectionalSortFMComparer : IComparer<FanMission>
     {
-        SortDirection SortDirection { get; set; }
-        bool ShowRecentAtTop { get; set; }
-        bool ShowPinnedAtTop { get; set; }
-        DateTime DateTimeNow { get; set; }
+        void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow);
     }
 
     #region FM list sorting
@@ -333,16 +330,17 @@ internal static class Comparers
     private sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -369,13 +367,17 @@ internal static class Comparers
     private sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
+        private bool _showPinnedAtTop;
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -389,16 +391,17 @@ internal static class Comparers
     private sealed class FMGameComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -428,16 +431,17 @@ internal static class Comparers
     private sealed class FMInstalledComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -466,16 +470,17 @@ internal static class Comparers
     private sealed class FMMisCountComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -505,16 +510,17 @@ internal static class Comparers
     private sealed class FMArchiveComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -550,16 +556,17 @@ internal static class Comparers
     private sealed class FMAuthorComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -597,16 +604,17 @@ internal static class Comparers
     private sealed class FMSizeComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -636,16 +644,17 @@ internal static class Comparers
     private sealed class FMRatingComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -691,16 +700,17 @@ internal static class Comparers
     private sealed class FMFinishedComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -748,16 +758,17 @@ internal static class Comparers
     private sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -802,16 +813,17 @@ internal static class Comparers
     private sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -855,16 +867,17 @@ internal static class Comparers
     private sealed class FMDateAddedComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -907,16 +920,17 @@ internal static class Comparers
     private sealed class FMPlayTimeComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -943,16 +957,17 @@ internal static class Comparers
     private sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {
@@ -1008,16 +1023,17 @@ internal static class Comparers
     private sealed class FMCommentComparer : IDirectionalSortFMComparer
     {
         private SortDirection _sortDirection = SortDirection.Ascending;
-        public SortDirection SortDirection { get => _sortDirection; set => _sortDirection = value; }
-
         private bool _showRecentAtTop;
-        public bool ShowRecentAtTop { get => _showRecentAtTop; set => _showRecentAtTop = value; }
-
         private bool _showPinnedAtTop;
-        public bool ShowPinnedAtTop { get => _showPinnedAtTop; set => _showPinnedAtTop = value; }
-
         private DateTime _dateTimeNow;
-        public DateTime DateTimeNow { get => _dateTimeNow; set => _dateTimeNow = value; }
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
 
         public int Compare(FanMission x, FanMission y)
         {

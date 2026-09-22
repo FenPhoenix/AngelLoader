@@ -1042,10 +1042,11 @@ internal static class Core
     {
         Comparers.IDirectionalSortFMComparer comparer = Comparers.ColumnComparers[(int)column];
 
-        comparer.SortDirection = sortDirection;
-        comparer.ShowRecentAtTop = View.GetShowRecentAtTop();
-        comparer.ShowPinnedAtTop = !View.GetShowUnavailableFMsFilter();
-        comparer.DateTimeNow = DateTime.Now;
+        comparer.SetValues(
+            sortDirection: sortDirection,
+            showRecentAtTop: View.GetShowRecentAtTop(),
+            showPinnedAtTop: !View.GetShowUnavailableFMsFilter(),
+            dateTimeNow: DateTime.Now);
 
         /*
         @PERF_TODO(Remaining inefficiency with view list sorting):
