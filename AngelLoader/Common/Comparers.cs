@@ -238,8 +238,6 @@ internal static class Comparers
         int title1Length = title1.Length;
         int title2Length = title2.Length;
 
-        const StringComparison comparison = StringComparison.InvariantCultureIgnoreCase;
-
         /*
         Domain knowledge:
         -The two strings are never the same reference
@@ -250,10 +248,10 @@ internal static class Comparers
         */
         if (title1Length == title2Length && EqualsHelper(title1, title2, title1Length))
         {
-            int earlyRet = string.Compare(x.Archive, y.Archive, comparison);
+            int earlyRet = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
             return earlyRet != 0
                 ? earlyRet
-                : string.Compare(x.InstalledDir, y.InstalledDir, comparison);
+                : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
         }
 
         if (title1Length == 0) return -1;
@@ -291,22 +289,22 @@ internal static class Comparers
             }
 
             ret = (xStart | yStart) == 0
-                ? string.Compare(title1, title2, comparison)
+                ? string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase)
                 : string.Compare(title1, xStart, title2, yStart, Math.Max(title1Length, title2Length),
                     StringComparison.InvariantCultureIgnoreCase);
         }
         else
         {
-            ret = string.Compare(title1, title2, comparison);
+            ret = string.Compare(title1, title2, StringComparison.InvariantCultureIgnoreCase);
         }
 
         if (ret != 0) return ret;
 
-        ret = string.Compare(x.Archive, y.Archive, comparison);
+        ret = string.Compare(x.Archive, y.Archive, StringComparison.InvariantCultureIgnoreCase);
 
         return ret != 0
             ? ret
-            : string.Compare(x.InstalledDir, y.InstalledDir, comparison);
+            : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
     }
 
     #endregion
