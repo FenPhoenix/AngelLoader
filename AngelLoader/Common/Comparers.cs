@@ -128,7 +128,7 @@ internal static class Comparers
     /// <param name="showPinnedAtTop"></param>
     /// <param name="showRecentAtTop"></param>
     /// <param name="dateTimeNow"></param>
-    /// <returns>0 if not to be sorted at the top, otherwise the sort value.</returns>
+    /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int GetTopSortedValue(FanMission x, FanMission y, bool showPinnedAtTop, bool showRecentAtTop, DateTime dateTimeNow)
     {
