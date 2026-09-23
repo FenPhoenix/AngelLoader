@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -118,42 +119,52 @@ internal static class Comparers
         return str1Length == str2.Length && EqualsHelper(str1, str2, str1Length);
     }
 
-    // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
-    // new title-sort classes in a loop!
-
-    private static bool TrySortRecentToTop(FanMission x, FanMission y, bool showRecentAtTop, DateTime dateTimeNow, out int ret)
+    /// <summary>
+    /// If this method returns a non-zero value, return that value from the Compare() method and do not run the normal compare code.
+    /// If this method returns 0, ignore it and run the normal compare code.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="showPinnedAtTop"></param>
+    /// <param name="showRecentAtTop"></param>
+    /// <param name="dateTimeNow"></param>
+    /// <returns>0 if not to be sorted at the top, otherwise the sort value.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetTopSortedValue(FanMission x, FanMission y, bool showPinnedAtTop, bool showRecentAtTop, DateTime dateTimeNow)
     {
+        int ret;
+
+        if (showPinnedAtTop)
+        {
+            bool xIsPinned = x.Pinned;
+            bool yIsPinned = y.Pinned;
+
+            ret = xIsPinned && yIsPinned ? 0 : xIsPinned ? -1 : yIsPinned ? 1 : 0;
+        }
+        else
+        {
+            ret = 0;
+        }
+
+        if (ret != 0) return ret;
+
         if (showRecentAtTop)
         {
             bool xIsRecent = IsRecent(x, dateTimeNow);
             bool yIsRecent = IsRecent(y, dateTimeNow);
 
-            if (xIsRecent && yIsRecent)
-            {
-                ret = -CompareDateAdded(x, y);
-                return true;
-            }
-            else if (xIsRecent)
-            {
-                ret = -1;
-                return true;
-            }
-            else if (yIsRecent)
-            {
-                ret = 1;
-                return true;
-            }
-            else
-            {
-                ret = 0;
-                return false;
-            }
+            ret = xIsRecent && yIsRecent
+                // Guaranteed to return non-0 because it does the full fallback chain to InstalledDir fields which
+                // are guaranteed to be unique.
+                ? -CompareDateAdded(x, y)
+                : xIsRecent ? -1 : yIsRecent ? 1 : 0;
         }
         else
         {
             ret = 0;
-            return false;
         }
+
+        return ret;
 
         static bool IsRecent(FanMission fm, DateTime dateTimeNow)
         {
@@ -173,41 +184,6 @@ internal static class Comparers
             {
                 return false;
             }
-        }
-    }
-
-    private static bool TrySortPinnedToTop(FanMission x, FanMission y, bool showPinnedAtTop, out int ret)
-    {
-        if (showPinnedAtTop)
-        {
-            bool xIsPinned = x.Pinned;
-            bool yIsPinned = y.Pinned;
-
-            if (xIsPinned && yIsPinned)
-            {
-                ret = 0;
-                return false;
-            }
-            else if (xIsPinned)
-            {
-                ret = -1;
-                return true;
-            }
-            else if (yIsPinned)
-            {
-                ret = 1;
-                return true;
-            }
-            else
-            {
-                ret = 0;
-                return false;
-            }
-        }
-        else
-        {
-            ret = 0;
-            return false;
         }
     }
 
@@ -341,20 +317,10 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret = TitleCompare(x, y);
-            }
+            int ret = TitleCompare(x, y);
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -408,24 +374,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret =
-                    x.Game == y.Game ? TitleCompare(x, y) :
-                    x.Game == Game.Null ? -1 :
-                    y.Game == Game.Null ? 1 :
-                    x.Game < y.Game ? -1 : 1;
-            }
+            int ret =
+                x.Game == y.Game ? TitleCompare(x, y) :
+                x.Game == Game.Null ? -1 :
+                y.Game == Game.Null ? 1 :
+                x.Game < y.Game ? -1 : 1;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -448,23 +404,13 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret =
-                    x.Installed == y.Installed ? TitleCompare(x, y) :
-                    // Installed goes on top, non-installed (blank icon) goes on bottom
-                    x.Installed ? -1 : 1;
-            }
+            int ret =
+                x.Installed == y.Installed ? TitleCompare(x, y) :
+                // Installed goes on top, non-installed (blank icon) goes on bottom
+                x.Installed ? -1 : 1;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -487,24 +433,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret =
-                    x.MisCount == y.MisCount ? TitleCompare(x, y) :
-                    x.MisCount == -1 ? -1 :
-                    y.MisCount == -1 ? 1 :
-                    x.MisCount < y.MisCount ? -1 : 1;
-            }
+            int ret =
+                x.MisCount == y.MisCount ? TitleCompare(x, y) :
+                x.MisCount == -1 ? -1 :
+                y.MisCount == -1 ? 1 :
+                x.MisCount < y.MisCount ? -1 : 1;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -527,29 +463,19 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
+            string xArchive = x.DisplayArchive;
+            string yArchive = y.DisplayArchive;
+
+            int ret = EqualsFast(xArchive, yArchive)
+                ? TitleCompare(x, y)
+                : string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
             if (ret == 0)
             {
-                string xArchive = x.DisplayArchive;
-                string yArchive = y.DisplayArchive;
-
-                ret =
-                    EqualsFast(xArchive, yArchive) ? TitleCompare(x, y) :
-                        string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
-
-                if (ret == 0)
-                {
-                    ret = TitleCompare(x, y);
-                }
+                ret = TitleCompare(x, y);
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -573,31 +499,21 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
+            string xAuthor = x.Author;
+            string yAuthor = y.Author;
+
+            int ret =
+                EqualsFast(xAuthor, yAuthor) ? TitleCompare(x, y) :
+                xAuthor.Length == 0 ? -1 :
+                yAuthor.Length == 0 ? 1 :
+                string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
 
             if (ret == 0)
             {
-                string xAuthor = x.Author;
-                string yAuthor = y.Author;
-
-                ret =
-                    EqualsFast(xAuthor, yAuthor) ? TitleCompare(x, y) :
-                    xAuthor.Length == 0 ? -1 :
-                    yAuthor.Length == 0 ? 1 :
-                    string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
-
-                if (ret == 0)
-                {
-                    ret = TitleCompare(x, y);
-                }
+                ret = TitleCompare(x, y);
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -621,24 +537,14 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret =
-                    x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
-                    x.SizeBytes == 0 ? -1 :
-                    y.SizeBytes == 0 ? 1 :
-                    x.SizeBytes < y.SizeBytes ? -1 : 1;
-            }
+            int ret =
+                x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
+                x.SizeBytes == 0 ? -1 :
+                y.SizeBytes == 0 ? 1 :
+                x.SizeBytes < y.SizeBytes ? -1 : 1;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -661,39 +567,30 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                // Working
+            int ret;
+            // Working
 #if false
-                if (false)
-                {
-                    int one = _sortDirection == SortDirection.Ascending ? 1 : -1;
+            if (false)
+            {
+                int one = _sortDirection == SortDirection.Ascending ? 1 : -1;
 
-                    ret =
-                        x.Rating == y.Rating ? TitleCompare(x, y) :
-                        x.Rating == -1 && y.Rating > -1 ? one :
-                        x.Rating > -1 && y.Rating == -1 ? -one :
-                        x.Rating > -1 && y.Rating > -1 && x.Rating < y.Rating ? -1 : 1;
-                }
-                else
+                int ret =
+                    x.Rating == y.Rating ? TitleCompare(x, y) :
+                    x.Rating == -1 && y.Rating > -1 ? one :
+                    x.Rating > -1 && y.Rating == -1 ? -one :
+                    x.Rating > -1 && y.Rating > -1 && x.Rating < y.Rating ? -1 : 1;
+            }
+            else
 #endif
-                {
-                    ret =
-                        x.Rating == y.Rating ? TitleCompare(x, y) :
-                        x.Rating == -1 ? -1 :
-                        y.Rating == -1 ? 1 :
-                        x.Rating < y.Rating ? -1 : 1;
-                }
+            {
+                ret =
+                    x.Rating == y.Rating ? TitleCompare(x, y) :
+                    x.Rating == -1 ? -1 :
+                    y.Rating == -1 ? 1 :
+                    x.Rating < y.Rating ? -1 : 1;
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -717,41 +614,32 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                // Working: will add new option for this when done
+            int ret;
+            // Working: will add new option for this when done
 #if false
-                if (false)
-                {
-                    ret =
-                        (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
-                            ? TitleCompare(x, y) :
-                        !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
-                        x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
-                        x.FinishedOn == 0 && y.FinishedOn > 0 ? 1 :
-                        x.FinishedOn > 0 && y.FinishedOn == 0 ? -1 :
-                        x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
-                }
-                else
+            if (false)
+            {
+                int ret =
+                     (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                         ? TitleCompare(x, y) :
+                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
+                     x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
+                     x.FinishedOn == 0 && y.FinishedOn > 0 ? 1 :
+                     x.FinishedOn > 0 && y.FinishedOn == 0 ? -1 :
+                     x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
+            }
+            else
 #endif
-                {
-                    ret =
-                        !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
-                            x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
-                                (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
-                                    ? TitleCompare(x, y) :
-                                    x.FinishedOn < y.FinishedOn ? -1 : 1;
-                }
+            {
+                ret =
+                    !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
+                        x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
+                            (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                                ? TitleCompare(x, y) :
+                                x.FinishedOn < y.FinishedOn ? -1 : 1;
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -775,38 +663,29 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
             // Sort this one down to the day only, because the exact time may very well not be known, and
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
+            int ret;
+            if (x.ReleaseDate.DateTime == null && y.ReleaseDate.DateTime == null)
             {
-                return recentRet;
+                ret = TitleCompare(x, y);
             }
-
-            if (ret == 0)
+            else if (x.ReleaseDate.DateTime == null)
             {
-                if (x.ReleaseDate.DateTime == null && y.ReleaseDate.DateTime == null)
-                {
-                    ret = TitleCompare(x, y);
-                }
-                else if (x.ReleaseDate.DateTime == null)
-                {
-                    ret = -1;
-                }
-                else if (y.ReleaseDate.DateTime == null)
-                {
-                    ret = 1;
-                }
-                else
-                {
-                    int cmp = ((DateTime)x.ReleaseDate.DateTime).Date.CompareTo(((DateTime)y.ReleaseDate.DateTime).Date);
-                    ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-                }
+                ret = -1;
+            }
+            else if (y.ReleaseDate.DateTime == null)
+            {
+                ret = 1;
+            }
+            else
+            {
+                int cmp = ((DateTime)x.ReleaseDate.DateTime).Date.CompareTo(((DateTime)y.ReleaseDate.DateTime).Date);
+                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -830,37 +709,28 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
+            int ret;
+            if (x.LastPlayed.DateTime == null && y.LastPlayed.DateTime == null)
             {
-                return recentRet;
+                ret = TitleCompare(x, y);
             }
-
-            if (ret == 0)
+            else if (x.LastPlayed.DateTime == null)
             {
-                if (x.LastPlayed.DateTime == null && y.LastPlayed.DateTime == null)
-                {
-                    ret = TitleCompare(x, y);
-                }
-                else if (x.LastPlayed.DateTime == null)
-                {
-                    ret = -1;
-                }
-                else if (y.LastPlayed.DateTime == null)
-                {
-                    ret = 1;
-                }
-                else
-                {
-                    // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
-                    // second (you change it by playing it), and the user will expect precise sorting.
-                    int cmp = ((DateTime)x.LastPlayed.DateTime).CompareTo((DateTime)y.LastPlayed.DateTime);
-                    ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-                }
+                ret = -1;
+            }
+            else if (y.LastPlayed.DateTime == null)
+            {
+                ret = 1;
+            }
+            else
+            {
+                // Sort this one by exact DateTime because the time is (indirectly) changeable down to the
+                // second (you change it by playing it), and the user will expect precise sorting.
+                int cmp = ((DateTime)x.LastPlayed.DateTime).CompareTo((DateTime)y.LastPlayed.DateTime);
+                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
@@ -884,20 +754,10 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                ret = CompareDateAdded(x, y);
-            }
+            int ret = CompareDateAdded(x, y);
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -920,21 +780,11 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
-
-            if (ret == 0)
-            {
-                int cmp = x.PlayTime.CompareTo(y.PlayTime);
-                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-            }
+            int cmp = x.PlayTime.CompareTo(y.PlayTime);
+            int ret = cmp == 0 ? TitleCompare(x, y) : cmp;
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
@@ -957,47 +807,38 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
+            int ret;
+            if (x.DisableAllMods && !y.DisableAllMods)
             {
-                return recentRet;
+                ret = -1;
             }
-
-            if (ret == 0)
+            else
             {
-                if (x.DisableAllMods && !y.DisableAllMods)
+                if (!x.DisableAllMods && y.DisableAllMods)
                 {
-                    ret = -1;
+                    ret = 1;
                 }
                 else
                 {
-                    if (!x.DisableAllMods && y.DisableAllMods)
-                    {
-                        ret = 1;
-                    }
-                    else
-                    {
-                        string xDisabledMods = x.DisabledMods;
-                        string yDisabledMods = y.DisabledMods;
+                    string xDisabledMods = x.DisabledMods;
+                    string yDisabledMods = y.DisabledMods;
 
-                        ret = (x.DisableAllMods && y.DisableAllMods) || EqualsFast(xDisabledMods, yDisabledMods)
-                            ? TitleCompare(x, y)
-                            // Sort this column content-first for better UX
-                            : xDisabledMods.Length == 0
-                                ? 1
-                                : yDisabledMods.Length == 0
-                                    ? -1
-                                    : string.Compare(xDisabledMods, yDisabledMods,
-                                        StringComparison.InvariantCultureIgnoreCase);
+                    ret = (x.DisableAllMods && y.DisableAllMods) || EqualsFast(xDisabledMods, yDisabledMods)
+                        ? TitleCompare(x, y)
+                        // Sort this column content-first for better UX
+                        : xDisabledMods.Length == 0
+                            ? 1
+                            : yDisabledMods.Length == 0
+                                ? -1
+                                : string.Compare(xDisabledMods, yDisabledMods,
+                                    StringComparison.InvariantCultureIgnoreCase);
 
-                        if (ret == 0)
-                        {
-                            ret = TitleCompare(x, y);
-                        }
+                    if (ret == 0)
+                    {
+                        ret = TitleCompare(x, y);
                     }
                 }
             }
@@ -1023,32 +864,22 @@ internal static class Comparers
 
         public int Compare(FanMission x, FanMission y)
         {
-            if (TrySortPinnedToTop(x, y, _showPinnedAtTop, out int ret))
-            {
-                return ret;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            if (TrySortRecentToTop(x, y, _showRecentAtTop, _dateTimeNow, out int recentRet))
-            {
-                return recentRet;
-            }
+            string xCommentSingleLine = x.CommentSingleLine;
+            string yCommentSingleLine = y.CommentSingleLine;
+
+            int ret =
+                EqualsFast(xCommentSingleLine, yCommentSingleLine) ? TitleCompare(x, y) :
+                // Sort this column content-first for better UX
+                xCommentSingleLine.Length == 0 ? 1 :
+                yCommentSingleLine.Length == 0 ? -1 :
+                string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
             if (ret == 0)
             {
-                string xCommentSingleLine = x.CommentSingleLine;
-                string yCommentSingleLine = y.CommentSingleLine;
-
-                ret =
-                    EqualsFast(xCommentSingleLine, yCommentSingleLine) ? TitleCompare(x, y) :
-                    // Sort this column content-first for better UX
-                    xCommentSingleLine.Length == 0 ? 1 :
-                    yCommentSingleLine.Length == 0 ? -1 :
-                    string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
-
-                if (ret == 0)
-                {
-                    ret = TitleCompare(x, y);
-                }
+                ret = TitleCompare(x, y);
             }
 
             return _sortDirection == SortDirection.Ascending ? ret : -ret;
