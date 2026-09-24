@@ -577,7 +577,7 @@ internal static class Comparers
             {
                 int one = _sortDirection == SortDirection.Ascending ? 1 : -1;
 
-                int ret =
+                ret =
                     x.Rating == y.Rating ? TitleCompare(x, y) :
                     x.Rating == -1 && y.Rating > -1 ? one :
                     x.Rating > -1 && y.Rating == -1 ? -one :
@@ -622,14 +622,14 @@ internal static class Comparers
 #if false
             if (false)
             {
-                int ret =
-                     (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
-                         ? TitleCompare(x, y) :
-                     !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
-                     x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
-                     x.FinishedOn == 0 && y.FinishedOn > 0 ? 1 :
-                     x.FinishedOn > 0 && y.FinishedOn == 0 ? -1 :
-                     x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
+                ret =
+                    (x.FinishedOnUnknown && y.FinishedOnUnknown) || x.FinishedOn == y.FinishedOn
+                        ? TitleCompare(x, y) :
+                    !x.FinishedOnUnknown && y.FinishedOnUnknown ? -1 :
+                    x.FinishedOnUnknown && !y.FinishedOnUnknown ? 1 :
+                    x.FinishedOn == 0 && y.FinishedOn > 0 ? 1 :
+                    x.FinishedOn > 0 && y.FinishedOn == 0 ? -1 :
+                    x.FinishedOn > 0 && y.FinishedOn > 0 && x.FinishedOn < y.FinishedOn ? -1 : 1;
             }
             else
 #endif

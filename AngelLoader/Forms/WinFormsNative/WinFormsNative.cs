@@ -403,11 +403,9 @@ internal static class Native
     // ReSharper disable RedundantCast
 #pragma warning disable IDE0004
     internal static nint MAKELPARAM(int low, int high) => (nint)((high << 16) | (low & 0xffff));
-
     internal static int MAKELONG(int low, int high) => (high << 16) | (low & 0xffff);
     internal static int HIWORD(int n) => (n >> 16) & 0xffff;
     internal static int HIWORD(nint n) => HIWORD(unchecked((int)(long)n));
-
     internal static int LOWORD(int n) => n & 0xffff;
     internal static int LOWORD(nint n) => LOWORD(unchecked((int)(long)n));
     internal static int SignedHIWORD(nint n) => SignedHIWORD(unchecked((int)(long)n));
