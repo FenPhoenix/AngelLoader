@@ -550,8 +550,8 @@ public sealed partial class RtfDisplayedReadmeParser
                         int colorValue = firstDigit - '0';
                         for (int colorI = indexPastHue + 1; colorI < entry.Length; colorI++)
                         {
-                            byte c = entry[colorI];
-                            if (!char.IsAsciiDigit((char)c)) break;
+                            byte b = entry[colorI];
+                            if (!char.IsAsciiDigit((char)b)) break;
                             // Color value too long, must be 1-3 digits
                             if (colorI >= indexPastHue + 3)
                             {
@@ -559,7 +559,7 @@ public sealed partial class RtfDisplayedReadmeParser
                                 return false;
                             }
                             colorValue *= 10;
-                            colorValue += c - '0';
+                            colorValue += b - '0';
                         }
                         if (colorValue is >= 0 and <= 255)
                         {

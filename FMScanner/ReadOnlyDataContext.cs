@@ -1115,7 +1115,7 @@ public sealed class ReadOnlyDataContext
     /// </summary>
     internal sealed class TitlesStrNaturalNumericSortComparer : IComparer<string>
     {
-        public int Compare(string x, string y)
+        public int Compare(string? x, string? y)
         {
             // int32 max digits minus 1 (to avoid having to check for overflow)
             const int maxDigits = 9;
@@ -1126,7 +1126,7 @@ public sealed class ReadOnlyDataContext
             // This also means we don't need to do any guard checks. Any failure case will be caught by the
             // normal logic.
 
-            int xIndexOfColon = x.IndexOf(':', underscoreIndex);
+            int xIndexOfColon = x!.IndexOf(':', underscoreIndex);
 
             int xNum = 0;
             int xEnd = Math.Min(xIndexOfColon, underscoreIndex + maxDigits);
@@ -1144,7 +1144,7 @@ public sealed class ReadOnlyDataContext
                 }
             }
 
-            int yIndexOfColon = y.IndexOf(':', underscoreIndex);
+            int yIndexOfColon = y!.IndexOf(':', underscoreIndex);
 
             int yNum = 0;
             int yEnd = Math.Min(yIndexOfColon, underscoreIndex + maxDigits);
@@ -1168,9 +1168,9 @@ public sealed class ReadOnlyDataContext
 
     internal sealed class FMScanOriginalIndexComparer : IComparer<ScannedFMDataAndError>
     {
-        public int Compare(ScannedFMDataAndError x, ScannedFMDataAndError y)
+        public int Compare(ScannedFMDataAndError? x, ScannedFMDataAndError? y)
         {
-            return x.OriginalIndex.CompareTo(y.OriginalIndex);
+            return x!.OriginalIndex.CompareTo(y!.OriginalIndex);
         }
     }
 
