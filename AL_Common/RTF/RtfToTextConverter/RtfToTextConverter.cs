@@ -2805,8 +2805,8 @@ public sealed partial class RtfToTextConverter
 
         We're going to match LibreOffice here.
         */
-        byte hexNibble1 = CharExtension.CharToHexLookup[byte1];
-        byte hexNibble2 = CharExtension.CharToHexLookup[byte2];
+        byte hexNibble1 = CharToHexLookup[byte1];
+        byte hexNibble2 = CharToHexLookup[byte2];
         // Reject null bytes
         if ((hexNibble1 | hexNibble2).IsBetween(1, 0xFE))
         {
@@ -2825,8 +2825,8 @@ public sealed partial class RtfToTextConverter
 
         We're going to match LibreOffice here.
         */
-        byte hexNibble1 = CharExtension.CharToHexLookup[byte1];
-        byte hexNibble2 = CharExtension.CharToHexLookup[byte2];
+        byte hexNibble1 = CharToHexLookup[byte1];
+        byte hexNibble2 = CharToHexLookup[byte2];
         // Reject null bytes
         if ((hexNibble1 | hexNibble2).IsBetween(1, 0xFE))
         {
@@ -2845,8 +2845,8 @@ public sealed partial class RtfToTextConverter
 
         We're going to match LibreOffice here.
         */
-        byte hexNibble1 = CharExtension.CharToHexLookup[byte1];
-        byte hexNibble2 = CharExtension.CharToHexLookup[byte2];
+        byte hexNibble1 = CharToHexLookup[byte1];
+        byte hexNibble2 = CharToHexLookup[byte2];
         // Reject null bytes
         if ((hexNibble1 | hexNibble2).IsBetween(1, 0xFE))
         {
@@ -2885,7 +2885,7 @@ public sealed partial class RtfToTextConverter
                         negateParam = 1;
                         ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef);
                     }
-                    if (ch.IsAsciiNumeric())
+                    if (char.IsAsciiDigit(ch))
                     {
                         int param = 0;
 
@@ -2895,7 +2895,7 @@ public sealed partial class RtfToTextConverter
                             {
                                 int i;
                                 for (i = 0;
-                                     i < ParamMaxLen + 1 && ch.IsAsciiNumeric();
+                                     i < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
                                      i++, ch = (char)GetByteAtCurrentPosAndIncrement(ref bufferRef))
                                 {
                                     param = (param * 10) + (ch - '0');
@@ -2960,7 +2960,7 @@ public sealed partial class RtfToTextConverter
                         negateParam = 1;
                         ch = (char)GetByte(IncrementCurrentPos());
                     }
-                    if (ch.IsAsciiNumeric())
+                    if (char.IsAsciiDigit(ch))
                     {
                         int param = 0;
 
@@ -2970,7 +2970,7 @@ public sealed partial class RtfToTextConverter
                             {
                                 int i;
                                 for (i = 0;
-                                     i < ParamMaxLen + 1 && ch.IsAsciiNumeric();
+                                     i < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
                                      i++, ch = (char)GetByte(IncrementCurrentPos()))
                                 {
                                     param = (param * 10) + (ch - '0');
@@ -3075,13 +3075,13 @@ public sealed partial class RtfToTextConverter
                     if (GetByteAtCurrentPosAndIncrement(ref bufferRef) == '\'')
                     {
                         byte b = GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                        if (!CharExtension.IsAsciiHexDigit((char)b))
+                        if (!char.IsAsciiHexDigit((char)b))
                         {
                             _currentPos--;
                             break;
                         }
                         b = GetByteAtCurrentPosAndIncrement(ref bufferRef);
-                        if (!CharExtension.IsAsciiHexDigit((char)b))
+                        if (!char.IsAsciiHexDigit((char)b))
                         {
                             _currentPos -= 2;
                             break;
@@ -3119,13 +3119,13 @@ public sealed partial class RtfToTextConverter
                     if (GetByte(IncrementCurrentPos()) == '\'')
                     {
                         byte b = GetByte(IncrementCurrentPos());
-                        if (!CharExtension.IsAsciiHexDigit((char)b))
+                        if (!char.IsAsciiHexDigit((char)b))
                         {
                             _currentPos--;
                             break;
                         }
                         b = GetByte(IncrementCurrentPos());
-                        if (!CharExtension.IsAsciiHexDigit((char)b))
+                        if (!char.IsAsciiHexDigit((char)b))
                         {
                             _currentPos -= 2;
                             break;
@@ -3460,7 +3460,7 @@ public sealed partial class RtfToTextConverter
         int fldinstSymbolNumberCount;
         for (fldinstSymbolNumberCount = 0;
              fldinstSymbolNumberCount < _fldinstSymbolNumberMaxLen + 1 &&
-             ((alphaFound = ch.IsAsciiAlpha()) || ch.IsAsciiNumeric());
+             ((alphaFound = char.IsAsciiLetter(ch)) || char.IsAsciiDigit(ch));
              fldinstSymbolNumberCount++, ch = (char)GetByte(IncrementCurrentPos()))
         {
             if (alphaFound) alphaCharsFound = true;
@@ -3629,7 +3629,7 @@ public sealed partial class RtfToTextConverter
                 if (ch != ' ') return FieldInst_RewindAndSkipGroup(ref bufferRef);
 
                 int numDigitCount = 0;
-                while ((ch = (char)GetByte(IncrementCurrentPos())).IsAsciiNumeric())
+                while (char.IsAsciiDigit(ch = (char)GetByte(IncrementCurrentPos())))
                 {
                     if (numDigitCount > _fldinstSymbolNumberMaxLen)
                     {

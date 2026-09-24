@@ -276,7 +276,7 @@ internal static class DetectDriveData
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool RootIsLetter(string root)
         {
-            return !root.IsEmpty() && root.Length == 2 && root[0].IsAsciiAlpha() && root[1] == ':';
+            return !root.IsEmpty() && root.Length == 2 && char.IsAsciiLetter(root[0]) && root[1] == ':';
         }
     }
 
@@ -362,7 +362,7 @@ internal static class DetectDriveData
     }
 
     private static bool PathStartsWithLetterAndVolumeSeparator(string path) =>
-        path.Length >= 2 && path[0].IsAsciiAlpha() && path[1] == Path.VolumeSeparatorChar;
+        path.Length >= 2 && char.IsAsciiLetter(path[0]) && path[1] == Path.VolumeSeparatorChar;
 
 
     // In case the directory is a symlink pointing at some other drive

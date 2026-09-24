@@ -1133,7 +1133,7 @@ public sealed class ReadOnlyDataContext
             for (int i = underscoreIndex; i < xEnd; i++)
             {
                 char c = x[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     xNum *= 10;
                     xNum += c - '0';
@@ -1151,7 +1151,7 @@ public sealed class ReadOnlyDataContext
             for (int i = underscoreIndex; i < yEnd; i++)
             {
                 char c = y[i];
-                if (c.IsAsciiNumeric())
+                if (char.IsAsciiDigit(c))
                 {
                     yNum *= 10;
                     yNum += c - '0';

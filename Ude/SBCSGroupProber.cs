@@ -197,7 +197,7 @@ internal sealed class SBCSGroupProber : CharsetProber
             {
                 meetMSB = true;
             }
-            else if (!b.IsAsciiAlpha())
+            else if (!char.IsAsciiLetter((char)b))
             {
                 if (meetMSB && cur > prev)
                 {

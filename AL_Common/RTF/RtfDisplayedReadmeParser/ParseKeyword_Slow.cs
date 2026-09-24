@@ -10,7 +10,7 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         char ch = (char)GetByte(IncrementCurrentPos());
 
-        if (!ch.IsAsciiAlpha())
+        if (!char.IsAsciiLetter(ch))
         {
             return HandleControlChar(ref bufferRef, ch);
         }
@@ -24,7 +24,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             byte keywordCount;
             for (keywordCount = 1;
-                 keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
+                 keywordCount < KeywordMaxLen + 1 && char.IsAsciiLetter(ch);
                  keywordCount++, ch = (char)GetByte(IncrementCurrentPos()))
             {
                 Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref keywordRef, (nint)keywordCount), (byte)ch);
@@ -42,7 +42,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
             bool hasParam = false;
             int param = 0;
-            if (ch.IsAsciiNumeric())
+            if (char.IsAsciiDigit(ch))
             {
                 hasParam = true;
                 long longParam = ch - '0';
@@ -50,7 +50,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
                 int paramLength;
                 for (paramLength = 1;
-                     paramLength < ParamMaxLen + 1 && ch.IsAsciiNumeric();
+                     paramLength < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
                      paramLength++, ch = (char)GetByte(IncrementCurrentPos()))
                 {
                     longParam = (longParam * 10) + (ch - '0');

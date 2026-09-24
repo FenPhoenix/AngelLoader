@@ -15,7 +15,7 @@ public sealed partial class RtfToTextConverter
 
         char ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos);
 
-        if (!ch.IsAsciiAlpha())
+        if (!char.IsAsciiLetter(ch))
         {
             ++_currentPos;
 
@@ -28,7 +28,7 @@ public sealed partial class RtfToTextConverter
             byte keywordCount;
             Symbol? symbol;
             for (keywordCount = 1;
-                 keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
+                 keywordCount < KeywordMaxLen + 1 && char.IsAsciiLetter(ch);
                  keywordCount++,
                  ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + keywordCount))
             {
@@ -48,7 +48,7 @@ public sealed partial class RtfToTextConverter
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
             }
             bool hasParam = false;
-            if (ch.IsAsciiNumeric())
+            if (char.IsAsciiDigit(ch))
             {
                 hasParam = true;
                 long longParam = ch - '0';
@@ -56,7 +56,7 @@ public sealed partial class RtfToTextConverter
 
                 int paramLength;
                 for (paramLength = 1;
-                     paramLength < ParamMaxLen + 1 && ch.IsAsciiNumeric();
+                     paramLength < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
                      paramLength++,
                      ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + paramLength))
                 {

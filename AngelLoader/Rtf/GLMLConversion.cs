@@ -224,7 +224,7 @@ internal static class GLMLConversion
                     }
                 }
                 // HTML Unicode named character references
-                else if (i < glml.Length - 3 && glml[i + 1].IsAsciiAlpha())
+                else if (i < glml.Length - 3 && char.IsAsciiLetter(glml[i + 1]))
                 {
                     for (int j = i + 1; i < glml.Length; j++)
                     {
@@ -248,7 +248,7 @@ internal static class GLMLConversion
                             break;
                         }
                         // Support named references with numbers somewhere after their first char ("blk34" for instance)
-                        else if (!glml[j].IsAsciiAlphanumeric())
+                        else if (!char.IsAsciiLetterOrDigit(glml[j]))
                         {
                             sb.Append('&');
                             sb.Append(subSB);

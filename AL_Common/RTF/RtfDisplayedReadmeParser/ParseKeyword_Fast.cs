@@ -12,7 +12,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         char ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos);
 
-        if (!ch.IsAsciiAlpha())
+        if (!char.IsAsciiLetter(ch))
         {
             ++_currentPos;
 
@@ -25,7 +25,7 @@ public sealed partial class RtfDisplayedReadmeParser
             Symbol? symbol;
             byte keywordCount;
             for (keywordCount = 1;
-                 keywordCount < KeywordMaxLen + 1 && ch.IsAsciiAlpha();
+                 keywordCount < KeywordMaxLen + 1 && char.IsAsciiLetter(ch);
                  keywordCount++,
                  ch = (char)GetByteAtPos(ref bufferRef, startingCurrentPos + keywordCount))
             {
@@ -46,7 +46,7 @@ public sealed partial class RtfDisplayedReadmeParser
             }
             bool hasParam = false;
             int param = 0;
-            if (ch.IsAsciiNumeric())
+            if (char.IsAsciiDigit(ch))
             {
                 hasParam = true;
                 long longParam = ch - '0';
@@ -54,7 +54,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
                 int paramLength;
                 for (paramLength = 1;
-                     paramLength < ParamMaxLen + 1 && ch.IsAsciiNumeric();
+                     paramLength < ParamMaxLen + 1 && char.IsAsciiDigit(ch);
                      paramLength++,
                      ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + paramLength))
                 {

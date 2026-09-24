@@ -150,7 +150,7 @@ internal static class RtfProcessing
             // skip past the entire header.
             for (int i = firstIndexPastHeader; i < currentReadmeBytes.Length; i++)
             {
-                if (!currentReadmeBytes[i].IsAsciiAlphanumeric())
+                if (!char.IsAsciiLetterOrDigit((char)currentReadmeBytes[i]))
                 {
                     firstIndexPastHeader = i;
                     break;

@@ -562,7 +562,7 @@ public static partial class Misc
             get => _dict[key.ToAsciiUpper()];
             set
             {
-                if (key.IsAsciiAlpha())
+                if (char.IsAsciiLetter(key))
                 {
                     _dict[key.ToAsciiUpper()] = value;
                 }
@@ -577,7 +577,7 @@ public static partial class Misc
 
         public void Add(char key, DriveMultithreadingLevel value)
         {
-            if (key.IsAsciiAlpha())
+            if (char.IsAsciiLetter(key))
             {
                 _dict.Add(key.ToAsciiUpper(), value);
             }
