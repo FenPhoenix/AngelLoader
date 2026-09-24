@@ -62,15 +62,6 @@ public static partial class Common
         char1 == char2 ||
         (char.IsAsciiLetter(char1) && char.IsAsciiLetter(char2) && (char1 & '_') == (char2 & '_'));
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiAlpha(this byte b) => char.IsAsciiLetter((char)b);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiNumeric(this byte b) => char.IsAsciiDigit((char)b);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAsciiHex(this byte b) => char.IsAsciiHexDigit((char)b);
-
     public static bool IsAsciiAlphaUpper(this string str)
     {
         for (int i = 0; i < str.Length; i++)

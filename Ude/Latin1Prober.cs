@@ -196,7 +196,7 @@ internal sealed class Latin1Prober : CharsetProber
             byte b = buf[cur];
 
             // it's ascii, but it's not a letter
-            if ((b & 0x80) == 0 && !b.IsAsciiAlpha())
+            if ((b & 0x80) == 0 && !char.IsAsciiLetter((char)b))
             {
                 if (cur > prev)
                 {
