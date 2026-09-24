@@ -152,6 +152,36 @@ public sealed partial class MessageBoxCustomForm : DarkFormBase
             IconPictureBox.Margin = IconPictureBox.Margin with { Top = (ContentTLP.Height / 2) - (IconPictureBox.Height / 2), Bottom = 0 };
         }
 
+        /*
+        @Wine: Manual layout because Wine breaks with a FlowLayoutPanel, which insists on "top-to-bottom" meaning
+        "top-to-bottom until a slight breeze hits me and then left-to-right".
+        */
+        #region Manual vertical flow layout
+
+        MessageTopLabel.Location = new Point(0, 18);
+        MessageTopLabel.Size = MessageTopLabel.Size with { Width = MainFLP.Width };
+
+        const int rightMargin = 22;
+
+        Control prevControl = MessageTopLabel;
+        if (_multiChoice)
+        {
+            ChoiceListBox.Location = new Point(0, prevControl.Bottom + 24);
+            ChoiceListBox.Size = ChoiceListBox.Size with { Width = MainFLP.Width - rightMargin };
+
+            prevControl = ChoiceListBox;
+
+            SelectButtonsFLP.Location = new Point(0, prevControl.Bottom);
+            SelectButtonsFLP.Size = SelectButtonsFLP.Size with { Width = MainFLP.Width - (rightMargin - 1) };
+
+            prevControl = SelectButtonsFLP;
+        }
+
+        MessageBottomLabel.Location = new Point(0, prevControl.Bottom + 3);
+        MessageBottomLabel.Size = MessageBottomLabel.Size with { Width = MainFLP.Width - rightMargin };
+
+        #endregion
+
         #endregion
 
         if (_multiChoice)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
@@ -157,11 +158,11 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     /// Use this if you need the FMs in visual order, but take a (probably minor-ish) perf/mem hit.
     /// </summary>
     /// <returns></returns>
-    internal List<FanMission> GetSelectedFMs_InOrder_List()
+    internal ListFast<FanMission> GetSelectedFMs_InOrder_List()
     {
         DataGridViewRow[] selRows = GetOrderedRowsArray();
 
-        List<FanMission> ret = new(selRows.Length);
+        ListFast<FanMission> ret = new(selRows.Length);
         foreach (DataGridViewRow selRow in selRows)
         {
             ret.Add(GetFMFromIndex(selRow.Index));
@@ -635,12 +636,83 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         }
     }
 
+    private void DrawPinIconIfNeeded(DataGridViewCellPaintingEventArgs e, FanMission fm, bool isSelected)
+    {
+        bool fmShouldBePinned = fm.Pinned && !_owner.GetShowUnavailableFMsFilter();
+        if (!fmShouldBePinned) return;
+        if (e.CellStyle == null) return;
+        if (e.Graphics == null) return;
+
+        if ((this.Columns[(int)Column.Title].Visible &&
+             e.ColumnIndex == (int)Column.Title) ||
+            (!this.Columns[(int)Column.Title].Visible &&
+             this.Columns[(int)Column.Archive].Visible &&
+             e.ColumnIndex == (int)Column.Archive) ||
+            (!this.Columns[(int)Column.Title].Visible &&
+             !this.Columns[(int)Column.Archive].Visible &&
+             this.Columns[(int)Column.Author].Visible &&
+             e.ColumnIndex == (int)Column.Author))
+        {
+            float sliceOfCellHeight = (e.CellBounds.Height - 1) - GetValueFromPercent_Float(36, e.CellBounds.Height);
+            RectangleF pinGlyphRect = new()
+            {
+                X = e.CellBounds.Left + (sliceOfCellHeight / 4),
+                Y = e.CellBounds.Top + (sliceOfCellHeight / 4),
+                Width = sliceOfCellHeight,
+                Height = sliceOfCellHeight,
+            };
+
+            e.CellStyle.Padding = e.CellStyle.Padding with { Left = (int)pinGlyphRect.Width + (int)((int)pinGlyphRect.Width / 2.5f) };
+
+            if (!_darkModeEnabled)
+            {
+                e.Paint(e.CellBounds, DataGridViewPaintParts.All);
+                e.Handled = true;
+            }
+
+            Brush foreColorBrush = _darkModeEnabled
+                ? DarkColors.Fen_DarkForegroundBrush
+                : isSelected ? SystemBrushes.HighlightText : SystemBrushes.ControlText;
+
+            SmoothingMode oldSmoothingMode = e.Graphics.SmoothingMode;
+            Matrix oldTransform = e.Graphics.Transform;
+            try
+            {
+                e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
+
+                Images.FitRectInBounds(
+                    e.Graphics,
+                    Images.PinGPathBounds,
+                    pinGlyphRect
+                );
+                e.Graphics.FillPath(foreColorBrush, Images.PinGPath);
+            }
+            finally
+            {
+                e.Graphics.Transform = oldTransform;
+                e.Graphics.SmoothingMode = oldSmoothingMode;
+            }
+        }
+    }
+
     protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
     {
         base.OnCellPainting(e);
 
-        if (!_darkModeEnabled) return;
         if (e.Graphics == null) return;
+
+        bool isSelected = (e.State & DataGridViewElementStates.Selected) != 0;
+
+        if (!_darkModeEnabled)
+        {
+            if (e is { RowIndex: > -1, CellStyle: not null })
+            {
+                FanMission fm = GetFMFromIndex(e.RowIndex);
+                DrawPinIconIfNeeded(e, fm, isSelected);
+            }
+
+            return;
+        }
 
         // This is for having different colored grid lines in recent-highlighted rows.
         // That way, we can get a good, visible separator color for all cases by just having two.
@@ -648,8 +720,6 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         if (e.RowIndex > -1)
         {
             FanMission fm = GetFMFromIndex(e.RowIndex);
-
-            bool isSelected = (e.State & DataGridViewElementStates.Selected) != 0;
 
             #region Paint cell background
 
@@ -674,6 +744,8 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
                 e.CellStyle.ForeColor = isSelected
                     ? DarkColors.Fen_HighlightText
                     : DarkColors.Fen_DarkForeground;
+
+                DrawPinIconIfNeeded(e, fm, isSelected);
             }
 
             e.Paint(e.CellBounds, DataGridViewPaintParts.ContentForeground);

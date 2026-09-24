@@ -569,6 +569,9 @@ public static partial class Common
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ExtIsRar(this string value) => value.EndsWithI(".rar");
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsPk4(this string value) => value.EndsWithI(".pk4");
+
     #endregion
 
     #region Set file attributes

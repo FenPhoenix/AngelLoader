@@ -43,7 +43,7 @@ internal static class FMAudio
 
         List<ValidAudioConvertibleFM> validFMs;
         {
-            List<FanMission> rawFMs = Core.View.GetSelectedFMs_InOrder_List();
+            ListFast<FanMission> rawFMs = Core.View.GetSelectedFMs_InOrder_List();
             validFMs = ValidAudioConvertibleFM.CreateListFrom(rawFMs);
             if (validFMs.Count == 0) return;
 

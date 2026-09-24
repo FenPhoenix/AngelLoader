@@ -9,10 +9,6 @@
     <Configurations>Debug;Release;DebugTestMode;ReleaseTestMode</Configurations>
     <Platforms>x64</Platforms>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-
-	<!-- Get reasonable perf right off the bat -->
-	<!--<TieredCompilation>false</TieredCompilation>
-	<TieredCompilationQuickJit>false</TieredCompilationQuickJit>-->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -32,7 +28,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
   </ItemGroup>
 
   <ItemGroup>

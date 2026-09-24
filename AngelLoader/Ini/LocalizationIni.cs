@@ -14,11 +14,11 @@ internal static partial class Ini
         const BindingFlags _bfLText = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
 
         FieldInfo[] sectionFields = typeof(LText_Class).GetFields(_bfLText);
-        var sections = new Dictionary<ReadOnlyMemory<char>, Dictionary<ReadOnlyMemory<char>, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, new MemoryStringComparer());
+        var sections = new Dictionary<ReadOnlyMemory<char>, Dictionary<ReadOnlyMemory<char>, (FieldInfo FieldInfo, object Obj)>>(sectionFields.Length, CachedKeyComparer);
         foreach (FieldInfo f in sectionFields)
         {
             FieldInfo[] fields = f.FieldType.GetFields(_bfLText);
-            var dict = new Dictionary<ReadOnlyMemory<char>, (FieldInfo, object)>(fields.Length, new MemoryStringComparer());
+            var dict = new Dictionary<ReadOnlyMemory<char>, (FieldInfo, object)>(fields.Length, CachedKeyComparer);
             foreach (FieldInfo field in fields)
             {
                 dict[field.Name.AsMemory()] = (field, f.GetValue(lText)!);
@@ -28,7 +28,7 @@ internal static partial class Ini
 
         #endregion
 
-        List<string> lines = AL_Common.Common.File_ReadAllLines_List(file);
+        List<string> lines = File_ReadAllLines_List(file);
         int linesLength = lines.Count;
         for (int i = 0; i < linesLength; i++)
         {

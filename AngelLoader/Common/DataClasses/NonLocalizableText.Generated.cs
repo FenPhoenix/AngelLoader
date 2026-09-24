@@ -7,5 +7,5 @@ namespace AngelLoader.DataClasses;
 [FenGenCurrentYearDestClassAttribute]
 internal static partial class NonLocalizableText
 {
-    internal const string CurrentYear = "2025";
+    internal const string CurrentYear = "2026";
 }

@@ -5,19 +5,10 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    private static readonly PathComparer _pathComparer = new();
-    public sealed class PathComparer : StringComparer
+    public static readonly PathComparer CachedPathComparer = new();
+    public sealed class PathComparer : IEqualityComparer<string>
     {
-        // Allocations here, but this doesn't ever seem to get hit for Add() or Contains() calls
-        public override int Compare(string? x, string? y)
-        {
-            return x == y ? 0 :
-                x == null ? -1 :
-                y == null ? 1 :
-                string.Compare(x.ToBackSlashes(), y.ToBackSlashes(), StringComparison.OrdinalIgnoreCase);
-        }
-
-        public override bool Equals(string? x, string? y)
+        public bool Equals(string? x, string? y)
         {
             if (x == y) return true;
             if (x == null || y == null) return false;
@@ -26,9 +17,9 @@ public static partial class Common
         }
 
         // @MEM(PathComparer/GetHashCode): We allocate if the string is not already backslash separators
-        public override int GetHashCode(string obj) => obj == null
+        public int GetHashCode(string obj) => obj == null
             ? throw new ArgumentNullException(nameof(obj))
-            : OrdinalIgnoreCase.GetHashCode(obj.ToBackSlashes());
+            : StringComparer.OrdinalIgnoreCase.GetHashCode(obj.ToBackSlashes());
     }
 
     /// <summary>
@@ -36,11 +27,11 @@ public static partial class Common
     /// </summary>
     public sealed class HashSetPathI : HashSet<string>
     {
-        public HashSetPathI() : base(_pathComparer) { }
+        public HashSetPathI() : base(CachedPathComparer) { }
 
-        public HashSetPathI(int capacity) : base(capacity, _pathComparer) { }
+        public HashSetPathI(int capacity) : base(capacity, CachedPathComparer) { }
 
-        public HashSetPathI(IEnumerable<string> collection) : base(collection, _pathComparer) { }
+        public HashSetPathI(IEnumerable<string> collection) : base(collection, CachedPathComparer) { }
 
         /// <inheritdoc cref="HashSet{T}.Add"/>
         public new bool Add(string value) => base.Add(value.ToBackSlashes());

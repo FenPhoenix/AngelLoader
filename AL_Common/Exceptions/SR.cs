@@ -62,6 +62,7 @@ public static class SR
     public static readonly string NotSupported_UnseekableStream = "Stream does not support seeking.";
     public static readonly string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
     public static readonly string InvalidOperation_EmptyStack = "Stack empty.";
+    public static readonly string ArgumentOutOfRange_ListInsert = "Index must be within the bounds of the List.";
     public static readonly string IO_FileNotFound_FileName = "Could not find file '{0}'.";
 #if ENABLE_UNUSED
     public static readonly string InvalidArgumentOffsetCount = "Offset plus count is larger than the length of target array.";

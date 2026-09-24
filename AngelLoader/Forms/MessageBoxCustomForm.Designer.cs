@@ -34,13 +34,13 @@ partial class MessageBoxCustomForm
         this.MessageTopLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
         this.ContentTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.MainFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.MainFLP = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.ChoiceListBox = new AngelLoader.Forms.CustomControls.DarkListBox();
-        this.SelectButtonsFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.SelectButtonsFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.SelectAllButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.MessageBottomLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.OuterTLP = new System.Windows.Forms.TableLayoutPanel();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         ((System.ComponentModel.ISupportInitialize)(this.IconPictureBox)).BeginInit();
@@ -95,7 +95,6 @@ partial class MessageBoxCustomForm
         this.MainFLP.Controls.Add(this.SelectButtonsFLP);
         this.MainFLP.Controls.Add(this.MessageBottomLabel);
         this.MainFLP.Dock = System.Windows.Forms.DockStyle.Fill;
-        this.MainFLP.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
         this.MainFLP.Location = new System.Drawing.Point(60, 0);
         this.MainFLP.Margin = new System.Windows.Forms.Padding(0);
         this.MainFLP.Name = "MainFLP";
@@ -226,12 +225,12 @@ partial class MessageBoxCustomForm
     private System.Windows.Forms.PictureBox IconPictureBox;
     private System.Windows.Forms.TableLayoutPanel ContentTLP;
     private System.Windows.Forms.TableLayoutPanel OuterTLP;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private System.Windows.Forms.FlowLayoutPanel MainFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
+    private AngelLoader.Forms.CustomControls.PanelCustom MainFLP;
     [AL_Common.FenGenAttributes.FenGenForceRemoveSizeAttribute]
     private AngelLoader.Forms.CustomControls.DarkListBox ChoiceListBox;
     private AngelLoader.Forms.CustomControls.DarkLabel MessageBottomLabel;
-    private System.Windows.Forms.FlowLayoutPanel SelectButtonsFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom SelectButtonsFLP;
     private AngelLoader.Forms.CustomControls.StandardButton SelectAllButton;
     private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;

@@ -78,7 +78,7 @@ internal static class FMScan
     /// <param name="scanMessage"></param>
     /// <returns></returns>
     internal static async Task<bool> ScanFMs(
-        NonEmptyList<FanMission> fmsToScan,
+        NonEmptyListFast<FanMission> fmsToScan,
         ScanOptions? scanOptions = null,
         bool scanFullIfNew = false,
         bool suppressSingleFMProgressBoxIfFast = false,
@@ -645,7 +645,7 @@ internal static class FMScan
         #endregion
     }
 
-    internal static Task ScanNewFMs(NonEmptyList<FanMission> newFMs)
+    internal static Task ScanNewFMs(NonEmptyListFast<FanMission> newFMs)
     {
         return ScanFMs(newFMs,
             ScanOptions.FalseDefault(scanGameType: true),
@@ -670,7 +670,7 @@ internal static class FMScan
 
     internal static async Task ScanAllFMs()
     {
-        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(FMsViewList, out var fmsToScan))
+        if (!NonEmptyListFast<FanMission>.TryCreateFrom_Ref(FMsViewList, out var fmsToScan))
         {
             return;
         }
@@ -686,7 +686,7 @@ internal static class FMScan
 
     internal static async Task ScanSelectedFMs()
     {
-        if (!NonEmptyList<FanMission>.TryCreateFrom_Ref(Core.View.GetSelectedFMs_InOrder_List(), out var fmsToScan))
+        if (!NonEmptyListFast<FanMission>.TryCreateFrom_Ref(Core.View.GetSelectedFMs_InOrder_List(), out var fmsToScan))
         {
             return;
         }

@@ -41,7 +41,7 @@ partial class FilterDateForm
         this.ToCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.NoMinLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.NoMaxLabel = new AngelLoader.Forms.CustomControls.DarkTextBox();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 
@@ -206,5 +206,5 @@ partial class FilterDateForm
     private AngelLoader.Forms.CustomControls.DarkCheckBox ToCheckBox;
     private AngelLoader.Forms.CustomControls.DarkTextBox NoMinLabel;
     private AngelLoader.Forms.CustomControls.DarkTextBox NoMaxLabel;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
 }

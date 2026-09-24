@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 using static AngelLoader.Global;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class User_DL_ImportControls : UserControl
+public sealed partial class User_DL_ImportControls : UserControlCustom
 {
     public User_DL_ImportControls()
     {

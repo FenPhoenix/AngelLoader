@@ -1,11 +1,16 @@
-﻿using System;
+﻿//#define TIME_TEST
+
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
 using AngelLoader.Forms.CustomControls.LazyLoaded;
+using AngelLoader.Forms.WinFormsNative;
+using Pfim;
 
 namespace AngelLoader.Forms;
 
@@ -48,31 +53,134 @@ internal sealed class FMTabControlGroup(
 }
 
 /*
-Images loaded from files keep the file stream alive for their entire lifetime, insanely. This means the file
-is "in use" and will cause delete attempts (like FM uninstallation) to fail. So we need to use this workaround
-of loading the file into a memory stream first, so it's only the memory stream being kept alive. This does
-mean we carry around the full file bytes in memory as well as the displayed image, but since we're only
-displaying one at a time and they'll probably be a few megs at most, it's not a big deal.
+Images loaded with Image.FromFile() keep the file handle alive for their entire lifetime, insanely. This means
+the file is "in use" and will cause delete attempts (like FM uninstallation) to fail. However, images loaded with
+Image.FromStream() do NOT keep the file in use. This is completely non-obvious, because every other file API in
+the known universe has the path-taking version just construct and pass a stream to the stream-taking version
+internally. But this one, alone, calls two completely different Windows API functions internally, and the path-
+taking one holds the file handle for the life of the Image.
+
+Because I, quite reasonably, assumed that Image.FromStream() would have the same issue as Image.FromFile(), I
+made this class to load the file into a MemoryStream and then pass that to Image.FromStream(), so that when it
+"held the stream open" (which it turns out it doesn't), it would only hold the MemoryStream and not the file,
+thereby avoiding the file being in use when we're trying to delete it.
+
+But yeah, turns out we can just load the file with Image.FromStream() and everything's fine.
+
+@TDM(TGA format): 2026-08-27: At the time of this writing (TDM 2.14 is the latest), TDM only writes TGA files in
+uncompressed true-color format (value 2). Pfim handles RLE and uncompressed, but not "huffman-delta-run-length
+encoded color-mapped" or "huffman-delta-run-length-4-pass-quadtree-type process encoded color-mapped", from the
+looks of it. If we wanted to be obsessive we could remove the compressed TGA handling code, but we've got Pfim
+down to like 18K already so meh.
 */
 public sealed class MemoryImage : IDisposable
 {
-    private readonly MemoryStream _memoryStream;
+    private GCHandle _pfimHandle;
     public readonly Image Img;
+    private readonly Targa? _tgaImg;
     public string Path { get; private set; }
+    private readonly bool _isTga;
 
     public MemoryImage(string path)
     {
         Path = path;
-        byte[] bytes = File.ReadAllBytes(path);
-        _memoryStream = new MemoryStream(bytes);
-        Img = Image.FromStream(_memoryStream);
+        if (path.EndsWithI(".tga"))
+        {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
+            _isTga = true;
+
+            _tgaImg = Pfimage.FromFile(path);
+            PixelFormat format = _tgaImg.Format switch
+            {
+                Pfim.ImageFormat.Rgb24 => PixelFormat.Format24bppRgb,
+                Pfim.ImageFormat.Rgba32 => PixelFormat.Format32bppArgb,
+                Pfim.ImageFormat.R5g5b5 => PixelFormat.Format16bppRgb555,
+                Pfim.ImageFormat.R5g6b5 => PixelFormat.Format16bppRgb565,
+                Pfim.ImageFormat.R5g5b5a1 => PixelFormat.Format16bppArgb1555,
+                Pfim.ImageFormat.Rgb8 => PixelFormat.Format8bppIndexed,
+                _ => throw new InvalidDataException("Couldn't load '" + path + "'; pixel format not supported."),
+            };
+            _pfimHandle = GCHandle.Alloc(_tgaImg.Data, GCHandleType.Pinned);
+            IntPtr ptr = Marshal.UnsafeAddrOfPinnedArrayElement(_tgaImg.Data, 0);
+
+            Img = new Bitmap(_tgaImg.Width, _tgaImg.Height, _tgaImg.Stride, format, ptr);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(TGA) Time: " + sw.Elapsed);
+#endif
+        }
+        // PCX loading is somewhat slow, but then again it's unlikely most people will use it.
+        else if (path.EndsWithI(".pcx"))
+        {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
+            _isTga = false;
+
+            Img = DmitryBrant.ImageFormats.PcxReader.Load(path);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(PCX) Time: " + sw.Elapsed);
+#endif
+        }
+        else
+        {
+#if TIME_TEST
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
+            _isTga = false;
+
+            using FileStream fileStream = File_OpenReadFast(path, FileStreamBufferSize);
+            Img = Image.FromStream(fileStream);
+
+#if TIME_TEST
+            sw.Stop();
+            System.Diagnostics.Trace.WriteLine("(Other) Time: " + sw.Elapsed);
+#endif
+        }
+    }
+
+    /// <summary>
+    /// Disposes and assigns a new one.
+    /// </summary>
+    /// <param name="memoryImage"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static MemoryImage Recreate(MemoryImage? memoryImage, string path)
+    {
+        memoryImage?.Dispose();
+        return new MemoryImage(path);
     }
 
     public void Dispose()
     {
         Path = "";
         Img.Dispose();
-        _memoryStream.Dispose();
+        if (_isTga)
+        {
+            try
+            {
+                if (_pfimHandle.IsAllocated)
+                {
+                    _pfimHandle.Free();
+                }
+            }
+            catch
+            {
+                // It might still throw if some weird thread access to the handle happens I guess, so just in case
+            }
+            finally
+            {
+                _tgaImg?.Dispose();
+            }
+        }
     }
 }
 

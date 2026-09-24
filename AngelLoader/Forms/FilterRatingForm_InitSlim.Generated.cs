@@ -14,7 +14,7 @@ sealed partial class FilterRatingForm
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ResetButton = new AngelLoader.Forms.CustomControls.DarkButton();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.BottomFLP.SuspendLayout();
         this.SuspendLayout();
         // 

@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class ImagePanelCustom : Panel, IDarkable
+public sealed class ImagePanelCustom : PanelCustom, IDarkable
 {
     [PublicAPI]
     public Color DrawnBackColor = SystemColors.Control;

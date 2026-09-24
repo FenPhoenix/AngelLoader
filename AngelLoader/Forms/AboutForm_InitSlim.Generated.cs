@@ -14,7 +14,7 @@ partial class AboutForm
         OKButton = new CustomControls.StandardButton();
         AngelLoaderUsesLabel = new CustomControls.DarkLabel();
         LogoTextPictureBox = new System.Windows.Forms.PictureBox();
-        OK_FLP = new System.Windows.Forms.FlowLayoutPanel();
+        OK_FLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         BuildDateLabel = new CustomControls.DarkLabel();
         ((System.ComponentModel.ISupportInitialize)LogoPictureBox).BeginInit();
         ((System.ComponentModel.ISupportInitialize)LogoTextPictureBox).BeginInit();

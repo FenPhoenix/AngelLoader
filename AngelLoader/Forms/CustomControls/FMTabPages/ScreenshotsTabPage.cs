@@ -245,8 +245,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #endif
                             Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
                             SetCurrentScreenshotFileName();
-                            _currentScreenshotImage?.Dispose();
-                            _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
+                            _currentScreenshotImage = MemoryImage.Recreate(_currentScreenshotImage, CurrentScreenshotFileName);
                         }
                     }
                     catch
@@ -256,8 +255,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #endif
                         Screenshots.PopulateScreenshotFileNames(fm, ScreenshotFileNames);
                         SetCurrentScreenshotFileName();
-                        _currentScreenshotImage?.Dispose();
-                        _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
+                        _currentScreenshotImage = MemoryImage.Recreate(_currentScreenshotImage, CurrentScreenshotFileName);
                     }
                 }
                 else
@@ -265,8 +263,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
 #if TESTING
                     System.Diagnostics.Trace.WriteLine("Didn't preload");
 #endif
-                    _currentScreenshotImage?.Dispose();
-                    _currentScreenshotImage = new MemoryImage(CurrentScreenshotFileName);
+                    _currentScreenshotImage = MemoryImage.Recreate(_currentScreenshotImage, CurrentScreenshotFileName);
                 }
                 _page.ScreenshotsPictureBox.SetImage(_currentScreenshotImage.Img, GetGamma());
             }

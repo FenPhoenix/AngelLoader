@@ -4,14 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using AL_Common.RTF;
 using AngelLoader.DataClasses;
-using static AL_Common.RtfDisplayedReadmeParser;
 
 namespace AngelLoader;
 
 internal static class RtfProcessing
 {
-    #region Private fields
+    #region Fields
 
     #region Horizontal line setup
 
@@ -53,8 +53,7 @@ internal static class RtfProcessing
 
     // Static because we're very likely to need it a lot (for every rtf readme in dark mode), and we don't want
     // to make a new one every time.
-    private static RtfDisplayedReadmeParser? _rtfDisplayedReadmeParser;
-    private static RtfDisplayedReadmeParser RtfDisplayedReadmeParser => _rtfDisplayedReadmeParser ??= new RtfDisplayedReadmeParser();
+    private static readonly RtfDisplayedReadmeParser _rtfDisplayedReadmeParser = new();
 
     #region Colors
 
@@ -74,113 +73,24 @@ internal static class RtfProcessing
 
     #endregion
 
-    #region Langs
-
-    // +1 for adding a space after the digits
-    private static readonly ListFast<byte> _codePageBytes = new(RTFParserCommon.MaxLangNumDigits + 1);
-
-    private static readonly byte[] _lang = @"\lang"u8.ToArray();
-
-    private static readonly byte[] _ansicpg = @"\ansicpg"u8.ToArray();
-
-    #endregion
-
-    #endregion
-
     internal static readonly string RTF_DarkBackgroundString = @"{\*\background{\shp{\*\shpinst{\sp{\sn fillColor}{\sv "
                                                                + ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground).ToStrInv()
                                                                + "}}}}}";
     private static readonly byte[] RTF_DarkBackgroundBytes = Encoding.ASCII.GetBytes(RTF_DarkBackgroundString);
 
-    private static ListFast<byte> CreateColorTableRTFBytes(List<Color>? colorTable)
+    #endregion
+
+    /*
+    The first parse takes like 20ms, even when subsequent ones take <1ms. So do the first slow parse in parallel
+    during startup if we're not already loading an RTF readme right away (if we are then it will already do the
+    parse then). This speeds up the first selection of an FM with an RTF readme when the startup FM readme was
+    plain text.
+    */
+    internal static void WarmUpRtfParser()
     {
-        // "\red255\green255\blue255;" = 25 chars
-        const int maxColorEntryStringLength = 25;
-
-        // Size us large enough that we don't reallocate
-        ListFast<byte> colorEntriesBytesList = new(
-            _colortbl.Length +
-            (maxColorEntryStringLength * colorTable?.Count ?? 0)
-            + 2);
-
-        colorEntriesBytesList.AddRange_Large(_colortbl);
-
-        if (colorTable != null)
-        {
-            for (int i = 0; i < colorTable.Count; i++)
-            {
-                Color invertedColor;
-                Color currentColor = colorTable[i];
-                if (i == 0 && currentColor.A == 0)
-                {
-                    // We can just do the standard thing now, because with the sys color hook our default color
-                    // is now our bright foreground color
-                    colorEntriesBytesList.Add((byte)';');
-                    continue;
-                }
-                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
-                // white and that's a bit too bright.
-                else if (currentColor is { R: 0, G: 0, B: 0 })
-                {
-                    invertedColor = DarkColors.Fen_DarkForeground;
-                }
-                else if (ColorIsTheSameAsBackground(currentColor))
-                {
-                    invertedColor = DarkColors.Fen_DarkBackground;
-                }
-                else
-                {
-                    invertedColor = ColorUtils.InvertLightness(currentColor);
-
-                    // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be
-                    // 254 or less... don't ask me
-                    if (invertedColor is { R: 255, G: 255, B: 255 })
-                    {
-                        invertedColor = Color.FromArgb(254, 254, 254);
-                    }
-                }
-
-                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
-
-                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
-
-                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
-
-                colorEntriesBytesList.Add((byte)';');
-            }
-        }
-
-        colorEntriesBytesList.Add((byte)'}');
-
-        return colorEntriesBytesList;
-
-        #region Local functions
-
-        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
-        // new background color to keep author intent (avoiding spoilers etc.)
-        static bool ColorIsTheSameAsBackground(Color color) => color is { R: 255, G: 255, B: 255 };
-
-        static ListFast<byte> ByteToASCIICharBytes(byte number)
-        {
-            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
-            // a new byte array EVERY time through here (which is a lot)
-            _colorNumberBytes.ClearFast();
-
-            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
-
-            for (int i = 0; i < digits; i++)
-            {
-                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
-                number /= 10;
-            }
-
-            return _colorNumberBytes;
-        }
-
-        #endregion
+        // This string contains enough RTF data to trigger the main codepaths to run and warm up. Just "{\rtf1}"
+        // is not sufficient.
+        _ = _rtfDisplayedReadmeParser.GetData(@"{\rtf1\ansicpg1252{\fonttbl\f0\cpg1252 Dummy;}{\colortbl;}}"u8.ToArray(), true);
     }
 
     internal static byte[] GetProcessedRTFBytes(byte[] currentReadmeBytes, bool darkMode)
@@ -189,144 +99,39 @@ internal static class RtfProcessing
         // and arrays for our readme bytes is going to blow out memory.
 
 #if PROCESS_README_TIME_TEST
-        TimeSpan totalTime = TimeSpan.Zero;
-#endif
-
-        /*
-        It's much faster on average to run pre-checks and be able to avoid an expensive parse.
-        We don't want to severely degrade every rtf readme's load speed just because some of them need parsing.
-        */
-
-        bool colorTableWorkRequired = false;
-        bool langWorkRequired = false;
-
-        if (darkMode)
-        {
-            #region Precheck for \colortbl
-
-#if PROCESS_README_TIME_TEST
-            System.Diagnostics.Stopwatch preCheckForColorTableTimer = new();
-            preCheckForColorTableTimer.Start();
-#endif
-
-            colorTableWorkRequired = currentReadmeBytes.Contains(_colortbl);
-
-#if PROCESS_README_TIME_TEST
-            preCheckForColorTableTimer.Stop();
-            TimeSpan preCheckForColorTableTimerElapsed = preCheckForColorTableTimer.Elapsed;
-            totalTime = totalTime.Add(preCheckForColorTableTimerElapsed);
-            System.Diagnostics.Trace.WriteLine(nameof(preCheckForColorTableTimer) + " took:\r\n" + preCheckForColorTableTimerElapsed);
-#endif
-
-            #endregion
-        }
-
-        #region Precheck for \lang fixing work required
-
-#if PROCESS_README_TIME_TEST
-        System.Diagnostics.Stopwatch preCheckForLangsTimer = new();
-        preCheckForLangsTimer.Start();
-#endif
-
-        int startFrom = 0;
-        while (startFrom > -1 && startFrom < currentReadmeBytes.Length - 1)
-        {
-            (int start, int end) = FindIndexOfLangWithNum(currentReadmeBytes, startFrom);
-            if ((start | end) > -1 &&
-                end - (start + 5) <= RTFParserCommon.MaxLangNumDigits)
-            {
-                int num = 0;
-                for (int i = start + 5; i < end; i++)
-                {
-                    byte b = currentReadmeBytes[i];
-                    if (b.IsAsciiNumeric())
-                    {
-                        num *= 10;
-                        num += b - '0';
-                    }
-                }
-
-                if (num <= RTFParserCommon.MaxLangNumIndex)
-                {
-                    int codePage = RTFParserCommon.LangToCodePage[num];
-                    // The only known broken readmes only need code page 1251 to fix them, so for now let's just
-                    // only support that, to exclude as many readmes as possible from an expensive full parse.
-#if true
-                    if (codePage is 1251)
-#else
-                    if (codePage is > -1 and not 1252)
-#endif
-                    {
-                        langWorkRequired = true;
-                        break;
-                    }
-                }
-            }
-            startFrom = end;
-        }
-
-#if PROCESS_README_TIME_TEST
-        preCheckForLangsTimer.Stop();
-        TimeSpan preCheckForLangsTimerElapsed = preCheckForLangsTimer.Elapsed;
-        totalTime = totalTime.Add(preCheckForLangsTimerElapsed);
-        System.Diagnostics.Trace.WriteLine(nameof(preCheckForLangsTimer) + " took:\r\n" + preCheckForLangsTimerElapsed);
-#endif
-
-        #endregion
-
-        #region Parse
-
-#if PROCESS_README_TIME_TEST
         System.Diagnostics.Stopwatch parseTimer = new();
         parseTimer.Start();
 #endif
 
-        (bool success, List<Color>? colorTable, List<LangItem>? langItems) =
-            RtfDisplayedReadmeParser.GetData(
-                new ArrayWithLength<byte>(currentReadmeBytes),
-                getColorTable: colorTableWorkRequired,
-                getLangs: langWorkRequired);
+        (bool success, List<RtfColor>? colorTable, List<CodePageItem>? codePageItems) =
+            _rtfDisplayedReadmeParser.GetData(currentReadmeBytes, getColorTable: darkMode);
 
 #if PROCESS_README_TIME_TEST
         parseTimer.Stop();
         TimeSpan parseTimerElapsed = parseTimer.Elapsed;
-        totalTime = totalTime.Add(parseTimerElapsed);
-        System.Diagnostics.Trace.WriteLine(nameof(parseTimer) + " took:\r\n" + parseTimerElapsed);
-#endif
-
-        #endregion
-
-#if PROCESS_README_TIME_TEST
-        System.Diagnostics.Trace.WriteLine("Total time:\r\n" + totalTime);
+        System.Diagnostics.Trace.WriteLine(nameof(_rtfDisplayedReadmeParser) + "." + nameof(RtfDisplayedReadmeParser.GetData) + "() took:\r\n" + parseTimerElapsed);
 #endif
 
         int colorTableEntryLength = 0;
 
         ListFast<byte>? colorEntriesBytesList = null;
 
-        if (success && colorTableWorkRequired)
+        if (success && colorTable?.Count > 0)
         {
             colorEntriesBytesList = CreateColorTableRTFBytes(colorTable);
             colorTableEntryLength = colorEntriesBytesList.Count;
         }
 
-        int extraAnsiCpgCombinedLength = 0;
-        int ansiCpgLength = _ansicpg.Length;
+        int extraCpgCombinedLength = 0;
 
-        if (!(success && langWorkRequired && langItems?.Count > 0) && !darkMode)
+        if (!(success && codePageItems?.Count > 0) && !darkMode)
         {
             return currentReadmeBytes;
         }
 
-        if (success && langWorkRequired && langItems?.Count > 0)
+        if (success && codePageItems?.Count > 0)
         {
-            for (int i = 0; i < langItems.Count; i++)
-            {
-                LangItem item = langItems[i];
-                item.Index += colorTableEntryLength;
-                // +1 for adding a space after the digits
-                extraAnsiCpgCombinedLength += ansiCpgLength + item.DigitsCount + 1;
-            }
+            extraCpgCombinedLength = (RtfDisplayedReadmeParser.FontNameSuffixCodePageLength) * codePageItems.Count;
         }
 
         byte[] retBytes;
@@ -336,7 +141,7 @@ internal static class RtfProcessing
                 currentReadmeBytes.Length +
                 colorTableEntryLength +
                 RTF_DarkBackgroundBytes.Length +
-                extraAnsiCpgCombinedLength;
+                extraCpgCombinedLength;
             retBytes = new byte[retBytesLength];
 
             int lastClosingBraceIndex = Array.LastIndexOf(currentReadmeBytes, (byte)'}');
@@ -361,13 +166,19 @@ internal static class RtfProcessing
             int lastIndexSource = firstIndexPastHeader;
             int lastIndexDest = firstIndexPastHeader;
 
-            // Copy color table
-            // Fortunately, only the first color table is used, so we can just stick ourselves right at the start
-            // and not even have to awkwardly delete the old color table.
-            // Now watch Windows get an update that breaks that.
-            // @DarkModeNote: We could add code to delete the old color table at some point.
-            // This would make us some amount slower, and it's not necessary currently, so let's just not do it
-            // for now.
+            /*
+            Copy color table
+            We insert our new color table right after the header (and thus before the old color table) so as to
+            "override" the old one, which we don't remove. And by "override" I mean that both color tables are
+            still technically read and "used", but since the color indexes are implicit, the old color table's
+            indexes are all now out of range of anything that's actually used in the file, because our new one
+            uses all the previous indexes for itself. So, yeah, we should actually be removing the old color
+            table, but that would be work and stuff so whatever...
+
+            @DarkModeNote: We could add code to delete the old color table at some point.
+            This would make us some amount slower, and it's not necessary currently, so let's just not do it for
+            now.
+            */
             if (colorEntriesBytesList != null)
             {
                 ReadOnlySpan<byte> colorTableSpan = colorEntriesBytesList.ItemsArray.AsSpan(0, colorTableEntryLength);
@@ -375,9 +186,9 @@ internal static class RtfProcessing
                 lastIndexDest += colorTableEntryLength;
             }
 
-            if (success && langWorkRequired && langItems?.Count > 0)
+            if (success && codePageItems?.Count > 0)
             {
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
             }
 
             ReadOnlySpan<byte> bodyToLastClosingBrace = currentReadmeBytesSpan[lastIndexSource..lastClosingBraceIndex];
@@ -437,9 +248,9 @@ internal static class RtfProcessing
         }
         else
         {
-            if (success && langWorkRequired && langItems?.Count > 0)
+            if (success && codePageItems?.Count > 0)
             {
-                retBytes = new byte[currentReadmeBytes.Length + extraAnsiCpgCombinedLength];
+                retBytes = new byte[currentReadmeBytes.Length + extraCpgCombinedLength];
 
                 ReadOnlySpan<byte> currentReadmeBytesSpan = currentReadmeBytes.AsSpan();
                 Span<byte> retBytesSpan = retBytes.AsSpan();
@@ -447,7 +258,7 @@ internal static class RtfProcessing
                 int lastIndexSource = 0;
                 int lastIndexDest = 0;
 
-                CopyInserts(langItems, currentReadmeBytesSpan, retBytesSpan, ansiCpgLength, ref lastIndexSource, ref lastIndexDest);
+                InsertCodePages(codePageItems, colorTableEntryLength, currentReadmeBytesSpan, retBytesSpan, ref lastIndexSource, ref lastIndexDest);
 
                 // One more to copy everything from the last index to the end
                 currentReadmeBytesSpan[lastIndexSource..].CopyTo(retBytesSpan[lastIndexDest..]);
@@ -456,96 +267,123 @@ internal static class RtfProcessing
 
             return currentReadmeBytes;
         }
-
-        #region Local functions
-
-        static (int Start, int End) FindIndexOfLangWithNum(byte[] input, int start = 0)
-        {
-            byte firstByte = _lang[0];
-            int index = Array.IndexOf(input, firstByte, start);
-
-            while (index > -1)
-            {
-                for (int i = 0; i < _lang.Length; i++)
-                {
-                    if (index + i >= input.Length) return (-1, -1);
-                    if (_lang[i] != input[index + i])
-                    {
-                        if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return (-1, -1);
-                        break;
-                    }
-
-                    if (i == _lang.Length - 1)
-                    {
-                        int firstDigitIndex = index + i + 1;
-
-                        int numIndex = firstDigitIndex;
-                        while (numIndex < input.Length - 1 && input[numIndex].IsAsciiNumeric())
-                        {
-                            numIndex++;
-                        }
-                        if (numIndex > firstDigitIndex)
-                        {
-                            return (index, numIndex);
-                        }
-                        else
-                        {
-                            index = numIndex;
-                        }
-                    }
-                }
-            }
-
-            return (-1, -1);
-        }
-
-        #endregion
     }
 
-    private static void CopyInserts(
-        List<LangItem> langItems,
+    private static void InsertCodePages(
+        List<CodePageItem> codePageItems,
+        int colorTableEntryLength,
         ReadOnlySpan<byte> currentReadmeBytesSpan,
         Span<byte> retBytesSpan,
-        int ansiCpgLength,
         ref int lastIndexSource,
         ref int lastIndexDest)
     {
         int plus = 0;
-        ReadOnlySpan<byte> ansiCpgSpan = _ansicpg.AsSpan();
-        for (int i = 0; i < langItems.Count; i++)
+        for (int i = 0; i < codePageItems.Count; i++)
         {
-            LangItem item = langItems[i];
-            ListFast<byte> cpgBytes = CodePageToBytes(item.CodePage, item.DigitsCount);
+            CodePageItem item = codePageItems[i];
 
-            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (item.Index - lastIndexDest) + plus);
+            int itemIndex = item.Index + colorTableEntryLength;
+
+            ReadOnlySpan<byte> bodySpan = currentReadmeBytesSpan.Slice(lastIndexSource, (itemIndex - lastIndexDest) + plus);
             bodySpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexSource += bodySpan.Length;
             lastIndexDest += bodySpan.Length;
 
-            ansiCpgSpan.CopyTo(retBytesSpan[lastIndexDest..]);
-            lastIndexDest += ansiCpgLength;
-            ReadOnlySpan<byte> codePageSpan = cpgBytes.ItemsArray.AsSpan()[..cpgBytes.Count];
+            ReadOnlySpan<byte> codePageSpan = item.CodePageBytes.AsSpan();
             codePageSpan.CopyTo(retBytesSpan[lastIndexDest..]);
             lastIndexDest += codePageSpan.Length;
-            plus += ansiCpgLength + codePageSpan.Length;
+            plus += RtfDisplayedReadmeParser.FontNameSuffixCodePageLength;
+        }
+    }
+
+    private static ListFast<byte> CreateColorTableRTFBytes(List<RtfColor>? colorTable)
+    {
+        // "\red255\green255\blue255;" = 25 chars
+        const int maxColorEntryStringLength = 25;
+
+        // Size us large enough that we don't reallocate
+        ListFast<byte> colorEntriesBytesList = new(
+            _colortbl.Length +
+            (maxColorEntryStringLength * colorTable?.Count ?? 0)
+            + 2);
+
+        colorEntriesBytesList.AddRange_Large(_colortbl);
+
+        if (colorTable != null)
+        {
+            for (int i = 0; i < colorTable.Count; i++)
+            {
+                RtfColor invertedColor;
+                RtfColor currentColor = colorTable[i];
+                if (i == 0 && currentColor.IsDefaultColor)
+                {
+                    // We can just do the standard thing now, because with the sys color hook our default color
+                    // is now our bright foreground color
+                    colorEntriesBytesList.Add((byte)';');
+                    continue;
+                }
+                // Set pure black to custom-white (not pure white), otherwise it would invert around to pure
+                // white and that's a bit too bright.
+                else if (currentColor is { R: 0, G: 0, B: 0 })
+                {
+                    invertedColor = DarkColors.Fen_DarkForeground_Rtf;
+                }
+                else if (ColorIsTheSameAsBackground(currentColor))
+                {
+                    invertedColor = DarkColors.Fen_DarkBackground_Rtf;
+                }
+                else
+                {
+                    invertedColor = ColorUtils.InvertLightness(currentColor);
+
+                    // For some reason RTF doesn't accept a \cfN if the color is 255 all around, it has to be
+                    // 254 or less... don't ask me
+                    if (invertedColor is { R: 255, G: 255, B: 255 })
+                    {
+                        invertedColor = new RtfColor(254, 254, 254);
+                    }
+                }
+
+                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
+
+                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
+
+                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
+                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
+
+                colorEntriesBytesList.Add((byte)';');
+            }
         }
 
-        return;
+        colorEntriesBytesList.Add((byte)'}');
 
-        static ListFast<byte> CodePageToBytes(int codePage, int digits)
+        return colorEntriesBytesList;
+
+        #region Local functions
+
+        // One file (In These Enlightened Times) had some hidden (white-on-white) text, so make that match our
+        // new background color to keep author intent (avoiding spoilers etc.)
+        static bool ColorIsTheSameAsBackground(RtfColor color) => color is { R: 255, G: 255, B: 255 };
+
+        static ListFast<byte> ByteToASCIICharBytes(byte number)
         {
-            _codePageBytes.ClearFast();
+            // Use global 3-byte list and do allocation-less clears and inserts, otherwise we would allocate
+            // a new byte array EVERY time through here (which is a lot)
+            _colorNumberBytes.ClearFast();
+
+            int digits = number <= 9 ? 1 : number <= 99 ? 2 : 3;
 
             for (int i = 0; i < digits; i++)
             {
-                _codePageBytes.InsertAtZeroFast((byte)((codePage % 10) + '0'));
-                codePage /= 10;
+                _colorNumberBytes.InsertAtZeroFast((byte)((number % 10) + '0'));
+                number /= 10;
             }
 
-            // Use the option for control words to have a space after them, for safety
-            _codePageBytes.Add((byte)' ');
-
-            return _codePageBytes;
+            return _colorNumberBytes;
         }
+
+        #endregion
     }
 }

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using JetBrains.Annotations;
 
 namespace AL_Common;
@@ -11,53 +10,6 @@ namespace AL_Common;
 public static partial class Common
 {
     #region Classes
-
-    [PublicAPI]
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct ArrayWithLength<T>
-    {
-        public readonly T[] Array;
-        public readonly int Length;
-
-        public ArrayWithLength()
-        {
-            Array = System.Array.Empty<T>();
-            Length = 0;
-        }
-
-        public ArrayWithLength(T[] array)
-        {
-            Array = array;
-            Length = array.Length;
-        }
-
-        public ArrayWithLength(T[] array, int length)
-        {
-            Array = array;
-            Length = length;
-        }
-
-        // This MUST be a method (not a static field) to maintain performance!
-        public static ArrayWithLength<T> Empty() => new();
-
-        /// <summary>
-        /// Manually bounds-checked past <see cref="T:Length"/>.
-        /// If you don't need bounds-checking past <see cref="T:Length"/>, access <see cref="T:Array"/> directly.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
-        public T this[int index]
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
-            {
-                // Very unfortunately, we have to manually bounds-check here, because our array could be longer
-                // than Length (such as when it comes from a pool).
-                if (index > Length - 1) ThrowHelper.IndexOutOfRange();
-                return Array[index];
-            }
-        }
-    }
 
     // How many times have you thought, "Gee, I wish I could just reach in and grab that backing array from
     // that List, instead of taking the senseless performance hit of having it copied to a newly allocated
@@ -108,6 +60,11 @@ public static partial class Common
         {
             ItemsArray = new T[capacity];
             _itemsArrayLength = capacity;
+        }
+
+        public int IndexOf(T item)
+        {
+            return Array.IndexOf(ItemsArray, item, 0, Count);
         }
 
         public void RemoveAt(int index)
@@ -185,11 +142,81 @@ public static partial class Common
             AddRange_Large(items);
         }
 
+        public void TrimExcess()
+        {
+            int threshold = (int)(((double)_itemsArrayLength) * 0.9);
+            if (Count < threshold)
+            {
+                Capacity = Count;
+            }
+        }
+
+        public void Insert(int index, T item)
+        {
+            if ((uint)index > (uint)Count)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_ListInsert);
+            }
+
+            if (Count == _itemsArrayLength)
+            {
+                EnsureCapacity(Count + 1);
+            }
+
+            if (index < Count)
+            {
+                Array.Copy(ItemsArray, index, ItemsArray, index + 1, Count - index);
+            }
+
+            ItemsArray[index] = item;
+            Count++;
+        }
+
         public void InsertAtZeroFast(T item)
         {
             Array.Copy(ItemsArray, 0, ItemsArray, 1, Count);
             ItemsArray[0] = item;
             Count++;
+        }
+
+        public T? Find(Predicate<T> match)
+        {
+            for (int i = 0; i < Count; i++)
+            {
+                if (match(ItemsArray[i]))
+                {
+                    return ItemsArray[i];
+                }
+            }
+
+            return default;
+        }
+
+        public bool Contains(T item)
+        {
+            if (item == null)
+            {
+                for (int i = 0; i < Count; i++)
+                {
+                    if (ItemsArray[i] == null)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            EqualityComparer<T> equalityComparer = EqualityComparer<T>.Default;
+            for (int j = 0; j < Count; j++)
+            {
+                if (equalityComparer.Equals(ItemsArray[j], item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /*
@@ -237,6 +264,16 @@ public static partial class Common
                     Count = 0;
                 }
             }
+        }
+
+        public void CopyTo(T[] array)
+        {
+            CopyTo(array, 0);
+        }
+
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            Array.Copy(ItemsArray, 0, array, arrayIndex, Count);
         }
 
         public void HardReset(int capacity)

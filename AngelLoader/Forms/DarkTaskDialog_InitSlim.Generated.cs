@@ -8,7 +8,7 @@ partial class DarkTaskDialog
     private void InitSlim()
     {
         this.IconPictureBox = new System.Windows.Forms.PictureBox();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         this.ViewLogButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.DarkButton();
         this.NoButton = new AngelLoader.Forms.CustomControls.DarkButton();

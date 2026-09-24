@@ -170,25 +170,35 @@ internal sealed class Lazy_ReadmeEncodingsMenu : IEventDisabler, IDarkable
 
         CentralEuropeanMenu.DropDown.Items.AddRange(
             new ToolStripMenuItemWithBackingField<int>(1250),
-            new ToolStripMenuItemWithBackingField<int>(28592), new ToolStripMenuItemWithBackingField<int>(852),
-            new ToolStripMenuItemWithBackingField<int>(10029), new ToolStripMenuItemWithBackingField<int>(10082),
+            new ToolStripMenuItemWithBackingField<int>(28592),
+            new ToolStripMenuItemWithBackingField<int>(852),
+            new ToolStripMenuItemWithBackingField<int>(10029),
+            new ToolStripMenuItemWithBackingField<int>(10082),
             new ToolStripMenuItemWithBackingField<int>(20106),
             new ToolStripMenuItemWithBackingField<int>(10010)
         );
 
         ChineseMenu.DropDown.Items.AddRange(
-            new ToolStripMenuItemWithBackingField<int>(51936), new ToolStripMenuItemWithBackingField<int>(936),
-            new ToolStripMenuItemWithBackingField<int>(20936), new ToolStripMenuItemWithBackingField<int>(54936),
-            new ToolStripMenuItemWithBackingField<int>(52936), new ToolStripMenuItemWithBackingField<int>(50227),
-            new ToolStripMenuItemWithBackingField<int>(10008), new ToolStripMenuItemWithBackingField<int>(950),
-            new ToolStripMenuItemWithBackingField<int>(20000), new ToolStripMenuItemWithBackingField<int>(20002),
+            new ToolStripMenuItemWithBackingField<int>(51936),
+            new ToolStripMenuItemWithBackingField<int>(936),
+            new ToolStripMenuItemWithBackingField<int>(20936),
+            new ToolStripMenuItemWithBackingField<int>(54936),
+            new ToolStripMenuItemWithBackingField<int>(52936),
+            new ToolStripMenuItemWithBackingField<int>(50227),
+            new ToolStripMenuItemWithBackingField<int>(10008),
+            new ToolStripMenuItemWithBackingField<int>(950),
+            new ToolStripMenuItemWithBackingField<int>(20000),
+            new ToolStripMenuItemWithBackingField<int>(20002),
             new ToolStripMenuItemWithBackingField<int>(10002)
         );
 
         CyrillicMenu.DropDown.Items.AddRange(
-            new ToolStripMenuItemWithBackingField<int>(1251), new ToolStripMenuItemWithBackingField<int>(28595),
-            new ToolStripMenuItemWithBackingField<int>(866), new ToolStripMenuItemWithBackingField<int>(10007),
-            new ToolStripMenuItemWithBackingField<int>(855), new ToolStripMenuItemWithBackingField<int>(20866),
+            new ToolStripMenuItemWithBackingField<int>(1251),
+            new ToolStripMenuItemWithBackingField<int>(28595),
+            new ToolStripMenuItemWithBackingField<int>(866),
+            new ToolStripMenuItemWithBackingField<int>(10007),
+            new ToolStripMenuItemWithBackingField<int>(855),
+            new ToolStripMenuItemWithBackingField<int>(20866),
             new ToolStripMenuItemWithBackingField<int>(21866)
         );
 

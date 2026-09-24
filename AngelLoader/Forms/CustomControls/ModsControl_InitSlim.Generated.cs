@@ -9,7 +9,7 @@ sealed partial class ModsControl
     {
         this.components = new System.ComponentModel.Container();
         this.HeaderLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.ResetFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+        this.ResetFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
         this.DisableNonImportantButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.EnableAllButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.ShowImportantCheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();

@@ -92,6 +92,8 @@ public static partial class Misc
     */
     public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
 
+    public static bool ReadmeTypeSupportsEncodingChange(ReadmeType readmeType) => readmeType is ReadmeType.PlainText or ReadmeType.GLML;
+
     public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
 
     internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
@@ -102,18 +104,21 @@ public static partial class Misc
     {
         internal static readonly string InitialSettings = "#initial_setup";
 
-#pragma warning disable IDE0300 // Simplify collection initialization
-        [SuppressMessage("ReSharper", "RedundantExplicitArraySize")]
-        internal static readonly string[] SettingsPages = new string[SettingsTabCount]
+        internal static readonly string[] SettingsPages = RunFunc(static () =>
         {
-            "#settings_paths_section",
-            "#settings_appearance_section",
-            "#settings_other_section",
-            "#settings_thief_buddy_section",
-            "#settings_update_section",
-            "#settings_io_threading_section",
-        };
-#pragma warning restore IDE0300 // Simplify collection initialization
+            string[] array = new string[SettingsTabCount];
+            array[(int)SettingsTab.Paths] = "#settings_paths_section";
+            array[(int)SettingsTab.Appearance] = "#settings_appearance_section";
+            array[(int)SettingsTab.AudioFiles] = "#settings_audio_files_section";
+            array[(int)SettingsTab.Other] = "#settings_other_section";
+            array[(int)SettingsTab.ThiefBuddy] = "#settings_thief_buddy_section";
+            array[(int)SettingsTab.Update] = "#settings_update_section";
+            array[(int)SettingsTab.IOThreading] = "#settings_io_threading_section";
+
+            Utils.AssertR(array.All(static x => x != null), nameof(SettingsPages) + " is missing at least one item");
+
+            return array;
+        });
 
         internal static readonly string MainWindow = "#main_window";
         internal static readonly string MissionList = "#mission_list";
@@ -213,9 +218,6 @@ public static partial class Misc
         internal const uint MaxDaysRecent = 99999;
     }
 
-    // Another leak of view implementation details into here (GDI+/Bitmap supported formats)
-    // @ScreenshotDisplay: NewDark games can also have .pcx, and TDM can also have .tga
-    // Neither are supported by Bitmap, so, you're kinda outta luck on those.
     public static readonly string[] SupportedScreenshotExtensions =
     {
         // Common/likely ones first
@@ -226,6 +228,8 @@ public static partial class Misc
         ".gif",
         ".tif",
         ".tiff",
+        ".tga",
+        ".pcx",
     };
 
     // ReSharper disable once RedundantExplicitArraySize
@@ -393,6 +397,58 @@ public static partial class Misc
 
         [MustUseReturnValue]
         public static NonEmptyList<T> CreateFrom(T item) => new(new List<T>(1) { item });
+
+        public T this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _list[index];
+        }
+
+        public IEnumerator<T> GetEnumerator() => _list.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct NonEmptyListFast<T> : IEnumerable<T>
+    {
+        private readonly ListFast<T> _list;
+
+        private NonEmptyListFast(ListFast<T> list)
+        {
+            _list = list;
+            Count = _list.Count;
+            Single = Count == 1;
+        }
+
+        public readonly int Count;
+
+        public readonly bool Single;
+
+        /// <summary>
+        /// The internal list will be a reference copy of what you pass in. Use this method if you know the source
+        /// list won't change, and you want to avoid the extra allocation.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        [MustUseReturnValue]
+        public static bool TryCreateFrom_Ref(ListFast<T>? list, out NonEmptyListFast<T> result)
+        {
+            if (list?.Count > 0)
+            {
+                result = new NonEmptyListFast<T>(list);
+                return true;
+            }
+            else
+            {
+                result = default;
+                return false;
+            }
+        }
+
+        [MustUseReturnValue]
+        public static NonEmptyListFast<T> CreateFrom(T item) => new(new ListFast<T>(1) { item });
 
         public T this[int index]
         {

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using AL_Common.FastZipReader;
+using AL_Common.RTF;
 
 namespace AL_Common;
 
@@ -35,6 +36,15 @@ public static class ThrowHelper
     public static void IndexOutOfRange() => throw new IndexOutOfRangeException();
     [DoesNotReturn]
     public static void EncryptionNotSupported() => throw new NotSupportedException("Encrypted archives are not supported.");
+    
+    [DoesNotReturn]
+    internal static void ThrowArgumentOutOfRangeException(string argument, string resource)
+    {
+        throw new ArgumentOutOfRangeException(argument, resource);
+    }
     [DoesNotReturn]
     internal static void ThrowInvalidOperationException(string message) => throw new InvalidOperationException(message);
+    
+    [DoesNotReturn]
+    public static void UnmatchedBraceException() => throw new RtfCommon.UnmatchedBraceException();
 }

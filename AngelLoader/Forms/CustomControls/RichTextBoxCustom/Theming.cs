@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
 using JetBrains.Annotations;
+using Ude.NetStandard.SimpleHelpers;
 using static AngelLoader.Misc;
 
 namespace AngelLoader.Forms.CustomControls;
@@ -76,7 +77,10 @@ internal sealed partial class RichTextBoxCustom
     {
         _currentReadmeType = readmeType;
 
-        (BackColor, ForeColor) = (readmeType is ReadmeType.PlainText or ReadmeType.Wri) && _darkModeEnabled
+        (BackColor, ForeColor) =
+            // Always set fore and back colors - because on Wine (Mono), setting back color actually works for
+            // rtf format! While the clever background insert thing doesn't. Killing me, man.
+            _darkModeEnabled
             ? (DarkColors.Fen_DarkBackground, DarkColors.Fen_DarkForeground)
             : (SystemColors.Window, SystemColors.WindowText);
     }
@@ -86,6 +90,7 @@ internal sealed partial class RichTextBoxCustom
         string path = "",
 #endif
         PreProcessedRTF? preProcessedRtf = null,
+        string? text = null,
         bool skipSuspend = false)
     {
         // Save/restore scroll position even for plaintext, because merely setting the fore/back colors makes
@@ -134,7 +139,26 @@ internal sealed partial class RichTextBoxCustom
             }
             else if (_currentReadmeType == ReadmeType.GLML)
             {
-                Rtf = GLMLConversion.GLMLToRTF(_currentReadmeBytes, _darkModeEnabled);
+                if (text != null)
+                {
+                    Rtf = GLMLConversion.GLMLToRTF(text, _darkModeEnabled);
+                }
+                else
+                {
+                    using MemoryStream ms = new(_currentReadmeBytes);
+
+                    if (_glmlEncoding == null)
+                    {
+                        FileEncoding fe = new();
+                        _glmlEncoding = fe.DetectFileEncoding(ms) ?? GetLegacyDefaultEncoding();
+                        ms.Position = 0;
+                    }
+
+                    using StreamReader sr = new(ms, _glmlEncoding);
+                    string finalText = sr.ReadToEnd();
+
+                    Rtf = GLMLConversion.GLMLToRTF(finalText, _darkModeEnabled);
+                }
             }
         }
         // Let exceptions propagate back, so we'll get the "unable to load readme" message.

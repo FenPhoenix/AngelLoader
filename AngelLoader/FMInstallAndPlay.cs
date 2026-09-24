@@ -301,8 +301,15 @@ internal static partial class FMInstallAndPlay
 #endif
             if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame)) return false;
 
+            // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
+            var nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+
 #if !ReleaseBeta && !ReleasePublic
-            string args = Config.ForceWindowed ? "force_windowed=1" : "";
+            // This gets overwritten if Steam is used, but it's private-build only and I don't use Steam, so it
+            // doesn't affect me in practice.
+            string args = Config.ForceWindowed
+                ? nd128 ? "-force_windowed=1"  : "force_windowed=1"
+                : "";
 #else
             string args = "";
 #endif
@@ -315,10 +322,10 @@ internal static partial class FMInstallAndPlay
                 switch (Config.GetNewMantling(gameIndex))
                 {
                     case true:
-                        args += " new_mantle=1";
+                        args += nd128 ? " -new_mantle=1" : " new_mantle=1";
                         break;
                     case false:
-                        args += " new_mantle=0";
+                        args += nd128 ? " -new_mantle=0" : " new_mantle=0";
                         break;
                 }
             }
@@ -406,9 +413,15 @@ internal static partial class FMInstallAndPlay
             problem. If anyone else reports this we could go back to the arg passing, but eh...
             */
             gameIndex == GameIndex.TDM ? "" :
+            // We don't use the -fm argument for Steam, but "fm" gets written to cam_mod.ini before play, which
+            // does the same thing. I forget why we don't use the argument, but I assume Steam just doesn't
+            // accept it. We could probably just get rid of the -fm entirely even for the non-Steam path, given
+            // the above, but everything works as is so let's just leave it alone for now.
             !steamArgs.IsEmpty() ? steamArgs :
             "-fm";
 
+        // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
+        var nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
         if (GameIsDark(fm.Game))
         {
             MissFlagError missFlagError = GenerateMissFlagFileIfRequired(fm, errorOnCantPlay: true);
@@ -417,7 +430,7 @@ internal static partial class FMInstallAndPlay
 #if !ReleaseBeta && !ReleasePublic
             if (Config.ForceWindowed)
             {
-                args += " force_windowed=1";
+                args += nd128 ? " -force_windowed=1" : " force_windowed=1";
             }
 #endif
 
@@ -427,7 +440,7 @@ internal static partial class FMInstallAndPlay
 
             if (fmIsOldDark && FMRequiresPaletteFix(fm, checkForOldDark: false))
             {
-                args += " legacy_32bit_txtpal=1";
+                args += nd128 ? " -legacy_32bit_txtpal=1" : " legacy_32bit_txtpal=1";
             }
 
             /*
@@ -444,33 +457,33 @@ internal static partial class FMInstallAndPlay
             */
             if (fm.NewMantle == true)
             {
-                args += " new_mantle=1";
+                args += nd128 ? " -new_mantle=1" : " new_mantle=1";
             }
             else if (fm.NewMantle == false)
             {
-                args += " new_mantle=0";
+                args += nd128 ? " -new_mantle=0" : " new_mantle=0";
             }
             else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
             {
-                args += " new_mantle=0";
+                args += nd128 ? " -new_mantle=0" : " new_mantle=0";
             }
 
             if (fm.PostProc == true)
             {
-                args += " postprocess=1";
+                args += nd128 ? " -postprocess=1" : " postprocess=1";
             }
             else if (fm.PostProc == false)
             {
-                args += " postprocess=0";
+                args += nd128 ? " -postprocess=0" : " postprocess=0";
             }
 
             if (fm.NDSubs == true)
             {
-                args += " enable_subtitles=1";
+                args += nd128 ? " -enable_subtitles=1" : " enable_subtitles=1";
             }
             else if (fm.NDSubs == false)
             {
-                args += " enable_subtitles=0";
+                args += nd128 ? " -enable_subtitles=0" : " enable_subtitles=0";
             }
         }
 
@@ -2097,15 +2110,41 @@ internal static partial class FMInstallAndPlay
                 Stopwatch audioConvertSW = Stopwatch.StartNew();
 #endif
 
-                // Dark engine games can't play MP3s, so they must be converted in all cases.
-                // This one won't be called anywhere except during install, because it always runs during
-                // install so there's no need to make it optional elsewhere. So we don't need to have a
-                // check bool or anything.
-                FMAudio.ConvertAsPartOfInstall(
-                    validAudioConvertibleFM,
-                    AudioConvert.MP3ToWAV,
-                    audioConversionThreadingData,
-                    cancellationToken);
+                /*
+                Dark engine games can't play MP3s, so they must be converted in all cases.
+                This one won't be called anywhere except during install, because it always runs during install so
+                there's no need to make it optional elsewhere. So we don't need to have a check bool or anything.
+
+                @ND128(MP3 always convert on install):
+                1.28+ directly supports MP3s in-game now (the patents have expired since NewDark first released),
+                so it's no longer true that MP3s always need converting. We should have the option not to convert
+                for 1.28+.
+
+                @ND128(MP3):
+                Test if mp3s have the same delay in loading as oggs do. If they do, we should make mp3-to-wav
+                the default even for 1.28+, that way there'll be no perf regression from the 1.27 experience.
+                
+                @ND128(Audio files, conversion, and backup restore):
+                If we allow MP3s to not be converted, then a backup restore will put the previously converted
+                .wav versions back into the folder, and will also auto-delete the mp3 versions (same with oggs if
+                they were converted). This is already sort of a problem and we've been avoiding it for a long time
+                now, although things end up working out mostly okay in practice. The reason we've been avoiding
+                the issue is that it's difficult to tell for sure if backed-up audio is just a converted version
+                of stock audio, or if some of it was manually user-modified. However, user modification is pretty
+                unlikely and should be a very rare case, so maybe we should just exclude everything in the sound
+                folders from backup and restore. That's kind of janky, but the other solution would be to temp-
+                convert all stock audio to the destination format (both of them - .wav AND .wav-16!) and then
+                diff every single one with the backup set to see if any have changed outside conversion. That's
+                insanely slow, so excluding audio from backup is probably the better option.
+                */
+                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) || Config.ConvertMP3sToWAVsOnInstall_ND128)
+                {
+                    FMAudio.ConvertAsPartOfInstall(
+                        validAudioConvertibleFM,
+                        AudioConvert.MP3ToWAV,
+                        audioConversionThreadingData,
+                        cancellationToken);
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -2120,7 +2159,7 @@ internal static partial class FMInstallAndPlay
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                if (Config.ConvertWAVsTo16BitOnInstall)
+                if (!ConfigStoredGameIsNewDark128OrAbove(fmData.GameIndex) && Config.ConvertWAVsTo16BitOnInstall)
                 {
                     FMAudio.ConvertAsPartOfInstall(
                         validAudioConvertibleFM,

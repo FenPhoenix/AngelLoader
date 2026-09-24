@@ -38,7 +38,7 @@ partial class AboutForm
         OKButton = new CustomControls.StandardButton();
         AngelLoaderUsesLabel = new CustomControls.DarkLabel();
         LogoTextPictureBox = new System.Windows.Forms.PictureBox();
-        OK_FLP = new System.Windows.Forms.FlowLayoutPanel();
+        OK_FLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
         BuildDateLabel = new CustomControls.DarkLabel();
         ((System.ComponentModel.ISupportInitialize)LogoPictureBox).BeginInit();
         ((System.ComponentModel.ISupportInitialize)LogoTextPictureBox).BeginInit();
@@ -171,7 +171,7 @@ partial class AboutForm
     private AngelLoader.Forms.CustomControls.DarkLabel VersionLabel;
     private AngelLoader.Forms.CustomControls.DarkLabel BuildDateLabel;
     private AngelLoader.Forms.CustomControls.DarkTextBox LicenseTextBox;
-    private System.Windows.Forms.FlowLayoutPanel OK_FLP;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom OK_FLP;
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;
     private AngelLoader.Forms.CustomControls.DarkLabel AngelLoaderUsesLabel;
     private AngelLoader.Forms.CustomControls.DarkLinkLabel GitHubLinkLabel;

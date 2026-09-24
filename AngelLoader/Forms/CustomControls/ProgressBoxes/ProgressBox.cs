@@ -15,7 +15,7 @@ namespace AngelLoader.Forms.CustomControls;
 // IMPORTANT (ProgressBox layout / size of controls / centering):
 // Designer layout is NOT accurate on the right edge! Progress bar dimensions look like 9px left/11px right,
 // but in-app it's 9px left/9px right like we want. Ugh.
-public sealed partial class ProgressBox : UserControl, IDarkable
+public sealed partial class ProgressBox : UserControlCustom, IDarkable
 {
     // Cache text and width to minimize expensive calls to Control.Text property (getter) and text measurer.
     // Controls have a cache-text option but it's weird and causes weird issues sometimes that are not always
@@ -63,8 +63,8 @@ public sealed partial class ProgressBox : UserControl, IDarkable
     internal static string DefaultCancelMessage => LText.Global.Cancel;
     internal const ProgressType DefaultProgressType = ProgressType.Determinate;
 
-    private const int _regularHeight = 128;
-    private const int _extendedHeight = 192;
+    private readonly int _regularHeight;
+    private readonly int _extendedHeight;
 
     private readonly int _defaultWidth;
 
@@ -136,6 +136,9 @@ public sealed partial class ProgressBox : UserControl, IDarkable
 #endif
 
         _defaultWidth = Width;
+        // Fix yet another Wine layout breakage
+        _regularHeight = MainProgressBar.Bottom + Cancel_Button.Height + 26;
+        _extendedHeight = SubProgressBar.Bottom + Cancel_Button.Height + 26;
 
         // ReSharper disable once RedundantExplicitArraySize
         MessageItems = new MessageItem[5]

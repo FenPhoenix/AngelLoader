@@ -3,6 +3,7 @@
 //#define INDIVIDUAL_FM_TIMING
 //#define ScanSynchronous
 //#define StoreCurrentFM
+#define ND128_GAME_HINT
 
 /*
 @NET5/@MEM(Scanner readme line splitting):
@@ -65,6 +66,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using AL_Common.FastZipReader;
+using AL_Common.RTF;
 using JetBrains.Annotations;
 using SharpCompress.Archives.Rar;
 using SharpCompress.Archives.SevenZip;
@@ -121,14 +123,15 @@ public sealed class Scanner : IDisposable
 
     #region Buffers
 
-    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
-
-    private ListFast<char>? _utf32CharBuffer;
-    private ListFast<char> Utf32CharBuffer => _utf32CharBuffer ??= new ListFast<char>(2);
-
     private readonly BinaryBuffer _binaryReadBuffer = new();
 
     #region Game detection
+
+    private readonly byte[] _misChunkHeaderBuffer = new byte[12];
+
+#if ND128_GAME_HINT
+    private readonly byte[] _darkmissChunkBuffer = new byte[38];
+#endif
 
     private const int _gameTypeBufferSize = 81_920;
 
@@ -498,27 +501,19 @@ public sealed class Scanner : IDisposable
         internal string FullName;
         internal long Length;
 
-        private SevenZipArchiveEntry? _archiveFileInfo;
-
-        private bool _rar;
+        private SevenZipArchiveEntry? _sevenZipArchiveEntry;
 
         private DateTime? _lastWriteTime;
         internal DateTime LastWriteTime
         {
             get
             {
-                if (_rar)
+                if (_sevenZipArchiveEntry != null)
                 {
-                    return (DateTime)_lastWriteTime!;
+                    _lastWriteTime = _sevenZipArchiveEntry.LastModifiedTime ?? DateTime.MinValue;
+                    _sevenZipArchiveEntry = null;
                 }
-                else
-                {
-                    if (_archiveFileInfo != null)
-                    {
-                        _lastWriteTime = _archiveFileInfo.LastModifiedTime ?? DateTime.MinValue;
-                        _archiveFileInfo = null;
-                    }
-                }
+
                 return (DateTime)_lastWriteTime!;
             }
         }
@@ -541,31 +536,28 @@ public sealed class Scanner : IDisposable
         [MemberNotNull(nameof(FullName))]
         internal void Set(FileInfo fileInfo)
         {
-            _rar = false;
             FullName = fileInfo.FullName;
             Length = fileInfo.Length;
             _lastWriteTime = fileInfo.LastWriteTime;
-            _archiveFileInfo = null;
+            _sevenZipArchiveEntry = null;
         }
 
         [MemberNotNull(nameof(FullName))]
         internal void Set(SevenZipArchiveEntry archiveFileInfo)
         {
-            _rar = false;
             FullName = archiveFileInfo.FileName;
             Length = archiveFileInfo.UncompressedSize;
             _lastWriteTime = null;
-            _archiveFileInfo = archiveFileInfo;
+            _sevenZipArchiveEntry = archiveFileInfo;
         }
 
         [MemberNotNull(nameof(FullName))]
         internal void Set(RarArchiveEntry entry)
         {
-            _rar = true;
             FullName = entry.Key;
             Length = entry.Size;
             _lastWriteTime = entry.LastModifiedTime ?? DateTime.MinValue;
-            _archiveFileInfo = null;
+            _sevenZipArchiveEntry = null;
         }
     }
 
@@ -1117,14 +1109,14 @@ public sealed class Scanner : IDisposable
         // in parallelized scenario.
         string tempRandomName = Path.GetRandomFileName().Trim();
 
-        bool nullAlreadyAdded = false;
+        bool blankAlreadyAdded = false;
 
         #region Init
 
         if (fm.Path.IsEmpty())
         {
             scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-            nullAlreadyAdded = true;
+            blankAlreadyAdded = true;
         }
         else
         {
@@ -1140,9 +1132,11 @@ public sealed class Scanner : IDisposable
                                 ? FMFormat.Rar
                                 : FMFormat.NotInArchive;
 
+            // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
             _archive?.Dispose();
             _rarArchive?.Dispose();
             _rarStream?.Dispose();
+            // ReSharper restore ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
             if (_fmFormat > FMFormat.NotInArchive)
             {
@@ -1154,7 +1148,7 @@ public sealed class Scanner : IDisposable
                 {
                     Log(fmPath + ": Path.Combine error, paths are probably invalid", ex);
                     scannedFMDataList.Add(new ScannedFMDataAndError(fm.OriginalIndex));
-                    nullAlreadyAdded = true;
+                    blankAlreadyAdded = true;
                 }
             }
             else
@@ -1179,8 +1173,8 @@ public sealed class Scanner : IDisposable
 
         #endregion
 
-        // If there was an error then we already added null to the list. DON'T add any extra items!
-        if (!nullAlreadyAdded)
+        // If there was an error then we already added a blank item to the list. DON'T add any extra items!
+        if (!blankAlreadyAdded)
         {
             ScannedFMDataAndError scannedFMAndError = new(fm.OriginalIndex);
             ScanOptions? _tempScanOptions = null;
@@ -1279,7 +1273,7 @@ public sealed class Scanner : IDisposable
             if (__zipEntries == null)
             {
                 _archive?.Dispose();
-                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false, darkModMode: true);
+                var zipResult = ConstructZipArchive(fm, zipPath, ZipContext, checkForZeroEntries: false, darkMod: true);
                 if (zipResult.Success)
                 {
                     _archive = zipResult.Archive!;
@@ -1327,6 +1321,8 @@ public sealed class Scanner : IDisposable
                 try
                 {
                     zipPath = "";
+                    // This is the slow built-in call, but it's on a fallback path that is not expected to be hit
+                    // (and isn't ever hit, as of 2025-05-08).
                     string[] pk4FilesInFMFolder = Directory.GetFiles(fm.Path, "*.pk4", SearchOption.TopDirectoryOnly);
                     foreach (string fileName in pk4FilesInFMFolder)
                     {
@@ -1931,6 +1927,8 @@ public sealed class Scanner : IDisposable
             SetOrAddTitle(titles, GetValueFromReadme(SpecialLogic.Title, _ctx.SA_TitleDetect));
 
             if (!fmIsT3) SetOrAddTitle(titles, GetTitleFromNewGameStrFile());
+
+            if (fm.IsArchive) SetOrAddTitle(titles, GetTitleFromThiefGuildFormatArchiveName(fm));
 
             EndTitleScan(scanTitleForAuthorPurposesOnly, fmData, titles);
         }
@@ -3582,21 +3580,10 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.Open()
                         : readmeStream;
 
-                    // @MEM(RTF pooled byte arrays): This pool barely helps us
-                    // Most of the arrays are used only once, a handful are used twice.
-                    byte[] rtfBytes = _sevenZipContext.ByteArrayPool.Rent(readmeFileLen);
-                    try
+                    (bool success, string text) = RtfConverter.Convert(stream);
+                    if (success)
                     {
-                        int bytesRead = stream.ReadAll(rtfBytes, 0, readmeFileLen);
-                        (bool success, string text) = RtfConverter.Convert(new ArrayWithLength<byte>(rtfBytes, bytesRead));
-                        if (success)
-                        {
-                            last.Text = text;
-                        }
-                    }
-                    finally
-                    {
-                        _sevenZipContext.ByteArrayPool.Return(rtfBytes);
+                        last.Text = text;
                     }
                 }
                 else if (readmeFile.Name.ExtIsGlml())
@@ -3604,7 +3591,7 @@ public sealed class Scanner : IDisposable
                     using Stream stream = _fmFormat.IsStreamableArchive()
                         ? readmeEntry.Open()
                         : readmeStream;
-                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream), Utf32CharBuffer);
+                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream));
                 }
                 else
                 {
@@ -3637,8 +3624,6 @@ public sealed class Scanner : IDisposable
             // @TDM_NOTE: Janky, but it works and a null check isn't going to be our bottleneck here, so whatever
             if (singleReadme != null && singleReadme != readme) continue;
 
-            if (!readme.Scan) continue;
-
             if (specialLogic == SpecialLogic.Author)
             {
                 /*
@@ -3657,9 +3642,9 @@ public sealed class Scanner : IDisposable
                 if (specialLogic == SpecialLogic.Author)
                 {
                     // @PERF_TODO: We can move things around for perf here.
-                    // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be
-                    // a little bit faster on average. But that causes a handful of differences in the
-                    // output. Not enough to matter really, but meh...
+                    // We can put GetAuthorFromCopyrightMessage() here and put this down there, and be a little
+                    // bit faster on average. But that causes a handful of differences in the output. Not enough
+                    // to matter really, but meh...
                     ret = GetAuthorFromText(readme.Text);
                     if (!ret.IsEmpty()) return ret;
                 }
@@ -3961,10 +3946,57 @@ public sealed class Scanner : IDisposable
 
         if (value.IsEmpty()) return;
 
-        if (!titles.ContainsI(value))
+        /*
+        If we have titles like "A benevolent Master" and "A Benevolent Master", use the latter. We're currently
+        not outright converting titles to title-case ourselves, as that could get complicated and might result
+        in mistakes or inaccuracy, plus it might mess with author intent. This does mean we sometimes don't get
+        any perfectly title-cased titles and the best one is still only partially title-cased. We could go full
+        title-case conversion later if we decide that's a better idea.
+        */
+        for (int titlesI = 0; titlesI < titles.Count; titlesI++)
         {
-            titles.Add(value);
+            string title = titles[titlesI];
+            if (title.Equals(value))
+            {
+                return;
+            }
+            else if (title.EqualsI(value))
+            {
+                if (Utility.AnyConsecutiveAsciiUppercaseChars(value))
+                {
+                    return;
+                }
+
+                int existingTitlePoints = 0;
+                int incomingTitlePoints = 0;
+
+                for (int titleI = 0; titleI < title.Length; titleI++)
+                {
+                    char existingTitleChar = title[titleI];
+                    char incomingTitleChar = value[titleI];
+
+                    if (titleI == 0 || title[titleI - 1] == ' ')
+                    {
+                        if(char.IsAsciiLetterUpper(existingTitleChar))
+                        {
+                            existingTitlePoints++;
+                        }
+                        if (char.IsAsciiLetterUpper(incomingTitleChar))
+                        {
+                            incomingTitlePoints++;
+                        }
+                    }
+                }
+
+                if (incomingTitlePoints > existingTitlePoints)
+                {
+                    titles[titlesI] = value;
+                }
+                return;
+            }
         }
+
+        titles.Add(value);
     }
 
     private void SetFMTitles(ScannedFMData fmData, ListFast<string> titles, string? serverTitle = null)
@@ -4201,6 +4233,21 @@ public sealed class Scanner : IDisposable
         }
     }
 
+    /*
+    Thief Guild now has a standard archive name format, and that's the only reason I'm willing to go near the
+    archive name with a ten foot pole: we're basically guaranteed to get the correct title when we know we've
+    got a standard format.
+    @Scanner(Thief Guild archive name format): We could get the date from here too, but it's the first release
+    date, not the latest update date (according to this thread: https://www.thiefguild.com/topics/108869/the-thief-guild-fm-hosting-is-ready).
+    In contrast, we get the latest release date if we can, so switching would be a big ("breaking", if you will)
+    change. So let's avoid doing it for now.
+    */
+    private string GetTitleFromThiefGuildFormatArchiveName(FMToScan fm)
+    {
+        Match match = TitleFromThiefGuildArchiveNameFormatRegex().Match(fm.DisplayName);
+        return match.Success ? match.Groups["Title"].Value : "";
+    }
+
     private ListFast<string>? GetTitlesStrLines()
     {
         if (!Utility.TryGetTitlesFile(_stringsDirFiles, _ctx.FMFiles_TitlesStrLocations, out NameAndIndex titlesFile))
@@ -4338,12 +4385,7 @@ public sealed class Scanner : IDisposable
 
         if (mainTitle.Value.IsEmpty()) return;
 
-        _titleAcronymChars.ClearFast();
-
-        byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
-
         bool mainTitleContainsAcronym = AcronymRegex().Match(mainTitle.Value).Success;
-        Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
 
         bool swapDone = false;
 
@@ -4352,7 +4394,12 @@ public sealed class Scanner : IDisposable
 
         if (mainTitleContainsAcronym)
         {
+            _titleAcronymChars.ClearFast();
+            Utility.GetAcronym(mainTitle.Value, _titleAcronymChars);
+
             ListFast<char> romanNumeralRun = RomanNumeralRun;
+
+            byte[] romanNumeralToDecimalTable = _ctx.RomanNumeralToDecimalTable;
 
             for (int i = 1; i < titles.Count; i++)
             {
@@ -4811,6 +4858,19 @@ public sealed class Scanner : IDisposable
 
     #region Game type
 
+    /*
+    The new "Mission Game" parameter ("Dark Mission Description" in DromEd) is the 30th byte after DARKMISS*, and
+    is a new byte that doesn't exist in <1.27. 0x1 = Any, 0x2 = Thief 1, 0x3 = Thief 2.
+    SS2 (ShockEd) doesn't have the "Dark Mission Description" mission variable, and SS2 .mis files don't have the
+    DARKMISS block, so it appears that SS2 doesn't write out any game descriptor value.
+
+    *Block headers are 24 bytes (12 bytes name + 12 bytes cruft), so our byte is at header end + 14, or byte 13
+     after header if counting from 0.
+
+    @ND128: DromEd auto-detects the game hint byte in the absence of the user setting it explicitly, apparently
+    based on "dark1" presence in cam_ext.cfg (which is the normal way of specifying the game type for NewDark
+    installs). All 1.28 FMs at the time of writing (2026-08-25) detect correctly, so let's flip the switch.
+    */
     private Game GetGameType()
     {
         Game game;
@@ -4818,7 +4878,7 @@ public sealed class Scanner : IDisposable
 
         if (_solidGamFileToUse == null)
         {
-            NameAndIndex smallestUsedMisFile = GameType_GetSmallestMisFile();
+            NameAndIndex smallestUsedMisFile = GameType_GetSmallestUsedMisFile();
             misFileEntry = GetEntry(smallestUsedMisFile);
 
             game = GameType_DoQuickCheck(misFileEntry);
@@ -4872,9 +4932,23 @@ public sealed class Scanner : IDisposable
                     int length = _ctx.GameDetect_KeyPhraseZipOffsets[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
+
+#if ND128_GAME_HINT
+                    if (i == 0 && TryGetGameFromDARKMISS_StreamableArchive(buffer, out Game gameFromDARKMISS))
+                    {
+                        return gameFromDARKMISS;
+                    }
+#endif
                 }
                 else
                 {
+#if ND128_GAME_HINT
+                    if (i == 0 && TryGetGameFromDARKMISS_OnDisk(misStream, _darkmissChunkBuffer, out Game gameFromDARKMISS))
+                    {
+                        return gameFromDARKMISS;
+                    }
+#endif
+
                     buffer = _gameDetectStringBuffer;
                     misStream.Position = _ctx.GameDetect_KeyPhraseLocations[i];
                     int bytesRead = misStream.ReadAll(buffer, 0, _gameDetectStringBufferLength);
@@ -4919,6 +4993,45 @@ public sealed class Scanner : IDisposable
             int len = buffer.Length;
             return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
+
+#if ND128_GAME_HINT
+        static bool TryGetGameFromDARKMISS_StreamableArchive(byte[] buffer, out Game game)
+        {
+            if (buffer.Length <= Thief_128_GameDescriptor_Location ||
+                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second, Thief_DARKMISS_Location))
+            {
+                game = Game.Null;
+                return false;
+            }
+
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptor_Location]);
+            return game != Game.Null;
+        }
+
+        static bool TryGetGameFromDARKMISS_OnDisk(Stream misStream, byte[] buffer, out Game game)
+        {
+            // @ND128: Use handle and RandomAccess to make this more efficient
+            misStream.Position = Thief_DARKMISS_Location;
+            int bytesRead = misStream.ReadAll(buffer, 0, buffer.Length);
+            if (bytesRead != buffer.Length ||
+                !GameType_HeaderEquals(buffer, DARKMISS_First, DARKMISS_Second))
+            {
+                game = Game.Null;
+                return false;
+            }
+
+            game = GetGameFromDescriptorByte(buffer[Thief_128_GameDescriptor_OffsetFromDARKMISS]);
+            return game != Game.Null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static Game GetGameFromDescriptorByte(byte gameDescriptor) => gameDescriptor switch
+        {
+            0x2 => Game.Thief1,
+            0x3 => Game.Thief2,
+            _ => Game.Null,
+        };
+#endif
     }
 
     private Game GameType_DoMainCheck(Entry misFileEntry)
@@ -4945,8 +5058,8 @@ public sealed class Scanner : IDisposable
             string gamFileOnDisk = Path.Combine(_fmWorkingPath, _solidGamFileToUse.Value.Name);
             using FileStream fs = GetReadModeFileStreamWithCachedBuffer(gamFileOnDisk, DiskFileStreamBuffer);
 
-            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset1) ||
-                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Offset2))
+            if (GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Location1) ||
+                GAMEPARAM_At_Location(fs, _gameDetectStringBuffer, SS2_Gam_GAMEPARAM_Location2))
             {
                 return Game.SS2;
             }
@@ -4995,7 +5108,7 @@ public sealed class Scanner : IDisposable
                 int length = (int)BinaryRead.ReadUInt32(stream, _binaryReadBuffer);
 
                 // IMPORTANT: This MUST come AFTER the offset and length read, because those bump the stream forward!
-                if (bytesRead < 12 || !HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
+                if (bytesRead < 12 || !GameType_HeaderEquals(_misChunkHeaderBuffer, chunkNameFirst, chunkNameSecond))
                 {
                     continue;
                 }
@@ -5017,15 +5130,15 @@ public sealed class Scanner : IDisposable
             }
 
             return false;
-
-            static bool HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond)
-            {
-                ulong first = Unsafe.ReadUnaligned<ulong>(ref header[0]);
-                if (first != chunkNameFirst) return false;
-                uint second = Unsafe.ReadUnaligned<uint>(ref header[8]);
-                return second == chunkNameSecond;
-            }
         }
+    }
+
+    private static bool GameType_HeaderEquals(byte[] header, ulong chunkNameFirst, uint chunkNameSecond, int offset = 0)
+    {
+        ulong first = Unsafe.ReadUnaligned<ulong>(ref header[offset]);
+        if (first != chunkNameFirst) return false;
+        uint second = Unsafe.ReadUnaligned<uint>(ref header[offset + 8]);
+        return second == chunkNameSecond;
     }
 
     private Game GameType_DoSS2FallbackCheck(Entry misFileEntry)
@@ -5042,7 +5155,7 @@ public sealed class Scanner : IDisposable
         */
 
         // Just check the bare ss2 fingerprinted value, because if we're here then we already know it's required
-        if ((_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles)))
+        if (_ss2Fingerprinted || SS2MisFilesPresent(_usedMisFiles, _ctx.FMFiles_SS2MisFiles))
         {
             using Stream stream =
                 _solidGamFileToUse != null
@@ -5080,7 +5193,7 @@ public sealed class Scanner : IDisposable
         }
     }
 
-    private NameAndIndex GameType_GetSmallestMisFile()
+    private NameAndIndex GameType_GetSmallestUsedMisFile()
     {
         if (_solidMisFileToUse is { } solidMisFileToUse)
         {
@@ -5984,7 +6097,7 @@ public sealed class Scanner : IDisposable
     };
 
     private static (bool Success, ScannedFMDataAndError? ScannedFMDataAndError, ZipArchiveFast? Archive)
-    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkModMode = false)
+    ConstructZipArchive(FMToScan fm, string path, ZipContext zipContext, bool checkForZeroEntries, bool darkMod = false)
     {
         ZipArchiveFast? ret;
 
@@ -5993,7 +6106,7 @@ public sealed class Scanner : IDisposable
             ret = ZipArchiveFast.Create_Scan(
                 stream: GetReadModeFileStreamWithCachedBuffer(path, zipContext.FileStreamBuffer),
                 context: zipContext,
-                darkMod: darkModMode);
+                darkMod: darkMod);
 
             // Archive.Entries is lazy-loaded, so this will also trigger any exceptions that may be
             // thrown while loading them. If this passes, we're definitely good.

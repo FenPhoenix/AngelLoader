@@ -61,12 +61,17 @@ internal static partial class NonLocalizableText
         ("FFmpeg.NET", "https://github.com/cmxl/FFmpeg.NET"),
         ("SimpleHelpers.Net", "https://github.com/khalidsalomao/SimpleHelpers.Net/"),
         ("Ude.NetStandard", "https://github.com/yinyue200/ude"),
-        ("Ported code from modern .NET", "https://github.com/dotnet"),
+        ("Ookii Dialogs", "https://github.com/augustoproiete/ookii-dialogs-winforms"),
+        (".NET Runtime", "https://github.com/dotnet"),
+        (".NET Community Toolkit", "https://github.com/CommunityToolkit/dotnet"),
         ("DarkUI", "https://github.com/RobinPerris/DarkUI"),
         ("CoreHook", "https://github.com/unknownv2/CoreHook/"),
         ("Open Sans", "https://fonts.google.com/specimen/Open+Sans"),
         ("SpanExtensions.Net", "https://github.com/draconware-dev/SpanExtensions.Net"),
         ("DeviceIoControlLib", "https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib"),
+        ("Pfim", "https://github.com/nickbabcock/Pfim"),
+        ("ImageFormats", "https://github.com/dbrant/imageformats/"),
+        ("HPCsharp", "https://github.com/DragonSpit/HPCsharp"),
     };
     internal static readonly int DependenciesCount = Dependencies.Length;
 

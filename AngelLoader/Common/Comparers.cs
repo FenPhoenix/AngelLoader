@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -60,7 +61,7 @@ internal static class Comparers
 
     internal interface IDirectionalSortFMComparer : IComparer<FanMission>
     {
-        SortDirection SortDirection { set; }
+        void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow);
     }
 
     #region FM list sorting
@@ -69,6 +70,74 @@ internal static class Comparers
 
     // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
     // new title-sort classes in a loop!
+    /// <summary>
+    /// If this method returns a non-zero value, return that value from the Compare() method and do not run the normal compare code.
+    /// If this method returns 0, ignore it and run the normal compare code.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="showPinnedAtTop"></param>
+    /// <param name="showRecentAtTop"></param>
+    /// <param name="dateTimeNow"></param>
+    /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int GetTopSortedValue(FanMission x, FanMission y, bool showPinnedAtTop, bool showRecentAtTop, DateTime dateTimeNow)
+    {
+        int ret;
+
+        if (showPinnedAtTop)
+        {
+            bool xIsPinned = x.Pinned;
+            bool yIsPinned = y.Pinned;
+
+            ret = xIsPinned && yIsPinned ? 0 : xIsPinned ? -1 : yIsPinned ? 1 : 0;
+        }
+        else
+        {
+            ret = 0;
+        }
+
+        if (ret != 0) return ret;
+
+        if (showRecentAtTop)
+        {
+            bool xIsRecent = IsRecent(x, dateTimeNow);
+            bool yIsRecent = IsRecent(y, dateTimeNow);
+
+            ret = xIsRecent && yIsRecent
+                // Guaranteed to return non-0 because it does the full fallback chain to InstalledDir fields which
+                // are guaranteed to be unique.
+                ? -CompareDateAdded(x, y)
+                : xIsRecent ? -1 : yIsRecent ? 1 : 0;
+        }
+        else
+        {
+            ret = 0;
+        }
+
+        return ret;
+
+        static bool IsRecent(FanMission fm, DateTime dateTimeNow)
+        {
+            if (
+                // Don't mess with the sort order of pinned FMs, because they should be in the same sort
+                // order as the main list but just placed at the top. Whereas the recent FMs will always
+                // be displayed in order of date added.
+                !fm.Pinned &&
+                fm.DateAdded != null &&
+                ((DateTime)fm.DateAdded).CompareTo(dateTimeNow) <= 0 &&
+                (dateTimeNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
+            {
+                fm.MarkedRecent = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+
     private static int TitleCompare(FanMission x, FanMission y)
     {
         string title1 = x.Title;
@@ -109,9 +178,13 @@ internal static class Comparers
             bool xArticleSet = false;
             bool yArticleSet = false;
 
-            for (int i = 0; i < Config.Articles.Count; i++)
+            List<string> articles = Config.Articles;
+
+            int articlesCount = articles.Count;
+
+            for (int i = 0; i < articlesCount; i++)
             {
-                string article = Config.Articles[i];
+                string article = articles[i];
                 int aLen = article.Length;
 
                 if (!xArticleSet && title1.StartsWithIPlusWhiteSpace(article, aLen))
@@ -145,28 +218,84 @@ internal static class Comparers
             : string.Compare(x.InstalledDir, y.InstalledDir, StringComparison.InvariantCultureIgnoreCase);
     }
 
+    private static int CompareDateAdded(FanMission x, FanMission y)
+    {
+        if (x.DateAdded == null && y.DateAdded == null)
+        {
+            return TitleCompare(x, y);
+        }
+        else if (x.DateAdded == null)
+        {
+            return -1;
+        }
+        else if (y.DateAdded == null)
+        {
+            return 1;
+        }
+        else
+        {
+            // Sorting this one by exact DateTime is the appropriate method here
+            int ret = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
+            return ret == 0 ? TitleCompare(x, y) : ret;
+        }
+    }
+
     #endregion
 
     #region Column comparers
 
-    // Having every comparer inherit this (instead of having its own implemented property) reduces file size
-    private class ColumnComparer
-    {
-        public SortDirection SortDirection { get; set; } = SortDirection.Ascending;
-    }
+    /*
+    For performance, we integrate the sort-to-top logic into the normal sort. However, this makes the logic a bit
+    less clear. The logic is:
 
-    private sealed class FMTitleComparer : ColumnComparer, IDirectionalSortFMComparer
+    -If there is a set of pinned FMs and a set of recent FMs, the pinned FMs set goes above the recent FMs set.
+    -If an FM is both pinned and recent, its pinned status takes precedence.
+    -Within the pinned FMs group, FMs sort in the chosen order.
+    -Within the recent FMs group, FMs sort in recency order then title order, ignoring the chosen sort order.
+    */
+
+    private sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret = TitleCompare(x, y);
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
 #if DateAccTest
-    private sealed class FMDateAccuracyComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
             int ret =
@@ -177,71 +306,156 @@ internal static class Comparers
 
             ret = -ret;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 #endif
 
-    private sealed class FMGameComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMGameComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret =
                 x.Game == y.Game ? TitleCompare(x, y) :
                 x.Game == Game.Null ? -1 :
                 y.Game == Game.Null ? 1 :
                 x.Game < y.Game ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMInstalledComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMInstalledComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret =
                 x.Installed == y.Installed ? TitleCompare(x, y) :
                 // Installed goes on top, non-installed (blank icon) goes on bottom
                 x.Installed ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMMisCountComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMMisCountComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret =
                 x.MisCount == y.MisCount ? TitleCompare(x, y) :
                 x.MisCount == -1 ? -1 :
                 y.MisCount == -1 ? 1 :
                 x.MisCount < y.MisCount ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMArchiveComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMArchiveComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             string xArchive = x.DisplayArchive;
             string yArchive = y.DisplayArchive;
 
-            int ret =
-                xArchive.AsSpan().SequenceEqual(yArchive.AsSpan()) ? TitleCompare(x, y) :
-                    string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
+            int ret = xArchive.AsSpan().SequenceEqual(yArchive.AsSpan())
+                ? TitleCompare(x, y)
+                : string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            if (ret == 0)
+            {
+                ret = TitleCompare(x, y);
+            }
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMAuthorComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMAuthorComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             string xAuthor = x.Author;
             string yAuthor = y.Author;
 
@@ -251,34 +465,71 @@ internal static class Comparers
                 yAuthor.Length == 0 ? 1 :
                 string.Compare(xAuthor, yAuthor, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            if (ret == 0)
+            {
+                ret = TitleCompare(x, y);
+            }
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMSizeComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMSizeComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret =
                 x.SizeBytes == y.SizeBytes ? TitleCompare(x, y) :
                 x.SizeBytes == 0 ? -1 :
                 y.SizeBytes == 0 ? 1 :
                 x.SizeBytes < y.SizeBytes ? -1 : 1;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMRatingComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMRatingComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret;
             // Working
 #if false
             if (false)
             {
-                int one = SortDirection == SortDirection.Ascending ? 1 : -1;
+                int one = _sortDirection == SortDirection.Ascending ? 1 : -1;
 
                 ret =
                     x.Rating == y.Rating ? TitleCompare(x, y) :
@@ -296,14 +547,30 @@ internal static class Comparers
                     x.Rating < y.Rating ? -1 : 1;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMFinishedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMFinishedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret;
             // Working: will add new option for this when done
 #if false
@@ -329,14 +596,30 @@ internal static class Comparers
                                 x.FinishedOn < y.FinishedOn ? -1 : 1;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMReleaseDateComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             // Sort this one down to the day only, because the exact time may very well not be known, and
             // even if it is, it's not visible or editable anywhere and it'd be weird to have missions
             // sorted out of name order because of an invisible time difference.
@@ -359,14 +642,30 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMLastPlayedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret;
             if (x.LastPlayed.DateTime == null && y.LastPlayed.DateTime == null)
             {
@@ -388,56 +687,83 @@ internal static class Comparers
                 ret = cmp == 0 ? TitleCompare(x, y) : cmp;
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMDateAddedComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDateAddedComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
-            int ret;
-            if (x.DateAdded == null && y.DateAdded == null)
-            {
-                ret = TitleCompare(x, y);
-            }
-            else if (x.DateAdded == null)
-            {
-                ret = -1;
-            }
-            else if (y.DateAdded == null)
-            {
-                ret = 1;
-            }
-            else
-            {
-                // Sorting this one by exact DateTime is the appropriate method here
-                int cmp = ((DateTime)x.DateAdded).CompareTo((DateTime)y.DateAdded);
-                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            int ret = CompareDateAdded(x, y);
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMPlayTimeComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMPlayTimeComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
-            int ret;
-            {
-                int cmp = x.PlayTime.CompareTo(y.PlayTime);
-                ret = cmp == 0 ? TitleCompare(x, y) : cmp;
-            }
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            int cmp = x.PlayTime.CompareTo(y.PlayTime);
+            int ret = cmp == 0 ? TitleCompare(x, y) : cmp;
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMDisabledModsComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             int ret;
             if (x.DisableAllMods && !y.DisableAllMods)
             {
@@ -463,17 +789,38 @@ internal static class Comparers
                                 ? -1
                                 : string.Compare(xDisabledMods, yDisabledMods,
                                     StringComparison.InvariantCultureIgnoreCase);
+
+                    if (ret == 0)
+                    {
+                        ret = TitleCompare(x, y);
+                    }
                 }
             }
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 
-    private sealed class FMCommentComparer : ColumnComparer, IDirectionalSortFMComparer
+    private sealed class FMCommentComparer : IDirectionalSortFMComparer
     {
+        private SortDirection _sortDirection = SortDirection.Ascending;
+        private bool _showRecentAtTop;
+        private bool _showPinnedAtTop;
+        private DateTime _dateTimeNow;
+
+        public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
+        {
+            _sortDirection = sortDirection;
+            _showRecentAtTop = showRecentAtTop;
+            _showPinnedAtTop = showPinnedAtTop;
+            _dateTimeNow = dateTimeNow;
+        }
+
         public int Compare(FanMission x, FanMission y)
         {
+            int topRet = GetTopSortedValue(x, y, _showPinnedAtTop, _showRecentAtTop, _dateTimeNow);
+            if (topRet != 0) return topRet;
+
             string xCommentSingleLine = x.CommentSingleLine;
             string yCommentSingleLine = y.CommentSingleLine;
 
@@ -484,7 +831,12 @@ internal static class Comparers
                 yCommentSingleLine.Length == 0 ? -1 :
                 string.Compare(xCommentSingleLine, yCommentSingleLine, StringComparison.InvariantCultureIgnoreCase);
 
-            return SortDirection == SortDirection.Ascending ? ret : -ret;
+            if (ret == 0)
+            {
+                ret = TitleCompare(x, y);
+            }
+
+            return _sortDirection == SortDirection.Ascending ? ret : -ret;
         }
     }
 

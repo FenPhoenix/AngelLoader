@@ -9,7 +9,7 @@ namespace AngelLoader.Forms.CustomControls;
 /// <summary>
 /// Regular Panels don't behave with their BackColors, so...
 /// </summary>
-public sealed class DrawnPanel : Panel, IDarkable
+public sealed class DrawnPanel : PanelCustom, IDarkable
 {
     [PublicAPI]
     public Color DrawnBackColor = SystemColors.Control;

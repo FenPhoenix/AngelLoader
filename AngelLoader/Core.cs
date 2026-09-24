@@ -1,4 +1,6 @@
 ﻿//#define ENABLE_README_TESTS
+//#define SORT_TIMING_TEST
+#define USE_HPCSHARP
 
 /*
 NOTE(Core notes):
@@ -42,6 +44,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
+#if USE_HPCSHARP
+using HPCsharp;
+#endif
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using static AL_Common.LanguageSupport;
@@ -89,7 +94,7 @@ internal static class Core
         bool openSettings = false;
         SettingsWindowState settingsWindowState = SettingsWindowState.Startup;
 
-        List<FanMission>? fmsViewListUnscanned = null;
+        ListFast<FanMission>? fmsViewListUnscanned = null;
 
         #region Create required directories
 
@@ -112,6 +117,11 @@ internal static class Core
 
         // Perf: The only thing the splash screen needs is the theme
         (Config.VisualTheme, Config.FollowSystemTheme) = Ini.ReadThemeFromConfigIni(Paths.ConfigIni);
+
+        using Task? darkModeHooksTask =
+            Config.DarkMode
+                ? Task.Run(static () => ViewEnv.PreloadTheme(Config.VisualTheme))
+                : null;
 
         SetGameDataError[] gameDataErrors = InitializedArray(SupportedGameCount, SetGameDataError.None);
         bool enableTDMWatchers = false;
@@ -175,7 +185,8 @@ internal static class Core
                         {
                             if (File.Exists(gameExe))
                             {
-                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) = SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
+                                (gameDataErrors[i], bool _enableTdmWatchers, perGameCamModIniLines[i]) =
+                                    SetGameDataFromDisk(gameIndex, storeConfigInfo: true);
                                 if (gameIndex == GameIndex.TDM) enableTDMWatchers = _enableTdmWatchers;
                             }
                         }
@@ -255,52 +266,21 @@ internal static class Core
 
         static void ReadLanguages(SplashScreen splashScreen)
         {
-            // We can't show a message until we've read the config file (to know which language to use) and
-            // the current language file (to get the translated message strings). So just show language dir/
-            // language file names, so it's as clear as possible what we're doing without actually having to
-            // display a translated string.
-            splashScreen.SetMessage(Paths.Languages);
-
-            // Have to read langs here because which language to use will be stored in the config file.
-            // Gather all lang files in preparation to read their LanguageName= value so we can get the lang's
-            // name in its own language
-            List<string> langFiles;
+            string langIni = "";
             try
             {
-                langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
-            }
-            catch (Exception ex)
-            {
-                splashScreen.Hide();
-                ResetLanguages();
-                Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
-                Dialogs.ShowError(
-                    $"Couldn't get the language .ini files.{NL}{NL}" +
-                    ErrorText.LangDefault + $"{NL}{NL}" +
-                    "Path: " + Paths.Languages);
-                splashScreen.Show(Config.VisualTheme);
-                return;
-            }
-            bool selFound = false;
+                string langIniFileNameOnly = Config.Language + ".ini";
+                langIni = Path.Combine(Paths.Languages, langIniFileNameOnly);
 
-            Config.LanguageNames.Clear();
+                // We can't show a message until we've read the config file (to know which language to use) and
+                // the current language file (to get the translated message strings). So just show the lang ini
+                // file name, so it's as clear as possible what we're doing without actually having to display a
+                // translated string.
+                splashScreen.SetMessage(langIniFileNameOnly);
 
-            try
-            {
-                for (int i = 0; i < langFiles.Count; i++)
+                if (File.Exists(langIni))
                 {
-                    string f = langFiles[i];
-                    string fn = f.GetFileNameFast().RemoveExtension();
-
-                    splashScreen.SetMessage(f);
-
-                    if (!selFound && fn.EqualsI(Config.Language))
-                    {
-                        Ini.ReadLocalizationIni(f, LText);
-                        selFound = true;
-                    }
-
-                    Ini.AddLanguageFromFile(f, fn, Config.LanguageNames);
+                    Ini.ReadLocalizationIni(langIni, LText);
                 }
             }
             catch (Exception ex)
@@ -308,7 +288,7 @@ internal static class Core
                 splashScreen.Hide();
                 ResetLanguages();
                 Log(ErrorText.Ex + "in language files read", ex);
-                Dialogs.ShowError("An error occurred while trying to read language file(s). " + ErrorText.LangDefault);
+                Dialogs.ShowError("An error occurred while trying to read language file '" + langIni + "'. " + ErrorText.LangDefault);
                 splashScreen.Show(Config.VisualTheme);
             }
 
@@ -318,7 +298,6 @@ internal static class Core
             {
                 LText = new LText_Class();
                 Config.Language = "English";
-                Config.LanguageNames.Clear();
             }
         }
 
@@ -347,9 +326,9 @@ internal static class Core
 
         startupWorkTask.Wait();
 
-        async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_)
+        async Task DoParallelLoad(bool askForImport, SplashScreen splashScreen_, Task? darkModeHooksTask_)
         {
-            splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + Environment.NewLine +
+            splashScreen_.SetMessage(LText.SplashScreen.SearchingForNewFMs + $"{NL}" +
                                     LText.SplashScreen.LoadingMainApp);
             // We set this beforehand because we thought there was some cross-thread font access problem, but
             // actually it was just some issue with incorrect font disposal (which we fixed), but whatever, this
@@ -390,6 +369,8 @@ internal static class Core
                 }
             });
 
+            darkModeHooksTask_?.Wait();
+
             // Construct and init the view right here, because it's a heavy operation and we want it to run
             // in parallel with Find() to the greatest extent possible.
             View = ViewEnv.GetView();
@@ -421,16 +402,17 @@ internal static class Core
 
         if (!openSettings)
         {
-            await DoParallelLoad(askForImport: false, splashScreen);
+            await DoParallelLoad(askForImport: false, splashScreen, darkModeHooksTask);
         }
         else
         {
+            darkModeHooksTask?.Wait();
             splashScreen.Hide();
             (bool accepted, bool askForImport) = await OpenSettings(settingsWindowState);
             if (accepted)
             {
                 splashScreen.Show(Config.VisualTheme);
-                await DoParallelLoad(askForImport, splashScreen);
+                await DoParallelLoad(askForImport, splashScreen, darkModeHooksTask);
             }
             else
             {
@@ -617,7 +599,7 @@ internal static class Core
 
         #endregion
 
-        List<FanMission>? fmsViewListUnscanned = null;
+        ListFast<FanMission>? fmsViewListUnscanned = null;
 
         if (startup)
         {
@@ -675,27 +657,11 @@ internal static class Core
 
         #endregion
 
-        #region Other page
+        #region Audio files page
 
-        Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
         Config.ConvertOGGsToWAVsOnInstall = outConfig.ConvertOGGsToWAVsOnInstall;
-
-        Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
-
-        Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
-
-        Config.ConfirmUninstall = outConfig.ConfirmUninstall;
-
-        Config.BackupFMData = outConfig.BackupFMData;
-        Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
-
-        Array.Copy(outConfig.WebSearchUrls, Config.WebSearchUrls, SupportedGameCount);
-
-        Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
-
-        Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
-
-        Config.ShowPresetTags = outConfig.ShowPresetTags;
+        Config.ConvertWAVsTo16BitOnInstall = outConfig.ConvertWAVsTo16BitOnInstall;
+        Config.ConvertMP3sToWAVsOnInstall_ND128 = outConfig.ConvertMP3sToWAVsOnInstall_ND128;
 
         #endregion
 
@@ -718,6 +684,27 @@ internal static class Core
 
         // Don't clear the existing dict; we want to keep settings even for drives that have been removed
         outConfig.DriveLettersAndTypes.CopyTo_NoClearDest(Config.DriveLettersAndTypes);
+
+        #endregion
+
+        #region Other page
+
+        Config.UseOldMantlingForOldDarkFMs = outConfig.UseOldMantlingForOldDarkFMs;
+
+        Config.ConfirmBeforeInstall = outConfig.ConfirmBeforeInstall;
+
+        Config.ConfirmUninstall = outConfig.ConfirmUninstall;
+
+        Config.BackupFMData = outConfig.BackupFMData;
+        Config.BackupAlwaysAsk = outConfig.BackupAlwaysAsk;
+
+        Array.Copy(outConfig.WebSearchUrls, Config.WebSearchUrls, SupportedGameCount);
+
+        Config.ConfirmPlayOnDCOrEnter = outConfig.ConfirmPlayOnDCOrEnter;
+
+        Config.EnableFuzzySearch = outConfig.EnableFuzzySearch;
+
+        Config.ShowPresetTags = outConfig.ShowPresetTags;
 
         #endregion
 
@@ -807,7 +794,7 @@ internal static class Core
 
         #endregion
 
-        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             await FMScan.ScanNewFMs(fmsToScan);
         }
@@ -964,6 +951,9 @@ internal static class Core
                     configMods.Add(tempList[i]);
                 }
             }
+
+            var gv = GetGameVersion(gameIndex);
+            Config.SetDarkGameVersion(gameIndex, gv.Error == Error.None ? gv.Version : null);
         }
         else if (gameIndex == GameIndex.TDM)
         {
@@ -1073,68 +1063,41 @@ internal static class Core
     {
         Comparers.IDirectionalSortFMComparer comparer = Comparers.ColumnComparers[(int)column];
 
-        comparer.SortDirection = sortDirection;
+        comparer.SetValues(
+            sortDirection: sortDirection,
+            showRecentAtTop: View.GetShowRecentAtTop(),
+            showPinnedAtTop: !View.GetShowUnavailableFMsFilter(),
+            dateTimeNow: DateTime.Now);
 
-        FMsViewList.Sort(comparer);
-
-        if (View.GetShowRecentAtTop())
-        {
-            // Store it so it doesn't change
-            DateTime dtNow = DateTime.Now;
-
-            int recentFMCount = 0;
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FanMission fm = FMsViewList[i];
-                fm.MarkedRecent = false;
-
-                if (
-                    // Don't mess with the sort order of pinned FMs, because they should be in the same sort
-                    // order as the main list but just placed at the top. Whereas the recent FMs will always
-                    // be displayed in order of date added.
-                    !fm.Pinned &&
-                    fm.DateAdded != null &&
-                    ((DateTime)fm.DateAdded).CompareTo(dtNow) <= 0 &&
-                    (dtNow - (DateTime)fm.DateAdded).TotalDays <= Config.DaysRecent)
-                {
-                    fm.MarkedRecent = true;
-                    FMsViewList.Remove(fm);
-                    FMsViewList.Insert(0, fm);
-                    recentFMCount++;
-                }
-            }
-
-            if (recentFMCount > 0)
-            {
-                Comparers.ColumnComparers[(int)Column.DateAdded].SortDirection = SortDirection.Ascending;
-                FMsViewList.Sort(0, recentFMCount, Comparers.ColumnComparers[(int)Column.DateAdded]);
-            }
-        }
-        else
-        {
-            for (int i = 0; i < FMsViewList.Count; i++)
-            {
-                FMsViewList[i].MarkedRecent = false;
-            }
-        }
-
-        if (View.GetShowUnavailableFMsFilter()) return;
-
-        #region Pinned
-
-        int pinnedFMCount = 0;
+        /*
+        @PERF_TODO(Remaining inefficiency with view list sorting):
+        This loop is theoretically inefficient, as it's a full-set iteration in addition to the sort itself.
+        However, it takes <3ms on the 200,000 set, so in practice it's not really a problem.
+        It's uncertain whether it would be safe to set MarkedRecent during the sort itself, so we're just leaving
+        this loop in for now.
+        */
         for (int i = 0; i < FMsViewList.Count; i++)
         {
-            FanMission fm = FMsViewList[i];
-            if (fm.Pinned)
-            {
-                FMsViewList.Remove(fm);
-                FMsViewList.Insert(pinnedFMCount, fm);
-                pinnedFMCount++;
-            }
+            FMsViewList[i].MarkedRecent = false;
         }
 
-        #endregion
+#if SORT_TIMING_TEST
+        Stopwatch sw = Stopwatch.StartNew();
+#endif
+
+#if USE_HPCSHARP
+        // Turn the entire codebase upside down to make the view list be a ListFast in order to get at its
+        // internal array in order to pass it to the fully-in-place method in order to avoid massive allocs
+        // for every keypress in the filter boxes.
+        FMsViewList.ItemsArray.SortMergeInPlacePar(0, FMsViewList.Count, comparer, 2000);
+#else
+        FMsViewList.Sort(comparer);
+#endif
+
+#if SORT_TIMING_TEST
+        sw.Stop();
+        Trace.WriteLine(sw.Elapsed.ToString());
+#endif
     }
 
     // @BetterErrors(RefreshFMsListFromDisk): This one ties into FindFMs (see note there)
@@ -1147,7 +1110,7 @@ internal static class Core
             // and it also sets the wait cursor, to avoid flickering it on and off twice.
             View.SetWaitCursor(true);
 
-            List<FanMission> fmsViewListUnscanned = FindFMs.Find();
+            ListFast<FanMission> fmsViewListUnscanned = FindFMs.Find();
 
             // @TDM_CASE: Case-sensitive dictionary
             Dictionary<string, int> tdmFMsDict = new(FMDataIniListTDM.Count);
@@ -1181,7 +1144,7 @@ internal static class Core
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+            if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
             {
                 View.SetWaitCursor(false);
                 await FMScan.ScanNewFMs(fmsToScan);
@@ -1542,22 +1505,24 @@ internal static class Core
                 // keeping this array around permanently.
                 foreach (string item in new[] { "readme", "fminfo", "fm", "gameinfo", "mission", "missioninfo", "info", "entry" })
                 {
-                    foreach (string sr in safeReadmes)
+                    for (int i = 0; i < safeReadmes.Count; i++)
                     {
+                        string sr = safeReadmes[i];
                         if (Path.GetFileNameWithoutExtension(sr).EqualsI(item))
                         {
-                            safeReadmes.Remove(sr);
+                            safeReadmes.RemoveAt(i);
                             safeReadmes.Insert(0, sr);
                             break;
                         }
                     }
                 }
-                foreach (string sr in safeReadmes)
+                for (int i = 0; i < safeReadmes.Count; i++)
                 {
+                    string sr = safeReadmes[i];
                     string srNoExt = Path.GetFileNameWithoutExtension(sr);
                     if (langCodesExist && EndsWithLangCode(srNoExt, langCodes))
                     {
-                        safeReadmes.Remove(sr);
+                        safeReadmes.RemoveAt(i);
                         safeReadmes.Insert(0, sr);
                         break;
                     }
@@ -1605,7 +1570,7 @@ internal static class Core
             #endregion
 
             Encoding? encoding = null;
-            if (fileType == ReadmeType.PlainText &&
+            if (ReadmeTypeSupportsEncodingChange(fileType) &&
                 fm.ReadmeCodePages.TryGetValue(fm.SelectedReadme, out int codePage))
             {
                 try
@@ -1624,7 +1589,7 @@ internal static class Core
 
             // 0 = default, and we don't handle that - if it's default, then we'll just autodetect it
             // every time until the user explicitly requests something different.
-            if (fileType == ReadmeType.PlainText)
+            if (ReadmeTypeSupportsEncodingChange(fileType))
             {
                 if (newEncoding?.CodePage > 0)
                 {
@@ -2044,7 +2009,6 @@ internal static class Core
     {
         string gameExe = Config.GetGameExe(game);
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
-        if (!File.Exists(gameExe)) return (Error.GameExeNotFound, null, "");
 
         bool gameIsNormal = GameIsDark(game) || game == GameIndex.TDM;
         string exeToSearch;
@@ -2055,7 +2019,11 @@ internal static class Core
         else
         {
             // TODO: If Sneaky.dll not found, just use the version from specified exe and don't say "Sneaky Upgrade" before it
-            if (!TryCombineFilePathAndCheckExistence(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll, out exeToSearch))
+            try
+            {
+                exeToSearch = Path.Combine(Config.GetGamePath(GameIndex.Thief3), Paths.SneakyDll);
+            }
+            catch
             {
                 return (Error.SneakyDllNotFound, null, "");
             }
@@ -2064,6 +2032,7 @@ internal static class Core
         FileVersionInfo vi;
         try
         {
+            // This thing does a File.Exists() check itself, so no need to do any duplicate ones beforehand
             vi = FileVersionInfo.GetVersionInfo(exeToSearch);
         }
         catch (FileNotFoundException)
@@ -2155,7 +2124,7 @@ internal static class Core
 
         if (fm.NeedsScan())
         {
-            if (await FMScan.ScanFMs(NonEmptyList<FanMission>.CreateFrom(fm), suppressSingleFMProgressBoxIfFast: true))
+            if (await FMScan.ScanFMs(NonEmptyListFast<FanMission>.CreateFrom(fm), suppressSingleFMProgressBoxIfFast: true))
             {
                 View.RefreshFM(fm, rowOnly: true);
             }

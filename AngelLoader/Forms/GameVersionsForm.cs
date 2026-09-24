@@ -19,7 +19,7 @@ public sealed class GameVersionsForm : DarkFormBase
         #region Init
 
         OKButton = new StandardButton();
-        FlowLayoutPanel okFLP = new();
+        FlowLayoutPanelCustom okFLP = new();
         okFLP.SuspendLayout();
 
         SuspendLayout();

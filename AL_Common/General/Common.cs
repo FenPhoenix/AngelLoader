@@ -81,36 +81,35 @@ public static partial class Common
         }
     }
 
+    public readonly struct RtfColor
+    {
+        public readonly byte R;
+        public readonly byte G;
+        public readonly byte B;
+        public readonly bool IsDefaultColor;
+
+        public RtfColor(byte r, byte g, byte b)
+        {
+            R = r;
+            G = g;
+            B = b;
+            IsDefaultColor = false;
+        }
+
+        public RtfColor(byte r, byte g, byte b, bool isDefaultColor)
+        {
+            R = r;
+            G = g;
+            B = b;
+            IsDefaultColor = isDefaultColor;
+        }
+    }
+
     #endregion
 
     #region Methods
 
     public static bool EqualsIfNotNull(this object? obj1, object? obj2) => obj1 != null && obj2 != null && obj1 == obj2;
-
-    /// <summary>
-    /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of the infernal exception-throwing.
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ListFast<char>? ConvertFromUtf32(uint utf32u, ListFast<char> charBuffer)
-    {
-        if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)
-        {
-            return null;
-        }
-
-        if (utf32u <= char.MaxValue)
-        {
-            charBuffer.ItemsArray[0] = (char)utf32u;
-            charBuffer.Count = 1;
-            return charBuffer;
-        }
-
-        charBuffer.ItemsArray[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
-        charBuffer.ItemsArray[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
-        charBuffer.Count = 2;
-
-        return charBuffer;
-    }
 
     public static string GetPlainInnerText(this XmlNode? node) => node == null ? "" : WebUtility.HtmlDecode(node.InnerText);
 
@@ -122,6 +121,62 @@ public static partial class Common
     /// <returns></returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T RunFunc<T>(Func<T> initFunc) => initFunc.Invoke();
+
+    /// <summary>Indicates whether a <see langword="char"/> is within the specified inclusive range.</summary>
+    /// <param name="value">The <see langword="char"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(char value, char minInclusive, char maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether an <see langword="int"/> is within the specified inclusive range.</summary>
+    /// <param name="value">The <see langword="int"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this int value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether a <see langword="uint"/> is within the specified inclusive range.</summary>
+    /// <param name="value">The <see langword="uint"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this uint value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
+
+    /// <summary>Indicates whether a <see langword="ushort"/> is within the specified inclusive range.</summary>
+    /// <param name="value">The <see langword="ushort"/> to evaluate.</param>
+    /// <param name="minInclusive">The lower bound, inclusive.</param>
+    /// <param name="maxInclusive">The upper bound, inclusive.</param>
+    /// <returns>true if <paramref name="value"/> is within the specified range; otherwise, false.</returns>
+    /// <remarks>
+    /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+    /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+    /// <paramref name="minInclusive"/>, the behavior is undefined.
+    /// </remarks>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsBetween(this ushort value, int minInclusive, int maxInclusive) =>
+        (uint)(value - minInclusive) <= (uint)(maxInclusive - minInclusive);
 
     #endregion
 }

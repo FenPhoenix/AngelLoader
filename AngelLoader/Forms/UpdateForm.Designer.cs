@@ -18,7 +18,7 @@ sealed partial class UpdateForm
     /// </summary>
     private void InitializeComponent()
     {
-            this.BottomButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+            this.BottomButtonsFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
             this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
             this.UpdateButton = new AngelLoader.Forms.CustomControls.StandardButton();
             this.ReleaseNotesRichTextBox = new AngelLoader.Forms.CustomControls.RichTextBoxCustom();
@@ -106,7 +106,7 @@ sealed partial class UpdateForm
 
     #endregion
 
-    private CustomControls.DarkFlowLayoutPanel BottomButtonsFLP;
+    private CustomControls.DrawnFlowLayoutPanel BottomButtonsFLP;
     private CustomControls.StandardButton Cancel_Button;
     private CustomControls.StandardButton UpdateButton;
     private CustomControls.RichTextBoxCustom ReleaseNotesRichTextBox;

@@ -180,6 +180,8 @@ internal static partial class Ini
         }
     }
 
+    private static readonly MemoryStringComparer CachedKeyComparer = new();
+
     private sealed class MemoryStringComparer : IEqualityComparer<ReadOnlyMemory<char>>
     {
         public bool Equals(ReadOnlyMemory<char> x, ReadOnlyMemory<char> y) => x.Span.Equals(y.Span, StringComparison.Ordinal);
@@ -187,7 +189,7 @@ internal static partial class Ini
         public int GetHashCode(ReadOnlyMemory<char> obj) => string.GetHashCode(obj.Span);
     }
 
-    internal static void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
+    internal static unsafe void ReadFMDataIni(string fileName, List<FanMission> fmsList, List<FanMission> fmsListTDM)
     {
         fmsList.Clear();
         fmsListTDM.Clear();
@@ -216,28 +218,22 @@ internal static partial class Ini
             }
             else if (fm != null)
             {
-                PopulateFMFieldFromLine(fm, line);
+                ReadOnlyMemory<char> lineTS = line.AsMemory().TrimStart();
+                ReadOnlySpan<char> lineTSSpan = lineTS.Span;
+                int eqIndex = lineTSSpan.IndexOf('=');
+                if (eqIndex > -1 && lineTSSpan[0] != ';')
+                {
+                    if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
+                    {
+                        ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
+                        result.Action(fm, valRaw);
+                    }
+                }
             }
         }
         AddFMIfNotNull(fm, fmsList, fmsListTDM);
 
         return;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static unsafe void PopulateFMFieldFromLine(FanMission fm, string line)
-        {
-            ReadOnlyMemory<char> lineTS = line.AsMemory().TrimStart();
-            ReadOnlySpan<char> lineTSSpan = lineTS.Span;
-            int eqIndex = lineTSSpan.IndexOf('=');
-            if (eqIndex > -1 && lineTSSpan[0] != ';')
-            {
-                if (_actionDict_FMData.TryGetValue(lineTS[..eqIndex], out var result))
-                {
-                    ReadOnlySpan<char> valRaw = lineTSSpan[(eqIndex + 1)..];
-                    result.Action(fm, valRaw);
-                }
-            }
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void AddFMIfNotNull(FanMission? fm, List<FanMission> fmsList, List<FanMission> fmsListTDM)
@@ -632,7 +628,7 @@ internal static partial class Ini
         // TODO: This should really be like an "Ordered HashSet" but there's no such thing I don't think
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
-        config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(new PathComparer()).ToArray());
+        config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(CachedPathComparer).ToArray());
 
 #if SMART_NEW_COLUMN_INSERT
 

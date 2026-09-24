@@ -76,6 +76,14 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_SettingsAudioFilesVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        if (Int_TryParseInv(valTrimmed, out int result))
+        {
+            config.SetSettingsTabVScrollPos(SettingsTab.AudioFiles, result);
+        }
+    }
+
     private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         if (Int_TryParseInv(valTrimmed, out int result))
@@ -244,14 +252,19 @@ internal static partial class Ini
         }
     }
 
+    private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        config.ConvertOGGsToWAVsOnInstall = valTrimmed.EqualsTrue();
+    }
+
     private static void Config_ConvertWAVsTo16BitOnInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
         config.ConvertWAVsTo16BitOnInstall = valTrimmed.EqualsTrue();
     }
 
-    private static void Config_ConvertOGGsToWAVsOnInstall_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    private static void Config_ConvertMP3sToWAVsOnInstall_ND128_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        config.ConvertOGGsToWAVsOnInstall = valTrimmed.EqualsTrue();
+        config.ConvertMP3sToWAVsOnInstall_ND128 = valTrimmed.EqualsTrue();
     }
 
     private static void Config_UseOldMantlingForOldDarkFMs_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -922,6 +935,12 @@ internal static partial class Ini
         config.ShowPresetTags = valTrimmed.EqualsTrue();
     }
 
+    private static void Config_ExcludeSoundDirsFromBackupAndRestore_Set(ConfigData config, ReadOnlySpan<char> valTrimmed, ReadOnlySpan<char> valRaw, GameIndex gameIndex, bool ignoreGameIndex)
+    {
+        // @ND128: Don't save/restore this option for now
+        //config.ExcludeSoundDirsFromBackupAndRestore = valTrimmed.EqualsTrue();
+    }
+
     #endregion
 
     [StructLayout(LayoutKind.Auto)]
@@ -936,7 +955,7 @@ internal static partial class Ini
     }
 
     private static unsafe Dictionary<ReadOnlyMemory<char>, Config_DelegatePointerWrapper>
-    CreateConfigDictionary() => new(new MemoryStringComparer())
+    CreateConfigDictionary() => new(CachedKeyComparer)
     {
         #region Settings window state
 
@@ -945,6 +964,7 @@ internal static partial class Ini
         { "SettingsWindowSplitterDistance".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsWindowSplitterDistance_Set) },
         { "SettingsPathsVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsPathsVScrollPos_Set) },
         { "SettingsAppearanceVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsAppearanceVScrollPos_Set) },
+        { "SettingsAudioFilesVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsAudioFilesVScrollPos_Set) },
         { "SettingsOtherVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsOtherVScrollPos_Set) },
         { "SettingsThiefBuddyVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsThiefBuddyVScrollPos_Set) },
         { "SettingsUpdateVScrollPos".AsMemory(), new Config_DelegatePointerWrapper(&Config_SettingsUpdateVScrollPos_Set) },
@@ -981,6 +1001,7 @@ internal static partial class Ini
 
         { "DaysRecent".AsMemory(), new Config_DelegatePointerWrapper(&Config_DaysRecent_Set) },
         { "ConvertWAVsTo16BitOnInstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConvertWAVsTo16BitOnInstall_Set) },
+        { "ConvertMP3sToWAVsOnInstall_ND128".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConvertMP3sToWAVsOnInstall_ND128_Set) },
         { "ConvertOGGsToWAVsOnInstall".AsMemory(), new Config_DelegatePointerWrapper(&Config_ConvertOGGsToWAVsOnInstall_Set) },
         { "UseOldMantlingForOldDarkFMs".AsMemory(), new Config_DelegatePointerWrapper(&Config_UseOldMantlingForOldDarkFMs_Set) },
         { "HideUninstallButton".AsMemory(), new Config_DelegatePointerWrapper(&Config_HideUninstallButton_Set) },
@@ -1131,6 +1152,7 @@ internal static partial class Ini
         { "DriveMultithreadingLevel".AsMemory(), new Config_DelegatePointerWrapper(&Config_DriveMultithreadingLevel_Set) },
 
         { "ShowPresetTags".AsMemory(), new Config_DelegatePointerWrapper(&Config_ShowPresetTags_Set) },
+        { "ExcludeSoundDirsFromBackupAndRestore".AsMemory(), new Config_DelegatePointerWrapper(&Config_ExcludeSoundDirsFromBackupAndRestore_Set) },
 
         #region Backward compatibility
 
@@ -1314,6 +1336,7 @@ internal static partial class Ini
 
         sw.Append("SettingsPathsVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Paths));
         sw.Append("SettingsAppearanceVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Appearance));
+        sw.Append("SettingsAudioFilesVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.AudioFiles));
         sw.Append("SettingsOtherVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Other));
         sw.Append("SettingsThiefBuddyVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.ThiefBuddy));
         sw.Append("SettingsUpdateVScrollPos=").AppendLine(config.GetSettingsTabVScrollPos(SettingsTab.Update));
@@ -1402,8 +1425,9 @@ internal static partial class Ini
 
         sw.Append("DaysRecent=").AppendLine(config.DaysRecent);
 
-        sw.Append("ConvertWAVsTo16BitOnInstall=").AppendLine(config.ConvertWAVsTo16BitOnInstall);
         sw.Append("ConvertOGGsToWAVsOnInstall=").AppendLine(config.ConvertOGGsToWAVsOnInstall);
+        sw.Append("ConvertWAVsTo16BitOnInstall=").AppendLine(config.ConvertWAVsTo16BitOnInstall);
+        sw.Append("ConvertMP3sToWAVsOnInstall_ND128=").AppendLine(config.ConvertMP3sToWAVsOnInstall_ND128);
         sw.Append("UseOldMantlingForOldDarkFMs=").AppendLine(config.UseOldMantlingForOldDarkFMs);
         sw.Append("HideUninstallButton=").AppendLine(config.HideUninstallButton);
         sw.Append("HideFMListZoomButtons=").AppendLine(config.HideFMListZoomButtons);
@@ -1559,5 +1583,7 @@ internal static partial class Ini
         sw.AppendLine();
 
         sw.Append("ShowPresetTags=").AppendLine(config.ShowPresetTags);
+        // @ND128: Don't save/restore this option for now
+        //sw.Append("ExcludeSoundDirsFromBackupAndRestore=").AppendLine(config.ExcludeSoundDirsFromBackupAndRestore);
     }
 }

@@ -25,13 +25,13 @@ public sealed partial class MainForm
     {
         components = new Container();
         GameTabsImageList = new ImageList(components);
-        BottomRightFLP = new FlowLayoutPanel();
+        BottomRightFLP = new FlowLayoutPanelCustom();
         FMCountLabel = new DarkLabel();
         SettingsButton = new DarkButton();
-        BottomLeftFLP = new FlowLayoutPanel();
+        BottomLeftFLP = new FlowLayoutPanelCustom();
         PlayFMButton = new DarkButton();
-        PlayOriginalFLP = new FlowLayoutPanel();
-        EverythingPanel = new Panel();
+        PlayOriginalFLP = new FlowLayoutPanelCustom();
+        EverythingPanel = new PanelCustom();
         MainSplitContainer = new DarkSplitContainerCustom();
         TopSplitContainer = new DarkSplitContainerCustom();
         MainMenuButton = new DarkButton();
@@ -53,7 +53,7 @@ public sealed partial class MainForm
         PlayTimeColumn = new DataGridViewTextBoxColumn();
         DisabledModsColumn = new DataGridViewTextBoxColumn();
         CommentColumn = new DataGridViewTextBoxColumn();
-        FilterBarFLP = new FlowLayoutPanel();
+        FilterBarFLP = new FlowLayoutPanelCustom();
         FilterGameButtonsToolStrip = new ToolStripCustom();
         GameFilterControlsShowHideButtonToolStrip = new ToolStripCustom();
         GameFilterControlsShowHideButton = new ToolStripArrowButton();

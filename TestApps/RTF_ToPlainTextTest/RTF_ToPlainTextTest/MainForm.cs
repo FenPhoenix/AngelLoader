@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AL_Common.RTF;
 
 namespace RTF_ToPlainTextTest;
 
@@ -194,7 +195,7 @@ public sealed partial class MainForm : Form
 
         var rtfConverter = new RtfToTextConverter();
 
-        ArrayWithLength<byte>[] byteArrays = new ArrayWithLength<byte>[rtfFiles.Length];
+        byte[][] byteArrays = new byte[rtfFiles.Length][];
 
         long totalSize = 0;
 
@@ -204,7 +205,7 @@ public sealed partial class MainForm : Form
             using var fs = File.OpenRead(f);
             byte[] array = new byte[fs.Length];
             int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-            byteArrays[i] = new ArrayWithLength<byte>(array, bytesRead);
+            byteArrays[i] = array;
             totalSize += byteArrays[i].Length;
         }
 
@@ -217,7 +218,7 @@ public sealed partial class MainForm : Form
             {
                 string f = rtfFiles[i];
                 Trace.WriteLine(f);
-                ArrayWithLength<byte> array = byteArrays[i];
+                byte[] array = byteArrays[i];
                 (_, string text) = rtfConverter.Convert(array);
                 WritePlaintextFile(f, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);
             }
@@ -299,7 +300,7 @@ public sealed partial class MainForm : Form
         using var fs = File.OpenRead(file);
         byte[] array = new byte[fs.Length];
         int bytesRead = fs.ReadAll(array, 0, (int)fs.Length);
-        (_, string text) = rtfConverter.Convert(new ArrayWithLength<byte>(array, bytesRead));
+        (_, string text) = rtfConverter.Convert(array);
         if (write)
         {
             WritePlaintextFile(file, text.Split(new[] { "\r", "\n", "\r\n" }, StringSplitOptions.None), _destDirCustom);

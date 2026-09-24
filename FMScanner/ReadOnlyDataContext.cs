@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define ND128_GAME_HINT
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -131,6 +133,7 @@ public sealed partial class ReadOnlyDataContext
         new('\x2013', '-'),
         new('\x2018', '\''),
         new('\x2019', '\''),
+        new('\xB4', '\''),
         new('\x201C', '"'),
         new('\x201D', '"'),
     };
@@ -447,23 +450,37 @@ public sealed partial class ReadOnlyDataContext
 
     // ReSharper disable IdentifierTypo
 
+    // On-disk (exact locations)
     internal const int SS2_NewDark_MAPPARAM_Location = 696;
     internal const int T2_OldDark_SKYOBJVAR_Location = 772;
     internal const int SS2_OldDark_MAPPARAM_Location = 916;
 
+    // Streamable archive (offsets from end of last read to end of target keyphrase in current read)
     internal const int SS2_NewDark_MAPPARAM_Offset = 705; // 696+9 = 705
     internal const int T2_OldDark_SKYOBJVAR_Offset = 76;  // (772+9)-705 = 76
     internal const int SS2_OldDark_MAPPARAM_Offset = 144; // ((916+9)-76)-705 = 144
 
+#if ND128_GAME_HINT
+    // NewDark 1.28 fast game descriptor byte check
+    internal const int Thief_DARKMISS_Location = 612;
+    internal const int Thief_128_GameDescriptor_Location = 649;
+    internal const int Thief_128_GameDescriptor_OffsetFromDARKMISS = 37;
+#endif
+
     // I believe 1566 to be OldDark and 1194 to be NewDark, but I don't need to know so I'll check into it later.
-    internal const int SS2_Gam_GAMEPARAM_Offset1 = 1194;
-    internal const int SS2_Gam_GAMEPARAM_Offset2 = 1566;
+    internal const int SS2_Gam_GAMEPARAM_Location1 = 1194;
+    internal const int SS2_Gam_GAMEPARAM_Location2 = 1566;
 
     internal const ulong OBJ_MAP_First = 0x0050414D5F4A424F;
     internal const uint OBJ_MAP_Second = 0x00000000;
 
     internal const ulong SymName_First = 0x6D614E6D79532450;
     internal const uint SymName_Second = 0x00000065;
+
+#if ND128_GAME_HINT
+    internal const ulong DARKMISS_First = 0x5353494D4B524144;
+    internal const uint DARKMISS_Second = 0x00000000;
+#endif
 
     /*
     In theory, someone could make a Thief 1 mission with a RopeyArrow archetype. It's never happened and is
@@ -476,18 +493,18 @@ public sealed partial class ReadOnlyDataContext
     internal readonly byte[] RopeyArrow = "RopeyArrow"u8.ToArray();
     internal readonly byte[] GAMEPARAM = "GAMEPARAM"u8.ToArray();
 
-    internal readonly int[] GameDetect_KeyPhraseLocations =
-    {
-        SS2_NewDark_MAPPARAM_Location,
-        T2_OldDark_SKYOBJVAR_Location,
-        SS2_OldDark_MAPPARAM_Location,
-    };
-
     internal readonly int[] GameDetect_KeyPhraseZipOffsets =
     {
         SS2_NewDark_MAPPARAM_Offset,
         T2_OldDark_SKYOBJVAR_Offset,
         SS2_OldDark_MAPPARAM_Offset,
+    };
+
+    internal readonly int[] GameDetect_KeyPhraseLocations =
+    {
+        SS2_NewDark_MAPPARAM_Location,
+        T2_OldDark_SKYOBJVAR_Location,
+        SS2_OldDark_MAPPARAM_Location,
     };
 
     // ReSharper restore IdentifierTypo
@@ -718,6 +735,11 @@ public sealed partial class ReadOnlyDataContext
     [GeneratedRegex(@"(\s+|^)[A-Z]+[a-z]*[A-Z]+([^A-Za-z]|$)",
         RegexOptions.ExplicitCapture)]
     internal static partial Regex AcronymRegex();
+
+
+    [GeneratedRegex(@"^(?<Title>.+)\s+(\(|\[)\s*[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}\s*(\)|\])\s*T(1|G|2|3|(DM))\s",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.CultureInvariant)]
+    internal static partial Regex TitleFromThiefGuildArchiveNameFormatRegex();
 
     #endregion
 
@@ -1084,20 +1106,19 @@ public sealed partial class ReadOnlyDataContext
     {
         public int Compare(string? x, string? y)
         {
-            if (x == y) return 0;
-            if (x.IsEmpty()) return -1;
-            if (y.IsEmpty()) return 1;
-
             // int32 max digits minus 1 (to avoid having to check for overflow)
             const int maxDigits = 9;
 
             // Line is guaranteed to start with "title_"
             const int underscoreIndex = 6;
 
-            int xIndex2 = x.IndexOf(':', underscoreIndex);
+            // This also means we don't need to do any guard checks. Any failure case will be caught by the
+            // normal logic.
+
+            int xIndexOfColon = x!.IndexOf(':', underscoreIndex);
 
             int xNum = 0;
-            int xEnd = Math.Min(xIndex2, underscoreIndex + maxDigits);
+            int xEnd = Math.Min(xIndexOfColon, underscoreIndex + maxDigits);
             for (int i = underscoreIndex; i < xEnd; i++)
             {
                 char c = x[i];
@@ -1112,10 +1133,10 @@ public sealed partial class ReadOnlyDataContext
                 }
             }
 
-            int yIndex2 = y.IndexOf(':', underscoreIndex);
+            int yIndexOfColon = y!.IndexOf(':', underscoreIndex);
 
             int yNum = 0;
-            int yEnd = Math.Min(yIndex2, underscoreIndex + maxDigits);
+            int yEnd = Math.Min(yIndexOfColon, underscoreIndex + maxDigits);
             for (int i = underscoreIndex; i < yEnd; i++)
             {
                 char c = y[i];

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Update;
+﻿namespace Update;
 
 public enum VisualTheme
 {
@@ -25,6 +23,6 @@ internal static class Data
     /// restored from backup.
     /// </summary>
     internal static string GenericUpdateFailedSafeMessage =>
-        LText.Update.UpdateFailed + Environment.NewLine +
+        LText.Update.UpdateFailed + $"{NL}" +
         LText.Update.RecommendManualUpdate;
 }

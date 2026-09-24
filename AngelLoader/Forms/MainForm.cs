@@ -1101,7 +1101,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     // This one can't be multithreaded because it depends on the FMs list
     // @ViewBusinessLogic(FinishInitAndShow)
-    public async Task FinishInitAndShow(List<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport)
+    public async Task FinishInitAndShow(ListFast<FanMission>? fmsViewListUnscanned, ISplashScreen_Safe splashScreen, bool askForImport)
     {
         _splashScreen = splashScreen;
 
@@ -1114,7 +1114,7 @@ public sealed partial class MainForm : DarkFormBase,
         // been run first. Also, do this first sort so that the list is as sorted as possible before we show.
         SortFMsDGV(Config.SortedColumn, Config.SortDirection);
 
-        if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
+        if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsViewListUnscanned, out var fmsToScan))
         {
             Show();
             await FMScan.ScanNewFMs(fmsToScan);
@@ -1125,7 +1125,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         if (!Config.AskedToScanForMisCounts)
         {
-            List<FanMission> fmsNeedingMisCountScan = new();
+            ListFast<FanMission> fmsNeedingMisCountScan = new(0);
 
             for (int i = 0; i < FMsViewList.Count; i++)
             {
@@ -1136,7 +1136,7 @@ public sealed partial class MainForm : DarkFormBase,
                 }
             }
 
-            if (NonEmptyList<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
+            if (NonEmptyListFast<FanMission>.TryCreateFrom_Ref(fmsNeedingMisCountScan, out var fmsToScanForMisCount))
             {
                 Show();
                 await FMScan.ScanFMs(
@@ -2805,7 +2805,7 @@ public sealed partial class MainForm : DarkFormBase,
                     };
 
                     if (await FMScan.ScanFMs(
-                            NonEmptyList<FanMission>.CreateFrom(fm),
+                            NonEmptyListFast<FanMission>.CreateFrom(fm),
                             scanOptions,
                             suppressSingleFMProgressBoxIfFast: true))
                     {
@@ -3661,7 +3661,7 @@ public sealed partial class MainForm : DarkFormBase,
 
     public FanMission[] GetSelectedFMs() => FMsDGV.GetSelectedFMs();
 
-    public List<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
+    public ListFast<FanMission> GetSelectedFMs_InOrder_List() => FMsDGV.GetSelectedFMs_InOrder_List();
 
     public FanMission? GetFMFromIndex(int index) => FMsDGV.RowSelected() ? FMsDGV.GetFMFromIndex(index) : null;
 
@@ -4103,10 +4103,6 @@ public sealed partial class MainForm : DarkFormBase,
 
         FanMission fm = FMsDGV.GetFMFromIndex(e.RowIndex);
 
-        const string pinChar = "\U0001F4CC ";
-
-        bool fmShouldBePinned = fm.Pinned && !GetShowUnavailableFMsFilter();
-
         switch ((Column)e.ColumnIndex)
         {
 #if DateAccTest
@@ -4158,26 +4154,16 @@ public sealed partial class MainForm : DarkFormBase,
                     finalTitle = fm.Title;
                 }
 
-                if (TitleColumn.Visible && fmShouldBePinned)
-                {
-                    finalTitle = pinChar + finalTitle;
-                }
-
                 e.Value = finalTitle;
 
                 break;
 
             case Column.Archive:
-                string value = fm.DisplayArchive;
-                e.Value = !TitleColumn.Visible && ArchiveColumn.Visible && fmShouldBePinned
-                    ? pinChar + value
-                    : value;
+                e.Value = fm.DisplayArchive;
                 break;
 
             case Column.Author:
-                e.Value = !TitleColumn.Visible && !ArchiveColumn.Visible && AuthorColumn.Visible && fmShouldBePinned
-                    ? pinChar + fm.Author
-                    : fm.Author;
+                e.Value = fm.Author;
                 break;
 
             case Column.Size:
@@ -4503,8 +4489,16 @@ public sealed partial class MainForm : DarkFormBase,
     // Note: ChooseReadmePanel doesn't need this, because the readme controls aren't shown when it's visible.
     internal void ReadmeArea_MouseLeave(object? sender, EventArgs e)
     {
-        nint hWnd = Native.WindowFromPoint(Cursor.Position);
-        if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+        /*
+        @Wine: Unfortunately, this causes the readme chooser dropdown premature closing (among possibly other
+        things?). So we'll have to take the slight sacrifice of the readme not hiding when the mouse moves
+        out of the window or whatever, for the far more important benefit of fixing the readme auto-closing.
+        */
+        if (!WinVersion.IsWine)
+        {
+            nint hWnd = Native.WindowFromPoint(Cursor.Position);
+            if (Control.FromHandle(hWnd) == null) ShowReadmeControls(false);
+        }
     }
 
     public Encoding? ChangeReadmeEncoding(Encoding? encoding) => ReadmeRichTextBox.ChangeEncoding(encoding);
@@ -4553,7 +4547,21 @@ public sealed partial class MainForm : DarkFormBase,
 
     private void ShowReadmeControls(bool enabled)
     {
-        ChooseReadmeComboBox.Visible = enabled && ChooseReadmeComboBox.Items.Count > 0;
+        if (enabled)
+        {
+            if (!ChooseReadmeComboBox.Visible)
+            {
+                ChooseReadmeComboBox.Visible = ChooseReadmeComboBox.Items.Count > 0;
+            }
+        }
+        else
+        {
+            if (ReadmeComboBoxShouldHide_WineFriendly())
+            {
+                ChooseReadmeComboBox.Visible = false;
+            }
+        }
+
         if (enabled != _readmeControlsOtherThanComboBoxVisible)
         {
             foreach (DarkButton button in _readmeControlButtons)
@@ -4975,7 +4983,7 @@ public sealed partial class MainForm : DarkFormBase,
         Lazy_FMsDGV_FM_Menu.SetScanFMMenuItemEnabled(!noneAreAvailable);
         Lazy_FMsDGV_FM_Menu.SetScanFMText(multiSelected);
 
-        Lazy_FMsDGV_FM_Menu.SetConvertAudioRCSubMenuEnabled(
+        Lazy_FMsDGV_FM_Menu.SetConvertAudioSubMenuEnabled(
             !noneAreAvailable && !noneAreInstalled && !noneAreDark
         );
 
@@ -5038,7 +5046,9 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 FillReadmeListControl(ChooseReadmeComboBox, readmeFiles);
                 ChooseReadmeComboBox.SelectBackingIndexOf(readme);
-                ChooseReadmeComboBox.Show();
+                // Don't show if the cursor's not over it, otherwise it shows on startup (but not the other
+                // controls) until you mouse somewhere over the window.
+                ChooseReadmeComboBox.Visible = CursorOverReadmeArea();
             }
         }
     }
@@ -5078,7 +5088,30 @@ public sealed partial class MainForm : DarkFormBase,
         }
     }
 
-    public void ShowReadmeChooser(bool visible) => ChooseReadmeComboBox.Visible = visible;
+    public void ShowReadmeChooser(bool visible)
+    {
+        if (visible)
+        {
+            if (!ChooseReadmeComboBox.Visible)
+            {
+                ChooseReadmeComboBox.Visible = true;
+            }
+        }
+        else
+        {
+            if (ReadmeComboBoxShouldHide_WineFriendly())
+            {
+                ChooseReadmeComboBox.Visible = false;
+            }
+        }
+    }
+
+    // @Wine: If we try to set the combobox state - even if it's the same as previous - its dropdown closes.
+    // We need to keep it open so the user can interact with it.
+    private bool ReadmeComboBoxShouldHide_WineFriendly()
+    {
+        return ChooseReadmeComboBox.Visible && (!ChooseReadmeComboBox.DroppedDown || !CursorOverReadmeArea());
+    }
 
     public void ShowInitialReadmeChooser(bool visible) => Lazy_ChooseReadmePanel.ShowPanel(visible);
 
@@ -5097,7 +5130,7 @@ public sealed partial class MainForm : DarkFormBase,
         {
             SetReadmeVisible(true);
             Lazy_ViewHTMLReadmeButton.Hide();
-            ReadmeEncodingButton.Enabled = fileType == ReadmeType.PlainText;
+            ReadmeEncodingButton.Enabled = ReadmeTypeSupportsEncodingChange(fileType);
             return ReadmeRichTextBox.LoadContent(path, fileType, encoding);
         }
     }

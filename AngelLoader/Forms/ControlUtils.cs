@@ -293,7 +293,7 @@ internal static class ControlUtils
         }
     }
 
-    internal static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanel flp)
+    internal static int GetFlowLayoutPanelControlsWidthAll(FlowLayoutPanelCustom flp)
     {
         int ret = 0;
         for (int i = 0; i < flp.Controls.Count; i++)
@@ -1069,5 +1069,39 @@ internal static class ControlUtils
             // only backColor. Meh?
             c.ForeColor,
             color);
+    }
+
+    /*
+    @Wine: We have to call this from every single control that inherits from ScrollableControl, because we have
+    to act on the WM_NCPAINT message, and messages ONLY get sent to the exact control that they're meant for.
+    So we can't catch it in a main form WndProc() override nor in a message filter.
+    */
+    internal static void Wine_DrawScrollBarCorner(ScrollableControl control)
+    {
+        if (!Config.DarkMode ||
+            !WinVersion.IsWine ||
+            !control.VerticalScroll.Visible ||
+            !control.HorizontalScroll.Visible)
+        {
+            return;
+        }
+
+        nint controlHandle = control.Handle;
+
+        Native.SCROLLBARINFO sbi_v = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.GetScrollBarInfo(controlHandle, Native.OBJID_VSCROLL, ref sbi_v);
+
+        Rectangle sbr = sbi_v.rcScrollBar.ToRectangle();
+
+        Point vertSB_BottomPoint = control.PointToClient(new Point(sbr.Right, sbr.Bottom));
+
+        using Native.GraphicsContext gc = new(controlHandle);
+        gc.G.FillRectangle(
+            DarkColors.DarkBackgroundBrush,
+            vertSB_BottomPoint.X - sbr.Width,
+            vertSB_BottomPoint.Y,
+            sbr.Width,
+            SystemInformation.VerticalScrollBarArrowHeight
+        );
     }
 }

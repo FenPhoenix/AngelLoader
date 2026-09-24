@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.CustomControls;
+using AngelLoader.Forms.WinFormsNative;
 
 namespace AngelLoader.Forms;
 
@@ -42,7 +43,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
 
     public string ProductVersion => Application.ProductVersion;
 
-    public void PreloadScreenshot(ConfigData config, List<FanMission> fmsViewList)
+    public void PreloadScreenshot(ConfigData config, ListFast<FanMission> fmsViewList)
     {
         FMTabData screenshotsTab = config.FMTabsData.GetTab(FMTab.Screenshots);
         if (screenshotsTab.Visible == FMTabVisibleIn.Top &&
@@ -85,20 +86,29 @@ public sealed class FormsViewEnvironment : IViewEnvironment
             screenshotFileNames);
     }
 
-    public void PreprocessRTFReadme(ConfigData config, List<FanMission> fmsViewList, List<FanMission> fmsViewListUnscanned)
+    public void PreprocessRTFReadme(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
+    {
+        bool successfullyPreprocessedRtf = PreprocessReadme_Internal(config, fmsViewList, fmsViewListUnscanned);
+        if (!successfullyPreprocessedRtf)
+        {
+            RtfProcessing.WarmUpRtfParser();
+        }
+    }
+
+    private bool PreprocessReadme_Internal(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
     {
         SelectedFM selFM = config.GameOrganization == GameOrganization.OneList
             ? config.SelFM
             : config.GameTabsState.GetSelectedFM(config.GameTab);
 
-        if (selFM.InstalledName.IsWhiteSpace()) return;
+        if (selFM.InstalledName.IsWhiteSpace()) return false;
 
         FanMission? fm = fmsViewList.Find(x => x.InstalledDir.EqualsI(selFM.InstalledName));
-        if (fm == null) return;
-        if (fm.ForceReadmeReCache) return;
-        if (fm.ForceReadmeReCacheAlways) return;
-        if (fmsViewListUnscanned.Contains(fm)) return;
-        if (fm.SelectedReadme.IsWhiteSpace()) return;
+        if (fm == null) return false;
+        if (fm.ForceReadmeReCache) return false;
+        if (fm.ForceReadmeReCacheAlways) return false;
+        if (fmsViewListUnscanned.Contains(fm)) return false;
+        if (fm.SelectedReadme.IsWhiteSpace()) return false;
 
         string readmeFile;
         try
@@ -106,12 +116,12 @@ public sealed class FormsViewEnvironment : IViewEnvironment
             (readmeFile, Misc.ReadmeType readmeType) = Core.GetReadmeFileAndType(fm);
             if (readmeType != Misc.ReadmeType.RichText || readmeFile.IsWhiteSpace())
             {
-                return;
+                return false;
             }
         }
         catch
         {
-            return;
+            return false;
         }
 
         byte[] bytes;
@@ -121,9 +131,30 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         }
         catch
         {
-            return;
+            return false;
         }
 
         RTFPreprocessing.PreloadRichFormat(readmeFile, bytes, config.DarkMode);
+
+        return true;
+    }
+
+    public void PreloadTheme(VisualTheme theme)
+    {
+        // UI doesn't work with this crap
+#if DEBUG
+        return;
+#endif
+        try
+        {
+            if (theme != VisualTheme.Classic)
+            {
+                Win32ThemeHooks.PreloadHooks();
+            }
+        }
+        catch
+        {
+            // ignore
+        }
     }
 }

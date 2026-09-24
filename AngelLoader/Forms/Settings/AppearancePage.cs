@@ -1,8 +1,9 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPage
+public sealed partial class AppearancePage : UserControlCustom, Interfaces.ISettingsPage
 {
     public AppearancePage()
     {
@@ -21,9 +22,9 @@ public sealed partial class AppearancePage : UserControl, Interfaces.ISettingsPa
 
     private void FMsListGroupBox_PaintCustom(object? sender, PaintEventArgs e)
     {
-        Images.DrawHorizDiv(e.Graphics, 8, 136, FMsListGroupBox.Width - 9);
-        Images.DrawHorizDiv(e.Graphics, 8, 264, FMsListGroupBox.Width - 9);
-        Images.DrawHorizDiv(e.Graphics, 8, 408, FMsListGroupBox.Width - 9);
-        Images.DrawHorizDiv(e.Graphics, 8, 584, FMsListGroupBox.Width - 9);
+        Images.DrawHorizDiv(e.Graphics, 8, SortingLabel.Top - 20, FMsListGroupBox.Width - 9);
+        Images.DrawHorizDiv(e.Graphics, 8, RatingDisplayStyleLabel.Top - 20, FMsListGroupBox.Width - 9);
+        Images.DrawHorizDiv(e.Graphics, 8, DateFormatLabel.Top - 20, FMsListGroupBox.Width - 9);
+        Images.DrawHorizDiv(e.Graphics, 8, RecentFMsHeaderLabel.Top - 20, FMsListGroupBox.Width - 9);
     }
 }

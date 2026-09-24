@@ -1,25 +1,29 @@
-﻿//#define SYMBOL_PERFECT_HASH_GEN
+﻿/*
+TODO(gperf stuff): Tidy this up and get rid of hardcoded directories and whatnot
+*/
+
+//#define SYMBOL_PERFECT_HASH_GEN
 
 #if SYMBOL_PERFECT_HASH_GEN
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-#endif
 
-namespace AL_Common;
+namespace AL_Common.RTF;
 
-public static partial class RTFParserCommon
+public sealed partial class RtfDisplayedReadmeParser
 {
-#if SYMBOL_PERFECT_HASH_GEN
     // This is the original "canonical" list, generate the perfect hash from this
     private static readonly Symbol[] _symbolList =
     {
         #region Code pages / charsets / fonts
 
-        // The spec calls this "ANSI (the default)" but says nothing about what codepage that actually means.
-        // "ANSI" is often misused to mean one of the Windows codepages, so I'll assume it's Windows-1252.
-        new Symbol("ansi", 1252, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+        new Symbol("ansi", 0, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
         new Symbol("pc", 437, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
@@ -28,91 +32,34 @@ public static partial class RTFParserCommon
         new Symbol("mac", 10000, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
         new Symbol("pca", 850, true, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
-        new Symbol("ansicpg", 1252, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
+        new Symbol("ansicpg", 0, false, KeywordType.Special, (ushort)SpecialType.HeaderCodePage),
 
         new Symbol("deff", 0, false, KeywordType.Special, (ushort)SpecialType.DefaultFont),
 
         new Symbol("fonttbl", 0, false, KeywordType.Special, (ushort)SpecialType.FontTable),
-        new Symbol("f", 0, false, KeywordType.Property, (ushort)Property.FontNum),
-        new Symbol("fcharset", -1, false, KeywordType.Special, (ushort)SpecialType.Charset),
-        new Symbol("cpg", -1, false, KeywordType.Special, (ushort)SpecialType.CodePage),
-
-        #endregion
-
-        new Symbol("lang", 0, false, KeywordType.Property, (ushort)Property.Lang),
-
-        #region Encoded characters
-
-        new Symbol("uc", 1, false, KeywordType.Property, (ushort)Property.UnicodeCharSkipCount),
-        new Symbol("u", 0, false, KeywordType.Special, (ushort)SpecialType.UnicodeChar),
-
-        #endregion
-
-        // \v to make all plain text hidden (not output to the conversion stream), \v0 to make it shown again
-        new Symbol("v", 1, false, KeywordType.Property, (ushort)Property.Hidden),
-
-        #region Newlines
-
-        new Symbol("par", 0, false, KeywordType.Character, '\n'),
-        new Symbol("line", 0, false, KeywordType.Character, '\n'),
-        new Symbol("sect", 0, false, KeywordType.Character, '\n'),
-
-        #endregion
-
-        #region Control words that map to a single character
-
-        new Symbol("tab", 0, false, KeywordType.Character, '\t'),
-
-        new Symbol("bullet", 0, false, KeywordType.Character, '\x2022'),
-
-        /*
-        Convert these to ascii equivalents because for our use case we don't really want weird versions of
-        spaces and dashes etc.
-        Original (proper) values:
-        emspace   '\x2003'
-        enspace   '\x2002'
-        qmspace   '\x2005'
-        ~         '\xa0'
-        emdash    '\x2014'
-        endash    '\x2013'
-        lquote    '\x2018'
-        rquote    '\x2019'
-        ldblquote '\x201C'
-        rdblquote '\x201D'
-        */
-        new Symbol("emspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("enspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("qmspace", 0, false, KeywordType.Character, ' '),
-        new Symbol("emdash", 0, false, KeywordType.Character, '-'),
-        new Symbol("endash", 0, false, KeywordType.Character, '-'),
-        new Symbol("lquote", 0, false, KeywordType.Character, '\''),
-        new Symbol("rquote", 0, false, KeywordType.Character, '\''),
-        new Symbol("ldblquote", 0, false, KeywordType.Character, '"'),
-        new Symbol("rdblquote", 0, false, KeywordType.Character, '"'),
+        //new Symbol("f", 0, false, KeywordType.Property, (ushort)Property.FontNum),
+        new Symbol("fcharset", ushort.MaxValue, false, KeywordType.FCharset, 0),
+        new Symbol("cpg", ushort.MaxValue, false, KeywordType.CPG, 0),
 
         #endregion
 
         new Symbol("bin", 0, false, KeywordType.Special, (ushort)SpecialType.SkipNumberOfBytes),
 
-        // We need to do stuff with this (SYMBOL instruction)
-        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.FieldInstruction),
+        /*
+        Piggyback this onto the logic from \cs \ds \ts, because we want to just ignore the keyword and continue
+        parsing as normal, but since it's a \* destination, if we left it out of the table then its whole group
+        would be skipped. The reason we don't want to skip the \*\fldinst group is that it may have \lang keywords
+        that affect visible text, and we want to perform the charset patch on those if necessary.
+        */
+        new Symbol("fldinst", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 
-        // Hack to make sure we extract the \fldrslt text from Thief Trinity in that one place.
-        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
-        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.CanBeDestOrNotDest),
+        new Symbol("cs", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
+        new Symbol("ds", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
+        new Symbol("ts", 0, false, KeywordType.Destination, (ushort)DestinationType.SkipKeywordButNotGroup),
 
         #region Custom skip-destinations
 
-        // Ignore list item bullets and numeric prefixes etc. We don't need them.
-        /*
-        @Scanner: We can turn off skipping on these to get mostly-correct list numbers/bullets.
-        This has implications for the scanner though, mostly neutral to negative but at least one positive
-        (prevention of false match author "Yandros using Windows Movie Maker, Audacity, and Prism").
-        But if we wanted to make this properly correct we'd have to support the actual list syntax for real,
-        otherwise it often doesn't indent more than one level even when it should. Plus it rolls the dice on what
-        bullet char it'll use, a dash, bullet, or some other smaller kind of bullet or who knows what else.
-        */
+        // TODO(listtext/pntext): Temporarily disabled with a hack, but decide what we want to do here
         new Symbol("listtext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
         new Symbol("pntext", 0, false, KeywordType.Destination, (ushort)DestinationType.Skip),
 
@@ -166,15 +113,6 @@ public static partial class RTFParserCommon
 
         #endregion
 
-        #region Quick table hacks
-
-        new Symbol("row", 0, false, KeywordType.Character, '\n'),
-        new Symbol("cell", 0, false, KeywordType.Character, ' '),
-        new Symbol("nestrow", 0, false, KeywordType.Character, '\n'),
-        new Symbol("nestcell", 0, false, KeywordType.Character, ' '),
-
-        #endregion
-
         #endregion
     };
 
@@ -189,25 +127,28 @@ public static partial class RTFParserCommon
     Instructions for semi-automatic perfect hash function regeneration (for updates requiring such):
 
     1. Call ConvertSymbolListToGPerfFormat().
-    3. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
-       Call it symbolsCodeFile.
-    4. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
-       Call it inputFile.
-    5. Call ConvertGPerfOutputToCSharp().
-    6. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
+    2. Copy the contents of the symbols array above (just the body, not the header or closing brace) to a file.
+       Call it symbolsCodeFile.txt.
+    3. Copy the contents of the gperf-generated table from gperfOutputFile.txt (again, just the body) to another file.
+       Call it inputFile.txt.
+    4. Call ConvertGPerfOutputToCSharp().
+    5. Copy the C# symbols array-body code out of outputFile.txt and paste it into the symbols array in the
        main file, overwriting the previous symbols array body.
-    7. Port over the rest of the relevant code in the gperf output file (if necessary - some of it may not
-       have changed).
-    8. Done!
+    6. Port over the rest of the relevant code in gperfOutputFile.txt (if necessary - some of it may not have changed).
+    7. Call GenerateFirstCharAndLengthArray().
+    8. Copy the output from firstCharAndLengthArray.txt and paste it into the symbol-and-first-char array in the
+       main file, overwriting the previous array body.
+    9. Done!
     */
 
-    private const string genDir = @"C:\_al_rtf_table_gen";
+    private const string _genDir = @"C:\_al_rtf_table_gen";
+    private const string _gperfExePath = @"C:\gperf\tools\gperf.exe";
 
     public static void ConvertSymbolListToGPerfFormat()
     {
-        Directory.CreateDirectory(genDir);
+        Directory.CreateDirectory(_genDir);
 
-        string gperfFormatFile = Path.Combine(genDir, "gperfFormatFile.txt");
+        string gperfFormatFile = Path.Combine(_genDir, "gperfFormatFile.txt");
 
         List<string> outLines = new()
         {
@@ -224,8 +165,11 @@ public static partial class RTFParserCommon
 
         // gperf --output-file=[gperf output file] -t [gperfFormatFile]
         using (Process.Start(
-                   @"C:\gperf\tools\gperf.exe",
-                   "--output-file=" + Path.Combine(genDir, "gperfOutputFile.txt") + " " +
+                   _gperfExePath,
+                   "--output-file=" + Path.Combine(_genDir, "gperfOutputFile.txt") + " " +
+                   // -r = random, which increases the size of the table, leading to faster misses from more null
+                   // hits
+                   "-r " +
                    "-t " +
                    gperfFormatFile))
         {
@@ -234,9 +178,9 @@ public static partial class RTFParserCommon
 
     public static void ConvertGPerfOutputToCSharp()
     {
-        string inputFile = Path.Combine(genDir, "inputFile.txt");
-        string outputFile = Path.Combine(genDir, "outputFile.txt");
-        string symbolsCodeFile = Path.Combine(genDir, "symbolsCodeFile.txt");
+        string inputFile = Path.Combine(_genDir, "inputFile.txt");
+        string outputFile = Path.Combine(_genDir, "outputFile.txt");
+        string symbolsCodeFile = Path.Combine(_genDir, "symbolsCodeFile.txt");
 
         static int FindIndexOfValueInSymbolList(string value)
         {
@@ -269,7 +213,7 @@ public static partial class RTFParserCommon
             if (line.StartsWithO("#line"))
             {
                 string lineNumRaw = line.Substring(5, line.IndexOf('\"') - 5).Trim();
-                if (Common.Int_TryParseInv(lineNumRaw, out int result))
+                if (Int_TryParseInv(lineNumRaw, out int result))
                 {
                     // -3 because the gperf in format is like
                     // (line 1) struct declaration
@@ -298,5 +242,40 @@ public static partial class RTFParserCommon
 
         File.WriteAllLines(outputFile, lines);
     }
-#endif
+
+    public static void GenerateFirstCharAndLengthArray()
+    {
+        string firstCharString = "";
+        for (int i = 0; i < _symbolTable.Length; i++)
+        {
+            Symbol? symbol = _symbolTable[i];
+
+            if (symbol == null)
+            {
+                firstCharString += "0, ";
+            }
+            else
+            {
+                char firstChar = symbol.Keyword[0];
+                ushort firstCharAndLength = (ushort)((ushort)(firstChar << 8) + (byte)symbol.Keyword.Length);
+                firstCharString += "0x" + firstCharAndLength.ToString("X4").PadLeft(4, '0') + ", ";
+            }
+        }
+
+        File.WriteAllText(Path.Combine(_genDir, "firstCharAndLengthArray.txt"), firstCharString);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool Int_TryParseInv(string s, out int result)
+    {
+        return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
 }
+
+internal static class Extensions_Gen
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static bool StartsWithO(this string str, string value) => str.StartsWith(value, StringComparison.Ordinal);
+}
+
+#endif

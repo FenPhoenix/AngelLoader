@@ -118,8 +118,11 @@ internal static class GameConfigFiles
                 string lineTS = line.TrimStart();
 
                 // Quick check; these lines will be checked more thoroughly when we go to use them
-                if (!langOnly && lineTS.ContainsI(key_fm_selector)) fmSelectorLines.Add(lineTS);
-                if (!langOnly && lineTS.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
+                if (!langOnly)
+                {
+                    if (lineTS.ContainsI(key_fm_selector)) fmSelectorLines.Add(lineTS);
+                    if (lineTS.Trim().EqualsI(key_fm)) alwaysShowLoader = true;
+                }
 
                 if (lineTS.IsEmpty() || lineTS[0] == ';') continue;
 
@@ -188,7 +191,7 @@ internal static class GameConfigFiles
                      string PrevFMSelectorValue, bool AlwaysShowLoader, bool GamePathNeedsWriteCheck)
     GetInfoFromSneakyOptionsIni()
     {
-        (string soIni, bool isPortable) = Paths.GetSneakyOptionsIni();
+        (string soIni, bool isPortable, bool isNewStylePortable) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return (Error.SneakyOptionsNotFound, false, "", "", false, isPortable);
@@ -279,7 +282,11 @@ internal static class GameConfigFiles
                 string? soIniDir = Path.GetDirectoryName(soIni);
                 if (soIniDir != null)
                 {
-                    fmInstPath = RelativeToAbsolute(soIniDir, fmInstPath);
+                    // Direct from snobel, new-style relative paths are relative to \System, which should always
+                    // be the same as our game directory.
+                    string finalBasePath = isNewStylePortable ? Config.GetGamePath(GameIndex.Thief3) : soIniDir;
+
+                    fmInstPath = RelativeToAbsolute(finalBasePath, fmInstPath);
                     Directory.CreateDirectory(fmInstPath);
                 }
             }
@@ -357,8 +364,7 @@ internal static class GameConfigFiles
     }
 
     /*
-    @BetterErrors(FixCharacterDetailLineInCamCfg)
-    The bug:
+    The bug (1.27 and earlier):
     Ascend the Dim Valley has "character_detail 0" in its fm.cfg file. This file is supposed to contain
     values that ONLY apply to that specific FM. But, NewDark writes the character_detail value back out
     to the global cam.cfg after reading it from the FM-specific fm.cfg, causing the value to persist
@@ -369,6 +375,18 @@ internal static class GameConfigFiles
     to change it they can change it in Config.ini and it will be honored.
     We don't want to allow UI changing because the option shouldn't be disabled pretty much ever under
     normal circumstances.
+
+    @ND128(Fix character detail line):
+    1.28+ fixes the local-to-global writeout bug, so in theory we should be able to disable this fix for 1.28+.
+    However, it's possible that a user was on 1.27, had "character_detail 0" written out to cam.cfg, then upgraded
+    to 1.28+ and the value is still there.
+    Things we could do:
+    -Just leave the fix enabled.
+    -If we see "character_detail 0" in cam.cfg on 1.28+, ask the user if they want to remove it once, always, or
+     never.
+    -Add a Settings UI option with an explanation on what it does and when you would want it enabled or disabled.
+
+    @BetterErrors(FixCharacterDetailLineInCamCfg)
     @CAN_RUN_BEFORE_VIEW_INIT
     */
     internal static void FixCharacterDetailLine(GameIndex gameIndex, List<string>? camModIniLines = null)
@@ -757,7 +775,7 @@ internal static class GameConfigFiles
         bool existingAlwaysShowKeyOverwritten = false;
         int insertLineIndex = -1;
 
-        (string soIni, suIsPortable) = Paths.GetSneakyOptionsIni();
+        (string soIni, suIsPortable, _) = Paths.GetSneakyOptionsIni();
         if (soIni.IsEmpty())
         {
             return failNoEx;
@@ -1082,7 +1100,6 @@ internal static class GameConfigFiles
             if (Directory.Exists(modContainingDir))
             {
                 string modFileNameOnly = modName.GetFileNameFast();
-                if (modFileNameOnly.IsEmpty()) return false;
                 return !modFileNameOnly.IsEmpty() &&
                        FastIO.OneOrMoreModsExist(modContainingDir, modFileNameOnly + ".*", pathIsKnownValid: false);
             }

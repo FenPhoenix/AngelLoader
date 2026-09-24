@@ -471,4 +471,16 @@ public sealed class DarkSplitContainerCustom : SplitContainer, IDarkable
     }
 
     #endregion
+
+    protected override void WndProc(ref Message m)
+    {
+        if (m.Msg == Native.WM_NCPAINT)
+        {
+            base.WndProc(ref m);
+            ControlUtils.Wine_DrawScrollBarCorner(this);
+            return;
+        }
+
+        base.WndProc(ref m);
+    }
 }

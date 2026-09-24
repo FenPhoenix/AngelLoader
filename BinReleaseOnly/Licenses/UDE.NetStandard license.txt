@@ -1,5 +1,5 @@
 The full source code can be obtained from: https://github.com/yinyue200/ude
-------------------------------------------------------------------------
+---------------------------------------------------------------------------
 
                           MOZILLA PUBLIC LICENSE
                                 Version 1.1

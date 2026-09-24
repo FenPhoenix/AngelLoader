@@ -28,6 +28,7 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
     private bool _openFMFolderMenuItemVisible;
     private bool _scanFMMenuItemEnabled;
     private bool _convertAudioSubMenuEnabled;
+    // @ND128: We may want a "convert mp3s" menu item for ND 1.28+
     private int _rating = -1;
     private Difficulty _finishedExplicitItemsChecked = Difficulty.None;
     private bool _finishedOnUnknownChecked;
@@ -618,7 +619,7 @@ internal sealed class Lazy_FMsDGV_FM_Menu : IDarkable
         }
     }
 
-    internal void SetConvertAudioRCSubMenuEnabled(bool value)
+    internal void SetConvertAudioSubMenuEnabled(bool value)
     {
         if (_constructed)
         {

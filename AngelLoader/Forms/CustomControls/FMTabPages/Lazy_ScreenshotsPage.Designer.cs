@@ -31,7 +31,7 @@ public sealed partial class Lazy_ScreenshotsPage
     /// </summary>
     private void InitializeComponent()
     {
-            this.ButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+            this.ButtonsFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
             this.NextButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.PrevButton = new AngelLoader.Forms.CustomControls.DarkArrowButton();
             this.CopiedMessageLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -182,6 +182,6 @@ public sealed partial class Lazy_ScreenshotsPage
     internal DarkTrackBar GammaTrackBar;
     internal DarkLabel GammaLabel;
     internal DarkLabel CopiedMessageLabel;
-    private DarkFlowLayoutPanel ButtonsFLP;
+    private DrawnFlowLayoutPanel ButtonsFLP;
     internal DarkButton CopyButton;
 }

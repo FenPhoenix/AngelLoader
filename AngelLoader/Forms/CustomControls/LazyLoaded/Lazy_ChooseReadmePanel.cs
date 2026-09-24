@@ -12,7 +12,7 @@ internal sealed class Lazy_ChooseReadmePanel : IDarkable
 
     private readonly MainForm _owner;
 
-    private Panel Panel = null!;
+    private PanelCustom Panel = null!;
 
     private DarkListBoxWithBackingItems _listBox = null!;
     internal DarkListBoxWithBackingItems ListBox
@@ -24,7 +24,7 @@ internal sealed class Lazy_ChooseReadmePanel : IDarkable
         }
     }
 
-    private FlowLayoutPanel OK_FLP = null!;
+    private FlowLayoutPanelCustom OK_FLP = null!;
     private DarkButton OKButton = null!;
 
     private bool _darkModeEnabled;
@@ -63,7 +63,7 @@ internal sealed class Lazy_ChooseReadmePanel : IDarkable
         };
         OKButton.Click += _owner.ChooseReadmeButton_Click;
 
-        OK_FLP = new FlowLayoutPanel
+        OK_FLP = new FlowLayoutPanelCustom
         {
             Tag = LoadType.Lazy,
 
@@ -87,7 +87,7 @@ internal sealed class Lazy_ChooseReadmePanel : IDarkable
             DarkModeEnabled = _darkModeEnabled,
         };
 
-        Panel = new Panel
+        Panel = new PanelCustom
         {
             Tag = LoadType.Lazy,
 

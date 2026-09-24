@@ -14,6 +14,7 @@ public sealed class ConfigData
     {
         #region To be left at defaults
 
+        _darkGameVersions = new Version?[SupportedGameCount];
         _newMantling = new bool?[SupportedGameCount];
         _gameEditorDetected = new bool[SupportedGameCount];
         _startupAlwaysStartSelector = new bool[SupportedGameCount];
@@ -78,6 +79,18 @@ public sealed class ConfigData
     internal void SetStartupAlwaysStartSelector(GameIndex index, bool value) => _startupAlwaysStartSelector[(uint)index] = value;
 
     #endregion
+
+    #endregion
+
+    #region Dark game versions
+
+    // We only use these for NewDark version detection, so for performance don't get the version for other games
+
+    private readonly Version?[] _darkGameVersions;
+
+    internal Version? GetDarkGameVersion(GameIndex index) => GameIsDark(index) ? _darkGameVersions[(int)index] : null;
+
+    internal void SetDarkGameVersion(GameIndex index, Version? value) => _darkGameVersions[(int)index] = GameIsDark(index) ? value : null;
 
     #endregion
 
@@ -279,9 +292,6 @@ public sealed class ConfigData
 
     internal string Language = "English";
 
-    // Session-only; don't write out
-    internal readonly DictionaryI<string> LanguageNames = new();
-
     #endregion
 
     #region Date format
@@ -369,6 +379,9 @@ public sealed class ConfigData
 
     internal bool ConvertWAVsTo16BitOnInstall = true;
     internal bool ConvertOGGsToWAVsOnInstall;
+    internal bool ConvertMP3sToWAVsOnInstall_ND128;
+    // @ND128: If we want to allow conversion of other new supported formats, we'll need to build a version of
+    // ffmpeg with support for them.
 
     internal bool UseOldMantlingForOldDarkFMs;
 
@@ -473,6 +486,9 @@ public sealed class ConfigData
     }
 
     internal bool ShowPresetTags = true;
+
+    // @ND128: Make this a UI option
+    internal bool ExcludeSoundDirsFromBackupAndRestore = true;
 
 #if !ReleaseBeta && !ReleasePublic
     // Quick-n-dirty session-only var for now

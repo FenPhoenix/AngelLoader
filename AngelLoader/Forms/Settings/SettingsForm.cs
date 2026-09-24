@@ -53,7 +53,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private VisualTheme _selfTheme;
 
-    private readonly (DarkRadioButtonCustom Button, ISettingsPage Page)[] PageControls;
+    private sealed class PageButtonAndPage
+    {
+        internal readonly DarkRadioButtonCustom Button;
+        internal readonly ISettingsPage Page;
+
+        public PageButtonAndPage(DarkRadioButtonCustom button, ISettingsPage page)
+        {
+            Button = button;
+            Page = page;
+        }
+    }
+
+    private readonly PageButtonAndPage[] PageControls;
     private readonly int?[] _pageVScrollValues = new int?[SettingsTabCount];
 
     // @TDM(Settings/Paths page organization):
@@ -114,6 +126,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private readonly PathsPage PathsPage;
     private readonly AppearancePage AppearancePage;
+    private readonly AudioFilesPage AudioFilesPage;
     private readonly OtherPage OtherPage;
     private readonly ThiefBuddyPage ThiefBuddyPage;
     private readonly UpdatePage UpdatePage;
@@ -133,6 +146,25 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     public readonly ConfigData OutConfig;
     public bool AskForImport;
+
+    private void CreateButtonAndPage<T>(SettingsTab tab, out T Page) where T : Control, ISettingsPage, new()
+    {
+        DarkRadioButtonCustom button = new();
+
+        MainSplitContainer.Panel1.Controls.Add(button);
+
+        button.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+        button.Location = new Point(8, 8 + (24 * (int)tab));
+        button.Size = new Size(136, 23);
+        button.TabIndex = (int)tab;
+        button.CheckedChanged += PageRadioButtons_CheckedChanged;
+
+        Page = new T { Visible = false };
+
+        PageControls[(int)tab] = new PageButtonAndPage(button, Page);
+    }
+
+    private DarkRadioButtonCustom GetPageButton(SettingsTab tab) => PageControls[(int)tab].Button;
 
     protected override void WndProc(ref Message m)
     {
@@ -155,6 +187,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     // @CAN_RUN_BEFORE_VIEW_INIT
     internal SettingsForm(ISettingsChangeableView? ownerForm, ConfigData config, SettingsWindowState state)
     {
+        // Simply opening the language files (not even reading them) can take >50ms for the 11 file set on my
+        // system, inexplicably. So overlap the read.
+        IOrderedEnumerable<KeyValuePair<string, string>>? langsList = null;
+        using Task readLanguagesTask = Task.Run(() =>
+        {
+            langsList = ReadLanguages().OrderBy(static x => x.Key, StringComparer.Ordinal);
+        });
+
 #if DEBUG
         InitializeComponent();
 #else
@@ -197,19 +237,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         OutConfig = new ConfigData();
 
-        // IMPORTANT: Settings page controls: Don't reorder
-#pragma warning disable IDE0300 // Simplify collection initialization
-        // ReSharper disable once RedundantExplicitArraySize
-        PageControls = new (DarkRadioButtonCustom, ISettingsPage)[SettingsTabCount]
-        {
-            (PathsRadioButton, PathsPage = new PathsPage { Visible = false }),
-            (AppearanceRadioButton, AppearancePage = new AppearancePage { Visible = false }),
-            (OtherRadioButton, OtherPage = new OtherPage { Visible = false }),
-            (ThiefBuddyRadioButton, ThiefBuddyPage = new ThiefBuddyPage { Visible = false }),
-            (UpdateRadioButton, UpdatePage = new UpdatePage { Visible = false }),
-            (IOThreadingRadioButton, IOThreadingPage = new IOThreadingPage { Visible = false }),
-        };
-#pragma warning restore IDE0300 // Simplify collection initialization
+        PageControls = new PageButtonAndPage[SettingsTabCount];
+
+        CreateButtonAndPage(SettingsTab.Paths, out PathsPage);
+        CreateButtonAndPage(SettingsTab.Appearance, out AppearancePage);
+        CreateButtonAndPage(SettingsTab.AudioFiles, out AudioFilesPage);
+        CreateButtonAndPage(SettingsTab.Other, out OtherPage);
+        CreateButtonAndPage(SettingsTab.ThiefBuddy, out ThiefBuddyPage);
+        CreateButtonAndPage(SettingsTab.Update, out UpdatePage);
+        CreateButtonAndPage(SettingsTab.IOThreading, out IOThreadingPage);
+
+        // IMPORTANT: If there exists a page field that isn't in the array, we'll get a non-compiling null error,
+        // but if we have a SettingsTab item but no field yet, then we need this to catch that (at runtime, unfortunately).
+        Utils.AssertR(PageControls.All(static x => x != null), nameof(PageControls) + " is missing at least one item");
 
         LangGroupBox = AppearancePage.LanguageGroupBox;
         LangComboBox = AppearancePage.LanguageComboBox;
@@ -354,18 +394,19 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                 // _Load is too late for some of this stuff, so might as well put everything here
                 StartPosition = FormStartPosition.CenterScreen;
                 ShowInTaskbar = true;
-                PathsRadioButton.Checked = true;
+                DarkRadioButtonCustom pathsButton = GetPageButton(SettingsTab.Paths);
+                pathsButton.Checked = true;
                 for (int i = 0; i < SettingsTabCount; i++)
                 {
                     DarkRadioButtonCustom button = PageControls[i].Button;
-                    if (button != PathsRadioButton) button.Hide();
+                    if (button != pathsButton) button.Hide();
                 }
             }
             else
             {
                 if (state == SettingsWindowState.BackupPathSet)
                 {
-                    PageControls[(int)SettingsTab.Paths].Button.Checked = true;
+                    GetPageButton(SettingsTab.Paths).Checked = true;
                     for (int i = 0; i < PageControls.Length; i++)
                     {
                         if (i != (int)SettingsTab.Paths)
@@ -390,30 +431,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         MainSplitContainer.SplitterDistance = config.SettingsWindowSplitterDistance;
 
         #region Set page UI state
-
-        #region Load languages
-
-        const string engLang = "English";
-
-        var langsList = config.LanguageNames.OrderBy(static x => x.Key, StringComparer.Ordinal);
-
-        using (new UpdateRegion(LangComboBox))
-        {
-            LangComboBox.AddFullItem(engLang, engLang);
-            foreach (var item in langsList)
-            {
-                if (!item.Key.EqualsI(engLang))
-                {
-                    LangComboBox.AddFullItem(item.Key, item.Value);
-                }
-            }
-        }
-
-        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language, StringComparer.Ordinal)
-            ? config.Language
-            : engLang);
-
-        #endregion
 
         #region Paths page
 
@@ -603,64 +620,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Other page
+            #region Audio files page
 
-            #region File conversion
-
-            OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked = config.ConvertWAVsTo16BitOnInstall;
-            OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
-
-            #endregion
-
-            OtherPage.OldMantleForOldDarkFMsCheckBox.Checked = config.UseOldMantlingForOldDarkFMs;
-
-            #region Installing FMs
-
-            switch (config.ConfirmBeforeInstall)
-            {
-                case ConfirmBeforeInstall.Always:
-                    OtherPage.Install_ConfirmAlwaysRadioButton.Checked = true;
-                    break;
-                case ConfirmBeforeInstall.OnlyForMultiple:
-                    OtherPage.Install_ConfirmMultipleOnlyRadioButton.Checked = true;
-                    break;
-                case ConfirmBeforeInstall.Never:
-                default:
-                    OtherPage.Install_ConfirmNeverRadioButton.Checked = true;
-                    break;
-            }
-
-            #endregion
-
-            #region Uninstalling FMs
-
-            OtherPage.ConfirmUninstallCheckBox.Checked = config.ConfirmUninstall;
-
-            switch (config.BackupFMData)
-            {
-                case BackupFMData.SavesAndScreensOnly:
-                    OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked = true;
-                    break;
-                case BackupFMData.AllChangedFiles:
-                default:
-                    OtherPage.BackupAllChangedDataRadioButton.Checked = true;
-                    break;
-            }
-
-            OtherPage.BackupAlwaysAskCheckBox.Checked = config.BackupAlwaysAsk;
-
-            #endregion
-
-            for (int i = 0; i < SupportedGameCount; i++)
-            {
-                GameWebSearchUrlTextBoxes[i].Text = config.WebSearchUrls[i];
-            }
-
-            OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
-
-            OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
-
-            OtherPage.AlwaysShowPresetTagsCheckBox.Checked = config.ShowPresetTags;
+            AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked = config.ConvertOGGsToWAVsOnInstall;
+            AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Checked = config.ConvertWAVsTo16BitOnInstall;
+            AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Checked = config.ConvertMP3sToWAVsOnInstall_ND128;
 
             #endregion
 
@@ -726,7 +690,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 SettingsDriveData driveData = settingsDriveData[i];
 
-                Panel panel = new()
+                PanelCustom panel = new()
                 {
                     Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
                     Location = new Point(8, y),
@@ -789,6 +753,60 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             };
 
             #endregion
+
+            #region Other page
+
+            OtherPage.OldMantleForOldDarkFMsCheckBox.Checked = config.UseOldMantlingForOldDarkFMs;
+
+            #region Installing FMs
+
+            switch (config.ConfirmBeforeInstall)
+            {
+                case ConfirmBeforeInstall.Always:
+                    OtherPage.Install_ConfirmAlwaysRadioButton.Checked = true;
+                    break;
+                case ConfirmBeforeInstall.OnlyForMultiple:
+                    OtherPage.Install_ConfirmMultipleOnlyRadioButton.Checked = true;
+                    break;
+                case ConfirmBeforeInstall.Never:
+                default:
+                    OtherPage.Install_ConfirmNeverRadioButton.Checked = true;
+                    break;
+            }
+
+            #endregion
+
+            #region Uninstalling FMs
+
+            OtherPage.ConfirmUninstallCheckBox.Checked = config.ConfirmUninstall;
+
+            switch (config.BackupFMData)
+            {
+                case BackupFMData.SavesAndScreensOnly:
+                    OtherPage.BackupSavesAndScreensOnlyRadioButton.Checked = true;
+                    break;
+                case BackupFMData.AllChangedFiles:
+                default:
+                    OtherPage.BackupAllChangedDataRadioButton.Checked = true;
+                    break;
+            }
+
+            OtherPage.BackupAlwaysAskCheckBox.Checked = config.BackupAlwaysAsk;
+
+            #endregion
+
+            for (int i = 0; i < SupportedGameCount; i++)
+            {
+                GameWebSearchUrlTextBoxes[i].Text = config.WebSearchUrls[i];
+            }
+
+            OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Checked = config.ConfirmPlayOnDCOrEnter;
+
+            OtherPage.EnableFuzzySearchCheckBox.Checked = config.EnableFuzzySearch;
+
+            OtherPage.AlwaysShowPresetTagsCheckBox.Checked = config.ShowPresetTags;
+
+            #endregion
         }
         else
         {
@@ -805,6 +823,34 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         {
             ErrorIconPictureBox.Image = Images.RedExclCircle;
         }
+
+        // Do this last so that language reading can have the longest overlap window possible
+        #region Load languages
+
+        const string engLang = "English";
+
+        readLanguagesTask.Wait();
+
+        using (new UpdateRegion(LangComboBox))
+        {
+            LangComboBox.AddFullItem(engLang, engLang);
+            if (langsList != null)
+            {
+                foreach (var item in langsList)
+                {
+                    if (!item.Key.EqualsI(engLang))
+                    {
+                        LangComboBox.AddFullItem(item.Key, item.Value);
+                    }
+                }
+            }
+        }
+
+        LangComboBox.SelectBackingIndexOf(LangComboBox.BackingItems.Contains(config.Language, StringComparer.Ordinal)
+            ? config.Language
+            : engLang);
+
+        #endregion
 
         // Comes last so we don't have to use any DisableEvents blocks
         #region Hook up page events
@@ -866,15 +912,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Other page
-
-            foreach (DarkButton button in GameWebSearchUrlResetButtons)
-            {
-                button.Click += WebSearchURLResetButtons_Click;
-            }
-
-            #endregion
-
             #region Thief Buddy page
 
             _thiefBuddyExistenceCheckTimer.Tick += ThiefBuddyExistenceCheckTimer_Tick;
@@ -892,9 +929,57 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             IOThreadingPage.IOThreadsResetButton.Click += IOThreadsResetButton_Click;
 
             #endregion
+
+            #region Other page
+
+            foreach (DarkButton button in GameWebSearchUrlResetButtons)
+            {
+                button.Click += WebSearchURLResetButtons_Click;
+            }
+
+            #endregion
         }
 
         #endregion
+    }
+
+    private static DictionaryI<string> ReadLanguages()
+    {
+        DictionaryI<string> ret = new();
+
+        List<string> langFiles;
+        try
+        {
+            langFiles = FastIO.GetFilesTopOnly(Paths.Languages, "*.ini");
+        }
+        catch (Exception ex)
+        {
+            ResetLanguages();
+            Log(ErrorText.ExTry + "get language .ini files from " + Paths.Languages, ex);
+            return ret;
+        }
+
+        ret.Clear();
+
+        try
+        {
+            for (int i = 0; i < langFiles.Count; i++)
+            {
+                string fileName = langFiles[i];
+                string fileNameWithoutExtension = fileName.GetFileNameFast().RemoveExtension();
+
+                Ini.AddLanguageFromFile(fileName, fileNameWithoutExtension, ret);
+            }
+        }
+        catch (Exception ex)
+        {
+            ResetLanguages();
+            Log(ErrorText.Ex + "in language files read", ex);
+        }
+
+        return ret;
+
+        void ResetLanguages() => ret.Clear();
     }
 
     private void ComboBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -1012,7 +1097,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #region Paths page
 
-            PathsRadioButton.Text = _state.IsStartup()
+            GetPageButton(SettingsTab.Paths).Text = _state.IsStartup()
                 ? LText.SettingsWindow.InitialSettings_TabText
                 : LText.SettingsWindow.Paths_TabText;
 
@@ -1026,7 +1111,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             PathsPage.PathsToGameExesGroupBox.Text = LText.SettingsWindow.Paths_PathsToGameExes;
             PathsPage.GameRequirementsLabel.Text =
-                LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + Environment.NewLine +
+                LText.SettingsWindow.Paths_DarkEngineGamesRequireNewDark + $"{NL}" +
                 LText.SettingsWindow.Paths_Thief3RequiresSneakyUpgrade;
 
             PathsPage.SteamOptionsGroupBox.Text = LText.SettingsWindow.Paths_SteamOptions;
@@ -1059,7 +1144,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             {
                 #region Appearance page
 
-                AppearanceRadioButton.Text = LText.SettingsWindow.Appearance_TabText;
+                GetPageButton(SettingsTab.Appearance).Text = LText.SettingsWindow.Appearance_TabText;
 
                 AppearancePage.LanguageGroupBox.Text = LText.SettingsWindow.Appearance_Language;
 
@@ -1106,56 +1191,34 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #endregion
 
-                #region Other page
+                #region Audio Files page
 
-                OtherRadioButton.Text = LText.SettingsWindow.Other_TabText;
+                GetPageButton(SettingsTab.AudioFiles).Text = LText.SettingsWindow.AudioFiles_TabText;
 
-                OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
-                OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall;
-                MainToolTip.SetToolTip(OtherPage.ConvertWAVsTo16BitOnInstallCheckBox, LText.SettingsWindow.Other_ConvertWAVsTo16BitOnInstall_ToolTip);
-                OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall;
-                MainToolTip.SetToolTip(OtherPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.Other_ConvertOGGsToWAVsOnInstall_ToolTip);
+                AudioFilesPage.GlobalGroupBox.Text = LText.SettingsWindow.AudioFiles_AllNewDarkVersions;
 
-                OtherPage.OldMantleForOldDarkFMsCheckBox.Text = LText.SettingsWindow.Other_UseOldMantlingForOldDarkFMs;
+                AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall;
+                MainToolTip.SetToolTip(AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox, LText.SettingsWindow.AudioFiles_ConvertOGGsToWAVsOnInstall_ToolTip);
 
-                OtherPage.InstallingFMsGroupBox.Text = LText.SettingsWindow.Other_InstallingFMs;
-                OtherPage.ConfirmBeforeInstallLabel.Text = LText.SettingsWindow.Other_ConfirmBeforeInstallingFM;
-                OtherPage.Install_ConfirmAlwaysRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Always;
-                OtherPage.Install_ConfirmMultipleOnlyRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_OnlyForMultipleFMs;
-                OtherPage.Install_ConfirmNeverRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Never;
+                AudioFilesPage.ND127GroupBox.Text = LText.SettingsWindow.AudioFiles_NewDark_127;
 
-                OtherPage.UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
-                OtherPage.ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
-                OtherPage.WhatToBackUpLabel.Text = LText.SettingsWindow.Other_WhenUninstallingBackUp;
-                OtherPage.BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
-                OtherPage.BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
-                OtherPage.BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
+                AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_127;
+                MainToolTip.SetToolTip(AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox, LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_ToolTip);
 
-                OtherPage.WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
-                OtherPage.WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
-                OtherPage.WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
+                AudioFilesPage.ND127_ConvertMP3sToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertMP3sToWavOnInstall_NewDark_127;
 
-                for (int i = 0; i < SupportedGameCount; i++)
-                {
-                    GameWebSearchUrlLabels[i].Text = GetLocalizedGameNameColon((GameIndex)i);
-                    MainToolTip.SetToolTip(GameWebSearchUrlResetButtons[i], LText.SettingsWindow.Other_WebSearchResetToolTip);
-                }
+                AudioFilesPage.ND128GroupBox.Text = LText.SettingsWindow.AudioFiles_NewDark_128;
 
-                OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
-                OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
+                AudioFilesPage.ND128_ConvertWAVsTo16BitOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertWAVsTo16BitOnInstall_NewDark_128;
+                AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Text = LText.SettingsWindow.AudioFiles_ConvertMP3sToWavOnInstall_NewDark_128;
 
-                OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
-                OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
-
-                OtherPage.TagsGroupBox.Text = LText.SettingsWindow.Other_Tags;
-                OtherPage.AlwaysShowPresetTagsCheckBox.Text = LText.SettingsWindow.Other_AlwaysShowPresetTags;
-                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox, LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
+                // @ND128: We may want a tooltip for mp3 conversion and whatever else
 
                 #endregion
 
                 #region Thief Buddy page
 
-                ThiefBuddyRadioButton.Text = NonLocalizableText.ThiefBuddy;
+                GetPageButton(SettingsTab.ThiefBuddy).Text = NonLocalizableText.ThiefBuddy;
 
                 ThiefBuddyPage.ThiefBuddyOptionsGroupBox.Text = LText.SettingsWindow.ThiefBuddy_ThiefBuddyOptions;
 
@@ -1173,7 +1236,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region Update page
 
-                UpdateRadioButton.Text = LText.SettingsWindow.Update_TabText;
+                GetPageButton(SettingsTab.Update).Text = LText.SettingsWindow.Update_TabText;
                 UpdatePage.UpdateOptionsGroupBox.Text = LText.SettingsWindow.Update_UpdateOptions;
                 UpdatePage.CheckForUpdatesOnStartupCheckBox.Text = LText.SettingsWindow.Update_CheckForUpdatesOnStartup;
 
@@ -1181,7 +1244,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
                 #region I/O Threading page
 
-                IOThreadingRadioButton.Text = LText.SettingsWindow.IOThreading_TabText;
+                GetPageButton(SettingsTab.IOThreading).Text = LText.SettingsWindow.IOThreading_TabText;
 
                 IOThreadingPage.IOThreadCountGroupBox.Text = LText.SettingsWindow.IOThreading_IOThreads;
 
@@ -1229,6 +1292,49 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
                         _ => LText.SettingsWindow.IOThreading_IOThreadingLevels_SingleThread,
                     };
                 }
+
+                #endregion
+
+                #region Other page
+
+                GetPageButton(SettingsTab.Other).Text = LText.SettingsWindow.Other_TabText;
+
+                OtherPage.FMSettingsGroupBox.Text = LText.SettingsWindow.Other_FMSettings;
+
+                OtherPage.OldMantleForOldDarkFMsCheckBox.Text = LText.SettingsWindow.Other_UseOldMantlingForOldDarkFMs;
+
+                OtherPage.InstallingFMsGroupBox.Text = LText.SettingsWindow.Other_InstallingFMs;
+                OtherPage.ConfirmBeforeInstallLabel.Text = LText.SettingsWindow.Other_ConfirmBeforeInstallingFM;
+                OtherPage.Install_ConfirmAlwaysRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Always;
+                OtherPage.Install_ConfirmMultipleOnlyRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_OnlyForMultipleFMs;
+                OtherPage.Install_ConfirmNeverRadioButton.Text = LText.SettingsWindow.Other_InstallConfirm_Never;
+
+                OtherPage.UninstallingFMsGroupBox.Text = LText.SettingsWindow.Other_UninstallingFMs;
+                OtherPage.ConfirmUninstallCheckBox.Text = LText.SettingsWindow.Other_ConfirmBeforeUninstalling;
+                OtherPage.WhatToBackUpLabel.Text = LText.SettingsWindow.Other_WhenUninstallingBackUp;
+                OtherPage.BackupSavesAndScreensOnlyRadioButton.Text = LText.SettingsWindow.Other_BackUpSavesAndScreenshotsOnly;
+                OtherPage.BackupAllChangedDataRadioButton.Text = LText.SettingsWindow.Other_BackUpAllChangedFiles;
+                OtherPage.BackupAlwaysAskCheckBox.Text = LText.SettingsWindow.Other_BackUpAlwaysAsk;
+
+                OtherPage.WebSearchGroupBox.Text = LText.SettingsWindow.Other_WebSearch;
+                OtherPage.WebSearchUrlLabel.Text = LText.SettingsWindow.Other_WebSearchURL;
+                OtherPage.WebSearchTitleExplanationLabel.Text = LText.SettingsWindow.Other_WebSearchTitleVar;
+
+                for (int i = 0; i < SupportedGameCount; i++)
+                {
+                    GameWebSearchUrlLabels[i].Text = GetLocalizedGameNameColon((GameIndex)i);
+                    MainToolTip.SetToolTip(GameWebSearchUrlResetButtons[i], LText.SettingsWindow.Other_WebSearchResetToolTip);
+                }
+
+                OtherPage.PlayFMOnDCOrEnterGroupBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter;
+                OtherPage.ConfirmPlayOnDCOrEnterCheckBox.Text = LText.SettingsWindow.Other_ConfirmPlayOnDCOrEnter_Ask;
+
+                OtherPage.FilteringGroupBox.Text = LText.SettingsWindow.Other_Filtering;
+                OtherPage.EnableFuzzySearchCheckBox.Text = LText.SettingsWindow.Other_EnableFuzzySearch;
+
+                OtherPage.TagsGroupBox.Text = LText.SettingsWindow.Other_Tags;
+                OtherPage.AlwaysShowPresetTagsCheckBox.Text = LText.SettingsWindow.Other_AlwaysShowPresetTags;
+                MainToolTip.SetToolTip(OtherPage.AlwaysShowPresetTagsCheckBox, LText.SettingsWindow.Other_AlwaysShowPresetTags_ToolTip);
 
                 #endregion
             }
@@ -1498,14 +1604,47 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
             #endregion
 
-            #region Other page
+            #region Audio files page
 
-            #region File conversion
-
-            OutConfig.ConvertWAVsTo16BitOnInstall = OtherPage.ConvertWAVsTo16BitOnInstallCheckBox.Checked;
-            OutConfig.ConvertOGGsToWAVsOnInstall = OtherPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
+            OutConfig.ConvertOGGsToWAVsOnInstall = AudioFilesPage.ConvertOGGsToWAVsOnInstallCheckBox.Checked;
+            OutConfig.ConvertWAVsTo16BitOnInstall = AudioFilesPage.ND127_ConvertWAVsTo16BitOnInstallCheckBox.Checked;
+            OutConfig.ConvertMP3sToWAVsOnInstall_ND128 = AudioFilesPage.ND128_ConvertMP3sToWAVsOnInstallCheckBox.Checked;
 
             #endregion
+
+            #region Thief Buddy page
+
+            OutConfig.RunThiefBuddyOnFMPlay =
+                ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
+                ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
+                RunThiefBuddyOnFMPlay.Ask;
+
+            #endregion
+
+            #region Update page
+
+            OutConfig.CheckForUpdates = UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked
+                ? CheckForUpdates.True
+                : CheckForUpdates.False;
+
+            #endregion
+
+            #region I/O Threading page
+
+            OutConfig.IOThreadsMode =
+                IOThreadingPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
+                IOThreadsMode.Auto;
+
+            OutConfig.CustomIOThreadCount = (int)IOThreadingPage.CustomThreadsNumericUpDown.Value;
+
+            foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
+            {
+                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.MultithreadingLevel;
+            }
+
+            #endregion
+
+            #region Other page
 
             OutConfig.UseOldMantlingForOldDarkFMs = OtherPage.OldMantleForOldDarkFMsCheckBox.Checked;
 
@@ -1543,38 +1682,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             OutConfig.ShowPresetTags = OtherPage.AlwaysShowPresetTagsCheckBox.Checked;
 
             #endregion
-
-            #region Thief Buddy page
-
-            OutConfig.RunThiefBuddyOnFMPlay =
-                ThiefBuddyPage.RunTBAlwaysRadioButton.Checked ? RunThiefBuddyOnFMPlay.Always :
-                ThiefBuddyPage.RunTBNeverRadioButton.Checked ? RunThiefBuddyOnFMPlay.Never :
-                RunThiefBuddyOnFMPlay.Ask;
-
-            #endregion
-
-            #region Update page
-
-            OutConfig.CheckForUpdates = UpdatePage.CheckForUpdatesOnStartupCheckBox.Checked
-                ? CheckForUpdates.True
-                : CheckForUpdates.False;
-
-            #endregion
-
-            #region I/O Threading page
-
-            OutConfig.IOThreadsMode =
-                IOThreadingPage.CustomModeRadioButton.Checked ? IOThreadsMode.Custom :
-                IOThreadsMode.Auto;
-
-            OutConfig.CustomIOThreadCount = (int)IOThreadingPage.CustomThreadsNumericUpDown.Value;
-
-            foreach (DriveDataSection section in IOThreadingLevelDriveDataSections)
-            {
-                OutConfig.DriveLettersAndTypes[section.Drive[0]] = section.MultithreadingLevel;
-            }
-
-            #endregion
         }
 
         AskForImport = _state == SettingsWindowState.StartupClean;
@@ -1596,11 +1703,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Page selection handler
 
-    private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void PageRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
-        DarkRadioButtonCustom s = (DarkRadioButtonCustom)sender;
+        if (sender is not DarkRadioButtonCustom s) return;
         if (!s.Checked) return;
 
         using (new DisableEvents(this))
@@ -2092,16 +2199,6 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #endregion
 
-    #region Other page
-
-    private void WebSearchURLResetButtons_Click(object? sender, EventArgs e)
-    {
-        int index = Array.FindIndex(GameWebSearchUrlResetButtons, x => x == sender);
-        GameWebSearchUrlTextBoxes[index].Text = Defaults.WebSearchUrls[index];
-    }
-
-    #endregion
-
     #region Thief Buddy page
 
     private async void ThiefBuddyExistenceCheckTimer_Tick(object? sender, EventArgs e)
@@ -2160,6 +2257,16 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private void IOThreadsResetButton_Click(object? sender, EventArgs e)
     {
         IOThreadingPage.CustomThreadsNumericUpDown.Value = CoreCount;
+    }
+
+    #endregion
+
+    #region Other page
+
+    private void WebSearchURLResetButtons_Click(object? sender, EventArgs e)
+    {
+        int index = Array.FindIndex(GameWebSearchUrlResetButtons, x => x == sender);
+        GameWebSearchUrlTextBoxes[index].Text = Defaults.WebSearchUrls[index];
     }
 
     #endregion
@@ -2229,7 +2336,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         if (error)
         {
             // Currently, all errors happen on the Paths page, so go to that page automatically.
-            PathsRadioButton.Checked = true;
+            GetPageButton(SettingsTab.Paths).Checked = true;
 
             // One user missed the error highlight on a textbox because it was scrolled offscreen, and was
             // confused as to why there was an error. So scroll the first error-highlighted textbox onscreen

@@ -11,6 +11,8 @@ Here's the deal with this thing:
  the [SuppressGCTransition] attribute on GetSysColor().
 */
 
+// @Wine: 2025/07/11, tested all hooks work in 32-bit Wine
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -26,6 +28,32 @@ namespace AngelLoader.Forms.WinFormsNative;
 internal static class Win32ThemeHooks
 {
     #region Hooks
+
+    private enum HookType
+    {
+        GetSysColor,
+        GetSysColorBrush,
+        DrawThemeBackground,
+        GetThemeColor,
+        PatBlt,
+        FillRect,
+        DrawTextW,
+        Length,
+    }
+
+    private readonly struct HookData
+    {
+        internal readonly string Dll;
+        internal readonly string Method;
+        internal readonly bool WineOnly;
+
+        public HookData(string dll, string method, bool wineOnly)
+        {
+            Dll = dll;
+            Method = method;
+            WineOnly = wineOnly;
+        }
+    }
 
     #region Hooks and delegates
 
@@ -64,7 +92,7 @@ internal static class Win32ThemeHooks
         int partId,
         int stateId,
         ref Native.RECT pRect,
-        ref Native.RECT pClipRect);
+        nint pClipRect);
 
     #endregion
 
@@ -84,39 +112,121 @@ internal static class Win32ThemeHooks
 
     #endregion
 
+    #region PatBlt
+
+    private static LocalHook? _patBltHook;
+
+    private static PatBltDelegate? PatBlt_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private delegate bool PatBltDelegate(
+        nint hdc,
+        int x,
+        int y,
+        int w,
+        int h,
+        int rop);
+
     #endregion
+
+    #region FillRect
+
+    private static LocalHook? _fillRectHook;
+
+    private static FillRectDelegate? FillRect_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    private delegate int FillRectDelegate(
+        nint hdc,
+        ref Native.RECT lprc,
+        nint hbr);
+
+    #endregion
+
+    #region DrawTextW
+
+    private static LocalHook? _drawTextWHook;
+
+    private static DrawTextWDelegate? DrawTextW_Original;
+
+    [UnmanagedFunctionPointer(CallingConvention.StdCall, SetLastError = true)]
+    private delegate int DrawTextWDelegate(
+        nint hDC,
+        [MarshalAs(UnmanagedType.LPWStr)]
+        string lpszString,
+        int nCount,
+        ref Native.RECT lpRect,
+        int nFormat);
+
+    #endregion
+
+    #endregion
+
+    // ReSharper disable once RedundantExplicitArraySize
+    private static readonly HookData[] _hookData = new HookData[(int)HookType.Length]
+    {
+        new("user32.dll", "GetSysColor", wineOnly: false),
+        new("user32.dll", "GetSysColorBrush", wineOnly: false),
+        new("uxtheme.dll", "DrawThemeBackground", wineOnly: false),
+        new("uxtheme.dll", "GetThemeColor", wineOnly: false),
+        new("gdi32.dll", "PatBlt", wineOnly: true),
+        new("user32.dll", "FillRect", wineOnly: true),
+        new("user32.dll", "DrawTextW", wineOnly: true),
+    };
+
+    private static HookData GetHookData(HookType hookType) => _hookData[(int)hookType];
+
+    private static readonly nint[] _procAddresses = new nint[(int)HookType.Length];
 
     #region Hook installing
 
     private static bool _hooksInstalled;
+    private static bool _hooksPreloaded;
 
     internal static void InstallHooks()
     {
+        // UI doesn't work with this crap
+#if DEBUG
+        return;
+#endif
+
         if (_hooksInstalled) return;
 
-        ReloadHThemes();
+        PreloadHooks();
 
         try
         {
             (_getSysColorHook, GetSysColor_Original) = InstallHook<GetSysColorDelegate>(
-                "user32.dll",
-                "GetSysColor",
+                HookType.GetSysColor,
                 GetSysColor_Hooked);
 
             (_getSysColorBrushHook, GetSysColorBrush_Original) = InstallHook<GetSysColorBrushDelegate>(
-                "user32.dll",
-                "GetSysColorBrush",
+                HookType.GetSysColorBrush,
                 GetSysColorBrush_Hooked);
 
             (_drawThemeBackgroundHook, DrawThemeBackground_Original) = InstallHook<DrawThemeBackgroundDelegate>(
-                "uxtheme.dll",
-                "DrawThemeBackground",
+                HookType.DrawThemeBackground,
                 DrawThemeBackground_Hooked);
 
             (_getThemeColorHook, GetThemeColor_Original) = InstallHook<GetThemeColorDelegate>(
-                "uxtheme.dll",
-                "GetThemeColor",
+                HookType.GetThemeColor,
                 GetThemeColor_Hooked);
+
+            if (WinVersion.IsWine)
+            {
+                (_patBltHook, PatBlt_Original) = InstallHook<PatBltDelegate>(
+                    HookType.PatBlt,
+                    PatBlt_Hooked);
+
+                (_fillRectHook, FillRect_Original) = InstallHook<FillRectDelegate>(
+                    HookType.FillRect,
+                    FillRect_Hooked);
+
+                (_drawTextWHook, DrawTextW_Original) = InstallHook<DrawTextWDelegate>(
+                    HookType.DrawTextW,
+                    DrawTextW_Hooked);
+            }
         }
         catch
         {
@@ -125,6 +235,12 @@ internal static class Win32ThemeHooks
             _getSysColorBrushHook?.Dispose();
             _drawThemeBackgroundHook?.Dispose();
             _getThemeColorHook?.Dispose();
+            if (WinVersion.IsWine)
+            {
+                _patBltHook?.Dispose();
+                _fillRectHook?.Dispose();
+                _drawTextWHook?.Dispose();
+            }
         }
         finally
         {
@@ -132,15 +248,51 @@ internal static class Win32ThemeHooks
         }
     }
 
+    /*
+    @PERF_TODO(PreloadHooks): This overlap can sometimes just barely fit in the overlap window, when on a clean
+    install with no real data to load. We could overlap it with the main form component init and ctor, which is
+    currently not done because the InstallHooks() call is in DarkFormBase, and DarkFormBase's ctor runs before
+    its derived types (MainForm in this case). We put the call in there for robustness (for example if a dialog
+    needs to come up before any other form is loaded, the dialog will trigger the hook install), so we don't
+    really want to remove it if we can help it. We could make some disgusting hack to make it not run if our type
+    is MainForm or something.
+    */
+    private static readonly object _preloadHooksLock = new();
+    public static void PreloadHooks()
+    {
+        lock (_preloadHooksLock)
+        {
+            if (_hooksPreloaded) return;
+
+            ReloadHThemes();
+
+            for (int i = 0; i < (int)HookType.Length; i++)
+            {
+                HookData hookData = GetHookData((HookType)i);
+                if (WinVersion.IsWine || !hookData.WineOnly)
+                {
+                    _procAddresses[i] = GetProcAddressForHookData(hookData);
+                }
+            }
+
+            _hooksPreloaded = true;
+
+            return;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            static IntPtr GetProcAddressForHookData(HookData hookData) => LocalHook.GetProcAddress(hookData.Dll, hookData.Method);
+        }
+    }
+
     private static (LocalHook Hook, TDelegate OriginalMethod)
-    InstallHook<TDelegate>(string dll, string method, TDelegate hookDelegate) where TDelegate : Delegate
+    InstallHook<TDelegate>(HookType hookType, TDelegate hookDelegate) where TDelegate : Delegate
     {
         TDelegate originalMethod;
         LocalHook? hook = null;
 
         try
         {
-            nint address = LocalHook.GetProcAddress(dll, method);
+            nint address = _procAddresses[(int)hookType];
             originalMethod = Marshal.GetDelegateForFunctionPointer<TDelegate>(address);
             hook = LocalHook.Create(address, hookDelegate, null);
             hook.ThreadACL.SetInclusiveACL(new[] { 0 });
@@ -164,7 +316,7 @@ internal static class Win32ThemeHooks
         int iPartId,
         int iStateId,
         ref Native.RECT pRect,
-        ref Native.RECT pClipRect)
+        nint pClipRect)
     {
         const int success = 0;
         bool succeeded = false;
@@ -191,11 +343,15 @@ internal static class Win32ThemeHooks
             {
                 succeeded = TrackBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect);
             }
+            else if (hTheme == _hThemes[(int)RenderedControl.Progress] && ProgressBarEnabled())
+            {
+                succeeded = ProgressBar_TryDrawThemeBackground(hdc, iPartId, iStateId, ref pRect, pClipRect);
+            }
         }
 
         return succeeded
             ? success
-            : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, ref pClipRect);
+            : DrawThemeBackground_Original!(hTheme, hdc, iPartId, iStateId, ref pRect, pClipRect);
     }
 
     private static int GetThemeColor_Hooked(
@@ -305,6 +461,121 @@ internal static class Win32ThemeHooks
             : GetSysColorBrush_Original!(nIndex);
     }
 
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static bool PatBlt_Hooked(
+        nint hdc,
+        int x,
+        int y,
+        int w,
+        int h,
+        int rop)
+    {
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode && ScrollBarEnabled())
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            if (c is ScrollBar sb && PointIsOnScrollBarTrackArea(sb, x, y))
+            {
+                nint currentObject = Native.GetCurrentObject(hdc, Native.OBJ_BRUSH);
+                if (currentObject != 0)
+                {
+                    nint prevObject = Native.SelectObject(hdc, NativeBrush_DarkBackground);
+
+                    try
+                    {
+                        bool result = PatBlt_Original!(hdc, x, y, w, h, Native.PATCOPY);
+                        return result;
+                    }
+                    finally
+                    {
+                        Native.SelectObject(hdc, prevObject);
+                    }
+                }
+            }
+        }
+
+        return PatBlt_Original!(hdc, x, y, w, h, rop);
+    }
+
+    private static bool EqualsPhysically(this Color color1, Color color2) =>
+        color1.A == color2.A &&
+        color1.R == color2.R &&
+        color1.G == color2.G &&
+        color1.B == color2.B;
+
+    private static int FillRect_Hooked(
+        nint hdc,
+        ref Native.RECT lprc,
+        nint hbr)
+    {
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode)
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            if (c is DateTimePicker dtp)
+            {
+                nint logBrushPtr = Marshal.AllocHGlobal(Marshal.SizeOf<Native.LOGBRUSH>());
+                try
+                {
+                    Native.GetObject(hbr, Marshal.SizeOf<Native.LOGBRUSH>(), logBrushPtr);
+                    Native.LOGBRUSH logBrush = Marshal.PtrToStructure<Native.LOGBRUSH>(logBrushPtr);
+                    Color color = ColorTranslator.FromWin32((int)logBrush.lbColor);
+                    nint brush;
+                    // Wine doesn't render any selection highlight when not focused, so we don't need to either
+                    if (color.EqualsPhysically(SystemColors.ActiveCaption))
+                    {
+                        brush = NativeBrush_BlueSelection;
+                    }
+                    else
+                    {
+                        brush = dtp.Enabled ? NativeBrush_LightBackground : NativeBrush_DarkBackground;
+                    }
+                    int result = FillRect_Original!(hdc, ref lprc, brush);
+                    return result;
+                }
+                finally
+                {
+                    Marshal.FreeHGlobal(logBrushPtr);
+                }
+            }
+        }
+
+        return FillRect_Original!(hdc, ref lprc, hbr);
+    }
+
+    private static int DrawTextW_Hooked(
+        nint hdc,
+        [MarshalAs(UnmanagedType.LPWStr)]
+        string lpszString,
+        int nCount,
+        ref Native.RECT lpRect,
+        int nFormat)
+    {
+        if (WinVersion.IsWine && !_disableHookedTheming && Global.Config.DarkMode)
+        {
+            nint wnd = Native.WindowFromDC(hdc);
+            Control? c = Control.FromHandle(wnd);
+            // If it's disabled, just let it render the default disabled color, as it looks fine.
+            // We'd like to use the brighter text color for selected fields, but we have no way to know from this
+            // function whether we're drawing text on a selected field or not. So, just leave it as is.
+            if (c is DateTimePicker { Enabled: true })
+            {
+                int prevColor = Native.SetTextColor(hdc, ColorTranslator.ToWin32(DarkColors.LightText));
+                try
+                {
+                    int result = DrawTextW_Original!(hdc, lpszString, nCount, ref lpRect, nFormat);
+                    return result;
+                }
+                finally
+                {
+                    Native.SetTextColor(hdc, prevColor);
+                }
+            }
+        }
+
+        return DrawTextW_Original!(hdc, lpszString, nCount, ref lpRect, nFormat);
+    }
+
     #endregion
 
     #endregion
@@ -373,6 +644,10 @@ internal static class Win32ThemeHooks
     private static readonly nint SysColorBrush_Fen_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkBackground));
     private static readonly nint SysColorBrush_Fen_DarkForeground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.Fen_DarkForeground));
 
+    private static readonly nint NativeBrush_DarkBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.DarkBackground));
+    private static readonly nint NativeBrush_LightBackground = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.LightBackground));
+    private static readonly nint NativeBrush_BlueSelection = Native.CreateSolidBrush(ColorTranslator.ToWin32(DarkColors.BlueSelection));
+
     #endregion
 
     #region System color overriding
@@ -403,7 +678,6 @@ internal static class Win32ThemeHooks
 
     #region Arrays
 
-    private const int _renderedControlCount = 5;
     private enum RenderedControl
     {
         ScrollBar,
@@ -411,17 +685,21 @@ internal static class Win32ThemeHooks
         TreeView,
         TabScrollButtons,
         Trackbar,
+        Progress,
+        Length,
     }
 
-    private static readonly nint[] _hThemes = new nint[_renderedControlCount];
+    private static readonly nint[] _hThemes = new nint[(int)RenderedControl.Length];
 
-    private static readonly string[] _clSids =
+    // ReSharper disable once RedundantExplicitArraySize
+    private static readonly string[] _clSids = new string[(int)RenderedControl.Length]
     {
         "Scrollbar",
         "ToolTip",
         "TreeView",
         "Spin",
         "Trackbar",
+        "Progress",
     };
 
     #endregion
@@ -430,7 +708,7 @@ internal static class Win32ThemeHooks
 
     private static void ReloadHThemes()
     {
-        for (int i = 0; i < _renderedControlCount; i++)
+        for (int i = 0; i < (int)RenderedControl.Length; i++)
         {
             Native.CloseThemeData(_hThemes[i]);
             using Control c = new();
@@ -835,6 +1113,76 @@ internal static class Win32ThemeHooks
         }
     }
 
+    #region Wine-friendly scroll bar interior theming
+
+    /*
+    @Wine: Wine's scroll bars don't respond to the usual hook for the track area (or "interior" or whatever it's
+    really called), so use a different technique.
+    */
+
+    private static bool PointIsOnScrollBarTrackArea(ScrollBar scrollBar, int x, int y)
+    {
+        Native.SCROLLBARINFO sbi = new() { cbSize = Marshal.SizeOf(typeof(Native.SCROLLBARINFO)) };
+        Native.GetScrollBarInfo(scrollBar.Handle, Native.OBJID_CLIENT, ref sbi);
+
+        Rectangle thumbRect;
+        Rectangle firstArrowRect;
+        Rectangle secondArrowRect;
+
+        if (scrollBar is VScrollBar)
+        {
+            int vsbWidth = SystemInformation.VerticalScrollBarWidth;
+            int vsbArrowHeight = SystemInformation.VerticalScrollBarArrowHeight;
+
+            thumbRect = new Rectangle(
+                x: 0,
+                y: sbi.xyThumbTop,
+                width: sbi.dxyLineButton,
+                height: sbi.xyThumbBottom - sbi.xyThumbTop
+            );
+
+            firstArrowRect = new Rectangle(
+                x: 0,
+                y: 0,
+                width: vsbWidth,
+                height: vsbArrowHeight);
+
+            secondArrowRect = new Rectangle(
+                x: 0,
+                y: scrollBar.Height - vsbArrowHeight,
+                width: vsbWidth,
+                height: vsbArrowHeight);
+        }
+        else
+        {
+            int hsbHeight = SystemInformation.HorizontalScrollBarHeight;
+            int hsbArrowWidth = SystemInformation.HorizontalScrollBarArrowWidth;
+
+            thumbRect = new Rectangle(
+                x: sbi.xyThumbTop,
+                y: 0,
+                width: sbi.xyThumbBottom - sbi.xyThumbTop,
+                height: sbi.dxyLineButton
+            );
+
+            firstArrowRect = new Rectangle(
+                x: 0,
+                y: 0,
+                width: hsbArrowWidth,
+                height: hsbHeight);
+
+            secondArrowRect = new Rectangle(
+                x: scrollBar.Width - hsbArrowWidth,
+                y: 0,
+                width: hsbArrowWidth,
+                height: hsbHeight);
+        }
+
+        return !thumbRect.Contains(x, y) && !firstArrowRect.Contains(x, y) && !secondArrowRect.Contains(x, y);
+    }
+
+    #endregion
+
     #endregion
 
     #region ToolTip
@@ -911,6 +1259,57 @@ internal static class Win32ThemeHooks
             pen: Global.Config.DarkMode ? DarkColors.LightTextPen : SystemPens.WindowText);
 
         return true;
+    }
+
+    #endregion
+
+    #region Progress bar
+
+    private static bool ProgressBarEnabled() => Global.Config.DarkMode && WinVersion.IsWine;
+
+    private static bool ProgressBar_TryDrawThemeBackground(
+        nint hdc,
+        int iPartId,
+        int iStateId,
+        ref Native.RECT pRect,
+        nint pClipRect)
+    {
+        using Graphics g = Graphics.FromHdc(hdc);
+
+        Rectangle rect = pRect.ToRectangle();
+
+        /*
+        PP_FILL = foreground
+        PP_BAR = background
+        */
+
+        switch (iPartId)
+        {
+            case Native.PP_FILL:
+            case Native.PP_FILLVERT:
+            {
+                g.FillRectangle(DarkColors.BlueHighlightBrush, rect);
+                return true;
+            }
+            case Native.PP_BAR:
+            case Native.PP_BARVERT:
+            {
+                if (pClipRect != 0)
+                {
+                    Native.RECT clipRectNative = Marshal.PtrToStructure<Native.RECT>(pClipRect);
+                    Rectangle clipRect = clipRectNative.ToRectangle();
+                    g.FillRectangle(DarkColors.Fen_ControlBackgroundBrush, clipRect);
+                }
+                else
+                {
+                    Rectangle modRect = rect with { Width = rect.Width - 1, Height = rect.Height - 1 };
+                    g.DrawRectangle(DarkColors.Fen_ControlBackgroundPen, modRect);
+                }
+                return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion

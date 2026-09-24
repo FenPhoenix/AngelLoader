@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed class DarkFlowLayoutPanel : FlowLayoutPanel, IDarkable
+public sealed class DrawnFlowLayoutPanel : FlowLayoutPanelCustom, IDarkable
 {
     [PublicAPI]
     public Color DrawnBackColor = SystemColors.Control;

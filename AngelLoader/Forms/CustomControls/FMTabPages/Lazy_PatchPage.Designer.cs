@@ -37,7 +37,7 @@ public sealed partial class Lazy_PatchPage
         this.Patch_NewMantle_CheckBox = new AngelLoader.Forms.CustomControls.DarkCheckBox();
         this.PatchMainPanel = new AngelLoader.Forms.CustomControls.DrawnPanel();
         this.PatchDMLsPanel = new AngelLoader.Forms.CustomControls.DrawnPanel();
-        this.AddRemoveDMLButtonsFLP = new AngelLoader.Forms.CustomControls.DarkFlowLayoutPanel();
+        this.AddRemoveDMLButtonsFLP = new AngelLoader.Forms.CustomControls.DrawnFlowLayoutPanel();
         this.PatchAddDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.PatchRemoveDMLButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.PatchDMLPatchesLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
@@ -217,5 +217,5 @@ public sealed partial class Lazy_PatchPage
     internal DarkButton PatchRemoveDMLButton;
     internal DarkButton PatchAddDMLButton;
     internal DarkButton PatchOpenFMFolderButton;
-    internal DarkFlowLayoutPanel AddRemoveDMLButtonsFLP;
+    internal DrawnFlowLayoutPanel AddRemoveDMLButtonsFLP;
 }

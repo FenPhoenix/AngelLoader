@@ -538,16 +538,17 @@ internal sealed class TagsFilter
 
 #endregion
 
-// IMPORTANT: SettingsTab enum used as indexes; don't reorder
 [FenGenEnumCount]
 internal enum SettingsTab
 {
     Paths,
     Appearance,
-    Other,
+    AudioFiles,
     ThiefBuddy,
     Update,
     IOThreading,
+    // Ideally Other will always be at the bottom
+    Other,
 }
 
 /*

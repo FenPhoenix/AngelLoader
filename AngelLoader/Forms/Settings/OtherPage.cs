@@ -4,7 +4,7 @@ using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class OtherPage : UserControl, Interfaces.ISettingsPage
+public sealed partial class OtherPage : UserControlCustom, Interfaces.ISettingsPage
 {
     public OtherPage()
     {

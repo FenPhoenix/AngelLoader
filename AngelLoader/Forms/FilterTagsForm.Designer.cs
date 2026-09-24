@@ -42,7 +42,7 @@ sealed partial class FilterTagsForm
         this.IncludeAllLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.IncludeAnyLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
         this.ExcludeLabel = new AngelLoader.Forms.CustomControls.DarkLabel();
-        this.FilterLabelsPanel = new System.Windows.Forms.Panel();
+        this.FilterLabelsPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.RemoveAllNotButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.RemoveAllOrButton = new AngelLoader.Forms.CustomControls.DarkButton();
         this.RemoveAllAndButton = new AngelLoader.Forms.CustomControls.DarkButton();
@@ -52,8 +52,8 @@ sealed partial class FilterTagsForm
         this.OKButton = new AngelLoader.Forms.CustomControls.StandardButton();
         this.Cancel_Button = new AngelLoader.Forms.CustomControls.StandardButton();
         this.ResetButton = new AngelLoader.Forms.CustomControls.StandardButton();
-        this.BottomFLP = new System.Windows.Forms.FlowLayoutPanel();
-        this.MoveButtonsPanel = new System.Windows.Forms.Panel();
+        this.BottomFLP = new AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom();
+        this.MoveButtonsPanel = new AngelLoader.Forms.CustomControls.PanelCustom();
         this.MainToolTip = new AngelLoader.Forms.CustomControls.ToolTipCustom(this.components);
         this.FindTagTextBox = new AngelLoader.Forms.CustomControls.DarkTextBox();
         this.FilterLabelsPanel.SuspendLayout();
@@ -348,7 +348,7 @@ sealed partial class FilterTagsForm
     private AngelLoader.Forms.CustomControls.DarkLabel IncludeAllLabel;
     private AngelLoader.Forms.CustomControls.DarkLabel IncludeAnyLabel;
     private AngelLoader.Forms.CustomControls.DarkLabel ExcludeLabel;
-    private System.Windows.Forms.Panel FilterLabelsPanel;
+    private AngelLoader.Forms.CustomControls.PanelCustom FilterLabelsPanel;
     private AngelLoader.Forms.CustomControls.StandardButton OKButton;
     private AngelLoader.Forms.CustomControls.StandardButton Cancel_Button;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedAndButton;
@@ -358,8 +358,8 @@ sealed partial class FilterTagsForm
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedNotButton;
     private AngelLoader.Forms.CustomControls.DarkButton RemoveSelectedOrButton;
     private AngelLoader.Forms.CustomControls.StandardButton ResetButton;
-    private System.Windows.Forms.FlowLayoutPanel BottomFLP;
-    private System.Windows.Forms.Panel MoveButtonsPanel;
+    private AngelLoader.Forms.CustomControls.FlowLayoutPanelCustom BottomFLP;
+    private AngelLoader.Forms.CustomControls.PanelCustom MoveButtonsPanel;
     private AngelLoader.Forms.CustomControls.ToolTipCustom MainToolTip;
     private AngelLoader.Forms.CustomControls.DarkTextBox FindTagTextBox;
 }

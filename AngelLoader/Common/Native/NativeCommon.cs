@@ -75,11 +75,13 @@ internal static partial class NativeCommon
     {
         try
         {
-            nint pidl = ILCreateFromPathW(filePath);
-            if (pidl == 0) return false;
+            nint pidl = 0;
 
             try
             {
+                pidl = ILCreateFromPathW(filePath);
+                if (pidl == 0) return false;
+
                 int result = SHOpenFolderAndSelectItems(pidl, 0, 0, 0);
                 return result == 0;
             }
@@ -108,4 +110,11 @@ internal static partial class NativeCommon
     private static partial void ILFree(nint pidl);
 
     #endregion
+
+    // TODO: procName is defined as LPCSTR (not LPCWSTR), so does this mean CharSet.Ansi is required...?
+    [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+    internal static extern nint GetProcAddress(nint hModule, string procName);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+    internal static extern nint GetModuleHandleW(string lpModuleName);
 }

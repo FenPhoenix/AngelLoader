@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace AngelLoader.Forms.CustomControls;
 
-public sealed partial class Lazy_ScreenshotsPage : UserControl
+public sealed partial class Lazy_ScreenshotsPage : UserControlCustom
 {
     public Lazy_ScreenshotsPage()
     {

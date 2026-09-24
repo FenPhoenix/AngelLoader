@@ -24,14 +24,6 @@ If the cold startup time were solved (either directly or through finishing of Wi
 </h1>
 <p align="center"><img src="https://github.com/FenPhoenix/AngelLoader/blob/master/docs/images/main_window_v194_900w.png" /></p>
 
-<hr>
-<h4 align="center">
-Thanks to JetBrains for providing their tools to AngelLoader under their Open Source License.
-</h4>
-<p align="center">
-<a href="https://jb.gg/OpenSourceSupport"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" width="128" height="128"/></a>
-</p>
-
 ## Description
 AngelLoader is a standalone fan mission loader for Thief 1, Thief 2, Thief 3, System Shock 2, and The Dark Mod. Unlike FMSel, which requires a separate copy for each game, AngelLoader allows you to manage and play all your FMs in one place. The interface is inspired by DarkLoader (by Björn Henke and Tom N. Harris) and NewDarkLoader (by Robin Collier).
 
@@ -59,19 +51,16 @@ Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/r
 
 .NET Framework 4.7.2 or above is required. All modern versions of Windows should come with this already.
 
+### Running on Linux:
+I don't know how to run the modern .NET version on Linux, and whether the process is the same as for the Framework version or what, sorry.
+
 ## Building
 - Use Visual Studio 2022 with .NET and C++ desktop workloads installed.
 - Use Release_Public for the standard AngelLoader build.
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
 ## License
-AngelLoader's code is released under the MIT license, except portions which are otherwise specified.
-AngelLoader contains portions of code from the following:
-- Ookii Dialogs by [Sven Groot](http://www.ookii.org/software/dialogs/), modified by [Caio Proiete](https://github.com/caioproiete/ookii-dialogs-winforms), and further modified and slimmed down by myself. This code is released under the BSD 3-clause license.
-- DarkUI by [Robin Perris](https://github.com/RobinPerris/DarkUI)
-- FFmpeg.NET by [Tobias Haimerl](https://github.com/cmxl/FFmpeg.NET)
-- SharpCompress (stripped down to the bare minimum for 7z archive entry enumeration) by [Adam Hathcock](https://github.com/adamhathcock/sharpcompress)
+AngelLoader's code is released under the MIT license, except portions which are otherwise specified in the About window and in the [Licenses directory](https://github.com/FenPhoenix/AngelLoader/tree/master/BinReleaseOnly/Licenses).
 
-FMScanner, which has now been forked to be part of AngelLoader, uses portions of code from the following:
-- [SimpleHelpers.Net](https://github.com/khalidsalomao/SimpleHelpers.Net)
-- Modified portions of the [.NET Core](https://github.com/dotnet/corefx) System.IO.Compression code (tuned for scanning performance)
+## Statement on the Non-Use of AI
+I do not use AI to generate any of my code, and in fact I don't use it in any area of my programming workflow, period. All my code is written by me. I can't vouch that third-party dependencies don't contain any AI generated code, but thankfully most of them are old enough that they probably don't, so there's that.

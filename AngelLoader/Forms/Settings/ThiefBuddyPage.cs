@@ -1,8 +1,9 @@
 ﻿using System.Windows.Forms;
+using AngelLoader.Forms.CustomControls;
 
 namespace AngelLoader.Forms;
 
-public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPage
+public sealed partial class ThiefBuddyPage : UserControlCustom, Interfaces.ISettingsPage
 {
     public ThiefBuddyPage()
     {
@@ -19,7 +20,7 @@ public sealed partial class ThiefBuddyPage : UserControl, Interfaces.ISettingsPa
 
     private void ThiefBuddyOptionsGroupBox_PaintCustom(object? sender, PaintEventArgs e)
     {
-        Images.DrawHorizDiv(e.Graphics, 16, 40, ThiefBuddyOptionsGroupBox.Width - 17);
+        Images.DrawHorizDiv(e.Graphics, 16, (RunTBPanel.Top + RunThiefBuddyWhenPlayingFMsLabel.Top) - 20, ThiefBuddyOptionsGroupBox.Width - 17);
     }
 
     public void SetVScrollPos(int value) => PagePanel.VerticalScroll.Value = value.Clamp(PagePanel.VerticalScroll.Minimum, PagePanel.VerticalScroll.Maximum);

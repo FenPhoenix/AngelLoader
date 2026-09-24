@@ -218,6 +218,8 @@ internal static class Utility
     {
         if (value.IsEmpty() || value[0] != '(' || value[^1] != ')') return value;
 
+        stack.ClearFast();
+
         ReadOnlySpan<char> valueSpan = value.AsSpan();
 
         bool surroundedByParens = false;
@@ -294,6 +296,29 @@ internal static class Utility
             else
             {
                 consecutiveWordCharCount = 0;
+            }
+        }
+
+        return false;
+    }
+
+    internal static bool AnyConsecutiveAsciiUppercaseChars(string value)
+    {
+        int consecutiveAsciiUppercaseCharCount = 0;
+        for (int i = 0; i < value.Length; i++)
+        {
+            char c = value[i];
+            if (char.IsAsciiLetterUpper(c))
+            {
+                consecutiveAsciiUppercaseCharCount++;
+                if (consecutiveAsciiUppercaseCharCount > 1)
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                consecutiveAsciiUppercaseCharCount = 0;
             }
         }
 
@@ -594,11 +619,13 @@ internal static class Utility
         Closing,
     }
 
-    internal static string GLMLToPlainText(string glml, ListFast<char> charBuffer)
+    internal static unsafe string GLMLToPlainText(string glml)
     {
         // @MEM: We could cache these, and maybe even as ListFast<char>s to avoid the cruft of StringBuilder appending?
         StringBuilder sb = new(glml.Length);
         StringBuilder subSB = new(16);
+
+        char* charBuffer = stackalloc char[2];
 
         const char unicodeUnknownChar = '\u25A1';
 
@@ -659,14 +686,14 @@ internal static class Utility
 
                             if (success)
                             {
-                                ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
-                                if (chars == null)
+                                (bool convertSuccess, int charsCount) = ConvertFromUtf32(result, charBuffer);
+                                if (convertSuccess)
                                 {
-                                    sb.Append(unicodeUnknownChar);
+                                    sb.Append(charBuffer, charsCount);
                                 }
                                 else
                                 {
-                                    sb.Append(chars.ItemsArray, 0, chars.Count);
+                                    sb.Append(unicodeUnknownChar);
                                 }
                             }
                             else
@@ -694,14 +721,14 @@ internal static class Utility
                             if (HTML.HTML401NamedEntities.TryGetValue(name, out string? value) &&
                                 UInt_TryParseInv(value, out uint result))
                             {
-                                ListFast<char>? chars = ConvertFromUtf32(result, charBuffer);
-                                if (chars == null)
+                                (bool convertSuccess, int charsCount) = ConvertFromUtf32(result, charBuffer);
+                                if (convertSuccess)
                                 {
-                                    sb.Append(unicodeUnknownChar);
+                                    sb.Append(charBuffer, charsCount);
                                 }
                                 else
                                 {
-                                    sb.Append(chars.ItemsArray, 0, chars.Count);
+                                    sb.Append(unicodeUnknownChar);
                                 }
                             }
                             else
@@ -746,6 +773,30 @@ internal static class Utility
             }
             return true;
         }
+    }
+
+    /// <summary>
+    /// Copy of .NET 7 version (fewer branches than Framework) but with a fast null return on fail instead of
+    /// the infernal exception-throwing.
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static unsafe (bool Success, int Count)
+    ConvertFromUtf32(uint utf32u, char* charBuffer)
+    {
+        if (((utf32u - 0x110000u) ^ 0xD800u) < 0xFFEF0800u)
+        {
+            return (false, 0);
+        }
+
+        if (utf32u <= char.MaxValue)
+        {
+            charBuffer[0] = (char)utf32u;
+            return (true, 1);
+        }
+
+        charBuffer[0] = (char)((utf32u + ((0xD800u - 0x40u) << 10)) >> 10);
+        charBuffer[1] = (char)((utf32u & 0x3FFu) + 0xDC00u);
+        return (true, 2);
     }
 
     #endregion

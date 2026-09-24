@@ -1,5 +1,5 @@
 The full source code can be obtained from: https://github.com/LordMike/MBW.Libraries.DeviceIOControlLib
--------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 
 MIT License
 
