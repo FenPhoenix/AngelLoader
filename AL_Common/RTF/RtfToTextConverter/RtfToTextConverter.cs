@@ -169,8 +169,6 @@ public sealed partial class RtfToTextConverter
 
     private readonly char[] _fldinstSymbolFontName = new char[MaxSymbolFontNameLength + 1];
 
-    private readonly byte[] _symbolFontNameBuffer = new byte[MaxSymbolFontNameLength];
-
     #region Tables
 
     #region Conversion tables
@@ -247,30 +245,6 @@ public sealed partial class RtfToTextConverter
 
     private readonly uint[][] _symbolFontTables = new uint[_symbolArraysLength][];
     private readonly byte[][] _symbolFontCharsArrays = new byte[_symbolArraysLength][];
-    private const int _minSupportedSymbolFontNameLength = 6;
-    private const int _maxSupportedSymbolFontNameLength = 17;
-
-    private static readonly bool[] _symbolFontNameLengths =
-    [
-        false, // 0
-        false, // 1
-        false, // 2
-        false, // 3
-        false, // 4
-        false, // 5
-        true,  // 6
-        false, // 7
-        true,  // 8
-        true,  // 9
-        false, // 10
-        true,  // 11
-        false, // 12
-        true,  // 13
-        false, // 14
-        false, // 15
-        false, // 16
-        true,  // 17
-    ];
 
     private void InitSymbolFontData()
     {
@@ -1681,8 +1655,6 @@ public sealed partial class RtfToTextConverter
         _symbolFontCharsArrays[(int)SymbolFont.Webdings] = "Webdings"u8.ToArray();
         _symbolFontCharsArrays[(int)SymbolFont.ITCZapfDingbats] = "ITC Zapf Dingbats"u8.ToArray();
         _symbolFontCharsArrays[(int)SymbolFont.ZapfDingbats] = "Zapf Dingbats"u8.ToArray();
-
-        InitSymbolFontNameVectors();
     }
 
     #endregion
