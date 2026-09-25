@@ -140,8 +140,7 @@ public sealed partial class RtfDisplayedReadmeParser
         // NOTE: This logic is optimized to do the same thing as the gperf generated code, but more efficiently.
         key += asso_values[Unsafe.AddByteOffset(ref keywordRef, len - 1)];
         if (len > 2) key += asso_values[Unsafe.AddByteOffset(ref keywordRef, 2)];
-        key += asso_values[Unsafe.AddByteOffset(ref keywordRef, 1)];
-        key += asso_values[firstChar];
+        key += asso_values[Unsafe.AddByteOffset(ref keywordRef, 0)];
 
         if (key <= MAX_HASH_VALUE)
         {
