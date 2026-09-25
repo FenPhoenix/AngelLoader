@@ -137,7 +137,7 @@ public static class RandomAccess
 
     private static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
     {
-        int errorCode = Marshal.GetLastWin32Error();
+        int errorCode = Marshal.GetLastPInvokeError();
 
         // If ERROR_INVALID_HANDLE is returned, it doesn't suffice to set
         // the handle as invalid; the handle must also be closed.
@@ -203,7 +203,7 @@ public static class RandomAccess
                 &eofInfo,
                 (uint)sizeof(Interop.Kernel32.FILE_END_OF_FILE_INFO)))
         {
-            int errorCode = Marshal.GetLastWin32Error();
+            int errorCode = Marshal.GetLastPInvokeError();
 
             throw errorCode == Interop.Errors.ERROR_INVALID_PARAMETER
                 ? new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_FileLengthTooBig)

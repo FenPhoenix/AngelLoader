@@ -165,7 +165,7 @@ public static class Delete_Threaded
             throw exception;
         }
 
-        int errorCode = Marshal.GetLastWin32Error();
+        int errorCode = Marshal.GetLastPInvokeError();
         if (errorCode != Interop.Errors.ERROR_SUCCESS && errorCode != Interop.Errors.ERROR_NO_MORE_FILES)
         {
             throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
@@ -195,7 +195,7 @@ public static class Delete_Threaded
                 {
                     if (!Interop.Kernel32.DeleteFile(fileName) && !exceptions.TryPeek(out _))
                     {
-                        errorCode = Marshal.GetLastWin32Error();
+                        errorCode = Marshal.GetLastPInvokeError();
 
                         // We don't care if something else deleted the file first
                         if (errorCode != Interop.Errors.ERROR_FILE_NOT_FOUND)
@@ -217,7 +217,7 @@ public static class Delete_Threaded
                 // (Note: This doesn't remove the underlying directory)
                 if (!Interop.Kernel32.DeleteVolumeMountPoint(reparsePointEntry.VolumeMountPoint) && !exceptions.TryPeek(out _))
                 {
-                    errorCode = Marshal.GetLastWin32Error();
+                    errorCode = Marshal.GetLastPInvokeError();
                     if (errorCode != Interop.Errors.ERROR_SUCCESS &&
                         errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
                     {
@@ -229,7 +229,7 @@ public static class Delete_Threaded
             // Note that RemoveDirectory on a symbolic link will remove the link itself.
             if (!Interop.Kernel32.RemoveDirectory(reparsePointEntry.Directory) && !exceptions.TryPeek(out _))
             {
-                errorCode = Marshal.GetLastWin32Error();
+                errorCode = Marshal.GetLastPInvokeError();
                 if (errorCode != Interop.Errors.ERROR_PATH_NOT_FOUND)
                 {
                     exceptions.Push(Win32Marshal.GetExceptionForWin32Error(errorCode, reparsePointEntry.DirName));
@@ -250,7 +250,7 @@ public static class Delete_Threaded
             throw exception;
         }
 
-        errorCode = Marshal.GetLastWin32Error();
+        errorCode = Marshal.GetLastPInvokeError();
         if (errorCode != Interop.Errors.ERROR_SUCCESS && errorCode != Interop.Errors.ERROR_NO_MORE_FILES)
         {
             throw Win32Marshal.GetExceptionForWin32Error(errorCode, fullPath);
@@ -279,7 +279,7 @@ public static class Delete_Threaded
     {
         if (!Interop.Kernel32.RemoveDirectory(fullPath))
         {
-            int errorCode = Marshal.GetLastWin32Error();
+            int errorCode = Marshal.GetLastPInvokeError();
             switch (errorCode)
             {
                 case Interop.Errors.ERROR_FILE_NOT_FOUND:

@@ -85,7 +85,7 @@ internal sealed class BufferedSubStream : Stream
 #if false
 #if !NETFRAMEWORK && !NETSTANDARD2_0
 
-    public override int Read(Span<byte> buffer) => Stream.Read(buffer);
+    public override int Read(Span<byte> buffer) => _stream.Read(buffer);
 
     public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 

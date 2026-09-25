@@ -45,7 +45,7 @@ internal static class NativeCommon
                     {
                         return buffer[..(int)length].ToString();
                     }
-                    else if (Marshal.GetLastWin32Error() != ERROR_INSUFFICIENT_BUFFER)
+                    else if (Marshal.GetLastPInvokeError() != ERROR_INSUFFICIENT_BUFFER)
                     {
                         return null;
                     }

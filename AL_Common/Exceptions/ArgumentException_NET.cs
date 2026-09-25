@@ -13,7 +13,7 @@ public static class ArgumentException_NET
     /// <exception cref="ArgumentException"><paramref name="argument"/> is empty.</exception>
     public static void ThrowIfNullOrEmpty(string? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
-        if (string.IsNullOrEmpty(argument))
+        if (argument.IsEmpty())
         {
             ThrowNullOrEmptyException(argument, paramName);
         }

@@ -110,7 +110,7 @@ internal static class FileStreamHelpers
     {
         if (!Interop.Kernel32.FlushFileBuffers(handle))
         {
-            int errorCode = Marshal.GetLastWin32Error();
+            int errorCode = Marshal.GetLastPInvokeError();
 
             // NOTE: unlike fsync() on Unix, the FlushFileBuffers() function on Windows doesn't
             // support flushing handles opened for read-only access and will return an error. We
@@ -149,7 +149,7 @@ internal static class FileStreamHelpers
 
     internal static int GetLastWin32ErrorAndDisposeHandleIfInvalid(AL_SafeFileHandle handle)
     {
-        int errorCode = Marshal.GetLastWin32Error();
+        int errorCode = Marshal.GetLastPInvokeError();
 
         // If ERROR_INVALID_HANDLE is returned, it doesn't suffice to set
         // the handle as invalid; the handle must also be closed.

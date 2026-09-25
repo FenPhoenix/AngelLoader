@@ -50,7 +50,7 @@ internal static class Paths
         int noOfTimes = 1;
         int length;
         while (((length = GetModuleFileNameW(nullHandleRef, buffer, buffer.Capacity)) == buffer.Capacity) &&
-               Marshal.GetLastWin32Error() == ERROR_INSUFFICIENT_BUFFER &&
+               Marshal.GetLastPInvokeError() == ERROR_INSUFFICIENT_BUFFER &&
                buffer.Capacity < MAX_UNICODESTRING_LEN)
         {
             noOfTimes += 2;

@@ -561,6 +561,8 @@ public static partial class Common
     /// <returns></returns>
     public static bool HasFileExtension(this string value)
     {
+        // Exact copy of code in .NET modern Path.HasFileExtension, but with explicit dir seps because we're
+        // dealing with zip files, and we don't want "whatever the framework decides"
         for (int i = value.Length - 1; i >= 0; i--)
         {
             char ch = value[i];
@@ -760,7 +762,7 @@ public static partial class Common
         FILE_TIME fileTime = new(lastWriteTimeUtc.ToFileTimeUtc());
         if (!Interop.SetFileTime(handle, null, null, &fileTime))
         {
-            __Error.WinIOError(Marshal.GetLastWin32Error(), path);
+            __Error.WinIOError(Marshal.GetLastPInvokeError(), path);
         }
     }
 

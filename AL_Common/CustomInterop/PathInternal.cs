@@ -58,7 +58,7 @@ internal static partial class PathInternal
     /// </summary>
     internal static unsafe int EqualStartingCharacterCount(string? first, string? second, bool ignoreCase)
     {
-        if (string.IsNullOrEmpty(first) || string.IsNullOrEmpty(second)) return 0;
+        if (first.IsEmpty() || second.IsEmpty()) return 0;
 
         int commonChars = 0;
 
@@ -231,7 +231,7 @@ internal static partial class PathInternal
     /// Returns true if the path ends in a directory separator.
     /// </summary>
     internal static bool EndsInDirectorySeparator([NotNullWhen(true)] string? path) =>
-          !string.IsNullOrEmpty(path) && IsDirectorySeparator(path![^1]);
+          !path.IsEmpty() && IsDirectorySeparator(path[^1]);
 
 #if ENABLE_UNUSED
     /// <summary>

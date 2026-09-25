@@ -904,7 +904,7 @@ internal static class Import
 
                 // NewDarkLoader removes square brackets [] on ini read, but still writes them out, so it's possible
                 // for them to be in there, so we need to check both cases.
-                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission fm) && SizesMatch(archiveFI, fm)) ||
+                if ((fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: true), out FanMission? fm) && SizesMatch(archiveFI, fm)) ||
                     (fmsInstalledDirDict.TryGetValue(RemoveBrackets(archive.ToInstDirNameNDL(instDirNameContext, truncate: true)), out fm) && SizesMatch(archiveFI, fm)) ||
 
                     (fmsInstalledDirDict.TryGetValue(archive.ToInstDirNameNDL(instDirNameContext, truncate: false), out fm) && SizesMatch(archiveFI, fm)) ||

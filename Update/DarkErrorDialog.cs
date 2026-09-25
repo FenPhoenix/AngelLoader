@@ -27,7 +27,7 @@ public sealed class DarkErrorDialog : DarkTaskDialog
         YesButton.Click += YesButton_Click;
     }
 
-    private void YesButton_Click(object sender, EventArgs e) => Program.OpenLogFile();
+    private void YesButton_Click(object? sender, EventArgs e) => Program.OpenLogFile();
 
     protected override void OnShown(EventArgs e)
     {

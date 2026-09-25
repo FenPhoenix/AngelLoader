@@ -19,7 +19,7 @@ internal static class __Error
     /// <returns></returns>
     private static string GetDisplayablePath(string path, bool isInvalidPath)
     {
-        if (string.IsNullOrEmpty(path))
+        if (path.IsEmpty())
         {
             return path;
         }
@@ -55,7 +55,7 @@ internal static class __Error
         return path;
     }
 
-    // After calling GetLastWin32Error(), it clears the last error field, so you must save the
+    // After calling GetLastPInvokeError(), it clears the last error field, so you must save the
     // HResult and pass it to this method.  This method will determine the appropriate
     // exception to throw dependent on your error, and depending on the error, insert a string
     // into the message gotten from the ResourceManager.

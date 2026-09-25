@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net472</TargetFrameworks>
+		<TargetFrameworks>$(SolutionTargetFramework)</TargetFrameworks>
 		<Authors>Victor J. Duvanenko</Authors>
 		<Company>FooState</Company>
 		<Product>HPCsharp</Product>

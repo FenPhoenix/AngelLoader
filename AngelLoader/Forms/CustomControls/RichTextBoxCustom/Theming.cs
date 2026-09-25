@@ -125,7 +125,7 @@ internal sealed partial class RichTextBoxCustom
                     LoadFile(ms, RichTextBoxStreamType.RichText);
 
 #if BYTE_IDENTICALITY_TEST
-                    if (!string.IsNullOrEmpty(path))
+                    if (!path.IsEmpty())
                     {
                         string theme = _darkModeEnabled ? "dark" : "light";
                         // Say "new" if this is the current version; "old" if it's the previous version

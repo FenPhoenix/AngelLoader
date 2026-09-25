@@ -319,7 +319,7 @@ public static class AppUpdate
             string versionString = await request.Content.ReadAsStringAsync();
 
             return !versionString.IsEmpty() &&
-                   Version.TryParse(versionString, out Version version) &&
+                   Version.TryParse(versionString, out Version? version) &&
                    version > appVersion
                 ? CheckUpdateResult.UpdateAvailable
                 : CheckUpdateResult.NoUpdateAvailable;

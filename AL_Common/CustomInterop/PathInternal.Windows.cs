@@ -84,12 +84,12 @@ internal static partial class PathInternal
 
     internal static bool EndsWithPeriodOrSpace(string? path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (path.IsEmpty())
         {
             return false;
         }
 
-        char c = path![^1];
+        char c = path[^1];
         return c == ' ' || c == '.';
     }
 
@@ -335,7 +335,7 @@ internal static partial class PathInternal
     [return: NotNullIfNotNull(nameof(path))]
     internal static string? NormalizeDirectorySeparators(string? path)
     {
-        if (string.IsNullOrEmpty(path))
+        if (path.IsEmpty())
         {
             return path;
         }

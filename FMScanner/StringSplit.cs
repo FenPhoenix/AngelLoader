@@ -251,7 +251,7 @@ internal static class StringSplit
                 for (int j = 0; j < sepCount; j++)
                 {
                     string separator = separators[j];
-                    if (string.IsNullOrEmpty(separator))
+                    if (separator.IsEmpty())
                     {
                         continue;
                     }

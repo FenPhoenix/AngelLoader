@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace AL_Common;
 
@@ -19,7 +20,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII digit.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is an ASCII digit; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is an ASCII digit; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range '0' through '9', inclusive.
         /// </remarks>
@@ -28,7 +29,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII letter.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is an ASCII letter; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is an ASCII letter; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range 'A' through 'Z', inclusive,
         /// or 'a' through 'z', inclusive.
@@ -38,7 +39,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as a lowercase ASCII letter.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is a lowercase ASCII letter; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is a lowercase ASCII letter; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range 'a' through 'z', inclusive.
         /// </remarks>
@@ -47,7 +48,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an uppercase ASCII letter.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is an uppercase ASCII letter; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is an uppercase ASCII letter; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range 'A' through 'Z', inclusive.
         /// </remarks>
@@ -56,7 +57,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII letter or digit.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is an ASCII letter or digit; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is an ASCII letter or digit; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range 'A' through 'Z', inclusive,
         /// 'a' through 'z', inclusive, or '0' through '9', inclusive.
@@ -66,7 +67,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII hexadecimal digit.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is a hexadecimal digit; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is a hexadecimal digit; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range '0' through '9', inclusive,
         /// 'A' through 'F', inclusive, or 'a' through 'f', inclusive.
@@ -76,7 +77,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII upper-case hexadecimal digit.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is a hexadecimal digit; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is a hexadecimal digit; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range '0' through '9', inclusive,
         /// or 'A' through 'F', inclusive.
@@ -86,7 +87,7 @@ public static partial class Common
 
         /// <summary>Indicates whether a character is categorized as an ASCII lower-case hexadecimal digit.</summary>
         /// <param name="c">The character to evaluate.</param>
-        /// <returns>true if <paramref name="c"/> is a lower-case hexadecimal digit; otherwise, false.</returns>
+        /// <returns><see langword="true"/> if <paramref name="c"/> is a lower-case hexadecimal digit; otherwise, <see langword="false"/>.</returns>
         /// <remarks>
         /// This determines whether the character is in the range '0' through '9', inclusive,
         /// or 'a' through 'f', inclusive.
@@ -151,5 +152,17 @@ public static partial class Common
     private static int FromChar(int c)
     {
         return c >= CharToHexLookup.Length ? 0xFF : CharToHexLookup[c];
+    }
+
+    extension(Marshal)
+    {
+        /// <inheritdoc cref="Marshal.GetLastWin32Error"/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int GetLastPInvokeError() => Marshal.GetLastWin32Error();
+    }
+
+    extension(Math)
+    {
+        public static double Cbrt(double d) => Math.Pow(d, 1f / 3f);
     }
 }

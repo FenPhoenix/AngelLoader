@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>$(SolutionTargetFramework)</TargetFramework>
     <Nullable>enable</Nullable>
 	<LangVersion>latest</LangVersion>
     <UseWindowsForms>true</UseWindowsForms>

@@ -835,7 +835,7 @@ internal static class Utility
                         {
                             string name = subSB.ToString();
 
-                            if (HTML.HTML401NamedEntities.TryGetValue(name, out string value) &&
+                            if (HTML.HTML401NamedEntities.TryGetValue(name, out string? value) &&
                                 UInt_TryParseInv(value, out uint result))
                             {
                                 (bool convertSuccess, int charsCount) = ConvertFromUtf32(result, charBuffer);

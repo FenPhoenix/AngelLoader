@@ -70,7 +70,7 @@ internal static class FastIO
 
             if (fileFinder.IsInvalid)
             {
-                int err = Marshal.GetLastWin32Error();
+                int err = Marshal.GetLastPInvokeError();
                 if (err == ERROR_FILE_NOT_FOUND) continue;
 
                 // Since the framework isn't here to save us, we should blanket-catch and throw on every
@@ -98,7 +98,7 @@ internal static class FastIO
         {
             if (fileFinder.IsInvalid)
             {
-                int err = Marshal.GetLastWin32Error();
+                int err = Marshal.GetLastPInvokeError();
                 if (err != ERROR_FILE_NOT_FOUND)
                 {
                     ThrowException(searchPatterns, err, path, @"\* [looking for all directories]", 1);

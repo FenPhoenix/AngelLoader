@@ -58,9 +58,9 @@ internal sealed class BZip2Stream : Stream
 #if false
 #if !NETFRAMEWORK && !NETSTANDARD2_0
 
-    public override int Read(Span<byte> buffer) => stream.Read(buffer);
+    public override int Read(Span<byte> buffer) => _stream.Read(buffer);
 
-    public override void Write(ReadOnlySpan<byte> buffer) => stream.Write(buffer);
+    public override void Write(ReadOnlySpan<byte> buffer) => _stream.Write(buffer);
 #endif
 #endif
 

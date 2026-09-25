@@ -6,11 +6,6 @@
 #define ND128_GAME_HINT
 
 /*
-@MEM(Scanner readme line splitting):
-We could just get the full text and then allocate an array of int pairs for start and length of each line,
-then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
-be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
-
 @BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
 
 @BLOCKS_NOTE: Could SharpCompress (full) allow us to stream 7z entries to memory?

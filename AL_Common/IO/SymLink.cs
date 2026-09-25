@@ -141,7 +141,7 @@ public static partial class Common
             {
                 // If the handle fails because it is unreachable, is because the link was broken.
                 // We need to fallback to manually traverse the links and return the target of the last resolved link.
-                int error = Marshal.GetLastWin32Error();
+                int error = Marshal.GetLastPInvokeError();
                 if (FileSystem.IsPathUnreachableError(error))
                 {
                     return GetFinalLinkTargetSlow(linkPath, isDirectory);
@@ -229,7 +229,7 @@ public static partial class Common
                     return null;
                 }
 
-                int error = Marshal.GetLastWin32Error();
+                int error = Marshal.GetLastPInvokeError();
                 // File not found doesn't make much sense coming from a directory.
                 if (isDirectory && error == Interop.Errors.ERROR_FILE_NOT_FOUND)
                 {
@@ -264,7 +264,7 @@ public static partial class Common
                         return null;
                     }
 
-                    int error = Marshal.GetLastWin32Error();
+                    int error = Marshal.GetLastPInvokeError();
                     // The file or directory is not a reparse point.
                     if (error == Interop.Errors.ERROR_NOT_A_REPARSE_POINT)
                     {
