@@ -209,9 +209,6 @@ internal static class FMAudio
 
                         while (pd.CQ.TryDequeue(out string? f))
                         {
-                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                            if (!f.EndsWithI(".wav")) continue;
-
                             File_UnSetReadOnly(f);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();
@@ -290,9 +287,6 @@ internal static class FMAudio
                     {
                         while (pd.CQ.TryDequeue(out string? f))
                         {
-                            // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-                            if (!f.EndsWithI(ext)) continue;
-
                             File_UnSetReadOnly(f);
 
                             pd.PO.CancellationToken.ThrowIfCancellationRequested();

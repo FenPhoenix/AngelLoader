@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace AL_Common;
@@ -176,33 +175,4 @@ public static partial class FastIO_Native
 
         return path;
     }
-
-    #region Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-
-    public static bool SearchPatternHas3CharExt(string searchPattern)
-    {
-        if (searchPattern.Length > 4 && searchPattern[^4] == '.')
-        {
-            for (int i = 1; i <= 3; i++)
-            {
-                // This logic isn't quite correct; the problem still occurs if our pattern is like "*.t*t"
-                // for example, but checking for that starts to get complicated and we don't ever use patterns
-                // like that ourselves, so meh.
-                char c = searchPattern[^i];
-                if (c is '*' or '?') return false;
-            }
-            return true;
-        }
-
-        return false;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool FileNameExtTooLong(string fileName)
-    {
-        int len = fileName.Length;
-        return len > 4 && fileName[len - 4] != '.';
-    }
-
-    #endregion
 }

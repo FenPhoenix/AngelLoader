@@ -61,8 +61,6 @@ internal static class FastIO
 
         foreach (string p in searchPatterns)
         {
-            bool searchPatternHas3CharExt = SearchPatternHas3CharExt(p);
-
             using FileFinder fileFinder = FileFinder.Create(
                 searchPath + p,
                 0,
@@ -81,8 +79,7 @@ internal static class FastIO
             do
             {
                 if ((findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY &&
-                    findData.cFileName != "." && findData.cFileName != ".." &&
-                    !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName)))
+                    findData.cFileName != "." && findData.cFileName != "..")
                 {
                     return true;
                 }

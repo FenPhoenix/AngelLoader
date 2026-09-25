@@ -128,7 +128,6 @@ internal static class FastIO
         }
 
         path = NormalizeAndCheckPath(path, pathIsKnownValid);
-        bool searchPatternHas3CharExt = SearchPatternHas3CharExt(searchPattern);
 
         // Other relevant errors (though we don't use them specifically at the moment)
         //const int ERROR_PATH_NOT_FOUND = 0x3;
@@ -158,11 +157,7 @@ internal static class FastIO
                     (fileType == FileType.Files && IsFile(findData)) ||
                     (fileType == FileType.Directories && IsDirectory(findData, ignoreReparsePoints)) ||
                     (fileType == FileType.FilesAndDirectories && (IsFile(findData) || IsDirectory(findData, ignoreReparsePoints)))
-                ) &&
-                (
-                    findData.cFileName != "." && findData.cFileName != ".." &&
-                    !(searchPatternHas3CharExt && FileNameExtTooLong(findData.cFileName))
-                )
+                ) && findData.cFileName != "." && findData.cFileName != ".."
                )
             {
                 string fullName = returnFullPaths
@@ -212,7 +207,6 @@ internal static class FastIO
         {
             if (IsFile(findData) &&
                 findData.cFileName != "." && findData.cFileName != ".." &&
-                !FileNameExtTooLong(findData.cFileName) &&
                 !findData.cFileName.EndsWithI("_l10n.pk4")
                )
             {

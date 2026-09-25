@@ -1208,16 +1208,6 @@ internal static partial class FMInstallAndPlay
             return false;
         }
 
-        // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
-        for (int i = 0; i < misFileInfos.Count; i++)
-        {
-            if (!misFileInfos[i].Name.EndsWithI(".mis"))
-            {
-                misFileInfos.RemoveAt(i);
-                i--;
-            }
-        }
-
         if (misFileInfos.Count == 0)
         {
             string msg = "Error detecting OldDark: could not find any .mis files in FM installed directory.";
