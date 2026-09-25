@@ -2185,7 +2185,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private void DateCustomRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
-        if (sender is not RadioButton radioButton) return;
+        if (sender is not DarkRadioButton radioButton) return;
         AppearancePage.DateCustomFormatPanel.Enabled = radioButton.Checked;
         if (radioButton.Checked) UpdateCustomExampleDate();
     }
