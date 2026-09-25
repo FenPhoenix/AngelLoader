@@ -1,0 +1,33 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="DebugFullTest" />
+    <BuildType Name="DebugRTFTest" />
+    <BuildType Name="DebugTestMode" />
+    <BuildType Name="Release" />
+    <BuildType Name="ReleaseFullTest" />
+    <BuildType Name="ReleaseRTFTest" />
+    <BuildType Name="ReleaseTestMode" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="../../AL_Common/AL_Common.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="Debug" />
+    <BuildType Solution="DebugRTFTest|*" Project="Debug" />
+    <BuildType Solution="DebugTestMode|*" Project="Debug" />
+    <BuildType Solution="ReleaseFullTest|*" Project="Release" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="Release" />
+    <BuildType Solution="ReleaseTestMode|*" Project="Release" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+  <Project Path="RTF_ToPlainTextTest/RTF_ToPlainTextTest.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="DebugTestMode" />
+    <BuildType Solution="DebugRTFTest|*" Project="DebugTestMode" />
+    <BuildType Solution="ReleaseFullTest|*" Project="ReleaseTestMode" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="ReleaseTestMode" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+</Solution>
