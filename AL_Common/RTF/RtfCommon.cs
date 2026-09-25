@@ -106,23 +106,6 @@ public static class RtfCommon
 
     #region SIMD
 
-    //public static readonly Vector<byte> ZeroVector = new((byte)'\0');
-    //public static readonly Vector<byte> LF_Vector = new((byte)'\n');
-    //public static readonly Vector<byte> CR_Vector = new((byte)'\r');
-    //public static readonly Vector<byte> BackslashVector = new((byte)'\\');
-    //public static readonly Vector<byte> OpenBraceVector = new((byte)'{');
-    //public static readonly Vector<byte> ClosingBraceVector = new((byte)'}');
-    //public static readonly Vector<byte> n_Vector = new((byte)'n');
-    //public static readonly Vector<byte> SemicolonVector = new((byte)';');
-
-    //public const ulong XorPowerOfTwoToHighByte = (0x07ul |
-    //                                               0x06ul << 8 |
-    //                                               0x05ul << 16 |
-    //                                               0x04ul << 24 |
-    //                                               0x03ul << 32 |
-    //                                               0x02ul << 40 |
-    //                                               0x01ul << 48) + 1;
-
     public static readonly Vector512<byte> ZeroVector512 = Vector512.Create((byte)'\0');
     public static readonly Vector512<byte> LF_Vector512 = Vector512.Create((byte)'\n');
     public static readonly Vector512<byte> CR_Vector512 = Vector512.Create((byte)'\r');
@@ -525,6 +508,7 @@ public static class RtfCommon
                 }
             }
         }
+
         return -1;
     }
 

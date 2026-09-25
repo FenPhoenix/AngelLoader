@@ -3977,7 +3977,7 @@ public sealed class Scanner : IDisposable
 
                     if (titleI == 0 || title[titleI - 1] == ' ')
                     {
-                        if(char.IsAsciiLetterUpper(existingTitleChar))
+                        if (char.IsAsciiLetterUpper(existingTitleChar))
                         {
                             existingTitlePoints++;
                         }

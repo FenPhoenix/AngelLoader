@@ -4882,9 +4882,15 @@ public sealed partial class MainForm : DarkFormBase,
             {
                 if (selectedFM.Installed) installedCount++;
                 if (selectedFM.MarkedUnavailable) markedUnavailableCount++;
-                if (GameIsDark(selectedFM.Game)) gameIsDarkCount++;
                 if (selectedFM.Game == Game.TDM) gameIsTDMCount++;
-                if (GameIsKnownAndSupported(selectedFM.Game)) knownAndSupportedCount++;
+                if (selectedFM.Game.ConvertsToKnownAndSupported(out GameIndex gi))
+                {
+                    knownAndSupportedCount++;
+                    if (GameIsDark(gi))
+                    {
+                        gameIsDarkCount++;
+                    }
+                }
 
                 if (!multiplePinnedStates)
                 {

@@ -28,7 +28,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             byte keywordCount;
             for (keywordCount = 1;
-                 keywordCount < KeywordMaxLen + 1 && char.IsAsciiLetter(ch  );
+                 keywordCount < KeywordMaxLen + 1 && char.IsAsciiLetter(ch);
                  keywordCount++, ch = (char)GetByte(IncrementCurrentPos()))
             {
                 Unsafe.WriteUnaligned(ref Unsafe.AddByteOffset(ref keywordRef, (nint)keywordCount), (byte)ch);

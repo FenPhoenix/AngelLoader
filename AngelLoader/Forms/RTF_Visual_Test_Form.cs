@@ -179,7 +179,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
     {
         if (_broadcastEnabled)
         {
-            var si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
+            Native.SCROLLINFO si = ControlUtils.GetCurrentScrollInfo(RTFBox.Handle, Native.SB_VERT);
             Native.PostMessageW(HWND_BROADCAST, WM_CHANGERICHTEXTBOXSCROLLINFO, AppNum(), si.nPos);
         }
     }

@@ -68,8 +68,6 @@ internal static class Comparers
 
     #region Static methods
 
-    // Static for perf - this gets called from most comparer classes and we don't want to be instantiating
-    // new title-sort classes in a loop!
     /// <summary>
     /// If this method returns a non-zero value, return that value from the Compare() method and do not run the normal compare code.
     /// If this method returns 0, ignore it and run the normal compare code.
