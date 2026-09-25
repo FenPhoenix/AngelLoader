@@ -52,10 +52,10 @@ Simply download the [latest release](https://github.com/FenPhoenix/AngelLoader/r
 .NET Framework 4.7.2 or above is required. All modern versions of Windows should come with this already.
 
 ### Running on Linux:
-I don't know how to run the modern .NET version on Linux, and whether the process is the same as for the Framework version or what, sorry.
+I haven't tried or tested running this modern .NET version on Linux yet, sorry.
 
 ## Building
-- Use Visual Studio 2022 with .NET and C++ desktop workloads installed.
+- Use Visual Studio 2026 with .NET and C++ desktop workloads installed.
 - Use Release_Public for the standard AngelLoader build.
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
