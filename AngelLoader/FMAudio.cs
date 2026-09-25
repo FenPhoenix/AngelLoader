@@ -206,7 +206,7 @@ internal static class FMAudio
                         */
                         Span<byte> buffer = stackalloc byte[36];
 
-                        while (pd.CQ.TryDequeue(out string f))
+                        while (pd.CQ.TryDequeue(out string? f))
                         {
                             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                             if (!f.EndsWithI(".wav")) continue;
@@ -287,7 +287,7 @@ internal static class FMAudio
 
                     Parallel.For(0, threadCount, pd.PO, _ =>
                     {
-                        while (pd.CQ.TryDequeue(out string f))
+                        while (pd.CQ.TryDequeue(out string? f))
                         {
                             // Workaround https://fenphoenix.github.io/AngelLoader/file_ext_note.html
                             if (!f.EndsWithI(ext)) continue;

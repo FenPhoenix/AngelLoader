@@ -113,7 +113,7 @@ public sealed class ZipContext_Pool
 
     public ZipContext Rent()
     {
-        if (_contexts.TryTake(out ZipContext item))
+        if (_contexts.TryTake(out ZipContext? item))
         {
             item.Set();
             return item;
@@ -190,7 +190,7 @@ public sealed class ZipContext_Threaded_Pool
 
     public ZipContext_Threaded Rent(FileStream_NET archiveStream, long archiveStreamLength)
     {
-        if (_contexts.TryTake(out ZipContext_Threaded item))
+        if (_contexts.TryTake(out ZipContext_Threaded? item))
         {
             item.Set(archiveStream, archiveStreamLength);
             return item;

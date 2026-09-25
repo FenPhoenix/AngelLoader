@@ -983,7 +983,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         void ResetLanguages() => ret.Clear();
     }
 
-    private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void ComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (sender is DarkComboBox { Tag: int index } comboBox)
         {
@@ -1714,11 +1714,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Page selection handler
 
-    private void PageRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void PageRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
-        DarkRadioButtonCustom s = (DarkRadioButtonCustom)sender;
+        if (sender is not DarkRadioButtonCustom s) return;
         if (!s.Checked) return;
 
         using (new DisableEvents(this))
@@ -1783,14 +1783,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Paths page
 
-    private void ExePathTextBoxes_Leave(object sender, EventArgs e)
+    private void ExePathTextBoxes_Leave(object? sender, EventArgs e)
     {
-        DarkTextBox exePathTextBox = (DarkTextBox)sender;
+        if (sender is not DarkTextBox exePathTextBox) return;
         ShowPathError(exePathTextBox, !exePathTextBox.Text.IsEmpty() && !File.Exists(exePathTextBox.Text));
         ShowPathError(PathsPage.BackupPathTextBox, BackupPathInvalid_Settings(PathsPage.BackupPathTextBox.Text, GameExeTextBoxes));
     }
 
-    private void ExePathBrowseButtons_Click(object sender, EventArgs e)
+    private void ExePathBrowseButtons_Click(object? sender, EventArgs e)
     {
         string? dialogTitle = null;
         DarkTextBox? tb = null;
@@ -1839,10 +1839,10 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return false;
     }
 
-    private void BackupPathTextBox_Leave(object sender, EventArgs e)
+    private void BackupPathTextBox_Leave(object? sender, EventArgs e)
     {
-        DarkTextBox s = (DarkTextBox)sender;
-        ShowPathError(s, BackupPathInvalid_Settings(s.Text, GameExeTextBoxes));
+        if (sender is not DarkTextBox textBox) return;
+        ShowPathError(textBox, BackupPathInvalid_Settings(textBox.Text, GameExeTextBoxes));
     }
 
     private static string SanitizePathForDialog(string path)
@@ -1864,7 +1864,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return path;
     }
 
-    private void BackupPathBrowseButton_Click(object sender, EventArgs e)
+    private void BackupPathBrowseButton_Click(object? sender, EventArgs e)
     {
         DarkTextBox tb = PathsPage.BackupPathTextBox;
 
@@ -1889,7 +1889,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         return (dialog.ShowDialogDark(this), dialog.FileName);
     }
 
-    private void SteamExeTextBox_TextChanged(object sender, EventArgs e)
+    private void SteamExeTextBox_TextChanged(object? sender, EventArgs e)
     {
         PathsPage.LaunchTheseGamesThroughSteamPanel.Enabled = !PathsPage.SteamExeTextBox.Text.IsWhiteSpace();
     }
@@ -1902,14 +1902,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void LaunchTheseGamesThroughSteamCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         SetUseSteamGameCheckBoxesEnabled(PathsPage.LaunchTheseGamesThroughSteamCheckBox.Checked);
     }
 
     #region Archive paths
 
-    private void AddFMArchivePathButton_Click(object sender, EventArgs e)
+    private void AddFMArchivePathButton_Click(object? sender, EventArgs e)
     {
         using VistaFolderBrowserDialog d = new();
 
@@ -1948,7 +1948,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         CheckForErrors();
     }
 
-    private void RemoveFMArchivePathButton_Click(object sender, EventArgs e)
+    private void RemoveFMArchivePathButton_Click(object? sender, EventArgs e)
     {
         PathsPage.FMArchivePathsListBox.RemoveAndSelectNearest();
         CheckForErrors();
@@ -1960,7 +1960,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Appearance page
 
-    private void LanguageComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private void LanguageComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
 
@@ -2006,7 +2006,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void VisualThemeRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void VisualThemeRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (sender is not DarkRadioButton button) return;
@@ -2030,7 +2030,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void GameOrganizationRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void GameOrganizationRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (sender is not DarkRadioButton { Checked: true }) return;
         AppearancePage.UseShortGameTabNamesCheckBox.Enabled = AppearancePage.OrganizeGamesByTabRadioButton.Checked;
@@ -2038,7 +2038,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Articles
 
-    private void ArticlesCheckBox_CheckedChanged(object sender, EventArgs e) => SetArticlesEnabledState();
+    private void ArticlesCheckBox_CheckedChanged(object? sender, EventArgs e) => SetArticlesEnabledState();
 
     private void SetArticlesEnabledState()
     {
@@ -2046,7 +2046,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         AppearancePage.MoveArticlesToEndCheckBox.Enabled = AppearancePage.EnableIgnoreArticlesCheckBox.Checked;
     }
 
-    private void ArticlesTextBox_Leave(object sender, EventArgs e) => FormatArticles();
+    private void ArticlesTextBox_Leave(object? sender, EventArgs e) => FormatArticles();
 
     private void FormatArticles()
     {
@@ -2081,7 +2081,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Rating display
 
-    private void RatingOutOfTenRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void RatingOutOfTenRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (AppearancePage.RatingNDLDisplayStyleRadioButton.Checked)
@@ -2091,7 +2091,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void RatingOutOfFiveRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void RatingOutOfFiveRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         if (AppearancePage.RatingFMSelDisplayStyleRadioButton.Checked)
@@ -2101,7 +2101,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void RatingUseStarsCheckBox_CheckedChanged(object sender, EventArgs e)
+    private void RatingUseStarsCheckBox_CheckedChanged(object? sender, EventArgs e)
     {
         if (EventsDisabled > 0) return;
         SetRatingImage();
@@ -2182,7 +2182,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         }
     }
 
-    private void DateShortAndLongRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void DateShortAndLongRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         if (sender is not DarkRadioButton { Checked: true }) return;
         AppearancePage.DateCustomFormatPanel.Enabled = false;
@@ -2191,14 +2191,14 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             : _exampleDate.ToLongDateString();
     }
 
-    private void DateCustomRadioButton_CheckedChanged(object sender, EventArgs e)
+    private void DateCustomRadioButton_CheckedChanged(object? sender, EventArgs e)
     {
-        DarkRadioButton s = (DarkRadioButton)sender;
-        AppearancePage.DateCustomFormatPanel.Enabled = s.Checked;
-        if (s.Checked) UpdateCustomExampleDate();
+        if (sender is not DarkRadioButton radioButton) return;
+        AppearancePage.DateCustomFormatPanel.Enabled = radioButton.Checked;
+        if (radioButton.Checked) UpdateCustomExampleDate();
     }
 
-    private void DateCustomValue_Changed(object sender, EventArgs e)
+    private void DateCustomValue_Changed(object? sender, EventArgs e)
     {
         if (AppearancePage.DateCustomFormatPanel.Enabled) UpdateCustomExampleDate();
     }
@@ -2209,7 +2209,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Thief Buddy page
 
-    private async void ThiefBuddyExistenceCheckTimer_Tick(object sender, EventArgs e)
+    private async void ThiefBuddyExistenceCheckTimer_Tick(object? sender, EventArgs e)
     {
         try
         {
@@ -2241,7 +2241,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
             : LText.SettingsWindow.ThiefBuddy_StatusNotInstalled;
     }
 
-    private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    private static void ThiefBuddyPage_GetTBLinkLabel_LinkClicked(object? sender, LinkLabelLinkClickedEventArgs e)
     {
         Core.OpenLink(NonLocalizableText.ThiefBuddyLink);
     }
@@ -2250,7 +2250,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region I/O Threading page
 
-    private void IOThreadsRadioButtons_CheckedChanged(object sender, EventArgs e)
+    private void IOThreadsRadioButtons_CheckedChanged(object? sender, EventArgs e)
     {
         SetIOThreadsState();
     }
@@ -2262,7 +2262,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
         IOThreadingPage.IOThreadsResetButton.Enabled = IOThreadingPage.CustomModeRadioButton.Checked;
     }
 
-    private void IOThreadsResetButton_Click(object sender, EventArgs e)
+    private void IOThreadsResetButton_Click(object? sender, EventArgs e)
     {
         IOThreadingPage.CustomThreadsNumericUpDown.Value = CoreCount;
     }
@@ -2271,7 +2271,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     #region Other page
 
-    private void WebSearchURLResetButtons_Click(object sender, EventArgs e)
+    private void WebSearchURLResetButtons_Click(object? sender, EventArgs e)
     {
         int index = Array.FindIndex(GameWebSearchUrlResetButtons, x => x == sender);
         GameWebSearchUrlTextBoxes[index].Text = Defaults.WebSearchUrls[index];
@@ -2456,7 +2456,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
     private T GetDummy<T>() where T : IDisposable, new()
     {
-        return (T)(_dummyDisposables.TryGetValue(typeof(T), out IDisposable item)
+        return (T)(_dummyDisposables.TryGetValue(typeof(T), out IDisposable? item)
             ? item
             : _dummyDisposables.AddAndReturn(typeof(T), new T()));
     }

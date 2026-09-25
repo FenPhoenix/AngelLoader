@@ -861,7 +861,7 @@ public static class Images
     private static readonly Dictionary<Image, Image> _disabledImages = new(25);
     internal static Image GetDisabledImage(Image image)
     {
-        return _disabledImages.TryGetValue(image, out Image result)
+        return _disabledImages.TryGetValue(image, out Image? result)
             ? result
             : _disabledImages.AddAndReturn(image, ToolStripRenderer.CreateDisabledImage(image));
     }

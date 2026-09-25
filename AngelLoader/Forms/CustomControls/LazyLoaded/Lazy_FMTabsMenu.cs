@@ -59,7 +59,7 @@ internal sealed class Lazy_FMTabsMenu : IDarkable
         }
     }
 
-    private void MenuClosed(object sender, ToolStripDropDownClosedEventArgs e)
+    private void MenuClosed(object? sender, ToolStripDropDownClosedEventArgs e)
     {
         /*
         Fix: OnPaint() has a bizarre bug where if it's drawn one tab with the hot color, then you right-click for

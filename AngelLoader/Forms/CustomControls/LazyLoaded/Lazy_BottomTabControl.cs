@@ -181,9 +181,9 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     public TabPage? DragTab => Constructed ? _tabControl.DragTab : null;
 
-    private void TabControl_Selected(object sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
+    private void TabControl_Selected(object? sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
 
-    private void TabControl_VisibleChanged(object sender, System.EventArgs e)
+    private void TabControl_VisibleChanged(object? sender, System.EventArgs e)
     {
         if (_tabControl is { Visible: true, SelectedTab: Lazy_TabsBase lazyTab } &&
             !_owner.BottomSplitContainer.FullScreen)

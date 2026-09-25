@@ -1080,7 +1080,7 @@ public sealed class Scanner : IDisposable
         (List<ScannedFMDataAndError> scannedFMDataList, ProgressReport progressReport) =
             GetInitialScanData(tempPath, scanOptions, fmsCount, listCapacity);
 
-        while (fms.TryDequeue(out FMToScan fm))
+        while (fms.TryDequeue(out FMToScan? fm))
         {
             ScanFM(
                 scannedFMDataList,
@@ -1295,8 +1295,8 @@ public sealed class Scanner : IDisposable
         }
 
         TDM_ServerFMData? infoFromServer = null;
-        if (_tdmContext.ServerFMData.TryGetValue(FMWorkingPathDirName, out TDM_ServerFMData serverFMData) &&
-            _tdmContext.LocalFMData.TryGetValue(FMWorkingPathDirName, out TDM_LocalFMData localFMData) &&
+        if (_tdmContext.ServerFMData.TryGetValue(FMWorkingPathDirName, out TDM_ServerFMData? serverFMData) &&
+            _tdmContext.LocalFMData.TryGetValue(FMWorkingPathDirName, out TDM_LocalFMData? localFMData) &&
             serverFMData.Version == localFMData.DownloadedVersion)
         {
             infoFromServer = serverFMData;
@@ -1309,7 +1309,7 @@ public sealed class Scanner : IDisposable
         };
 
         if (!Directory.Exists(_fmWorkingPath) &&
-            _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string realPK4))
+            _tdmContext.BaseFMsDirPK4Files.TryGetValue(FMWorkingPathDirName, out string? realPK4))
         {
             if (_tdmContext.FMsPath.IsEmpty())
             {

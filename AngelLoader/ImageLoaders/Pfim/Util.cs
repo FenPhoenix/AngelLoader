@@ -80,7 +80,7 @@ namespace Pfim
         {
             if (stream is MemoryStream s && s.TryGetBuffer(out var arr))
             {
-                Buffer.BlockCopy(arr.Array, (int)s.Position, data, offset, dataLen);
+                Buffer.BlockCopy(arr.Array!, (int)s.Position, data, offset, dataLen);
                 s.Position += dataLen;
             }
             else

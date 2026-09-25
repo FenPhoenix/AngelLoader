@@ -294,7 +294,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         }
     }
 
-    private void ScreenshotsPictureBox_MouseDown(object sender, MouseEventArgs e)
+    private void ScreenshotsPictureBox_MouseDown(object? sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Right)
         {
@@ -302,7 +302,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         }
     }
 
-    internal void CopyMenu_Opening(object sender, CancelEventArgs e)
+    internal void CopyMenu_Opening(object? sender, CancelEventArgs e)
     {
         if (!_constructed || _page.ScreenshotsPictureBox.ShowingErrorImage)
         {
@@ -310,23 +310,23 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         }
     }
 
-    internal void CopyMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    internal void CopyMenu_ItemClicked(object? sender, ToolStripItemClickedEventArgs e)
     {
         // Otherwise it won't hide until after the blocking copy operation is finished
         CopyMenu.Menu.Hide();
         CopyImageToClipboard();
     }
 
-    private void CopyButton_Click(object sender, EventArgs e) => CopyImageToClipboard();
+    private void CopyButton_Click(object? sender, EventArgs e) => CopyImageToClipboard();
 
-    private void OpenScreenshotsFolderButton_Click(object sender, EventArgs e)
+    private void OpenScreenshotsFolderButton_Click(object? sender, EventArgs e)
     {
         Core.OpenFMScreenshotsFolder(_owner.FMsDGV.GetMainSelectedFM(), CurrentScreenshotFileName);
     }
 
-    private void ScreenshotsPrevButton_Click(object sender, EventArgs e) => CycleScreenshot(step: -1);
+    private void ScreenshotsPrevButton_Click(object? sender, EventArgs e) => CycleScreenshot(step: -1);
 
-    private void ScreenshotsNextButton_Click(object sender, EventArgs e) => CycleScreenshot(step: 1);
+    private void ScreenshotsNextButton_Click(object? sender, EventArgs e) => CycleScreenshot(step: 1);
 
     private void CycleScreenshot(int step)
     {
@@ -344,7 +344,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         DisplayCurrentScreenshot();
     }
 
-    private void GammaTrackBar_Scroll(object sender, EventArgs e)
+    private void GammaTrackBar_Scroll(object? sender, EventArgs e)
     {
         Config.ScreenshotGammaPercent = _page.GammaTrackBar.Value;
         _page.ScreenshotsPictureBox.SetGamma(GetGamma());
@@ -373,7 +373,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         return ret;
     }
 
-    private void GammaTrackBar_MouseDown(object sender, MouseEventArgs e)
+    private void GammaTrackBar_MouseDown(object? sender, MouseEventArgs e)
     {
         if ((ModifierKeys & Keys.Control) != 0 && e.Button == MouseButtons.Left)
         {
@@ -381,7 +381,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         }
     }
 
-    private void GammaTrackBar_MouseDoubleClick(object sender, MouseEventArgs e)
+    private void GammaTrackBar_MouseDoubleClick(object? sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
         {
@@ -410,7 +410,7 @@ public sealed class ScreenshotsTabPage : Lazy_TabsBase, IDarkContextMenuOwner
         CopiedMessageFadeoutTimer.Start();
     }
 
-    private void CopiedMessageFadeoutTimer_Tick(object sender, EventArgs e)
+    private void CopiedMessageFadeoutTimer_Tick(object? sender, EventArgs e)
     {
         if (!_constructed) return;
         if (Disposing || _owner.AboutToClose) return;

@@ -29,7 +29,7 @@ namespace Pfim
 
                 for (int i = 0; dataIndex >= 0; i++, dataIndex -= stride)
                 {
-                    Buffer.BlockCopy(arr.Array, (int) (s.Position + i * width), data, dataIndex, width);
+                    Buffer.BlockCopy(arr.Array!, (int) (s.Position + i * width), data, dataIndex, width);
                 }
             }
             else

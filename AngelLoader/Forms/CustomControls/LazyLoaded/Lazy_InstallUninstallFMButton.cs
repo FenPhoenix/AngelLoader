@@ -144,7 +144,7 @@ internal sealed class Lazy_InstallUninstallFMButton : IDarkable
         }
     }
 
-    private void InstallUninstallButton_Paint(object sender, PaintEventArgs e)
+    private void InstallUninstallButton_Paint(object? sender, PaintEventArgs e)
     {
         bool enabled = Button.Enabled;
 

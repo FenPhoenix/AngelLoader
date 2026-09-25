@@ -389,7 +389,7 @@ internal static class Import
                             string dlArchive = lineT.Substring(1, lastIndexDot - 1);
                             string size = lineT.Substring(lastIndexDot + 1, lineT.Length - lastIndexDot - 2);
 
-                            if (!archives.TryGetValue(dlArchive, out string realArchive))
+                            if (!archives.TryGetValue(dlArchive, out string? realArchive))
                             {
                                 continue;
                             }
@@ -969,7 +969,7 @@ internal static class Import
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM))
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
                 {
@@ -1066,7 +1066,7 @@ internal static class Import
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
                 instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())
@@ -1198,7 +1198,7 @@ internal static class Import
 
         foreach (FanMission importedFM in importedFMs)
         {
-            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission mainFM) ||
+            if (archivesDict.TryGetValue(importedFM.Archive, out FanMission? mainFM) ||
                 instDirsDict.TryGetValue(importedFM.InstalledDir, out mainFM))
             {
                 if (fields.Title && !importedFM.Title.IsEmpty())

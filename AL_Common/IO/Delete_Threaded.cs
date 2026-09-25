@@ -191,7 +191,7 @@ public static class Delete_Threaded
 
             Parallel.For(0, threadCount, filesPD.PO, i =>
             {
-                while (filesPD.CQ.TryDequeue(out string fileName))
+                while (filesPD.CQ.TryDequeue(out string? fileName))
                 {
                     if (!Interop.Kernel32.DeleteFile(fileName) && !exceptions.TryPeek(out _))
                     {
@@ -245,7 +245,7 @@ public static class Delete_Threaded
             RemoveDirectoryInternal(directoryEntry.Directory, topLevel: topLevel, allowDirectoryNotEmpty: true);
         }
 
-        if (exceptions.TryPeek(out Exception exception))
+        if (exceptions.TryPeek(out Exception? exception))
         {
             throw exception;
         }

@@ -208,7 +208,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         }
     }
 
-    private void Process_Exited(object sender, EventArgs e)
+    private void Process_Exited(object? sender, EventArgs e)
     {
 #if TESTING
         Trace.WriteLine("Top of Process_Exited");

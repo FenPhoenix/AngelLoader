@@ -12,7 +12,7 @@ public static partial class Common
 
         public FixedLengthByteArrayPool(int length) => _length = length;
 
-        public byte[] Rent() => _items.TryTake(out byte[] item) ? item : new byte[_length];
+        public byte[] Rent() => _items.TryTake(out byte[]? item) ? item : new byte[_length];
 
         public void Return(byte[] item) => _items.Add(item);
     }

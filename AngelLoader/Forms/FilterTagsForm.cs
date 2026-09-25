@@ -154,7 +154,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
         bool isCategory = o.SelectedNode.Parent == null;
         string cat = isCategory ? o.SelectedNode.Text : o.SelectedNode.Parent!.Text;
 
-        if (filteredTags.TryGetValue(cat, out FMTagsCollection tags))
+        if (filteredTags.TryGetValue(cat, out FMTagsCollection? tags))
         {
             if (isCategory)
             {
@@ -202,7 +202,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
         {
             string cat = tv.SelectedNode.Parent.Text;
 
-            if (tags.TryGetValue(cat, out FMTagsCollection tagsList))
+            if (tags.TryGetValue(cat, out FMTagsCollection? tagsList))
             {
                 tagsList.Remove(tv.SelectedNode.Text);
                 if (tagsList.Count == 0)
@@ -258,7 +258,7 @@ public sealed partial class FilterTagsForm : DarkFormBase
                 _ => TagsFilter.NotTags,
             };
 
-            if (filteredTags.TryGetValue(cat, out FMTagsCollection tagsList) &&
+            if (filteredTags.TryGetValue(cat, out FMTagsCollection? tagsList) &&
                 (isCategory || tagsList.Contains(o.SelectedNode.Text) ||
                  (cat == o.SelectedNode.Parent!.Text && tagsList.Count == 0)))
             {

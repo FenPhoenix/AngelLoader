@@ -149,7 +149,7 @@ public sealed class User_FMSel_NDL_ImportControls : UserControlCustom
             : "";
     }
 
-    private void ThiefIniBrowseButtons_Click(object sender, EventArgs e)
+    private void ThiefIniBrowseButtons_Click(object? sender, EventArgs e)
     {
         var gameIniItem = GameIniItems.First(x => x.BrowseButton == sender);
 
@@ -165,16 +165,16 @@ public sealed class User_FMSel_NDL_ImportControls : UserControlCustom
         tb.Text = d.FileName;
     }
 
-    private void AutodetectCheckBoxes_CheckedChanged(object sender, EventArgs e)
+    private void AutodetectCheckBoxes_CheckedChanged(object? sender, EventArgs e)
     {
-        CheckBox s = (CheckBox)sender;
+        if (sender is not CheckBox checkBox) return;
 
         var gameIniItem = GameIniItems.First(x => x.AutodetectCheckBox == sender);
 
-        gameIniItem.TextBox.ReadOnly = s.Checked;
-        gameIniItem.BrowseButton.Enabled = !s.Checked;
+        gameIniItem.TextBox.ReadOnly = checkBox.Checked;
+        gameIniItem.BrowseButton.Enabled = !checkBox.Checked;
 
-        if (s.Checked)
+        if (checkBox.Checked)
         {
             AutodetectGameIni(gameIniItem.GameIndex, gameIniItem.TextBox);
         }

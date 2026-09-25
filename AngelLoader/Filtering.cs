@@ -174,7 +174,7 @@ internal static class Filtering
             bool andPass = true;
             foreach (CatAndTagsList andTag in andTags)
             {
-                if (!fmTags.TryGetValue(andTag.Category, out FMTagsCollection match))
+                if (!fmTags.TryGetValue(andTag.Category, out FMTagsCollection? match))
                 {
                     andPass = false;
                     break;
@@ -210,7 +210,7 @@ internal static class Filtering
             bool orPass = false;
             foreach (CatAndTagsList orTag in orTags)
             {
-                if (!fmTags.TryGetValue(orTag.Category, out FMTagsCollection match))
+                if (!fmTags.TryGetValue(orTag.Category, out FMTagsCollection? match))
                 {
                     continue;
                 }
@@ -249,7 +249,7 @@ internal static class Filtering
             bool notPass = true;
             foreach (CatAndTagsList notTag in notTags)
             {
-                if (!fmTags.TryGetValue(notTag.Category, out FMTagsCollection match))
+                if (!fmTags.TryGetValue(notTag.Category, out FMTagsCollection? match))
                 {
                     continue;
                 }

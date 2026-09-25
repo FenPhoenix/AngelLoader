@@ -538,7 +538,7 @@ internal static class FindFMs
                     string fmDir = finalFilesList[fileIndex];
                     if (TDM.IsValidTdmFM(fmsPath, fmDir))
                     {
-                        if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission dictFM))
+                        if (fmDataIniListTDM_Dict.TryGetValue(fmDir, out FanMission? dictFM))
                         {
                             dictFM.Installed = false;
                             dictFM.DateAdded ??= finalDateTimesList[fileIndex].DateTime;
@@ -673,7 +673,7 @@ internal static class FindFMs
             if (archiveName.IsEmpty()) continue;
 
             // NOTE: I guess this removes duplicates, which is why it has to do the search?
-            if (GetArchivesDict().TryGetValue(archiveName, out FanMission existingFM))
+            if (GetArchivesDict().TryGetValue(archiveName, out FanMission? existingFM))
             {
                 existingFM.InstalledDir = fm.InstalledDir;
                 existingFM.Installed = true;
@@ -755,7 +755,7 @@ internal static class FindFMs
             string archive = item.Key;
 
             // Do the check that doesn't require allocations first
-            if (fmDataIniArchiveDict.TryGetValue(archive, out FanMission fm))
+            if (fmDataIniArchiveDict.TryGetValue(archive, out FanMission? fm))
             {
                 fm.Archive = archive;
                 if (fm.NoArchive)
@@ -807,7 +807,7 @@ internal static class FindFMs
         {
             FanMission gFM = item.Value.FM;
 
-            if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission fm))
+            if (fmDataIniInstDirDict.TryGetValue(gFM.InstalledDir, out FanMission? fm))
             {
                 fm.Game = gFM.Game;
                 fm.Installed = true;

@@ -18,7 +18,7 @@ public sealed partial class ThiefBuddyPage : UserControlCustom, Interfaces.ISett
         ThiefBuddyOptionsGroupBox.PaintCustom += ThiefBuddyOptionsGroupBox_PaintCustom;
     }
 
-    private void ThiefBuddyOptionsGroupBox_PaintCustom(object sender, PaintEventArgs e)
+    private void ThiefBuddyOptionsGroupBox_PaintCustom(object? sender, PaintEventArgs e)
     {
         Images.DrawHorizDiv(e.Graphics, 16, (RunTBPanel.Top + RunThiefBuddyWhenPlayingFMsLabel.Top) - 20, ThiefBuddyOptionsGroupBox.Width - 17);
     }

@@ -172,7 +172,7 @@ public sealed class ScreenshotWatcher(GameIndex gameIndex)
         }
     });
 
-    private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private void Timer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         if (Core.View == null!) return;
         HandleEvent(_timer.FullPath);

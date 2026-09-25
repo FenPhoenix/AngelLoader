@@ -94,7 +94,7 @@ public sealed partial class DataGridViewCustom
             int hitTestType;
             try
             {
-                hitTestType = (int)typeInternal.GetValue(ht);
+                hitTestType = (int)typeInternal.GetValue(ht)!;
             }
             catch
             {

@@ -146,7 +146,7 @@ public sealed class StreamReaderCustom
         if (encodingCruftEnabled)
         {
             _decoders ??= new Dictionary<Encoding, Decoder>(_knownEncodingCount);
-            _decoder = _decoders.TryGetValue(encoding, out Decoder decoder)
+            _decoder = _decoders.TryGetValue(encoding, out Decoder? decoder)
                 ? decoder
                 : _decoders.AddAndReturn(encoding, encoding.GetDecoder());
 
@@ -158,12 +158,12 @@ public sealed class StreamReaderCustom
                 { 514, new char[514] },
                 { 1027, new char[1027] },
             };
-            _charBuffer = _charBuffers.TryGetValue(_maxCharsPerBuffer, out char[] maxCharsBuffer)
+            _charBuffer = _charBuffers.TryGetValue(_maxCharsPerBuffer, out char[]? maxCharsBuffer)
                 ? maxCharsBuffer
                 : _charBuffers.AddAndReturn(_maxCharsPerBuffer, new char[_maxCharsPerBuffer]);
 
             _perEncodingPreambles ??= new Dictionary<Encoding, byte[]>(_knownEncodingCount);
-            _preamble = _perEncodingPreambles.TryGetValue(encoding, out byte[] preamble)
+            _preamble = _perEncodingPreambles.TryGetValue(encoding, out byte[]? preamble)
                 ? preamble
                 : _perEncodingPreambles.AddAndReturn(encoding, encoding.GetPreamble());
         }

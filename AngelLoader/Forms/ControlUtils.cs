@@ -526,7 +526,7 @@ internal static class ControlUtils
                 NativeWindow? nw = NativeWindow.FromHandle(handle);
                 if (nw == null || nw.GetType() != _toolTipNativeWindowClass) continue;
 
-                _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolTipNativeWindowControlField.GetValue(nw), null);
+                _toolTipRecreateHandleMethod.Invoke((ToolTip)_toolTipNativeWindowControlField.GetValue(nw)!, null);
             }
         }
         catch (Exception ex)

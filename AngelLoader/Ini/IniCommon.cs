@@ -750,7 +750,7 @@ internal static partial class Ini
                 continue;
             }
 
-            if (existingTags.TryGetValue(cat, out FMTagsCollection tagsList))
+            if (existingTags.TryGetValue(cat, out FMTagsCollection? tagsList))
             {
                 if (!tag.IsEmpty()) tagsList.Add(tag);
             }

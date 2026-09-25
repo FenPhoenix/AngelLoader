@@ -11,7 +11,7 @@ public static class DarkColors
 
     public static SolidBrush GetCachedSolidBrush(Color color)
     {
-        return _solidBrushCache.TryGetValue(color, out SolidBrush result)
+        return _solidBrushCache.TryGetValue(color, out SolidBrush? result)
             ? result
             : _solidBrushCache.AddAndReturn(color, new SolidBrush(color));
     }
@@ -20,7 +20,7 @@ public static class DarkColors
 
     public static Pen GetCachedDefaultWidthPen(Color color)
     {
-        return _defaultWidthPenCache.TryGetValue(color, out Pen result)
+        return _defaultWidthPenCache.TryGetValue(color, out Pen? result)
             ? result
             : _defaultWidthPenCache.AddAndReturn(color, new Pen(color));
     }
@@ -29,7 +29,7 @@ public static class DarkColors
 
     public static Pen GetCached16WidthPen(Color color)
     {
-        return _16WidthPenCache.TryGetValue(color, out Pen result)
+        return _16WidthPenCache.TryGetValue(color, out Pen? result)
             ? result
             : _16WidthPenCache.AddAndReturn(color, new Pen(color, 1.6f));
     }

@@ -296,7 +296,7 @@ public static class AppUpdate
     {
         try
         {
-            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
+            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version? appVersion))
             {
                 return CheckUpdateResult.NoUpdateAvailable;
             }
@@ -377,7 +377,7 @@ public static class AppUpdate
 
             List<UpdateInfoInternal> versions = new();
 
-            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version appVersion))
+            if (!Version.TryParse(Core.ViewEnv.ProductVersion, out Version? appVersion))
             {
                 return (UpdateDetailsDownloadResult.Error, ret);
             }

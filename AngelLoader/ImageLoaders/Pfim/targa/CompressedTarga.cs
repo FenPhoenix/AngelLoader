@@ -17,7 +17,7 @@ namespace Pfim
             int bytesPerPixel = header.PixelDepthBytes;
 
             fixed (byte* startDataPtr = data)
-            fixed (byte* fixedInputPtr = &arr.Array[arrPosition])
+            fixed (byte* fixedInputPtr = &arr.Array![arrPosition])
             {
                 byte* endSentinal = startDataPtr + dataLen;
                 byte* dataPtr = endSentinal - stride;

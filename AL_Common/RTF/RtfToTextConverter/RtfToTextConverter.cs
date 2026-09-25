@@ -3482,7 +3482,7 @@ public sealed partial class RtfToTextConverter
         if (numIsHex)
         {
             ReadOnlySpan<char> span = new(_fldinstSymbolNumber, 0, fldinstSymbolNumberCount);
-            if (!ushort.TryParse(span.ToString(),
+            if (!ushort.TryParse(span,
                     NumberStyles.HexNumber,
                     NumberFormatInfo.InvariantInfo,
                     out param))

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace AngelLoader.DataClasses;
@@ -105,7 +106,7 @@ public sealed class FMCategoriesCollection : IEnumerable<CatAndTagsList>
         }
     }
 
-    public bool TryGetValue(string key, out FMTagsCollection value)
+    public bool TryGetValue(string key, [NotNullWhen(true)] out FMTagsCollection? value)
     {
         return _dict.TryGetValue(key, out value);
     }

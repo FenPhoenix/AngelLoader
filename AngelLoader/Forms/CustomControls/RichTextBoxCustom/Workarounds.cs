@@ -230,7 +230,7 @@ internal sealed partial class RichTextBoxCustom
         }
     }
 
-    private void AutoScrollTimer_Tick(object sender, EventArgs e)
+    private void AutoScrollTimer_Tick(object? sender, EventArgs e)
     {
         if (_scrollIncrementY != 0) BetterScroll(Handle, _scrollIncrementY);
     }

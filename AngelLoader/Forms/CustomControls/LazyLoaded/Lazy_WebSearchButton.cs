@@ -96,5 +96,5 @@ internal sealed class Lazy_WebSearchButton : IDarkable
         }
     }
 
-    private void WebSearchButton_Paint(object sender, PaintEventArgs e) => Images.PaintWebSearchButton(Button, e);
+    private void WebSearchButton_Paint(object? sender, PaintEventArgs e) => Images.PaintWebSearchButton(Button, e);
 }
