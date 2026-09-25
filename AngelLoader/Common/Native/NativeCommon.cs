@@ -25,6 +25,7 @@ internal static partial class NativeCommon
 
     private const int ERROR_INSUFFICIENT_BUFFER = 0x7A;
 
+    // From .NET 8
     internal static unsafe string? GetProcessPath(int processId)
     {
         using SafeProcessHandle handle = OpenProcess(QUERY_LIMITED_INFORMATION, false, processId);

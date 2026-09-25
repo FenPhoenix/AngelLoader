@@ -22,15 +22,6 @@ NOTE(Core notes):
 
  We're reading output from ffprobe.exe and 7z.exe. We're only pulling out ascii strings, so we're fine with all
  the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
-
--@NET5(Tiered/quick-jit):
- We need to keep the tiering/quick-jit crap turned on or else our startup time regresses to significantly slower
- than Framework.
- But if we really need a method to jit fast the first time, we can use this attribute on it:
- [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-
- If we're eventually able to go full AOT (waiting on WinForms), presumably this whole frustrating pile of perf
- heartaches will be gone for good and everything will just be blazing instantly. We'll see.
 */
 using System;
 using System.Buffers;
