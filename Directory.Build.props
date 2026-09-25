@@ -3,4 +3,21 @@
 		<SolutionTargetFramework>net472</SolutionTargetFramework>
 		<SmartNewColumnInsert></SmartNewColumnInsert>
 	</PropertyGroup>
+	<PropertyGroup>
+		<MeziantouPolyfill_IncludedPolyfills_Source>
+			T:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
+			P:System.Runtime.CompilerServices.CallerArgumentExpressionAttribute.ParameterName;
+			T:System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
+			T:System.Diagnostics.CodeAnalysis.MaybeNullAttribute;
+			T:System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute;
+			T:System.Diagnostics.CodeAnalysis.MemberNotNullAttribute;
+			T:System.Diagnostics.CodeAnalysis.MemberNotNullWhenAttribute;
+			T:System.Diagnostics.CodeAnalysis.NotNullAttribute;
+			T:System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute;
+			T:System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
+			T:System.Index;
+			T:System.Range;
+			M:System.UInt16.TryParse(System.ReadOnlySpan{System.Char},System.Globalization.NumberStyles,System.IFormatProvider,System.UInt16@);
+		</MeziantouPolyfill_IncludedPolyfills_Source>
+	</PropertyGroup>
 </Project>

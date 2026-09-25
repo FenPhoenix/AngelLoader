@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
-    <PackageReference Include="PolySharp" Version="1.16.0">
+    <PackageReference Include="Meziantou.Polyfill" Version="1.0.165">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -45,6 +45,12 @@
     <PackageReference Include="System.Memory" Version="4.6.3" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.12" />
   </ItemGroup>
+
+	<PropertyGroup>
+		<MeziantouPolyfill_IncludedPolyfills>
+			$(MeziantouPolyfill_IncludedPolyfills_Source)
+		</MeziantouPolyfill_IncludedPolyfills>
+	</PropertyGroup>
 
   <ItemGroup>
     <Reference Include="System.Net.Http" />

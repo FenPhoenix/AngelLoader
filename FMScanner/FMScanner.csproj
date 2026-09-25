@@ -96,7 +96,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
-    <PackageReference Include="PolySharp" Version="1.16.0">
+    <PackageReference Include="Meziantou.Polyfill" Version="1.0.165">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -105,7 +105,13 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.12" />
   </ItemGroup>
 
-  <ItemGroup>
+	<PropertyGroup>
+		<MeziantouPolyfill_IncludedPolyfills>
+			$(MeziantouPolyfill_IncludedPolyfills_Source)
+		</MeziantouPolyfill_IncludedPolyfills>
+	</PropertyGroup>
+
+	<ItemGroup>
     <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
     <ProjectReference Include="..\SharpCompress\SharpCompress.csproj" />
     <ProjectReference Include="..\Ude\Ude.NetStandard.csproj" />
