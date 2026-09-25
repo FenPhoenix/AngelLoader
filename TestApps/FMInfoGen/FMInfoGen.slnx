@@ -1,0 +1,47 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="DebugFullTest" />
+    <BuildType Name="DebugRTFTest" />
+    <BuildType Name="DebugTesting" />
+    <BuildType Name="Release" />
+    <BuildType Name="ReleaseFullTest" />
+    <BuildType Name="ReleaseRTFTest" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="../../AL_Common/AL_Common.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="Debug" />
+    <BuildType Solution="DebugRTFTest|*" Project="Debug" />
+    <BuildType Solution="DebugTesting|*" Project="Debug" />
+    <BuildType Solution="ReleaseFullTest|*" Project="Release" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="../../FMScanner/FMScanner.csproj">
+    <BuildType Solution="DebugTesting|*" Project="DebugRTFTest" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="../../SharpCompress/SharpCompress.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="Debug" />
+    <BuildType Solution="DebugRTFTest|*" Project="Debug" />
+    <BuildType Solution="DebugTesting|*" Project="Debug" />
+    <BuildType Solution="ReleaseFullTest|*" Project="Release" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="../../Ude/Ude.NetStandard.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="Debug" />
+    <BuildType Solution="DebugRTFTest|*" Project="Debug" />
+    <BuildType Solution="DebugTesting|*" Project="Debug" />
+    <BuildType Solution="ReleaseFullTest|*" Project="Release" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="FMInfoGen/FMInfoGen.csproj">
+    <BuildType Solution="DebugFullTest|*" Project="DebugTesting" />
+    <BuildType Solution="DebugRTFTest|*" Project="DebugTesting" />
+    <BuildType Solution="ReleaseFullTest|*" Project="Release" />
+    <BuildType Solution="ReleaseRTFTest|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+</Solution>

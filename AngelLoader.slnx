@@ -1,0 +1,119 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Debug_UIWork" />
+    <BuildType Name="Release" />
+    <BuildType Name="Release_Beta" />
+    <BuildType Name="Release_Public" />
+    <BuildType Name="Release_Testing" />
+    <BuildType Name="Release_Testing_NoAsserts" />
+    <BuildType Name="RT_HeavyTests" />
+    <BuildType Name="RT_StartupOnly" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="AL_Common/AL_Common.csproj">
+    <BuildDependency Project="FenGen/FenGen.csproj" />
+    <BuildType Solution="Debug_UIWork|*" Project="Debug" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="AngelLoader/AngelLoader.csproj">
+    <BuildDependency Project="AngelLoader_Stub/AngelLoader_Stub.vcxproj" />
+    <BuildDependency Project="FenGen/FenGen.csproj" />
+    <BuildType Solution="RT_HeavyTests|x64" Project="Release_Testing" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="AngelLoader_Stub/AngelLoader_Stub.vcxproj" Id="3cc81750-4ae0-4cea-b69e-85f226244d8f">
+    <BuildDependency Project="FenGen/FenGen.csproj" />
+    <BuildType Solution="Debug_UIWork|Any CPU" Project="Debug" />
+    <BuildType Solution="Debug_UIWork|x64" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Release" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+    <Platform Project="Win32" />
+  </Project>
+  <Project Path="FenGen/FenGen.csproj">
+    <BuildType Solution="Debug_UIWork|Any CPU" Project="Debug" />
+    <BuildType Solution="Debug_UIWork|x64" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Release" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="FMScanner/FMScanner.csproj">
+    <BuildDependency Project="FenGen/FenGen.csproj" />
+    <BuildType Solution="Debug_UIWork|Any CPU" Project="Debug" />
+    <BuildType Solution="Debug_UIWork|x64" Project="Release" />
+    <BuildType Solution="Debug|x64" Project="Release" />
+    <BuildType Solution="Release_Beta|Any CPU" Project="ReleaseRTFTest" />
+    <BuildType Solution="Release_Beta|x64" Project="Release" />
+    <BuildType Solution="Release_Public|Any CPU" Project="ReleaseRTFTest" />
+    <BuildType Solution="Release_Public|x64" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|Any CPU" Project="ReleaseFullTest" />
+    <BuildType Solution="Release_Testing_NoAsserts|x64" Project="Release" />
+    <BuildType Solution="Release_Testing|Any CPU" Project="ReleaseFullTest" />
+    <BuildType Solution="Release_Testing|x64" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|Any CPU" Project="ReleaseRTFTest" />
+    <BuildType Solution="RT_HeavyTests|x64" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|Any CPU" Project="ReleaseRTFTest" />
+    <BuildType Solution="RT_StartupOnly|x64" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="HPCsharp/HPCsharp.csproj">
+    <BuildType Solution="Debug_UIWork|*" Project="Debug" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Debug" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Debug" />
+  </Project>
+  <Project Path="SharpCompress/SharpCompress.csproj">
+    <BuildType Solution="Debug_UIWork|*" Project="Debug" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Ude/Ude.NetStandard.csproj">
+    <BuildType Solution="Debug_UIWork|*" Project="Debug" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+    <Platform Project="x64" />
+  </Project>
+  <Project Path="Update/Update.csproj">
+    <BuildDependency Project="FenGen/FenGen.csproj" />
+    <BuildType Solution="Debug_UIWork|*" Project="Debug" />
+    <BuildType Solution="Release_Beta|*" Project="Release" />
+    <BuildType Solution="Release_Public|*" Project="Release" />
+    <BuildType Solution="Release_Testing_NoAsserts|*" Project="Release" />
+    <BuildType Solution="Release_Testing|*" Project="Release" />
+    <BuildType Solution="RT_HeavyTests|*" Project="Release" />
+    <BuildType Solution="RT_StartupOnly|*" Project="Release" />
+  </Project>
+</Solution>
