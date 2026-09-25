@@ -6,35 +6,6 @@
 #define ND128_GAME_HINT
 
 /*
-@NET5/@MEM(Scanner readme line splitting):
-We could just get the full text and then allocate an array of int pairs for start and length of each line,
-then just use that when we need to go line-by-line. It's still an array allocation per readme, but it should
-be far less memory allocated than to essentially duplicate the entire readme in separate line form as we do now.
-
-2023-11-19:
-Implemented ReadOnlyMemory/ReadOnlySpan for readmes in a branch, but didn't get any perf improvement.
-We save 30MB in string allocs, but then we get 12MB of ReadOnlyMemory allocs.
-
-Before:
-Type                   Allocations   Bytes          Average Size (Bytes)
-string                 | 2,008,301   | 170,450,930  | 84.87
-
-After:
-Type                   Allocations   Bytes          Average Size (Bytes)
-string                 | 1,792,302   | 140,483,233  | 78.38
-ReadOnlyMemory<char>[] | 15,174      | 11,709,920   | 771.71
-
-How is a ReadOnlyMemory 771 bytes anyway?!
-
-We were caching ReadOnlyMemory objects in the readme lines list, for two reasons. First, so we didn't have to
-search the text for linebreaks constantly every time through (which is a lot), and second, because we need to
-be able to get the positions in the underlying string for Regex.Match(), and only Memory/ReadOnlyMemory can
-provide that, spans can't. So meh. We're more likely to gain perf by getting rid of the zip filename strings,
-as those are the large majority of the string allocs. But we're already pretty blazing fast and it's getting
-hard to get much of a gain even from alloc reductions. Meh.
-
-@RAR(Scanner): The rar stuff here is a total mess! It works, but we should clean it up...
-
 @BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
 
 @BLOCKS_NOTE: Could SharpCompress (full) allow us to stream 7z entries to memory?

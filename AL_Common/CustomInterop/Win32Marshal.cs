@@ -34,28 +34,28 @@ internal static class Win32Marshal
         {
             case Interop.Errors.ERROR_FILE_NOT_FOUND:
                 return new FileNotFoundException(
-                    string.IsNullOrEmpty(path) ? SR.FileNotFound : string.Format(SR.FileNotFound_FileName, path), path);
+                    path.IsEmpty() ? SR.FileNotFound : string.Format(SR.FileNotFound_FileName, path), path);
             case Interop.Errors.ERROR_PATH_NOT_FOUND:
                 return new DirectoryNotFoundException(
-                    string.IsNullOrEmpty(path) ? SR.PathNotFound_NoPathName : string.Format(SR.PathNotFound_Path, path));
+                    path.IsEmpty() ? SR.PathNotFound_NoPathName : string.Format(SR.PathNotFound_Path, path));
             case Interop.Errors.ERROR_ACCESS_DENIED:
                 return new UnauthorizedAccessException(
-                    string.IsNullOrEmpty(path) ? SR.UnauthorizedAccess_IODenied_NoPathName : string.Format(SR.UnauthorizedAccess_IODenied_Path, path));
+                    path.IsEmpty() ? SR.UnauthorizedAccess_IODenied_NoPathName : string.Format(SR.UnauthorizedAccess_IODenied_Path, path));
             case Interop.Errors.ERROR_ALREADY_EXISTS:
-                if (string.IsNullOrEmpty(path))
+                if (path.IsEmpty())
                 {
                     goto default;
                 }
                 return new IOException(string.Format(SR.IO_AlreadyExists_Name, path), MakeHRFromErrorCode(errorCode));
             case Interop.Errors.ERROR_FILENAME_EXCED_RANGE:
                 return new PathTooLongException(
-                    string.IsNullOrEmpty(path) ? SR.PathTooLong : string.Format(SR.PathTooLong_Path, path));
+                    path.IsEmpty() ? SR.PathTooLong : string.Format(SR.PathTooLong_Path, path));
             case Interop.Errors.ERROR_SHARING_VIOLATION:
                 return new IOException(
-                    string.IsNullOrEmpty(path) ? SR.IO_SharingViolation_NoFileName : string.Format(SR.IO_SharingViolation_File, path),
+                    path.IsEmpty() ? SR.IO_SharingViolation_NoFileName : string.Format(SR.IO_SharingViolation_File, path),
                     MakeHRFromErrorCode(errorCode));
             case Interop.Errors.ERROR_FILE_EXISTS:
-                if (string.IsNullOrEmpty(path))
+                if (path.IsEmpty())
                 {
                     goto default;
                 }
@@ -66,11 +66,11 @@ internal static class Win32Marshal
 
             default:
                 string msg = GetPInvokeErrorMessage(errorCode);
-                if (!string.IsNullOrEmpty(path))
+                if (!path.IsEmpty())
                 {
                     msg += $" : '{path}'.";
                 }
-                if (!string.IsNullOrEmpty(errorDetails))
+                if (!errorDetails.IsEmpty())
                 {
                     msg += $" {errorDetails}";
                 }
