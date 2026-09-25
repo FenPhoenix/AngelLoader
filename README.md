@@ -47,7 +47,7 @@ If you did want to use the **64-bit** version of AngelLoader, a few more steps a
   Alternatively, if you have access to an actual Windows 10/11 install, you can grab the dll from `C:\Windows\System32\msls31.dll` and copy it over.
 
 ## Building
-- Use Visual Studio 2022, .NET Framework 4.7.2 targeting, also going to need the C++ workload installed.
+- Use Visual Studio 2026, .NET Framework 4.7.2 targeting, also going to need the C++ workload installed.
 - Use Release_Public for the standard AngelLoader build.
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
 
