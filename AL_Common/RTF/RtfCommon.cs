@@ -21,9 +21,15 @@ public static class RtfCommon
 
     public const int KeywordParseMaxRequiredBytes =
         KeywordMaxLen + 1 + // +1 to read one beyond for length checking purposes
-        1 + // Minus sign
+        1 +                 // Minus sign
+        ParamMaxLen + 1 +   // +1 to read one beyond for length checking purposes
+        1;                  // Space at end
+
+    public const int KeywordVector128ParseMaxRequiredBytes =
+        16 +              // Vector128<byte>.Count (no need for +1 for this codepath)
+        1 +               // Minus sign
         ParamMaxLen + 1 + // +1 to read one beyond for length checking purposes
-        1; // Space at end
+        1;                // Space at end
 
     // "\bin"
     public const int BinLength = 4;
