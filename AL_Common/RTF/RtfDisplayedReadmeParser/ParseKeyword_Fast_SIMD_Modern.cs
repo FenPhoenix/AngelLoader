@@ -138,6 +138,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
         // We handle 1-length before we get here, so know we're at least 2.
         // NOTE: This logic is optimized to do the same thing as the gperf generated code, but more efficiently.
+        // This logic has to match the logic in the regular non-vectorized version.
         key += asso_values[Unsafe.AddByteOffset(ref keywordRef, len - 1)];
         if (len > 2) key += asso_values[Unsafe.AddByteOffset(ref keywordRef, 2)];
         key += asso_values[Unsafe.AddByteOffset(ref keywordRef, 0)];
