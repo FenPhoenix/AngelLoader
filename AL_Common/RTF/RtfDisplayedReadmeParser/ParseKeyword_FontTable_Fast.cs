@@ -47,10 +47,8 @@ public sealed partial class RtfDisplayedReadmeParser
                 accumulatedPos += 1;
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
             }
-            bool hasParam = false;
             if (char.IsAsciiDigit(ch))
             {
-                hasParam = true;
                 long longParam = ch - '0';
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + 1);
 
@@ -119,7 +117,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             fontTableKeyword = symbol.KeywordType;
             return fontTableKeyword < KeywordType.F
-                ? DispatchKeyword(ref bufferRef, symbol, param, hasParam)
+                ? DispatchKeyword(ref bufferRef, symbol, param)
                 : RtfError.OK;
         }
     }

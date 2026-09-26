@@ -593,7 +593,7 @@ public sealed partial class RtfDisplayedReadmeParser
     #region Act on keywords
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private RtfError DispatchKeyword(ref byte bufferRef, Symbol symbol, int param, bool hasParam)
+    private RtfError DispatchKeyword(ref byte bufferRef, Symbol symbol, int param)
     {
         if (!GroupStack_CurrentSkipDest)
         {

@@ -95,7 +95,7 @@ public sealed class FormsViewEnvironment : IViewEnvironment
         }
     }
 
-    private bool PreprocessReadme_Internal(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
+    private static bool PreprocessReadme_Internal(ConfigData config, ListFast<FanMission> fmsViewList, ListFast<FanMission> fmsViewListUnscanned)
     {
         SelectedFM selFM = config.GameOrganization == GameOrganization.OneList
             ? config.SelFM

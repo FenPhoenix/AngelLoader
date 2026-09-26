@@ -59,11 +59,9 @@ public sealed partial class RtfDisplayedReadmeParser
                 accumulatedPos += 1;
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos);
             }
-            bool hasParam = false;
             int param = 0;
             if (char.IsAsciiDigit(ch))
             {
-                hasParam = true;
                 long longParam = ch - '0';
                 ch = (char)GetByteAtPos(ref bufferRef, accumulatedPos + 1);
 
@@ -97,7 +95,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 {
                     symbol = _fontSymbol;
                     _skipDestinationIfUnknown = false;
-                    return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
+                    return DispatchKeyword(ref bufferRef, symbol, param);
                 }
                 else
                 {
@@ -122,7 +120,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
             _skipDestinationIfUnknown = false;
 
-            return DispatchKeyword(ref bufferRef, symbol, param, hasParam);
+            return DispatchKeyword(ref bufferRef, symbol, param);
         }
     }
 

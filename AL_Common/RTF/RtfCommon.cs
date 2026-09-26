@@ -119,7 +119,6 @@ public static class RtfCommon
     public static readonly Vector512<byte> OpenBraceVector512 = Vector512.Create((byte)'{');
     public static readonly Vector512<byte> ClosingBraceVector512 = Vector512.Create((byte)'}');
     public static readonly Vector512<byte> n_Vector512 = Vector512.Create((byte)'n');
-    public static readonly Vector512<byte> SemicolonVector512 = Vector512.Create((byte)';');
     // CreateSequence() was introduced in .NET 9, so since we support 8, we need to do it manually for now.
     public static readonly Vector512<byte> IndexVec_512 = Vector512.Create(
         (byte)
@@ -136,7 +135,6 @@ public static class RtfCommon
     public static readonly Vector256<byte> OpenBraceVector256 = Vector256.Create((byte)'{');
     public static readonly Vector256<byte> ClosingBraceVector256 = Vector256.Create((byte)'}');
     public static readonly Vector256<byte> n_Vector256 = Vector256.Create((byte)'n');
-    public static readonly Vector256<byte> SemicolonVector256 = Vector256.Create((byte)';');
     public static readonly Vector256<byte> IndexVec_256 = Vector256.Create(
         (byte)
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -150,7 +148,6 @@ public static class RtfCommon
     public static readonly Vector128<byte> OpenBraceVector128 = Vector128.Create((byte)'{');
     public static readonly Vector128<byte> ClosingBraceVector128 = Vector128.Create((byte)'}');
     public static readonly Vector128<byte> n_Vector128 = Vector128.Create((byte)'n');
-    public static readonly Vector128<byte> SemicolonVector128 = Vector128.Create((byte)';');
     public static readonly Vector128<byte> IndexVec_128 = Vector128.Create(
         (byte)
         0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
