@@ -65,23 +65,13 @@ public sealed class ColumnData
 {
     public Column Id;
 
-#if SMART_NEW_COLUMN_INSERT
-    // Don't clamp this anymore because it messes with our validator; let the validator handle it
-    internal int DisplayIndex;
-#else
     private int _displayIndex;
     public int DisplayIndex { get => _displayIndex; set => _displayIndex = value.Clamp(0, ColumnCount - 1); }
-#endif
 
     private int _width = Defaults.ColumnWidth;
     public int Width { get => _width; set => _width = value.Clamp(Defaults.MinColumnWidth, 65536); }
 
     public bool Visible = true;
-
-#if SMART_NEW_COLUMN_INSERT
-    // Needed for the validator to sort new columns with the same column index as old ones in the intended way
-    public bool ExplicitlySet;
-#endif
 }
 
 public sealed class ColumnDataArray
@@ -129,16 +119,6 @@ public sealed class ColumnDataArray
         }
         return ret;
     }
-
-#if SMART_NEW_COLUMN_INSERT
-    public ColumnDataArray Sorted(IComparer<ColumnData> comparer)
-    {
-        ColumnDataArray ret = new();
-        CopyTo(ret);
-        Array.Sort(ret._columns, comparer);
-        return ret;
-    }
-#endif
 
     public void CopyTo(ColumnDataArray dest) => Array.Copy(_columns, dest._columns, ColumnCount);
 }

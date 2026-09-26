@@ -407,10 +407,6 @@ internal static partial class Ini
         valTrimmed = valTrimmed.Trim(',');
 
         ColumnData col = config.Columns[(int)columnType];
-#if SMART_NEW_COLUMN_INSERT
-        col.ExplicitlySet = true;
-#endif
-
         int i = 0;
         foreach (ReadOnlySpan<char> part in ReadOnlySpanExtensions.Split(valTrimmed, ','))
         {
@@ -569,10 +565,6 @@ internal static partial class Ini
         I dunno, but there's the theory...
         */
 
-#if SMART_NEW_COLUMN_INSERT
-        EnsureColumnsValid(config);
-#endif
-
         #region Date format
 
         static string GetFormattedDateString(ConfigData config) =>
@@ -629,118 +621,6 @@ internal static partial class Ini
         // So we should make it a custom type like the cat and tags classes
         // Because we want it to self-dedupe, but also to keep its ordering
         config.FMArchivePaths.ClearAndAdd(config.FMArchivePaths.Distinct(CachedPathComparer).ToArray());
-
-#if SMART_NEW_COLUMN_INSERT
-
-        return;
-
-        static void EnsureColumnsValid(ConfigData config)
-        {
-#if TESTING_COLUMN_VALIDATOR
-            System.Diagnostics.Trace.WriteLine("---------- INITIAL:");
-
-            for (int i = 0; i < ColumnCount; i++)
-            {
-                ColumnData column = config.Columns[i];
-                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
-            }
-            System.Diagnostics.Trace.WriteLine("---------- END INITIAL");
-#endif
-
-            HashSet<int> displayIndexesHash = new(ColumnCount);
-            foreach (ColumnData column in config.Columns)
-            {
-                displayIndexesHash.Add(column.DisplayIndex);
-            }
-
-            int[] displayIndexesArray = displayIndexesHash.ToArray();
-            Array.Sort(displayIndexesArray);
-
-#if TESTING_COLUMN_VALIDATOR
-            for (int i = 0; i < displayIndexesArray.Length; i++)
-            {
-                System.Diagnostics.Trace.WriteLine(displayIndexesArray[i]);
-            }
-#endif
-
-            if (!ColumnDisplayIndexesValid(displayIndexesArray))
-            {
-                Utils.ResetColumnDisplayIndexes(config.Columns);
-                return;
-            }
-
-            displayIndexesHash.Clear();
-
-            ColumnDataArray sortedColumns = config.Columns.Sorted(new Comparers.ValidatorColumnComparer());
-
-            restart:
-            for (int index = 0; index < ColumnCount; index++)
-            {
-                ColumnData column = sortedColumns[index];
-#if TESTING_COLUMN_VALIDATOR
-                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
-#endif
-                if (!displayIndexesHash.Add(column.DisplayIndex))
-                {
-#if TESTING_COLUMN_VALIDATOR
-                    System.Diagnostics.Trace.WriteLine("----------");
-#endif
-#if true
-                    column.DisplayIndex++;
-#else
-                    for (int subIndex = ColumnCount - 1; subIndex >= index; subIndex--)
-                    {
-                        ColumnData subColumn = sortedColumns[subIndex];
-#if TESTING_COLUMN_VALIDATOR
-                        System.Diagnostics.Trace.WriteLine(subColumn.ExplicitlySet);
-#endif
-                        subColumn.DisplayIndex++;
-                    }
-#endif
-                    displayIndexesHash.Clear();
-                    goto restart;
-                }
-            }
-
-            foreach (ColumnData column in config.Columns)
-            {
-                if (column.DisplayIndex is < 0 or > ColumnCount - 1)
-                {
-                    Utils.ResetColumnDisplayIndexes(config.Columns);
-                    return;
-                }
-            }
-
-#if TESTING_COLUMN_VALIDATOR
-            System.Diagnostics.Trace.WriteLine("---------- FINAL:");
-
-            for (int i = 0; i < ColumnCount; i++)
-            {
-                ColumnData column = config.Columns[i];
-                System.Diagnostics.Trace.WriteLine(column.Id + ", " + column.DisplayIndex);
-            }
-#endif
-
-            return;
-
-            static bool ColumnDisplayIndexesValid(int[] displayIndexes)
-            {
-#if true
-                return true;
-#endif
-
-                for (int i = 0; i < displayIndexes.Length; i++)
-                {
-                    if (displayIndexes[i] != i)
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-
-#endif
     }
 
     #endregion
