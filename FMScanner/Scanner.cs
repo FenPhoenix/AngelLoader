@@ -635,7 +635,7 @@ public sealed class Scanner : IDisposable
         internal void SetLines(string[] lines)
         {
             Lines.ClearFast();
-            Lines.AddRange_Large(lines);
+            Lines.AddRange(lines);
             /*
             Quick-n-dirty way to support multi-line authors (or any other line-after-next checks) without having
             to explicitly account for if the block is at the end of the file (no more lines after it).

@@ -307,7 +307,7 @@ internal static class RtfProcessing
             (maxColorEntryStringLength * colorTable?.Count ?? 0)
             + 2);
 
-        colorEntriesBytesList.AddRange_Large(_colortbl);
+        colorEntriesBytesList.AddRange(_colortbl);
 
         if (colorTable != null)
         {
@@ -344,14 +344,14 @@ internal static class RtfProcessing
                     }
                 }
 
-                colorEntriesBytesList.AddRange_Large(_redFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.R));
+                colorEntriesBytesList.AddRange(_redFieldBytes);
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.R));
 
-                colorEntriesBytesList.AddRange_Large(_greenFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.G));
+                colorEntriesBytesList.AddRange(_greenFieldBytes);
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.G));
 
-                colorEntriesBytesList.AddRange_Large(_blueFieldBytes);
-                colorEntriesBytesList.AddRange_Large(ByteToASCIICharBytes(invertedColor.B));
+                colorEntriesBytesList.AddRange(_blueFieldBytes);
+                colorEntriesBytesList.AddRange(ByteToASCIICharBytes(invertedColor.B));
 
                 colorEntriesBytesList.Add((byte)';');
             }
