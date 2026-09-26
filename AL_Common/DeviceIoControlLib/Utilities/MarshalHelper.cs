@@ -6,7 +6,7 @@ internal static class MarshalHelper
 {
     public static T ToStructure<T>(this nint ptr)
     {
-        return Marshal.PtrToStructure<T>(ptr);
+        return Marshal.PtrToStructure<T>(ptr)!;
     }
 
     public static uint SizeOf<T>()
