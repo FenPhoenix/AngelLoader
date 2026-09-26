@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using static AngelLoader.Utils;
 
 namespace AngelLoader;
 

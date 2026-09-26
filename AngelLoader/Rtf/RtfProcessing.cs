@@ -131,7 +131,7 @@ internal static class RtfProcessing
 
         if (success && codePageItems?.Count > 0)
         {
-            extraCpgCombinedLength = (RtfDisplayedReadmeParser.FontNameSuffixCodePageLength) * codePageItems.Count;
+            extraCpgCombinedLength = RtfDisplayedReadmeParser.FontNameSuffixCodePageLength * codePageItems.Count;
         }
 
         byte[] retBytes;

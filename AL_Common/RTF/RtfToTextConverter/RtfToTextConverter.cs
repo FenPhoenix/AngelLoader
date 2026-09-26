@@ -2287,12 +2287,6 @@ public sealed partial class RtfToTextConverter
         return RtfError.OK;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool ShouldUseSimdFontNameCodePath()
-    {
-        return System.Numerics.Vector.IsHardwareAccelerated && VectorLengthFitsInAByte;
-    }
-
     private (SymbolFont SymbolFont, ushort CodePage)
     GetSymbolFontAndCodePageOverride_Scalar(ref byte bufferRef, char ch, int symbolFontNameCountStart = 0)
     {

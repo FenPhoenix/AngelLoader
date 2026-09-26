@@ -17,7 +17,7 @@ public sealed partial class RtfToTextConverter
     */
     private
 #if true
-        static 
+        static
 #endif
         readonly Dictionary<ushort, char[]> _sbcsToUtf16Dict = new()
     {

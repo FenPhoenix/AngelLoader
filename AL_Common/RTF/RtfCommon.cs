@@ -112,8 +112,7 @@ public static class RtfCommon
     public static readonly Vector<byte> OpenBraceVector = new((byte)'{');
     public static readonly Vector<byte> ClosingBraceVector = new((byte)'}');
     public static readonly Vector<byte> n_Vector = new((byte)'n');
-    public static readonly Vector<byte> SemicolonVector = new((byte)';');
-
+    
     public const ulong XorPowerOfTwoToHighByte = (0x07ul |
                                                    0x06ul << 8 |
                                                    0x05ul << 16 |
