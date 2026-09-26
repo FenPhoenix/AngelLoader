@@ -613,7 +613,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             }
                             else
                             {
-                                _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                                _currentPos = IndexOfNextClosingBrace();
                                 return RtfError.OK;
                             }
                         case DestinationType.Skip:
@@ -640,7 +640,7 @@ public sealed partial class RtfDisplayedReadmeParser
                         }
                         else
                         {
-                            _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                            _currentPos = IndexOfNextClosingBrace();
                         }
                     }
                     return RtfError.OK;
@@ -689,7 +689,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 }
                 else
                 {
-                    _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                    _currentPos = IndexOfNextClosingBrace();
                 }
                 break;
         }
@@ -711,7 +711,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     #region Fast skipping
 
-    private int IndexOfNextClosingBrace_ChunkAware()
+    private int IndexOfNextClosingBrace()
     {
         int foundIndex = Array.IndexOf(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
         return foundIndex > -1 ? foundIndex : _rtfBytesLength;
@@ -755,7 +755,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 default:
                     if (_groupStackTopIndex == startGroupLevel)
                     {
-                        _currentPos = IndexOfNextClosingBrace_ChunkAware();
+                        _currentPos = IndexOfNextClosingBrace();
                     }
                     break;
             }
@@ -791,9 +791,10 @@ public sealed partial class RtfDisplayedReadmeParser
             /*
             Curly braces can be escaped like \{ and \}. But there can be an arbitrary amount of backslashes
             before a curly brace, because it could be a series of escaped backslashes and then an escaped
-            curly brace: \\\\\\\}. Which means if we encountered one, we'd have to read an arbitrary amount
-            back in the stream, which we can't do. So if we don't find the end of our subgroup stack in the
-            current buffer chunk, just give up and take the slow path that properly parses escapes.
+            curly brace: \\\\\\\}.
+
+            We don't use streams or buffer chunks in this version, but keep the logic because it works and does
+            no harm.
             */
             if (index <= 0 ||
                 index >= _rtfBytesLength ||
