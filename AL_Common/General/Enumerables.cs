@@ -91,31 +91,7 @@ public static partial class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddRange(ListFast<T> items)
-        {
-            EnsureCapacity(Count + items.Count);
-            // We usually add small enough arrays that a loop is faster
-            for (int i = 0; i < items.Count; i++)
-            {
-                ItemsArray[Count + i] = items[i];
-            }
-            Count += items.Count;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddRange(ListFast<T> items, int count)
-        {
-            EnsureCapacity(Count + count);
-            // We usually add small enough arrays that a loop is faster
-            for (int i = 0; i < count; i++)
-            {
-                ItemsArray[Count + i] = items[i];
-            }
-            Count += count;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddRange_Large(T[] items)
+        public void AddRange(T[] items)
         {
             int length = items.Length;
             EnsureCapacity(Count + length);
@@ -124,12 +100,20 @@ public static partial class Common
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddRange_Large(ListFast<T> items)
+        public void AddRange(ListFast<T> items)
         {
             int length = items.Count;
             EnsureCapacity(Count + length);
             Array.Copy(items.ItemsArray, 0, ItemsArray, Count, length);
             Count += length;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void AddRange(ListFast<T> items, int count)
+        {
+            EnsureCapacity(Count + count);
+            Array.Copy(items.ItemsArray, 0, ItemsArray, Count, count);
+            Count += count;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -139,7 +123,7 @@ public static partial class Common
         public void ClearFullAndAdd(T[] items)
         {
             ClearFull();
-            AddRange_Large(items);
+            AddRange(items);
         }
 
         public void TrimExcess()
