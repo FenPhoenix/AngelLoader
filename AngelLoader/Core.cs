@@ -1265,9 +1265,11 @@ internal static class Core
 #if ENABLE_README_TESTS
     internal static async void SafeReadmeIdenticalityTest()
     {
+        string prevConfigLanguage = Config.Language;
+
         using (StreamWriter sw = new(@"C:\readme_test_old.txt"))
         {
-            List<string> langs = Config.LanguageNames.Keys.ToList();
+            List<string> langs = SupportedLanguages.ToList();
             langs.Sort(StringComparer.Ordinal);
 
             foreach (string lang in langs)
@@ -1280,8 +1282,9 @@ internal static class Core
                     await sw.WriteLineAsync(safeReadme);
                 }
             }
-            Config.Language = "English";
         }
+
+        Config.Language = prevConfigLanguage;
     }
 
     internal static async Task ReadmeEncodingIdenticalityTest()
