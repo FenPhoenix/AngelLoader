@@ -49,23 +49,6 @@ public static partial class Logger
 
     #endregion
 
-    private static void ClearLogFile()
-    {
-        lock (_lock)
-        {
-            if (_logFile.IsEmpty()) return;
-
-            try
-            {
-                File.Delete(_logFile);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-        }
-    }
-
     /// <summary>
     /// A faster version without locking or unnecessary options for running on startup.
     /// </summary>
@@ -101,7 +84,17 @@ public static partial class Logger
             {
                 try
                 {
-                    if (GetFileLength(_logFile) > ByteSize.MB * 50) ClearLogFile();
+                    if (GetFileLength(_logFile) > ByteSize.MB * 50)
+                    {
+                        try
+                        {
+                            File.Delete(_logFile);
+                        }
+                        catch (Exception deleteLogFileEx)
+                        {
+                            Debug.WriteLine(deleteLogFileEx);
+                        }
+                    }
                 }
                 catch
                 {
