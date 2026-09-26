@@ -1,7 +1,6 @@
 <Project>
 	<PropertyGroup>
 		<SolutionTargetFramework>net472</SolutionTargetFramework>
-		<SmartNewColumnInsert></SmartNewColumnInsert>
 	</PropertyGroup>
 	<PropertyGroup>
 		<MeziantouPolyfill_IncludedPolyfills_Source>
