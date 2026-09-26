@@ -4890,7 +4890,7 @@ public sealed class Scanner : IDisposable
 
     /*
     The new "Mission Game" parameter ("Dark Mission Description" in DromEd) is the 30th byte after DARKMISS*, and
-    is a new byte that doesn't exist in <1.27. 0x1 = Any, 0x2 = Thief 1, 0x3 = Thief 2.
+    is a new byte that doesn't exist in versions prior to 1.28. 0x1 = Any, 0x2 = Thief 1, 0x3 = Thief 2.
     SS2 (ShockEd) doesn't have the "Dark Mission Description" mission variable, and SS2 .mis files don't have the
     DARKMISS block, so it appears that SS2 doesn't write out any game descriptor value.
 
