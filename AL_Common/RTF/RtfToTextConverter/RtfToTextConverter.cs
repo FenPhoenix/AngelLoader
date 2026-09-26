@@ -3962,7 +3962,7 @@ public sealed partial class RtfToTextConverter
     {
         while (!_reachedEndOfStream)
         {
-            int foundIndex = RTF_Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
+            int foundIndex = Array_IndexOfByte_Fast(_buffer, (byte)'}', _currentPos, _currentBufferChunkLength - _currentPos);
             if (foundIndex > -1)
             {
                 return foundIndex;

@@ -700,7 +700,7 @@ public sealed partial class RtfDisplayedReadmeParser
 
     private int IndexOfNextClosingBrace_ChunkAware()
     {
-        int foundIndex = RTF_Array_IndexOfByte_Fast(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
+        int foundIndex = Array_IndexOfByte_Fast(_rtfBytes, (byte)'}', _currentPos, _rtfBytesLength - _currentPos);
         return foundIndex > -1 ? foundIndex : _rtfBytesLength;
     }
 
