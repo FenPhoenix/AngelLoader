@@ -6,7 +6,7 @@ namespace AL_Common;
 
 public static partial class Common
 {
-    // Meziantou.Polyfill's versions are less efficient (ie. > '0' && <'9' etc.) at the time of writing.
+    // Meziantou.Polyfill's versions are less efficient (ie. > '0' && < '9' etc.) at the time of writing.
     extension(char)
     {
         /// <summary>
