@@ -2013,45 +2013,9 @@ public sealed partial class MainForm : DarkFormBase,
         {
             if (!startup) EverythingPanel.SuspendDrawing();
 
-#if false
-            bool CreateHandlePredicate(Control x) =>
-                x == BottomPanel ||
-                (!TopSplitContainer.FullScreen && x == TopSplitContainer);
-#else
-            /*
-             @PERF_TODO(Startup window drawn state completeness/speed tradeoff):
-            Now that we have two tab areas, the old logic in here was weird and removing it doesn't seem to cause
-            any issues, so... let's just leave it out for now?
-
-            OLD COMMENT:
-            Use this for a more conservative visual ux. With this method, the window shows all bg color
-            and then refreshes all at once, but is slower. With the faster method above, the window shows
-            in a mostly-but-not-quite-fully-drawn state, but if you have window animations on (which is
-            the default and probably almost everyone does), you don't really have time to see it.
-            So meh, it's a toss-up.
-            Also, I think the faster method above may not actually be any faster to usability, but may
-            just be faster to _something_ being displayed, so it _appears_ that the app "loads faster".
-            */
-            static bool CreateHandlePredicate(Control x)
-            {
-                return true;
-#if false
-                return !TopSplitContainer.FullScreen ||
-                       (
-                           //x != TopSplitContainer &&
-                           //x != TopSplitContainer.Panel2 &&
-                           x != TopFMTabControl &&
-                           !_fmTabPages.Contains(x)
-                       );
-#endif
-            }
-#endif
-
             if (startup && !darkMode)
             {
-                ControlUtils.CreateAllControlsHandles(
-                    control: this,
-                    createHandlePredicate: CreateHandlePredicate);
+                ControlUtils.CreateAllControlsHandles(this);
             }
             else
             {
@@ -2063,7 +2027,6 @@ public sealed partial class MainForm : DarkFormBase,
                             (ProgressBox?.Controls.Contains(xControl) == true))
                         || x is SplitterPanel,
                     createControlHandles: createControlHandles,
-                    createHandlePredicate: CreateHandlePredicate,
                     capacity: 150
                 );
             }

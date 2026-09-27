@@ -71,7 +71,6 @@ public
         VisualTheme theme,
         Func<Component, bool>? excludePredicate = null,
         bool createControlHandles = false,
-        Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
         if (WinVersion.SupportsDarkMode)
@@ -99,7 +98,6 @@ public
             theme: theme,
             excludePredicate: excludePredicate,
             createControlHandles: createControlHandles,
-            createHandlePredicate: createHandlePredicate,
             capacity: capacity);
     }
 
