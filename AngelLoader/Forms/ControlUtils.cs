@@ -715,8 +715,7 @@ internal static class ControlUtils
     private static void FillControlColorList(
         Control control,
         List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
-        bool createControlHandles,
-        Func<Control, bool>? createHandlePredicate = null
+        bool createControlHandles
 #if !ReleasePublic && !NoAsserts
         , int stackCounter = 0
 #endif
@@ -735,7 +734,6 @@ internal static class ControlUtils
         }
 
         if (createControlHandles &&
-            createHandlePredicate?.Invoke(control) != false &&
             !control.IsHandleCreated)
         {
             _ = control.Handle;
@@ -765,8 +763,7 @@ internal static class ControlUtils
                 FillControlColorList(
                     control: backingPage,
                     controlColors: controlColors,
-                    createControlHandles: createControlHandles,
-                    createHandlePredicate: createHandlePredicate
+                    createControlHandles: createControlHandles
 #if !ReleasePublic && !NoAsserts
                     , stackCounter: stackCounter
 #endif
@@ -782,8 +779,7 @@ internal static class ControlUtils
                 FillControlColorList(
                     control: controls[i],
                     controlColors: controlColors,
-                    createControlHandles: createControlHandles,
-                    createHandlePredicate: createHandlePredicate
+                    createControlHandles: createControlHandles
 #if !ReleasePublic && !NoAsserts
                     , stackCounter: stackCounter
 #endif
@@ -792,13 +788,12 @@ internal static class ControlUtils
         }
     }
 
-    internal static void CreateAllControlsHandles(Control control, Func<Control, bool> createHandlePredicate)
+    internal static void CreateAllControlsHandles(Control control)
     {
         FillControlColorList(
             control: control,
             controlColors: null,
-            createControlHandles: true,
-            createHandlePredicate: createHandlePredicate);
+            createControlHandles: true);
     }
 
     internal static void SetTheme(
@@ -807,7 +802,6 @@ internal static class ControlUtils
         VisualTheme theme,
         Func<Component, bool>? excludePredicate = null,
         bool createControlHandles = false,
-        Func<Control, bool>? createHandlePredicate = null,
         int capacity = -1)
     {
         bool darkMode = theme == VisualTheme.Dark;
@@ -820,8 +814,7 @@ internal static class ControlUtils
             FillControlColorList(
                 control: baseControl,
                 controlColors: (List<KeyValuePair<Control, ControlOriginalColors?>>?)controlColors,
-                createControlHandles: createControlHandles,
-                createHandlePredicate: createHandlePredicate);
+                createControlHandles: createControlHandles);
         }
 
         foreach (var item in controlColors)
