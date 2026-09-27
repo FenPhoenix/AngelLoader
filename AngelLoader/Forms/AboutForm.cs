@@ -25,11 +25,18 @@ public sealed partial class AboutForm : DarkFormBase
         int initialTopPosition = AngelLoaderUsesLabel.Bottom + 16;
         int y = initialTopPosition;
         int tabIndex = 6;
-        for (int i = 0; i < NonLocalizableText.DependenciesCount; i++, y += 16, tabIndex++)
+
+        int depCount = NonLocalizableText.DependenciesCount;
+        for (int i = 0; i < depCount; i++, y += 16, tabIndex++)
         {
             if (i == 8)
             {
-                x = 232;
+                x = depCount <= 16 ? 232 : 200;
+                y = initialTopPosition;
+            }
+            else if (i == 16)
+            {
+                x = 368;
                 y = initialTopPosition;
             }
 
