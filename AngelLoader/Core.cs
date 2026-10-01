@@ -24,7 +24,6 @@ NOTE(Core notes):
  the Windows and DOS codepages (125x, 437 etc.) but we should see if we can switch to UTF8 and have it still work.
 */
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -40,6 +39,7 @@ using HPCsharp;
 #endif
 using JetBrains.Annotations;
 using Microsoft.Win32;
+using Microsoft.Win32.SafeHandles;
 using static AL_Common.LanguageSupport;
 using static AL_Common.Logger;
 using static AngelLoader.GameSupport;
@@ -1254,32 +1254,24 @@ internal static class Core
         }
 
         // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
-        byte[] buffer = ArrayPool<byte>.Shared.Rent(FileStreamBufferSize);
-        try
+        using SafeFileHandle fileHandle = File.OpenHandle(readmeOnDisk);
         {
-            using (var fs = GetReadModeFileStreamWithCachedBuffer(readmeOnDisk, buffer))
+            int headerLen = RTFHeaderBytes.Length;
+            long fileLength = RandomAccess.GetLength(fileHandle);
+            // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
+            // end up with an "unable to load readme" error.
+            if (fileLength >= headerLen)
             {
-                int headerLen = RTFHeaderBytes.Length;
-                // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
-                // end up with an "unable to load readme" error.
-                if (fs.Length >= headerLen)
+                Span<byte> header = stackalloc byte[headerLen];
+                int bytesRead = RandomAccess.Read(fileHandle, header, 0);
+                if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
                 {
-                    Span<byte> header = stackalloc byte[headerLen];
-                    int bytesRead = fs.ReadAll(header);
-
-                    if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
-                    {
-                        return (readmeOnDisk, ReadmeType.RichText);
-                    }
+                    return (readmeOnDisk, ReadmeType.RichText);
                 }
             }
+        }
 
-            return (readmeOnDisk, ReadmeType.PlainText);
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(buffer);
-        }
+        return (readmeOnDisk, ReadmeType.PlainText);
     }
 
 #if ENABLE_README_TESTS
