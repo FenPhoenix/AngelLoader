@@ -107,6 +107,11 @@ public sealed class AL_SafeFileHandle : SafeHandleZeroOrMinusOneIsInvalid
         return Open(fullPath, mode, access, share, options, 0);
     }
 
+    public static AL_SafeFileHandle OpenRead(string fullPath)
+    {
+        return Open(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read, FileOptions.None, 0);
+    }
+
     public static AL_SafeFileHandle Open(string fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, long preallocationSize)
     {
         using (DisableMediaInsertionPrompt.Create())

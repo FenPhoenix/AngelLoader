@@ -1242,16 +1242,16 @@ internal static class Core
         }
 
         // This might throw, but all calls to this method are supposed to be wrapped in a try-catch block
-        using (FileStream_Read_WithRentedBuffer fs = new(readmeOnDisk))
+        using AL_SafeFileHandle fileHandle = AL_SafeFileHandle.OpenRead(readmeOnDisk);
         {
             int headerLen = RTFHeaderBytes.Length;
+            long fileLength = RandomAccess.GetLength(fileHandle);
             // Fix: In theory, the readme could be less than headerLen bytes long and then we would throw and
             // end up with an "unable to load readme" error.
-            if (fs.FileStream.Length >= headerLen)
+            if (fileLength >= headerLen)
             {
-                // This method can run in a thread now, so let's just allocate this locally and not be stupid
-                byte[] header = new byte[headerLen];
-                int bytesRead = fs.FileStream.ReadAll(header, 0, headerLen);
+                Span<byte> header = stackalloc byte[headerLen];
+                int bytesRead = RandomAccess.Read(fileHandle, header, 0);
                 if (bytesRead >= headerLen && header.SequenceEqual(RTFHeaderBytes))
                 {
                     return (readmeOnDisk, ReadmeType.RichText);

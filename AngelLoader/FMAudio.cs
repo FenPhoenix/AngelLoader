@@ -343,12 +343,7 @@ internal static class FMAudio
                 const uint JUNK = 0x4B4E554A; // "JUNK"
                 const uint fmt_ = 0x20746D66; // "fmt "
 
-                using AL_SafeFileHandle fileHandle = AL_SafeFileHandle.Open(
-                    file,
-                    FileMode.Open,
-                    FileAccess.Read,
-                    FileShare.Read,
-                    FileOptions.None);
+                using AL_SafeFileHandle fileHandle = AL_SafeFileHandle.OpenRead(file);
                 long fileLength = RandomAccess.GetLength(fileHandle);
                 if (fileLength < buffer.Length) return -1;
 
