@@ -180,8 +180,6 @@ public sealed partial class RtfDisplayedReadmeParser
     {
         // Avoid bounds checks by passing a buffer reference everywhere. We do our own bounds checking.
         ref byte bufferRef = ref MemoryMarshal.GetArrayDataReference(_rtfBytes);
-        ref bool isNonPlainTextCharRef = ref MemoryMarshal.GetReference(IsNonPlainText);
-        ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(IsIgnoreChar);
 
         while (_currentPos < _rtfBytesLength)
         {
@@ -206,7 +204,7 @@ public sealed partial class RtfDisplayedReadmeParser
                 // skip it.
                 default:
                 {
-                    if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
+                    if (!IsIgnoreChar[ch] &&
                         !GroupStack_CurrentSkipDest)
                     {
                         // No measurable perf loss from this, and it lets us avoid duplicating the loop body.
@@ -214,7 +212,7 @@ public sealed partial class RtfDisplayedReadmeParser
                             ? GetByteAtPos(ref bufferRef, _currentPos)
                             : GetByte(_currentPos));
 
-                        if (!Unsafe.AddByteOffset(ref isNonPlainTextCharRef, (nint)currentChar))
+                        if (!IsNonPlainText[currentChar])
                         {
                             HandlePlainTextRun(ref bufferRef);
                         }

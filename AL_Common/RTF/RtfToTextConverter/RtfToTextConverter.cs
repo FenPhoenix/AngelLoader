@@ -2187,8 +2187,6 @@ public sealed partial class RtfToTextConverter
     {
         // Avoid bounds checks by passing a buffer reference everywhere. We do our own bounds checking.
         ref byte bufferRef = ref MemoryMarshal.GetArrayDataReference(_buffer);
-        ref bool isNonPlainTextCharRef = ref MemoryMarshal.GetReference(IsNonPlainText);
-        ref bool isIgnoreCharRef = ref MemoryMarshal.GetReference(IsIgnoreChar);
 
         while (!_reachedEndOfStream)
         {
@@ -2213,7 +2211,7 @@ public sealed partial class RtfToTextConverter
                         break;
                     default:
                     {
-                        if (!Unsafe.AddByteOffset(ref isIgnoreCharRef, (nint)ch) &&
+                        if (!IsIgnoreChar[ch] &&
                             !GroupStack_CurrentSkipDest &&
                             !GroupStack_CurrentPropertyHidden)
                         {
@@ -2222,7 +2220,7 @@ public sealed partial class RtfToTextConverter
                                 ? GetByteAtPos(ref bufferRef, _currentPos)
                                 : GetByte(_currentPos));
 
-                            if (Unsafe.AddByteOffset(ref isNonPlainTextCharRef, (nint)currentChar))
+                            if (IsNonPlainText[currentChar])
                             {
                                 SymbolFont symbolFont = GroupStack_CurrentSymbolFont;
                                 if (symbolFont > SymbolFont.None)
