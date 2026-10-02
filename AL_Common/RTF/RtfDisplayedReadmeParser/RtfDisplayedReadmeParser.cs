@@ -980,7 +980,7 @@ public sealed partial class RtfDisplayedReadmeParser
     private const int MAX_HASH_VALUE = 170;
     /* maximum key range = 152, duplicates = 0 */
 
-    private static ReadOnlySpan<ushort> asso_values =>
+    private static ReadOnlySpan<byte> asso_values =>
     [
         171, 171, 171, 171, 171, 171, 171, 171, 171, 171,
         171, 171, 171, 171, 171, 171, 171, 171, 171, 171,
