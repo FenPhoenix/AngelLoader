@@ -626,6 +626,8 @@ public static partial class Common
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool ExtIsPk4(this string value) => value.EndsWithI_Ascii(".pk4");
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ExtIsDll(this string value) => value.EndsWithI_Ascii(".dll");
 
     #endregion
 
