@@ -61,12 +61,15 @@ internal sealed partial class RichTextBoxCustom
             Lazy_RTFBoxMenu.DarkModeEnabled = value;
             // Perf: Don't load readme twice on startup, and don't load it again if we're on HTML or no FM
             // selected or whatever
-            if (Visible) RefreshDarkModeState(preProcessedRtf: null, skipSuspend: false);
-
-            if (Visible && !Enabled)
+            if (Visible)
             {
-                _changedThemeWhileDisabled = true;
-                Native.EnableWindow(new HandleRef(this, Handle), _darkModeEnabled);
+                RefreshDarkModeState(preProcessedRtf: null, skipSuspend: false);
+
+                if (!Enabled)
+                {
+                    _changedThemeWhileDisabled = true;
+                    Native.EnableWindow(new HandleRef(this, Handle), _darkModeEnabled);
+                }
             }
         }
     }
