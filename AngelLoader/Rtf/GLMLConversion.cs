@@ -8,29 +8,48 @@ namespace AngelLoader;
 
 internal static class GLMLConversion
 {
+    private static string GetRtfColorTableEntry(RtfColor color) =>
+        @"\red" + color.R.ToStrInv() +
+        @"\green" + color.G.ToStrInv() +
+        @"\blue" + color.B.ToStrInv() +
+        ";";
+
+    private static readonly string _colorTableLight = @"{\colortbl " +
+        ";" + // First entry blank to say the system default foreground color, which will normally be plain black
+        GetRtfColorTableEntry(DarkColors.GLMLRed_Light_Rtf) + "}";
+
+    private static readonly string _colorTableDark = @"{\colortbl " +
+        GetRtfColorTableEntry(DarkColors.Fen_DarkForeground_Rtf) +
+        GetRtfColorTableEntry(DarkColors.GLMLRed_Dark_Rtf) + "}";
+
+    private const string _rtfHeaderFirst =
+        // RTF identifier
+        @"{\rtf1" +
+        // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
+        @"\ansi\ansicpg1252" +
+        // Fonts (use a pleasant sans-serif)
+        @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial{\*\falt Calibri};}}";
+
+    private const string _rtfHeaderLast =
+        // \viewkind4 = normal, \uc1 = 1 char Unicode fallback (don't worry about it), \f0 = use font 0,
+        // \cf0 = use color 0 as the foreground color
+        @"\viewkind4\uc1\f0\cf0 ";
+
+    private static readonly string _rtfHeaderLight =
+        _rtfHeaderFirst +
+        _colorTableLight +
+        _rtfHeaderLast;
+
+    private static readonly string _rtfHeaderDark =
+        _rtfHeaderFirst +
+        _colorTableDark +
+        _rtfHeaderLast;
+
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     [SuppressMessage("ReSharper", "CommentTypo")]
     internal static string GLMLToRTF(string glml, bool darkMode)
     {
-        string colorTable = @"{\colortbl ";
-        colorTable = darkMode
-            ? AddColorToTable(colorTable, DarkColors.Fen_DarkForeground_Rtf)
-            : colorTable + ";";
-        colorTable = AddColorToTable(colorTable, darkMode ? DarkColors.GLMLRed_Dark_Rtf : DarkColors.GLMLRed_Light_Rtf);
-        colorTable += "}";
-
-        string rtfHeader =
-            // RTF identifier
-            @"{\rtf1" +
-            // Character encoding (not sure if this matters since we're escaping all non-ASCII chars anyway)
-            @"\ansi\ansicpg1252" +
-            // Fonts (use a pleasant sans-serif)
-            @"\deff0{\fonttbl{\f0\fswiss\fcharset0 Arial{\*\falt Calibri};}}" +
-            // Set up red color and dark mode text colors
-            colorTable +
-            // \viewkind4 = normal, \uc1 = 1 char Unicode fallback (don't worry about it), \f0 = use font 0,
-            // \cf0 = use color 0 as the foreground color
-            @"\viewkind4\uc1\f0" + (darkMode ? @"\cf0 " : " ");
+        string rtfHeader = darkMode ? _rtfHeaderDark : _rtfHeaderLight;
 
         string horizontalLine = RtfProcessing.GetThemedHorizontalLine(darkMode);
 
@@ -292,11 +311,5 @@ internal static class GLMLConversion
 
         return sb.ToString();
 
-        static string AddColorToTable(string table, RtfColor color) =>
-            table +
-            @"\red" + color.R.ToStrInv() +
-            @"\green" + color.G.ToStrInv() +
-            @"\blue" + color.B.ToStrInv() +
-            ";";
     }
 }
