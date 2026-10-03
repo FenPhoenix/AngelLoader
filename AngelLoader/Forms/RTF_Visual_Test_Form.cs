@@ -10,7 +10,6 @@ using System.Text;
 using System.Windows.Forms;
 using AngelLoader.DataClasses;
 using AngelLoader.Forms.WinFormsNative;
-using static AL_Common.Common;
 using static AngelLoader.Global;
 using static AngelLoader.Misc;
 
@@ -77,7 +76,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
 
         List<string> rtfFiles = Directory
             .GetFiles(FMsCacheDir, "*", SearchOption.AllDirectories)
-            .Where(static x => x.EndsWithI(".rtf") || x.EndsWithI(".txt")).ToList();
+            .Where(static x => x.ExtIsRtf() || x.ExtIsTxt()).ToList();
 
         byte[] rtfHeaderBuffer = new byte[RTFHeaderBytes.Length];
 

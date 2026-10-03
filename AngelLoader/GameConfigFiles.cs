@@ -588,7 +588,7 @@ internal static class GameConfigFiles
                 {
                     string selectorFileName;
                     return line.StartsWithIPlusWhiteSpace(key_fm_selector) &&
-                           (selectorFileName = line.Substring(key_fm_selector.Length + 1)).EndsWithI(".dll") &&
+                           (selectorFileName = line.Substring(key_fm_selector.Length + 1)).ExtIsDll() &&
                            !selectorFileName.PathEqualsI(stubPath) &&
                            !GetFullPath(gamePath, selectorFileName).IsEmpty() &&
                            File.Exists(Path.Combine(gamePath, selectorFileName))
@@ -637,7 +637,7 @@ internal static class GameConfigFiles
 
                 string selectorFileName;
                 if (lt.StartsWithIPlusWhiteSpace(key_fm_selector) &&
-                    (selectorFileName = lt.Substring(key_fm_selector.Length + 1)).EndsWithI(".dll"))
+                    (selectorFileName = lt.Substring(key_fm_selector.Length + 1)).ExtIsDll())
                 {
                     if (!tempSelectorsList.PathContainsI(selectorFileName)) tempSelectorsList.Add(selectorFileName);
                 }
