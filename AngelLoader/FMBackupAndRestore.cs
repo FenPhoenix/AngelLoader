@@ -497,6 +497,10 @@ internal static partial class FMInstallAndPlay
     {
         // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
         ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
+        // TODO: IMPORTANT: Unintentional implicit conversion from DateTime to DateTimeOffset!
+        // Should be:
+        //entry.LastWriteTime = new DateTimeOffset(new FileInfo(fileNameOnDisk).LastWriteTime);
+        // But we need to diff test it before changing it!
         entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
         using FileStream_Read_WithRentedBuffer fs = new(fileNameOnDisk);
         using Stream eo = entry.Open();
