@@ -495,7 +495,7 @@ internal static partial class FMInstallAndPlay
     {
         // @DIRSEP: Converting to '/' because it will be a zip archive name and '/' is to spec
         ZipArchiveEntry entry = archive.CreateEntry(entryFileName.ToForwardSlashes(), CompressionLevel.Fastest);
-        entry.LastWriteTime = new FileInfo(fileNameOnDisk).LastWriteTime;
+        entry.LastWriteTime = new DateTimeOffset(new FileInfo(fileNameOnDisk).LastWriteTime);
         using FileStream_Read_WithRentedBuffer fs = new(fileNameOnDisk);
         using Stream eo = entry.Open();
         fs.FileStream.CopyTo(eo);
