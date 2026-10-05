@@ -847,7 +847,6 @@ internal static class Import
                         else if (lineFM.TryGetValueO("Finished=", out value))
                         {
                             UInt_TryParseInv(value, out uint result);
-
                             // result will be 0 on fail, which is the empty value so it's fine
                             fm.FinishedOn = result;
                         }
