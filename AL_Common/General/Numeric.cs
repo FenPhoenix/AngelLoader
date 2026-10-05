@@ -98,6 +98,19 @@ public static partial class Common
         return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
 
+    /// <summary>
+    /// Calls <see langword="ulong"/>.TryParse(<paramref name="s"/>, <see cref="NumberStyles.Integer"/>, <see cref="NumberFormatInfo.InvariantInfo"/>, out <see langword="ulong"/> <paramref name="result"/>);
+    /// </summary>
+    /// <param name="s">A string representing a number to convert.</param>
+    /// <param name="result"></param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <returns><see langword="true"/> if <paramref name="s"/> was converted successfully; otherwise, <see langword="false"/>.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool ULong_TryParseInv(string s, out ulong result)
+    {
+        return ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+    }
+
     #endregion
 
     #region Round up to power of 2

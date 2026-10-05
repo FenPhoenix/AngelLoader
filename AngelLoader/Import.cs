@@ -396,7 +396,7 @@ internal static class Import
 
                             realArchive += ".zip";
 
-                            ulong.TryParse(size, out ulong sizeBytes);
+                            ULong_TryParseInv(size, out ulong sizeBytes);
                             FanMission fm = new()
                             {
                                 Archive = realArchive,
@@ -434,7 +434,7 @@ internal static class Import
                                 }
                                 else if (lts.TryGetValueO("misdate=", out value))
                                 {
-                                    ulong.TryParse(value, out ulong result);
+                                    ULong_TryParseInv(value, out ulong result);
                                     try
                                     {
                                         DateTime date = new DateTime(1899, 12, 30).AddDays(result);
@@ -447,7 +447,7 @@ internal static class Import
                                 }
                                 else if (lts.TryGetValueO("date=", out value))
                                 {
-                                    ulong.TryParse(value, out ulong result);
+                                    ULong_TryParseInv(value, out ulong result);
                                     try
                                     {
                                         DateTime date = new DateTime(1899, 12, 30).AddDays(result);
@@ -460,7 +460,7 @@ internal static class Import
                                 }
                                 else if (lts.TryGetValueO("finished=", out value))
                                 {
-                                    uint.TryParse(value, out uint result);
+                                    UInt_TryParseInv(value, out uint result);
                                     // result will be 0 on fail, which is the empty value so it's fine
                                     fm.FinishedOn = result;
                                 }
@@ -654,14 +654,14 @@ internal static class Import
                         }
                         else if (lineFM.TryGetValueO("Completed=", out value))
                         {
-                            int.TryParse(value, out int result);
+                            Int_TryParseInv(value, out int result);
                             // Unfortunately FMSel doesn't let you choose the difficulty you finished on, so
                             // we have to have this fallback value as a best-effort thing.
                             if (result > 0) fm.FinishedOnUnknown = true;
                         }
                         else if (lineFM.TryGetValueO("Rating=", out value))
                         {
-                            fm.Rating = int.TryParse(value, out int result) ? result : -1;
+                            fm.Rating = Int_TryParseInv(value, out int result) ? result : -1;
                         }
                         else if (lineFM.TryGetValueO("Notes=", out value))
                         {
@@ -846,13 +846,14 @@ internal static class Import
                         }
                         else if (lineFM.TryGetValueO("Finished=", out value))
                         {
-                            uint.TryParse(value, out uint result);
+                            UInt_TryParseInv(value, out uint result);
+
                             // result will be 0 on fail, which is the empty value so it's fine
                             fm.FinishedOn = result;
                         }
                         else if (lineFM.TryGetValueO("Rating=", out value))
                         {
-                            fm.Rating = int.TryParse(value, out int result) ? result : -1;
+                            fm.Rating = Int_TryParseInv(value, out int result) ? result : -1;
                         }
                         else if (lineFM.TryGetValueO("Comment=", out value))
                         {
@@ -872,7 +873,7 @@ internal static class Import
                         }
                         else if (lineFM.TryGetValueO("FMSize=", out value))
                         {
-                            ulong.TryParse(value, out ulong result);
+                            ULong_TryParseInv(value, out ulong result);
                             fm.SizeBytes = result;
                         }
                         else if (lineFM.IsIniHeader())
