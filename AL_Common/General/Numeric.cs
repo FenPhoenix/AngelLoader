@@ -71,7 +71,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(ReadOnlySpan<char> s, out float result)
         {
-            return float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result);
+            if (float.TryParse(s, NumberStyles.Float, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
     }
 
@@ -87,7 +95,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(string s, out int result)
         {
-            return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
 
         /// <summary>
@@ -100,7 +116,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(ReadOnlySpan<char> s, out int result)
         {
-            return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
     }
 
@@ -116,7 +140,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(string s, out uint result)
         {
-            return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
 
         /// <summary>
@@ -129,7 +161,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(ReadOnlySpan<char> s, out uint result)
         {
-            return uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (uint.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
     }
 
@@ -145,7 +185,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseInvariant(string s, out ulong result)
         {
-            return ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
 
         /// <summary>
@@ -158,7 +206,15 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryTryParseInvariantarseInv(ReadOnlySpan<char> s, out ulong result)
         {
-            return ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
+            if (ulong.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result))
+            {
+                return true;
+            }
+            else
+            {
+                result = 0;
+                return false;
+            }
         }
     }
 
