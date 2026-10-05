@@ -1550,7 +1550,7 @@ internal static class Core
             // Tells me whether a readme got reloaded more than once, which should never be allowed to happen
             // due to performance concerns.
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-            View.SetDebug1Text(Int_TryParseInv(View.GetDebug1Text(), out int result) ? (result + 1).ToStrInv() : "1");
+            View.SetDebug1Text(int.TryParseInvariant(View.GetDebug1Text(), out int result) ? (result + 1).ToStrInv() : "1");
 #endif
 
             #endregion

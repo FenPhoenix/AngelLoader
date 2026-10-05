@@ -290,7 +290,7 @@ internal static class Filtering
     SetFilter()
     {
 #if DEBUG || (Release_Testing && !RT_StartupOnly)
-        Core.View.SetDebug2Text(Int_TryParseInv(Core.View.GetDebug2Text(), out int result) ? (result + 1).ToStrInv() : "1");
+        Core.View.SetDebug2Text(int.TryParseInvariant(Core.View.GetDebug2Text(), out int result) ? (result + 1).ToStrInv() : "1");
 #endif
 
         (FanMission? titleExactMatch, FanMission? authorExactMatch) ret = (null, null);

@@ -238,7 +238,7 @@ public static class Fen7z
                         {
                             ReadOnlySpan<char> lineTPastPercent = lineT[(pi + 1)..];
                             int di;
-                            if (Int_TryParseInv((di = lineTPastPercent.IndexOf('-')) > -1
+                            if (int.TryParseInvariant((di = lineTPastPercent.IndexOf('-')) > -1
                                     ? lineTPastPercent[..di]
                                     : lineTPastPercent, out int entriesDone))
                             {
@@ -246,7 +246,7 @@ public static class Fen7z
                             }
                         }
 
-                        if (Int_TryParseInv(lineT[..pi], out int bytesPercent))
+                        if (int.TryParseInvariant(lineT[..pi], out int bytesPercent))
                         {
                             report.PercentOfBytes = bytesPercent;
                         }

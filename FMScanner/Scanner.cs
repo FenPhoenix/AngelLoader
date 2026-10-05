@@ -5668,7 +5668,7 @@ public sealed class Scanner : IDisposable
 
                 dateNumsCount++;
 
-                if (int.TryParse(numStr, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int numInt))
+                if (int.TryParseInvariant(numStr, out int numInt))
                 {
                     switch (numInt)
                     {

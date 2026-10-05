@@ -219,7 +219,7 @@ internal static class GLMLConversion
 
                             bool success = num.Length > 0 && num[0] == 'x'
                                 ? int.TryParse(num.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out int result)
-                                : Int_TryParseInv(num, out result);
+                                : int.TryParseInvariant(num, out result);
 
                             if (success)
                             {

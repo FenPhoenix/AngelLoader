@@ -90,7 +90,7 @@ internal static partial class Ini
             string lastWrittenFileNumStr = lastWritten.Name.Substring(Paths.FMDataBakBase.Length);
 
             int newNum = 1;
-            if (Int_TryParseInv(lastWrittenFileNumStr, out int lastWrittenFileNum))
+            if (int.TryParseInvariant(lastWrittenFileNumStr, out int lastWrittenFileNum))
             {
                 newNum = lastWrittenFileNum >= maxBackups ? 1 : lastWrittenFileNum + 1;
             }
@@ -268,7 +268,7 @@ internal static partial class Ini
         int lastIndexOfComma = line.LastIndexOf(',');
 
         if (lastIndexOfComma > -1 &&
-            Int_TryParseInv(line[(lastIndexOfComma + 1)..], out int result) &&
+            int.TryParseInvariant(line[(lastIndexOfComma + 1)..], out int result) &&
             // 0 = default, we don't want to handle "default" as it's not a specific code page
             result > 0)
         {
@@ -386,8 +386,8 @@ internal static partial class Ini
             return false;
         }
 
-        bool firstExists = Int_TryParseInv(valTrimmed[..commaIndex].Trim(), out first);
-        bool secondExists = Int_TryParseInv(valTrimmed[(commaIndex + 1)..].Trim(), out second);
+        bool firstExists = int.TryParseInvariant(valTrimmed[..commaIndex].Trim(), out first);
+        bool secondExists = int.TryParseInvariant(valTrimmed[(commaIndex + 1)..].Trim(), out second);
 
         return firstExists && secondExists;
     }
@@ -412,10 +412,10 @@ internal static partial class Ini
         {
             switch (i)
             {
-                case 0 when Int_TryParseInv(part, out int di):
+                case 0 when int.TryParseInvariant(part, out int di):
                     col.DisplayIndex = di;
                     break;
-                case 1 when Int_TryParseInv(part, out int width):
+                case 1 when int.TryParseInvariant(part, out int width):
                     col.Width = width;
                     break;
                 case 2:

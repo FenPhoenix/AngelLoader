@@ -418,7 +418,7 @@ internal static class FMAudio
 
                 string line = e.Data;
                 if (line.TryGetValueO("bits_per_sample=", out string value) &&
-                    Int_TryParseInv(value, out int result))
+                    int.TryParseInvariant(value, out int result))
                 {
                     ret = result;
                 }
