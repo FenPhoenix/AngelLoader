@@ -134,7 +134,7 @@ internal static class FMData
                             // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
                             // number. But ToString() gives us the string version of the entire number. Argh...
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            Long_TryParseInv(val, out long result);
+                            long.TryParseInvariant(val, out long result);
                             field.NumericEmpty = result;
                             break;
                         }
@@ -327,14 +327,14 @@ internal static class FMData
                 }
                 else
                 {
-                    w.WL(tryParseLine);
+                    w.WL("bool success = " + tryParseLine);
                     if (field.Type == "TimeSpan")
                     {
-                        w.WL(objDotField + " = TimeSpan.FromTicks(result);");
+                        w.WL(objDotField + " = success ? TimeSpan.FromTicks(result) : TimeSpan.Zero;");
                     }
                     else
                     {
-                        w.WL(objDotField + " = result;");
+                        w.WL(objDotField + " = success ? result : 0;");
                     }
                 }
             }

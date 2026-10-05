@@ -63,8 +63,8 @@ internal static partial class Ini
     private static void FMData_TDMVersion_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
-        fm.TDMVersion = result;
+        bool success = int.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out int result);
+        fm.TDMVersion = success ? result : 0;
     }
 
     private static void FMData_Title_Set(FanMission fm, ReadOnlySpan<char> val)
@@ -160,8 +160,8 @@ internal static partial class Ini
     private static void FMData_SizeBytes_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        ulong.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out ulong result);
-        fm.SizeBytes = result;
+        bool success = ulong.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out ulong result);
+        fm.SizeBytes = success ? result : 0;
     }
 
     private static void FMData_Rating_Set(FanMission fm, ReadOnlySpan<char> val)
@@ -192,8 +192,8 @@ internal static partial class Ini
     private static void FMData_FinishedOn_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        uint.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out uint result);
-        fm.FinishedOn = result;
+        bool success = uint.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out uint result);
+        fm.FinishedOn = success ? result : 0;
     }
 
     private static void FMData_FinishedOnUnknown_Set(FanMission fm, ReadOnlySpan<char> val)
@@ -282,8 +282,8 @@ internal static partial class Ini
     private static void FMData_PlayTime_Set(FanMission fm, ReadOnlySpan<char> val)
     {
         val = val.Trim();
-        long.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out long result);
-        fm.PlayTime = TimeSpan.FromTicks(result);
+        bool success = long.TryParse(val, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out long result);
+        fm.PlayTime = success ? TimeSpan.FromTicks(result) : TimeSpan.Zero;
     }
 
     #region Old resource format - backward compatibility, we still have to be able to read it
