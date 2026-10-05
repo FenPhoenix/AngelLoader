@@ -53,7 +53,7 @@ internal static partial class Ini
 
     private static void Config_SettingsWindowSplitterDistance_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SettingsWindowSplitterDistance = result;
         }
@@ -61,7 +61,7 @@ internal static partial class Ini
 
     private static void Config_SettingsPathsVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.Paths, result);
         }
@@ -69,7 +69,7 @@ internal static partial class Ini
 
     private static void Config_SettingsAppearanceVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.Appearance, result);
         }
@@ -77,7 +77,7 @@ internal static partial class Ini
 
     private static void Config_SettingsAudioFilesVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.AudioFiles, result);
         }
@@ -85,7 +85,7 @@ internal static partial class Ini
 
     private static void Config_SettingsOtherVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.Other, result);
         }
@@ -93,7 +93,7 @@ internal static partial class Ini
 
     private static void Config_SettingsThiefBuddyVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.ThiefBuddy, result);
         }
@@ -101,7 +101,7 @@ internal static partial class Ini
 
     private static void Config_SettingsUpdateVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.Update, result);
         }
@@ -109,7 +109,7 @@ internal static partial class Ini
 
     private static void Config_SettingsIOThreadingVScrollPos_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.SetSettingsTabVScrollPos(SettingsTab.IOThreading, result);
         }
@@ -249,7 +249,7 @@ internal static partial class Ini
 
     private static void Config_DaysRecent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (UInt_TryParseInv(valTrimmed, out uint result))
+        if (uint.TryParseInvariant(valTrimmed, out uint result))
         {
             config.DaysRecent = result;
         }
@@ -453,7 +453,7 @@ internal static partial class Ini
 
     private static void Config_FilterRatingFrom_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             GetFilter(config, gameIndex, ignoreGameIndex).RatingFrom = result;
         }
@@ -461,7 +461,7 @@ internal static partial class Ini
 
     private static void Config_FilterRatingTo_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             GetFilter(config, gameIndex, ignoreGameIndex).RatingTo = result;
         }
@@ -552,7 +552,7 @@ internal static partial class Ini
     }
     private static void Config_FMsListFontSizeInPoints_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Float_TryParseInv(valTrimmed, out float result))
+        if (float.TryParseInvariant(valTrimmed, out float result))
         {
             config.FMsListFontSizeInPoints = result;
         }
@@ -653,7 +653,7 @@ internal static partial class Ini
     }
     private static void Config_SelFMIndexFromTop_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             GetSelectedFM(config, gameIndex, ignoreGameIndex).IndexFromTop = result;
         }
@@ -684,7 +684,7 @@ internal static partial class Ini
 
     private static void Config_MainSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Float_TryParseInv(valTrimmed, out float result))
+        if (float.TryParseInvariant(valTrimmed, out float result))
         {
             config.MainSplitterPercent = result;
         }
@@ -692,7 +692,7 @@ internal static partial class Ini
 
     private static void Config_TopSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Float_TryParseInv(valTrimmed, out float result))
+        if (float.TryParseInvariant(valTrimmed, out float result))
         {
             config.TopSplitterPercent = result;
         }
@@ -700,7 +700,7 @@ internal static partial class Ini
 
     private static void Config_BottomSplitterPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Float_TryParseInv(valTrimmed, out float result))
+        if (float.TryParseInvariant(valTrimmed, out float result))
         {
             config.BottomSplitterPercent = result;
         }
@@ -767,7 +767,7 @@ internal static partial class Ini
 
     private static void Config_StatsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Statistics).DisplayIndex = result;
     }
     private static void Config_StatsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -777,7 +777,7 @@ internal static partial class Ini
 
     private static void Config_EditFMTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.EditFM).DisplayIndex = result;
     }
     private static void Config_EditFMTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -787,7 +787,7 @@ internal static partial class Ini
 
     private static void Config_CommentTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Comment).DisplayIndex = result;
     }
     private static void Config_CommentTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -797,7 +797,7 @@ internal static partial class Ini
 
     private static void Config_TagsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Tags).DisplayIndex = result;
     }
     private static void Config_TagsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -807,7 +807,7 @@ internal static partial class Ini
 
     private static void Config_PatchTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Patch).DisplayIndex = result;
     }
     private static void Config_PatchTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -817,7 +817,7 @@ internal static partial class Ini
 
     private static void Config_ModsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Mods).DisplayIndex = result;
     }
     private static void Config_ModsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -827,7 +827,7 @@ internal static partial class Ini
 
     private static void Config_ScreenshotsTabPosition_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        Int_TryParseInv(valTrimmed, out int result);
+        int.TryParseInvariant(valTrimmed, out int result);
         config.FMTabsData.GetTab(FMTab.Screenshots).DisplayIndex = result;
     }
     private static void Config_ScreenshotsTabVisible_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
@@ -839,7 +839,7 @@ internal static partial class Ini
 
     private static void Config_ReadmeZoomFactor_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Float_TryParseInv(valTrimmed, out float result))
+        if (float.TryParseInvariant(valTrimmed, out float result))
         {
             config.ReadmeZoomFactor = result;
         }
@@ -879,7 +879,7 @@ internal static partial class Ini
 
     private static void Config_ScreenshotGammaPercent_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.ScreenshotGammaPercent = result;
         }
@@ -896,7 +896,7 @@ internal static partial class Ini
 
     private static void Config_CustomIOThreadCount_Set(ConfigData config, string valTrimmed, string valRaw, GameIndex gameIndex, bool ignoreGameIndex)
     {
-        if (Int_TryParseInv(valTrimmed, out int result))
+        if (int.TryParseInvariant(valTrimmed, out int result))
         {
             config.CustomIOThreadCount = result;
         }

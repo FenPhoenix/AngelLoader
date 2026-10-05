@@ -5728,7 +5728,7 @@ public sealed class Scanner : IDisposable
 
                 foreach (string num in nums)
                 {
-                    if (Int_TryParseInv(num, out int numInt))
+                    if (int.TryParseInvariant(num, out int numInt))
                     {
                         switch (numInt)
                         {

@@ -342,7 +342,7 @@ internal static class TDM
                     fm.LastPlayed.DateTime = result;
                 }
 
-                if (Int_TryParseInv(localData.DownloadedVersion, out int version))
+                if (int.TryParseInvariant(localData.DownloadedVersion, out int version))
                 {
                     fm.TDMVersion = version;
                 }
@@ -425,7 +425,7 @@ internal static class TDM
             foreach (TDM_LocalFMData localData in localDataList)
             {
                 if (internalTDMDict.TryGetValue(localData.InternalName, out FanMission? fm) &&
-                    Int_TryParseInv(localData.DownloadedVersion, out int version) &&
+                    int.TryParseInvariant(localData.DownloadedVersion, out int version) &&
                     fm.TDMVersion != version)
                 {
                     return true;

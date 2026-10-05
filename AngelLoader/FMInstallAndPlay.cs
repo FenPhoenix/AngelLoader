@@ -1076,7 +1076,7 @@ internal static partial class FMInstallAndPlay
             foreach (string mf in misFiles)
             {
                 Match m = Regex.Match(mf, "miss(?<Num>[0-9]+).mis", Regex_IgnoreCaseInvariant);
-                if (m.Success && Int_TryParseInv(m.Groups["Num"].Value, out int result))
+                if (m.Success && int.TryParseInvariant(m.Groups["Num"].Value, out int result))
                 {
                     misNums.Add(result);
                 }

@@ -597,7 +597,7 @@ internal static class FindFMs
                     System.Text.RegularExpressions.Group numberGroup;
                     if (fm.InstalledDir.Length >= 3 &&
                         (match = System.Text.RegularExpressions.Regex.Match(fm.InstalledDir, @"\((?<Number>[0-9]+)\)$")).Success &&
-                        UInt_TryParseInv((numberGroup = match.Groups["Number"]).Value, out uint result)
+                        uint.TryParseInvariant((numberGroup = match.Groups["Number"]).Value, out uint result)
                        )
                     {
                         fm.InstalledDir = fm.InstalledDir.Substring(0, numberGroup.Index - 1) + "(" + (result + 1) + ")";

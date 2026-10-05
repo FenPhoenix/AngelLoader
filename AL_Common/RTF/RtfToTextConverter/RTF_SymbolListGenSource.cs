@@ -9,7 +9,6 @@ TODO(gperf stuff): Tidy this up and get rid of hardcoded directories and whatnot
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
@@ -255,7 +254,7 @@ public sealed partial class RtfToTextConverter
             if (line.StartsWithO("#line"))
             {
                 string lineNumRaw = line.Substring(5, line.IndexOf('\"') - 5).Trim();
-                if (Int_TryParseInv(lineNumRaw, out int result))
+                if (int.TryParseInvariant(lineNumRaw, out int result))
                 {
                     // -3 because the gperf in format is like
                     // (line 1) struct declaration
@@ -305,12 +304,6 @@ public sealed partial class RtfToTextConverter
         }
 
         File.WriteAllText(Path.Combine(_genDir, "firstCharAndLengthArray.txt"), firstCharString);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static bool Int_TryParseInv(string s, out int result)
-    {
-        return int.TryParse(s, NumberStyles.Integer, NumberFormatInfo.InvariantInfo, out result);
     }
 }
 

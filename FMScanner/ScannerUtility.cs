@@ -799,7 +799,7 @@ internal static class Utility
 
                             bool success = num.Length > 0 && num[0] == 'x'
                                 ? uint.TryParse(num.Substring(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint result)
-                                : UInt_TryParseInv(num, out result);
+                                : uint.TryParseInvariant(num, out result);
 
                             if (success)
                             {
@@ -836,7 +836,7 @@ internal static class Utility
                             string name = subSB.ToString();
 
                             if (HTML.HTML401NamedEntities.TryGetValue(name, out string? value) &&
-                                UInt_TryParseInv(value, out uint result))
+                                uint.TryParseInvariant(value, out uint result))
                             {
                                 (bool convertSuccess, int charsCount) = ConvertFromUtf32(result, charBuffer);
                                 if (convertSuccess)

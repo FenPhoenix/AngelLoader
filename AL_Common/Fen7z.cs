@@ -237,14 +237,14 @@ public static class Fen7z
                     {
                         int di;
                         if (entriesCount > 0 &&
-                            Int_TryParseInv((di = lineT.IndexOf('-', pi + 1)) > -1
+                            int.TryParseInvariant((di = lineT.IndexOf('-', pi + 1)) > -1
                                 ? lineT.Substring(pi + 1, di)
                                 : lineT.Substring(pi + 1), out int entriesDone))
                         {
                             report.PercentOfEntries = GetPercentFromValue_Int(entriesDone, entriesCount).Clamp(0, 100);
                         }
 
-                        if (Int_TryParseInv(lineT.Substring(0, pi), out int bytesPercent))
+                        if (int.TryParseInvariant(lineT.Substring(0, pi), out int bytesPercent))
                         {
                             report.PercentOfBytes = bytesPercent;
                         }

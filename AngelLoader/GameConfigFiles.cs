@@ -1243,7 +1243,7 @@ internal static class GameConfigFiles
             {
                 string[] fields = lt.Split(_ca_Space_Tab_Semicolon, StringSplitOptions.RemoveEmptyEntries);
                 ret = fields.Length >= 2 &&
-                      Int_TryParseInv(fields[1], out int result) &&
+                      int.TryParseInvariant(fields[1], out int result) &&
                       result == 0;
             }
         }

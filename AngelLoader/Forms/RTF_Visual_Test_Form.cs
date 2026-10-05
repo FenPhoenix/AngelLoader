@@ -121,7 +121,7 @@ public sealed partial class RTF_Visual_Test_Form : DarkFormBase, IWaitCursorSett
             {
                 using StreamReader sr = new(ConfigFile);
                 string? indexStr = sr.ReadLine();
-                if (indexStr != null && Int_TryParseInv(indexStr, out int index))
+                if (indexStr != null && int.TryParseInvariant(indexStr, out int index))
                 {
                     RTFFileComboBox.SelectedIndex = index;
                 }
