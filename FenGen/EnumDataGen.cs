@@ -60,7 +60,7 @@ internal static class EnumDataGen
                         if (attr.ArgumentList is { Arguments.Count: 1 })
                         {
                             string tempStr = attr.ArgumentList.Arguments[0].ToString();
-                            if (Int_TryParseInv(tempStr, out int result))
+                            if (int.TryParseInvariant(tempStr, out int result))
                             {
                                 enumData.CountPlusOrMinus = result;
                             }

@@ -405,8 +405,8 @@ internal static class DesignerGen
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
                         oce.Type.ToString().TypeEquals("System.Drawing", "Size") &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
-                        Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
-                        Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int height))
+                        int.TryParseInvariant(oce.ArgumentList.Arguments[0].ToString(), out int width) &&
+                        int.TryParseInvariant(oce.ArgumentList.Arguments[1].ToString(), out int height))
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
 
@@ -440,8 +440,8 @@ internal static class DesignerGen
                     if (aes.Right is ObjectCreationExpressionSyntax oce &&
                         oce.Type.ToString().TypeEquals("System.Drawing", "Point") &&
                         oce.ArgumentList?.Arguments.Count == 2 &&
-                        Int_TryParseInv(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
-                        Int_TryParseInv(oce.ArgumentList.Arguments[1].ToString(), out int y))
+                        int.TryParseInvariant(oce.ArgumentList.Arguments[0].ToString(), out int x) &&
+                        int.TryParseInvariant(oce.ArgumentList.Arguments[1].ToString(), out int y))
                     {
                         CProps props = controlProperties.GetOrAddProps(curNode.ControlName);
                         props.Location = new Point(x, y);

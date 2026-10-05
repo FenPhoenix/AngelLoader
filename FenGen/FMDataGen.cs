@@ -169,7 +169,7 @@ internal static class FMData
                             // negative, we end up getting a PrefixUnaryExpressionSyntax rather than the entire
                             // number. But ToString() gives us the string version of the entire number. Argh...
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            Long_TryParseInv(val, out long result);
+                            long.TryParseInvariant(val, out long result);
                             field.NumericEmpty = result;
                             break;
                         }
@@ -177,7 +177,7 @@ internal static class FMData
                         {
                             CheckParamCount(attr, 1);
                             string val = attr.ArgumentList!.Arguments[0].Expression.ToString();
-                            Int_TryParseInv(val, out int result);
+                            int.TryParseInvariant(val, out int result);
                             field.MaxDigits = result > 0 ? result : null;
                             break;
                         }
@@ -409,7 +409,8 @@ internal static class FMData
                     }
                     else
                     {
-                        w.WL(fieldInnerType + ".TryParse(" + val + ", " + tryParseArgs + "out " + fieldInnerType + " result);");
+                        w.WL("bool success = " + fieldInnerType + ".TryParse(" + val + ", " + tryParseArgs + "out " + fieldInnerType + " result);");
+                        w.WL(objDotField + " = success ? result : TimeSpan.Zero;");
                     }
                     if (field.Type == "TimeSpan")
                     {
