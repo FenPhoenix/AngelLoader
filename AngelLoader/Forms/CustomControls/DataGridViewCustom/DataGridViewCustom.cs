@@ -22,7 +22,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
 
     private MainForm _owner = null!;
 
-    private readonly Color DefaultRowBackColor = SystemColors.Window;
+    private readonly Color DefaultRowBackColor;
 
     private bool _mouseHere;
     private int _mouseDownOnHeader = -1;
@@ -79,7 +79,11 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         }
     }
 
-    public DataGridViewCustom() => DoubleBuffered = true;
+    public DataGridViewCustom()
+    {
+        DoubleBuffered = true;
+        DefaultRowBackColor = DefaultCellStyle.BackColor;
+    }
 
     #region Public methods
 
