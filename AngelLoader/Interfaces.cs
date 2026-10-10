@@ -310,7 +310,7 @@ public interface IView : ISettingsChangeableView
 
     bool GetShowUnavailableFMsFilter();
 
-    List<int> GetFilterShownIndexList();
+    ListFast<int> GetFilterShownIndexList();
 
     bool GetShowRecentAtTop();
 

@@ -2381,7 +2381,7 @@ public sealed partial class MainForm : DarkFormBase,
     public bool GetShowUnavailableFMsFilter() => FilterShowUnavailableButton.Checked;
     public bool GetShowRecentAtTop() => FilterShowRecentAtTopButton.Checked;
 
-    public List<int> GetFilterShownIndexList() => FMsDGV.FilterShownIndexList;
+    public ListFast<int> GetFilterShownIndexList() => FMsDGV.FilterShownIndexList;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int TopBarXZero() => MainMenuButton.Left + MainMenuButton.Width + 8;
