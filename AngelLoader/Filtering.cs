@@ -310,9 +310,9 @@ internal static class Filtering
 
         #endregion
 
-        List<int> filterShownIndexList = Core.View.GetFilterShownIndexList();
+        ListFast<int> filterShownIndexList = Core.View.GetFilterShownIndexList();
 
-        filterShownIndexList.Clear();
+        filterShownIndexList.ClearFast();
 
         // Only ever add to the filter shown index list, don't subtract, as that requires constantly copying list
         // items and is therefore like eight trillion times slower.

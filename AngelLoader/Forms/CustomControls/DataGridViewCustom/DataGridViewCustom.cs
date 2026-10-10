@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -47,7 +46,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
     #region Filter
 
     internal readonly Filter Filter = new();
-    internal readonly List<int> FilterShownIndexList = new();
+    internal readonly ListFast<int> FilterShownIndexList = new(0);
 
     #endregion
 
