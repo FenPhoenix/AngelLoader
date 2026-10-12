@@ -311,6 +311,8 @@ internal static class Filtering
 
         ListFast<int> filterShownIndexList = Core.View.GetFilterShownIndexList();
 
+        // Match capacity at the start and then add without grow checks for perf
+        filterShownIndexList.EnsureCapacity(FMsViewList.Count);
         filterShownIndexList.ClearFast();
 
         // Only ever add to the filter shown index list, don't subtract, as that requires constantly copying list
@@ -497,7 +499,7 @@ internal static class Filtering
 
             #endregion
 
-            filterShownIndexList.Add(i);
+            filterShownIndexList.AddFast(i);
         }
 
         return ret;
