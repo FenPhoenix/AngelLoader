@@ -205,10 +205,9 @@ public static partial class Common
 
         /*
         Honestly, for fixed-size value types, doing an Array.Clear() is completely unnecessary. For reference
-        types, you definitely want to clear it to get rid of all the references, but for ints or chars etc.,
-        all a clear does is set a bunch of fixed-width values to other fixed-width values. You don't save
-        space and you don't get rid of loose references, all you do is waste an alarming amount of time. We
-        drop fully 200ms from the Unicode parser just by using the fast clear!
+        types, you definitely want to clear it to get rid of all the references, but for ints or chars etc., all
+        a clear does is set a bunch of fixed-width values to other fixed-width values. You don't save space and
+        you don't get rid of loose references, all you do is waste an alarming amount of time.
         */
         /// <summary>
         /// Just sets <see cref="Count"/> to 0. Doesn't zero out the array or do anything else whatsoever.
