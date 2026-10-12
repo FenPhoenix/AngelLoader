@@ -168,7 +168,7 @@ public sealed partial class DataGridViewCustom : DataGridView, IDarkable
         ListFast<FanMission> ret = new(selRows.Length);
         foreach (DataGridViewRow selRow in selRows)
         {
-            ret.Add(GetFMFromIndex(selRow.Index));
+            ret.AddFast(GetFMFromIndex(selRow.Index));
         }
 
         return ret;
