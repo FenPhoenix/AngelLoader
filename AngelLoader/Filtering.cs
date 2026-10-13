@@ -393,7 +393,8 @@ internal static class Filtering
 
                 if (ratingIsSet)
                 {
-                    if (fm.Rating < filterRatingFrom || fm.Rating > filterRatingTo)
+                    int fmRating = fm.Rating;
+                    if (fmRating < filterRatingFrom || fmRating > filterRatingTo)
                     {
                         continue;
                     }
