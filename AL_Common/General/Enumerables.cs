@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
@@ -35,8 +36,9 @@ public static partial class Common
     [PublicAPI]
     public sealed class ListFast<T> : IEnumerable<T>
     {
+        private const int DefaultCapacity = 4;
+
         public T[] ItemsArray;
-        private int _itemsArrayLength;
 
         /// <summary>
         /// Properties are slow. You can set this from outside if you know what you're doing.
@@ -59,7 +61,6 @@ public static partial class Common
         public ListFast(int capacity)
         {
             ItemsArray = new T[capacity];
-            _itemsArrayLength = capacity;
         }
 
         public int IndexOf(T item)
@@ -86,8 +87,51 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(T item)
         {
-            if (Count == _itemsArrayLength) EnsureCapacity(Count + 1);
-            ItemsArray[Count++] = item;
+            T[] array = ItemsArray;
+            int size = Count;
+            if ((uint)size < (uint)array.Length)
+            {
+                Count = size + 1;
+                array[size] = item;
+            }
+            else
+            {
+                AddWithResize(item);
+            }
+        }
+
+        // Non-inline from List.Add to improve its code quality as uncommon path
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void AddWithResize(T item)
+        {
+            Debug.Assert(Count == ItemsArray.Length);
+            int size = Count;
+            Grow(size + 1);
+            Count = size + 1;
+            ItemsArray[size] = item;
+        }
+
+        internal void Grow(int capacity)
+        {
+            Capacity = GetNewCapacity(capacity);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private int GetNewCapacity(int capacity)
+        {
+            Debug.Assert(ItemsArray.Length < capacity);
+
+            int newCapacity = ItemsArray.Length == 0 ? DefaultCapacity : 2 * ItemsArray.Length;
+
+            // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
+            // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
+            if ((uint)newCapacity > Array.MaxLength) newCapacity = Array.MaxLength;
+
+            // If the computed capacity is still less than specified, set to the original argument.
+            // Capacities exceeding Array.MaxLength will be surfaced as OutOfMemoryException by Array.Resize.
+            if (newCapacity < capacity) newCapacity = capacity;
+
+            return newCapacity;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -128,32 +172,11 @@ public static partial class Common
 
         public void TrimExcess()
         {
-            int threshold = (int)(((double)_itemsArrayLength) * 0.9);
+            int threshold = (int)(((double)ItemsArray.Length) * 0.9);
             if (Count < threshold)
             {
                 Capacity = Count;
             }
-        }
-
-        public void Insert(int index, T item)
-        {
-            if ((uint)index > (uint)Count)
-            {
-                ThrowHelper.ThrowArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_ListInsert);
-            }
-
-            if (Count == _itemsArrayLength)
-            {
-                EnsureCapacity(Count + 1);
-            }
-
-            if (index < Count)
-            {
-                Array.Copy(ItemsArray, index, ItemsArray, index + 1, Count - index);
-            }
-
-            ItemsArray[index] = item;
-            Count++;
         }
 
         public void InsertAtZeroFast(T item)
@@ -228,22 +251,20 @@ public static partial class Common
         public int Capacity
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => _itemsArrayLength;
+            get => ItemsArray.Length;
             set
             {
-                if (value == _itemsArrayLength) return;
+                if (value == ItemsArray.Length) return;
                 if (value > 0)
                 {
                     T[] objArray = new T[value];
                     if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, Count);
                     ItemsArray = objArray;
-                    _itemsArrayLength = value;
-                    if (_itemsArrayLength < Count) Count = _itemsArrayLength;
+                    if (ItemsArray.Length < Count) Count = ItemsArray.Length;
                 }
                 else
                 {
                     ItemsArray = Array.Empty<T>();
-                    _itemsArrayLength = 0;
                     Count = 0;
                 }
             }
@@ -268,31 +289,28 @@ public static partial class Common
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetRecycleState(int count, int maxEntriesBeforeCapacityReset = 25_000)
         {
-            if (_itemsArrayLength > maxEntriesBeforeCapacityReset)
+            if (ItemsArray.Length > maxEntriesBeforeCapacityReset)
             {
                 Capacity = 0;
             }
 
             Count = count;
 
-            if (_itemsArrayLength < Count)
+            if (ItemsArray.Length < Count)
             {
                 T[] objArray = new T[Count];
-                if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, _itemsArrayLength);
+                if (Count > 0) Array.Copy(ItemsArray, 0, objArray, 0, ItemsArray.Length);
                 ItemsArray = objArray;
-                _itemsArrayLength = Count;
-                if (_itemsArrayLength < Count) Count = _itemsArrayLength;
+                if (ItemsArray.Length < Count) Count = ItemsArray.Length;
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void EnsureCapacity(int min)
+        public void EnsureCapacity(int capacity)
         {
-            if (_itemsArrayLength >= min) return;
-            int newCapacity = _itemsArrayLength == 0 ? 4 : _itemsArrayLength * 2;
-            if ((uint)newCapacity > Array.MaxLength) newCapacity = Array.MaxLength;
-            if (newCapacity < min) newCapacity = min;
-            Capacity = newCapacity;
+            if (ItemsArray.Length < capacity)
+            {
+                Grow(capacity);
+            }
         }
 
         public ListFast<T> ClearedAndWithCapacityAtLeast(int capacity)
