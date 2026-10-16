@@ -2074,7 +2074,7 @@ public sealed partial class MainForm : DarkFormBase,
                 {
                     lazyLoadedControl.DarkModeEnabled = darkMode;
                 }
-                if (ProgressBox != null) ProgressBox.DarkModeEnabled = darkMode;
+                ProgressBox?.DarkModeEnabled = darkMode;
             }
 
             if (Config.GameOrganization == GameOrganization.ByTab)
