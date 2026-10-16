@@ -421,7 +421,7 @@ internal static class Comparers
             string xArchive = x.DisplayArchive;
             string yArchive = y.DisplayArchive;
 
-            int ret = EqualsFast(xArchive, yArchive)
+            int ret = xArchive.AsSpan().SequenceEqual(yArchive.AsSpan())
                 ? TitleCompare(x, y)
                 : string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
