@@ -44,6 +44,30 @@ internal static partial class FMInstallAndPlay
 
     #region Private fields
 
+    private enum NewDarkArgument
+    {
+        force_windowed,
+        new_mantle,
+        legacy_32bit_txtpal,
+        postprocess,
+        enable_subtitles,
+    }
+    private static readonly int _newDarkArgumentCount = Enum.GetValues(typeof(NewDarkArgument)).Length;
+
+    private static readonly string[] _newDarkArguments = RunFunc(static () =>
+    {
+        string[] array = new string[_newDarkArgumentCount];
+        array[(int)NewDarkArgument.force_windowed] = "force_windowed";
+        array[(int)NewDarkArgument.new_mantle] = "new_mantle";
+        array[(int)NewDarkArgument.legacy_32bit_txtpal] = "legacy_32bit_txtpal";
+        array[(int)NewDarkArgument.postprocess] = "postprocess";
+        array[(int)NewDarkArgument.enable_subtitles] = "enable_subtitles";
+
+        AssertR(array.All(static x => x != null), nameof(_newDarkArguments) + " is missing at least one item");
+
+        return array;
+    });
+
     private enum InstallResultType
     {
         InstallSucceeded,
@@ -301,17 +325,18 @@ internal static partial class FMInstallAndPlay
 #endif
             if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame)) return false;
 
-            // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
-            var nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+            bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+
+            string args = "";
 
 #if !ReleaseBeta && !ReleasePublic
-            // This gets overwritten if Steam is used, but it's private-build only and I don't use Steam, so it
-            // doesn't affect me in practice.
-            string args = Config.ForceWindowed
-                ? nd128 ? "-force_windowed=1"  : "force_windowed=1"
-                : "";
-#else
-            string args = "";
+            if (GameIsDark(gameIndex))
+            {
+                // This gets overwritten if Steam is used, but it's private-build only and I don't use Steam, so it
+                // doesn't affect me in practice.
+                bool? forceWindowed = Config.ForceWindowed ? true : null;
+                OptionallyAddNewDarkArgument(ref args, NewDarkArgument.force_windowed, forceWindowed, nd128);
+            }
 #endif
             string workingPath = Config.GetGamePath(gameIndex);
             var sv = GetSteamValues(gameIndex, playMP);
@@ -319,15 +344,7 @@ internal static partial class FMInstallAndPlay
 
             if (GameIsDark(gameIndex))
             {
-                switch (Config.GetNewMantling(gameIndex))
-                {
-                    case true:
-                        args += nd128 ? " -new_mantle=1" : " new_mantle=1";
-                        break;
-                    case false:
-                        args += nd128 ? " -new_mantle=0" : " new_mantle=0";
-                        break;
-                }
+                OptionallyAddNewDarkArgument(ref args, NewDarkArgument.new_mantle, Config.GetNewMantling(gameIndex), nd128);
             }
 
             if (!WriteStubCommFileForOriginalGame(
@@ -420,28 +437,21 @@ internal static partial class FMInstallAndPlay
             !steamArgs.IsEmpty() ? steamArgs :
             "-fm";
 
-        // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
-        var nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
         if (GameIsDark(fm.Game))
         {
+            bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+
             MissFlagError missFlagError = GenerateMissFlagFileIfRequired(fm, errorOnCantPlay: true);
             if (missFlagError != MissFlagError.None) return false;
 
 #if !ReleaseBeta && !ReleasePublic
-            if (Config.ForceWindowed)
-            {
-                args += nd128 ? " -force_windowed=1" : " force_windowed=1";
-            }
+            bool? forceWindowed = Config.ForceWindowed ? true : null;
+            OptionallyAddNewDarkArgument(ref args, NewDarkArgument.force_windowed, forceWindowed, nd128);
 #endif
 
             // Do this AFTER generating missflag.str! Otherwise it will fail to correctly detect the first used
             // .mis file when detecting OldDark (if there is no missflag.str)!
             bool fmIsOldDark = FMIsOldDark(fm);
-
-            if (fmIsOldDark && FMRequiresPaletteFix(fm, checkForOldDark: false))
-            {
-                args += nd128 ? " -legacy_32bit_txtpal=1" : " legacy_32bit_txtpal=1";
-            }
 
             /*
             We can say +new_mantle to enable and -new_mantle to disable, HOWEVER, if we use that syntax, the
@@ -455,36 +465,19 @@ internal static partial class FMInstallAndPlay
 
             Phew!
             */
-            if (fm.NewMantle == true)
-            {
-                args += nd128 ? " -new_mantle=1" : " new_mantle=1";
-            }
-            else if (fm.NewMantle == false)
-            {
-                args += nd128 ? " -new_mantle=0" : " new_mantle=0";
-            }
-            else if (fmIsOldDark && Config.UseOldMantlingForOldDarkFMs)
-            {
-                args += nd128 ? " -new_mantle=0" : " new_mantle=0";
-            }
 
-            if (fm.PostProc == true)
-            {
-                args += nd128 ? " -postprocess=1" : " postprocess=1";
-            }
-            else if (fm.PostProc == false)
-            {
-                args += nd128 ? " -postprocess=0" : " postprocess=0";
-            }
+            bool? fixPalette = fmIsOldDark && FMRequiresPaletteFix(fm, checkForOldDark: false) ? true : null;
+            OptionallyAddNewDarkArgument(ref args, NewDarkArgument.legacy_32bit_txtpal, fixPalette, nd128);
 
-            if (fm.NDSubs == true)
-            {
-                args += nd128 ? " -enable_subtitles=1" : " enable_subtitles=1";
-            }
-            else if (fm.NDSubs == false)
-            {
-                args += nd128 ? " -enable_subtitles=0" : " enable_subtitles=0";
-            }
+            bool? newMantle =
+                fm.NewMantle == true ? true :
+                fm.NewMantle == false ? false :
+                fmIsOldDark && Config.UseOldMantlingForOldDarkFMs ? false :
+                null;
+            OptionallyAddNewDarkArgument(ref args, NewDarkArgument.new_mantle, newMantle, nd128);
+
+            OptionallyAddNewDarkArgument(ref args, NewDarkArgument.postprocess, fm.PostProc, nd128);
+            OptionallyAddNewDarkArgument(ref args, NewDarkArgument.enable_subtitles, fm.NDSubs, nd128);
         }
 
         if (!RunThiefBuddyIfRequired(fm)) return false;
@@ -504,6 +497,32 @@ internal static partial class FMInstallAndPlay
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Adds an argument to <see paramref="args"/> based on <see paramref="newDarkArgument"/> if <see paramref="value"/> is non-null, otherwise does nothing.
+    /// </summary>
+    /// <param name="args"></param>
+    /// <param name="newDarkArgument"></param>
+    /// <param name="value"></param>
+    /// <param name="isNewDark128OrAbove"></param>
+    /// <returns></returns>
+    private static void OptionallyAddNewDarkArgument(ref string args, NewDarkArgument newDarkArgument, bool? value, bool isNewDark128OrAbove)
+    {
+        if (value == null) return;
+
+        if (!args.IsEmpty())
+        {
+            args += " ";
+        }
+
+        // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
+        if (isNewDark128OrAbove)
+        {
+            args += "-";
+        }
+
+        args += _newDarkArguments[(int)newDarkArgument] + "=" + (value == true ? "1" : "0");
     }
 
     internal static bool OpenFMInEditor(FanMission fm)
