@@ -8,7 +8,11 @@ namespace AngelLoader.Forms;
 
 public sealed partial class FilterDateForm : DarkFormBase, IEventDisabler
 {
-    private enum DateType { From, To }
+    private enum DateType
+    {
+        From,
+        To,
+    }
 
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

@@ -41,7 +41,10 @@ public sealed partial class ModsControl : UserControlCustom, IEventDisabler
 
     private Rectangle _cautionRectangle = Rectangle.Empty;
 
-    private enum ItemType { Caution }
+    private enum ItemType
+    {
+        Caution,
+    }
 
     internal void SoftClearList()
     {

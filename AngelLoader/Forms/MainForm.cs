@@ -131,7 +131,12 @@ public sealed partial class MainForm : DarkFormBase,
 
     #region Enums
 
-    private enum KeepSel { False, True, TrueNearest }
+    private enum KeepSel
+    {
+        False,
+        True,
+        TrueNearest
+    }
 
     // IMPORTANT: Don't change the order of the first three, they're used as indices!
     private enum ZoomFMsDGVType
