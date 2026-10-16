@@ -111,13 +111,13 @@ internal static class Program
 
         protected override bool OnStartup(StartupEventArgs eventArgs)
         {
+            // IMPORTANT: Set this first thing or else we won't have a log file!
+            SetLogFile(Paths.LogFile);
+
 #if WinForms
             IViewEnvironment viewEnv = new Forms.FormsViewEnvironment();
 #else
 #endif
-            // IMPORTANT: Set this first thing or else we won't have a log file!
-            SetLogFile(Paths.LogFile);
-
             // We don't need to clear this log because LogStartup overwrites (no append)
             LogStartup(viewEnv.ProductVersion + " (" + RuntimeInformation.FrameworkDescription + " x64) Started session");
 
