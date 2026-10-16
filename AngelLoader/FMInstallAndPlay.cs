@@ -499,32 +499,6 @@ internal static partial class FMInstallAndPlay
         return true;
     }
 
-    /// <summary>
-    /// Adds an argument to <see paramref="args"/> based on <see paramref="newDarkArgument"/> if <see paramref="value"/> is non-null, otherwise does nothing.
-    /// </summary>
-    /// <param name="args"></param>
-    /// <param name="newDarkArgument"></param>
-    /// <param name="value"></param>
-    /// <param name="isNewDark128OrAbove"></param>
-    /// <returns></returns>
-    private static void OptionallyAddNewDarkArgument(ref string args, NewDarkArgument newDarkArgument, bool? value, bool isNewDark128OrAbove)
-    {
-        if (value == null) return;
-
-        if (!args.IsEmpty())
-        {
-            args += " ";
-        }
-
-        // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
-        if (isNewDark128OrAbove)
-        {
-            args += "-";
-        }
-
-        args += _newDarkArguments[(int)newDarkArgument] + "=" + (value == true ? "1" : "0");
-    }
-
     internal static bool OpenFMInEditor(FanMission fm)
     {
         using DisableScreenshotWatchers dsw = new();
@@ -596,6 +570,32 @@ internal static partial class FMInstallAndPlay
     #endregion
 
     #region Helpers
+
+    /// <summary>
+    /// Adds an argument to <see paramref="args"/> based on <see paramref="newDarkArgument"/> if <see paramref="value"/> is non-null, otherwise does nothing.
+    /// </summary>
+    /// <param name="args"></param>
+    /// <param name="newDarkArgument"></param>
+    /// <param name="value"></param>
+    /// <param name="isNewDark128OrAbove"></param>
+    /// <returns></returns>
+    private static void OptionallyAddNewDarkArgument(ref string args, NewDarkArgument newDarkArgument, bool? value, bool isNewDark128OrAbove)
+    {
+        if (value == null) return;
+
+        if (!args.IsEmpty())
+        {
+            args += " ";
+        }
+
+        // NewDark 1.28 made (undocumented) changes to how launch arguments are specified
+        if (isNewDark128OrAbove)
+        {
+            args += "-";
+        }
+
+        args += _newDarkArguments[(int)newDarkArgument] + "=" + (value == true ? "1" : "0");
+    }
 
     [MustUseReturnValue]
     private static bool SetUsAsSelector(GameIndex gameIndex, string gamePath, PlaySource playSource)
@@ -851,8 +851,6 @@ internal static partial class FMInstallAndPlay
         }
     }
 
-    #endregion
-
     private static void HandleStartExeFailure(string exe, string workingPath, string args, Exception ex)
     {
         string msg = ErrorText.Un + "start '" + exe + "'.";
@@ -861,6 +859,8 @@ internal static partial class FMInstallAndPlay
             nameof(args) + ": " + args, ex);
         Core.Dialogs.ShowError(msg);
     }
+
+    #endregion
 
     private static (bool Success, string GameExe, string GamePath)
     CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
