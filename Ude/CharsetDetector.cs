@@ -149,7 +149,12 @@ public sealed class CharsetDetector
 
     public static readonly int CharsetCount = CharsetToCodePage.Length;
 
-    private enum InputState { PureASCII = 0, EscASCII = 1, HighByte = 2 }
+    private enum InputState
+    {
+        PureASCII = 0,
+        EscASCII = 1,
+        HighByte = 2,
+    }
 
     private const float MINIMUM_THRESHOLD = 0.20f;
 

@@ -163,18 +163,45 @@ public enum HideableFilterControls
     ShowRecentAtTop,
 }
 
-internal enum GameOrganization { ByTab, OneList }
+internal enum GameOrganization
+{
+    ByTab,
+    OneList,
+}
 
-public enum RatingDisplayStyle { NewDarkLoader, FMSel }
+public enum RatingDisplayStyle
+{
+    NewDarkLoader,
+    FMSel,
+}
 
-internal enum DateFormat { CurrentCultureShort, CurrentCultureLong, Custom }
+internal enum DateFormat
+{
+    CurrentCultureShort,
+    CurrentCultureLong,
+    Custom,
+}
 
 [Flags]
-internal enum FinishedState : uint { Null = 0, Finished = 1, Unfinished = 2 }
+internal enum FinishedState : uint
+{
+    Null = 0,
+    Finished = 1,
+    Unfinished = 2,
+}
 
-internal enum BackupFMData { SavesAndScreensOnly, AllChangedFiles }
+internal enum BackupFMData
+{
+    SavesAndScreensOnly,
+    AllChangedFiles,
+}
 
-internal enum ConfirmBeforeInstall { Always, OnlyForMultiple, Never }
+internal enum ConfirmBeforeInstall
+{
+    Always,
+    OnlyForMultiple,
+    Never,
+}
 
 internal enum RunThiefBuddyOnFMPlay
 {
@@ -183,7 +210,11 @@ internal enum RunThiefBuddyOnFMPlay
     Never,
 }
 
-public enum VisualTheme { Classic, Dark }
+public enum VisualTheme
+{
+    Classic,
+    Dark,
+}
 
 public enum CheckForUpdates
 {

@@ -18,7 +18,12 @@ internal sealed class Lazy_FMsDGV_ColumnHeaderMenu : IDarkable
 
     private readonly MainForm _owner;
 
-    private enum ColumnProperties { Visible, DisplayIndex, Width }
+    private enum ColumnProperties
+    {
+        Visible,
+        DisplayIndex,
+        Width,
+    }
 
     #region Menu item fields
 

@@ -91,13 +91,30 @@ public static partial class Misc
     And we don't want to give anyone any ideas to use this format (not like any modern program I know of
     can even write the .wri format, but still).
     */
-    public enum ReadmeType { PlainText, RichText, HTML, GLML, Wri }
+    public enum ReadmeType
+    {
+        PlainText,
+        RichText,
+        HTML,
+        GLML,
+        Wri,
+    }
 
     public static bool ReadmeTypeSupportsEncodingChange(ReadmeType readmeType) => readmeType is ReadmeType.PlainText or ReadmeType.GLML;
 
-    public enum ReadmeLocalizableMessage { None, NoReadmeFound, UnableToLoadReadme }
+    public enum ReadmeLocalizableMessage
+    {
+        None,
+        NoReadmeFound,
+        UnableToLoadReadme,
+    }
 
-    internal enum AudioConvert { MP3ToWAV, OGGToWAV, WAVToWAV16 }
+    internal enum AudioConvert
+    {
+        MP3ToWAV,
+        OGGToWAV,
+        WAVToWAV16,
+    }
 
     // Non-consts for file size; these aren't perf-critical at all
     [SuppressMessage("ReSharper", "ConvertToConstant.Global")]

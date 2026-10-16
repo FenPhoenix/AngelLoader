@@ -133,7 +133,11 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
     private readonly UpdatePage UpdatePage;
     private readonly IOThreadingPage IOThreadingPage;
 
-    private enum PathError { True, False }
+    private enum PathError
+    {
+        True,
+        False
+    }
 
     #region Disablers
 
