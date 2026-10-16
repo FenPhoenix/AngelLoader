@@ -254,10 +254,10 @@ internal static class Comparers
 
     private sealed class FMTitleComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -281,10 +281,10 @@ internal static class Comparers
 #if DateAccTest
     private sealed class FMDateAccuracyComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -311,10 +311,10 @@ internal static class Comparers
 
     private sealed class FMGameComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -341,10 +341,10 @@ internal static class Comparers
 
     private sealed class FMInstalledComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -370,10 +370,10 @@ internal static class Comparers
 
     private sealed class FMMisCountComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -400,10 +400,10 @@ internal static class Comparers
 
     private sealed class FMArchiveComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -421,7 +421,7 @@ internal static class Comparers
             string xArchive = x.DisplayArchive;
             string yArchive = y.DisplayArchive;
 
-            int ret = xArchive.AsSpan().SequenceEqual(yArchive.AsSpan())
+            int ret = EqualsFast(xArchive, yArchive)
                 ? TitleCompare(x, y)
                 : string.Compare(xArchive, yArchive, StringComparison.InvariantCultureIgnoreCase);
 
@@ -436,10 +436,10 @@ internal static class Comparers
 
     private sealed class FMAuthorComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -474,10 +474,10 @@ internal static class Comparers
 
     private sealed class FMSizeComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -504,10 +504,10 @@ internal static class Comparers
 
     private sealed class FMRatingComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -551,10 +551,10 @@ internal static class Comparers
 
     private sealed class FMFinishedComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -600,10 +600,10 @@ internal static class Comparers
 
     private sealed class FMReleaseDateComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -646,10 +646,10 @@ internal static class Comparers
 
     private sealed class FMLastPlayedComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -691,10 +691,10 @@ internal static class Comparers
 
     private sealed class FMDateAddedComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -717,10 +717,10 @@ internal static class Comparers
 
     private sealed class FMPlayTimeComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -744,10 +744,10 @@ internal static class Comparers
 
     private sealed class FMDisabledModsComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
@@ -801,10 +801,10 @@ internal static class Comparers
 
     private sealed class FMCommentComparer : IDirectionalSortFMComparer
     {
+        private DateTime _dateTimeNow;
         private SortDirection _sortDirection = SortDirection.Ascending;
         private bool _showRecentAtTop;
         private bool _showPinnedAtTop;
-        private DateTime _dateTimeNow;
 
         public void SetValues(SortDirection sortDirection, bool showRecentAtTop, bool showPinnedAtTop, DateTime dateTimeNow)
         {
