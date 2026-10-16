@@ -176,10 +176,7 @@ public sealed partial class ModsControl : UserControlCustom, IEventDisabler
 
     internal void RefreshCautionLabelText(string text)
     {
-        if (_cautionLabel != null)
-        {
-            _cautionLabel.Text = "* " + text;
-        }
+        _cautionLabel?.Text = "* " + text;
     }
 
     private void OnItemsCheckedChanged(object? sender, EventArgs e)

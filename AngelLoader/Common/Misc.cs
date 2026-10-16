@@ -549,7 +549,7 @@ public static partial class Misc
     [PublicAPI]
     public sealed class DriveLetterDictionary
     {
-        private Dictionary<char, DriveMultithreadingLevel> _dict;
+        private readonly Dictionary<char, DriveMultithreadingLevel> _dict;
 
         public DriveLetterDictionary() => _dict = new Dictionary<char, DriveMultithreadingLevel>();
 
