@@ -29,7 +29,7 @@ public static partial class Misc
         CurrentFM,
     }
 
-    public enum SortDirection
+    public enum SortDirection : byte
     {
         Ascending,
         Descending,
