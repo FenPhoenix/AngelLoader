@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2026.2.0" />
-    <PackageReference Include="Meziantou.Polyfill" Version="1.0.165">
+    <PackageReference Include="Meziantou.Polyfill" Version="1.0.166">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

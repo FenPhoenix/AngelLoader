@@ -21,12 +21,12 @@
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
   <ItemGroup>
-	  <PackageReference Include="Meziantou.Polyfill" Version="1.0.165">
+	  <PackageReference Include="Meziantou.Polyfill" Version="1.0.166">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
 	  <PackageReference Include="System.Memory" Version="4.6.3" />
-	  <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.12" />
+	  <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.13" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AL_Common\AL_Common.csproj" />
