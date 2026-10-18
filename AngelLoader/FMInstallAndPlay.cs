@@ -325,25 +325,25 @@ internal static partial class FMInstallAndPlay
 #endif
             if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame)) return false;
 
-            bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
-
-            string args = "";
-
-#if !ReleaseBeta && !ReleasePublic
-            if (GameIsDark(gameIndex))
-            {
-                // This gets overwritten if Steam is used, but it's private-build only and I don't use Steam, so it
-                // doesn't affect me in practice.
-                bool? forceWindowed = Config.ForceWindowed ? true : null;
-                OptionallyAddNewDarkArgument(ref args, NewDarkArgument.force_windowed, forceWindowed, nd128);
-            }
-#endif
+            string steamArgs = "";
+            string steamExe = "";
             string workingPath = Config.GetGamePath(gameIndex);
             var sv = GetSteamValues(gameIndex, playMP);
-            if (sv.Success) (_, gameExe, workingPath, args) = sv;
+            if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
+
+            string args =
+                gameIndex == GameIndex.TDM ? "" :
+                !steamArgs.IsEmpty() ? steamArgs
+                : "";
+
+            bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
 
             if (GameIsDark(gameIndex))
             {
+#if !ReleaseBeta && !ReleasePublic
+                bool? forceWindowed = Config.ForceWindowed ? true : null;
+                OptionallyAddNewDarkArgument(ref args, NewDarkArgument.force_windowed, forceWindowed, nd128);
+#endif
                 OptionallyAddNewDarkArgument(ref args, NewDarkArgument.new_mantle, Config.GetNewMantling(gameIndex), nd128);
             }
 
@@ -361,10 +361,10 @@ internal static partial class FMInstallAndPlay
             }
 
             if (!StartExeForPlayOriginalGame(
-                    gameIndex,
-                    gameExe,
-                    workingPath,
-                    args))
+                    gameIndex: gameIndex,
+                    exe: sv.Success ? steamExe : gameExe,
+                    workingPath: workingPath,
+                    args: args))
             {
                 return false;
             }
