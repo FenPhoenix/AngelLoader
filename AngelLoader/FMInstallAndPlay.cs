@@ -313,33 +313,15 @@ internal static partial class FMInstallAndPlay
         {
             Core.View.SetWaitCursor(true);
 
-            (bool success, string gameExe, string gamePath) =
-                CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: true, playMP);
-            if (!success) return false;
+            PlayPrepValues playPrepValues = DoPlayPrep(gameIndex, playingOriginalGame: true, playMP);
+            if (!playPrepValues.Success) return false;
 
-            Paths.CreateOrClearTempPath(TempPaths.StubComm);
-
-            GameConfigFiles.FixCharacterDetailLine(gameIndex);
-#if !ReleaseBeta && !ReleasePublic
-            GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
-#endif
-            if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.OriginalGame)) return false;
-
-            string steamArgs = "";
-            string steamExe = "";
-            string workingPath = Config.GetGamePath(gameIndex);
-            var sv = GetSteamValues(gameIndex, playMP);
-            if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
-
-            string args =
-                gameIndex == GameIndex.TDM ? "" :
-                !steamArgs.IsEmpty() ? steamArgs
-                : "";
-
-            bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+            string args = playPrepValues.Args;
 
             if (GameIsDark(gameIndex))
             {
+                bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
+
 #if !ReleaseBeta && !ReleasePublic
                 bool? forceWindowed = Config.ForceWindowed ? true : null;
                 OptionallyAddNewDarkArgument(ref args, NewDarkArgument.force_windowed, forceWindowed, nd128);
@@ -348,7 +330,7 @@ internal static partial class FMInstallAndPlay
             }
 
             if (!WriteStubCommFileForOriginalGame(
-                    gamePath: gamePath,
+                    gamePath: playPrepValues.GamePath,
                     gameIndex: gameIndex,
                     origDisabledMods: Config.GetDisabledMods(gameIndex)))
             {
@@ -362,8 +344,8 @@ internal static partial class FMInstallAndPlay
 
             if (!StartExeForPlayOriginalGame(
                     gameIndex: gameIndex,
-                    exe: sv.Success ? steamExe : gameExe,
-                    workingPath: workingPath,
+                    exe: playPrepValues.ExeToRun,
+                    workingPath: playPrepValues.ExeToRunWorkingPath,
                     args: args))
             {
                 return false;
@@ -381,61 +363,10 @@ internal static partial class FMInstallAndPlay
     {
         using DisableScreenshotWatchers dsw = new();
 
-        (bool success, string gameExe, string gamePath) =
-            CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame: false, playMP);
-        if (!success) return false;
+        PlayPrepValues playPrepValues = DoPlayPrep(gameIndex, playingOriginalGame: false, playMP);
+        if (!playPrepValues.Success) return false;
 
-        Paths.CreateOrClearTempPath(TempPaths.StubComm);
-
-        GameConfigFiles.FixCharacterDetailLine(gameIndex);
-#if !ReleaseBeta && !ReleasePublic
-        GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
-#endif
-        if (!SetUsAsSelector(gameIndex, gamePath, PlaySource.FM)) return false;
-
-        string steamArgs = "";
-        string steamExe = "";
-        string workingPath = Config.GetGamePath(gameIndex);
-        var sv = GetSteamValues(gameIndex, playMP);
-        if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
-
-        /*
-        BUG: Possible stub comm file not being deleted in the following scenario:
-        You launch a game through Steam, but the game doesn't actually launch (because you don't have
-        it in your Steam library or any other situation in which it gets cancelled). Because the game
-        never runs, it never deletes the stub comm file. The next time the game runs, it finds the stub
-        file and loads up whatever FM was specified. This won't happen if you launch an FM or original
-        game from AngelLoader, as we delete or overwrite the stub file ourselves before playing anything,
-        but if you were to run the game manually, it would load whatever FM was specified in the stub
-        once, and then delete it, so if you ran it again it would properly start the original game and
-        everything would be fine again.
-        I could solve it if there was a way to detect if we were being launched through Steam. I don't
-        know if there is, but then I could just specify a Steam=True line in the stub file, and then
-        if we're being launched through Steam we read and act on it as usual, but if we're not, then
-        we just delete it and ignore.
-        I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
-        works and one that doesn't, so I can test both paths.
-        */
-
-        string args =
-            /*
-            We set it in currentfm.txt beforehand. The reason we DON'T pass it as an arg is because then if you
-            deselect the FM in-game, when it restarts, the FM will be selected again. Probably it passes the
-            arguments it was started with to the next instance. This is probably not what the user wants, so
-            let's avoid it.
-
-            @TDM_NOTE: Once in a while the game starts with no FM even though there's one in currentfm.txt.
-            I haven't been able to reliably reproduce this. Presumably it can't read the file for some reason.
-            Passing args would bypass this file and guarantee it loads our FM, but then we get the above-described
-            problem. If anyone else reports this we could go back to the arg passing, but eh...
-            */
-            gameIndex == GameIndex.TDM ? "" :
-            // We don't use the -fm argument for Steam, but "fm" gets written to cam_mod.ini before play, which
-            // does the same thing. I forget why we don't use the argument, but I assume Steam just doesn't
-            // accept it. We could probably just get rid of the -fm entirely even for the non-Steam path, given
-            // the above, but everything works as is so let's just leave it alone for now.
-            !steamArgs.IsEmpty() ? steamArgs :
-            "-fm";
+        string args = playPrepValues.Args;
 
         if (GameIsDark(fm.Game))
         {
@@ -482,16 +413,16 @@ internal static partial class FMInstallAndPlay
 
         if (!RunThiefBuddyIfRequired(fm)) return false;
 
-        if (!WriteStubCommFileForFM(fm, gamePath)) return false;
+        if (!WriteStubCommFileForFM(fm, playPrepValues.GamePath)) return false;
 
         if (!await StartExeForPlayFM(
                 fm: fm,
                 gameIndex: gameIndex,
-                exe: sv.Success ? steamExe : gameExe,
-                gameExe: gameExe,
-                workingPath: workingPath,
+                exe: playPrepValues.ExeToRun,
+                gameExe: playPrepValues.GameExe,
+                workingPath: playPrepValues.ExeToRunWorkingPath,
                 args: args,
-                steam: sv.Success))
+                steam: playPrepValues.UseSteam))
         {
             return false;
         }
@@ -570,6 +501,253 @@ internal static partial class FMInstallAndPlay
     #endregion
 
     #region Helpers
+
+    private readonly struct PlayPrepValues
+    {
+        internal readonly bool Success;
+        internal readonly string ExeToRunWorkingPath;
+        internal readonly string ExeToRun;
+        internal readonly string GamePath;
+        internal readonly string GameExe;
+        internal readonly string Args;
+        internal readonly bool UseSteam;
+
+        internal static PlayPrepValues Failed => new(false, "", "", "", "", "", false);
+
+        internal PlayPrepValues(
+            bool success,
+            string exeToRunWorkingPath,
+            string exeToRun,
+            string gamePath,
+            string gameExe,
+            string args,
+            bool useSteam)
+        {
+            Success = success;
+            ExeToRun = exeToRun;
+            GameExe = gameExe;
+            ExeToRunWorkingPath = exeToRunWorkingPath;
+            Args = args;
+            GamePath = gamePath;
+            UseSteam = useSteam;
+        }
+    }
+
+    private static PlayPrepValues DoPlayPrep(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
+    {
+        (bool success, string gameExe, string gamePath) =
+            CheckAndReturnFinalGameExeAndGamePath(gameIndex, playingOriginalGame, playMP);
+        if (!success) return PlayPrepValues.Failed;
+
+        Paths.CreateOrClearTempPath(TempPaths.StubComm);
+
+        GameConfigFiles.FixCharacterDetailLine(gameIndex);
+#if !ReleaseBeta && !ReleasePublic
+        GameConfigFiles.SetGlobalDarkGameValues(gameIndex);
+#endif
+        if (!SetUsAsSelector(gameIndex, gamePath, playingOriginalGame ? PlaySource.OriginalGame : PlaySource.FM))
+        {
+            return PlayPrepValues.Failed;
+        }
+
+        string steamArgs = "";
+        string steamExe = "";
+        string workingPath = gamePath;
+        var sv = GetSteamValues(gameIndex, playMP);
+        if (sv.Success) (_, steamExe, workingPath, steamArgs) = sv;
+
+        /*
+        BUG: Possible stub comm file not being deleted in the following scenario:
+        You launch a game through Steam, but the game doesn't actually launch (because you don't have
+        it in your Steam library or any other situation in which it gets cancelled). Because the game
+        never runs, it never deletes the stub comm file. The next time the game runs, it finds the stub
+        file and loads up whatever FM was specified. This won't happen if you launch an FM or original
+        game from AngelLoader, as we delete or overwrite the stub file ourselves before playing anything,
+        but if you were to run the game manually, it would load whatever FM was specified in the stub
+        once, and then delete it, so if you ran it again it would properly start the original game and
+        everything would be fine again.
+        I could solve it if there was a way to detect if we were being launched through Steam. I don't
+        know if there is, but then I could just specify a Steam=True line in the stub file, and then
+        if we're being launched through Steam we read and act on it as usual, but if we're not, then
+        we just delete it and ignore.
+        I'll have to buy the games on Steam to test this. Or just buy one so I can have one game that
+        works and one that doesn't, so I can test both paths.
+        */
+
+        string args =
+            /*
+            We set it in currentfm.txt beforehand. The reason we DON'T pass it as an arg is because then if you
+            deselect the FM in-game, when it restarts, the FM will be selected again. Probably it passes the
+            arguments it was started with to the next instance. This is probably not what the user wants, so
+            let's avoid it.
+
+            @TDM_NOTE: Once in a while the game starts with no FM even though there's one in currentfm.txt.
+            I haven't been able to reliably reproduce this. Presumably it can't read the file for some reason.
+            Passing args would bypass this file and guarantee it loads our FM, but then we get the above-described
+            problem. If anyone else reports this we could go back to the arg passing, but eh...
+            */
+            gameIndex == GameIndex.TDM ? "" :
+            // We don't use the -fm argument for Steam, but "fm" gets written to cam_mod.ini before play, which
+            // does the same thing. I forget why we don't use the argument, but I assume Steam just doesn't
+            // accept it. We could probably just get rid of the -fm entirely even for the non-Steam path, given
+            // the above, but everything works as is so let's just leave it alone for now.
+            !steamArgs.IsEmpty() ? steamArgs :
+            playingOriginalGame ? "" :
+            "-fm";
+
+        return new PlayPrepValues(
+            success: true,
+            exeToRunWorkingPath: workingPath,
+            exeToRun: sv.Success ? steamExe : gameExe,
+            gamePath: gamePath,
+            gameExe: gameExe,
+            args: args,
+            useSteam: sv.Success);
+
+        static (bool Success, string GameExe, string GamePath)
+        CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
+        {
+            var failed = (Success: false, GameExe: "", GamePath: "");
+
+            string gameName = GetLocalizedGameName(gameIndex);
+
+            string gameExe = Config.GetGameExe(gameIndex);
+
+            #region Fail if game path is blank
+
+            string gamePath = Config.GetGamePath(gameIndex);
+            if (gamePath.IsEmpty())
+            {
+                Log(ErrorText.GamePathEmpty + $"{NL}" + gameIndex, stackTrace: true);
+                Core.Dialogs.ShowError(gameName + $":{NL}" + ErrorText.GamePathEmpty);
+                return failed;
+            }
+
+            #endregion
+
+            if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
+
+            #region Exe: Fail if blank or not found
+
+            if (GameDirNeedsWriteAccess(gameIndex))
+            {
+                if (!DirectoryHasWritePermission(gamePath))
+                {
+                    Log(gameName + $": No write permission for game directory.{NL}" +
+                        "Game path: " + gamePath);
+
+                    Core.Dialogs.ShowError(
+                        GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
+                        LText.AlertMessages.NoWriteAccessToGameDir_Play + $"{NL}{NL}" +
+                        LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
+                        gamePath,
+                        icon: MBoxIcon.Warning
+                    );
+
+                    return failed;
+                }
+            }
+
+            if (gameExe.IsEmpty() || !File.Exists(gameExe))
+            {
+                string exeNotFoundMessage = playingOriginalGame
+                    ? LText.AlertMessages.Play_ExecutableNotFound
+                    : LText.AlertMessages.Play_ExecutableNotFoundFM;
+
+                if (gameExe.IsEmpty())
+                {
+                    Log(gameName + ": Game executable not specified.");
+                }
+                else
+                {
+                    Log(gameName + ": Game executable not found: " + gameExe);
+                }
+
+                string finalMessage = gameName + $":{NL}" + exeNotFoundMessage;
+                if (!gameExe.IsEmpty()) finalMessage += $"{NL}{NL}" + gameExe;
+
+                Core.Dialogs.ShowError(finalMessage);
+                return failed;
+            }
+
+            #endregion
+
+            #region Exe: Fail if already running
+
+            if (GameIsRunning(gameExe, checkAllGames: true))
+            {
+                Core.Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
+                return failed;
+            }
+
+            #endregion
+
+            // Put this AFTER running check, because the user might go into DarkLoader and have it mess with the
+            // files in the game dir, and we don't want the game running if they do that.
+            #region Fail on DarkLoader FM installed
+
+            if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
+            {
+                string dlExe = AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
+
+                (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
+                    message: GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
+                             LText.AlertMessages.DarkLoader_InstalledFMFound,
+                    title: LText.AlertMessages.Alert,
+                    icon: MBoxIcon.Warning,
+                    yes: !dlExe.IsEmpty() ? LText.AlertMessages.DarkLoader_OpenNow : null,
+                    no: LText.Global.ContinueAnyway,
+                    cancel: LText.Global.Cancel,
+                    defaultButton: !dlExe.IsEmpty() ? MBoxButton.Yes : MBoxButton.Cancel
+                );
+                if (result == MBoxButton.Yes && !dlExe.IsEmpty())
+                {
+                    try
+                    {
+                        ProcessStart_UseShellExecute(dlExe);
+                    }
+                    catch (Exception ex)
+                    {
+                        string msg = ErrorText.Un + "open DarkLoader.";
+                        Log(msg, ex);
+                        Core.Dialogs.ShowError(msg);
+                    }
+                    return failed;
+                }
+                else if (result == MBoxButton.Cancel)
+                {
+                    return failed;
+                }
+            }
+
+            #endregion
+
+            return (true, gameExe, gamePath);
+        }
+
+        static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
+        GetSteamValues(GameIndex game, bool playMP)
+        {
+            // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
+            // will start Thief2.exe
+            if (!playMP &&
+                !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
+                Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
+            {
+                string? workingPath = Path.GetDirectoryName(Config.SteamExe);
+
+                if (workingPath.IsEmpty()) return (false, "", "", "");
+
+                string args = "-applaunch " + GetGameSteamId(game);
+
+                return (true, Config.SteamExe, workingPath, args);
+            }
+            else
+            {
+                return (false, "", "", "");
+            }
+        }
+    }
 
     /// <summary>
     /// Adds an argument to <see paramref="args"/> based on <see paramref="newDarkArgument"/> if <see paramref="value"/> is non-null, otherwise does nothing.
@@ -861,150 +1039,6 @@ internal static partial class FMInstallAndPlay
     }
 
     #endregion
-
-    private static (bool Success, string GameExe, string GamePath)
-    CheckAndReturnFinalGameExeAndGamePath(GameIndex gameIndex, bool playingOriginalGame, bool playMP)
-    {
-        var failed = (Success: false, GameExe: "", GamePath: "");
-
-        string gameName = GetLocalizedGameName(gameIndex);
-
-        string gameExe = Config.GetGameExe(gameIndex);
-
-        #region Fail if game path is blank
-
-        string gamePath = Config.GetGamePath(gameIndex);
-        if (gamePath.IsEmpty())
-        {
-            Log(ErrorText.GamePathEmpty + $"{NL}" + gameIndex, stackTrace: true);
-            Core.Dialogs.ShowError(gameName + $":{NL}" + ErrorText.GamePathEmpty);
-            return failed;
-        }
-
-        #endregion
-
-        if (playMP) gameExe = Path.Combine(gamePath, Paths.T2MPExe);
-
-        #region Exe: Fail if blank or not found
-
-        if (GameDirNeedsWriteAccess(gameIndex))
-        {
-            if (!DirectoryHasWritePermission(gamePath))
-            {
-                Log(gameName + $": No write permission for game directory.{NL}" +
-                    "Game path: " + gamePath);
-
-                Core.Dialogs.ShowError(
-                    GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
-                    LText.AlertMessages.NoWriteAccessToGameDir_Play + $"{NL}{NL}" +
-                    LText.AlertMessages.GameDirInsideProgramFiles_Explanation + $"{NL}{NL}" +
-                    gamePath,
-                    icon: MBoxIcon.Warning
-                );
-
-                return failed;
-            }
-        }
-
-        if (gameExe.IsEmpty() || !File.Exists(gameExe))
-        {
-            string exeNotFoundMessage = playingOriginalGame
-                ? LText.AlertMessages.Play_ExecutableNotFound
-                : LText.AlertMessages.Play_ExecutableNotFoundFM;
-
-            if (gameExe.IsEmpty())
-            {
-                Log(gameName + ": Game executable not specified.");
-            }
-            else
-            {
-                Log(gameName + ": Game executable not found: " + gameExe);
-            }
-
-            string finalMessage = gameName + $":{NL}" + exeNotFoundMessage;
-            if (!gameExe.IsEmpty()) finalMessage += $"{NL}{NL}" + gameExe;
-
-            Core.Dialogs.ShowError(finalMessage);
-            return failed;
-        }
-
-        #endregion
-
-        #region Exe: Fail if already running
-
-        if (GameIsRunning(gameExe, checkAllGames: true))
-        {
-            Core.Dialogs.ShowAlert(LText.AlertMessages.Play_AnyGameIsRunning, LText.AlertMessages.Alert);
-            return failed;
-        }
-
-        #endregion
-
-        // Put this AFTER running check, because the user might go into DarkLoader and have it mess with the
-        // files in the game dir, and we don't want the game running if they do that.
-        #region Fail on DarkLoader FM installed
-
-        if (GameConfigFiles.GameHasDarkLoaderFMInstalled(gameIndex))
-        {
-            string dlExe = AutodetectDarkLoaderFile(Paths.DarkLoaderExe);
-
-            (MBoxButton result, _) = Core.Dialogs.ShowMultiChoiceDialog(
-                message: GetLocalizedGameNameColon(gameIndex) + $"{NL}" +
-                         LText.AlertMessages.DarkLoader_InstalledFMFound,
-                title: LText.AlertMessages.Alert,
-                icon: MBoxIcon.Warning,
-                yes: !dlExe.IsEmpty() ? LText.AlertMessages.DarkLoader_OpenNow : null,
-                no: LText.Global.ContinueAnyway,
-                cancel: LText.Global.Cancel,
-                defaultButton: !dlExe.IsEmpty() ? MBoxButton.Yes : MBoxButton.Cancel
-            );
-            if (result == MBoxButton.Yes && !dlExe.IsEmpty())
-            {
-                try
-                {
-                    ProcessStart_UseShellExecute(dlExe);
-                }
-                catch (Exception ex)
-                {
-                    string msg = ErrorText.Un + "open DarkLoader.";
-                    Log(msg, ex);
-                    Core.Dialogs.ShowError(msg);
-                }
-                return failed;
-            }
-            else if (result == MBoxButton.Cancel)
-            {
-                return failed;
-            }
-        }
-
-        #endregion
-
-        return (true, gameExe, gamePath);
-    }
-
-    private static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
-    GetSteamValues(GameIndex game, bool playMP)
-    {
-        // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
-        // will start Thief2.exe
-        if (!playMP &&
-            !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
-            Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
-        {
-            string? workingPath = Path.GetDirectoryName(Config.SteamExe);
-
-            if (workingPath.IsEmpty()) return (false, "", "", "");
-
-            string args = "-applaunch " + GetGameSteamId(game);
-
-            return (true, Config.SteamExe, workingPath, args);
-        }
-        else
-        {
-            return (false, "", "", "");
-        }
-    }
 
     private static bool RunThiefBuddyIfRequired(FanMission fm)
     {
