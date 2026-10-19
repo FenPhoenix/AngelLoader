@@ -68,31 +68,27 @@ public static partial class Common
 #endif
     }
 
-    public static int FindIndexOfCharSequence(string input, string pattern, int start = 0)
-    {
-        char firstChar = pattern[0];
-        int index = input.IndexOf(firstChar, start);
-
-        while (index > -1)
-        {
-            for (int i = 0; i < pattern.Length; i++)
-            {
-                if (index + i >= input.Length) return -1;
-                if (pattern[i] != input[index + i])
-                {
-                    if ((index = input.IndexOf(firstChar, index + i)) == -1) return -1;
-                    break;
-                }
-
-                if (i == pattern.Length - 1) return index;
-            }
-        }
-
-        return -1;
-    }
-
+    /// <summary>
+    /// Replaces all instances in <see paramref="input"/> of <see paramref="pattern"/> with <see paramref="replacePattern"/>.
+    /// <see paramref="pattern"/> and <see paramref="replacePattern"/> MUST both be the same length.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="pattern"></param>
+    /// <param name="replacePattern"></param>
     public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
     {
+#if X64
+        int patternLength = pattern.Length;
+        int index = 0;
+        while (true)
+        {
+            index = FindIndexOfByteSequence(input, pattern, index);
+            if (index == -1) break;
+
+            Array.Copy(replacePattern, 0, input, index, patternLength);
+            index += patternLength;
+        }
+#else
         byte firstByte = pattern[0];
         int index = Array_IndexOfByte_Fast(input, firstByte);
         int pLen = pattern.Length;
@@ -117,6 +113,7 @@ public static partial class Common
                 }
             }
         }
+#endif
     }
 
     public static bool Contains(this byte[] input, byte[] pattern, int length = -1)
