@@ -3557,19 +3557,13 @@ public sealed class Scanner : IDisposable
                         last.Text = text;
                     }
                 }
-                else if (readmeFile.Name.ExtIsGlml())
-                {
-                    using Stream stream = _fmFormat.IsStreamableArchive()
-                        ? readmeEntry.Open()
-                        : readmeStream;
-                    last.Text = Utility.GLMLToPlainText(ReadAllTextUTF8(stream));
-                }
                 else
                 {
                     using StreamScope streamScope = _fmFormat.IsStreamableArchive()
                         ? readmeEntry.OpenSeekable()
                         : new StreamScope(this, readmeStream);
-                    last.Text = ReadAllTextDetectEncoding(streamScope.Stream);
+                    string text = ReadAllTextDetectEncoding(streamScope.Stream);
+                    last.Text = readmeFile.Name.ExtIsGlml() ? Utility.GLMLToPlainText(text) : text;
                 }
 
                 last.SetLines(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
