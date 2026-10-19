@@ -11,31 +11,24 @@ public static partial class Common
         return index;
     }
 
+    /// <summary>
+    /// Replaces all instances in <see paramref="input"/> of <see paramref="pattern"/> with <see paramref="replacePattern"/>.
+    /// <see paramref="pattern"/> and <see paramref="replacePattern"/> MUST both be the same length.
+    /// </summary>
+    /// <param name="input"></param>
+    /// <param name="pattern"></param>
+    /// <param name="replacePattern"></param>
     public static void ReplaceByteSequence(byte[] input, byte[] pattern, byte[] replacePattern)
     {
-        byte firstByte = pattern[0];
-        int index = Array.IndexOf(input, firstByte);
-        int pLen = pattern.Length;
-
-        while (index > -1)
+        int patternLength = pattern.Length;
+        int index = 0;
+        while (true)
         {
-            for (int i = 0; i < pLen; i++)
-            {
-                if (index + i >= input.Length) return;
-                if (pattern[i] != input[index + i])
-                {
-                    if ((index = Array.IndexOf(input, firstByte, index + i)) == -1) return;
-                    break;
-                }
+            index = FindIndexOfByteSequence(input, pattern, index);
+            if (index == -1) break;
 
-                if (i == pLen - 1)
-                {
-                    for (int j = index, ri = 0; j < index + pLen; j++, ri++)
-                    {
-                        input[j] = replacePattern[ri];
-                    }
-                }
-            }
+            Array.Copy(replacePattern, 0, input, index, patternLength);
+            index += patternLength;
         }
     }
 
