@@ -764,17 +764,20 @@ internal static class ControlUtils
         */
         if (control is DarkTabControl dtc)
         {
-            Control[] backingPages = dtc.BackingTabPagesAsControls;
-            foreach (Control backingPage in backingPages)
+            if (!dtc.BackingListIsDuplicate)
             {
-                FillControlColorList(
-                    control: backingPage,
-                    controlColors: controlColors,
-                    createControlHandles: createControlHandles
+                List<BackingTab> backingPages = dtc.BackingTabList;
+                foreach (BackingTab backingPage in backingPages)
+                {
+                    FillControlColorList(
+                        control: backingPage.TabPage,
+                        controlColors: controlColors,
+                        createControlHandles: createControlHandles
 #if !ReleasePublic && !NoAsserts
-                    , stackCounter: stackCounter
+                        , stackCounter: stackCounter
 #endif
-                );
+                    );
+                }
             }
         }
         else
