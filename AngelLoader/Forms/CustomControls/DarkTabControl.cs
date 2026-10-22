@@ -24,6 +24,7 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
     public TabPage? DragTab { get; private set; }
 
     private List<BackingTab> _backingTabList = new(0);
+    internal List<BackingTab> BackingTabList => _backingTabList;
 
     #region Back up backing tabs
 
@@ -75,12 +76,26 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 
     #endregion
 
+    /*
+    Colossal garbage to avoid duplicate work in theme setter, where it would otherwise go through a list multiple
+    times, once for every DarkTabControl that shares it. Now it will only go through it once total.
+    */
+    private static readonly HashSet<List<BackingTab>> _backingTabListsHashSet = new();
+    internal bool BackingListIsDuplicate { get; private set; }
+
     /// <summary>
     /// Use this to use an external list rather than the internal one.
     /// Use when you want multiple controls to use the same list.
     /// </summary>
     /// <param name="list"></param>
-    internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
+    internal void SetBackingList(List<BackingTab> list)
+    {
+        if (!_backingTabListsHashSet.Add(list))
+        {
+            BackingListIsDuplicate = true;
+        }
+        _backingTabList = list;
+    }
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal WhichTabControl WhichTabControl { get; private set; } = WhichTabControl.Top;
@@ -133,21 +148,6 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
     [PublicAPI]
     [DefaultValue(false)]
     public bool EnableScrollButtonsRefreshHack { get; set; }
-
-    [Browsable(false)]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-    public Control[] BackingTabPagesAsControls
-    {
-        get
-        {
-            Control[] ret = new Control[_backingTabList.Count];
-            for (int i = 0; i < ret.Length; i++)
-            {
-                ret[i] = _backingTabList[i].TabPage;
-            }
-            return ret;
-        }
-    }
 
     // Double-buffering prevents flickering when mouse is moved over in dark mode
     public DarkTabControl() => SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
