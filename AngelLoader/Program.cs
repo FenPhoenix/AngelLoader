@@ -1,7 +1,6 @@
 ﻿#define WinForms
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
-//#define TRACE_WRITE_TO_FILE
 
 using System;
 using System.Drawing;
@@ -58,12 +57,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-#if TRACE_WRITE_TO_FILE
-        using FileStream fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
-        using System.Diagnostics.TextWriterTraceListener fl = new(fs);
-        System.Diagnostics.Trace.Listeners.Add(fl);
-#endif
-
         // Absolute first thing, so it comes before any Process calls (so we can tell it to use UTF8 if we need).
         // We don't know if there might be any Process calls somewhere in this SingleInstance mess, or somewhere
         // else, so just assume there are and do this first.
