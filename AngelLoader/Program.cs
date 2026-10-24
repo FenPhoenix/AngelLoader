@@ -1,7 +1,6 @@
 ﻿#define WinForms
 //#define ENABLE_RTF_VISUAL_TEST_FORM
 //#define HIGH_DPI
-//#define TRACE_WRITE_TO_FILE
 
 using System;
 using System.Drawing;
@@ -58,12 +57,6 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
-#if TRACE_WRITE_TO_FILE
-        using FileStream fs = File.Open(Path.Combine(Paths.Startup, "_TRACE_WRITELINE.txt"), FileMode.Create, FileAccess.Write, FileShare.Read);
-        using System.Diagnostics.TextWriterTraceListener fl = new(fs);
-        System.Diagnostics.Trace.Listeners.Add(fl);
-#endif
-
         /*
         @Wine: We include this dependency solely for Wine, which requires it unless the user were to install real
         .NET. Windows doesn't require this, but it does no harm - except bloating us up by 700k, but such are the
