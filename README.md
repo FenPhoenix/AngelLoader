@@ -3,7 +3,10 @@ AngelLoader
 
 ## This is the modern .NET version. It is believed to work fine (but doesn't receive much field testing), and you can compile and use it if you're interested in comparing.
 
-## If you want to change the targeted .NET version (eg. to upgrade), you **must** [follow the instructions for generated a new custom System.Drawing.dll here](https://www.github.com/AngelLoader/BUILDING.md) or it won't compile!
+### *IMPORTANT!*
+If you want to change the targeted .NET version (eg. to upgrade), you **must** [follow the instructions for generating a new custom System.Drawing.dll here](https://github.com/FenPhoenix/AngelLoader/blob/NET_Modern/BUILDING.md) or it won't compile!
+
+<hr>
 
 There are no new features compared to the standard .NET Framework version, and the code is almost entirely the same, differing only to work around breaking changes or to take advantage of higher-performance language features.
 
