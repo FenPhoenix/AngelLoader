@@ -63,6 +63,7 @@ I haven't tried or tested running this modern .NET version on Linux yet, sorry.
 - Use Visual Studio 2026 with .NET and C++ desktop workloads installed.
 - Use Release_Public for the standard AngelLoader build.
 - All dependencies now are either NuGet packages or are included in the bin_dependencies folder, so you should be able to just build with no fuss now.
+- To repeat, for this modern .NET version, you must [follow the instructions for generating a new custom System.Drawing.dll here](https://github.com/FenPhoenix/AngelLoader/blob/NET_Modern/BUILDING.md) or it won't compile once the targeted version has been changed.
 
 ## License
 AngelLoader's code is released under the MIT license, except portions which are otherwise specified in the About window and in the [Licenses directory](https://github.com/FenPhoenix/AngelLoader/tree/master/BinReleaseOnly/Licenses).
