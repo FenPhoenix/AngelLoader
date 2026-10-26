@@ -1,6 +1,6 @@
 ## Important notes on updating targeted .NET version - must read this to make it work!
 
-#### Modern .NET breaks one of the theme hooks, so we have to modify System.Drawing.dll to un-break it with every new .NET version targeted. Here are my notes on how to do it, slightly cleaned up but basically as I wrote them:
+#### Modern .NET breaks one of the theme hooks, so we have to modify System.Drawing.Primitives.dll to un-break it with every new .NET version targeted. Here are my notes on how to do it, slightly cleaned up but basically as I wrote them:
 
 - Download .NET explicit version branch zip file from the [dotnet repo](https://github.com/dotnet/runtime) repo (eg. release/9.0)
 
