@@ -6,7 +6,7 @@
 
 - Extract it to a folder with no spaces in the name - that's required! Also, make sure no personal info is in the path because it will bake the path into the dll - so just put it in for example, `C:\net9.0`
 
-- Remove `[SuppressGCTransition]` attribute from GetSysColor in `/src/libraries/Common/src/Interop/Windows/User32/Interop.GetSysColor.cs`
+- Remove `[SuppressGCTransition]` attribute from GetSysColor() in `/src/libraries/Common/src/Interop/Windows/User32/Interop.GetSysColor.cs`
 
 - Ensure Python 3 is installed, and by installed I mean:
   - Download and install it from the site, making sure to check "Add to path env var" or whatever
