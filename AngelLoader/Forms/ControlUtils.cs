@@ -722,7 +722,23 @@ internal static class ControlUtils
     private static void FillControlColorList(
         Control control,
         List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
-        bool createControlHandles
+        bool createControlHandles)
+    {
+        // Avoid duplicate work in theme setter, where it would otherwise go through a list multiple times, once
+        // for every DarkTabControl that shares it. Now it will only go through it once total.
+        HashSet<List<BackingTab>> backingTabHash = new();
+        FillControlColorList_Internal(
+            control,
+            controlColors,
+            createControlHandles,
+            backingTabHash);
+    }
+
+    private static void FillControlColorList_Internal(
+        Control control,
+        List<KeyValuePair<Control, ControlOriginalColors?>>? controlColors,
+        bool createControlHandles,
+        HashSet<List<BackingTab>> backingTabHash
 #if !ReleasePublic && !NoAsserts
         , int stackCounter = 0
 #endif
@@ -764,15 +780,16 @@ internal static class ControlUtils
         */
         if (control is DarkTabControl dtc)
         {
-            if (!dtc.BackingListIsDuplicate)
+            List<BackingTab> backingPages = dtc.BackingTabList;
+            if (backingTabHash.Add(backingPages))
             {
-                List<BackingTab> backingPages = dtc.BackingTabList;
                 foreach (BackingTab backingPage in backingPages)
                 {
-                    FillControlColorList(
+                    FillControlColorList_Internal(
                         control: backingPage.TabPage,
                         controlColors: controlColors,
-                        createControlHandles: createControlHandles
+                        createControlHandles: createControlHandles,
+                        backingTabHash
 #if !ReleasePublic && !NoAsserts
                         , stackCounter: stackCounter
 #endif
@@ -786,10 +803,11 @@ internal static class ControlUtils
             int count = controls.Count;
             for (int i = 0; i < count; i++)
             {
-                FillControlColorList(
+                FillControlColorList_Internal(
                     control: controls[i],
                     controlColors: controlColors,
-                    createControlHandles: createControlHandles
+                    createControlHandles: createControlHandles,
+                    backingTabHash
 #if !ReleasePublic && !NoAsserts
                     , stackCounter: stackCounter
 #endif

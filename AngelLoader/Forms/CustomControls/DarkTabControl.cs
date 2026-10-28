@@ -76,26 +76,12 @@ public sealed class DarkTabControl : TabControl, IDarkable, IOptionallyLazyTabCo
 
     #endregion
 
-    /*
-    Colossal garbage to avoid duplicate work in theme setter, where it would otherwise go through a list multiple
-    times, once for every DarkTabControl that shares it. Now it will only go through it once total.
-    */
-    private static readonly HashSet<List<BackingTab>> _backingTabListsHashSet = new();
-    internal bool BackingListIsDuplicate { get; private set; }
-
     /// <summary>
     /// Use this to use an external list rather than the internal one.
     /// Use when you want multiple controls to use the same list.
     /// </summary>
     /// <param name="list"></param>
-    internal void SetBackingList(List<BackingTab> list)
-    {
-        if (!_backingTabListsHashSet.Add(list))
-        {
-            BackingListIsDuplicate = true;
-        }
-        _backingTabList = list;
-    }
+    internal void SetBackingList(List<BackingTab> list) => _backingTabList = list;
 
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     internal WhichTabControl WhichTabControl { get; private set; } = WhichTabControl.Top;
