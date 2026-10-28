@@ -952,10 +952,7 @@ public sealed partial class MainForm : DarkFormBase,
 
         // EnsureValidity() guarantees selected tab will not be invisible
         TopFMTabControl.SelectedTab = _fmTabPages[(int)Config.FMTabsData.SelectedTab];
-        if (Lazy_BottomTabControl.Constructed)
-        {
-            Lazy_BottomTabControl.TabControl.SelectedTab = _fmTabPages[(int)Config.FMTabsData.SelectedTab2];
-        }
+        Lazy_BottomTabControl.SelectedTab = _fmTabPages[(int)Config.FMTabsData.SelectedTab2];
 
         #endregion
 

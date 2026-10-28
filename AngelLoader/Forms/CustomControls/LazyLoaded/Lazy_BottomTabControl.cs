@@ -6,7 +6,7 @@ namespace AngelLoader.Forms.CustomControls.LazyLoaded;
 
 internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabControl
 {
-    internal bool Constructed { get; private set; }
+    private bool _constructed;
 
     private readonly MainForm _owner;
 
@@ -30,7 +30,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
         {
             if (_darkModeEnabled == value) return;
             _darkModeEnabled = value;
-            if (!Constructed) return;
+            if (!_constructed) return;
 
             TabControl.DarkModeEnabled = value;
         }
@@ -45,7 +45,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
     // contents and those are still unloaded until they show.
     internal void Construct()
     {
-        if (Constructed) return;
+        if (_constructed) return;
 
         var container = _owner.BottomSplitContainer.Panel2;
 
@@ -80,7 +80,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
         _tabControl.Enabled = _enabled;
 
-        Constructed = true;
+        _constructed = true;
     }
 
     public void ShowTab(TabPage tabPage, bool show)
@@ -90,7 +90,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
             Construct();
             _tabControl.ShowTab(tabPage, true);
         }
-        else if (Constructed)
+        else if (_constructed)
         {
             _tabControl.ShowTab(tabPage, false);
         }
@@ -98,10 +98,10 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     public bool Enabled
     {
-        get => Constructed ? _tabControl.Enabled : _enabled;
+        get => _constructed ? _tabControl.Enabled : _enabled;
         set
         {
-            if (Constructed)
+            if (_constructed)
             {
                 _tabControl.Enabled = value;
             }
@@ -112,39 +112,39 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
         }
     }
 
-    public int TabCount => Constructed ? _tabControl.TabCount : 0;
+    public int TabCount => _constructed ? _tabControl.TabCount : 0;
 
     public TabPage? SelectedTab
     {
-        get => Constructed ? _tabControl.SelectedTab : null;
+        get => _constructed ? _tabControl.SelectedTab : null;
         set
         {
-            if (!Constructed) return;
+            if (!_constructed) return;
             _tabControl.SelectedTab = value;
         }
     }
 
-    public bool Focused => Constructed && _tabControl.Focused;
+    public bool Focused => _constructed && _tabControl.Focused;
 
-    public bool TabPagesContains(TabPage tabPage) => Constructed && _tabControl.TabPages.Contains(tabPage);
+    public bool TabPagesContains(TabPage tabPage) => _constructed && _tabControl.TabPages.Contains(tabPage);
 
-    public Rectangle GetTabRect(int index) => Constructed ? _tabControl.GetTabRect(index) : Rectangle.Empty;
+    public Rectangle GetTabRect(int index) => _constructed ? _tabControl.GetTabRect(index) : Rectangle.Empty;
 
-    public Rectangle GetTabBarRect() => Constructed ? _tabControl.GetTabBarRect() : Rectangle.Empty;
+    public Rectangle GetTabBarRect() => _constructed ? _tabControl.GetTabBarRect() : Rectangle.Empty;
 
-    public Rectangle ClientRectangle => Constructed ? _tabControl.ClientRectangle : Rectangle.Empty;
+    public Rectangle ClientRectangle => _constructed ? _tabControl.ClientRectangle : Rectangle.Empty;
 
-    public Point ClientCursorPos() => Constructed ? _tabControl.ClientCursorPos() : Point.Empty;
+    public Point ClientCursorPos() => _constructed ? _tabControl.ClientCursorPos() : Point.Empty;
 
-    public int Width => Constructed ? _tabControl.Width : 0;
+    public int Width => _constructed ? _tabControl.Width : 0;
 
-    public int Height => Constructed ? _tabControl.Height : 0;
+    public int Height => _constructed ? _tabControl.Height : 0;
 
-    public int SelectedIndex => Constructed ? _tabControl.SelectedIndex : -1;
+    public int SelectedIndex => _constructed ? _tabControl.SelectedIndex : -1;
 
     public bool Visible
     {
-        get => Constructed && _tabControl.Visible;
+        get => _constructed && _tabControl.Visible;
         set
         {
             if (value)
@@ -152,7 +152,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
                 Construct();
                 _tabControl.Show();
             }
-            else if (Constructed)
+            else if (_constructed)
             {
                 _tabControl.Hide();
             }
@@ -161,25 +161,25 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
 
     public void DrawToBitmap(Bitmap bitmap, Rectangle targetBounds)
     {
-        if (!Constructed) return;
+        if (!_constructed) return;
         _tabControl.DrawToBitmap(bitmap, targetBounds);
     }
 
-    public Point PointToClient_Fast(Point point) => Constructed ? _tabControl.PointToClient_Fast(point) : Point.Empty;
+    public Point PointToClient_Fast(Point point) => _constructed ? _tabControl.PointToClient_Fast(point) : Point.Empty;
 
     public void RestoreBackedUpBackingTabs()
     {
-        if (!Constructed) return;
+        if (!_constructed) return;
         _tabControl.RestoreBackedUpBackingTabs();
     }
 
     public void ResetTempDragData()
     {
-        if (!Constructed) return;
+        if (!_constructed) return;
         _tabControl.ResetTempDragData();
     }
 
-    public TabPage? DragTab => Constructed ? _tabControl.DragTab : null;
+    public TabPage? DragTab => _constructed ? _tabControl.DragTab : null;
 
     private void TabControl_Selected(object? sender, TabControlEventArgs e) => Selected?.Invoke(_tabControl, e);
 
