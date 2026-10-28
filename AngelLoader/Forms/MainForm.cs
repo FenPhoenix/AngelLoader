@@ -4105,13 +4105,14 @@ public sealed partial class MainForm : DarkFormBase,
                 if (Config is { EnableArticles: true, MoveArticlesToEnd: true })
                 {
                     string title = fm.Title;
-                    for (int i = 0; i < Config.Articles.Count; i++)
+                    List<string> articles = Config.Articles;
+                    for (int i = 0; i < articles.Count; i++)
                     {
-                        string a = Config.Articles[i];
-                        if (fm.Title.StartsWithI(a + " "))
+                        string a = articles[i];
+                        if (title.StartsWithIPlusWhiteSpace(a))
                         {
                             // Take the actual article from the name so as to preserve casing
-                            title = string.Concat(fm.Title.AsSpan(a.Length + 1), ", ", fm.Title.AsSpan(0, a.Length));
+                            title = string.Concat(title.AsSpan(a.Length + 1), ", ", title.AsSpan(0, a.Length));
                             break;
                         }
                     }
