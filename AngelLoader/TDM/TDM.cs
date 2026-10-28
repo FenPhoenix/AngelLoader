@@ -184,7 +184,7 @@ internal static class TDM
         List<TDM_LocalFMData> localFMData = ParseMissionsInfoFile();
         string fmsPath = Config.GetFMInstallPath(GameIndex.TDM);
         DictionaryI<string> pk4ConvertedNamesDict = GetTDMBaseFMsDirPK4sConverted();
-        (bool success, _, _, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer(cancellationToken);
+        (bool success, List<TDM_ServerFMData> serverFMData) = await TDM_Downloader.TryGetMissionsFromServer(cancellationToken);
         return success
             ? new ScannerTDMContext(fmsPath, pk4ConvertedNamesDict, localFMData, serverFMData)
             : new ScannerTDMContext(fmsPath);
