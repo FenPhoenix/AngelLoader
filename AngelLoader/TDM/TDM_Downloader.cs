@@ -39,13 +39,13 @@ internal static class TDM_Downloader
         "http://missions.thedarkmod.com/available_missions.xml",
     };
 
-    internal static async Task<(bool Success, bool Canceled, Exception? Ex, List<TDM_ServerFMData> FMsList)>
+    internal static async Task<(bool Success, List<TDM_ServerFMData> FMsList)>
     TryGetMissionsFromServer(CancellationToken cancellationToken)
     {
         HttpResponseMessage? request = null;
         try
         {
-            var fail = (false, false, (Exception?)null, new List<TDM_ServerFMData>());
+            var fail = (false, new List<TDM_ServerFMData>());
 
 #if ENABLE_ONLINE
             bool success = false;
@@ -122,15 +122,15 @@ internal static class TDM_Downloader
                 }
             }
 
-            return (true, false, null, fmsList);
+            return (true, fmsList);
         }
         catch (OperationCanceledException)
         {
-            return (false, true, null, new List<TDM_ServerFMData>());
+            throw;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            return (false, false, ex, new List<TDM_ServerFMData>());
+            return (false, new List<TDM_ServerFMData>());
         }
         finally
         {
