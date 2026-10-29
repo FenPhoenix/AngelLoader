@@ -42,18 +42,20 @@ internal static class Filtering
         int needleUsed = 0;
         int skippedInARow = 0;
 
+        char needleFirstChar = needle[0];
+
         int startIndex = -1;
         for (int i = 0; i < hayLength; i++)
         {
-            if (BothAreAscii(hay[i], needle[0]))
+            if (BothAreAscii(hay[i], needleFirstChar))
             {
-                if (hay[i].EqualsIAscii(needle[0]))
+                if (hay[i].EqualsIAscii(needleFirstChar))
                 {
                     startIndex = i;
                     break;
                 }
             }
-            else if (hay[i].EqualsIAscii(needle[0]) || hay[i].ToString().EqualsI(needle[0].ToString()))
+            else if (hay[i].EqualsIAscii(needleFirstChar) || hay[i].ToString().EqualsI(needleFirstChar.ToString()))
             {
                 startIndex = i;
                 break;
