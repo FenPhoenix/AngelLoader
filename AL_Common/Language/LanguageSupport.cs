@@ -1,6 +1,7 @@
 ﻿#define FenGen_LanguageSupportSource
 
 using System;
+using System.Runtime.CompilerServices;
 using static AL_Common.FenGenAttributes;
 
 namespace AL_Common;
@@ -68,5 +69,6 @@ public static partial class LanguageSupport
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool HasFlagFast(this Language language, Language flag) => (language & flag) != 0;
 }
