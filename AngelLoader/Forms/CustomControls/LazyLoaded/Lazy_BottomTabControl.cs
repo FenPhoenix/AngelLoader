@@ -11,14 +11,6 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
     private readonly MainForm _owner;
 
     private DarkTabControl _tabControl = null!;
-    public DarkTabControl TabControl
-    {
-        get
-        {
-            Construct();
-            return _tabControl;
-        }
-    }
 
     private bool _enabled = true;
 
@@ -32,7 +24,7 @@ internal sealed class Lazy_BottomTabControl : IDarkable, IOptionallyLazyTabContr
             _darkModeEnabled = value;
             if (!_constructed) return;
 
-            TabControl.DarkModeEnabled = value;
+            _tabControl.DarkModeEnabled = value;
         }
     }
 
