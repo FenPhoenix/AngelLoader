@@ -541,6 +541,9 @@ public sealed class Scanner : IDisposable
         internal bool Scan;
         internal bool UseForDateDetect;
         internal readonly ListFast<string> Lines = new(0);
+        /// <summary>
+        /// Do not set from outside. Instead, use <see cref="SetTextAndLines"/>.
+        /// </summary>
         internal string Text = "";
 
         private uint? _lastModifiedDateRaw;
@@ -632,8 +635,11 @@ public sealed class Scanner : IDisposable
             return readme;
         }
 
-        internal void SetLines(string[] lines)
+        internal void SetTextAndLines(Scanner scanner, string text)
         {
+            Text = text;
+            string[] lines = text.Split(scanner._ctx.SA_Linebreaks, StringSplitOptions.None);
+
             Lines.ClearFast();
             Lines.AddRange(lines);
             /*
@@ -1445,16 +1451,17 @@ public sealed class Scanner : IDisposable
             // That's _TERRIBLE_ but we want to match behavior.
             if (darkModTxtReadme != null)
             {
-                MatchCollection matches = DarkModTxtFieldsRegex().Matches(darkModTxtReadme.Text);
+                string darkModReadmeText = darkModTxtReadme.Text;
+                MatchCollection matches = DarkModTxtFieldsRegex().Matches(darkModReadmeText);
                 int plus = 0;
                 foreach (Match match in matches)
                 {
                     if (match.Index > 0)
                     {
-                        char c = darkModTxtReadme.Text[(match.Index + plus) - 1];
+                        char c = darkModReadmeText[(match.Index + plus) - 1];
                         if (c is not '\r' and not '\n')
                         {
-                            darkModTxtReadme.Text = darkModTxtReadme.Text.Insert(match.Index + plus, "\r\n");
+                            darkModReadmeText = darkModReadmeText.Insert(match.Index + plus, "\r\n");
                             plus += 2;
                         }
                     }
@@ -1462,7 +1469,7 @@ public sealed class Scanner : IDisposable
 
                 if (plus > 0)
                 {
-                    darkModTxtReadme.SetLines(darkModTxtReadme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    darkModTxtReadme.SetTextAndLines(this, darkModReadmeText);
                 }
             }
 
@@ -1572,8 +1579,8 @@ public sealed class Scanner : IDisposable
                         scan: true,
                         useForDateDetect: true);
                     using StreamScope streamScope = entry.OpenSeekable();
-                    readme.Text = ReadAllTextDetectEncoding(streamScope.Stream);
-                    readme.SetLines(readme.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
+                    string text = ReadAllTextDetectEncoding(streamScope.Stream);
+                    readme.SetTextAndLines(this, text);
                 }
                 catch
                 {
@@ -3554,7 +3561,7 @@ public sealed class Scanner : IDisposable
                     (bool success, string text) = RtfConverter.Convert(stream);
                     if (success)
                     {
-                        last.Text = text;
+                        last.SetTextAndLines(this, text);
                     }
                 }
                 else
@@ -3563,10 +3570,8 @@ public sealed class Scanner : IDisposable
                         ? readmeEntry.OpenSeekable()
                         : new StreamScope(this, readmeStream);
                     string text = ReadAllTextDetectEncoding(streamScope.Stream);
-                    last.Text = readmeFile.Name.ExtIsGlml() ? Utility.GLMLToPlainText(text) : text;
+                    last.SetTextAndLines(this, readmeFile.Name.ExtIsGlml() ? Utility.GLMLToPlainText(text) : text);
                 }
-
-                last.SetLines(last.Text.Split(_ctx.SA_Linebreaks, StringSplitOptions.None));
             }
             finally
             {
