@@ -49,9 +49,9 @@ public sealed class ZipArchiveFastEntry
         ZipCentralDirectoryFileHeader cd,
         Encoding? entryNameEncoding,
         bool useEntryNameEncodingCodePath,
-        bool darkModMode)
+        bool ignoreNonBaseDirFileNames)
     {
-        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath, darkModMode);
+        Set(in cd, entryNameEncoding, useEntryNameEncodingCodePath, ignoreNonBaseDirFileNames);
     }
 
     [MemberNotNull(nameof(FullName))]
