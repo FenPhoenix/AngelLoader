@@ -5909,12 +5909,6 @@ public sealed class Scanner : IDisposable
         return sr.Reader.ReadToEnd();
     }
 
-    private string ReadAllTextUTF8(Stream stream)
-    {
-        using StreamReaderCustom.SRC_Wrapper sr = new(stream, Encoding.UTF8, _streamReaderCustom);
-        return sr.Reader.ReadToEnd();
-    }
-
     #endregion
 
     #region Read all lines
