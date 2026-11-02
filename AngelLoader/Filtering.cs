@@ -135,8 +135,14 @@ internal static class Filtering
     internal static (bool Matched, bool ExactMatch)
     FMTitleContains_AllTests(FanMission fm, string title, string titleTrimmed)
     {
+        const int archiveMinLength = 3;
+        const int archiveMaxLength = 4;
+
         bool extIsArchive = fm.Archive.ExtIsArchive();
         if (extIsArchive &&
+            // Efficiency to avoid full equality comparison if possible
+            titleTrimmed.Length.IsBetween(archiveMinLength, archiveMaxLength) &&
+            titleTrimmed[0] == '.' &&
             // @RAR: Rule of three, let's pack these away in an array or something
             (titleTrimmed.EqualsI(".zip") ||
              titleTrimmed.EqualsI(".7z") ||
