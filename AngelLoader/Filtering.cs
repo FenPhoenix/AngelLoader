@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿//#define FILTER_TIMING_TEST
+
+using System;
 using AngelLoader.DataClasses;
 using static AngelLoader.GameSupport;
 using static AngelLoader.Global;
@@ -295,6 +296,10 @@ internal static class Filtering
         Core.View.SetDebug2Text(int.TryParseInvariant(Core.View.GetDebug2Text(), out int result) ? (result + 1).ToStrInv() : "1");
 #endif
 
+#if FILTER_TIMING_TEST
+        System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+
         (FanMission? titleExactMatch, FanMission? authorExactMatch) ret = (null, null);
 
         Filter viewFilter = Core.View.GetFilter();
@@ -321,9 +326,11 @@ internal static class Filtering
         // Only ever add to the filter shown index list, don't subtract, as that requires constantly copying list
         // items and is therefore like eight trillion times slower.
 
-        bool titleIsWhitespace = viewFilter.Title.IsWhiteSpace();
-        string titleTrimmed = viewFilter.Title.Trim();
-        bool authorIsWhitespace = viewFilter.Author.IsWhiteSpace();
+        string title = viewFilter.Title;
+        string author = viewFilter.Author;
+        bool titleIsWhitespace = title.IsWhiteSpace();
+        string titleTrimmed = title.Trim();
+        bool authorIsWhitespace = author.IsWhiteSpace();
         bool showUnsupported = Core.View.GetShowUnsupportedFilter();
         FMCategoriesCollection andTags = viewFilter.Tags.AndTags;
         FMCategoriesCollection orTags = viewFilter.Tags.OrTags;
@@ -338,6 +345,8 @@ internal static class Filtering
         DateTime? filterLastPlayedTo = viewFilter.LastPlayedTo;
         bool lastPlayedFilterSet = filterLastPlayedFrom != null || filterLastPlayedTo != null;
         bool showAvailable = Core.View.GetShowUnavailableFMsFilter();
+        FinishedState finished = viewFilter.Finished;
+        Game games = viewFilter.Games;
 
         for (int i = 0; i < FMsViewList.Count; i++)
         {
@@ -352,7 +361,7 @@ internal static class Filtering
 
                 if (!titleIsWhitespace)
                 {
-                    if (!(match = FMTitleContains_AllTests(fm, viewFilter.Title, titleTrimmed)).Match)
+                    if (!(match = FMTitleContains_AllTests(fm, title, titleTrimmed)).Match)
                     {
                         continue;
                     }
@@ -368,7 +377,7 @@ internal static class Filtering
 
                 if (!authorIsWhitespace)
                 {
-                    if (!(match = fm.Author.ContainsI_TextFilter(viewFilter.Author)).Match)
+                    if (!(match = fm.Author.ContainsI_TextFilter(author)).Match)
                     {
                         continue;
                     }
@@ -438,15 +447,15 @@ internal static class Filtering
 
                 #region Finished
 
-                if (viewFilter.Finished > FinishedState.Null)
+                if (finished > FinishedState.Null)
                 {
                     uint fmFinished = fm.FinishedOn;
                     bool fmFinishedOnUnknown = fm.FinishedOnUnknown;
 
                     if (((fmFinished > 0 || fmFinishedOnUnknown) &&
-                         !viewFilter.Finished.HasFlagFast(FinishedState.Finished)) ||
+                         !finished.HasFlagFast(FinishedState.Finished)) ||
                         (fmFinished == 0 && !fmFinishedOnUnknown &&
-                         !viewFilter.Finished.HasFlagFast(FinishedState.Unfinished)))
+                         !finished.HasFlagFast(FinishedState.Unfinished)))
                     {
                         continue;
                     }
@@ -488,14 +497,14 @@ internal static class Filtering
 
             #region Games
 
-            if (viewFilter.Games > Game.Null)
+            if (games > Game.Null)
             {
                 if (GameIsKnownAndSupported(fm.Game) &&
                     (Config.GameOrganization == GameOrganization.ByTab ||
                      // Hide recent FMs that don't match the game filter, but not pinned ones
                      !fm.Pinned
                      ) &&
-                    !viewFilter.Games.HasFlagFast(fm.Game))
+                    !games.HasFlagFast(fm.Game))
                 {
                     continue;
                 }
@@ -505,6 +514,11 @@ internal static class Filtering
 
             filterShownIndexList.AddFast(i);
         }
+
+#if FILTER_TIMING_TEST
+        sw.Stop();
+        System.Diagnostics.Trace.WriteLine("Filter took: " + sw.Elapsed);
+#endif
 
         return ret;
     }
