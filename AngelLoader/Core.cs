@@ -1075,7 +1075,7 @@ internal static class Core
 
 #if SORT_TIMING_TEST
         sw.Stop();
-        Trace.WriteLine(sw.Elapsed.ToString());
+        Trace.WriteLine("Sort took: " + sw.Elapsed.ToString());
 #endif
     }
 
