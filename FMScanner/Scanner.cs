@@ -1435,13 +1435,12 @@ public sealed class Scanner : IDisposable
 
         if (_scanOptions.ScanTitle || _scanOptions.ScanAuthor || _scanOptions.ScanReleaseDate)
         {
-            // @TDM_NOTE(readme text & dates):
-            // For best perf, I guess we would get dates from the pk4 but text from disk. Still, these files are
-            // generally extremely small, and TDM scans are lightning-fast anyway, so let's just leave it.
-
-            // Sometimes the extracted readmes have different dates than the ones in the pk4.
-            // The pk4's dates are to be considered canonical, as they won't have been modified by some weird
-            // copying or who knows what with the on-disk ones.
+            /*
+            @TDM_NOTE(readme text & dates):
+            Sometimes readmes on disk and readmes in the archive differ. I believe this happens when missions are
+            updated - the extracted stuff may not get updated right away. But we should ignore the on-disk stuff,
+            is the point, because it may be out of date.
+            */
             (ReadmeInternal? darkModTxtReadme, ReadmeInternal? readmeTxtReadme) =
                 AddReadmesFromPK4(GetZipEntries(), FMFiles.TDM_DarkModTxt, FMFiles.TDM_ReadmeTxt);
 
