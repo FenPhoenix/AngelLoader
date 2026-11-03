@@ -117,13 +117,14 @@ internal static class Comparers
 
         static bool IsRecent(FanMission fm, DateTime dateTimeNow)
         {
-            // Don't mess with the sort order of pinned FMs, because they should be in the same sort
-            // order as the main list but just placed at the top. Whereas the recent FMs will always
-            // be displayed in order of date added.
+            // Don't mess with the sort order of pinned FMs, because they should be in the same sort order as the
+            // main list but just placed at the top. Whereas the recent FMs will always be displayed in order of
+            // date added.
             if (fm.Pinned)
             {
                 return false;
             }
+            // Use the value if it's been set; don't do the expensive compare every time
             else if (fm.MarkedRecent)
             {
                 return true;
