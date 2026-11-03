@@ -1,6 +1,5 @@
 ﻿//#define ENABLE_README_TESTS
 //#define SORT_TIMING_TEST
-#define USE_HPCSHARP
 
 /*
 NOTE(Core notes):
@@ -34,9 +33,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AngelLoader.DataClasses;
-#if USE_HPCSHARP
 using HPCsharp;
-#endif
 using JetBrains.Annotations;
 using Microsoft.Win32;
 using Microsoft.Win32.SafeHandles;
@@ -1076,14 +1073,10 @@ internal static class Core
         Stopwatch sw = Stopwatch.StartNew();
 #endif
 
-#if USE_HPCSHARP
         // Turn the entire codebase upside down to make the view list be a ListFast in order to get at its
         // internal array in order to pass it to the fully-in-place method in order to avoid massive allocs
         // for every keypress in the filter boxes.
         FMsViewList.ItemsArray.SortMergeInPlacePar(0, FMsViewList.Count, comparer, 2000);
-#else
-        FMsViewList.Sort(comparer);
-#endif
 
 #if SORT_TIMING_TEST
         sw.Stop();
