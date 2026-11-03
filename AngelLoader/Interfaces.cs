@@ -290,9 +290,13 @@ public interface IView : ISettingsChangeableView
     /// <param name="landImmediate"></param>
     /// <param name="keepMultiSelection"></param>
     /// <returns></returns>
-    Task SortAndSetFilter(SelectedFM? selectedFM = null, bool forceDisplayFM = false,
-        bool keepSelection = false, bool gameTabSwitch = false,
-        bool landImmediate = false, bool keepMultiSelection = false);
+    Task SortAndSetFilter(
+        SelectedFM? selectedFM = null,
+        bool forceDisplayFM = false,
+        bool keepSelection = false,
+        bool gameTabSwitch = false,
+        bool landImmediate = false,
+        FanMission[]? multiSelectedFMs = null);
 
     Filter GetFilter();
 
