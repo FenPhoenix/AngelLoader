@@ -3856,7 +3856,7 @@ public sealed partial class MainForm : DarkFormBase,
         bool keepSelection = false,
         bool gameTabSwitch = false,
         bool landImmediate = false,
-        bool keepMultiSelection = false)
+        FanMission[]? multiSelectedFMs = null)
     {
         bool selFMWasPassedIn = selectedFM != null;
 
@@ -3865,9 +3865,6 @@ public sealed partial class MainForm : DarkFormBase,
         selectedFM ??= keepSelection && !gameTabSwitch && FMsDGV.RowSelected()
             ? FMsDGV.GetMainSelectedFMPosInfo()
             : null;
-
-        // Do this before any changes to the list (set filter, sort, etc.) because otherwise it will be wrong
-        FanMission[]? multiSelectedFMs = keepMultiSelection ? FMsDGV.GetSelectedFMs() : null;
 
         KeepSel keepSel =
             selectedFM != null ? KeepSel.TrueNearest :

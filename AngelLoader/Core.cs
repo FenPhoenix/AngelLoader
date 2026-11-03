@@ -2069,7 +2069,7 @@ internal static class Core
         return View.SortAndSetFilter(
             selectedFM: selFM,
             keepSelection: pin,
-            keepMultiSelection: !singleFMSelected && pin);
+            multiSelectedFMs: !singleFMSelected && pin ? selFMs : null);
     }
 
     internal static SelectedFM? FindNearestUnselectedFM(int index, int rowCount)
