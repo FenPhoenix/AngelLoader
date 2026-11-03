@@ -240,9 +240,9 @@ internal readonly ref struct Zip64EndOfCentralDirectoryLocator
             return false;
         }
 
-        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithZip64EOCD
+        stream.Seek(sizeof(int), SeekOrigin.Current); // NumberOfDiskWithZip64EOCD
         ulong offsetOfZip64EOCD = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // TotalNumberOfDisks
+        stream.Seek(sizeof(int), SeekOrigin.Current); // TotalNumberOfDisks
 
         zip64EOCDLocator = new Zip64EndOfCentralDirectoryLocator(offsetOfZip64EOCD: offsetOfZip64EOCD);
 
@@ -284,15 +284,15 @@ internal readonly ref struct Zip64EndOfCentralDirectoryRecord
         }
 
         stream.Seek(
-            ByteLengths.Int64 + // SizeOfThisRecord
-            ByteLengths.Int16 + // VersionMadeBy
-            ByteLengths.Int16,  // VersionNeededToExtract
+            sizeof(long) +  // SizeOfThisRecord
+            sizeof(short) + // VersionMadeBy
+            sizeof(short),  // VersionNeededToExtract
             SeekOrigin.Current);
         uint numberOfThisDisk = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
-        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // NumberOfDiskWithStartOfCD
+        stream.Seek(sizeof(int), SeekOrigin.Current); // NumberOfDiskWithStartOfCD
         ulong numberOfEntriesOnThisDisk = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
         ulong numberOfEntriesTotal = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
-        stream.Seek(ByteLengths.Int64, SeekOrigin.Current); // SizeOfCentralDirectory
+        stream.Seek(sizeof(long), SeekOrigin.Current); // SizeOfCentralDirectory
         ulong offsetOfCentralDirectory = BinaryRead.ReadUInt64(stream, context.BinaryReadBuffer);
 
         zip64EOCDRecord = new Zip64EndOfCentralDirectoryRecord(
@@ -403,21 +403,21 @@ public readonly ref struct ZipCentralDirectoryFileHeader
         }
 
         bufferIndex +=
-            ByteLengths.Byte + // VersionMadeBySpecification
-            ByteLengths.Byte + // VersionMadeByCompatibility
-            ByteLengths.Int16; // VersionNeededToExtract
+            sizeof(byte) + // VersionMadeBySpecification
+            sizeof(byte) + // VersionMadeByCompatibility
+            sizeof(short); // VersionNeededToExtract
         ushort generalPurposeBitFlag = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort compressionMethod = ReadUInt16_Fast(buffer, ref bufferIndex);
         uint lastModified = ReadUInt32_Fast(buffer, ref bufferIndex);
-        bufferIndex += ByteLengths.Int32; // Crc32
+        bufferIndex += sizeof(int); // Crc32
         uint compressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
         uint uncompressedSizeSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
         ushort fileNameLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort extraFieldLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort fileCommentLength = ReadUInt16_Fast(buffer, ref bufferIndex);
         ushort diskNumberStartSmall = ReadUInt16_Fast(buffer, ref bufferIndex);
-        bufferIndex += ByteLengths.Int16 + // InternalFileAttributes
-                       ByteLengths.Int32;  // ExternalFileAttributes
+        bufferIndex += sizeof(short) + // InternalFileAttributes
+                       sizeof(int);  // ExternalFileAttributes
         uint relativeOffsetOfLocalHeaderSmall = ReadUInt32_Fast(buffer, ref bufferIndex);
 
         byte[] fileNameBuffer = context.FileNameBuffer.GetArray(fileNameLength);
@@ -508,7 +508,7 @@ internal readonly ref struct ZipEndOfCentralDirectoryBlock
         ushort numberOfTheDiskWithTheStartOfTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectoryOnThisDisk = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
         ushort numberOfEntriesInTheCentralDirectory = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);
-        stream.Seek(ByteLengths.Int32, SeekOrigin.Current); // SizeOfCentralDirectory
+        stream.Seek(sizeof(int), SeekOrigin.Current); // SizeOfCentralDirectory
         uint offsetOfStartOfCentralDirectoryWithRespectToTheStartingDiskNumber = BinaryRead.ReadUInt32(stream, context.BinaryReadBuffer);
 
         ushort commentLength = BinaryRead.ReadUInt16(stream, context.BinaryReadBuffer);

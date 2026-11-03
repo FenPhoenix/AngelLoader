@@ -352,7 +352,7 @@ internal static class ZipArchiveFast_Common
     internal static short ReadInt16_Fast(byte[] value, ref int startIndex)
     {
         short ret = Unsafe.ReadUnaligned<short>(ref value[startIndex]);
-        startIndex += ByteLengths.Int16;
+        startIndex += sizeof(short);
         return ret;
     }
 
@@ -363,7 +363,7 @@ internal static class ZipArchiveFast_Common
     internal static int ReadInt32_Fast(byte[] value, ref int startIndex)
     {
         int ret = Unsafe.ReadUnaligned<int>(ref value[startIndex]);
-        startIndex += ByteLengths.Int32;
+        startIndex += sizeof(int);
         return ret;
     }
 
@@ -375,7 +375,7 @@ internal static class ZipArchiveFast_Common
     internal static long ReadInt64_Fast(byte[] value, ref int startIndex)
     {
         long ret = Unsafe.ReadUnaligned<long>(ref value[startIndex]);
-        startIndex += ByteLengths.Int64;
+        startIndex += sizeof(long);
         return ret;
     }
 

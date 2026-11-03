@@ -51,12 +51,12 @@ internal static class WriConversion
         if (BinaryRead.ReadUInt16(stream, buffer) != 0) return fail; // Reserved 4
         uint fcMac = BinaryRead.ReadUInt32(stream, buffer);
         stream.Position +=
-            ByteLengths.Int16 + // pnPara
-            ByteLengths.Int16 + // pnFntb
-            ByteLengths.Int16 + // pnSep
-            ByteLengths.Int16 + // pnSetb
-            ByteLengths.Int16 + // pnPgtb
-            ByteLengths.Int16 + // pnFfntb
+            sizeof(short) + // pnPara
+            sizeof(short) + // pnFntb
+            sizeof(short) + // pnSep
+            sizeof(short) + // pnSetb
+            sizeof(short) + // pnPgtb
+            sizeof(short) + // pnFfntb
             66; // szSsht (not used)
         if (BinaryRead.ReadUInt16(stream, buffer) == 0) return fail; // pnMac: 0 means Word file, not Write file
 
