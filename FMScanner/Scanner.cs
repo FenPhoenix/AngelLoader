@@ -4932,6 +4932,9 @@ public sealed class Scanner : IDisposable
             3093                   - NewDark, could be either T1/G or T2    Commonness: ~4%
             Any other location*    - OldDark Thief2
 
+        NewDark >=1.28 FMs have SKYOBJVAR at a different position (7234 for Between Hammer and Anvil at least),
+        but we don't depend on any particular NewDark position of it, so that's fine.
+
         System Shock 2 .mis files can (but may not) have the SKYOBJVAR string. If they do, it'll be at 3168 or
         7292.
         System Shock 2 .mis files all have the MAPPARAM string. It will be at either 696 or 916.
