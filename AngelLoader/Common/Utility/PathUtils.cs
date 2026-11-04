@@ -255,6 +255,7 @@ public static partial class Utils
     {
         using CancellationTokenSource cts = new(timeout);
 
+        Exception? lastException = null;
         while (!cts.IsCancellationRequested)
         {
             try
@@ -274,8 +275,9 @@ public static partial class Utils
                 lines = null;
                 return false;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                lastException = ex;
                 Thread.Sleep(50);
             }
             catch (Exception ex)
@@ -284,6 +286,11 @@ public static partial class Utils
                 lines = null;
                 return false;
             }
+        }
+
+        if (lastException != null)
+        {
+            if (log) LogException(file, lastException);
         }
 
         lines = null;
@@ -299,6 +306,7 @@ public static partial class Utils
     {
         using CancellationTokenSource cts = new(timeout);
 
+        Exception? lastException = null;
         while (!cts.IsCancellationRequested)
         {
             try
@@ -314,8 +322,9 @@ public static partial class Utils
                 exception = ex;
                 return false;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                lastException = ex;
                 Thread.Sleep(50);
             }
             catch (Exception ex)
@@ -326,7 +335,8 @@ public static partial class Utils
             }
         }
 
-        exception = new Exception("Unknown");
+        exception = lastException ?? new Exception("Unknown");
+        LogException(file, exception);
         return false;
 
         static void LogException(string file, Exception ex)
@@ -354,6 +364,7 @@ public static partial class Utils
     {
         using CancellationTokenSource cts = new(timeout);
 
+        Exception? lastException = null;
         while (!cts.IsCancellationRequested)
         {
             try
@@ -373,8 +384,9 @@ public static partial class Utils
                 lines = null;
                 return false;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                lastException = ex;
                 Thread.Sleep(50);
             }
             catch (Exception ex)
@@ -383,6 +395,11 @@ public static partial class Utils
                 lines = null;
                 return false;
             }
+        }
+
+        if (lastException != null)
+        {
+            if (log) LogException(file, lastException);
         }
 
         lines = null;
@@ -398,6 +415,7 @@ public static partial class Utils
     {
         using CancellationTokenSource cts = new(timeout);
 
+        Exception? lastException = null;
         while (!cts.IsCancellationRequested)
         {
             try
@@ -413,8 +431,9 @@ public static partial class Utils
                 exception = ex;
                 return false;
             }
-            catch (IOException)
+            catch (IOException ex)
             {
+                lastException = ex;
                 Thread.Sleep(50);
             }
             catch (Exception ex)
@@ -425,7 +444,8 @@ public static partial class Utils
             }
         }
 
-        exception = new Exception("Unknown");
+        exception = lastException ?? new Exception("Unknown");
+        LogException(file, exception);
         return false;
 
         static void LogException(string file, Exception ex)
