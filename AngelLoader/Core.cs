@@ -1961,12 +1961,12 @@ internal static class Core
     #endregion
 
     internal static (Error Error, Version? Version, string VersionString)
-    GetGameVersion(GameIndex game)
+    GetGameVersion(GameIndex gameIndex)
     {
-        string gameExe = Config.GetGameExe(game);
+        string gameExe = Config.GetGameExe(gameIndex);
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
 
-        bool gameIsNormal = GameIsDark(game) || game == GameIndex.TDM;
+        bool gameIsNormal = GameIsDark(gameIndex) || gameIndex == GameIndex.TDM;
         string exeToSearch;
         if (gameIsNormal)
         {
@@ -1999,7 +1999,7 @@ internal static class Core
         Version? version;
         try
         {
-            version = game == GameIndex.TDM
+            version = gameIndex == GameIndex.TDM
                 ? new Version(vi.FileMajorPart, vi.FileMinorPart, vi.FileBuildPart, vi.FilePrivatePart)
                 : new Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
         }
@@ -2008,7 +2008,7 @@ internal static class Core
             version = null;
         }
 
-        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
+        string finalVersion = gameIndex == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }

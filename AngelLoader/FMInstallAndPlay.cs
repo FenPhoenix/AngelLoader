@@ -735,19 +735,19 @@ internal static partial class FMInstallAndPlay
         }
 
         static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
-        GetSteamValues(GameIndex game, bool playMP)
+        GetSteamValues(GameIndex gameIndex, bool playMP)
         {
             // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
             // will start Thief2.exe
             if (!playMP &&
-                !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
+                !GetGameSteamId(gameIndex).IsEmpty() && Config.GetUseSteamSwitch(gameIndex) &&
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
             {
                 string? workingPath = Path.GetDirectoryName(Config.SteamExe);
 
                 if (workingPath.IsEmpty()) return (false, "", "", "");
 
-                string args = "-applaunch " + GetGameSteamId(game);
+                string args = "-applaunch " + GetGameSteamId(gameIndex);
 
                 return (true, Config.SteamExe, workingPath, args);
             }

@@ -42,21 +42,21 @@ internal static class FMLanguages
     }
 
     internal static (string Language, bool ForceLanguage)
-    GetDarkFMLanguage(GameIndex game, string fmArchive, string fmInstalledDir)
+    GetDarkFMLanguage(GameIndex gameIndex, string fmArchive, string fmInstalledDir)
     {
         string sLanguage;
         bool bForceLanguage;
 
         var (_, fmLanguage, _, _, _, _) =
             GameConfigFiles.GetInfoFromCamModIni(
-                Config.GetGamePath(game),
+                Config.GetGamePath(gameIndex),
                 langOnly: true,
                 returnAllLines: false);
 
         // bForceLanguage gets set to something specific in every possible case, effectively meaning the
         // fm_language_forced value is always ignored. Weird, but FMSel's code does exactly this, so meh?
         // Although I'm using FMSel from ND 1.26 as a reference, ND 1.27's is exactly the same.
-        string fmInstPath = Path.Combine(Config.GetFMInstallPath(game), fmInstalledDir);
+        string fmInstPath = Path.Combine(Config.GetFMInstallPath(gameIndex), fmInstalledDir);
         if (!fmLanguage.IsEmpty())
         {
             List<string> fmSupportedLangs = GetFMSupportedLanguages(fmArchive, fmInstPath, earlyOutOnEnglish: false);
