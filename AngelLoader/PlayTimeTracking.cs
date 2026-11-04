@@ -231,6 +231,8 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
         if (FMInstalledDir.IsEmpty()) return;
 
+        GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.SingleGame(_gameIndex));
+
         List<FanMission> fmsList = _gameIndex == GameIndex.TDM ? FMDataIniListTDM : FMDataIniList;
 
 #if TESTING

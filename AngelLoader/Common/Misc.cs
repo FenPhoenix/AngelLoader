@@ -326,6 +326,13 @@ public static partial class Misc
             }
             return ret;
         }
+
+        public static PerGameGoFlags SingleGame(GameIndex gameIndex)
+        {
+            PerGameGoFlags goFlags = new();
+            goFlags[(int)gameIndex] = true;
+            return goFlags;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]

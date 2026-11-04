@@ -426,8 +426,8 @@ internal static class GameConfigFiles
             if (fileLines == null)
             {
                 if (!(useDefaultEncoding
-                    ? TryReadAllLines_DefaultEncoding(cfgFile, out lines)
-                    : TryReadAllLines(cfgFile, out lines)))
+                    ? TryReadAllLines_Timeout_DefaultEncoding(cfgFile, out lines)
+                    : TryReadAllLines_Timeout(cfgFile, out lines)))
                 {
                     return;
                 }
@@ -472,8 +472,8 @@ internal static class GameConfigFiles
             if (!linesModified) return;
 
             bool writeSuccess = useDefaultEncoding
-                ? TryWriteAllLines_DefaultEncoding(cfgFile, lines, out _)
-                : TryWriteAllLines(cfgFile, lines, out _);
+                ? TryWriteAllLines_Timeout_DefaultEncoding(cfgFile, lines, out _)
+                : TryWriteAllLines_Timeout(cfgFile, lines, out _);
 
             if (!writeSuccess)
             {
@@ -495,7 +495,7 @@ internal static class GameConfigFiles
             return;
         }
 
-        if (!TryReadAllLines(camCfg, out List<string>? lines))
+        if (!TryReadAllLines_Timeout(camCfg, out List<string>? lines))
         {
             return;
         }
@@ -516,7 +516,7 @@ internal static class GameConfigFiles
             lines.Add(key_fm_language_forced + " 1");
         }
 
-        if (!TryWriteAllLines(camCfg, lines, out _))
+        if (!TryWriteAllLines_Timeout(camCfg, lines, out _))
         {
             // ReSharper disable once RedundantJumpStatement
             return; // Explicit for clarity of intent
@@ -622,7 +622,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines_DefaultEncoding(camModIni, out List<string>? lines))
+        if (!TryReadAllLines_Timeout_DefaultEncoding(camModIni, out List<string>? lines))
         {
             return failNoEx;
         }
@@ -766,7 +766,7 @@ internal static class GameConfigFiles
             lines.Insert(fmCommentLineIndex + 1, fmLine);
         }
 
-        bool success = TryWriteAllLines_DefaultEncoding(camModIni, lines, out Exception? ex);
+        bool success = TryWriteAllLines_Timeout_DefaultEncoding(camModIni, lines, out Exception? ex);
         return (success, ex);
     }
 
@@ -786,7 +786,7 @@ internal static class GameConfigFiles
             return failNoEx;
         }
 
-        if (!TryReadAllLines(soIni, out List<string>? lines))
+        if (!TryReadAllLines_Timeout(soIni, out List<string>? lines))
         {
             return failNoEx;
         }
@@ -908,7 +908,7 @@ internal static class GameConfigFiles
             lines.Insert(insertLineIndex, key_AlwaysShow + "true");
         }
 
-        bool success = TryWriteAllLines(soIni, lines, out Exception? ex);
+        bool success = TryWriteAllLines_Timeout(soIni, lines, out Exception? ex);
         return (success, ex);
     }
 
@@ -1223,7 +1223,7 @@ internal static class GameConfigFiles
 
         return GameIsDark(gameIndex) &&
                TryGetGameDirFilePathIfExists(gameIndex, file, out filePath) &&
-               TryReadAllLines(filePath, out lines);
+               TryReadAllLines_Timeout(filePath, out lines);
     }
 
     private static readonly char[] _ca_Space_Tab_Semicolon = { ' ', '\t', ';' };
@@ -1265,7 +1265,7 @@ internal static class GameConfigFiles
 
         RemoveConsecutiveWhiteSpace(lines);
 
-        TryWriteAllLines(userCfgFile, lines, out _);
+        TryWriteAllLines_Timeout(userCfgFile, lines, out _);
     }
 
     internal static bool? GetTitaniumMode(GameIndex gameIndex)
@@ -1320,7 +1320,7 @@ internal static class GameConfigFiles
             }
         }
 
-        TryWriteAllLines(userBndFile, lines, out _);
+        TryWriteAllLines_Timeout(userBndFile, lines, out _);
     }
 
     internal static void SetGlobalDarkGameValues(GameIndex gameIndex)
@@ -1347,7 +1347,7 @@ internal static class GameConfigFiles
 
             RemoveConsecutiveWhiteSpace(lines);
 
-            TryWriteAllLines(camCfgFile, lines, out _);
+            TryWriteAllLines_Timeout(camCfgFile, lines, out _);
         }
     }
 
