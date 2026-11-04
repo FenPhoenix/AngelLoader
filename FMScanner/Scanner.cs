@@ -3,7 +3,6 @@
 //#define INDIVIDUAL_FM_TIMING
 //#define ScanSynchronous
 //#define StoreCurrentFM
-#define ND128_GAME_HINT
 
 /*
 @BLOCKS_NOTE: Tested: Solid RAR files work, just without the optimization, as designed
@@ -105,9 +104,7 @@ public sealed class Scanner : IDisposable
 
     private readonly byte[] _misChunkHeaderBuffer = new byte[12];
 
-#if ND128_GAME_HINT
     private readonly byte[] _darkmissChunkBuffer = new byte[38];
-#endif
 
     private const int _gameTypeBufferSize = 81_920;
 
@@ -4964,21 +4961,17 @@ public sealed class Scanner : IDisposable
                     int bytesRead = misStream.ReadAll(buffer, 0, length);
                     if (bytesRead < length) break;
 
-#if ND128_GAME_HINT
                     if (i == 0 && TryGetGameFromDARKMISS_StreamableArchive(buffer, out Game gameFromDARKMISS))
                     {
                         return gameFromDARKMISS;
                     }
-#endif
                 }
                 else
                 {
-#if ND128_GAME_HINT
                     if (i == 0 && TryGetGameFromDARKMISS_OnDisk(misStream, _darkmissChunkBuffer, out Game gameFromDARKMISS))
                     {
                         return gameFromDARKMISS;
                     }
-#endif
 
                     buffer = _gameDetectStringBuffer;
                     misStream.Position = _ctx.GameDetect_KeyPhraseLocations[i];
@@ -5025,7 +5018,6 @@ public sealed class Scanner : IDisposable
             return Unsafe.ReadUnaligned<ulong>(ref buffer[len - _gameDetectStringBufferLength]) == MAPPARAM_ULong;
         }
 
-#if ND128_GAME_HINT
         static bool TryGetGameFromDARKMISS_StreamableArchive(byte[] buffer, out Game game)
         {
             if (buffer.Length <= Thief_128_GameDescriptor_Location ||
@@ -5062,7 +5054,6 @@ public sealed class Scanner : IDisposable
             0x3 => Game.Thief2,
             _ => Game.Null,
         };
-#endif
     }
 
     private Game GameType_DoMainCheck(Entry misFileEntry)
