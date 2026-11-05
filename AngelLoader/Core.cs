@@ -538,8 +538,13 @@ internal static class Core
 
         #region Game exes
 
-        // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
-        // the old ones.
+        /*
+        Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to the
+        old ones.
+
+        NOTE: In theory we don't need to do this anymore because we reset on game exit now, but keep this around
+        for the edge case in which a user changes game paths while a game is still running.
+        */
         if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
         // Game paths should have been checked and verified before OK was clicked, so assume they're good here
@@ -2274,6 +2279,7 @@ internal static class Core
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static void DoShutdownTasks()
     {
+        // NOTE: We shouldn't need to do this on shutdown anymore because we do it on game exit now, but meh...
         GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.AllTrue());
     }
 
