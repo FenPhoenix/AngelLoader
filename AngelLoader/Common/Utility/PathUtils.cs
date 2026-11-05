@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using AngelLoader.DataClasses;
 using static AL_Common.Logger;
 
@@ -181,6 +182,8 @@ public static partial class Utils
 
     #region Try read and write lines
 
+    private const int _defaultIOTimeout = 5000;
+
     internal static bool TryReadAllLines(
         string file,
         [NotNullWhen(true)] out List<string>? lines,
@@ -202,19 +205,97 @@ public static partial class Utils
         }
     }
 
-    internal static bool TryWriteAllLines(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception)
+    internal static bool TryReadAllLines_Timeout(string file, [NotNullWhen(true)] out List<string>? lines, int timeout = _defaultIOTimeout, bool log = true)
     {
-        try
+        using CancellationTokenSource cts = new(timeout);
+
+        Exception? lastException = null;
+        while (!cts.IsCancellationRequested)
         {
-            File.WriteAllLines(file, lines);
-            exception = null;
-            return true;
+            try
+            {
+                lines = File_ReadAllLines_List(file);
+                return true;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
+            catch (FileNotFoundException ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
+            catch (IOException ex)
+            {
+                lastException = ex;
+                Thread.Sleep(50);
+            }
+            catch (Exception ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
         }
-        catch (Exception ex)
+
+        if (lastException != null)
+        {
+            if (log) LogException(file, lastException);
+        }
+
+        lines = null;
+        return false;
+
+        static void LogException(string file, Exception ex)
+        {
+            Log(ErrorText.ExRead + file, ex);
+        }
+    }
+
+    internal static bool TryWriteAllLines_Timeout(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception, int timeout = _defaultIOTimeout)
+    {
+        using CancellationTokenSource cts = new(timeout);
+
+        Exception? lastException = null;
+        while (!cts.IsCancellationRequested)
+        {
+            try
+            {
+                // @FileStreamNET: Implicit use of FileStream
+                File.WriteAllLines(file, lines);
+                exception = null;
+                return true;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                LogException(file, ex);
+                exception = ex;
+                return false;
+            }
+            catch (IOException ex)
+            {
+                lastException = ex;
+                Thread.Sleep(50);
+            }
+            catch (Exception ex)
+            {
+                LogException(file, ex);
+                exception = ex;
+                return false;
+            }
+        }
+
+        exception = lastException ?? new Exception("Unknown");
+        LogException(file, exception);
+        return false;
+
+        static void LogException(string file, Exception ex)
         {
             Log(ErrorText.ExWrite + file, ex);
-            exception = ex;
-            return false;
         }
     }
 
@@ -233,34 +314,97 @@ public static partial class Utils
     etc. etc.) are in UTF-8 format
     */
 
-    internal static bool TryReadAllLines_DefaultEncoding(string file, [NotNullWhen(true)] out List<string>? lines)
+    internal static bool TryReadAllLines_Timeout_DefaultEncoding(string file, [NotNullWhen(true)] out List<string>? lines, int timeout = _defaultIOTimeout, bool log = true)
     {
-        try
+        using CancellationTokenSource cts = new(timeout);
+
+        Exception? lastException = null;
+        while (!cts.IsCancellationRequested)
         {
-            lines = File_ReadAllLines_List(file, GetLegacyDefaultEncoding(), true);
-            return true;
+            try
+            {
+                lines = File_ReadAllLines_List(file, GetLegacyDefaultEncoding(), true);
+                return true;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
+            catch (FileNotFoundException ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
+            catch (IOException ex)
+            {
+                lastException = ex;
+                Thread.Sleep(50);
+            }
+            catch (Exception ex)
+            {
+                if (log) LogException(file, ex);
+                lines = null;
+                return false;
+            }
         }
-        catch (Exception ex)
+
+        if (lastException != null)
+        {
+            if (log) LogException(file, lastException);
+        }
+
+        lines = null;
+        return false;
+
+        static void LogException(string file, Exception ex)
         {
             Log(ErrorText.ExRead + file, ex);
-            lines = null;
-            return false;
         }
     }
 
-    internal static bool TryWriteAllLines_DefaultEncoding(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception)
+    internal static bool TryWriteAllLines_Timeout_DefaultEncoding(string file, List<string> lines, [NotNullWhen(false)] out Exception? exception, int timeout = _defaultIOTimeout)
     {
-        try
+        using CancellationTokenSource cts = new(timeout);
+
+        Exception? lastException = null;
+        while (!cts.IsCancellationRequested)
         {
-            File.WriteAllLines(file, lines, GetLegacyDefaultEncoding());
-            exception = null;
-            return true;
+            try
+            {
+                // @FileStreamNET: Implicit use of FileStream
+                File.WriteAllLines(file, lines, GetLegacyDefaultEncoding());
+                exception = null;
+                return true;
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                LogException(file, ex);
+                exception = ex;
+                return false;
+            }
+            catch (IOException ex)
+            {
+                lastException = ex;
+                Thread.Sleep(50);
+            }
+            catch (Exception ex)
+            {
+                LogException(file, ex);
+                exception = ex;
+                return false;
+            }
         }
-        catch (Exception ex)
+
+        exception = lastException ?? new Exception("Unknown");
+        LogException(file, exception);
+        return false;
+
+        static void LogException(string file, Exception ex)
         {
             Log(ErrorText.ExWrite + file, ex);
-            exception = ex;
-            return false;
         }
     }
 

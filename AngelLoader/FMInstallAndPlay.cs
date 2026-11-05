@@ -305,7 +305,7 @@ internal static partial class FMInstallAndPlay
 
     #region Play / open
 
-    internal static bool PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
+    internal static async Task<bool> PlayOriginalGame(GameIndex gameIndex, bool playMP = false)
     {
         using DisableScreenshotWatchers dsw = new();
 
@@ -334,7 +334,7 @@ internal static partial class FMInstallAndPlay
                     gameIndex: gameIndex,
                     origDisabledMods: Config.GetDisabledMods(gameIndex)))
             {
-                return false;
+                return FailAndResetConfigs(gameIndex);
             }
 
             if (gameIndex == GameIndex.TDM)
@@ -342,13 +342,15 @@ internal static partial class FMInstallAndPlay
                 SelectTdmFM(null, deselect: true);
             }
 
-            if (!StartExeForPlayOriginalGame(
+            if (!await StartExeForPlayOriginalGame(
                     gameIndex: gameIndex,
                     exe: playPrepValues.ExeToRun,
+                    gameExe: playPrepValues.GameExe,
                     workingPath: playPrepValues.ExeToRunWorkingPath,
-                    args: args))
+                    args: args,
+                    steam: playPrepValues.UseSteam))
             {
-                return false;
+                return FailAndResetConfigs(gameIndex);
             }
 
             return true;
@@ -373,7 +375,7 @@ internal static partial class FMInstallAndPlay
             bool nd128 = ConfigStoredGameIsNewDark128OrAbove(gameIndex);
 
             MissFlagError missFlagError = GenerateMissFlagFileIfRequired(fm, errorOnCantPlay: true);
-            if (missFlagError != MissFlagError.None) return false;
+            if (missFlagError != MissFlagError.None) return FailAndResetConfigs(gameIndex);
 
 #if !ReleaseBeta && !ReleasePublic
             bool? forceWindowed = Config.ForceWindowed ? true : null;
@@ -411,9 +413,9 @@ internal static partial class FMInstallAndPlay
             OptionallyAddNewDarkArgument(ref args, NewDarkArgument.enable_subtitles, fm.NDSubs, nd128);
         }
 
-        if (!RunThiefBuddyIfRequired(fm)) return false;
+        if (!RunThiefBuddyIfRequired(fm)) return FailAndResetConfigs(gameIndex);
 
-        if (!WriteStubCommFileForFM(fm, playPrepValues.GamePath)) return false;
+        if (!WriteStubCommFileForFM(fm, playPrepValues.GamePath)) return FailAndResetConfigs(gameIndex);
 
         if (!await StartExeForPlayFM(
                 fm: fm,
@@ -424,7 +426,7 @@ internal static partial class FMInstallAndPlay
                 args: args,
                 steam: playPrepValues.UseSteam))
         {
-            return false;
+            return FailAndResetConfigs(gameIndex);
         }
 
         return true;
@@ -480,14 +482,15 @@ internal static partial class FMInstallAndPlay
             // Why not
             GenerateMissFlagFileIfRequired(fm);
 
-            if (!WriteStubCommFileForFM(fm, gamePath)) return false;
+            if (!WriteStubCommFileForFM(fm, gamePath)) return FailAndResetConfigs(gameIndex);
 
             if (!StartExeForOpenFMInEditor(
-                    exe: editorExe,
-                    workingPath: gamePath,
-                    args: "-fm"))
+                gameIndex: gameIndex,
+                exe: editorExe,
+                workingPath: gamePath,
+                args: "-fm"))
             {
-                return false;
+                return FailAndResetConfigs(gameIndex);
             }
 
             return true;
@@ -501,6 +504,12 @@ internal static partial class FMInstallAndPlay
     #endregion
 
     #region Helpers
+
+    private static bool FailAndResetConfigs(GameIndex gameIndex)
+    {
+        GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.SingleGame(gameIndex));
+        return false;
+    }
 
     private readonly struct PlayPrepValues
     {
@@ -726,19 +735,19 @@ internal static partial class FMInstallAndPlay
         }
 
         static (bool Success, string SteamExe, string SteamWorkingPath, string Args)
-        GetSteamValues(GameIndex game, bool playMP)
+        GetSteamValues(GameIndex gameIndex, bool playMP)
         {
             // Multiplayer means starting Thief2MP.exe, so we can't really run it through Steam because Steam
             // will start Thief2.exe
             if (!playMP &&
-                !GetGameSteamId(game).IsEmpty() && Config.GetUseSteamSwitch(game) &&
+                !GetGameSteamId(gameIndex).IsEmpty() && Config.GetUseSteamSwitch(gameIndex) &&
                 Config.LaunchGamesWithSteam && !Config.SteamExe.IsEmpty() && File.Exists(Config.SteamExe))
             {
                 string? workingPath = Path.GetDirectoryName(Config.SteamExe);
 
                 if (workingPath.IsEmpty()) return (false, "", "", "");
 
-                string args = "-applaunch " + GetGameSteamId(game);
+                string args = "-applaunch " + GetGameSteamId(gameIndex);
 
                 return (true, Config.SteamExe, workingPath, args);
             }
@@ -942,32 +951,6 @@ internal static partial class FMInstallAndPlay
 
     [MustUseReturnValue]
     private static bool StartExeForOpenFMInEditor(
-        string exe,
-        string workingPath,
-        string args)
-    {
-        try
-        {
-            ProcessStartInfo startInfo = new()
-            {
-                FileName = exe,
-                WorkingDirectory = workingPath,
-                Arguments = !args.IsEmpty() ? args : "",
-            };
-
-            ProcessStart_UseShellExecute(startInfo);
-
-            return true;
-        }
-        catch (Exception ex)
-        {
-            HandleStartExeFailure(exe, workingPath, args, ex);
-            return false;
-        }
-    }
-
-    [MustUseReturnValue]
-    private static bool StartExeForPlayOriginalGame(
         GameIndex gameIndex,
         string exe,
         string workingPath,
@@ -982,13 +965,43 @@ internal static partial class FMInstallAndPlay
                 Arguments = !args.IsEmpty() ? args : "",
             };
 
+            PlayTimeTracking.GetTimeTrackingProcess(gameIndex).StartNonSteamWithNoTrackedFM(startInfo);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            HandleStartExeFailure(exe, workingPath, args, ex);
+            return false;
+        }
+    }
+
+    [MustUseReturnValue]
+    private static async Task<bool> StartExeForPlayOriginalGame(
+        GameIndex gameIndex,
+        string exe,
+        string gameExe,
+        string workingPath,
+        string args,
+        bool steam)
+    {
+        try
+        {
+            ProcessStartInfo startInfo = new()
+            {
+                FileName = exe,
+                WorkingDirectory = workingPath,
+                Arguments = !args.IsEmpty() ? args : "",
+            };
+
             if (gameIndex == GameIndex.TDM)
             {
-                PlayTimeTracking.GetTimeTrackingProcess(gameIndex).StartTdmWithNoFM(startInfo);
+                PlayTimeTracking.GetTimeTrackingProcess(gameIndex).StartNonSteamWithNoTrackedFM(startInfo);
             }
             else
             {
-                ProcessStart_UseShellExecute(startInfo);
+                bool success = await PlayTimeTracking.GetTimeTrackingProcess(gameIndex).Start(startInfo, null, steam, gameExe);
+                return success;
             }
 
             return true;

@@ -550,8 +550,13 @@ internal static class Core
 
         #region Game exes
 
-        // Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to
-        // the old ones.
+        /*
+        Do this BEFORE copying game exes to Config, because we need the Config game exes to still point to the
+        old ones.
+
+        NOTE: In theory we don't need to do this anymore because we reset on game exit now, but keep this around
+        for the edge case in which a user changes game paths while a game is still running.
+        */
         if (gamePathsChanged) GameConfigFiles.ResetGameConfigTempChanges(individualGamePathsChanged);
 
         // Game paths should have been checked and verified before OK was clicked, so assume they're good here
@@ -1984,12 +1989,12 @@ internal static class Core
     #endregion
 
     internal static (Error Error, Version? Version, string VersionString)
-    GetGameVersion(GameIndex game)
+    GetGameVersion(GameIndex gameIndex)
     {
-        string gameExe = Config.GetGameExe(game);
+        string gameExe = Config.GetGameExe(gameIndex);
         if (gameExe.IsWhiteSpace()) return (Error.GameExeNotSpecified, null, "");
 
-        bool gameIsNormal = GameIsDark(game) || game == GameIndex.TDM;
+        bool gameIsNormal = GameIsDark(gameIndex) || gameIndex == GameIndex.TDM;
         string exeToSearch;
         if (gameIsNormal)
         {
@@ -2022,7 +2027,7 @@ internal static class Core
         Version? version;
         try
         {
-            version = game == GameIndex.TDM
+            version = gameIndex == GameIndex.TDM
                 ? new Version(vi.FileMajorPart, vi.FileMinorPart, vi.FileBuildPart, vi.FilePrivatePart)
                 : new Version(vi.ProductMajorPart, vi.ProductMinorPart, vi.ProductBuildPart, vi.ProductPrivatePart);
         }
@@ -2031,7 +2036,7 @@ internal static class Core
             version = null;
         }
 
-        string finalVersion = game == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
+        string finalVersion = gameIndex == GameIndex.TDM ? TDM.GetTDMVersion(vi, version) : vi.ProductVersion ?? "";
 
         return finalVersion.IsEmpty() ? (Error.GameVersionNotFound, null, "") : (Error.None, version, finalVersion);
     }
@@ -2297,6 +2302,7 @@ internal static class Core
     // @CAN_RUN_BEFORE_VIEW_INIT
     private static void DoShutdownTasks()
     {
+        // NOTE: We shouldn't need to do this on shutdown anymore because we do it on game exit now, but meh...
         GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.AllTrue());
     }
 

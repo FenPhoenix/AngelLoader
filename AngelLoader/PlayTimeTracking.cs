@@ -39,7 +39,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
     public async Task<bool> Start(
         ProcessStartInfo startInfo,
-        FanMission fm,
+        FanMission? fm,
         bool steam,
         string gameExe)
     {
@@ -59,7 +59,9 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 
                     Core.View.ShowProgressBox_Single(
                         message1: LText.ProgressBox.WaitingForSteamToStartTheGame,
-                        message2: LText.ProgressBox.WaitingForSteamToStartTheGame_Explanation,
+                        // We don't track play time for original games, so don't show the message about play time
+                        // tracking for that case.
+                        message2: fm != null ? LText.ProgressBox.WaitingForSteamToStartTheGame_Explanation : "",
                         progressType: ProgressType.Indeterminate,
                         cancelMessage: LText.Global.Cancel,
                         cancelAction: CancelSteamWait
@@ -70,7 +72,14 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
                     _process.EnableRaisingEvents = true;
 
                     _process.Exited += Process_Exited;
-                    _stopwatch.Restart();
+                    if (fm != null)
+                    {
+                        _stopwatch.Restart();
+                    }
+                    else
+                    {
+                        _stopwatch.Reset();
+                    }
                     IsRunning = true;
                     return true;
                 }
@@ -91,7 +100,14 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
             else
             {
                 StartProcessNonSteam(startInfo);
-                _stopwatch.Restart();
+                if (fm != null)
+                {
+                    _stopwatch.Restart();
+                }
+                else
+                {
+                    _stopwatch.Reset();
+                }
                 return true;
             }
         }
@@ -102,7 +118,7 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
         }
     }
 
-    public void StartTdmWithNoFM(ProcessStartInfo startInfo)
+    public void StartNonSteamWithNoTrackedFM(ProcessStartInfo startInfo)
     {
         InitStart(startInfo, null);
 
@@ -228,6 +244,10 @@ public sealed class TimeTrackingProcess(GameIndex gameIndex)
 #if TESTING
         Trace.WriteLine("Top of Update()");
 #endif
+
+        // Do this even if we have no FM (ie. we're playing the original game), because we'll have modified the
+        // configs even in that case.
+        GameConfigFiles.ResetGameConfigTempChanges(PerGameGoFlags.SingleGame(_gameIndex));
 
         if (FMInstalledDir.IsEmpty()) return;
 
