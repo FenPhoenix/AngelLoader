@@ -36,6 +36,8 @@ public sealed class ConfigData
 
         GameFilterControlVisibilities = new bool[SupportedGameCount];
 
+        WebSearchUrls = new string[SupportedGameCount];
+
         #endregion
 
         FilterControlVisibilities = InitializedArray(HideableFilterControlsCount, true);
@@ -53,6 +55,8 @@ public sealed class ConfigData
             _startupFMSelectorLines[i] = new List<string>();
 
             GameFilterControlVisibilities[i] = true;
+
+            WebSearchUrls[i] = Defaults.WebSearchUrls[i];
         }
     }
 
@@ -396,12 +400,7 @@ public sealed class ConfigData
 
     #endregion
 
-    internal readonly string[] WebSearchUrls = RunFunc(static () =>
-    {
-        string[] ret = new string[SupportedGameCount];
-        Defaults.WebSearchUrls.CopyTo(ret, 0);
-        return ret;
-    });
+    internal readonly string[] WebSearchUrls;
     internal string GetWebSearchUrl(GameIndex index) => WebSearchUrls[(int)index];
     internal void SetWebSearchUrl(GameIndex index, string value) => WebSearchUrls[(int)index] = value;
 
