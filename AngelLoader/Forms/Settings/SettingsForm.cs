@@ -160,7 +160,7 @@ internal sealed partial class SettingsForm : DarkFormBase, IEventDisabler
 
         button.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         button.Location = new Point(8, 8 + (24 * (int)tab));
-        button.Size = new Size(136, 23);
+        button.Size = new Size(MainSplitContainer.SplitterDistance - 16, 23);
         button.TabIndex = (int)tab;
         button.CheckedChanged += PageRadioButtons_CheckedChanged;
 
